@@ -96,6 +96,19 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
     feedbackNotSaved: "Diesmal konnten wir es nicht in deinem Posteingang speichern: Wenn du eine Antwort möchtest, schreib dem Staff von dort aus.",
     openInbox: "Posteingang öffnen",
   },
+  ru: {
+    messages: "Сообщения",
+    envelopeOne: "Сообщения, 1 непрочитанная",
+    envelopeMany: "Сообщения, непрочитанных: {n}",
+    staffInbox: "Входящие Staff",
+    unreadOne: "1 непрочитанная переписка",
+    unreadMany: "Непрочитанных переписок: {n}",
+    writeToUser: "Написать этому пользователю",
+    feedbackNote: "Вы вошли в аккаунт: ваш отзыв будет связан с вашим аккаунтом, и мы ответим вам во входящих на OriginsMeta.",
+    feedbackSaved: "Мы также сохранили его в ваших входящих: там вы найдёте наш ответ.",
+    feedbackNotSaved: "На этот раз сохранить его во входящих не удалось: если хотите получить ответ, напишите команде Staff оттуда.",
+    openInbox: "Открыть входящие",
+  },
 };
 
 /**

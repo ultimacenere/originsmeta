@@ -1310,9 +1310,9 @@ export const it: Dictionary = {
     },
     kicker: "Mazzo di Origins",
     guideLangNote: "Questa guida è stata scritta in {lang} da chi ha pubblicato il mazzo e viene mostrata così com'è: la traduzione automatica non è ancora pronta.",
-    langNames: { en: "inglese", it: "italiano", es: "spagnolo", fr: "francese", pt: "portoghese", de: "tedesco" },
+    langNames: { en: "inglese", it: "italiano", es: "spagnolo", fr: "francese", pt: "portoghese", de: "tedesco", ru: "russo" },
     /** "da <lingua>", dopo "Tradotta automaticamente" */
-    langFrom: { en: "dall'inglese", it: "dall'italiano", es: "dallo spagnolo", fr: "dal francese", pt: "dal portoghese", de: "dal tedesco" },
+    langFrom: { en: "dall'inglese", it: "dall'italiano", es: "dallo spagnolo", fr: "dal francese", pt: "dal portoghese", de: "dal tedesco", ru: "dal russo" },
     translatedNote: "Tradotta automaticamente {from}: i nomi delle carte restano in inglese, come nel gioco.",
     originalText: "Testo originale ({lang})",
     metaTail: "Lista completa, grafici e codice del gioco su OriginsMeta.",

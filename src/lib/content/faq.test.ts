@@ -56,9 +56,9 @@ const { faqs, suggerimenti } = faqModule;
 const { cards, activeCards, cardsVerified } = cardsModule;
 const { risposteApprovate, contestoPer } = retrieveModule;
 
-// il portoghese dal 20/10/2026 (docs/portoghese.md), il tedesco dallo stesso giorno (docs/tedesco.md)
-type Locale = "en" | "it" | "es" | "pt" | "de";
-const locales: Locale[] = ["en", "it", "es", "pt", "de"];
+// il portoghese dal 20/10/2026 (docs/portoghese.md), il tedesco e il russo dallo stesso giorno (docs/tedesco.md, docs/russo.md)
+type Locale = "en" | "it" | "es" | "pt" | "de" | "ru";
+const locales: Locale[] = ["en", "it", "es", "pt", "de", "ru"];
 const byId = (l: Locale, id: string) => {
   const f = faqs[l].find((x) => x.id === id);
   assert.ok(f, `[${l}] manca la risposta ${id}`);
@@ -119,7 +119,7 @@ describe("FAQPage: una domanda marcata una volta sola nel sito", () => {
   test("nessuna domanda di /faq è uguale a una domanda delle FAQ di una guida o di una news, nella stessa lingua", () => {
     // /faq è la pagina ponte: risponde in breve e rimanda alla pagina primaria, che ha le sue FAQ. La guida di Google
     // chiede di marcare una FAQ ripetuta una sola volta: qui le domande si scrivono in un altro modo.
-    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9а-я]+/g, " ").trim();
     for (const l of locales) {
       const altrove = new Map<string, string>();
       for (const g of guidesModule.getGuides(l)) for (const f of g.faq ?? []) altrove.set(norm(f.q), `guida ${g.slug}`);
@@ -132,7 +132,7 @@ describe("FAQPage: una domanda marcata una volta sola nel sito", () => {
     // la stessa risposta. Una FAQ di una pagina nuova si scrive su un altro aspetto (la guida: a che ora apre). Fra
     // guide dei mazzi le domande generiche ("What do you keep in the mulligan?") si ripetono con risposte diverse:
     // quelle non contano.
-    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9а-я]+/g, " ").trim();
     for (const l of locales) {
       const inNews = new Map<string, string>();
       for (const n of newsModule.news) for (const f of n.faq?.[l] ?? []) inNews.set(norm(f.q), n.slug);
@@ -158,6 +158,7 @@ describe("numeri che cambiano con una patch", () => {
       es: (n) => `${n} es el único hechizo`,
       pt: (n) => `${n} é o único feitiço`,
       de: (n) => `${n} ist der einzige Zauber`,
+      ru: (n) => `${n} — единственное заклинание`,
     };
     for (const l of locales) {
       const a = byId(l, "legendaries").a;
@@ -189,7 +190,7 @@ describe("dati delle carte senza fonte dell'import (decisione di Pierluigi del 2
     }
   });
   test("where-cards e card-list dicono che le carte create e le rimosse non sono verificate nel gioco", () => {
-    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game/, it: /non (?:sono state )?verificat[ei] nel gioco/, es: /sin comprobar en el juego|no se han comprobado en el juego/, pt: /não foram verificad[oa]s no jogo/, de: /nicht im Spiel geprüft/ };
+    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game/, it: /non (?:sono state )?verificat[ei] nel gioco/, es: /sin comprobar en el juego|no se han comprobado en el juego/, pt: /não foram verificad[oa]s no jogo/, de: /nicht im Spiel geprüft/, ru: /не проверен\S* в игре/ };
     for (const l of locales) {
       assert.match(byId(l, "where-cards").a, notChecked[l], `[${l}] where-cards`);
       assert.match(byId(l, "card-list").a, notChecked[l], `[${l}] card-list`);
@@ -258,6 +259,14 @@ describe("risposte approvate per l'assistente", () => {
       ["Wann startet Ranked?", "de", "ranked"],
       ["Wie importiere ich den Code eines Decks?", "de", "deck-code"],
       ["Was sind die Preise beim Crimson Cup?", "de", "crimson-cup"],
+      ["Игра есть на русском?", "ru", "languages"],
+      ["Какие языки есть в игре?", "ru", "languages"],
+      ["Когда дата релиза?", "ru", "release-date"],
+      ["Есть ли версия для телефона?", "ru", "mobile"],
+      ["Origins TCG есть на Android?", "ru", "mobile"],
+      ["Когда начнётся рейтинговый режим?", "ru", "ranked"],
+      ["Как импортировать колоду по коду?", "ru", "deck-code"],
+      ["Какие призы на Crimson Cup?", "ru", "crimson-cup"],
     ];
     for (const [q, l, id] of cases) assert.equal(first(q, l), id, `[${l}] "${q}" → ${ids(q, l).join(", ") || "nessuna"}`);
   });

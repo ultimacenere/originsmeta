@@ -386,14 +386,14 @@ export function metaMapLayout(points: readonly MapPoint[], opts: { W: number; na
 
 /* ---------- numeri nella lingua della pagina ---------- */
 
-const TAG: Record<Locale, string> = { en: "en-GB", it: "it-IT", es: "es-ES", fr: "fr-FR", pt: "pt-BR", de: "de-DE" };
+const TAG: Record<Locale, string> = { en: "en-GB", it: "it-IT", es: "es-ES", fr: "fr-FR", pt: "pt-BR", de: "de-DE", ru: "ru-RU" };
 /** In francese lo spazio delle migliaia e quello prima del "%" sono insecabili (U+00A0, docs/francese.md). */
 const fixSpaces = (s: string) => s.replace(/[   ]/g, " ");
 
 /** Numero intero: "1,240", "1.240", "1240" (spagnolo: 4 cifre senza separatore), "1 240" con lo spazio insecabile. */
 export function fmtInt(n: number, locale: Locale): string {
   const s = new Intl.NumberFormat(TAG[locale], { useGrouping: locale === "es" ? "min2" : "always", maximumFractionDigits: 0 }).format(n);
-  return locale === "fr" ? fixSpaces(s) : s;
+  return locale === "fr" || locale === "ru" ? fixSpaces(s) : s;
 }
 /** Numero con decimali fissi ("3,5"). */
 export function fmtDec(n: number, locale: Locale, digits = 1): string {
@@ -401,7 +401,7 @@ export function fmtDec(n: number, locale: Locale, digits = 1): string {
 }
 /**
  * Il segno "%" della lingua: attaccato in inglese, italiano e portoghese, con lo spazio insecabile in spagnolo, francese
- * e tedesco ("98 %", in tedesco come vuole la norma DIN: docs/tedesco.md).
+ * e tedesco ("98 %", in tedesco come vuole la norma DIN: docs/tedesco.md); attaccato anche in russo ("98%", docs/russo.md).
  */
 export const pctUnit = (locale: Locale) => (locale === "es" || locale === "fr" || locale === "de" ? " %" : "%");
 /** Percentuale di una quota fra 0 e 1, solo il numero ("57,1"), con `digits` decimali. */

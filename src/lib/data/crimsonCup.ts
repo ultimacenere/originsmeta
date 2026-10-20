@@ -23,7 +23,7 @@ import type { Locale } from "../i18n";
 */
 
 type L10n = Record<Locale, string>;
-const n = (en: string, it: string, es: string, fr: string, pt: string, de: string): L10n => ({ en, it, es, fr, pt, de });
+const n = (en: string, it: string, es: string, fr: string, pt: string, de: string, ru: string): L10n => ({ en, it, es, fr, pt, de, ru });
 
 export type CrimsonLegendaryRow = {
   /** slug della Leggendaria in cards.ts */
@@ -128,7 +128,7 @@ export const crimsonQualifiers: CrimsonQualifier[] = [
 
 /** La regione di ogni qualificazione, per la riga sotto il nome nel selettore. */
 export const crimsonRegions: Record<string, L10n> = {
-  AMER: n("Americas", "Americhe", "Américas", "Amériques", "Américas", "Amerika"),
-  EMEA: n("Europe, Middle East and Africa", "Europa, Medio Oriente e Africa", "Europa, Oriente Medio y África", "Europe, Moyen-Orient et Afrique", "Europa, Oriente Médio e África", "Europa, Naher Osten und Afrika"),
-  APAC: n("Asia-Pacific", "Asia-Pacifico", "Asia-Pacífico", "Asie-Pacifique", "Ásia-Pacífico", "Asien-Pazifik"),
+  AMER: n("Americas", "Americhe", "Américas", "Amériques", "Américas", "Amerika", "Америка"),
+  EMEA: n("Europe, Middle East and Africa", "Europa, Medio Oriente e Africa", "Europa, Oriente Medio y África", "Europe, Moyen-Orient et Afrique", "Europa, Oriente Médio e África", "Europa, Naher Osten und Afrika", "Европа, Ближний Восток и Африка"),
+  APAC: n("Asia-Pacific", "Asia-Pacifico", "Asia-Pacífico", "Asie-Pacifique", "Ásia-Pacífico", "Asien-Pazifik", "Азиатско-Тихоокеанский регион"),
 };

@@ -20,7 +20,7 @@ import type { Locale } from "./i18n";
 export type Day = string;
 
 /** Primo giorno online di ogni lingua: nessuna pagina può dichiararsi cambiata prima di esistere. */
-export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20" };
+export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20" };
 
 /**
  * Soglia comune a tutte le pagine: il 25/09/2026 lo spagnolo ha aggiunto a ogni URL l'hreflang `es` (e la voce del

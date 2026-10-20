@@ -42,4 +42,8 @@ export const newsFeedLabels: Record<Locale, { title: string; description: string
     title: "Origins TCG News · OriginsMeta",
     description: "Die News von OriginsMeta zu Origins TCG: Patchnotes, Events, Neuigkeiten zur Demo und zur Website. Inoffizielle Fanseite, nicht mit Koin Games verbunden.",
   },
+  ru: {
+    title: "Новости Origins TCG · OriginsMeta",
+    description: "Новости OriginsMeta об Origins TCG: патчноуты, события, новинки демоверсии и сайта. Неофициальный фан-сайт, не связан с Koin Games.",
+  },
 };

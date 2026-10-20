@@ -94,4 +94,19 @@ const de: CardFilterLabels = {
   active: "{n} aktiv",
 };
 
-export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es, fr, pt, de };
+// russo (20/10/2026): Сила / Здоровье come nel glossario di docs/russo.md
+const ru: CardFilterLabels = {
+  cost: "Стоимость",
+  more: "Другие фильтры",
+  keyword: "Ключевое слово",
+  gameKeywords: "Ключевые слова игры",
+  effects: "Эффекты",
+  power: "Сила",
+  health: "Здоровье",
+  min: "мин.",
+  max: "макс.",
+  clear: "Сбросить фильтры",
+  active: "Активно: {n}",
+};
+
+export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es, fr, pt, de, ru };

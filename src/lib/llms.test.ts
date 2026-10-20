@@ -200,7 +200,7 @@ describe("public/llms.txt", () => {
       // l'ancora (/en/decks#best-decks) non cambia la pagina: si controlla il percorso
       const p = (path ?? "/").replace(/[.,;:]$/, "").split("#")[0];
       if (fixed.has(p)) continue;
-      const m = p.match(/^\/(en|it|es|fr|pt|de)(?:\/(.*))?$/);
+      const m = p.match(/^\/(en|it|es|fr|pt|de|ru)(?:\/(.*))?$/);
       if (!m) {
         problems.push(`${p}: senza lingua`);
         continue;

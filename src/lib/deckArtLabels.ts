@@ -202,7 +202,38 @@ const de: DeckArtLabels = {
   },
 };
 
-export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es, fr, pt, de };
+const ru: DeckArtLabels = {
+  form: {
+    title: "Арт Легендарной карты",
+    roles: "Creator и Staff",
+    hint: "Замените иллюстрацию карты {legendary} в этой колоде своей: на странице колоды, в списках колод, в вашем профиле и в тир-листах. Формат карты 5:7, не меньше {minw} × {minh} px (идеально {w} × {h}), PNG, JPG или WebP до 2 МБ: мы обрежем изображение до 5:7 по центру. Только ваши изображения или те, которые вы вправе использовать. Официальная карта остаётся на своей странице и в превью.",
+    upload: "Загрузить арт",
+    replace: "Заменить арт",
+    uploading: "Загружаем…",
+    remove: "Использовать официальную карту",
+    official: "Официальная карта",
+    custom: "Ваш арт",
+    notOwner: "Загрузить арт может только тот, кто опубликовал колоду; здесь вы можете его убрать.",
+    noRole: "Арт Легендарной карты доступен ролям Creator и Staff: здесь его можно только убрать.",
+    errors: {
+      type: "Этот файл не является изображением PNG, JPG или WebP.",
+      tooBig: "Изображение слишком тяжёлое даже после сжатия: попробуйте поменьше.",
+      upload: "Загрузка не прошла: проверьте соединение и попробуйте ещё раз.",
+      limit: "Вы достигли лимита загруженных изображений: удалите те, что больше не используете, или напишите команде Staff.",
+    },
+  },
+  errors: {
+    artFile: "Арт не найден или его нельзя использовать: загрузите его заново или используйте официальную карту.",
+    artRole: "Арт Легендарной карты доступен ролям Creator и Staff.",
+    artUnavailable: "Арт колоды пока нельзя сохранить: попробуйте через несколько минут или опубликуйте с официальной картой.",
+  },
+  deck: {
+    caption: "Арт от Creator",
+    alt: "{legendary}: арт колоды, автор {author}",
+  },
+};
+
+export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es, fr, pt, de, ru };
 
 /** Le etichette del modulo nella lingua della pagina, con gli errori delle Server Action. */
 export function deckArtFormLabels(locale: Locale): DeckArtFormLabels {

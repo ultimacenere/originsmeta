@@ -19,8 +19,8 @@ const SITE = "https://originsmeta.com";
 const UTM = discordUtm("guide", "guides");
 
 type Lang = Locale;
-const FLAGS: Record<Lang, string> = { en: "🇬🇧 English", it: "🇮🇹 Italiano", es: "🇪🇸 Español", fr: "🇫🇷 Français", pt: "🇧🇷 Português", de: "🇩🇪 Deutsch" };
-const BY: Record<Lang, string> = { en: "by", it: "di", es: "de", fr: "par", pt: "por", de: "von" };
+const FLAGS: Record<Lang, string> = { en: "🇬🇧 English", it: "🇮🇹 Italiano", es: "🇪🇸 Español", fr: "🇫🇷 Français", pt: "🇧🇷 Português", de: "🇩🇪 Deutsch", ru: "🇷🇺 Русский" };
+const BY: Record<Lang, string> = { en: "by", it: "di", es: "de", fr: "par", pt: "por", de: "von", ru: "автор:" };
 
 /** Un testo tagliato all'ultima parola intera entro `max` caratteri, con l'ellissi. */
 export function cut(text: string, max: number): string {
@@ -70,7 +70,7 @@ export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
   const author = escapeDiscord(cut(g.author, 60));
   const image = announcedImage(g.image);
   return {
-    content: "📘 **Nuova guida · New guide · Nueva guía · Nouveau guide · Novo guia · Neuer Guide**",
+    content: "📘 **Nuova guida · New guide · Nueva guía · Nouveau guide · Novo guia · Neuer Guide · Новый гайд**",
     embeds: [
       {
         // il titolo di un embed non interpreta il Markdown: resta com'è, solo accorciato
@@ -79,7 +79,7 @@ export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
         description: [
           escapeDiscord(cut(g.summary, 300)),
           "",
-          ...(["it", "en", "es", "fr", "pt", "de"] as const).map((l) => `${g.category[l]} · ${BY[l]} ${author}`),
+          ...(["it", "en", "es", "fr", "pt", "de", "ru"] as const).map((l) => `${g.category[l]} · ${BY[l]} ${author}`),
         ].join("\n"),
         fields: [{ name: FLAGS[g.lang], value: `[${escapeDiscord(g.title.replace(/[[\]]/g, "").slice(0, 200))}](${SITE}/${g.lang}/guides/community/${g.slug}?${UTM})` }],
         ...(image ? { image: { url: image } } : {}),

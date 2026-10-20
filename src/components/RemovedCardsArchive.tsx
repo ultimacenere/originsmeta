@@ -49,6 +49,11 @@ const labels: Record<Locale, { title: string; text: string; link: string }> = {
     text: "Diese Karten wurden in früheren Builds entfernt und sind nicht in der Demo 2.0, deshalb nimmt der Deckbuilder sie nicht an. Jede behält ihre Seite, mit dem letzten bekannten Text, den letzten bekannten Werten und der Legende, aus der sie stammt.",
     link: "Alle Karten, die nicht in der Demo sind",
   },
+  ru: {
+    title: "Карты вне демоверсии",
+    text: "Эти карты были удалены в прошлых сборках и отсутствуют в Demo 2.0, поэтому конструктор колод их не принимает. У каждой осталась своя страница с последним известным текстом и характеристиками и легендой, из которой она пришла.",
+    link: "Все карты вне демоверсии",
+  },
 };
 
 /**

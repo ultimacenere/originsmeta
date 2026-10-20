@@ -160,4 +160,29 @@ const de: FavoriteLabels = {
   },
 };
 
-export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr, pt, de };
+const ru: FavoriteLabels = {
+  save: "Сохранить",
+  saved: "Сохранено",
+  countOne: "сохранили: 1 игрок",
+  count: "сохранили игроков: {n}",
+  countNone: "Сохраните колоду, чтобы найти её в своём профиле",
+  loginToSave: "Войдите, чтобы сохранить",
+  errors: {
+    limit: "Вы сохранили 500 колод — это максимум: уберите несколько в своём профиле.",
+    invalid: "Эту колоду нельзя сохранить.",
+    unavailable: "Сохранение колод пока недоступно: попробуйте ещё раз через несколько минут.",
+    db: "Что-то пошло не так: попробуйте ещё раз.",
+  },
+  sortTrending: "В тренде",
+  sortSaved: "Чаще сохраняют",
+  favoritesShort: "☆ {n}",
+  account: {
+    title: "Сохранённые колоды",
+    hint: "Колоды, которые вы сохранили кнопкой «Сохранить». Этот список видите только вы.",
+    empty: "Сохранённых колод пока нет: откройте колоду и нажмите «Сохранить».",
+    remove: "Убрать",
+    unpublished: "Больше не опубликована",
+  },
+};
+
+export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr, pt, de, ru };

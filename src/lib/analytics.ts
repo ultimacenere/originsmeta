@@ -339,7 +339,7 @@ export function vercelProps(name: EventName, params: Props): Props {
 /** Lingua della pagina dal percorso (/it/…, /es/…, /fr/…): "" fuori dalle quattro lingue. */
 export function langOf(pathname: string): string {
   const seg = pathname.split("/")[1] ?? "";
-  return seg === "en" || seg === "it" || seg === "es" || seg === "fr" || seg === "pt" || seg === "de" ? seg : "";
+  return seg === "en" || seg === "it" || seg === "es" || seg === "fr" || seg === "pt" || seg === "de" || seg === "ru" ? seg : "";
 }
 
 /** Leggendaria di un mazzo come parametro: lo slug della carta, "custom" per quelle inserite a mano (il nome lo scrive l'utente). */

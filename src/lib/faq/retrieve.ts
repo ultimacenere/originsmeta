@@ -28,7 +28,8 @@ const normalizza = (s: string) =>
     .replace(/ß/g, "ss")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9\s'-]/g, " ");
+    // il cirillico resta (russo dal 20/10/2026): con NFD la "й" diventa "и" e la "ё" diventa "е", come gli accenti
+    .replace(/[^a-z0-9а-я\s'-]/g, " ");
 
 /** Punteggio di pertinenza di una carta rispetto alla domanda. */
 function punteggio(card: Card, domanda: string, parole: string[], locale: Locale): number {
@@ -93,6 +94,12 @@ const DE_FAQ = [
   ...["der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem", "einer", "eines", "und", "oder", "aber", "wenn", "dass", "denn", "nicht", "kein", "keine", "keinen", "ist", "sind", "war", "sein", "bin", "bist", "hat", "haben", "habe", "hast", "wird", "werden", "kann", "kannst", "konnen", "muss", "musst", "soll", "sollte", "ich", "du", "er", "sie", "es", "wir", "ihr", "man", "mich", "mir", "dich", "dir", "mein", "meine", "meinen", "dein", "deine", "deinen", "seine", "ihre", "was", "wer", "wie", "wo", "wann", "warum", "welche", "welcher", "welches", "wieviel", "viele", "viel"],
   ...["im", "in", "am", "an", "auf", "aus", "bei", "mit", "nach", "von", "vom", "vor", "zu", "zum", "zur", "fur", "uber", "unter", "gegen", "ohne", "durch", "um", "gibt", "spiel", "spiele", "spielen", "spielt", "karte", "karten", "deck", "decks", "alle", "allen", "jede", "jeden", "jeder", "jedes", "andere", "anderen", "auch", "noch", "schon", "gut", "besser", "beste", "besten", "mehr", "weniger", "sehr", "funktioniert", "funktionieren", "startet", "beginnt", "vorher", "danach", "finde", "finden", "brauche", "mochte", "will", "wissen", "hier", "dort", "jetzt", "dieser", "diese", "dieses", "diesen", "sich", "macht", "machen", "beim", "gern", "gerne", "woher", "eines"],
 ];
+// russo (20/10/2026): come escono da `normalizza` ("и" anche per "й", "е" anche per "ё": "какои", "еще"); le forme di
+// "карта", "колода", "игра" e "демоверсия" sono vuote come "card", "deck", "game" e "demo" (docs/russo.md)
+const RU_FAQ = [
+  ...["и", "в", "во", "на", "с", "со", "к", "ко", "о", "об", "от", "до", "по", "за", "из", "у", "для", "без", "про", "при", "над", "под", "между", "через", "что", "чтобы", "кто", "как", "какои", "какая", "какое", "какие", "каких", "каким", "какую", "когда", "где", "куда", "почему", "зачем", "сколько", "ли", "или", "а", "но", "же", "не", "нет", "да", "это", "этот", "эта", "эти", "этого", "этои", "этом", "эту", "тот", "та", "те", "то", "мои", "моя", "мое", "моего", "мою", "мне", "меня", "я", "ты", "вы", "вас", "вам", "ваш", "ваша", "ваши", "он", "она", "они", "оно", "его", "ее", "их", "им"],
+  ...["есть", "был", "была", "было", "были", "быть", "будет", "будут", "можно", "могу", "может", "могут", "нужно", "надо", "хочу", "уже", "еще", "тоже", "также", "все", "всех", "весь", "вся", "каждыи", "каждая", "очень", "более", "менее", "лучше", "лучшии", "лучшая", "лучшие", "хорошо", "хорошии", "игра", "игры", "игре", "игру", "игрои", "играть", "играю", "играет", "карта", "карты", "карт", "карте", "карту", "картои", "картами", "картах", "колода", "колоды", "колоду", "колоде", "колод", "колодои", "колодами", "колодах", "против", "работает", "работают", "начинается", "начнется", "сеичас", "здесь", "там", "потом", "после", "перед", "самое", "самыи", "такое", "такои", "делает", "делать", "сделать", "наити", "знать", "демо", "демоверсия", "демоверсии", "демоверсию", "патч", "патча", "патче", "работать"],
+];
 const STOPWORDS_FAQ: Record<Locale, Set<string>> = {
   en: new Set([...COMUNI_FAQ, ...EN_FAQ]),
   it: new Set([...COMUNI_FAQ, ...EN_FAQ, ...IT_FAQ]),
@@ -100,6 +107,7 @@ const STOPWORDS_FAQ: Record<Locale, Set<string>> = {
   fr: new Set([...COMUNI_FAQ, ...EN_FAQ, ...FR_FAQ]),
   pt: new Set([...COMUNI_FAQ, ...EN_FAQ, ...PT_FAQ]),
   de: new Set([...COMUNI_FAQ, ...EN_FAQ, ...DE_FAQ]),
+  ru: new Set([...COMUNI_FAQ, ...EN_FAQ, ...RU_FAQ]),
 };
 
 /** Parole di un testo per le risposte approvate: normalizzate e divise anche sull'apostrofo ("c'è", "un'abilità"). */

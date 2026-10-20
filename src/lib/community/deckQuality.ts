@@ -163,6 +163,10 @@ export const guideMeterLabels: Record<Locale, { below: string; ok: string }> = {
     below: "{n} von {min} Wörtern. Mit mindestens {min} Wörtern Guide (Spielplan plus Abschnitte) kann die Deckseite bei Google erscheinen; mit weniger bleibt sie nur auf der Website.",
     ok: "{n} Wörter: vollständiger Guide, die Deckseite kann bei Google erscheinen.",
   },
+  ru: {
+    below: "{n} из {min} слов. Если в гайде (план игры и разделы) не меньше {min} слов, страница колоды может появиться в Google; гайды короче остаются только на сайте.",
+    ok: "Слов: {n}. Гайд полный, страница колоды может появиться в Google.",
+  },
 };
 
 /** La frase dell'indicatore per un numero di parole. */
@@ -234,6 +238,13 @@ type ProfileWords = {
  * e non deve contendere la query principale a /tier-list e /tier-list/community (lo stesso schema del rilievo
  * DECKS-09, che cresce con gli iscritti). Glossario spagnolo in docs/spagnolo.md.
  */
+/** Forma russa del sostantivo per un numero: 1 колода, 2 колоды, 5 колод (21 колода, 11 колод). */
+const ruPlural = (n: number, one: string, few: string, many: string): string => {
+  const d = n % 10;
+  const h = n % 100;
+  return d === 1 && h !== 11 ? one : d >= 2 && d <= 4 && (h < 12 || h > 14) ? few : many;
+};
+
 const profileWords: Record<Locale, ProfileWords> = {
   en: {
     title: {
@@ -398,6 +409,35 @@ const profileWords: Record<Locale, ProfileWords> = {
     kinds: { legendaries: "Legendäre", cards: "Basiskarten" },
     and: " und ",
     tails: ["Ein Community-Profil auf OriginsMeta, der inoffiziellen Fanseite zu Origins TCG.", "Ein Community-Profil auf OriginsMeta.", "Community-Profil."],
+  },
+  // russo (20/10/2026, docs/russo.md): "колоды Origins TCG", "тир-лист" col trattino; il nome utente non si declina
+  // (sempre dopo "от"), le forme per 2–4 e 5+ con ruPlural
+  ru: {
+    title: {
+      both: "{name}: колоды и тир-листы Origins TCG",
+      decks: "{name}: колоды Origins TCG",
+      deck: "{name}: колода Origins TCG",
+      decksGuides: "{name}: колоды и гайды Origins TCG",
+      guides: "{name}: гайды по Origins TCG",
+      guide: "{name}: гайд по Origins TCG",
+      none: "{name}: профиль в сообществе Origins TCG",
+      short: "{name}: Origins TCG",
+    },
+    decks: ({ name, n, list }) =>
+      n === 1
+        ? `Колода Origins TCG от ${name}${list} с планом игры и полным списком карт`
+        : `${n} ${ruPlural(n, "колода", "колоды", "колод")} Origins TCG от ${name}${list} с планами игры и полными списками карт`,
+    plusTiers: (k) => (k === 1 ? ", а также сохранённый тир-лист" : `, а также ${k} ${ruPlural(k, "сохранённый тир-лист", "сохранённых тир-листа", "сохранённых тир-листов")}`),
+    plusGuides: (g) => (g === 1 ? ", а также гайд" : `, а также ${g} ${ruPlural(g, "гайд", "гайда", "гайдов")}`),
+    guidesOnly: ({ name, g }) => `${g === 1 ? "Гайд" : `${g} ${ruPlural(g, "гайд", "гайда", "гайдов")}`} по Origins TCG от ${name} для других игроков`,
+    tiersOnly: ({ name, k, kinds }) => {
+      const head = `${k === 1 ? "Тир-лист" : `${k} ${ruPlural(k, "тир-лист", "тир-листа", "тир-листов")}`} Origins TCG от ${name} (${kinds}) с рейтингом от S до D`;
+      return [`${head}: можно открыть в инструменте для создания тир-листов.`, `${head}.`];
+    },
+    none: (name) => `Профиль ${name} на OriginsMeta, сайте сообщества Origins TCG: опубликованных колод и тир-листов пока нет.`,
+    kinds: { legendaries: "Легендарные", cards: "базовые карты" },
+    and: " и ",
+    tails: ["Профиль в сообществе OriginsMeta, неофициального фан-сайта об игре Origins TCG.", "Профиль в сообществе OriginsMeta, неофициального фан-сайта Origins TCG.", "Профиль игрока в сообществе фан-сайта OriginsMeta.", "Профиль в сообществе OriginsMeta.", "Профиль в сообществе."],
   },
 };
 
@@ -641,5 +681,12 @@ export const communityPageLabels: Record<Locale, CommunityPageLabels> = {
     guideCallout: "Der Guide von OriginsMeta zu diesem Deck",
     authorPage: "Redaktion von OriginsMeta: {name}",
     tierList: "Origins TCG Tier-List",
+  },
+  ru: {
+    sameLegendary: "Другие колоды с {legendary}",
+    moreAfter: "Другие колоды",
+    guideCallout: "Гайд OriginsMeta по этой колоде",
+    authorPage: "Редакция OriginsMeta: {name}",
+    tierList: "Тир-лист Origins TCG",
   },
 };

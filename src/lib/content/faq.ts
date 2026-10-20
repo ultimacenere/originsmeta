@@ -9,7 +9,7 @@ import type { GuideSlug } from "./guides";
  * (quindi Google le legge) e finiscono nei dati strutturati FAQPage della pagina.
  *
  * Come cresce questo file: dalle domande che arrivano davvero. Quando una domanda torna spesso e la risposta
- * regge, si scrive qui in inglese, italiano, spagnolo, francese, portoghese e tedesco e smette di costare una chiamata al modello.
+ * regge, si scrive qui in inglese, italiano, spagnolo, francese, portoghese, tedesco e russo e smette di costare una chiamata al modello.
  * `cards` e `guides` sono gli slug da collegare sotto la risposta. `news` (dal 25/09/2026, MQ-06) porta all'articolo
  * che fa da fonte o da pagina di riferimento, con il testo del link scritto per quella lingua ("Crimson Cup rules",
  * dalla mappa delle query): le stesse news in ogni lingua, lo controlla `newsMeta.test.ts`.
@@ -75,10 +75,10 @@ const en: Faq[] = [
   {
     id: "languages",
     q: "What languages is Origins TCG in?",
-    a: "Since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). On 30 September 2026 the Steam page lists the same 13 for the interface, with full audio in English only. To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian, Spanish, French (since 7 October 2026), Portuguese and German (both since 20 October 2026), with the game's own card texts in Italian, Spanish, French, Portuguese and German (the German ones read in the game on 20 October 2026).",
+    a: "Since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). On 30 September 2026 the Steam page lists the same 13 for the interface, with full audio in English only. To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian, Spanish, French (since 7 October 2026), Portuguese, German and Russian (all three since 20 October 2026), with the game's own card texts in Italian, Spanish, French, Portuguese and German (the German ones read in the game on 20 October 2026); the Russian card texts are our own translation, not yet checked in the game.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patch 0.7 notes" }],
-    keywords: ["language", "english", "italian", "spanish", "french", "german", "translated", "translation", "subtitles", "voice", "espanol", "italiano"],
+    keywords: ["language", "english", "italian", "spanish", "french", "german", "russian", "translated", "translation", "subtitles", "voice", "espanol", "italiano"],
   },
   {
     id: "mobile",
@@ -183,7 +183,7 @@ const en: Faq[] = [
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "Costs, stats, alignments and texts of the 122 cards of the Demo 2.0 were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts, on the demo patch of 21 September 2026. Patch 0.7 of 29 September changed the cost of Bagheera, Mind Palace and Spellbook and reworked Twister Toss: the site applies those changes from the official patch notes on Steam, and the new text of Twister Toss has not been read in the game yet. The German card texts are the game's own too, read in the collection on 20 October 2026 with the texts of patch 0.7. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
+    a: "Costs, stats, alignments and texts of the 122 cards of the Demo 2.0 were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts, on the demo patch of 21 September 2026. Patch 0.7 of 29 September changed the cost of Bagheera, Mind Palace and Spellbook and reworked Twister Toss: the site applies those changes from the official patch notes on Steam, and the new text of Twister Toss has not been read in the game yet. The German card texts are the game's own too, read in the collection on 20 October 2026 with the texts of patch 0.7, while the Russian ones are our own translation and have not been checked in the game yet. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
     news: [
       { slug: "patch-0-7", label: "Patch 0.7 notes" },
       { slug: "demo-patch-notes-0921", label: "Demo patch notes of 21 September" },
@@ -203,10 +203,10 @@ const it: Faq[] = [
   {
     id: "languages",
     q: "In che lingue è Origins TCG?",
-    a: "Dalla patch 0.7 del 29 settembre 2026 il gioco supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), spagnolo (America latina), portoghese (Brasile), portoghese (Portogallo), giapponese, coreano, polacco, russo e cinese semplificato (patch notes ufficiali). Il 30 settembre 2026 la pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese. Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese, spagnolo, francese (dal 7 ottobre 2026), portoghese e tedesco (tutti e due dal 20 ottobre 2026), con i testi delle carte del gioco in italiano, spagnolo, francese, portoghese e tedesco (quelli tedeschi letti nel gioco il 20 ottobre 2026).",
+    a: "Dalla patch 0.7 del 29 settembre 2026 il gioco supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), spagnolo (America latina), portoghese (Brasile), portoghese (Portogallo), giapponese, coreano, polacco, russo e cinese semplificato (patch notes ufficiali). Il 30 settembre 2026 la pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese. Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese, spagnolo, francese (dal 7 ottobre 2026), portoghese, tedesco e russo (tutti e tre dal 20 ottobre 2026), con i testi delle carte del gioco in italiano, spagnolo, francese, portoghese e tedesco (quelli tedeschi letti nel gioco il 20 ottobre 2026); i testi russi delle carte sono una traduzione nostra, non ancora verificata nel gioco.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patch notes della 0.7" }],
-    keywords: ["lingua", "lingue", "italiano", "inglese", "spagnolo", "francese", "tedesco", "tradotto", "traduzione", "sottotitoli", "doppiaggio", "ita"],
+    keywords: ["lingua", "lingue", "italiano", "inglese", "spagnolo", "francese", "tedesco", "russo", "tradotto", "traduzione", "sottotitoli", "doppiaggio", "ita"],
   },
   {
     id: "mobile",
@@ -311,7 +311,7 @@ const it: Faq[] = [
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Costi, statistiche, allineamenti e testi delle 122 carte della Demo 2.0 sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco, sulla patch della demo del 21 settembre 2026. La patch 0.7 del 29 settembre ha cambiato il costo di Bagheera, Mind Palace e Spellbook e l'effetto di Twister Toss: il sito applica queste modifiche dalle patch notes ufficiali su Steam, e il testo nuovo di Twister Toss non è ancora stato letto nel gioco. Anche i testi tedeschi delle carte sono quelli del gioco, letti nella collezione il 20 ottobre 2026 con i testi della patch 0.7. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
+    a: "Costi, statistiche, allineamenti e testi delle 122 carte della Demo 2.0 sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco, sulla patch della demo del 21 settembre 2026. La patch 0.7 del 29 settembre ha cambiato il costo di Bagheera, Mind Palace e Spellbook e l'effetto di Twister Toss: il sito applica queste modifiche dalle patch notes ufficiali su Steam, e il testo nuovo di Twister Toss non è ancora stato letto nel gioco. Anche i testi tedeschi delle carte sono quelli del gioco, letti nella collezione il 20 ottobre 2026 con i testi della patch 0.7; quelli russi invece sono una traduzione nostra, non ancora verificata nel gioco. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
     news: [
       { slug: "patch-0-7", label: "Patch notes della 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patch notes della demo del 21 settembre" },
@@ -331,10 +331,10 @@ const es: Faq[] = [
   {
     id: "languages",
     q: "¿Origins TCG está en español?",
-    a: "Sí: desde el parche 0.7 del 29 de septiembre de 2026 el juego admite 13 idiomas, entre ellos el español de España y el de Latinoamérica (notas oficiales del parche); ya el 25 de septiembre la demo tenía la interfaz y los textos de las cartas en español (comprobado en el juego). El 30 de septiembre de 2026 la página de Steam indica los mismos 13 idiomas para la interfaz (inglés, francés, italiano, alemán, español de España y de Latinoamérica, portugués de Brasil y de Portugal, japonés, coreano, polaco, ruso y chino simplificado), con audio completo solo en inglés. Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés, italiano, francés (desde el 7 de octubre de 2026), portugués y alemán (los dos desde el 20 de octubre de 2026), con los textos de las cartas del juego en español, italiano, francés, portugués y alemán (los alemanes, leídos en el juego el 20 de octubre de 2026).",
+    a: "Sí: desde el parche 0.7 del 29 de septiembre de 2026 el juego admite 13 idiomas, entre ellos el español de España y el de Latinoamérica (notas oficiales del parche); ya el 25 de septiembre la demo tenía la interfaz y los textos de las cartas en español (comprobado en el juego). El 30 de septiembre de 2026 la página de Steam indica los mismos 13 idiomas para la interfaz (inglés, francés, italiano, alemán, español de España y de Latinoamérica, portugués de Brasil y de Portugal, japonés, coreano, polaco, ruso y chino simplificado), con audio completo solo en inglés. Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés, italiano, francés (desde el 7 de octubre de 2026), portugués, alemán y ruso (los tres desde el 20 de octubre de 2026), con los textos de las cartas del juego en español, italiano, francés, portugués y alemán (los alemanes, leídos en el juego el 20 de octubre de 2026); los textos de las cartas en ruso son una traducción nuestra, todavía sin comprobar en el juego.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notas del parche 0.7" }],
-    keywords: ["idioma", "idiomas", "espanol", "castellano", "ingles", "italiano", "frances", "aleman", "traducido", "traduccion", "subtitulos", "doblaje"],
+    keywords: ["idioma", "idiomas", "espanol", "castellano", "ingles", "italiano", "frances", "aleman", "ruso", "traducido", "traduccion", "subtitulos", "doblaje"],
   },
   {
     id: "mobile",
@@ -439,7 +439,7 @@ const es: Faq[] = [
   {
     id: "where-cards",
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
-    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la Demo 2.0 se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego, sobre el parche de la demo del 21 de septiembre de 2026. El parche 0.7 del 29 de septiembre cambió el coste de Bagheera, Mind Palace y Spellbook e hizo un rework de Twister Toss: el sitio aplica esos cambios a partir de las notas oficiales del parche en Steam, y el nuevo texto de Twister Toss todavía no se ha leído en el juego. Los textos de las cartas en alemán también son los del juego, leídos en la colección el 20 de octubre de 2026, ya con los textos del parche 0.7. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
+    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la Demo 2.0 se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego, sobre el parche de la demo del 21 de septiembre de 2026. El parche 0.7 del 29 de septiembre cambió el coste de Bagheera, Mind Palace y Spellbook e hizo un rework de Twister Toss: el sitio aplica esos cambios a partir de las notas oficiales del parche en Steam, y el nuevo texto de Twister Toss todavía no se ha leído en el juego. Los textos de las cartas en alemán también son los del juego, leídos en la colección el 20 de octubre de 2026, ya con los textos del parche 0.7; los textos en ruso, en cambio, son una traducción nuestra y todavía no se han comprobado en el juego. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
     news: [
       { slug: "patch-0-7", label: "Notas del parche 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas del parche de la demo del 21 de septiembre" },
@@ -459,10 +459,10 @@ const fr: Faq[] = [
   {
     id: "languages",
     q: "Origins TCG est-il en français ?",
-    a: "Oui. Depuis le patch 0.7 du 29 septembre 2026, le jeu prend en charge 13 langues (notes de patch officielles) : anglais, français, italien, allemand, espagnol (Espagne), espagnol (Amérique latine), portugais (Brésil), portugais (Portugal), japonais, coréen, polonais, russe et chinois simplifié. Le 30 septembre 2026, la page Steam indique les mêmes 13 langues pour l'interface, avec l'audio complet en anglais seulement. Pour changer de langue : clic droit sur le jeu dans votre bibliothèque Steam, puis Propriétés, Langue. OriginsMeta est en français, anglais, italien, espagnol et, depuis le 20 octobre 2026, portugais et allemand ; les textes des cartes sont ceux du jeu, en français comme en anglais, en italien, en espagnol, en portugais et en allemand (les textes allemands lus dans le jeu le 20 octobre 2026).",
+    a: "Oui. Depuis le patch 0.7 du 29 septembre 2026, le jeu prend en charge 13 langues (notes de patch officielles) : anglais, français, italien, allemand, espagnol (Espagne), espagnol (Amérique latine), portugais (Brésil), portugais (Portugal), japonais, coréen, polonais, russe et chinois simplifié. Le 30 septembre 2026, la page Steam indique les mêmes 13 langues pour l'interface, avec l'audio complet en anglais seulement. Pour changer de langue : clic droit sur le jeu dans votre bibliothèque Steam, puis Propriétés, Langue. OriginsMeta est en français, anglais, italien, espagnol et, depuis le 20 octobre 2026, portugais, allemand et russe ; les textes des cartes sont ceux du jeu, en français comme en anglais, en italien, en espagnol, en portugais et en allemand (les textes allemands lus dans le jeu le 20 octobre 2026), tandis que les textes russes sont une traduction de notre part, pas encore vérifiée dans le jeu.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notes du patch 0.7" }],
-    keywords: ["langue", "langues", "francais", "anglais", "italien", "espagnol", "allemand", "traduit", "traduction", "sous-titres", "doublage"],
+    keywords: ["langue", "langues", "francais", "anglais", "italien", "espagnol", "allemand", "russe", "traduit", "traduction", "sous-titres", "doublage"],
   },
   {
     id: "mobile",
@@ -567,7 +567,7 @@ const fr: Faq[] = [
   {
     id: "where-cards",
     q: "D'où viennent les statistiques des cartes de ce site ?",
-    a: "Les coûts, les statistiques, les alignements et les textes des 122 cartes de la Demo 2.0 ont été vérifiés un par un dans le jeu le 22 septembre 2026, en anglais, puis le 25 septembre aussi en italien et en espagnol, qui sont les textes du jeu, sur le patch de la démo du 21 septembre 2026 ; les textes français ont été lus dans le jeu le 8 octobre 2026, les textes portugais et allemands le 20 octobre 2026, sur le patch 0.7. Le patch 0.7 du 29 septembre a changé le coût de Bagheera, Mind Palace et Spellbook et retravaillé Twister Toss : le site applique ces changements d'après les notes de patch officielles sur Steam, et le nouveau texte de Twister Toss n'a pas encore été lu dans le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
+    a: "Les coûts, les statistiques, les alignements et les textes des 122 cartes de la Demo 2.0 ont été vérifiés un par un dans le jeu le 22 septembre 2026, en anglais, puis le 25 septembre aussi en italien et en espagnol, qui sont les textes du jeu, sur le patch de la démo du 21 septembre 2026 ; les textes français ont été lus dans le jeu le 8 octobre 2026, les textes portugais et allemands le 20 octobre 2026, sur le patch 0.7 ; les textes russes, eux, sont une traduction de notre part et n'ont pas encore été vérifiés dans le jeu. Le patch 0.7 du 29 septembre a changé le coût de Bagheera, Mind Palace et Spellbook et retravaillé Twister Toss : le site applique ces changements d'après les notes de patch officielles sur Steam, et le nouveau texte de Twister Toss n'a pas encore été lu dans le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
     news: [
       { slug: "patch-0-7", label: "Notes du patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notes de patch de la démo du 21 septembre" },
@@ -589,10 +589,10 @@ const pt: Faq[] = [
   {
     id: "languages",
     q: "Origins TCG está em português?",
-    a: "Sim: desde o patch 0.7 de 29 de setembro de 2026 o jogo tem 13 idiomas: inglês, francês, italiano, alemão, espanhol (Espanha), espanhol (América Latina), português (Brasil), português (Portugal), japonês, coreano, polonês, russo e chinês simplificado (notas oficiais do patch). Em 30 de setembro de 2026 a página da Steam lista os mesmos 13 para a interface, com áudio completo só em inglês. Para mudar o idioma, clique com o botão direito no jogo na sua biblioteca da Steam e depois em Propriedades, Idioma. O OriginsMeta está em português e em alemão desde 20 de outubro de 2026, além de inglês, italiano, espanhol e francês, com os textos das cartas do próprio jogo em português, italiano, espanhol, francês e alemão (os alemães lidos no jogo em 20 de outubro de 2026).",
+    a: "Sim: desde o patch 0.7 de 29 de setembro de 2026 o jogo tem 13 idiomas: inglês, francês, italiano, alemão, espanhol (Espanha), espanhol (América Latina), português (Brasil), português (Portugal), japonês, coreano, polonês, russo e chinês simplificado (notas oficiais do patch). Em 30 de setembro de 2026 a página da Steam lista os mesmos 13 para a interface, com áudio completo só em inglês. Para mudar o idioma, clique com o botão direito no jogo na sua biblioteca da Steam e depois em Propriedades, Idioma. O OriginsMeta está em português, em alemão e em russo desde 20 de outubro de 2026, além de inglês, italiano, espanhol e francês, com os textos das cartas do próprio jogo em português, italiano, espanhol, francês e alemão (os alemães lidos no jogo em 20 de outubro de 2026); os textos das cartas em russo são uma tradução nossa, ainda não verificada no jogo.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notas do patch 0.7" }],
-    keywords: ["portugues", "brasil", "portugal", "idioma", "idiomas", "lingua", "linguas", "traduzido", "traducao", "legendas", "dublagem", "audio", "ingles", "espanhol"],
+    keywords: ["portugues", "brasil", "portugal", "idioma", "idiomas", "lingua", "linguas", "russo", "traduzido", "traducao", "legendas", "dublagem", "audio", "ingles", "espanhol"],
   },
   {
     id: "mobile",
@@ -697,7 +697,7 @@ const pt: Faq[] = [
   {
     id: "where-cards",
     q: "De onde vêm as estatísticas das cartas deste site?",
-    a: "Os custos, as estatísticas, os alinhamentos e os textos das 122 cartas da Demo 2.0 foram verificados um a um no jogo em 22 de setembro de 2026, em inglês, e em 25 de setembro também em italiano e espanhol, que são os textos do jogo, no patch da demo de 21 de setembro de 2026. Os textos em português e em alemão também são os do jogo, lidos na coleção em 20 de outubro de 2026, já com os textos do patch 0.7. O patch 0.7 de 29 de setembro mudou o custo de Bagheera, Mind Palace e Spellbook e reformulou Twister Toss: o site aplica essas mudanças a partir das notas oficiais do patch na Steam, e o novo texto de Twister Toss foi lido no jogo em português, mas ainda não em inglês. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
+    a: "Os custos, as estatísticas, os alinhamentos e os textos das 122 cartas da Demo 2.0 foram verificados um a um no jogo em 22 de setembro de 2026, em inglês, e em 25 de setembro também em italiano e espanhol, que são os textos do jogo, no patch da demo de 21 de setembro de 2026. Os textos em português e em alemão também são os do jogo, lidos na coleção em 20 de outubro de 2026, já com os textos do patch 0.7; os textos em russo, por outro lado, são uma tradução nossa e ainda não foram verificados no jogo. O patch 0.7 de 29 de setembro mudou o custo de Bagheera, Mind Palace e Spellbook e reformulou Twister Toss: o site aplica essas mudanças a partir das notas oficiais do patch na Steam, e o novo texto de Twister Toss foi lido no jogo em português, mas ainda não em inglês. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
     news: [
       { slug: "patch-0-7", label: "Notas do patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas do patch da demo de 21 de setembro" },
@@ -719,10 +719,10 @@ const de: Faq[] = [
   {
     id: "languages",
     q: "Gibt es Origins TCG auf Deutsch?",
-    a: "Ja: Seit Patch 0.7 vom 29. September 2026 unterstützt das Spiel 13 Sprachen: Englisch, Französisch, Italienisch, Deutsch, Spanisch (Spanien), Spanisch (Lateinamerika), Portugiesisch (Brasilien), Portugiesisch (Portugal), Japanisch, Koreanisch, Polnisch, Russisch und vereinfachtes Chinesisch (offizielle Patchnotes). Am 30. September 2026 nennt die Steam-Seite dieselben 13 Sprachen für die Oberfläche, mit vollständiger Sprachausgabe nur auf Englisch. Zum Wechseln der Sprache klickst du in deiner Steam-Bibliothek mit der rechten Maustaste auf das Spiel, dann auf Eigenschaften, Sprache. OriginsMeta gibt es seit dem 20. Oktober 2026 auch auf Deutsch, neben Englisch, Italienisch, Spanisch, Französisch und Portugiesisch. Die Kartentexte auf Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch sind die des Spiels; die deutschen haben wir am 20. Oktober 2026 im Spiel gelesen.",
+    a: "Ja: Seit Patch 0.7 vom 29. September 2026 unterstützt das Spiel 13 Sprachen: Englisch, Französisch, Italienisch, Deutsch, Spanisch (Spanien), Spanisch (Lateinamerika), Portugiesisch (Brasilien), Portugiesisch (Portugal), Japanisch, Koreanisch, Polnisch, Russisch und vereinfachtes Chinesisch (offizielle Patchnotes). Am 30. September 2026 nennt die Steam-Seite dieselben 13 Sprachen für die Oberfläche, mit vollständiger Sprachausgabe nur auf Englisch. Zum Wechseln der Sprache klickst du in deiner Steam-Bibliothek mit der rechten Maustaste auf das Spiel, dann auf Eigenschaften, Sprache. OriginsMeta gibt es seit dem 20. Oktober 2026 auch auf Deutsch und Russisch, neben Englisch, Italienisch, Spanisch, Französisch und Portugiesisch. Die Kartentexte auf Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch sind die des Spiels; die deutschen haben wir am 20. Oktober 2026 im Spiel gelesen. Die russischen Kartentexte sind unsere eigene Übersetzung und noch nicht im Spiel geprüft.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patchnotes zu 0.7" }],
-    keywords: ["deutsch", "deutsche", "sprache", "sprachen", "übersetzt", "übersetzung", "untertitel", "sprachausgabe", "synchronisation", "englisch", "lokalisierung"],
+    keywords: ["deutsch", "deutsche", "sprache", "sprachen", "russisch", "übersetzt", "übersetzung", "untertitel", "sprachausgabe", "synchronisation", "englisch", "lokalisierung"],
   },
   {
     id: "mobile",
@@ -827,7 +827,7 @@ const de: Faq[] = [
   {
     id: "where-cards",
     q: "Woher stammen die Kartenwerte auf dieser Website?",
-    a: "Kosten, Werte, Gesinnungen und Texte der 122 Karten der Demo 2.0 wurden am 22. September 2026 einzeln im Spiel geprüft, auf Englisch, und am 25. September auch auf Italienisch und Spanisch, die die Texte des Spiels sind, auf dem Demo-Patch vom 21. September 2026; die französischen Texte haben wir am 8. Oktober 2026 und die portugiesischen und deutschen am 20. Oktober 2026 im Spiel gelesen, auf Patch 0.7. Patch 0.7 vom 29. September hat die Kosten von Bagheera, Mind Palace und Spellbook geändert und Twister Toss überarbeitet: Die Website übernimmt diese Änderungen aus den offiziellen Patchnotes auf Steam, und der neue Text von Twister Toss wurde im Spiel auf Portugiesisch und Deutsch gelesen, auf Englisch noch nicht. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
+    a: "Kosten, Werte, Gesinnungen und Texte der 122 Karten der Demo 2.0 wurden am 22. September 2026 einzeln im Spiel geprüft, auf Englisch, und am 25. September auch auf Italienisch und Spanisch, die die Texte des Spiels sind, auf dem Demo-Patch vom 21. September 2026; die französischen Texte haben wir am 8. Oktober 2026 und die portugiesischen und deutschen am 20. Oktober 2026 im Spiel gelesen, auf Patch 0.7. Patch 0.7 vom 29. September hat die Kosten von Bagheera, Mind Palace und Spellbook geändert und Twister Toss überarbeitet: Die Website übernimmt diese Änderungen aus den offiziellen Patchnotes auf Steam, und der neue Text von Twister Toss wurde im Spiel auf Portugiesisch und Deutsch gelesen, auf Englisch noch nicht. Die russischen Kartentexte sind dagegen unsere eigene Übersetzung und wurden noch nicht im Spiel geprüft. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
     news: [
       { slug: "patch-0-7", label: "Patchnotes zu 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patchnotes der Demo vom 21. September" },
@@ -836,7 +836,137 @@ const de: Faq[] = [
   },
 ];
 
-export const faqs: Record<Locale, Faq[]> = { en, it, es, fr, pt, de };
+// russo (20/10/2026, docs/russo.md): вы, nomi delle carte in inglese; i testi russi delle carte sono una traduzione
+// nostra, non ancora verificata nel gioco (languages, legendaries, card-list, where-cards)
+const ru: Faq[] = [
+  {
+    id: "release-date",
+    q: "Когда выходит Origins TCG?",
+    a: "На странице Steam релиз указан на четвёртый квартал 2026 года («Q4 2026»), без более точной даты (по состоянию на 25 сентября 2026). Играть можно уже сейчас: бесплатная демоверсия есть в Steam с 15 июля 2026, 21 сентября получила первое крупное обновление, а со стартом Steam Next Fest, с 19 по 26 октября 2026, в ней открывается рейтинговый режим. В нашей дорожной карте собраны все подтверждённые даты.",
+    guides: ["roadmap-and-dates", "play-the-demo"],
+    keywords: ["выходит", "выход", "выйдет", "релиз", "релиза", "дата выхода", "дата релиза", "запуск", "early access", "ранний доступ"],
+  },
+  {
+    id: "languages",
+    q: "Есть ли Origins TCG на русском языке?",
+    a: "Да: с патча 0.7 от 29 сентября 2026 игра поддерживает 13 языков: английский, французский, итальянский, немецкий, испанский (Испания), испанский (Латинская Америка), португальский (Бразилия), португальский (Португалия), японский, корейский, польский, русский и упрощённый китайский (официальные патчноуты). 30 сентября 2026 страница Steam указывает те же 13 языков для интерфейса, а полная озвучка есть только на английском. Чтобы сменить язык, щёлкните правой кнопкой мыши по игре в библиотеке Steam, затем выберите «Свойства» и «Язык». OriginsMeta с 20 октября 2026 есть и на русском, а также на английском, итальянском, испанском, французском, португальском и немецком. Тексты карт на итальянском, испанском, французском, португальском и немецком взяты из игры (немецкие мы прочитали в игре 20 октября 2026), а русские тексты карт — наш собственный перевод, ещё не проверенный в игре.",
+    guides: ["play-the-demo"],
+    news: [{ slug: "patch-0-7", label: "Патчноуты 0.7" }],
+    keywords: ["русский", "русском", "русская", "язык", "языки", "языке", "языков", "перевод", "переведена", "локализация", "субтитры", "озвучка", "английский"],
+  },
+  {
+    id: "mobile",
+    q: "Есть ли Origins TCG на Android или iOS?",
+    a: "Пока нет. Страница Steam указывает Windows и macOS (по состоянию на 25 сентября 2026). На странице предварительной регистрации Koin Games пишет, что открытие паков на мобильных устройствах появится: «We have our sights set on 2027 for Origins on Mobile.» Ни одна из страниц не уточняет, идёт ли речь об Android, iOS или об обеих платформах. В ноябре 2025 года у игры был мягкий запуск в App Store в отдельных регионах, до того как студия перенесла торговлю картами в Steam.",
+    guides: ["roadmap-and-dates"],
+    keywords: ["мобильный", "мобильная", "мобильной", "мобильных", "телефон", "телефоне", "смартфон", "планшет", "iphone", "ipad", "android", "андроид", "ios", "app store", "google play", "mac", "macos"],
+  },
+  {
+    id: "riftbound",
+    q: "Origins TCG — это то же самое, что Riftbound Origins?",
+    a: "Нет. Origins TCG — цифровая коллекционная карточная игра от Koin Games в Steam, где играют легенды из общественного достояния, такие как Robin Hood, Mulan и Dracula. «Riftbound Origins» — набор карт для Riftbound, коллекционной карточной игры по League of Legends (официальный сайт Riftbound, по состоянию на 25 сентября 2026): это другая игра, и её делает не Koin Games. Если искать колоды или карты «Origins», можно наткнуться на обе.",
+    guides: ["origins-tcg-explained"],
+    keywords: ["riftbound", "league of legends", "riot"],
+  },
+  {
+    id: "free-to-compete",
+    q: "Origins TCG — это pay-to-win?",
+    a: "Koin Games говорит, что нет: каждый игрок получает все карты бесплатно, а покупаются коллекционные версии — с грейдингом, ограниченные, которыми можно торговать на Торговой площадке Steam. Так что деньги меняют то, чем вы владеете, а не то, чем вы можете играть. Игра ещё не вышла: что пока не подтверждено, написано в нашем гайде.",
+    guides: ["is-origins-tcg-pay-to-win"],
+    keywords: ["pay to win", "pay-to-win", "p2w", "донат", "донатная", "free-to-play", "free to play", "free-to-compete", "микротранзакции"],
+  },
+  {
+    id: "kickstarter",
+    q: "Есть ли уже дата Kickstarter для Origins TCG?",
+    a: "Да: 27 октября 2026. Генеральный директор Koin Games Tim Jooste назвал дату в X 17 сентября 2026 («back the Alpha Edition Kickstarter (Oct 27th)»), а главное меню демоверсии показывало Kickstarter как «Coming soon – Oct 27» (по состоянию на 25 сентября 2026); ни там, ни там не сказано, во сколько он стартует. Предварительная регистрация открыта на founder.origins-tcg.com: депозит в 1 доллар, который можно вернуть до запуска, даёт статус VIP со скидкой 15%. В нашем гайде по Kickstarter всё самое актуальное.",
+    guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA по Kickstarter от 10 сентября" }],
+    keywords: ["kickstarter", "кикстартер", "краудфандинг", "предрегистрация", "предварительная регистрация", "депозит", "founder", "alpha"],
+  },
+  {
+    id: "demo-progress",
+    q: "Сохранится ли мой прогресс из демоверсии Origins TCG?",
+    a: "Внутри демоверсии — да. 16 сентября 2026 сотрудник Koin Games написал в официальном Discord, что открытые колоды и прогресс против боссов из Demo 1 переносятся в Demo 2, а пост в Steam от 21 сентября добавляет, что все, кто играл в демоверсию, в плейтест или и туда и туда, сохранят тот прогресс, который продвинулся дальше, «so no one will have to unlock cards again». О полной игре пост о запуске от 16 июля говорит, что эксклюзивными коллекционными предметами демоверсии можно будет торговать на Торговой площадке Steam; переносятся ли туда и открытые колоды, ни один официальный пост в Steam пока не говорит.",
+    guides: ["play-the-demo"],
+    news: [
+      { slug: "demo-first-big-update", label: "Обновление демоверсии от 21 сентября" },
+      { slug: "demo-2-progress-carryover", label: "Открытое в Demo 1 сохраняется" },
+    ],
+    keywords: ["прогресс", "сохранится", "сохраняется", "перенос", "переносится", "переносятся", "разблокировка", "открытые", "сброс", "сбросят", "потеряю"],
+  },
+  {
+    id: "ranked",
+    q: "Когда в Origins TCG можно будет играть в рейтинговом режиме?",
+    a: "С началом Steam Next Fest, в понедельник 19 октября 2026, согласно посту в Steam от 21 сентября, который обещает эксклюзивные награды рейтингового режима, пока без подробностей. Рейтинговый режим уже был в закрытом плейтесте, начиная с патча 0.6.1 от 14 августа 2026: лестница дивизионов до Grandmaster с мировой таблицей лидеров для дивизиона Grandmaster.",
+    guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
+    news: [
+      { slug: "demo-first-big-update", label: "Рейтинговый режим на Steam Next Fest" },
+      { slug: "patch-0-6-1-ranked", label: "Патч 0.6.1: рейтинговая лестница" },
+    ],
+    keywords: ["рейтинг", "рейтинговый", "рейтинговом", "рейтинговая", "ранкед", "ranked", "ladder", "лестница", "grandmaster", "грандмастер", "дивизион", "дивизионы", "таблица лидеров", "лидерборд"],
+  },
+  {
+    id: "crimson-cup",
+    q: "Когда проходит Crimson Cup и что можно выиграть?",
+    a: "С 19 по 25 октября 2026, во время Steam Next Fest: пять квалификаций по 512 мест каждая с 19-го по 22-е (AMER 19-го в 19:00 EST, EMEA 20-го в 19:00 CEST, AMER 21-го в 21:00 EST, APAC и EMEA 22-го), плей-офф 24-го, финалы 25-го. Призы общей стоимостью 10 000 долларов делятся на деньги, коллекционные предметы и промокарты: победитель получает промокарту Dracula 1/1, два кейса бустер-боксов и 1500 долларов, промокарты достаются вплоть до топ-32, а паки — до топ-256. Регистрация проходит в официальном Discord Koin, а чек-ин закрывается за пять минут до каждой квалификации: пропустите его — и сыграть не получится.",
+    guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Правила Crimson Cup" }],
+    keywords: ["приз", "призы", "призовой", "призовой фонд", "выиграть", "квалификация", "квалификации", "чек-ин", "check-in", "check in", "плей-офф", "playoffs"],
+  },
+  {
+    id: "conquest",
+    q: "Как работает формат Conquest?",
+    a: "Вы регистрируете больше одной колоды, и колоды должны отличаться друг от друга. Соперник банит одну из ваших колод, а вы выигрываете матч, если победите его каждой из оставшихся. На Crimson Cup колод три, между каждой парой — не меньше 8 уникальных карт разницы, списки колод скрыты до топ-4 (при бане вы видите только Легендарную), а в матчах best-of-five бана нет: нужно выиграть всеми тремя. Впервые Koin провела этот формат на Big Bob's Playtest Battle, где каждой колоде была нужна своя Легендарная и не меньше девяти карт разницы.",
+    guides: ["origins-tcg-conquest", "steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Правила Crimson Cup" }],
+    keywords: ["conquest", "конквест", "формат", "три колоды", "бан", "банит", "уникальные карты", "уникальных"],
+  },
+  {
+    id: "deck-rules",
+    q: "Сколько карт в колоде Origins TCG?",
+    a: "Двадцать пять: одна Легендарная и двенадцать разных карт, каждая в двух копиях. Вы выбираете тринадцать названий, а игра сама удваивает двенадцать базовых карт. Конструктор колод на этом сайте проверяет правило и подсказывает, чего не хватает.",
+    guides: ["origins-tcg-explained"],
+    keywords: ["сколько карт", "размер колоды", "собрать", "допустимая", "допустимую", "легальная", "копии", "копий", "правила колоды"],
+  },
+  {
+    id: "legendaries",
+    q: "Какие Легендарные карты есть в демоверсии Origins TCG?",
+    a: "В Demo 2.0 их 11, по состоянию на патч 0.7 от 29 сентября 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing и Wicked Stepmother. Каждую колоду возглавляет ровно одна из них; Legion of the Dead — единственное заклинание, остальные десять — персонажи. У каждой есть своя страница в нашей базе карт: с текстом карты, характеристиками и историей балансных изменений.",
+    cards: legendaries,
+    guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
+    links: [{ path: "/cards", label: "База карт" }],
+    keywords: ["легендарные", "легендарная", "легендарных", "легендарки", "legendary", "legendaries"],
+  },
+  {
+    id: "deck-code",
+    q: "Как импортировать код колоды?",
+    a: "Чтобы перенести колоду из игры на этот сайт, вставьте её код (он начинается с KGBLDC) в поле вверху нашего конструктора колод и нажмите «Импортировать»: поле понимает также ссылку для обмена или текстовый список и называет каждую карту, которую не удалось распознать. В обратную сторону: на странице колоды на OriginsMeta есть кнопка «Копировать код игры», если сайт знает ID каждой карты в колоде; в конструкторе колод при том же условии код находится под кнопкой «Поделиться». Именно этот код нужно вставить в Origins.",
+    links: [
+      { path: "/deck-builder", label: "Конструктор колод" },
+      { path: "/decks", label: "Колоды сообщества" },
+    ],
+    keywords: ["код", "коды", "код колоды", "код игры", "импорт", "импортировать", "экспорт", "экспортировать", "kgbldc"],
+  },
+  {
+    id: "card-list",
+    q: "Где посмотреть все карты Origins TCG?",
+    a: "В нашей базе карт: 122 карты Demo 2.0 с актуальными характеристиками, текстом и историей балансных изменений каждой, плюс 22 созданные карты — те, что появляются, только когда их создаёт другая карта, и чьи тексты не проверены в игре. Тексты карт на английском, итальянском, испанском, французском, португальском и немецком — такие, как в игре; русские тексты — наш перевод, ещё не проверенный в игре. В самой игре коллекция находится в разделе My Decks → Cards: включите фильтр «Unowned», чтобы видеть и карты, которых у вас ещё нет.",
+    links: [{ path: "/cards", label: "База карт" }],
+    keywords: ["список карт", "все карты", "каждую карту", "база карт", "база данных", "коллекция", "коллекции", "unowned"],
+  },
+  {
+    id: "where-cards",
+    q: "Откуда берутся характеристики карт на этом сайте?",
+    a: "Стоимость, характеристики, мировоззрения и тексты 122 карт Demo 2.0 были проверены в игре по одной 22 сентября 2026 на английском, а 25 сентября — также на итальянском и испанском, это игровые тексты, на патче демоверсии от 21 сентября 2026; французские тексты мы прочитали в игре 8 октября 2026, а португальские и немецкие — 20 октября 2026, на патче 0.7. Русские тексты карт — наш собственный перевод, они ещё не проверены в игре. Патч 0.7 от 29 сентября изменил стоимость Bagheera, Mind Palace и Spellbook и переработал Twister Toss: сайт применяет эти изменения по официальным патчноутам в Steam, а новый текст Twister Toss прочитан в игре на португальском и немецком, но ещё не на английском. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
+    news: [
+      { slug: "patch-0-7", label: "Патчноуты 0.7" },
+      { slug: "demo-patch-notes-0921", label: "Патчноуты демоверсии от 21 сентября" },
+    ],
+    keywords: ["характеристики", "статы", "источник", "источники", "откуда", "данные", "точные", "проверены", "проверка"],
+  },
+];
+
+export const faqs: Record<Locale, Faq[]> = { en, it, es, fr, pt, de, ru };
 
 /** Domande pronte sotto il campo: non sostituiscono la domanda libera, la riempiono. */
 export const suggerimenti: Record<Locale, string[]> = {
@@ -886,5 +1016,13 @@ export const suggerimenti: Record<Locale, string[]> = {
     "Was hat sich im Patch der Demo vom 21. September geändert?",
     "Welche Legendären gibt es in der Demo 2.0?",
     "Was macht eine Fähigkeit Beim Aufdecken?",
+  ],
+  ru: [
+    "Что делает Mulan?",
+    "Какие карты хорошо сочетаются с Van Helsing?",
+    "Как собрать допустимую колоду?",
+    "Что изменилось в патче демоверсии от 21 сентября?",
+    "Какие Легендарные карты есть в Demo 2.0?",
+    "Что делает способность При раскрытии?",
   ],
 };

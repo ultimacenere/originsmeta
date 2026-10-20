@@ -1240,9 +1240,9 @@ export const de: Dictionary = {
     },
     kicker: "Origins-Deck",
     guideLangNote: "Dieser Guide wurde von der Person, die das Deck veröffentlicht hat, auf {lang} geschrieben und wird so gezeigt, wie er geschrieben wurde: Die automatische Übersetzung ist noch nicht fertig.",
-    langNames: { en: "Englisch", it: "Italienisch", es: "Spanisch", fr: "Französisch", pt: "Portugiesisch", de: "Deutsch" },
+    langNames: { en: "Englisch", it: "Italienisch", es: "Spanisch", fr: "Französisch", pt: "Portugiesisch", de: "Deutsch", ru: "Russisch" },
     /** "aus dem <Sprache>", dopo "Automatisch übersetzt" */
-    langFrom: { en: "aus dem Englischen", it: "aus dem Italienischen", es: "aus dem Spanischen", fr: "aus dem Französischen", pt: "aus dem Portugiesischen", de: "aus dem Deutschen" },
+    langFrom: { en: "aus dem Englischen", it: "aus dem Italienischen", es: "aus dem Spanischen", fr: "aus dem Französischen", pt: "aus dem Portugiesischen", de: "aus dem Deutschen", ru: "aus dem Russischen" },
     translatedNote: "Automatisch übersetzt {from}: Die Kartennamen bleiben auf Englisch, wie im Spiel.",
     originalText: "Originaltext ({lang})",
     metaTail: "Vollständige Liste, Diagramme und der Deckcode des Spiels auf OriginsMeta.",

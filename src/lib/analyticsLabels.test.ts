@@ -19,9 +19,9 @@ import { TRACKER_DOWNLOAD_FILE, trackerInstallHref, analyticsInterestPrivacy, an
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { TRACKER_DOWNLOAD_URL } from "./trackerDownload.ts";
 
-const LOCALES = ["en", "it", "es", "fr", "pt", "de"] as const;
+const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
 /** lingua degli screenshot: l'app non ha il francese, la pagina francese mostra quelli inglesi (come SHOT_LOCALE della pagina) */
-const SHOT = { en: "en", it: "it", es: "es", fr: "en", pt: "en", de: "en" } as const;
+const SHOT = { en: "en", it: "it", es: "es", fr: "en", pt: "en", de: "en", ru: "en" } as const;
 const TITLE_MAX = 60;
 const DESC_MIN = 120;
 const DESC_MAX = 158;
@@ -148,7 +148,7 @@ describe("analytics: come il blocco INTERESSE ANALYTICS di schema.sql", () => {
   });
 
   test("stesse lingue, stesse posizioni del tasto, stesso numero del browser", () => {
-    assert.match(block, /locale in \('en', 'it', 'es', 'fr', 'pt', 'de'\)/);
+    assert.match(block, /locale in \('en', 'it', 'es', 'fr', 'pt', 'de', 'ru'\)/);
     assert.match(block, /source in \('top', 'bottom'\)/);
     assert.ok(block.includes("'^[0-9a-f]{32}$'"));
     assert.ok(component.includes("/^[0-9a-f]{32}$/"));

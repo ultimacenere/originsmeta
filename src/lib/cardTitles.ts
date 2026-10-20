@@ -9,7 +9,7 @@ import type { Card } from "./data/cards";
  * e senza la parola "carta"; la description era un elenco di campi senza "Origins TCG" né "Koin Games", e sui nomi
  * condivisi con altri giochi (Merlin in Grand Archive e Sorcery, Riftbound Origins) lo snippet non diceva di che gioco
  * si parla. Qui c'è un modello per tipo di carta (Leggendaria, carta base, carta creata, carta non nella demo) nelle
- * sei lingue (francese dal 07/10/2026, portoghese del Brasile e tedesco dal 20/10/2026), e la description è una frase vera fatta solo con i dati della scheda: tipo,
+ * sette lingue (francese dal 07/10/2026, portoghese del Brasile, tedesco e russo dal 20/10/2026), e la description è una frase vera fatta solo con i dati della scheda: tipo,
  * allineamento, costo, statistiche, stato, chi crea la carta, testo e origine della leggenda.
  *
  * Funzioni pure che importano solo tipi: `node --test` le prova su tutto il database carte (cardTitles.test.ts).
@@ -111,6 +111,15 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     created: "erschaffene Karte aus Origins TCG",
     removed: "Karte aus Origins TCG, nicht in der Demo",
     removedLegendary: "Legendäre aus Origins TCG, nicht in der Demo",
+  },
+  // russo (docs/russo.md, glossario provvisorio): "Легендарная" con la maiuscola come la rarità, "созданная карта" per
+  // i token; il nome del gioco non si declina, quindi sta dopo "карта" come apposizione ("карта Origins TCG")
+  ru: {
+    legendary: "Легендарная карта Origins TCG",
+    card: "карта Origins TCG",
+    created: "созданная карта Origins TCG",
+    removed: "карта Origins TCG, нет в демо",
+    removedLegendary: "Легендарная карта Origins TCG, нет в демо",
   },
 };
 
@@ -257,7 +266,30 @@ const descWords: Record<Locale, DescWords> = {
     tail: "Werte, veröffentlichte Decks und Herkunft der Legende auf OriginsMeta.",
     shortTail: "Alle Details auf OriginsMeta.",
   },
+  // Russo (glossario provvisorio di docs/russo.md): "персонаж" e "заклинание" con l'aggettivo accordato ("Легендарный
+  // персонаж", "Легендарное заклинание"), l'allineamento in inglese dopo il tipo; il costo con "ед. маны", che regge
+  // ogni numero senza declinare ("1 ед. маны", "5 ед. маны"). Chi crea la carta: "создаёт карта" / "создают карты".
+  ru: {
+    stats: (m, p, h) => (p === undefined ? `${m ?? "?"} ед. маны` : `${m ?? "?"} ед. маны, ${p}/${h ?? "?"}`),
+    former: (x) => ` (ранее ${x})`,
+    and: " и ",
+    active: (h) => `${h.name}, ${ruKind(h)} ${h.align} из Origins TCG (Koin Games): ${h.stats}.`,
+    created: (h) =>
+      h.creators
+        ? `${h.name}, карта ${h.align}, которую ${h.creators.includes(" и ") ? "создают карты" : "создаёт карта"} ${h.creators} в Origins TCG (Koin Games): ${h.stats}.`
+        : `${h.name}, созданная карта ${h.align} из Origins TCG (Koin Games): ${h.stats}.`,
+    removed: (h) => `${h.name}, ${ruKind(h)} ${h.align} из Origins TCG (Koin Games), нет в демо: ${h.stats}.`,
+    // Lunga come quella tedesca: regge anche una carta senza testo né origine russa
+    tail: "Характеристики, опубликованные колоды и происхождение легенды на OriginsMeta.",
+    shortTail: "Все подробности на OriginsMeta.",
+  },
 };
+
+/** Tipo della carta in russo, con l'aggettivo accordato al genere: "Легендарный персонаж", "Легендарное заклинание". */
+function ruKind(h: Head): string {
+  if (h.spell) return h.legendary ? "Легендарное заклинание" : "заклинание";
+  return h.legendary ? "Легендарный персонаж" : "персонаж";
+}
 
 /** Per confrontare nomi e testi senza badare all'apostrofo tipografico (il database li usa tutti e due). */
 function plain(text: string): string {
@@ -312,7 +344,8 @@ function oneLine(text: string): string {
 function lastSentenceEnd(text: string, max: number): number {
   const within = text.slice(0, max + 1);
   let end = -1;
-  for (const m of within.matchAll(/[.!?](?= |$)/g)) if (m.index < max && !/\b(?:Dr|Mr|Mrs|Ms|St)$/.test(within.slice(0, m.index))) end = m.index;
+  // anche il russo "ед." ("3 ед. урона"), dove `\b` non vale per il cirillico
+  for (const m of within.matchAll(/[.!?](?= |$)/g)) if (m.index < max && !/(?:\b(?:Dr|Mr|Mrs|Ms|St)|(?<!\p{L})ед)$/u.test(within.slice(0, m.index))) end = m.index;
   return end;
 }
 
@@ -339,7 +372,10 @@ const stopWords = new Set(
     "o os as um uns uma umas do dos da das no nos na nas ao aos em com por para ou mas se quando seu seus sua suas " +
     "meu meus minha minhas este esta estes estas esse essa à às pelo pela " +
     "der die das den dem des ein eine einen einem einer eines und oder aber wenn mit von vom zu zum zur im ins auf aus für " +
-    "bei nach durch um dein deine deinen deinem deiner deines dieser diese diesen diesem dieses jeden jede jedes"
+    "bei nach durch um dein deine deinen deinem deiner deines dieser diese diesen diesem dieses jeden jede jedes " +
+    "и в во на с со к ко о об от до из у за по для при без над под про через а но или если когда что как его её ее их " +
+    "между перед после вместо среди около чтобы который которая которое которые где ваш ваша ваше ваши вашу вашей " +
+    "вашего свой свою своего своей свои этот эта это эти этого этой тот та то те не"
   ).split(" "),
 );
 
@@ -477,6 +513,9 @@ export const DECK_TITLE_MAX = CARD_TITLE_MAX - " · Origins TCG".length;
  * - Tedesco (20/10/2026): "Deck" (das Deck, docs/tedesco.md) con "mit" e "für", che lo distinguono dalle altre lingue:
  *   "Spellcast, Deck mit Merlin", "Deck mit Merlin", "Dorothy Combo, Deck für Origins TCG", "Spellcast Deck mit Merlin",
  *   "Merlin Deck für Origins TCG".
+ * - Russo (20/10/2026): "колода" (docs/russo.md) con il nome della Leggendaria in apposizione, non declinato:
+ *   "Spellcast, колода Merlin", "Колода Merlin", "Dorothy Combo, колода для Origins TCG", "Колода Spellcast с Merlin",
+ *   "Колода Merlin для Origins TCG".
  */
 const deckTitles: Record<
   Locale,
@@ -537,6 +576,14 @@ const deckTitles: Record<
     withWord: (l, n) => `${n} mit ${l}`,
     namedWord: (n) => `${n} für Origins TCG`,
   },
+  ru: {
+    with: (l, n) => `${n}, колода ${l}`,
+    only: (l) => `Колода ${l}`,
+    named: (n) => `${n}, колода для Origins TCG`,
+    word: /(?<!\p{L})колод[аыеуой]{0,2}(?!\p{L})/iu,
+    withWord: (l, n) => `${n} с ${l}`,
+    namedWord: (n) => `${n} для Origins TCG`,
+  },
 };
 
 /**
@@ -584,6 +631,7 @@ export function deckLead(deck: { name: string; legendary?: string; author: strin
   if (locale === "fr") return `${l ? `Deck ${l} pour Origins TCG` : "Deck pour Origins TCG"}\u00a0: ${name} par ${deck.author}, archétype ${arch}.`;
   if (locale === "pt") return `${l ? `Deck de ${l} para Origins TCG` : "Deck de Origins TCG"}: ${name} de ${deck.author}, arquétipo ${arch}.`;
   if (locale === "de") return `${l ? `Deck mit ${l} für Origins TCG` : "Deck für Origins TCG"}: ${name} von ${deck.author}, Archetyp ${arch}.`;
+  if (locale === "ru") return `${l ? `Колода с ${l} для Origins TCG` : "Колода для Origins TCG"}: ${name}, автор ${deck.author}, архетип ${arch}.`;
   return `${l ? `${l} deck for Origins TCG` : "Origins TCG deck"}: ${name} by ${deck.author}, ${arch} archetype.`;
 }
 
@@ -599,4 +647,5 @@ export const deckShortTail: Record<Locale, string> = {
   fr: "Liste complète sur OriginsMeta.",
   pt: "Lista completa no OriginsMeta.",
   de: "Vollständige Liste auf OriginsMeta.",
+  ru: "Полный список на OriginsMeta.",
 };

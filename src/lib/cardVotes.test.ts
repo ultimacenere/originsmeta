@@ -31,7 +31,7 @@ import {
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { cardVoteLabels } from "./cardVoteLabels.ts";
 
-const LOCALES = ["en", "it", "es", "fr", "pt", "de"] as const;
+const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
 const TITLE_MAX = 60;
 const DESC_MIN = 120;
 const DESC_MAX = 158;

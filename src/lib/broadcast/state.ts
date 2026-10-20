@@ -11,7 +11,7 @@
  * disegna, così l'indirizzo per OBS resta corto.
  */
 
-export const BROADCAST_LANGS = ["en", "it", "es", "fr", "pt", "de"] as const;
+export const BROADCAST_LANGS = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
 export type BroadcastLang = (typeof BROADCAST_LANGS)[number];
 
 export const BEST_OF = [1, 3, 5] as const;

@@ -926,7 +926,7 @@ describe("messaggi Discord", () => {
     lang: "es" as const,
     author: "Vega @everyone",
     summary: "Una **guía** con [link](https://evil.example)",
-    category: { en: "Deck guides", it: "Guide ai mazzi", es: "Guías de mazos", fr: "Guides de decks", pt: "Guias de decks", de: "Deck-Guides" },
+    category: { en: "Deck guides", it: "Guide ai mazzi", es: "Guías de mazos", fr: "Guides de decks", pt: "Guias de decks", de: "Deck-Guides", ru: "Гайды по колодам" },
     image: "/media/keyart-mulan.webp",
   };
 

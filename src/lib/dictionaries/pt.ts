@@ -1319,9 +1319,9 @@ export const pt: Dictionary = {
     },
     kicker: "Deck de Origins",
     guideLangNote: "Este guia foi escrito em {lang} por quem publicou o deck e aparece como foi escrito: a tradução automática ainda não está pronta.",
-    langNames: { en: "inglês", it: "italiano", es: "espanhol", fr: "francês", pt: "português", de: "alemão" },
+    langNames: { en: "inglês", it: "italiano", es: "espanhol", fr: "francês", pt: "português", de: "alemão", ru: "russo" },
     /** "do <idioma>", depois de "Traduzido automaticamente" */
-    langFrom: { en: "do inglês", it: "do italiano", es: "do espanhol", fr: "do francês", pt: "do português", de: "do alemão" },
+    langFrom: { en: "do inglês", it: "do italiano", es: "do espanhol", fr: "do francês", pt: "do português", de: "do alemão", ru: "do russo" },
     translatedNote: "Traduzido automaticamente {from}: os nomes das cartas ficam em inglês, como no jogo.",
     originalText: "Texto original ({lang})",
     metaTail: "Lista completa, gráficos e o código do deck para o jogo no OriginsMeta.",

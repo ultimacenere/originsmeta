@@ -36,6 +36,10 @@ export default function GlobalNotFound() {
             <span className="block font-display font-bold text-sky">Diese Karte gibt es nicht.</span>
             Die gesuchte Seite liegt nicht auf dem Tisch.
           </p>
+          <p className="mt-4 text-pale-muted" lang="ru">
+            <span className="block font-display font-bold text-sky">Такой карты нет.</span>
+            Страницы, которую вы ищете, нет на столе.
+          </p>
           <p className="mt-6 flex flex-wrap justify-center gap-3">
             <Link className="btn btn-ink" href="/en">English</Link>
             <Link className="btn btn-ink" href="/it">Italiano</Link>
@@ -43,6 +47,7 @@ export default function GlobalNotFound() {
             <Link className="btn btn-ink" href="/fr">Français</Link>
             <Link className="btn btn-ink" href="/pt">Português</Link>
             <Link className="btn btn-ink" href="/de">Deutsch</Link>
+            <Link className="btn btn-ink" href="/ru">Русский</Link>
           </p>
         </div>
       </body>

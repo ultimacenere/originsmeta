@@ -4,6 +4,7 @@ import { esText } from "./guides-es";
 import { frText } from "./guides-fr";
 import { ptText } from "./guides-pt";
 import { deText } from "./guides-de";
+import { ruText } from "./guides-ru";
 import type { GuideVideo } from "../videos";
 
 export type GuideCategory = "game" | "decks" | "rank" | "archetypes" | "interviews" | "events" | "economy";
@@ -3262,8 +3263,9 @@ const es = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...esText[s]
 const fr = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...frText[s] }])) as Record<GuideSlug, Guide>;
 const pt = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...ptText[s] }])) as Record<GuideSlug, Guide>;
 const de = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...deText[s] }])) as Record<GuideSlug, Guide>;
+const ru = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...ruText[s] }])) as Record<GuideSlug, Guide>;
 
-const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, es, fr, pt, de };
+const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, es, fr, pt, de, ru };
 
 /** Giorno di prima pubblicazione di ogni guida (il primo commit che la contiene). Una guida nuova si aggiunge qui. */
 const publishedOn: Record<GuideSlug, string> = {

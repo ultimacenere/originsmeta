@@ -101,7 +101,7 @@ const en = {
       "Type your bot's line in your Twitch chat, as the channel owner or a moderator. The answer: deck name, Legendary, short link and game code. If !deck already exists, write edit instead of add (!commands edit, !command edit).",
     fossabot: "Fossabot (response of a command created in the dashboard)",
     langName: "English",
-    langHint: "The answer is in {lang}: for another language change lang={code} at the end of the link (en, it, es, fr, pt, de).",
+    langHint: "The answer is in {lang}: for another language change lang={code} at the end of the link (en, it, es, fr, pt, de, ru).",
     overlay: "OBS overlay with your latest deck",
   },
 };
@@ -188,7 +188,7 @@ const it: StreamLabels = {
       "Scrivi la riga del tuo bot nella chat di Twitch, da proprietario del canale o da moderatore. La risposta: nome del mazzo, Leggendaria, link breve e codice del gioco. Se !deck esiste già, al posto di add scrivi edit (!commands edit, !command edit).",
     fossabot: "Fossabot (risposta di un comando creato dalla dashboard)",
     langName: "italiano",
-    langHint: "La risposta è in {lang}: per un'altra lingua cambia lang={code} in fondo al link (en, it, es, fr, pt, de).",
+    langHint: "La risposta è in {lang}: per un'altra lingua cambia lang={code} in fondo al link (en, it, es, fr, pt, de, ru).",
     overlay: "Overlay per OBS con il tuo ultimo mazzo",
   },
 };
@@ -273,7 +273,7 @@ const es: StreamLabels = {
       "Escribe la línea de tu bot en el chat de Twitch, como dueño del canal o moderador. La respuesta: nombre del mazo, Legendaria, enlace corto y código del juego. Si !deck ya existe, en lugar de add escribe edit (!commands edit, !command edit).",
     fossabot: "Fossabot (respuesta de un comando creado en el panel)",
     langName: "español",
-    langHint: "La respuesta está en {lang}: para otro idioma cambia lang={code} al final del enlace (en, it, es, fr, pt, de).",
+    langHint: "La respuesta está en {lang}: para otro idioma cambia lang={code} al final del enlace (en, it, es, fr, pt, de, ru).",
     overlay: "Overlay para OBS con tu último mazo",
   },
 };
@@ -360,7 +360,7 @@ const fr: StreamLabels = {
       "Tapez la ligne de votre bot dans votre chat Twitch, en tant que propriétaire de la chaîne ou modérateur. La réponse : nom du deck, Légendaire, lien court et code du jeu. Si !deck existe déjà, écrivez edit à la place de add (!commands edit, !command edit).",
     fossabot: "Fossabot (réponse d'une commande créée dans le tableau de bord)",
     langName: "français",
-    langHint: "La réponse est en {lang} : pour une autre langue, changez lang={code} à la fin du lien (en, it, es, fr, pt, de).",
+    langHint: "La réponse est en {lang} : pour une autre langue, changez lang={code} à la fin du lien (en, it, es, fr, pt, de, ru).",
     overlay: "Overlay OBS avec votre dernier deck",
   },
 };
@@ -447,7 +447,7 @@ const pt: StreamLabels = {
       "Digite a linha do seu bot no chat da sua Twitch, como dono do canal ou moderador. A resposta: nome do deck, Lendária, link curto e código do jogo. Se !deck já existir, escreva edit no lugar de add (!commands edit, !command edit).",
     fossabot: "Fossabot (resposta de um comando criado no painel)",
     langName: "português",
-    langHint: "A resposta está em {lang}: para outro idioma, mude lang={code} no final do link (en, it, es, fr, pt, de).",
+    langHint: "A resposta está em {lang}: para outro idioma, mude lang={code} no final do link (en, it, es, fr, pt, de, ru).",
     overlay: "Overlay do OBS com o seu último deck",
   },
 };
@@ -533,9 +533,95 @@ const de: StreamLabels = {
       "Gib die Zeile deines Bots als Kanalinhaber oder Moderator in deinen Twitch-Chat ein. Die Antwort: Name des Decks, Legendäre, Kurzlink und Spielcode. Gibt es !deck schon, schreib edit statt add (!commands edit, !command edit).",
     fossabot: "Fossabot (Antwort eines im Dashboard erstellten Befehls)",
     langName: "Deutsch",
-    langHint: "Die Antwort ist auf {lang}: Für eine andere Sprache ändere lang={code} am Ende des Links (en, it, es, fr, pt, de).",
+    langHint: "Die Antwort ist auf {lang}: Für eine andere Sprache ändere lang={code} am Ende des Links (en, it, es, fr, pt, de, ru).",
     overlay: "OBS-Overlay mit deinem neuesten Deck",
   },
 };
 
-export const streamLabels: Record<Locale, StreamLabels> = { en, it, es, fr, pt, de };
+// russo (20/10/2026, docs/russo.md): вы, «Легендарная», «код игры»; «оверлей» come lo dicono gli streamer russi
+const ru: StreamLabels = {
+  chat: {
+    line: "Колода от {author}: {deck}",
+    legendary: "Легендарная",
+    code: "Код игры",
+    setLine: "Турнирная колода от {author}: {set}",
+    noDecks: "У {user} пока нет публичных колод на OriginsMeta.",
+    noUser: "На OriginsMeta нет пользователя {user}.",
+    noDeck: "Колода на OriginsMeta не найдена: проверьте URL команды.",
+    noSet: "Турнирная колода на OriginsMeta не найдена: проверьте URL команды.",
+    usage: "Добавьте к URL команды ?u=<имя пользователя на OriginsMeta>, ?deck=<колода> или ?set=<турнирная колода>.",
+    unavailable: "OriginsMeta сейчас недоступен: попробуйте ещё раз через минуту.",
+  },
+  overlay: {
+    title: "Оверлей колоды",
+    legendary: "Легендарная",
+    by: "от",
+    cards: "Карты (×2)",
+    noDeck: "Колода не найдена: проверьте URL источника «Браузер».",
+    noDecks: "У {user} пока нет публичных колод: опубликуйте колоду на OriginsMeta, и в течение минуты она появится здесь.",
+    noUser: "На OriginsMeta нет пользователя {user}.",
+    usage: "Добавьте к URL ?u=<имя пользователя на OriginsMeta> или используйте /overlay/deck/<колода>.",
+    unavailable: "OriginsMeta сейчас недоступен: оверлей пробует снова каждую минуту.",
+    unofficial: "Неофициальный фан-сайт, не связан с Koin Games",
+    set: "Турнирная колода",
+    deck: "Колода {letter}",
+    noSet: "Турнирная колода не найдена: проверьте URL источника «Браузер».",
+  },
+  image: {
+    kicker: "Origins TCG · Колода сообщества",
+    by: "от",
+    legendary: "Легендарная",
+    cards: "Карты · по 2 копии",
+    unofficial: "Неофициальный фан-сайт, не связан с Koin Games",
+    alt: "Список колоды {deck} от {author} с Легендарной {legendary}: двенадцать карт и их стоимость в мане.",
+    altNoLegendary: "Список колоды {deck} от {author}: карты и их стоимость в мане.",
+    setKicker: "Origins TCG · Турнирная колода · Conquest",
+    deck: "Колода {letter}",
+    setAlt: "Турнирная колода {set} от {author}: списки трёх колод Conquest с Легендарными {legendaries} и стоимостью в мане каждой карты.",
+  },
+  tools: {
+    summary: "Для стримеров: короткая ссылка, команда чата, оверлей OBS, изображение",
+    intro: "Для стримов и видео. Ничего не нужно устанавливать: скопируйте, вставьте — и колода на экране.",
+    shortLink: "Короткая ссылка",
+    shortLinkHint: "Назовите её на стриме или добавьте в описание видео: она откроет эту колоду на языке зрителя.",
+    chat: "Команда чата для этой колоды",
+    chatHint:
+      "Введите её в чате Twitch как владелец канала или модератор: после этого !deck будет отвечать этой колодой, её короткой ссылкой и кодом игры. Если !deck уже существует, напишите edit вместо add (!commands edit для Nightbot, !command edit для StreamElements).",
+    nightbot: "Nightbot",
+    streamelements: "StreamElements",
+    overlay: "Оверлей OBS",
+    overlayHint: "В OBS: Источники → + → Браузер, вставьте ссылку и задайте {vw} × {vh} для вертикального, {hw} × {hh} для горизонтального. Прозрачный фон, обновление каждую минуту.",
+    vertical: "Вертикальный",
+    horizontal: "Горизонтальный",
+    open: "Предпросмотр",
+    image: "Изображение колоды",
+    imageHint: "PNG для превью, постов и сторис: Легендарная, двенадцать карт со стоимостью и короткая ссылка.",
+    download16x9: "Скачать 16:9 (1280 × 720)",
+    download9x16: "Скачать 9:16 (1080 × 1920)",
+    ownerOnly:
+      "Команда чата и оверлей OBS показывают текст, написанный тем, кто опубликовал колоду, поэтому они доступны только для ваших собственных колод. В вашем аккаунте есть варианты, которые всегда показывают вашу последнюю колоду.",
+    accountLink: "Для стримеров в вашем аккаунте",
+    copy: "Копировать",
+    copied: "Скопировано",
+    setShortLinkHint: "Назовите её на стриме или добавьте в описание видео: она откроет эту турнирную колоду на языке зрителя.",
+    setChat: "Команда чата для этой турнирной колоды",
+    setChatHint:
+      "Введите её в чате Twitch как владелец канала или модератор: после этого !deck будет отвечать этой турнирной колодой, её тремя Легендарными и короткой ссылкой (коды игры — на странице, по одному на колоду). Если !deck уже существует, напишите edit вместо add (!commands edit для Nightbot, !command edit для StreamElements).",
+    setImage: "Изображение турнирной колоды",
+    setImageHint: "PNG для превью, постов и сторис: три колоды с их Легендарными, по двенадцать карт со стоимостью и короткая ссылка.",
+  },
+  account: {
+    title: "Для стримеров",
+    intro: "Команда чата и оверлей OBS, которые всегда показывают колоду, опубликованную вами последней: опубликуйте новую — и в течение минуты они переключатся на неё. Ничего не нужно устанавливать.",
+    noDecks: "Они заработают с вашей первой опубликованной колодой.",
+    command: "Команда чата !deck",
+    commandHint:
+      "Введите строку вашего бота в чате Twitch как владелец канала или модератор. Ответ: название колоды, Легендарная, короткая ссылка и код игры. Если !deck уже существует, напишите edit вместо add (!commands edit, !command edit).",
+    fossabot: "Fossabot (ответ команды, созданной в панели управления)",
+    langName: "русский",
+    langHint: "Язык ответа: {lang}. Для другого языка измените lang={code} в конце ссылки (en, it, es, fr, pt, de, ru).",
+    overlay: "Оверлей OBS с вашей последней колодой",
+  },
+};
+
+export const streamLabels: Record<Locale, StreamLabels> = { en, it, es, fr, pt, de, ru };

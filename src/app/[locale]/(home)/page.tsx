@@ -555,9 +555,9 @@ export default async function Home({ params }: { params: LocaleParams }) {
                     [d.home.status.kickstarter, d.home.status.kickstarterValue, "/guides/origins-tcg-kickstarter"],
                   ] as [string, string, string?][]
                 ).map(([k, v, to], i, all) => (
-                  <div key={k} className={`felt-panel p-4${i === all.length - 1 && all.length % 2 ? " col-span-2" : ""}`}>
+                  <div key={k} className={`felt-panel min-w-0 p-4${i === all.length - 1 && all.length % 2 ? " col-span-2" : ""}`}>
                     <dt className="kicker text-chalk-muted">{k}</dt>
-                    <dd className="mt-1 font-display text-lg font-bold text-sky">
+                    <dd className="mt-1 hyphens-auto break-words font-display text-lg font-bold text-sky">
                       {to ? (
                         <Link href={href(locale, to)} className="underline decoration-mint/50 underline-offset-4 hover:text-mint">
                           {v}

@@ -39,7 +39,7 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 
 ## Legendaries
 
-The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…) and German (/de/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese and German, and the balance history.
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…) and Russian (/ru/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese and German, and the balance history.
 
 - [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
@@ -83,7 +83,7 @@ The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of th
 
 ## Guides
 
-Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…), Brazilian Portuguese (/pt/guides/…) and German (/de/guides/…) with the same slug.
+Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…), Brazilian Portuguese (/pt/guides/…), German (/de/guides/…) and Russian (/ru/guides/…) with the same slug.
 
 - [The 11 Legendaries of Origins TCG: cards, stats, patches and decks](https://originsmeta.com/en/guides/origins-tcg-legendaries): All 11 Legendary cards of the Origins TCG Demo 2.0: cost, stats, official text, the cards they create, patch changes and the decks that use them.
 - [Origins TCG locations: how the three lanes change every game](https://originsmeta.com/en/guides/origins-tcg-locations): Locations are the third player at the table: they double damage, change costs and move your characters. How they work, which ones decide games, and how to build with them in mind.
@@ -244,6 +244,33 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Comics](https://originsmeta.com/de/news/comics): Comics über Origins TCG, gezeichnet von Creators der Community.
 - [Creator und Autoren](https://originsmeta.com/de/creators): die Creator, Autoren und Streamer, die Inhalte zu Origins TCG machen, mit ihren Kanälen und Sprachen.
 - [Über uns](https://originsmeta.com/de/about): wer wir sind, wie wir arbeiten und welche Quellen wir nutzen.
+
+## Страницы на русском
+
+- [Главная](https://originsmeta.com/ru): самое новое на сайте — новости, календарь, тир-лист и MetaShifting.
+- [FAQ](https://originsmeta.com/ru/faq): ответы, которые мы написали и проверили, каждый с источником и датой: релиз, языки, мобильная версия, прогресс в демо, рейтинговый режим, легендарные карты, коды колод, Crimson Cup и Kickstarter.
+- [Тир-лист](https://originsmeta.com/ru/tier-list): колоды, легендарные и базовые карты; рейтинг OriginsMeta начнётся после Crimson Cup (19–25 октября 2026) и будет основан на результатах турниров.
+- [Чаще всего играют](https://originsmeta.com/ru/tier-list/most-played): в скольких колодах, опубликованных на OriginsMeta, встречается каждая легендарная и каждая карта, с архетипами колод. Популярность, а не винрейт.
+- [Тир-лист сообщества](https://originsmeta.com/ru/tier-list/community): среднее по тир-листам, сохранённым участниками, с голосами по каждой карте; предпросмотр до 5 списков.
+- [Создать свой тир-лист](https://originsmeta.com/ru/tier-list/create): ваш собственный тир-лист Origins TCG — перетащите карты Demo 2.0 по уровням от S до D, легендарные отдельно, ссылкой можно поделиться. Бесплатно, без аккаунта.
+- [Тир-лист по оценкам карт](https://originsmeta.com/ru/tier-list/votes): каждая карта Origins TCG с оценкой от 1 (слабая) до 10 (сильная); среднее по голосам участников даёт тир-лист легендарных и базовых карт.
+- [MetaShifting](https://originsmeta.com/ru/metashifting): патчноуты Origins TCG: каждое изменение баланса, карта за картой и патч за патчем, сначала новые, по официальным публикациям Koin Games.
+- [Список карт](https://originsmeta.com/ru/cards): все карты Demo 2.0 с актуальными характеристиками, официальным английским текстом, русским текстом (наш перевод, ещё не сверенный с игрой), историей изменений и легендой, стоящей за каждой картой.
+- [Локации](https://originsmeta.com/ru/locations): локации Demo 2.0 с их эффектами, с поиском и фильтрами.
+- [Колоды](https://originsmeta.com/ru/decks): деклисты, опубликованные сообществом в конструкторе колод, каждый с гайдом и оценкой от 1 до 5 звёзд.
+- [Турнирные колоды](https://originsmeta.com/ru/decks/tournament): тройки колод Conquest для турниров вроде Crimson Cup, опубликованные игроками с общим гайдом: три разные легендарные, коды игры и оценки.
+- [Драфт](https://originsmeta.com/ru/draft): бесплатный драфт Origins TCG в трёх форматах против Мозга, нашего бота, или против друга: выбирайте карты, соберите 1 легендарную + 12 и скопируйте код игры.
+- [Analytics](https://originsmeta.com/ru/analytics): винрейты Origins TCG по партиям, записанным приложением OriginsMeta Tracker: легендарные, колоды сообщества, архетипы, карты и матчапы, патч за патчем.
+- [OriginsMeta Tracker](https://originsmeta.com/ru/tracker): наше приложение для Windows, которое само записывает ваши партии в Origins TCG, ведёт трекер колоды рядом с игрой и умеет показывать оверлей для стримеров; работает с бесплатным аккаунтом OriginsMeta. Пошаговая инструкция по установке.
+- [Конструктор колод](https://originsmeta.com/ru/deck-builder): соберите корректную колоду в браузере — одна легендарная и двенадцать разных базовых карт по две копии, 25 карт, — затем экспортируйте код игры или опубликуйте список. Бесплатно, для сборки аккаунт не нужен.
+- [Гайды](https://originsmeta.com/ru/guides): как устроена игра, дорожная карта, коллекционная экономика, как сыграть в демо, гайды по колодам и матчапам.
+- [Турниры и события](https://originsmeta.com/ru/tournaments): официальные события и события сообщества, а также организатор турниров для сообщества.
+- [Новости](https://originsmeta.com/ru/news): официальные анонсы, обновления демо, события и колоды, опубликованные на сайте; у каждого патча есть отдельная статья. У каждой новости своя подписанная страница с датой, официальным источником и затронутыми картами.
+- [Авторы](https://originsmeta.com/ru/authors): люди, которые подписывают гайды, колоды и новости, и за что отвечает каждый из них.
+- [Гайды сообщества](https://originsmeta.com/ru/guides/community): гайды авторов, креаторов и про-игроков OriginsMeta, которые авторы сами поддерживают в актуальном виде, а сайт переводит.
+- [Комиксы](https://originsmeta.com/ru/news/comics): комиксы про Origins TCG, нарисованные креаторами сообщества.
+- [Креаторы и авторы](https://originsmeta.com/ru/creators): креаторы, авторы и стримеры, которые делают контент про Origins TCG, с их каналами и языками.
+- [О нас](https://originsmeta.com/ru/about): кто мы, как работаем и какими источниками пользуемся.
 
 ## Feeds, sitemaps and full text
 

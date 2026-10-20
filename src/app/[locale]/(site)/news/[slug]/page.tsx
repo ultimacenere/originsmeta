@@ -33,7 +33,7 @@ const HEADLINE_MAX = 110;
  * spagnolo dal 25/09/2026, il francese dal 07/10/2026): "Traducido el …" al posto di "Actualizado", che promette un
  * paragrafo di aggiornamento nel testo. La usa solo questa pagina.
  */
-const TRANSLATED_ON: Record<Locale, string> = { en: "Translated on", it: "Tradotto il", es: "Traducido el", fr: "Traduit le", pt: "Traduzido em", de: "Übersetzt am" };
+const TRANSLATED_ON: Record<Locale, string> = { en: "Translated on", it: "Tradotto il", es: "Traducido el", fr: "Traduit le", pt: "Traduzido em", de: "Übersetzt am", ru: "Переведено" };
 
 /** Le news che raccontano una patch (campo `news` delle patch in cards.ts): per le news correlate sono dello stesso tipo. */
 const patchNews = new Set(patchOrder.map((id) => patches[id].news).filter((s): s is string => Boolean(s)));

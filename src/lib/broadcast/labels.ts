@@ -115,6 +115,21 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     unofficial: "OriginsMeta · nicht mit Koin Games verbunden",
     phases: { final: "Finale", semi: "Halbfinale", quarter: "Viertelfinale", round: "Runde {n}" },
   },
+  ru: {
+    score: "Счёт",
+    deck: "Колода {n}",
+    showDeck: "Нажмите, чтобы открыть колоду",
+    hideDeck: "Скрыть колоду",
+    inPlay: "В игре",
+    copyDeck: "Копировать колоду",
+    copied: "Скопировано!",
+    noCode: "Код недоступен",
+    left: "осталось",
+    bestOf: "Bo{n}",
+    wins: "Побеждает {name}",
+    unofficial: "OriginsMeta · не связан с Koin Games",
+    phases: { final: "Финал", semi: "Полуфинал", quarter: "Четвертьфинал", round: "Тур {n}" },
+  },
 };
 
 export function fillLabel(template: string, values: Record<string, string | number>): string {

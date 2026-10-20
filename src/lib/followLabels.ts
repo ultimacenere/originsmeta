@@ -305,6 +305,53 @@ export const followLabels: Record<Locale, FollowLabels> = {
     privacy:
       "Folgen und Benachrichtigungen: Mit einem Konto kannst du den Profilen mit der Rolle Creator, Autor, Pro oder Staff folgen. Auf Supabase (Server in Irland, EU) speichern wir, wem du folgst und seit wann, sowie die Benachrichtigungen, die wir für dich erstellen (ein neues Deck, ein neuer Guide oder ein Twitch-Stream eines Profils, dem du folgst), mit ihrem Datum und ob du sie gelesen hast. Nur du siehst, wem du folgst, und deine Benachrichtigungen: Ein Profil zeigt nur, wie viele Follower es hat, nie, wer sie sind. Um zu wissen, wer live ist, fragt unser Server alle 10 Minuten bei Twitch (Twitch Interactive Inc., USA) nach, ob die in diesen Profilen angegebenen Twitch-Kanäle gerade streamen: Von dir wird nichts an Twitch gesendet. Benachrichtigungen bleiben nur auf der Website (wir verschicken keine E-Mails) und werden 90 Tage aufbewahrt. Um doppelte oder zu häufige Benachrichtigungen zu vermeiden, bewahren wir 180 Tage lang ein Protokoll jeder gesendeten Benachrichtigung auf: welches Profil sie ausgelöst hat (das Deck, der Guide oder der Stream), wann und an wie viele Personen, ohne die Namen der Empfänger. Du kannst jederzeit über dein Profil aufhören zu folgen, und mit deinem Konto wird alles gelöscht.",
   },
+  ru: {
+    account: {
+      title: "Ваши подписки",
+      intro:
+        "Профили, на которые вы подписаны (роль Creator, Автор, Pro или Staff). Когда они публикуют колоду или выходят в эфир на Twitch с Origins TCG, в конверте вверху страницы появляется уведомление.",
+      countOne: "Вы подписаны на 1 профиль.",
+      countMany: "Подписок: {n} (не больше {max}).",
+      empty: "Вы пока ни на кого не подписаны: откройте страницу креатора или автора и нажмите «Подписаться».",
+      browse: "Креаторы и авторы",
+      unfollow: "Отписаться",
+      unfollowAria: "Отписаться от {name}",
+      unfollowing: "Минутку…",
+      since: "С {date}",
+      unavailable: "Этот список сейчас недоступен. Попробуйте ещё раз через несколько минут.",
+    },
+    notifications: {
+      title: "Уведомления",
+      intro: "Новости профилей, на которые вы подписаны: новые колоды, гайды и комиксы, а также стримы на Twitch с Origins TCG. Мы храним их 90 дней.",
+      unreadOne: "Новых уведомлений: 1.",
+      unreadMany: "Новых уведомлений: {n}.",
+      jumpOne: "Новых уведомлений от ваших подписок: 1",
+      jumpMany: "Новых уведомлений от ваших подписок: {n}",
+      markAll: "Отметить все как прочитанные",
+      marking: "Минутку…",
+      newBadge: "Новое",
+      kinds: { deck_published: "Колода", live: "Эфир", guide_published: "Гайд", comic_published: "Комикс", deck_set_published: "Турнирная колода", match_ready: "Турнир" },
+      deckPublished: "{name} публикует колоду: {deck}",
+      deckGone: "{name} опубликовал(а) колоду, которой больше нет на сайте",
+      live: "{name} в эфире на Twitch с Origins TCG",
+      guidePublished: "{name} публикует гайд: {guide}",
+      guideGone: "{name} опубликовал(а) гайд, которого больше нет на сайте",
+      comicPublished: "{name} публикует комикс: {comic}",
+      comicGone: "{name} опубликовал(а) комикс, которого больше нет на сайте",
+      deckSetPublished: "{name} публикует турнирную колоду: {deck}",
+      deckSetGone: "{name} опубликовал(а) турнирную колоду, которой больше нет на сайте",
+      matchReady: "Ваш турнирный матч против {name} готов: откройте комнату матча",
+      someone: "Профиль из ваших подписок",
+      empty: "Уведомлений пока нет. Подпишитесь на креаторов и авторов, чтобы узнавать, когда они публикуют колоду или выходят в эфир.",
+      browse: "Креаторы и авторы",
+      manage: "Управлять подписками",
+      unavailable: "Уведомления сейчас недоступны. Попробуйте ещё раз через несколько минут.",
+      error: "Что-то пошло не так: попробуйте ещё раз.",
+      utcLabel: "UTC",
+    },
+    privacy:
+      "Подписки и уведомления: с аккаунтом вы можете подписываться на профили с ролью Creator, Автор, Pro или Staff. В Supabase (серверы в Ирландии, ЕС) мы храним, на кого вы подписаны и с какого времени, а также уведомления, которые мы создаём для вас (новая колода, новый гайд или стрим на Twitch профиля, на который вы подписаны), с их датой и отметкой о прочтении. Ваши подписки и уведомления видите только вы: профиль показывает лишь число подписчиков, но никогда — кто они. Чтобы знать, кто в эфире, каждые 10 минут наш сервер спрашивает у Twitch (Twitch Interactive Inc., США), идут ли трансляции на Twitch-каналах, указанных в этих профилях: о вас в Twitch ничего не передаётся. Уведомления остаются только на сайте (мы не отправляем письма) и хранятся 90 дней. Чтобы не было повторных или слишком частых уведомлений, мы 180 дней храним журнал каждого отправленного уведомления: какой профиль его вызвал (колода, гайд или стрим), когда и скольким людям оно ушло, без имён получателей. Отписаться можно в любой момент в своём профиле, а при удалении аккаунта всё удаляется вместе с ним.",
+  },
 };
 
 /** Riempie i segnaposto {nome} di un'etichetta. */

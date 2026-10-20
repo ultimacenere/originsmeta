@@ -3,12 +3,13 @@ import type { GuideSlug } from "../content/guides";
 import { frText, type NewsCopy } from "./news-fr";
 import { ptText } from "./news-pt";
 import { deText } from "./news-de";
+import { ruText } from "./news-ru";
 
 /**
  * Le lingue scritte in questo file; il francese (dal 07/10/2026) sta in news-fr.ts e il portoghese (dal 20/10/2026) in
  * news-pt.ts, il tedesco (dal 20/10/2026) in news-de.ts, e si uniscono in fondo (`withTranslations`).
  */
-type Base = Exclude<Locale, "fr" | "pt" | "de">;
+type Base = Exclude<Locale, "fr" | "pt" | "de" | "ru">;
 type BaseL10n = Record<Base, string>;
 type L10n = Record<Locale, string>;
 type Highlight = { label: string; text?: string; anchor: string };
@@ -95,6 +96,7 @@ const translations = {
   fr: { text: frText, file: "news-fr.ts" },
   pt: { text: ptText, file: "news-pt.ts" },
   de: { text: deText, file: "news-de.ts" },
+  ru: { text: ruText, file: "news-ru.ts" },
 } as const;
 type TranslatedLocale = keyof typeof translations;
 
@@ -8267,7 +8269,7 @@ export function newsReadTime(item: NewsItem, locale: Locale): number {
  * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
  * import senza estensione.
  */
-export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20" };
+export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20" };
 
 /** Data di modifica (giorno ISO) di un articolo nella lingua `locale`, secondo la regola qui sopra. */
 export function modifiedIn(locale: Locale, day: string): string {

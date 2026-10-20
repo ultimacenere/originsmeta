@@ -183,6 +183,32 @@ export const linkLabels: Record<Locale, LinkLabels> = {
     deckChange: "Deck-Änderung",
     guideNews: "News zu diesem Thema",
   },
+  // russo (20/10/2026): con {n} le forme che reggono ogni numero ("Карт, изменённых в этом патче: {n}.")
+  ru: {
+    explore: {
+      title: "Обзор",
+      metashifting: "Патчноуты (MetaShifting)",
+      locations: "Локации",
+      mostPlayed: "Чаще всего играют",
+      communityTierList: "Тир-лист сообщества",
+      makeTierList: "Создайте свой тир-лист",
+      authors: "Редакция",
+    },
+    relatedNews: "Похожие новости",
+    patch: {
+      title: "Что меняется в этом патче",
+      introOne: "В этом патче меняется 1 карта.",
+      introMany: "Карт, изменённых в этом патче: {n}.",
+      swapsOne: "1 карта затронута изменениями готовых колод плейтеста.",
+      swapsMany: "Карт, затронутых изменениями готовых колод плейтеста: {n}.",
+      linksOne: "Её название открывает страницу карты со всей историей балансных изменений.",
+      linksMany: "Каждое название открывает страницу карты со всей историей балансных изменений.",
+      numbers: "Цифры — это мана · Сила/Здоровье, до и после.",
+      metashifting: "Все балансные изменения в MetaShifting",
+    },
+    deckChange: "Изменение колоды",
+    guideNews: "Новости по теме",
+  },
 };
 
 // ---------- Modifiche di bilanciamento ----------

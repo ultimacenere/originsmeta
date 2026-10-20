@@ -24,6 +24,8 @@ import { fr } from "./dictionaries/fr.ts";
 import { pt } from "./dictionaries/pt.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { de } from "./dictionaries/de.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { ru } from "./dictionaries/ru.ts";
 
 type Dict = typeof en;
 const dicts: [string, Dict][] = [
@@ -33,6 +35,7 @@ const dicts: [string, Dict][] = [
   ["fr", fr],
   ["pt", pt],
   ["de", de],
+  ["ru", ru],
 ];
 
 /** Stesse costanti di src/lib/page.ts (TITLE_MAX, DESCRIPTION_MAX). */
@@ -114,25 +117,27 @@ for (const [locale, d] of dicts) {
       assert.match(d.meta.homeTitle, /Koin Games/);
       assert.match(d.meta.homeTitle, /OriginsMeta$/);
       // "carte"/"cartas" restano come definizione ("gioco di carte"): fuori solo le parole delle sezioni
-      assert.doesNotMatch(d.meta.homeTitle, /tier list|decks?\b|mazzi|mazos|database/i);
+      // in russo: "тир-лист", "колоды" e "база данных" (docs/russo.md)
+      assert.doesNotMatch(d.meta.homeTitle, /tier list|decks?\b|mazzi|mazos|database|тир-лист|колод|база данных/i);
       assert.match(d.meta.description, /Koin Games/);
       assert.match(d.home.h1, /Koin Games/);
       assert.match(d.home.inBrief, /Koin Games/);
     });
 
     test("le patch notes sono di MetaShifting, non di /news", () => {
-      // in tedesco "Patchnotes" è una parola sola (docs/tedesco.md)
-      assert.match(d.metashifting.title, /patch ?notes|notas del parche/i);
-      assert.doesNotMatch(d.news.metaTitle, /patch|parche/i);
+      // in tedesco "Patchnotes" è una parola sola (docs/tedesco.md); in russo "патч-ноуты"
+      assert.match(d.metashifting.title, /patch ?notes|notas del parche|патч-ноут/i);
+      assert.doesNotMatch(d.news.metaTitle, /patch|parche|патч/i);
     });
 
     test("i titoli degli hub non prendono le parole di un altro primario (revisione dell'Ondata 1)", () => {
       // "mazzi" è di /decks, "carte" di /cards, "codici" di /deck-builder
-      assert.doesNotMatch(d.tier.metaTitle, /decks?\b|cards?\b|mazzi|carte|mazos|cartas/i);
-      assert.match(d.tier.metaTitle, /meta\b/i);
-      assert.doesNotMatch(d.faq.metaTitle, /decks?\b|mazzi|mazos/i);
-      assert.doesNotMatch(d.decks.metaTitle, /codes?\b|codici|códigos/i);
-      assert.match(d.decks.metaTitle, /Guides|Guide|guías|guias/i);
+      // in russo: "колоды" di /decks, "карты" di /cards, "коды" di /deck-builder, "гайды" e "мета"
+      assert.doesNotMatch(d.tier.metaTitle, /decks?\b|cards?\b|mazzi|carte|mazos|cartas|колод|карт/i);
+      assert.match(d.tier.metaTitle, /meta\b|мета/i);
+      assert.doesNotMatch(d.faq.metaTitle, /decks?\b|mazzi|mazos|колод/i);
+      assert.doesNotMatch(d.decks.metaTitle, /codes?\b|codici|códigos|код/i);
+      assert.match(d.decks.metaTitle, /Guides|Guide|guías|guias|гайд/i);
     });
 
     test("/tournaments nomina la Crimson Cup ma lascia posti e premi alla news delle regole", () => {
@@ -148,15 +153,15 @@ for (const [locale, d] of dicts) {
     });
 
     test("la FAQ non promette l'assistente nel titolo", () => {
-      for (const title of [d.faq.title, d.faq.metaTitle]) assert.doesNotMatch(title, /ask|chiedi|pregunta lo que/i);
+      for (const title of [d.faq.title, d.faq.metaTitle]) assert.doesNotMatch(title, /ask|chiedi|pregunta lo que|спроси|задайте/i);
     });
 
     test("con l'assistente spento la FAQ non ne parla", () => {
-      for (const text of [d.faq.introOffline, d.faq.offlineTitle, d.faq.offline]) assert.doesNotMatch(text, /assistant|assistente|asistente/i);
+      for (const text of [d.faq.introOffline, d.faq.offlineTitle, d.faq.offline]) assert.doesNotMatch(text, /assistant|assistente|asistente|ассистент|помощник/i);
     });
 
     test("la dicitura del footer dice sempre che il sito non è affiliato a Koin Games", () => {
-      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games|não é afiliado à Koin Games|nicht mit Koin Games verbunden/);
+      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games|não é afiliado à Koin Games|nicht mit Koin Games verbunden|не связан с Koin Games/);
     });
 
     test("le frasi costruite con i dati hanno i loro segnaposto", () => {

@@ -50,7 +50,7 @@ import {
 import { streamLabels } from "./streamLabels.ts";
 
 const SITE = "https://originsmeta.com";
-const locales = ["en", "it", "es"] as const;
+const locales = ["en", "it", "es", "ru"] as const;
 /** Un codice del gioco vero nella forma (13 chiavi): la lunghezza conta per il limite dei 400 caratteri. */
 const GAME_CODE = `KGBLDC${Buffer.from(`v1|${Array.from({ length: 13 }, (_, i) => `C${String(100 + i).padStart(5, "0")}_MB`).join("|")}`).toString("base64")}:0a1b2c3d`;
 

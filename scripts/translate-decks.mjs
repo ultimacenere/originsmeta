@@ -33,7 +33,11 @@ const opt = (name) => {
 
 // Lingue del sito: le stesse di src/lib/i18n.ts (lette dal file, così non si copiano a mano).
 const i18n = readFileSync(path.join(root, "src/lib/i18n.ts"), "utf8");
-const LOCALES = JSON.parse(`[${/export const locales = \[([^\]]+)\]/.exec(i18n)[1]}]`);
+const SITE_LOCALES = JSON.parse(`[${/export const locales = \[([^\]]+)\]/.exec(i18n)[1]}]`);
+// Le lingue che il database non accetta ancora (DB_PENDING_LOCALES di src/lib/community/translate.ts) si saltano.
+const pendingSrc = /DB_PENDING_LOCALES: readonly Locale\[\] = \[([^\]]*)\]/.exec(readFileSync(path.join(root, "src/lib/community/translate.ts"), "utf8"));
+const PENDING = pendingSrc && pendingSrc[1].trim() ? JSON.parse(`[${pendingSrc[1]}]`) : [];
+const LOCALES = SITE_LOCALES.filter((l) => !PENDING.includes(l));
 
 // .env.local: quello indicato, quello del repo o quello del checkout principale (i worktree non lo hanno).
 function envFile() {
@@ -138,7 +142,16 @@ if (flag("--dry-run")) {
   const viaSite = process.argv.includes("--via-site");
   const key = viaSite ? process.env.CRON_SECRET || env.CRON_SECRET : process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY;
   if (!key) throw new Error(viaSite ? "serve CRON_SECRET in .env.local" : "serve ANTHROPIC_API_KEY (variabile d'ambiente o .env.local), oppure --via-site");
-  const client = new Anthropic({ apiKey: key, maxRetries: 2, ...(viaSite ? { baseURL: "https://originsmeta.com/api/cron/anthropic", timeout: 300_000 } : {}) });
+  // La rotta del sito non inoltra l'intestazione anthropic-beta: senza la beta il campo fallbacks va tolto.
+  const viaSiteFetch = (url, init) => {
+    if (init && typeof init.body === "string") {
+      const body = JSON.parse(init.body);
+      delete body.fallbacks;
+      init = { ...init, body: JSON.stringify(body) };
+    }
+    return fetch(url, init);
+  };
+  const client = new Anthropic({ apiKey: key, maxRetries: 2, ...(viaSite ? { baseURL: "https://originsmeta.com/api/cron/anthropic", timeout: 300_000, fetch: viaSiteFetch } : {}) });
   let saved = 0;
   for (const r of todo) {
     const names = namesIn(guideText(r.guide), NAMES);

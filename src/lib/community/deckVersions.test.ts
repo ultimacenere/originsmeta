@@ -124,7 +124,7 @@ describe("etichette delle versioni", () => {
   const holes = (o: object): string[] =>
     Object.entries(o).flatMap(([k, v]) => (typeof v === "object" && v ? holes(v).map((h) => `${k}.${h}`) : [`${k}:${[...String(v).matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(",")}`]));
   test("stesse chiavi e stessi segnaposto in inglese, italiano e spagnolo", () => {
-    for (const l of ["it", "es", "fr", "pt", "de"] as const) {
+    for (const l of ["it", "es", "fr", "pt", "de", "ru"] as const) {
       assert.deepEqual(keys(L.deckVersionLabels[l]), keys(L.deckVersionLabels.en), l);
       assert.deepEqual(holes(L.deckVersionLabels[l]), holes(L.deckVersionLabels.en), l);
     }

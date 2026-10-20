@@ -30,6 +30,14 @@ const hand = Caveat({ subsets: ["latin"], variable: "--font-hand", display: "swa
 // scrivendo a penna", poi "scritte di fretta"): Reenie Beanie, una biro veloce e irregolare. Niente preload.
 const pen = Reenie_Beanie({ subsets: ["latin"], weight: ["400"], variable: "--font-pen", display: "swap", preload: false });
 
+// Pagine russe (20/10/2026): gli stessi font con il cirillico, istanze a parte senza preload, così le altre lingue non
+// scaricano i file cirillici. Reenie Beanie non ha il cirillico: in russo i post-it grandi ripiegano sul font di riserva.
+const unboundedCyr = Unbounded({ subsets: ["latin", "cyrillic"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap", preload: false });
+const manropeCyr = Manrope({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap", preload: false });
+const jetCyr = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500"], variable: "--font-jet", display: "swap", preload: false });
+const notoCyr = Noto_Sans({ subsets: ["latin", "cyrillic"], weight: ["600"], variable: "--font-noto", display: "swap", preload: false });
+const handCyr = Caveat({ subsets: ["latin", "cyrillic"], variable: "--font-hand", display: "swap", preload: false });
+
 // dynamicParams resta al default (true): le lingue sconosciute finiscono in notFound() qui sotto, e le pagine
 // generate su richiesta (mazzi della community) restano possibili.
 
@@ -73,7 +81,10 @@ export default async function LocaleLayout({ children, params }: Props) {
   const l: Locale = locale;
   const d = getDictionary(l);
   return (
-    <html lang={htmlLang[l]} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable} ${pen.variable} h-full`}>
+    <html
+      lang={htmlLang[l]}
+      className={`${l === "ru" ? `${unboundedCyr.variable} ${manropeCyr.variable} ${jetCyr.variable} ${notoCyr.variable} ${handCyr.variable}` : `${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable}`} ${pen.variable} h-full`}
+    >
       <body className="min-h-full flex flex-col">
         {/* Feed RSS delle news nella lingua della pagina (Ondata 2): React 19 porta i <link> nel <head>. Percorso e titolo
             dal modulo leggero newsFeedMeta.ts (non da newsFeed.ts, che legge news, autori e file). Non passa dai

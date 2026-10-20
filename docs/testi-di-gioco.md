@@ -31,6 +31,19 @@ e vale per carte create e rimosse, luoghi, guide, news ed etichette, che restano
 è una scelta nostra). Il provvisorio sbagliava quattro parole: Beim Tod, Beim Töten, Trampeln, Stärke. Anche qui Twister
 Toss ha già il testo della patch 0.7.
 
+**Russo (20/10/2026, provvisorio)**: il gioco ha il russo fra le lingue (pagina Steam), ma la demo in russo non l'abbiamo
+ancora letta. Per ora **tutti** i testi russi delle carte, anche quelli delle 122 carte della collezione, sono una
+traduzione nostra dall'inglese di `card-lore.ts` (campo `en`, altrimenti il testo dell'import) con il glossario
+provvisorio di `docs/russo.md` (При раскрытии, При смерти, При убийстве, Щит, Натиск, Смертельное касание, Защитник,
+Первый удар, Меткий выстрел, ячейка, локация, барьер, ЛЮБОЙ; verbi all'imperativo con il вы: Нанесите, Призовите,
+Возьмите карту, Сбросьте…; Food = Еда, nomi delle carte in inglese), in `src/lib/data/card-lore-ru.ts` insieme alle
+righe sull'origine. `ru` **non** sta in `officialTextLocales`, quindi le schede dicono che il testo non è verificato
+nel gioco; anche lo storico dei bilanciamenti (`card-history.ts`) ha la sua nota russa. Manca la lettura nel gioco:
+quando Pierluigi apre la demo in russo si trascrivono le 122 carte in `docs/testi-ufficiali/ru.tsv`,
+`node scripts/official-texts.mjs ru` elenca le differenze e `--apply` scrive il campo `text` di `card-lore-ru.ts`, si
+mette `ru` in `officialTextLocales` e si riallinea il glossario del gioco in tutto il russo del sito (carte create e
+rimosse, storico, luoghi, pastiglie, `GAME_KEYWORDS`, guide, news, FAQ, etichette), come per il tedesco.
+
 ## La regola
 
 - **Testi di gioco** (testo delle carte, carte create e rimosse, effetti dei luoghi): in italiano e spagnolo si usa il
@@ -110,7 +123,7 @@ Stile del gioco da imitare nei testi nostri:
 2. Si trascrive in `docs/testi-ufficiali/<lingua>.tsv`, una carta per riga ("Nome<TAB>testo", `\n` per gli a capo,
    statistiche come nel sito: `[5⚔️/3❤️]`). Il file com'è oggi è la lettura del 25/09/2026: basta correggere le righe
    che cambiano.
-3. `node scripts/official-texts.mjs it` (o `es`, `fr`, `pt`) elenca le carte il cui testo nel sito è diverso dalla trascrizione e
+3. `node scripts/official-texts.mjs it` (o `es`, `fr`, `pt`, `de`, `ru`) elenca le carte il cui testo nel sito è diverso dalla trascrizione e
    controlla che ci siano tutte le carte e gli stessi a capo dell'inglese; con `--apply` scrive in `card-lore.ts` (per il
    francese in `card-lore-fr.ts`, per il portoghese in `card-lore-pt.ts`, campo `text`).
 4. Le carte nuove della patch prendono anche la riga `origin` e il resto della voce, come sempre.

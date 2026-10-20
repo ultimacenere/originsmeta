@@ -1324,9 +1324,9 @@ export const en = {
     },
     kicker: "Origins deck",
     guideLangNote: "This guide was written in {lang} by whoever published the deck and is shown as written: the automatic translation is not ready yet.",
-    langNames: { en: "English", it: "Italian", es: "Spanish", fr: "French", pt: "Portuguese", de: "German" },
+    langNames: { en: "English", it: "Italian", es: "Spanish", fr: "French", pt: "Portuguese", de: "German", ru: "Russian" },
     /** "from <language>", after "Translated automatically" */
-    langFrom: { en: "from English", it: "from Italian", es: "from Spanish", fr: "from French", pt: "from Portuguese", de: "from German" },
+    langFrom: { en: "from English", it: "from Italian", es: "from Spanish", fr: "from French", pt: "from Portuguese", de: "from German", ru: "from Russian" },
     translatedNote: "Translated automatically {from}: card names stay in English, as in the game.",
     originalText: "Original text ({lang})",
     metaTail: "Full list, charts and the game's deck code on OriginsMeta.",

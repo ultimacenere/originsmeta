@@ -204,6 +204,37 @@ export const deckStatsLabels: Record<Locale, DeckStatsLabels> = {
     deck: "Deck",
     by: "von",
   },
+  ru: {
+    title: "Ваша статистика",
+    intro:
+      "Как идут дела у ваших опубликованных колод: посещения, копирования кода игры (со страницы колоды и из списка колод), оценки, клики по ссылкам и запуски видео за последние 7 и 30 дней и за всё время. Ваши собственные посещения после входа не учитываются.",
+    estimate:
+      "Это оценки: каждая вкладка браузера учитывается один раз на колоду и на тип, а боты и трафик команды Staff исключаются. Посещение засчитывается после нескольких секунд на странице; видео — при первом клике по плееру или по кнопке видео. Дни считаются по UTC.",
+    since: "Первый день с данными: {date}",
+    noData: "Данных пока нет: числа появятся после первых посещений ваших колод.",
+    unavailable: "Статистика пока недоступна. Попробуйте позже.",
+    d7: "7 дней",
+    d30: "30 дней",
+    total: "Всего",
+    metric: "Показатель",
+    views: "Посещения",
+    codeCopies: "Копирования кода",
+    votes: "Оценки",
+    average: "Средняя оценка",
+    linkClicks: "Клики по ссылкам",
+    videoPlays: "Запуски видео",
+    allDecks: "Все ваши колоды",
+    chartTitle: "Посещения и копирования кода по дням, последние 30 дней",
+    chartAria: "График: посещения и копирования кода по дням за последние 30 дней. Посещения: {views}; копирования кода: {copies}.",
+    hidden: "Скрыта",
+    staffTitle: "Staff: самые посещаемые колоды (30 дней)",
+    staffIntro: "Этот рейтинг видят только админы и Staff: все колоды сообщества, с теми же оценками.",
+    staffEmpty: "За последние 30 дней посещений не зафиксировано.",
+    partial: "Неполный рейтинг: строк слишком много, чтобы прочитать все.",
+    notVisible: "колода не видна",
+    deck: "Колода",
+    by: "автор:",
+  },
 };
 
 /**
@@ -218,6 +249,7 @@ export const deckStatsPrivacy: Record<Locale, string> = {
   fr: "Statistiques des decks : sur la page d'un deck de la communauté, et quand vous copiez un code du jeu depuis la liste des decks, le site compte, pour chaque deck et chaque jour, les visites, les copies du code du jeu, les clics sur les liens et les lectures de vidéos, et montre ces totaux uniquement à la personne qui a publié le deck et au staff d'OriginsMeta (à part les totaux de tous les decks publiés ensemble qu'un profil vitrine choisit d'afficher sur sa page publique : voir « Succès et chiffres publics des profils »). Seuls les totaux du jour sont enregistrés, sur Supabase (Irlande, UE) : aucune adresse IP, aucun compte, aucun identifiant. La requête passe par les serveurs de Supabase, qui, comme Vercel, conservent peu de temps les journaux techniques habituels (adresse IP comprise), jamais reliés aux totaux. Pour que la même visite ne compte pas deux fois, le navigateur note les decks déjà comptés dans la mémoire de session de l'onglet, effacée quand vous fermez l'onglet et jamais envoyée. Les bots, les navigateurs du staff et les personnes qui consultent leurs propres decks avec la session ouverte ne sont pas comptés.",
   pt: "Estatísticas dos decks: na página de um deck da comunidade, e quando você copia um código do jogo da lista de decks, o site conta, para cada deck e cada dia, as visitas, as cópias do código do jogo, os cliques nos links e os vídeos iniciados, e mostra esses totais só para quem publicou o deck e para o staff do OriginsMeta (fora os totais de todos os decks publicados juntos que um perfil vitrine escolhe mostrar na sua página pública: veja “Conquistas e números públicos dos perfis”). Só os totais do dia são salvos, no Supabase (Irlanda, UE): nenhum endereço IP, nenhuma conta, nenhum identificador. A solicitação passa pelos servidores do Supabase, que, como a Vercel, guardam por pouco tempo os registros técnicos habituais (endereço IP incluído), nunca ligados aos totais. Para que a mesma visita não conte duas vezes, o navegador anota os decks já contados na memória de sessão da aba, que é apagada quando você fecha a aba e nunca é enviada. Não são contados os bots, os navegadores do staff nem quem vê os próprios decks com o login feito.",
   de: "Deck-Statistiken: Auf der Seite eines Community-Decks und wenn du einen Spielcode aus der Deckliste kopierst, zählt die Website für jedes Deck und jeden Tag die Besuche, die Kopien des Spielcodes, die Klicks auf Links und die gestarteten Videos und zeigt diese Summen nur der Person, die das Deck veröffentlicht hat, und dem Staff von OriginsMeta (abgesehen von den Gesamtsummen aller veröffentlichten Decks zusammen, die ein Schaufenster-Profil auf seiner öffentlichen Seite zeigen kann: siehe „Erfolge und öffentliche Zahlen in Profilen“). Gespeichert werden nur die Tagessummen, bei Supabase (Irland, EU): keine IP-Adresse, kein Konto, keine Kennung. Die Anfrage läuft über die Server von Supabase, die wie Vercel die üblichen technischen Logs (einschließlich IP-Adresse) für kurze Zeit aufbewahren, nie mit den Summen verknüpft. Damit derselbe Besuch nicht doppelt zählt, merkt sich der Browser die bereits gezählten Decks im Sitzungsspeicher des Tabs, der beim Schließen des Tabs gelöscht und nie gesendet wird. Nicht gezählt werden Bots, Browser des Staffs und Personen, die mit Anmeldung ihre eigenen Decks ansehen.",
+  ru: "Статистика колод: на странице колоды сообщества и когда вы копируете код игры из списка колод, сайт считает для каждой колоды и каждого дня посещения, копирования кода игры, клики по ссылкам и запуски видео и показывает эти итоги только тому, кто опубликовал колоду, и команде Staff OriginsMeta (кроме общих итогов всех опубликованных колод вместе, которые профиль с витриной может показать на своей публичной странице: см. «Достижения и публичные числа в профилях»). Хранятся только дневные итоги, в Supabase (Ирландия, ЕС): ни IP-адреса, ни аккаунта, ни идентификатора. Запрос проходит через серверы Supabase, которые, как и Vercel, недолго хранят обычные технические журналы (включая IP-адрес), никогда не связанные с итогами. Чтобы одно и то же посещение не засчитывалось дважды, браузер отмечает уже учтённые колоды в сессионном хранилище вкладки, которое очищается при закрытии вкладки и никогда не отправляется. Не учитываются боты, браузеры команды Staff и те, кто смотрит свои собственные колоды после входа.",
 };
 
 /** Riempie i segnaposto `{nome}` (senza interpretare i `$` di `replace`). */

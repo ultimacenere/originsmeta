@@ -19,6 +19,7 @@ export const NOT_FOUND_TITLE: Record<Locale, string> = {
   fr: "Page introuvable",
   pt: "Página não encontrada",
   de: "Seite nicht gefunden",
+  ru: "Страница не найдена",
 };
 
 /** "404 · Pagina non trovata · OriginsMeta": lo stesso titolo per le 404 di questa route e per quelle di notFound(). */

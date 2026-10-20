@@ -40,7 +40,7 @@ const MATCHES = { width: 1200, height: 667 };
  * inglese), senza copiare i file: le didascalie restano nella lingua della pagina. Lo stesso il portoghese e il tedesco (20/10/2026).
  */
 type ShotLocale = "en" | "it" | "es";
-const SHOT_LOCALE: Record<Locale, ShotLocale> = { en: "en", it: "it", es: "es", fr: "en", pt: "en", de: "en" };
+const SHOT_LOCALE: Record<Locale, ShotLocale> = { en: "en", it: "it", es: "es", fr: "en", pt: "en", de: "en", ru: "en" };
 const OVERLAY: Record<ShotLocale, { width: number; height: number }> = { en: { width: 638, height: 243 }, it: { width: 688, height: 243 }, es: { width: 626, height: 243 } };
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {

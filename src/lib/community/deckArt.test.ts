@@ -283,12 +283,12 @@ describe("strumento dello staff e testi", () => {
     const at = (o: unknown, p: string) => p.split(".").reduce<unknown>((x, k) => (x as Record<string, unknown>)[k], o);
     const holes = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
     const en = L.deckArtLabels.en;
-    for (const locale of ["it", "es", "fr", "pt", "de"] as const) {
+    for (const locale of ["it", "es", "fr", "pt", "de", "ru"] as const) {
       const other = L.deckArtLabels[locale];
       assert.deepEqual(sorted(paths(other)), sorted(paths(en)), locale);
       for (const p of paths(en)) assert.deepEqual(holes(String(at(other, p))), holes(String(at(en, p))), `${locale}: ${p}`);
     }
-    for (const locale of ["en", "it", "es", "fr", "pt", "de"] as const) {
+    for (const locale of ["en", "it", "es", "fr", "pt", "de", "ru"] as const) {
       const f = L.deckArtFormLabels(locale);
       // gli errori del caricamento sono quelli di MediaError (mediaUpload.ts), quelli delle Server Action i codici di actions.ts
       assert.deepEqual(sorted(Object.keys(f.errors)), ["limit", "tooBig", "type", "upload"]);

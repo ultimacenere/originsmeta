@@ -133,6 +133,7 @@ describe("funzioni di supporto", () => {
     assert.deepEqual(updateMarkers("it", "2026-09-25"), ["Aggiornamento del 25 settembre"]);
     assert.deepEqual(updateMarkers("it", "2026-10-08"), ["Aggiornamento dell'8 ottobre"]);
     assert.deepEqual(updateMarkers("es", "2026-10-01"), ["Actualización del 1 de octubre"]);
+    assert.deepEqual(updateMarkers("ru", "2026-09-25"), ["Обновление от 25 сентября"]);
   });
   test("destinazione dei link", () => {
     assert.equal(linkProblem("/en/news/crimson-cup-format-check-in#check-in", "en", checks), undefined);
@@ -147,7 +148,7 @@ describe("funzioni di supporto", () => {
 });
 
 describe("newsProblems", () => {
-  const l10n = (s: string) => ({ en: s, it: s, es: s, fr: s, pt: s, de: s });
+  const l10n = (s: string) => ({ en: s, it: s, es: s, fr: s, pt: s, de: s, ru: s });
   const ok = {
     slug: "prova",
     date: "2026-09-25",
@@ -182,7 +183,7 @@ describe("newsProblems", () => {
     assert.ok(problems.some((p) => p.includes('"guida-che-non-esiste" non esiste')));
   });
   test("una news aggiornata senza il paragrafo dell'aggiornamento", () => {
-    const upd = { ...ok, date: "2026-09-20", updated: "2026-09-25", body: { en: "## A\n\nUpdate, 25 September: sì.", it: "## A\n\nNessun aggiornamento.", es: "## A\n\nActualización del 25 de septiembre: sí.", fr: "## A\n\nMise à jour du 25 septembre : oui.", pt: "## A\n\nAtualização de 25 de setembro: sim.", de: "## A\n\nUpdate vom 25. September: ja." } };
+    const upd = { ...ok, date: "2026-09-20", updated: "2026-09-25", body: { en: "## A\n\nUpdate, 25 September: sì.", it: "## A\n\nNessun aggiornamento.", es: "## A\n\nActualización del 25 de septiembre: sí.", fr: "## A\n\nMise à jour du 25 septembre : oui.", pt: "## A\n\nAtualização de 25 de setembro: sim.", de: "## A\n\nUpdate vom 25. September: ja.", ru: "## A\n\nОбновление от 25 сентября: да." } };
     assert.deepEqual(newsProblems(upd, locales, checks), ["prova [it]: aggiornata il 2026-09-25 ma il testo non ha il paragrafo \"Aggiornamento del 25 settembre…\""]);
   });
   test("un title senza Origins TCG in SERP", () => {
@@ -252,11 +253,13 @@ describe("date delle versioni tradotte (news e guide)", () => {
     assert.equal(modifiedIn("pt", "2026-10-25"), "2026-10-25");
     assert.equal(modifiedIn("de", "2026-10-07"), "2026-10-20");
     assert.equal(modifiedIn("de", "2026-10-25"), "2026-10-25");
+    assert.equal(modifiedIn("ru", "2026-10-07"), "2026-10-20");
+    assert.equal(modifiedIn("ru", "2026-10-25"), "2026-10-25");
     assert.equal(modifiedIn("en", "2026-03-13"), "2026-03-13");
     assert.equal(modifiedIn("it", "2026-09-09"), "2026-09-09");
   });
   test("la soglia di ogni lingua tradotta è il giorno in cui è nata, lo stesso della sitemap", () => {
-    assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es", "fr", "pt", "de"]);
+    assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es", "fr", "pt", "de", "ru"]);
     for (const [l, day] of Object.entries(TRANSLATED_SINCE)) assert.equal(day, LOCALE_SINCE[l as Locale], l);
   });
   test("news: pubblicata alla data dell'articolo in ogni lingua; la modifica spagnola non va prima del 25/09/2026 e, se è solo la traduzione, la firma lo dice", () => {

@@ -39,7 +39,7 @@ export async function proxy(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   // Pagine private senza accesso: al login con un 307 da qui (17/10/2026). Dentro le pagine il `redirect()` non basta più:
   // il loading.tsx di /account fa partire la risposta prima, e il rimando diventerebbe un 200 con un refresh nella pagina.
-  const account = /^\/(en|it|es|fr|pt|de)\/account(?:\/|$)/.exec(pathname);
+  const account = /^\/(en|it|es|fr|pt|de|ru)\/account(?:\/|$)/.exec(pathname);
   if (account && !data?.claims?.sub) {
     const login = new URL(`/${account[1]}/login`, request.url);
     login.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
@@ -54,39 +54,39 @@ export const config = {
   matcher: [
     // Mercato in prova riservata (18/10/2026, MARKET_PUBLIC spento): le pagine leggono la sessione per sapere se chi guarda
     // è admin; quando il Mercato si apre a tutti queste due righe si possono togliere
-    "/:locale(en|it|es|fr|pt|de)/market",
-    "/:locale(en|it|es|fr|pt|de)/market/:path*",
-    "/:locale(en|it|es|fr|pt|de)/account",
+    "/:locale(en|it|es|fr|pt|de|ru)/market",
+    "/:locale(en|it|es|fr|pt|de|ru)/market/:path*",
+    "/:locale(en|it|es|fr|pt|de|ru)/account",
     // "Modifica la mia pagina pubblica" (01/10/2026): profilo pubblico, foto e vetrina, pagina renderizzata sul server
-    "/:locale(en|it|es|fr|pt|de)/account/profile",
+    "/:locale(en|it|es|fr|pt|de|ru)/account/profile",
     // casella messaggi (26/09/2026, pacchetto INBOX): elenco e conversazione dell'utente, area staff, pagine renderizzate sul server
-    "/:locale(en|it|es|fr|pt|de)/account/messages",
-    "/:locale(en|it|es|fr|pt|de)/account/messages/:id",
-    "/:locale(en|it|es|fr|pt|de)/account/staff/messages",
-    "/:locale(en|it|es|fr|pt|de)/account/staff/messages/:id",
+    "/:locale(en|it|es|fr|pt|de|ru)/account/messages",
+    "/:locale(en|it|es|fr|pt|de|ru)/account/messages/:id",
+    "/:locale(en|it|es|fr|pt|de|ru)/account/staff/messages",
+    "/:locale(en|it|es|fr|pt|de|ru)/account/staff/messages/:id",
     // tracker/overlay (30/09/2026): collegamento dell'app, PC e partite, pagina renderizzata sul server
-    "/:locale(en|it|es|fr|pt|de)/account/tracker",
+    "/:locale(en|it|es|fr|pt|de|ru)/account/tracker",
     // OriginsMeta Tracker in prova (10–11/10/2026) aveva qui la pagina dell'app e quella dei win rate, che leggevano la
     // sessione per decidere chi le vedeva; aperte a tutti il 12/10/2026 (ANALYTICS_PUBLIC acceso), sono di nuovo statiche e
-    // ISR. Per richiudere: ANALYTICS_PUBLIC = false e due righe per le pagine di oggi, "/:locale(en|it|es|fr|pt|de)/analytics"
-    // (le statistiche) e "/:locale(en|it|es|fr|pt|de)/tracker" (l'app).
-    "/:locale(en|it|es|fr|pt|de)/decks/community/:slug/edit",
+    // ISR. Per richiudere: ANALYTICS_PUBLIC = false e due righe per le pagine di oggi, "/:locale(en|it|es|fr|pt|de|ru)/analytics"
+    // (le statistiche) e "/:locale(en|it|es|fr|pt|de|ru)/tracker" (l'app).
+    "/:locale(en|it|es|fr|pt|de|ru)/decks/community/:slug/edit",
     // mazzi torneo (04/10/2026): modifica, pagina renderizzata sul server
-    "/:locale(en|it|es|fr|pt|de)/decks/tournament/:slug/edit",
+    "/:locale(en|it|es|fr|pt|de|ru)/decks/tournament/:slug/edit",
     // guide della community (pacchetto GUIDE, 27/09/2026): scrittura e modifica, pagine renderizzate sul server
-    "/:locale(en|it|es|fr|pt|de)/guides/new",
-    "/:locale(en|it|es|fr|pt|de)/guides/community/:slug/edit",
+    "/:locale(en|it|es|fr|pt|de|ru)/guides/new",
+    "/:locale(en|it|es|fr|pt|de|ru)/guides/community/:slug/edit",
     // fumetti dei creator (pacchetto FUMETTI, 29/09/2026): pubblicazione e modifica, pagine renderizzate sul server
-    "/:locale(en|it|es|fr|pt|de)/news/comics/new",
-    "/:locale(en|it|es|fr|pt|de)/news/comics/:slug/edit",
+    "/:locale(en|it|es|fr|pt|de|ru)/news/comics/new",
+    "/:locale(en|it|es|fr|pt|de|ru)/news/comics/:slug/edit",
     // Tournament Organizer: pagine renderizzate sul server (la scheda è dinamica dal 16/09: i tornei privati dipendono dalla sessione)
-    "/:locale(en|it|es|fr|pt|de)/tournaments/new",
-    "/:locale(en|it|es|fr|pt|de)/tournaments/:slug",
-    "/:locale(en|it|es|fr|pt|de)/tournaments/:slug/manage",
-    "/:locale(en|it|es|fr|pt|de)/tournaments/:slug/deck",
-    "/:locale(en|it|es|fr|pt|de)/tournaments/:slug/match/:id",
+    "/:locale(en|it|es|fr|pt|de|ru)/tournaments/new",
+    "/:locale(en|it|es|fr|pt|de|ru)/tournaments/:slug",
+    "/:locale(en|it|es|fr|pt|de|ru)/tournaments/:slug/manage",
+    "/:locale(en|it|es|fr|pt|de|ru)/tournaments/:slug/deck",
+    "/:locale(en|it|es|fr|pt|de|ru)/tournaments/:slug/match/:id",
     // draft online (02/10/2026): stanza fra due giocatori, pagina renderizzata sul server, mosse con la sessione
-    "/:locale(en|it|es|fr|pt|de)/draft/r/:code",
+    "/:locale(en|it|es|fr|pt|de|ru)/draft/r/:code",
     // Link breve dei creator: /@<nome> (una cartella di src/app non può chiamarsi "@…", sono le rotte parallele)
     "/@:name",
     // URL di spam sulla radice: solo con entrambi i parametri (la home e le pagine statiche non passano di qui)

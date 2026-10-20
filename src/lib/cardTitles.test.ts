@@ -65,12 +65,13 @@ const datesModule: typeof import("./cardDates") = await import("./cardDates.ts")
 const { pageTitle } = pageModule;
 const { cardDates, cardLastmod, cardTextSource: src, localizedTextsRead } = datesModule;
 
-type Locale = "en" | "it" | "es" | "fr" | "pt" | "de";
-const locales: Locale[] = ["en", "it", "es", "fr", "pt", "de"];
+type Locale = "en" | "it" | "es" | "fr" | "pt" | "de" | "ru";
+const locales: Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru"];
 /**
  * Le lingue in cui esistono già le guide (`getGuides`, letto anche da `cardLastmod`) e le etichette dei bilanciamenti
  * (`linkLabels`): il francese è entrato con `guides-fr.ts` e `linkLabels.fr`, il portoghese con `guides-pt.ts` e
- * `linkLabels.pt` (20/10/2026), il tedesco con `guides-de.ts` e `linkLabels.de` (20/10/2026).
+ * `linkLabels.pt` (20/10/2026), il tedesco con `guides-de.ts` e `linkLabels.de` (20/10/2026). Il russo (20/10/2026) entra qui
+ * quando ci sono `guides-ru.ts` e `linkLabels.ru`; title e description delle schede lo provano già (`locales`).
  */
 const contentLocales: Locale[] = ["en", "it", "es", "fr", "pt", "de"];
 const cards: readonly TitleCard[] = cardsModule.cards;
@@ -92,7 +93,7 @@ describe("database", () => {
 });
 
 describe("cardTitle", () => {
-  test("un modello per tipo, nelle sei lingue", () => {
+  test("un modello per tipo, nelle sette lingue", () => {
     assert.equal(cardTitle(card("merlin"), "en"), "Merlin: Origins TCG Legendary card");
     assert.equal(cardTitle(card("merlin"), "it"), "Merlin: carta Leggendaria di Origins TCG");
     assert.equal(cardTitle(card("merlin"), "es"), "Merlin: carta Legendaria de Origins TCG");
@@ -123,6 +124,11 @@ describe("cardTitle", () => {
     assert.equal(cardTitle(card("garlic"), "de"), "Garlic: erschaffene Karte aus Origins TCG");
     assert.equal(cardTitle(card("baker"), "de"), "Baker: Karte aus Origins TCG, nicht in der Demo");
     assert.equal(cardTitle(card("alice"), "de"), "Alice: Legendäre aus Origins TCG, nicht in der Demo");
+    assert.equal(cardTitle(card("merlin"), "ru"), "Merlin: Легендарная карта Origins TCG");
+    assert.equal(cardTitle(card("aladdin"), "ru"), "Aladdin: карта Origins TCG");
+    assert.equal(cardTitle(card("garlic"), "ru"), "Garlic: созданная карта Origins TCG");
+    assert.equal(cardTitle(card("baker"), "ru"), "Baker: карта Origins TCG, нет в демо");
+    assert.equal(cardTitle(card("alice"), "ru"), "Alice: Легендарная карта Origins TCG, нет в демо");
   });
 
   test("ogni carta, in ogni lingua: nome in testa, Origins TCG dentro, title finale entro 60 caratteri", () => {
@@ -135,7 +141,7 @@ describe("cardTitle", () => {
     assert.deepEqual(bad, []);
   });
 
-  test("le sei lingue hanno sei title diversi, e in ogni lingua i title non si ripetono", () => {
+  test("le sette lingue hanno sette title diversi, e in ogni lingua i title non si ripetono", () => {
     for (const c of cards) assert.equal(new Set(locales.map((l) => cardTitle(c, l))).size, locales.length, c.slug);
     for (const locale of locales) {
       const titles = cards.map((c) => cardTitle(c, locale));
@@ -170,7 +176,7 @@ describe("creatorsOf", () => {
 });
 
 /** Parole vuote che non devono restare prima dei puntini (un campione per lingua). */
-const danglers = /\s(?:a|an|the|of|to|your|il|la|di|del|della|nella|e|el|los|las|de|en|y|que|le|les|un|une|des|du|à|et|pour|dans|sur|par|votre|qui|o|os|as|um|uma|do|da|no|na|em|com|para|seu|sua|der|die|das|den|dem|ein|eine|und|mit|von|zu|auf|für|dein|deine)…$/i;
+const danglers = /\s(?:a|an|the|of|to|your|il|la|di|del|della|nella|e|el|los|las|de|en|y|que|le|les|un|une|des|du|à|et|pour|dans|sur|par|votre|qui|o|os|as|um|uma|do|da|no|na|em|com|para|seu|sua|der|die|das|den|dem|ein|eine|und|mit|von|zu|auf|für|dein|deine|и|в|на|с|к|для|из|по|от|ваш|вашу|свою|его|её)…$/i;
 
 describe("cardDescription", () => {
   test("ogni carta, in ogni lingua: 120–158 caratteri, nome in testa, Origins TCG e Koin Games dentro", () => {
@@ -214,6 +220,9 @@ describe("cardDescription", () => {
     // tedesco: Charakter e Zauber del glossario provvisorio, tutti e due maschili
     assert.match(cardDescription(card("merlin"), "de", cards, src), /^Merlin, Legendärer Charakter Neutral aus Origins TCG \(Koin Games\): \d+ Mana, \d+\/\d+\. /);
     assert.match(cardDescription(card("legion-of-the-dead"), "de", cards, src), /^Legion of the Dead, Legendärer Zauber /);
+    // russo: "персонаж" e "заклинание" del glossario provvisorio, con l'aggettivo accordato; il costo in "ед. маны"
+    assert.match(cardDescription(card("merlin"), "ru", cards, src), /^Merlin, Легендарный персонаж Neutral из Origins TCG \(Koin Games\): \d+ ед\. маны, \d+\/\d+\. /);
+    assert.match(cardDescription(card("legion-of-the-dead"), "ru", cards, src), /^Legion of the Dead, Легендарное заклинание /);
   });
 
   test("le carte create dicono chi le crea solo se un testo lo dice; le rimosse che non sono nella demo", () => {
@@ -223,10 +232,11 @@ describe("cardDescription", () => {
     assert.match(cardDescription(card("garlic"), "fr", cards, src), /carte Neutral créée par Van Helsing's Tools dans Origins TCG/);
     assert.match(cardDescription(card("garlic"), "pt", cards, src), /carta Neutral criada por Van Helsing's Tools em Origins TCG/);
     assert.match(cardDescription(card("garlic"), "de", cards, src), /Karte Neutral, erschaffen von Van Helsing's Tools in Origins TCG/);
+    assert.match(cardDescription(card("garlic"), "ru", cards, src), /карта Neutral, которую создаёт карта Van Helsing's Tools в Origins TCG/);
     // Reflection: World of Origins la collega a Mulan, ma nessun testo di carta dice chi la crea
     for (const locale of locales) {
       const d = cardDescription(card("reflection"), locale, cards, src);
-      assert.doesNotMatch(d, /created by|generata da|creada por|créée par|criada por|erschaffen von/, d);
+      assert.doesNotMatch(d, /created by|generata da|creada por|créée par|criada por|erschaffen von|создаёт карта|создают карты/, d);
     }
     assert.match(cardDescription(card("alice"), "en", cards, src), /not in the demo/);
     assert.match(cardDescription(card("alice"), "it", cards, src), /non nella demo/);
@@ -234,6 +244,7 @@ describe("cardDescription", () => {
     assert.match(cardDescription(card("alice"), "fr", cards, src), /hors de la démo/);
     assert.match(cardDescription(card("alice"), "pt", cards, src), /fora da demo/);
     assert.match(cardDescription(card("alice"), "de", cards, src), /nicht in der Demo/);
+    assert.match(cardDescription(card("alice"), "ru", cards, src), /нет в демо/);
   });
 
   test("il nome precedente resta nella description", () => {
@@ -245,10 +256,10 @@ describe("cardDescription", () => {
   test("un testo superato da una patch non si cita: Silver Bullet (danno da 3 a 1, poi anche le barriere)", () => {
     for (const locale of locales) {
       const d = cardDescription(card("silver-bullet"), locale, cards, src);
-      assert.doesNotMatch(d, /\b3 (?:damage|danni|de daño|dégâts|de dano|Schaden)\b/, d);
+      assert.doesNotMatch(d, /\b3 (?:damage|danni|de daño|dégâts|de dano|Schaden)\b|\b3 (?:ед\. )?урон/, d);
       // restano gli altri pezzi: chi la crea e le statistiche
       assert.match(d, /Van Helsing's Tools/, d);
-      assert.match(d, /^Silver Bullet, .*: 1 (?:de )?(?:mana|maná|Mana)\./, d);
+      assert.match(d, /^Silver Bullet, .*: 1 (?:de |ед\. )?(?:mana|maná|Mana|маны)\./, d);
     }
   });
 });
@@ -281,7 +292,7 @@ describe("textOutdated", () => {
     // Patch finte con gli id veri: verifica sul gioco fra la 0.6.2 e la 0.6.3
     const source: TextSource = { dates: { "0.6.1": "2026-01-01", "0.6.2": "2026-02-01", "0.6.3": "2026-03-01" }, verified: "2026-02-15" };
     type History = TitleCard["history"];
-    const note = { en: "", it: "", es: "", fr: "", pt: "", de: "" };
+    const note = { en: "", it: "", es: "", fr: "", pt: "", de: "", ru: "" };
     const text = (patch: "0.6.2" | "0.6.3", kind: "buff" | "deck" = "buff"): History => [{ patch, kind, note }];
     const unit = (history: History) => ({ status: "active" as const, type: "unit" as const, history });
     const token = (history: History) => ({ status: "active" as const, type: "token" as const, history });
@@ -349,7 +360,7 @@ function datesLatest(dates: readonly (string | undefined)[]): string | undefined
 }
 
 describe("deckTitle", () => {
-  test("nome del mazzo in testa, poi la Leggendaria, nelle sei lingue (mappa delle query, C34)", () => {
+  test("nome del mazzo in testa, poi la Leggendaria, nelle sette lingue (mappa delle query, C34)", () => {
     assert.equal(deckTitle("Spellcast", "Merlin", "en"), "Spellcast, Merlin deck");
     assert.equal(deckTitle("Spellcast", "Merlin", "it"), "Spellcast, mazzo di Merlin");
     assert.equal(deckTitle("Spellcast", "Merlin", "es"), "Spellcast, mazo de Merlin");
@@ -362,6 +373,8 @@ describe("deckTitle", () => {
     assert.equal(pageTitle(deckTitle("Healing Healsing", "Van Helsing", "pt")), "Healing Healsing, deck de Van Helsing · Origins TCG");
     assert.equal(deckTitle("Spellcast", "Merlin", "de"), "Spellcast, Deck mit Merlin");
     assert.equal(pageTitle(deckTitle("Healing Healsing", "Van Helsing", "de")), "Healing Healsing, Deck mit Van Helsing · Origins TCG");
+    assert.equal(deckTitle("Spellcast", "Merlin", "ru"), "Spellcast, колода Merlin");
+    assert.equal(pageTitle(deckTitle("Healing Healsing", "Van Helsing", "ru")), "Healing Healsing, колода Van Helsing · Origins TCG");
   });
   test("un nome uguale alla Leggendaria o che la contiene non la ripete; senza Leggendaria resta il nome", () => {
     assert.equal(deckTitle("merlin", "Merlin", "en"), "Merlin deck");
@@ -376,6 +389,8 @@ describe("deckTitle", () => {
     assert.equal(deckTitle("Dorothy Combo", "Dorothy", "pt"), "Dorothy Combo, deck de Origins TCG");
     assert.equal(deckTitle("merlin", "Merlin", "de"), "Deck mit Merlin");
     assert.equal(deckTitle("Dorothy Combo", "Dorothy", "de"), "Dorothy Combo, Deck für Origins TCG");
+    assert.equal(deckTitle("merlin", "Merlin", "ru"), "Колода Merlin");
+    assert.equal(deckTitle("Dorothy Combo", "Dorothy", "ru"), "Dorothy Combo, колода для Origins TCG");
     assert.equal(pageTitle(deckTitle("Dorothy Combo", "Dorothy", "it")), "Dorothy Combo, mazzo di Origins TCG · OriginsMeta");
     assert.equal(deckTitle("Merlinator", "Merlin", "en"), "Merlinator, Merlin deck");
     assert.equal(deckTitle("Buff", undefined, "it"), "Buff");
@@ -396,6 +411,11 @@ describe("deckTitle", () => {
     assert.equal(deckTitle("Spellcast Deck", "Merlin", "pt"), "Spellcast Deck com Merlin");
     assert.equal(deckTitle("Merlin Deck", "Merlin", "de"), "Merlin Deck für Origins TCG");
     assert.equal(deckTitle("Spellcast Deck", "Merlin", "de"), "Spellcast Deck mit Merlin");
+    // in russo la parola è "колода" (anche declinata): "Merlin Deck" non la contiene
+    assert.equal(deckTitle("Колода Merlin", "Merlin", "ru"), "Колода Merlin для Origins TCG");
+    assert.equal(deckTitle("Колода Spellcast", "Merlin", "ru"), "Колода Spellcast с Merlin");
+    assert.equal(deckTitle("Merlin Deck", "Merlin", "ru"), "Merlin Deck, колода для Origins TCG");
+    assert.equal(deckTitle("Колодец", "Merlin", "ru"), "Колодец, колода Merlin");
     // la parola di un'altra lingua non ripete niente
     assert.equal(deckTitle("Spellcast Deck", "Merlin", "it"), "Spellcast Deck, mazzo di Merlin");
     assert.equal(deckTitle("Merlin Deck", "Merlin", "es"), "Merlin Deck, mazo de Origins TCG");
@@ -426,7 +446,7 @@ describe("deckTitle", () => {
     assert.equal(deckTitle("The Trick-or-Treat Legion of Halloween and friends", "Legion of the Dead", "en"), "The Trick-or-Treat Legion of Halloween…");
     assert.equal(deckTitle("Trick-or-Treat-Halloween-Legion-Zombies-and-Pumpkins", "Three Not So Little Pigs", "es"), "Trick-or-Treat-Halloween-Legion-Zombies…");
   });
-  test("con il modello lungo le sei lingue hanno sei title diversi", () => {
+  test("con il modello lungo le sette lingue hanno sette title diversi", () => {
     for (const [name, legendary] of [
       ["Spellcast", "Merlin"],
       ["Healing Healsing", "Van Helsing"],
@@ -511,8 +531,10 @@ describe("deckLead", () => {
     assert.equal(deckLead({ name: "Buff", author: "albeo", archetype: "Aggro" }, "pt"), "Deck de Origins TCG: Buff de albeo, arquétipo Aggro.");
     assert.equal(deckLead({ name: "Buff", legendary: "Robin Hood", author: "albeo", archetype: "Swarm / breit spielen" }, "de"), "Deck mit Robin Hood für Origins TCG: Buff von albeo, Archetyp Swarm.");
     assert.equal(deckLead({ name: "Buff", author: "albeo", archetype: "Aggro" }, "de"), "Deck für Origins TCG: Buff von albeo, Archetyp Aggro.");
+    assert.equal(deckLead({ name: "Buff", legendary: "Robin Hood", author: "albeo", archetype: "Swarm / играть вширь" }, "ru"), "Колода с Robin Hood для Origins TCG: Buff, автор albeo, архетип Swarm.");
+    assert.equal(deckLead({ name: "Buff", author: "albeo", archetype: "Aggro" }, "ru"), "Колода для Origins TCG: Buff, автор albeo, архетип Aggro.");
   });
-  test("la coda corta c'è nelle sei lingue e dice OriginsMeta", () => {
+  test("la coda corta c'è nelle sette lingue e dice OriginsMeta", () => {
     for (const locale of locales) assert.match(deckShortTail[locale], /OriginsMeta\.$/);
   });
 });

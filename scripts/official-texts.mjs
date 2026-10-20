@@ -1,8 +1,8 @@
 // Confronta i testi ufficiali delle carte letti nel gioco con quelli di `src/lib/data/card-lore.ts` e, a richiesta,
 // li scrive nel file. Serve alla verifica da rifare dopo ogni patch (procedura in docs/testi-di-gioco.md).
 //
-//   node scripts/official-texts.mjs <it|es|fr|pt|de>      elenca le carte il cui testo è diverso da quello del gioco
-//   node scripts/official-texts.mjs <it|es|fr|pt|de> --apply  scrive il testo del gioco (card-lore.ts, -fr.ts, -pt.ts, -de.ts)
+//   node scripts/official-texts.mjs <it|es|fr|pt|de|ru>   elenca le carte il cui testo è diverso da quello del gioco
+//   node scripts/official-texts.mjs <it|es|fr|pt|de|ru> --apply  scrive il testo del gioco (card-lore.ts, -fr.ts, -pt.ts, -de.ts, -ru.ts)
 //   --file <percorso>                                  trascrizione da usare (predefinita: docs/testi-ufficiali/<lingua>.tsv)
 //
 // La trascrizione ha una riga per carta: "Nome<TAB>testo", con \n letterale per gli a capo; le carte senza testo
@@ -18,8 +18,8 @@ const ts = require("typescript");
 
 const args = process.argv.slice(2);
 const lang = args[0];
-if (!["it", "es", "fr", "pt", "de"].includes(lang)) {
-  console.error("Uso: node scripts/official-texts.mjs <it|es|fr|pt|de> [--apply] [--file <trascrizione>]");
+if (!["it", "es", "fr", "pt", "de", "ru"].includes(lang)) {
+  console.error("Uso: node scripts/official-texts.mjs <it|es|fr|pt|de|ru> [--apply] [--file <trascrizione>]");
   process.exit(1);
 }
 const apply = args.includes("--apply");
@@ -61,11 +61,11 @@ function readLore(relative, variable) {
 }
 
 // Italiano e spagnolo stanno in card-lore.ts (campo con il nome della lingua); il francese (dal 07/10/2026) in
-// card-lore-fr.ts, il portoghese del Brasile (dal 20/10/2026) in card-lore-pt.ts e il tedesco (dal 20/10/2026, per ora
-// tutto tradotto da noi) in card-lore-de.ts, campo `text`. L'inglese di
+// card-lore-fr.ts, il portoghese del Brasile (dal 20/10/2026) in card-lore-pt.ts il tedesco (dal 20/10/2026) in
+// card-lore-de.ts e il russo (dal 20/10/2026) in card-lore-ru.ts, campo `text`. L'inglese di
 // riferimento (gli a capo) è sempre quello di card-lore.ts o dell'import.
 const base = readLore("src/lib/data/card-lore.ts", "cardLore");
-const own = { fr: ["src/lib/data/card-lore-fr.ts", "frLore"], pt: ["src/lib/data/card-lore-pt.ts", "ptLore"], de: ["src/lib/data/card-lore-de.ts", "deLore"] }[lang];
+const own = { fr: ["src/lib/data/card-lore-fr.ts", "frLore"], pt: ["src/lib/data/card-lore-pt.ts", "ptLore"], de: ["src/lib/data/card-lore-de.ts", "deLore"], ru: ["src/lib/data/card-lore-ru.ts", "ruLore"] }[lang];
 const target = own ? readLore(...own) : base;
 const field = own ? "text" : lang;
 const { file, src, eol, sf, lore } = target;

@@ -43,7 +43,8 @@ describe("404 dentro le lingue", () => {
     assert.equal(notFoundTitle("fr"), "404 · Page introuvable · OriginsMeta");
     assert.equal(notFoundTitle("pt"), "404 · Página não encontrada · OriginsMeta");
     assert.equal(notFoundTitle("de"), "404 · Seite nicht gefunden · OriginsMeta");
-    assert.deepEqual(Object.keys(NOT_FOUND_TITLE).sort(), ["de", "en", "es", "fr", "it", "pt"]);
+    assert.equal(notFoundTitle("ru"), "404 · Страница не найдена · OriginsMeta");
+    assert.deepEqual(Object.keys(NOT_FOUND_TITLE).sort(), ["de", "en", "es", "fr", "it", "pt", "ru"]);
   });
   test("lingua, H1 e testo sono nell'HTML, con i link alla home e alle carte", () => {
     const html = notFoundHtml(es);
@@ -147,7 +148,7 @@ describe("sezioni senza lingua", () => {
       .map((e) => e.name);
     assert.deepEqual([...sections].sort(), dirs.sort());
   });
-  test("redirect temporanei, sezione sola e con il percorso: italiano, spagnolo (anche ca, gl, eu), francese (dal 07/10/2026), portoghese (dal 20/10/2026), tedesco (dal 20/10/2026), poi inglese", () => {
+  test("redirect temporanei, sezione sola e con il percorso: italiano, spagnolo (anche ca, gl, eu), francese (dal 07/10/2026), portoghese (dal 20/10/2026), tedesco e russo (dal 20/10/2026), poi inglese", () => {
     assert.deepEqual(
       sectionRules.map((r) => [r.destination, r.has?.[0]?.value ?? null, r.permanent]),
       [
@@ -161,6 +162,8 @@ describe("sezioni senza lingua", () => {
         ["/pt/:section/:path", "^pt.*", false],
         ["/de/:section", "^de.*", false],
         ["/de/:section/:path", "^de.*", false],
+        ["/ru/:section", "^ru.*", false],
+        ["/ru/:section/:path", "^ru.*", false],
         ["/en/:section", null, false],
         ["/en/:section/:path", null, false],
       ],
@@ -172,6 +175,7 @@ describe("sezioni senza lingua", () => {
     assert.equal(root("fr"), "^fr.*");
     assert.equal(root("pt"), "^pt.*");
     assert.equal(root("de"), "^de.*");
+    assert.equal(root("ru"), "^ru.*");
   });
   test("Next accetta le regole (la sua verifica all'avvio, che su una regola sbagliata chiude il processo)", () => {
     checkCustomRoutes(redirects, "redirect");

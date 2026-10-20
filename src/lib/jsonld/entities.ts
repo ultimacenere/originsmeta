@@ -126,7 +126,7 @@ export const organization: Json = {
     "@type": "ContactPoint",
     contactType: "editorial",
     email: "staff@originsmeta.com",
-    availableLanguage: ["en", "it", "es", "fr", "pt", "de"],
+    availableLanguage: ["en", "it", "es", "fr", "pt", "de", "ru"],
   },
 };
 

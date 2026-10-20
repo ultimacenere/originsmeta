@@ -248,5 +248,9 @@ describe("numeri nelle cinque lingue", () => {
     assert.equal(fmtInt(1240, "de"), "1.240");
     assert.equal(pct(4 / 7, "de"), "57,1 %");
     assert.equal(deltaText(4 / 7, "de"), "+7,1");
+    // russo (20/10/2026, docs/russo.md): "10 000" con lo spazio insecabile, "3,5", "98%"
+    assert.equal(fmtInt(1240, "ru"), "1\u00a0240");
+    assert.equal(pct(4 / 7, "ru"), "57,1%");
+    assert.equal(deltaText(4 / 7, "ru"), "+7,1");
   });
 });

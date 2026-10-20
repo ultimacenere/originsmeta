@@ -227,14 +227,14 @@ describe("etichette dei mazzi torneo (deckSetLabels.ts)", () => {
   const holes = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
   test("stesse chiavi e stessi segnaposto in inglese, italiano e spagnolo", () => {
     const en = flat(L.deckSetLabels.en);
-    for (const locale of ["it", "es", "fr", "pt", "de"] as const) {
+    for (const locale of ["it", "es", "fr", "pt", "de", "ru"] as const) {
       const other = flat(L.deckSetLabels[locale]);
       assert.deepEqual(Object.keys(other).sort(), Object.keys(en).sort(), locale);
       for (const k of Object.keys(en)) assert.deepEqual(holes(other[k]), holes(en[k]), `${locale}: ${k}`);
     }
   });
   test("le voci del menu sono quelle dei dizionari", () => {
-    for (const locale of ["en", "it", "es", "pt", "de"] as const) {
+    for (const locale of ["en", "it", "es", "pt", "de", "ru"] as const) {
       const dict = read(`../dictionaries/${locale}.ts`);
       assert.ok(dict.includes(`decksSingle: "${L.deckSetLabels[locale].nav.single}"`), locale);
       assert.ok(dict.includes(`decksTournament: "${L.deckSetLabels[locale].nav.tournament}"`), locale);

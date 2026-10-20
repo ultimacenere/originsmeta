@@ -18,6 +18,7 @@ export const defaultOgAlt: Record<Locale, string> = {
   fr: "Key art d'Origins TCG : une héroïne blonde parmi des cartes qui volent sur un fond rose et violet, à côté du logo Origins Trading Card Game.",
   pt: "Key art de Origins TCG: uma heroína loira entre cartas que voam sobre um fundo rosa e roxo, ao lado do logo de Origins Trading Card Game.",
   de: "Key Art von Origins TCG: eine blonde Heldin zwischen fliegenden Karten vor einem rosa-violetten Hintergrund, neben dem Logo von Origins Trading Card Game.",
+  ru: "Ключевой арт Origins TCG: светловолосая героиня среди летящих карт на розово-фиолетовом фоне, рядом с логотипом Origins Trading Card Game.",
 };
 
 /** Oltre i ~160 caratteri Google taglia lo snippet: teniamo un margine. */

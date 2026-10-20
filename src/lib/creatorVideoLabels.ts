@@ -72,4 +72,13 @@ export const creatorVideoLabels: Record<Locale, CreatorVideoLabels> = {
     next: "Nächste Videos",
     list: "Videos zu Origins TCG von den Creatorn",
   },
+  ru: {
+    title: "Видео креаторов",
+    sub: "Свежие видео по Origins TCG от креаторов OriginsMeta — прямо с их YouTube-каналов.",
+    all: "Все креаторы",
+    by: "автор: {name}",
+    prev: "Предыдущие видео",
+    next: "Следующие видео",
+    list: "Видео креаторов по Origins TCG",
+  },
 };

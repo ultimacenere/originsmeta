@@ -134,6 +134,25 @@ export const followNavLabels: Record<Locale, FollowNavLabels> = {
     notifOne: "1 neue Benachrichtigung",
     notifMany: "{n} neue Benachrichtigungen",
   },
+  ru: {
+    follow: "Подписаться",
+    following: "Вы подписаны",
+    followAria: "Подписаться: {name}",
+    followingAria: "Вы подписаны: {name}. Нажмите, чтобы отписаться",
+    loginAria: "Подписаться: {name}. Сначала войдите",
+    followersOne: "Подписчиков: 1",
+    followersMany: "Подписчиков: {n}",
+    errors: {
+      notLoggedIn: "Войдите, чтобы подписаться на этот профиль.",
+      notFollowable: "На этот профиль нельзя подписаться.",
+      self: "Нельзя подписаться на самого себя.",
+      tooMany: "Вы уже подписаны на максимум профилей ({max}): сначала отпишитесь от кого-нибудь в своём профиле.",
+      unavailable: "Подписки сейчас недоступны. Попробуйте ещё раз через несколько минут.",
+      db: "Что-то пошло не так: попробуйте ещё раз.",
+    },
+    notifOne: "новых уведомлений: 1",
+    notifMany: "новых уведомлений: {n}",
+  },
 };
 
 /**
