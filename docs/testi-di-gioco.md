@@ -31,18 +31,14 @@ e vale per carte create e rimosse, luoghi, guide, news ed etichette, che restano
 è una scelta nostra). Il provvisorio sbagliava quattro parole: Beim Tod, Beim Töten, Trampeln, Stärke. Anche qui Twister
 Toss ha già il testo della patch 0.7.
 
-**Russo (20/10/2026, provvisorio)**: il gioco ha il russo fra le lingue (pagina Steam), ma la demo in russo non l'abbiamo
-ancora letta. Per ora **tutti** i testi russi delle carte, anche quelli delle 122 carte della collezione, sono una
-traduzione nostra dall'inglese di `card-lore.ts` (campo `en`, altrimenti il testo dell'import) con il glossario
-provvisorio di `docs/russo.md` (При раскрытии, При смерти, При убийстве, Щит, Натиск, Смертельное касание, Защитник,
-Первый удар, Меткий выстрел, ячейка, локация, барьер, ЛЮБОЙ; verbi all'imperativo con il вы: Нанесите, Призовите,
-Возьмите карту, Сбросьте…; Food = Еда, nomi delle carte in inglese), in `src/lib/data/card-lore-ru.ts` insieme alle
-righe sull'origine. `ru` **non** sta in `officialTextLocales`, quindi le schede dicono che il testo non è verificato
-nel gioco; anche lo storico dei bilanciamenti (`card-history.ts`) ha la sua nota russa. Manca la lettura nel gioco:
-quando Pierluigi apre la demo in russo si trascrivono le 122 carte in `docs/testi-ufficiali/ru.tsv`,
-`node scripts/official-texts.mjs ru` elenca le differenze e `--apply` scrive il campo `text` di `card-lore-ru.ts`, si
-mette `ru` in `officialTextLocales` e si riallinea il glossario del gioco in tutto il russo del sito (carte create e
-rimosse, storico, luoghi, pastiglie, `GAME_KEYWORDS`, guide, news, FAQ, etichette), come per il tedesco.
+**Russo (20/10/2026)**: partito il pomeriggio con una traduzione nostra provvisoria (glossario provvisorio: Натиск per
+Trample, Переместить per Move, verbi all'imperativo), la notte stessa Pierluigi ha aperto la demo in «Русский»: i 122
+testi della collezione (con «Не в коллекции» acceso; le 8 carte non possedute si trovano anche cercandole per nome) sono
+in `docs/testi-ufficiali/ru.tsv`, scritti in `card-lore-ru.ts` da `node scripts/official-texts.mjs ru --apply` (100
+diversi dai nostri, 15 uguali), e `ru` sta in `officialTextLocales`. Il glossario del gioco è in `docs/russo.md`: il
+provvisorio sbagliava Trample (nel gioco «Пробивной удар») e la parola chiave Move («Перемещение»), e le carte del
+gioco parlano in terza persona («Наносит», «Даёт», «Призывает»), non all'imperativo. Vale per carte create e rimosse,
+luoghi, storico, guide, news ed etichette, che restano traduzioni nostre.
 
 ## La regola
 

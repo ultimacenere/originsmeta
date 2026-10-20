@@ -1,9 +1,8 @@
 # Il russo su OriginsMeta
 
 Settima lingua del sito dal 20/10/2026 (richiesta di Pierluigi: "procediamo con il russo"). Indirizzo `/ru`,
-`hreflang="ru"`, `<html lang="ru">`, `og:locale` ru_RU, chiave `ru` accanto a `de` in tutto il codice. Il gioco ha il
-russo fra le lingue dell'interfaccia (pagina Steam: Russian), quindi i testi delle carte si leggono nel gioco come per le
-altre lingue.
+`hreflang="ru"`, `<html lang="ru">`, `og:locale` ru_RU, chiave `ru` accanto a `de` in tutto il codice. I testi delle carte della
+collezione sono quelli ufficiali letti nel gioco (sezione qui sotto).
 
 ## Varietà e tono
 
@@ -20,41 +19,55 @@ altre lingue.
 - La dicitura di non affiliazione: «не связан с Koin Games» (o «неофициальный фан-сайт, не связанный с Koin Games»):
   non si toglie mai.
 
-## Testi di gioco: glossario PROVVISORIO
+## Testi di gioco: il glossario del gioco
 
-I testi russi delle carte sono **una traduzione nostra provvisoria** finché non si legge il gioco in russo
-(`card-lore-ru.ts`, `ru` NON in `officialTextLocales`: le schede dicono «не проверено в игре»). Quando Pierluigi apre la
-demo in russo: trascrizione in `docs/testi-ufficiali/ru.tsv`, `node scripts/official-texts.mjs ru --apply`, `ru` in
-`officialTextLocales` e si riallinea questo glossario in tutto il russo del sito (carte create e rimosse, storico, luoghi,
-pastiglie, `GAME_KEYWORDS`, guide, news, FAQ, etichette).
+Partiti il pomeriggio del 20/10/2026 con una traduzione nostra provvisoria, i testi russi delle 122 carte della collezione
+sono quelli ufficiali **letti nel gioco la notte del 20/10/2026** (demo in «Русский», collezione con «Не в коллекции»
+acceso): trascrizione in `docs/testi-ufficiali/ru.tsv`, scritti in `card-lore-ru.ts` con
+`node scripts/official-texts.mjs ru --apply`, `ru` in `officialTextLocales`. Carte create e rimosse, luoghi, storico,
+pastiglie, `GAME_KEYWORDS`, guide, news, FAQ ed etichette restano traduzioni nostre, ma col glossario del gioco qui sotto.
 
-| Inglese | Russo (provvisorio) |
+**Lo stile del gioco**: le carte parlano in terza persona («Наносит 3 урона…», «Даёт…», «Призывает…», «Уничтожает…»,
+«Перемещает…», «Возвращает…»), i personaggi in prima persona («получаю», «перемещаюсь», «превращаюсь», «возвращаюсь»);
+l'imperativo col вы solo per pescare, scartare e scegliere («Возьмите карту», «Сбросьте…», «Выберите…»).
+
+| Inglese | Russo del gioco |
 | --- | --- |
 | On Reveal | При раскрытии |
 | On Death | При смерти |
 | On Kill | При убийстве |
-| Shield | Щит |
-| Trample | Натиск |
+| Shield | Щит («Даёт Щит ЛЮБОМУ персонажу») |
+| Trample | **Пробивной удар** (non «Натиск»: «с Пробивным ударом») |
 | Deathtouch | Смертельное касание |
-| Defender | Защитник |
+| Defender | Защитник («даёт ему Защитника») |
 | Rebirth | Возрождение |
-| First Strike | Первый удар |
+| First Strike | Первый удар («с Первым ударом») |
 | Double Attack | Двойная атака |
-| Snipe | Меткий выстрел |
-| Move | Переместить (verbo della carta), перемещение |
-| Stun | Оглушает / оглушить |
-| ANY (nei testi delle carte) | ЛЮБОЙ / ЛЮБУЮ / ЛЮБОЕ (maiuscolo, accordato) |
-| slot | ячейка |
-| location | локация |
-| Barrier | Барьер |
-| Legendary | Легендарная (карта), легендарка solo nel gergo |
-| spell | заклинание |
-| round | раунд |
-| Power / Health | Сила / Здоровье |
-| Mana | мана |
-| Ranked | рейтинговый режим |
-| Good / Evil | Добро / Зло (nei testi delle carte; etichette del sito in inglese) |
-| rarità | Обычная, Редкая, Эпическая, Легендарная |
+| Snipe | Меткий выстрел N |
+| Move (parola chiave) | **Перемещение**; il verbo nei testi: «перемещает», «перемещаюсь», «перемещались» |
+| Stun | Оглушение (parola chiave), nei testi «Оглушает ЛЮБОГО персонажа» |
+| ANY | ЛЮБОЙ / ЛЮБОГО / ЛЮБОМУ (maiuscolo, accordato); ALL «ВСЕМ» / «ВСЕХ» |
+| deal N damage | наносит N урона (1 урон, 2/3/4 урона, 6/10 урона) |
+| heal N damage | исцеляет N урона (персонажа / барьера) |
+| draw a card | Возьмите карту / Возьмите 2 карты |
+| discard | сбросьте (imperativo), сбрасывает, «Когда меня сбрасывают» |
+| summon | Призывает … в случайную ячейку / в две случайные ячейки |
+| return to hand | Возвращает … в руку владельца |
+| destroy | Уничтожает |
+| ally / enemy / opponent | союзник / враг / противник («барьер противника») |
+| slot / location | ячейка / локация |
+| barrier | барьер (minuscolo) |
+| spell | заклинание («Когда вы разыгрываете заклинание») |
+| play a character | «Когда вы играете союзника», «Когда вы играете Доброго персонажа» |
+| round / game | раунд / партия («в этой партии», «до конца партии») |
+| before / after combat | Перед боем / После боя |
+| at the start of the round | В начале раунда |
+| graveyard | кладбище |
+| cost (lowest / highest / even) | стоимость (наименьшей / наибольшей / чётной стоимостью) |
+| permanently | навсегда |
+| Good / Evil (allineamento) | Добрый / Злой («Доброго персонажа», «вашим Злым персонажам»); etichette del sito in inglese |
+| Choose one: … OR … | Выберите одно: … ИЛИ … |
+| mana | маны («+1 маны») |
 
 Nelle guide per chi inizia la prima citazione di ogni parola chiave porta l'inglese tra parentesi: «При раскрытии
 (On Reveal)».

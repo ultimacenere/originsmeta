@@ -439,8 +439,9 @@ describe("etichette e fonti", () => {
     // il glossario del gioco come nelle altre lingue
     assert.equal(cardLabels.de.textOurs, "Übersetzung von OriginsMeta (Glossar des Spiels)");
     assert.equal(cardLabels.de.brief, "Kurz gesagt");
-    // russo: il gioco in russo non è ancora letto, quindi la traduzione nostra (su tutte le carte) dice che non è verificata
-    assert.equal(cardLabels.ru.textOurs, "Перевод OriginsMeta (не проверен в игре)");
+    // russo: dal 20/10/2026 (la notte) i testi della collezione sono quelli del gioco, la traduzione nostra (create e
+    // rimosse) usa il glossario del gioco come nelle altre lingue
+    assert.equal(cardLabels.ru.textOurs, "Перевод OriginsMeta (глоссарий игры)");
     assert.equal(cardLabels.ru.brief, "Коротко");
   });
 
@@ -460,10 +461,8 @@ describe("etichette e fonti", () => {
     const merlin = cardLdTexts(card("merlin"), false);
     assert.deepEqual(
       merlin.map((t) => t.lang),
-      ["en", "it", "es", "fr", "pt", "de"],
+      ["en", "it", "es", "fr", "pt", "de", "ru"],
     );
-    // il russo non è fra i testi letti nel gioco (officialTextLocales): la nostra traduzione non va nel JSON-LD
-    assert.ok(!merlin.some((t) => t.lang === "ru"));
     assert.ok(merlin.every((t) => !/\n| {2}/.test(t.text)));
     // carte create e rimosse: il solo inglese, mai la nostra traduzione
     for (const slug of ["garlic", "baker"]) assert.deepEqual(cardLdTexts(card(slug), false).map((t) => t.lang), card(slug).ability ? ["en"] : [], slug);

@@ -28,9 +28,9 @@ import type { PatchId } from "./cards";
  *   Ao revelar, Atropelar, Mover, espaço, local, barreira…), in terza persona come i testi delle carte ("Compra uma carta").
  *   Il tedesco (dal 20/10/2026) è nostro con il glossario del gioco letto quel giorno (`docs/tedesco.md`: Beim Aufdecken,
  *   Bei Tod, Überrennen, Kraft, Bewegen, Feld, Ort, Barriere…), all'imperativo con il du ("Ziehe eine Karte").
- *   Il russo (dal 20/10/2026) è nostro con il glossario PROVVISORIO di `docs/russo.md` (При раскрытии, При смерти, Натиск,
- *   Сила/Здоровье, ячейка, локация, Барьер…), all'imperativo con il «вы» («Возьмите карту»), finché non si legge il
- *   gioco in russo.
+ *   Il russo (dal 20/10/2026) è nostro con il glossario del gioco letto quel giorno (`docs/russo.md`: При раскрытии,
+ *   При смерти, Пробивной удар, Перемещение, ячейка, локация, барьер…), in terza persona come i testi delle carte
+ *   («Наносит…», «Призывает…»), l'imperativo col «вы» solo per «Возьмите», «Сбросьте», «Выберите».
  * - `tags`: come si comporta il luogo, per i filtri della pagina. Un luogo può averne più d'uno.
  * - `cards`: slug delle carte del nostro database citate dall'effetto, per i collegamenti incrociati.
  */
@@ -100,7 +100,7 @@ export const locations: GameLocation[] = [
       fr: "Quand vous jouez un personnage ici, défaussez votre carte la plus à droite, puis piochez une carte.",
       pt: "Quando você joga um personagem aqui, descarta a sua carta mais à direita e depois compra uma carta.",
       de: "Wenn du hier einen Charakter spielst, wirf deine Karte ganz rechts ab und ziehe dann eine Karte.",
-      ru: "Когда вы разыгрываете здесь персонажа, сбросьте свою крайнюю правую карту, затем возьмите карту.",
+      ru: "Когда вы играете здесь персонажа, сбросьте свою самую правую карту, затем возьмите карту.",
     },
     tags: ["cards"],
   },
@@ -114,7 +114,7 @@ export const locations: GameLocation[] = [
       fr: "Après le combat, renvoyez un personnage aléatoire ici dans la main de son propriétaire, pour les deux joueurs.",
       pt: "Depois do combate, devolve um personagem aleatório daqui à mão do seu dono, para os dois jogadores.",
       de: "Nach dem Kampf: Bringe für beide Spieler einen zufälligen Charakter von hier auf die Hand seines Besitzers zurück.",
-      ru: "После боя верните случайного персонажа отсюда в руку его владельца — для обоих игроков.",
+      ru: "После боя возвращает случайного персонажа отсюда в руку владельца — для обоих игроков.",
     },
     tags: ["move"],
   },
@@ -128,7 +128,7 @@ export const locations: GameLocation[] = [
       fr: "Après que vous avez joué un personnage ici, il a 10 % de chances de se transformer en Bandersnatch cette manche.",
       pt: "Depois de você jogar um personagem aqui, há 10% de chance de ele se transformar em um Bandersnatch nesta rodada.",
       de: "Nachdem du hier einen Charakter gespielt hast, verwandelt er sich mit 10 % Wahrscheinlichkeit in dieser Runde in einen Bandersnatch.",
-      ru: "После того как вы разыграете здесь персонажа, с вероятностью 10% он превратится в Bandersnatch в этом раунде.",
+      ru: "После того как вы сыграете здесь персонажа, с вероятностью 10% он превращается в Bandersnatch в этом раунде.",
     },
     tags: ["summon"],
     cards: ["bandersnatch"],
@@ -136,7 +136,7 @@ export const locations: GameLocation[] = [
   {
     slug: "blessed-grounds",
     name: "Blessed Grounds",
-    effect: { en: "When a Good character is played here, it gets Shield.", it: "Quando un personaggio Buono viene giocato qui, ottiene Scudo.", es: "Cuando un personaje Bueno es jugado aquí, obtiene Escudo.", fr: "Quand un personnage Bon est joué ici, il obtient Bouclier.", pt: "Quando um personagem Bom é jogado aqui, recebe Escudo.", de: "Wenn hier ein guter Charakter gespielt wird, erhält er Schild.", ru: "Когда здесь разыгрывается персонаж Добра, он получает Щит." },
+    effect: { en: "When a Good character is played here, it gets Shield.", it: "Quando un personaggio Buono viene giocato qui, ottiene Scudo.", es: "Cuando un personaje Bueno es jugado aquí, obtiene Escudo.", fr: "Quand un personnage Bon est joué ici, il obtient Bouclier.", pt: "Quando um personagem Bom é jogado aqui, recebe Escudo.", de: "Wenn hier ein guter Charakter gespielt wird, erhält er Schild.", ru: "Когда здесь играют Доброго персонажа, он получает Щит." },
     tags: ["keyword"],
   },
   {
@@ -160,7 +160,7 @@ export const locations: GameLocation[] = [
   {
     slug: "burnturn-arena",
     name: "Burnturn Arena",
-    effect: { en: "After combat, deal 1 damage to ALL characters here.", it: "Dopo il combattimento, infliggi 1 danno a TUTTI i personaggi qui.", es: "Después del combate, inflige 1 de daño a TODOS los personajes de aquí.", fr: "Après le combat, infligez 1 dégât à TOUS les personnages ici.", pt: "Depois do combate, causa 1 de dano a TODOS os personagens aqui.", de: "Nach dem Kampf: Füge ALLEN Charakteren hier 1 Schaden zu.", ru: "После боя нанесите 1 урон ВСЕМ персонажам здесь." },
+    effect: { en: "After combat, deal 1 damage to ALL characters here.", it: "Dopo il combattimento, infliggi 1 danno a TUTTI i personaggi qui.", es: "Después del combate, inflige 1 de daño a TODOS los personajes de aquí.", fr: "Après le combat, infligez 1 dégât à TOUS les personnages ici.", pt: "Depois do combate, causa 1 de dano a TODOS os personagens aqui.", de: "Nach dem Kampf: Füge ALLEN Charakteren hier 1 Schaden zu.", ru: "После боя наносит 1 урон ВСЕМ персонажам здесь." },
     tags: ["damage"],
   },
   {
@@ -179,26 +179,26 @@ export const locations: GameLocation[] = [
       fr: "Après que vous avez joué un personnage ici, remplissez vos cases ici avec des copies de celui-ci.",
       pt: "Depois de você jogar um personagem aqui, preenche os seus espaços aqui com cópias dele.",
       de: "Nachdem du hier einen Charakter gespielt hast, fülle deine Felder hier mit Kopien davon.",
-      ru: "После того как вы разыграете здесь персонажа, заполните свои ячейки здесь его копиями.",
+      ru: "После того как вы сыграете здесь персонажа, заполняет ваши ячейки здесь его копиями.",
     },
     tags: ["summon"],
   },
   {
     slug: "conveyor-belt",
     name: "Conveyor Belt",
-    effect: { en: "After combat, move all characters here to the right one space.", it: "Dopo il combattimento, muovi tutti i personaggi qui di uno spazio a destra.", es: "Después del combate, mueve a todos los personajes de aquí un espacio a la derecha.", fr: "Après le combat, déplacez tous les personnages ici d'une case vers la droite.", pt: "Depois do combate, move todos os personagens aqui um espaço para a direita.", de: "Nach dem Kampf: Bewege alle Charaktere hier um ein Feld nach rechts.", ru: "После боя переместите всех персонажей здесь на одну ячейку вправо." },
+    effect: { en: "After combat, move all characters here to the right one space.", it: "Dopo il combattimento, muovi tutti i personaggi qui di uno spazio a destra.", es: "Después del combate, mueve a todos los personajes de aquí un espacio a la derecha.", fr: "Après le combat, déplacez tous les personnages ici d'une case vers la droite.", pt: "Depois do combate, move todos os personagens aqui um espaço para a direita.", de: "Nach dem Kampf: Bewege alle Charaktere hier um ein Feld nach rechts.", ru: "После боя перемещает всех персонажей здесь на одну ячейку вправо." },
     tags: ["move"],
   },
   {
     slug: "field-of-mice",
     name: "Field of Mice",
-    effect: { en: "After a character enters play here, stun it.", it: "Dopo che un personaggio entra in gioco qui, stordiscilo.", es: "Después de que un personaje entra en juego aquí, atúrdelo.", fr: "Après qu'un personnage entre en jeu ici, étourdissez-le.", pt: "Depois de um personagem entrar em jogo aqui, atordoa-o.", de: "Nachdem ein Charakter hier ins Spiel gekommen ist, betäube ihn.", ru: "После того как персонаж входит в игру здесь, оглушите его." },
+    effect: { en: "After a character enters play here, stun it.", it: "Dopo che un personaggio entra in gioco qui, stordiscilo.", es: "Después de que un personaje entra en juego aquí, atúrdelo.", fr: "Après qu'un personnage entre en jeu ici, étourdissez-le.", pt: "Depois de um personagem entrar em jogo aqui, atordoa-o.", de: "Nachdem ein Charakter hier ins Spiel gekommen ist, betäube ihn.", ru: "После того как персонаж входит в игру здесь, оглушает его." },
     tags: ["ability"],
   },
   {
     slug: "giants-beacon",
     name: "Giant's Beacon",
-    effect: { en: "Draw your highest-cost card. Set its cost to 1.", it: "Pesca la tua carta dal costo più alto. Porta il suo costo a 1.", es: "Roba tu carta de mayor coste. Fija su coste en 1.", fr: "Piochez votre carte au coût le plus élevé. Fixez son coût à 1.", pt: "Compra a sua carta de custo mais alto. O custo dela passa a ser 1.", de: "Ziehe deine Karte mit den höchsten Kosten. Setze ihre Kosten auf 1.", ru: "Возьмите свою самую дорогую карту. Её стоимость становится равной 1." },
+    effect: { en: "Draw your highest-cost card. Set its cost to 1.", it: "Pesca la tua carta dal costo più alto. Porta il suo costo a 1.", es: "Roba tu carta de mayor coste. Fija su coste en 1.", fr: "Piochez votre carte au coût le plus élevé. Fixez son coût à 1.", pt: "Compra a sua carta de custo mais alto. O custo dela passa a ser 1.", de: "Ziehe deine Karte mit den höchsten Kosten. Setze ihre Kosten auf 1.", ru: "Возьмите свою карту с наибольшей стоимостью. Её стоимость становится равной 1." },
     tags: ["cards", "mana"],
   },
   {
@@ -223,14 +223,14 @@ export const locations: GameLocation[] = [
       fr: "Quand vous jouez un personnage ici, détruisez-le et infligez des dégâts égaux à sa puissance à la barrière de l'adversaire.",
       pt: "Quando você joga um personagem aqui, destrói-o e causa dano igual ao Poder dele à barreira do oponente.",
       de: "Wenn du hier einen Charakter spielst, zerstöre ihn und füge der gegnerischen Barriere Schaden in Höhe seiner Kraft zu.",
-      ru: "Когда вы разыгрываете здесь персонажа, уничтожьте его и нанесите барьеру противника урон, равный его Силе.",
+      ru: "Когда вы играете здесь персонажа, уничтожает его и наносит барьеру противника урон, равный его Силе.",
     },
     tags: ["destroy", "barrier", "damage"],
   },
   {
     slug: "hundred-acre-woods",
     name: "Hundred Acre Woods",
-    effect: { en: "Summon Christopher Robin here for both players.", it: "Evoca Christopher Robin qui per entrambi i giocatori.", es: "Invoca a Christopher Robin aquí para ambos jugadores.", fr: "Invoquez Christopher Robin ici pour les deux joueurs.", pt: "Invoca Christopher Robin aqui para os dois jogadores.", de: "Beschwöre hier für beide Spieler Christopher Robin.", ru: "Призовите здесь Christopher Robin для обоих игроков." },
+    effect: { en: "Summon Christopher Robin here for both players.", it: "Evoca Christopher Robin qui per entrambi i giocatori.", es: "Invoca a Christopher Robin aquí para ambos jugadores.", fr: "Invoquez Christopher Robin ici pour les deux joueurs.", pt: "Invoca Christopher Robin aqui para os dois jogadores.", de: "Beschwöre hier für beide Spieler Christopher Robin.", ru: "Призывает сюда Christopher Robin для обоих игроков." },
     tags: ["summon"],
     cards: ["christopher-robin"],
   },
@@ -249,7 +249,7 @@ export const locations: GameLocation[] = [
   {
     slug: "mana-battery",
     name: "Mana Battery",
-    effect: { en: "Keep your leftover mana between rounds.", it: "Conservi il mana avanzato da un round all'altro.", es: "Conserva tu maná sobrante entre rondas.", fr: "Vous conservez votre mana restant d'une manche à l'autre.", pt: "Você mantém a mana que sobra de uma rodada para a outra.", de: "Behalte dein übriges Mana von Runde zu Runde.", ru: "Сохраняйте неизрасходованную ману между раундами." },
+    effect: { en: "Keep your leftover mana between rounds.", it: "Conservi il mana avanzato da un round all'altro.", es: "Conserva tu maná sobrante entre rondas.", fr: "Vous conservez votre mana restant d'une manche à l'autre.", pt: "Você mantém a mana que sobra de uma rodada para a outra.", de: "Behalte dein übriges Mana von Runde zu Runde.", ru: "Неизрасходованная мана сохраняется между раундами." },
     tags: ["mana"],
   },
   {
@@ -261,13 +261,13 @@ export const locations: GameLocation[] = [
   {
     slug: "nostradamus-call",
     name: "Nostradamus' Call",
-    effect: { en: "At the start of round 6, destroy both players' decks.", it: "All'inizio del round 6, distruggi i mazzi di entrambi i giocatori.", es: "Al comienzo de la ronda 6, destruye los mazos de ambos jugadores.", fr: "Au début de la manche 6, détruisez les decks des deux joueurs.", pt: "No início da rodada 6, destrói os decks dos dois jogadores.", de: "Zu Beginn von Runde 6: Zerstöre die Decks beider Spieler.", ru: "В начале 6-го раунда уничтожьте колоды обоих игроков." },
+    effect: { en: "At the start of round 6, destroy both players' decks.", it: "All'inizio del round 6, distruggi i mazzi di entrambi i giocatori.", es: "Al comienzo de la ronda 6, destruye los mazos de ambos jugadores.", fr: "Au début de la manche 6, détruisez les decks des deux joueurs.", pt: "No início da rodada 6, destrói os decks dos dois jogadores.", de: "Zu Beginn von Runde 6: Zerstöre die Decks beider Spieler.", ru: "В начале 6-го раунда уничтожает колоды обоих игроков." },
     tags: ["cards", "destroy"],
   },
   {
     slug: "open-meadow",
     name: "Open Meadow",
-    effect: { en: "When a character enters play here, it gets Move.", it: "Quando un personaggio entra in gioco qui, ottiene Muovere.", es: "Cuando un personaje entra en juego aquí, obtiene Mover.", fr: "Quand un personnage entre en jeu ici, il obtient Déplacer.", pt: "Quando um personagem entra em jogo aqui, recebe Mover.", de: "Wenn ein Charakter hier ins Spiel kommt, erhält er Bewegen.", ru: "Когда персонаж входит в игру здесь, он получает способность Переместить." },
+    effect: { en: "When a character enters play here, it gets Move.", it: "Quando un personaggio entra in gioco qui, ottiene Muovere.", es: "Cuando un personaje entra en juego aquí, obtiene Mover.", fr: "Quand un personnage entre en jeu ici, il obtient Déplacer.", pt: "Quando um personagem entra em jogo aqui, recebe Mover.", de: "Wenn ein Charakter hier ins Spiel kommt, erhält er Bewegen.", ru: "Когда персонаж входит в игру здесь, он получает Перемещение." },
     tags: ["keyword", "move"],
   },
   {
@@ -287,32 +287,32 @@ export const locations: GameLocation[] = [
   {
     slug: "poison-grounds",
     name: "Poison Grounds",
-    effect: { en: "Evil characters here have Deathtouch.", it: "I personaggi Malvagi qui hanno Tocco letale.", es: "Los personajes Malvados de aquí tienen Toque mortal.", fr: "Les personnages Mauvais ici ont Contact mortel.", pt: "Os personagens Malignos aqui têm Toque mortífero.", de: "Böse Charaktere hier haben Todesberührung.", ru: "У персонажей Зла здесь есть Смертельное касание." },
+    effect: { en: "Evil characters here have Deathtouch.", it: "I personaggi Malvagi qui hanno Tocco letale.", es: "Los personajes Malvados de aquí tienen Toque mortal.", fr: "Les personnages Mauvais ici ont Contact mortel.", pt: "Os personagens Malignos aqui têm Toque mortífero.", de: "Böse Charaktere hier haben Todesberührung.", ru: "У Злых персонажей здесь есть Смертельное касание." },
     tags: ["keyword"],
   },
   {
     slug: "reflecting-pool",
     name: "Reflecting Pool",
-    effect: { en: "After you play a character here, copy it in another location.", it: "Dopo che giochi un personaggio qui, copialo in un altro luogo.", es: "Después de jugar un personaje aquí, cópialo en otra ubicación.", fr: "Après que vous avez joué un personnage ici, copiez-le dans un autre lieu.", pt: "Depois de você jogar um personagem aqui, copia-o em outro local.", de: "Nachdem du hier einen Charakter gespielt hast, kopiere ihn an einen anderen Ort.", ru: "После того как вы разыграете здесь персонажа, скопируйте его в другую локацию." },
+    effect: { en: "After you play a character here, copy it in another location.", it: "Dopo che giochi un personaggio qui, copialo in un altro luogo.", es: "Después de jugar un personaje aquí, cópialo en otra ubicación.", fr: "Après que vous avez joué un personnage ici, copiez-le dans un autre lieu.", pt: "Depois de você jogar um personagem aqui, copia-o em outro local.", de: "Nachdem du hier einen Charakter gespielt hast, kopiere ihn an einen anderen Ort.", ru: "После того как вы сыграете здесь персонажа, копирует его в другую локацию." },
     tags: ["summon"],
   },
   {
     slug: "sherwood-forest",
     name: "Sherwood Forest",
-    effect: { en: "Summon a Merry Man at a random location every turn.", it: "Evoca un Merry Man in un luogo casuale a ogni turno.", es: "Invoca un Merry Man en una ubicación aleatoria en cada turno.", fr: "Invoquez un Merry Man dans un lieu aléatoire à chaque tour.", pt: "Invoca um Merry Man em um local aleatório a cada turno.", de: "Beschwöre jede Runde einen Merry Man an einem zufälligen Ort.", ru: "Каждый ход призывайте Merry Man в случайную локацию." },
+    effect: { en: "Summon a Merry Man at a random location every turn.", it: "Evoca un Merry Man in un luogo casuale a ogni turno.", es: "Invoca un Merry Man en una ubicación aleatoria en cada turno.", fr: "Invoquez un Merry Man dans un lieu aléatoire à chaque tour.", pt: "Invoca um Merry Man em um local aleatório a cada turno.", de: "Beschwöre jede Runde einen Merry Man an einem zufälligen Ort.", ru: "Каждый ход призывает Merry Man в случайную локацию." },
     tags: ["summon"],
     cards: ["merry-man"],
   },
   {
     slug: "soul-artillery",
     name: "Soul Artillery",
-    effect: { en: "After a character dies here, deal 1 damage to BOTH barriers.", it: "Dopo che un personaggio muore qui, infliggi 1 danno a ENTRAMBE le barriere.", es: "Después de que un personaje muere aquí, inflige 1 de daño a AMBAS barreras.", fr: "Après qu'un personnage meurt ici, infligez 1 dégât aux DEUX barrières.", pt: "Depois de um personagem morrer aqui, causa 1 de dano a AMBAS as barreiras.", de: "Nachdem hier ein Charakter gestorben ist, füge BEIDEN Barrieren 1 Schaden zu.", ru: "После того как здесь умирает персонаж, нанесите 1 урон ОБОИМ барьерам." },
+    effect: { en: "After a character dies here, deal 1 damage to BOTH barriers.", it: "Dopo che un personaggio muore qui, infliggi 1 danno a ENTRAMBE le barriere.", es: "Después de que un personaje muere aquí, inflige 1 de daño a AMBAS barreras.", fr: "Après qu'un personnage meurt ici, infligez 1 dégât aux DEUX barrières.", pt: "Depois de um personagem morrer aqui, causa 1 de dano a AMBAS as barreiras.", de: "Nachdem hier ein Charakter gestorben ist, füge BEIDEN Barrieren 1 Schaden zu.", ru: "После того как здесь умирает персонаж, наносит 1 урон ОБОИМ барьерам." },
     tags: ["barrier", "damage"],
   },
   {
     slug: "stomping-grounds",
     name: "Stomping Grounds",
-    effect: { en: "Characters here have Trample.", it: "I personaggi qui hanno Travolgere.", es: "Los personajes de aquí tienen Arrollar.", fr: "Les personnages ici ont Piétinement.", pt: "Os personagens aqui têm Atropelar.", de: "Charaktere hier haben Überrennen.", ru: "У персонажей здесь есть Натиск." },
+    effect: { en: "Characters here have Trample.", it: "I personaggi qui hanno Travolgere.", es: "Los personajes de aquí tienen Arrollar.", fr: "Les personnages ici ont Piétinement.", pt: "Os personagens aqui têm Atropelar.", de: "Charaktere hier haben Überrennen.", ru: "У персонажей здесь есть Пробивной удар." },
     tags: ["keyword"],
   },
   {
@@ -324,7 +324,7 @@ export const locations: GameLocation[] = [
   {
     slug: "the-gallows",
     name: "The Gallows",
-    effect: { en: "When a character enters play here, destroy the enemy across from it.", it: "Quando un personaggio entra in gioco qui, distruggi il nemico di fronte a lui.", es: "Cuando un personaje entra en juego aquí, destruye al enemigo frente a él.", fr: "Quand un personnage entre en jeu ici, détruisez l'ennemi en face de lui.", pt: "Quando um personagem entra em jogo aqui, destrói o inimigo à frente dele.", de: "Wenn ein Charakter hier ins Spiel kommt, zerstöre den gegnerischen Charakter ihm gegenüber.", ru: "Когда персонаж входит в игру здесь, уничтожьте врага напротив него." },
+    effect: { en: "When a character enters play here, destroy the enemy across from it.", it: "Quando un personaggio entra in gioco qui, distruggi il nemico di fronte a lui.", es: "Cuando un personaje entra en juego aquí, destruye al enemigo frente a él.", fr: "Quand un personnage entre en jeu ici, détruisez l'ennemi en face de lui.", pt: "Quando um personagem entra em jogo aqui, destrói o inimigo à frente dele.", de: "Wenn ein Charakter hier ins Spiel kommt, zerstöre den gegnerischen Charakter ihm gegenüber.", ru: "Когда персонаж входит в игру здесь, уничтожает врага напротив него." },
     tags: ["destroy"],
   },
   {
@@ -337,7 +337,7 @@ export const locations: GameLocation[] = [
       fr: "Après le combat, s'il y a plus d'un personnage ici, détruisez TOUS les personnages qui ont la puissance la plus basse.",
       pt: "Depois do combate, se houver mais de um personagem aqui, destrói TODOS os personagens empatados com o menor Poder.",
       de: "Nach dem Kampf: Wenn hier mehr als ein Charakter ist, zerstöre ALLE Charaktere mit der niedrigsten Kraft.",
-      ru: "После боя, если здесь больше одного персонажа, уничтожьте ВСЕХ персонажей с наименьшей Силой.",
+      ru: "После боя, если здесь больше одного персонажа, уничтожает ВСЕХ персонажей с наименьшей Силой.",
     },
     tags: ["destroy"],
   },
@@ -351,14 +351,14 @@ export const locations: GameLocation[] = [
       fr: "Au début de chaque manche, piochez une carte. Défaussez-la avant le combat.",
       pt: "No início de cada rodada, compra uma carta. Descarta-a antes do combate.",
       de: "Ziehe zu Beginn jeder Runde eine Karte. Wirf sie vor dem Kampf ab.",
-      ru: "В начале каждого раунда возьмите карту. Сбросьте её до боя.",
+      ru: "В начале каждого раунда возьмите карту. Сбросьте её перед боем.",
     },
     tags: ["cards"],
   },
   {
     slug: "the-well",
     name: "The Well",
-    effect: { en: "When you play a character here, heal 1 damage from your barrier here.", it: "Quando giochi un personaggio qui, cura 1 danno alla tua barriera qui.", es: "Cuando juegas un personaje aquí, cura 1 de daño de tu barrera aquí.", fr: "Quand vous jouez un personnage ici, soignez 1 dégât de votre barrière ici.", pt: "Quando você joga um personagem aqui, cura 1 de dano da sua barreira aqui.", de: "Wenn du hier einen Charakter spielst, heile 1 Schaden an deiner Barriere hier.", ru: "Когда вы разыгрываете здесь персонажа, вылечите 1 урон у своего барьера здесь." },
+    effect: { en: "When you play a character here, heal 1 damage from your barrier here.", it: "Quando giochi un personaggio qui, cura 1 danno alla tua barriera qui.", es: "Cuando juegas un personaje aquí, cura 1 de daño de tu barrera aquí.", fr: "Quand vous jouez un personnage ici, soignez 1 dégât de votre barrière ici.", pt: "Quando você joga um personagem aqui, cura 1 de dano da sua barreira aqui.", de: "Wenn du hier einen Charakter spielst, heile 1 Schaden an deiner Barriere hier.", ru: "Когда вы играете здесь персонажа, исцеляет 1 урон вашего барьера здесь." },
     tags: ["barrier"],
   },
   {
@@ -388,7 +388,7 @@ export const locations: GameLocation[] = [
   {
     slug: "wall-of-dumpty",
     name: "Wall of Dumpty",
-    effect: { en: "Destroy the first character you play here.", it: "Distruggi il primo personaggio che giochi qui.", es: "Destruye al primer personaje que juegues aquí.", fr: "Détruisez le premier personnage que vous jouez ici.", pt: "Destrói o primeiro personagem que você jogar aqui.", de: "Zerstöre den ersten Charakter, den du hier spielst.", ru: "Уничтожьте первого персонажа, которого вы разыграете здесь." },
+    effect: { en: "Destroy the first character you play here.", it: "Distruggi il primo personaggio che giochi qui.", es: "Destruye al primer personaje que juegues aquí.", fr: "Détruisez le premier personnage que vous jouez ici.", pt: "Destrói o primeiro personagem que você jogar aqui.", de: "Zerstöre den ersten Charakter, den du hier spielst.", ru: "Уничтожает первого персонажа, которого вы сыграете здесь." },
     tags: ["destroy"],
   },
   {
@@ -400,7 +400,7 @@ export const locations: GameLocation[] = [
   {
     slug: "wonderland",
     name: "Wonderland",
-    effect: { en: "Reverse the attack order.", it: "Inverti l'ordine di attacco.", es: "Invierte el orden de ataque.", fr: "Inversez l'ordre d'attaque.", pt: "Inverte a ordem de ataque.", de: "Kehre die Angriffsreihenfolge um.", ru: "Поменяйте порядок атаки на обратный." },
+    effect: { en: "Reverse the attack order.", it: "Inverti l'ordine di attacco.", es: "Invierte el orden de ataque.", fr: "Inversez l'ordre d'attaque.", pt: "Inverte a ordem de ataque.", de: "Kehre die Angriffsreihenfolge um.", ru: "Меняет порядок атаки на обратный." },
     tags: ["ability"],
   },
 ];

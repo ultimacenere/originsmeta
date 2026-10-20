@@ -12,7 +12,7 @@ import { initials, sagaHue } from "@/lib/cardArt";
  * Parole chiave del gioco da evidenziare nel testo. I testi italiani e spagnoli delle carte sono quelli ufficiali del
  * gioco, che traduce le parole chiave: qui ci sono i loro nomi nelle sei lingue (glossario in `docs/testi-di-gioco.md`;
  * il francese, letto nel gioco l'08/10/2026, in `docs/francese.md`; il portoghese del Brasile, letto il 20/10/2026, in
- * `docs/portoghese.md`; il tedesco, letto il 20/10/2026, in `docs/tedesco.md`); il russo, provvisorio, sta a parte
+ * `docs/portoghese.md`; il tedesco, letto il 20/10/2026, in `docs/tedesco.md`); il russo, letto il 20/10/2026, sta a parte
  * in `KEYWORDS_RU`.
  */
 const KEYWORDS = [
@@ -36,16 +36,17 @@ const KEYWORDS = [
   ...["Schild", "Präzisionsschuss", "Betäube", "Überrennen"],
 ];
 /**
- * Russo (20/10/2026): glossario PROVVISORIO di `docs/russo.md`, finché non si legge il gioco in russo. Il russo declina
- * anche le parole chiave ("с Натиском", "Двойную атаку"), quindi ci sono anche le forme più comuni, e la regex le
+ * Russo (20/10/2026): glossario del gioco letto la notte del 20/10/2026 (`docs/russo.md`). Il russo declina
+ * anche le parole chiave ("с Пробивным ударом", "Двойную атаку"), quindi ci sono anche le forme più comuni, e la regex le
  * cerca solo come parole intere (`\b` non vale per il cirillico): "Щит" non si evidenzia dentro "Щитом" a metà.
  */
 const KEYWORDS_RU = [
   ...["При раскрытии", "При смерти", "При убийстве", "Первый удар", "Первым ударом", "Первого удара"],
   ...["Двойная атака", "Двойную атаку", "Двойной атакой", "Двойной атаки"],
   ...["Смертельное касание", "Смертельным касанием", "Смертельного касания", "Защитник", "Защитника", "Защитником"],
-  ...["Возрождение", "Возрождением", "Возрождения", "Щит", "Щита", "Щитом", "Натиск", "Натиска", "Натиском"],
-  ...["Меткий выстрел", "Метким выстрелом", "Меткого выстрела", "Оглушает", "Оглушите", "Оглушить"],
+  ...["Возрождение", "Возрождением", "Возрождения", "Щит", "Щита", "Щитом"],
+  ...["Пробивной удар", "Пробивным ударом", "Пробивного удара"],
+  ...["Меткий выстрел", "Метким выстрелом", "Меткого выстрела", "Оглушает", "Оглушение", "Оглушения"],
 ];
 const escapeRe = (k: string) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const byLength = (a: string, b: string) => b.length - a.length;

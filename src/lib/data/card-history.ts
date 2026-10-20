@@ -546,7 +546,7 @@ export const cardHistory: Record<string, Change[]> = {
         fr: "Correction d'un bug : si un personnage qu'il a renforcé perd ses capacités, le +2 Puissance reste désormais ; Piétinement est toujours retiré.",
         pt: "Correção de bug: se um personagem que recebeu o buff perde as habilidades, o +2 de Poder agora permanece; Atropelar continua sendo removido.",
         de: "Bugfix: Verliert ein Charakter, den die Karte gebufft hat, seine Fähigkeiten, bleiben die +2 Kraft jetzt erhalten; Überrennen wird weiterhin entfernt.",
-        ru: "Исправление ошибки: если персонаж, усиленный этой картой, теряет способности, +2 к Силе теперь сохраняются; Натиск по-прежнему снимается.",
+        ru: "Исправление ошибки: если персонаж, усиленный этой картой, теряет способности, +2 к Силе теперь сохраняются; Пробивной удар по-прежнему снимается.",
       },
     },
   ],

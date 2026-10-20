@@ -27,7 +27,7 @@ import type { RelCard } from "./cardSynergy";
  * dà del "du", il glossario è quello del gioco letto il 20/10/2026 (Charakter/Zauber/erschaffene Karte, Kraft/Leben,
  * Legendär), il pronome segue il tipo ("Er" per Charakter e Zauber, "Sie" per la carta creata) e i
  * verbi vanno in fondo alla subordinata (catene con l'apposizione "ihrerseits erschaffen von"). In russo (docs/russo.md, glossario
- * PROVVISORIO) si dà del "вы", il tipo è персонаж/заклинание/созданная карта (Сила/Здоровье, Легендарная), il soggetto si
+ * del gioco) si dà del "вы", il tipo è персонаж/заклинание/созданная карта (Сила/Здоровье, Легендарная), il soggetto si
  * sottintende o è "карта" (femminile) e i numeri stanno dove non declinano il nome ("Силу 5", "в патчах: 2"). Nessun dato nuovo: tutto viene da `cards.ts`, dai mazzi
  * pubblicati e dai testi.
  * Dove compare una patch si usa `patchLabel`, mai l'id (CLAUDE.md).
@@ -513,10 +513,10 @@ export const cardLabels: Record<Locale, CardLabels> = {
     kind: { unit: "Charakter", spell: "Zauber", token: "erschaffene Karte", legendaryUnit: "Legendärer Charakter", legendarySpell: "Legendärer Zauber" },
     creditText: "Illustration von {illus} · © Koin Games",
   },
-  // Russo (20/10/2026): glossario PROVVISORIO di docs/russo.md (персонаж/заклинание/созданная карта, Сила/Здоровье,
-  // Легендарная), «вы» minuscolo, «конструктор колод». `ru` NON è in `officialTextLocales`: il gioco in russo non è
-  // ancora stato letto, quindi su ogni carta il testo russo è una traduzione nostra e `textOurs` dice che non è
-  // verificato nel gioco (CardText.tsx usa `textOurs` per le lingue fuori da `officialTextLocales`).
+  // Russo (20/10/2026): glossario del gioco di docs/russo.md (персонаж/заклинание/созданная карта, Сила/Здоровье,
+  // Легендарная), «вы» minuscolo, «конструктор колод». I testi delle carte della collezione sono quelli del gioco
+  // (`ru` è in `officialTextLocales` dal 20/10/2026, letti la notte stessa); `textOurs` resta per carte create e
+  // rimosse, come nelle altre lingue.
   ru: {
     decksLed: "Колоды во главе с {name}",
     decksWith: "Колоды с {name}",
@@ -547,7 +547,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOfficial: "Официальный текст игры",
     textEnglish: "Английский текст игры",
     textEnglishWoo: "Английский текст (не проверен в игре)",
-    textOurs: "Перевод OriginsMeta (не проверен в игре)",
+    textOurs: "Перевод OriginsMeta (глоссарий игры)",
     textWoo: "Текст карты (не проверен в игре)",
     textOutdated: "Более поздний патч изменил этот текст: см. историю баланса ниже.",
     asOfToken:
@@ -958,7 +958,6 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
     fr: `${cap(frIl(card))} est dans la Demo 2.0 (${frMasculine(card) ? "vérifié" : "vérifiée"} dans le jeu le ${verifiedOn(locale)}).`,
     pt: `Está na Demo 2.0 (${ptMasculine(card) ? "verificado" : "verificada"} no jogo em ${verifiedOn(locale)}).`,
     de: `Die Karte ist in der Demo 2.0 (am ${verifiedOn(locale)} im Spiel überprüft).`,
-    // la carta è nella demo (verificato); il suo testo russo no, e lo dice l'etichetta del testo (`textOurs`)
     ru: `Карта есть в Demo 2.0 (проверено в игре ${verifiedOn(locale)}).`,
   }[locale];
   out.push(name, is, sp(statsSentence(card, locale)), sp(demo));

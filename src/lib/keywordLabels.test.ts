@@ -54,11 +54,13 @@ describe("keywordLabel", () => {
     assert.equal(keywordLabel("Snipe", "de"), "Präzisionsschuss");
     assert.equal(keywordLabel("Summon", "de"), "Beschwöre");
   });
-  test("in russo il glossario provvisorio del 20/10/2026 (docs/russo.md)", () => {
+  test("in russo i nomi del gioco letti il 20/10/2026 (docs/russo.md)", () => {
     assert.equal(keywordLabel("On Reveal", "ru"), "При раскрытии");
-    assert.equal(keywordLabel("Trample", "ru"), "Натиск");
+    assert.equal(keywordLabel("Trample", "ru"), "Пробивной удар");
+    assert.equal(keywordLabel("Move", "ru"), "Перемещение");
+    assert.equal(keywordLabel("Stun", "ru"), "Оглушение");
     assert.equal(keywordLabel("Snipe", "ru"), "Меткий выстрел");
-    assert.equal(keywordLabel("Summon", "ru"), "Призовите");
+    assert.equal(keywordLabel("Summon", "ru"), "Призывает");
   });
   test("le categorie di World of Origins hanno il verbo delle carte", () => {
     assert.equal(keywordLabel("Summon", "it"), "Evoca");

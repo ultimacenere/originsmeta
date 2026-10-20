@@ -220,7 +220,7 @@ describe("cardDescription", () => {
     // tedesco: Charakter e Zauber del glossario provvisorio, tutti e due maschili
     assert.match(cardDescription(card("merlin"), "de", cards, src), /^Merlin, Legendärer Charakter Neutral aus Origins TCG \(Koin Games\): \d+ Mana, \d+\/\d+\. /);
     assert.match(cardDescription(card("legion-of-the-dead"), "de", cards, src), /^Legion of the Dead, Legendärer Zauber /);
-    // russo: "персонаж" e "заклинание" del glossario provvisorio, con l'aggettivo accordato; il costo in "ед. маны"
+    // russo: "персонаж" e "заклинание" del glossario del gioco, con l'aggettivo accordato; il costo in "ед. маны"
     assert.match(cardDescription(card("merlin"), "ru", cards, src), /^Merlin, Легендарный персонаж Neutral из Origins TCG \(Koin Games\): \d+ ед\. маны, \d+\/\d+\. /);
     assert.match(cardDescription(card("legion-of-the-dead"), "ru", cards, src), /^Legion of the Dead, Легендарное заклинание /);
   });

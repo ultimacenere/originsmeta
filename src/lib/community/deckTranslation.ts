@@ -117,7 +117,7 @@ export function namesIn(text: GuideText | Readonly<Record<string, string>>, name
  * Parole chiave del gioco in inglese, italiano, spagnolo, francese, portoghese del Brasile e tedesco: i nomi ufficiali
  * letti nel gioco (il 25/09/2026, il francese l'08/10/2026, il portoghese il 20/10/2026, docs/portoghese.md); il tedesco
  * (20/10/2026) è quello del gioco letto quel giorno (docs/tedesco.md: Bei Tod, Bei Vernichtung, Überrennen); il russo
- * (20/10/2026) è PROVVISORIO finché non si legge il gioco in russo (docs/russo.md). Gli
+ * (20/10/2026) è quello del gioco letto la notte stessa (docs/russo.md: Пробивной удар, Перемещение, Оглушение). Gli
  * stessi delle etichette di `src/lib/keywordLabels.ts` (un test controlla che coincidano). Sono copiati qui perché
  * questo modulo non importa nulla a runtime: lo carica anche `scripts/translate-decks.mjs`, con Node.
  */
@@ -126,15 +126,15 @@ export const GAME_KEYWORDS: readonly (readonly [en: string, it: string, es: stri
   ["On Death", "Alla morte", "Al morir", "À la mort", "Ao morrer", "Bei Tod", "При смерти"],
   ["On Kill", "All'uccisione", "Al matar", "À l'élimination", "Ao matar", "Bei Vernichtung", "При убийстве"],
   ["Shield", "Scudo", "Escudo", "Bouclier", "Escudo", "Schild", "Щит"],
-  ["Trample", "Travolgere", "Arrollar", "Piétinement", "Atropelar", "Überrennen", "Натиск"],
+  ["Trample", "Travolgere", "Arrollar", "Piétinement", "Atropelar", "Überrennen", "Пробивной удар"],
   ["Deathtouch", "Tocco letale", "Toque mortal", "Contact mortel", "Toque mortífero", "Todesberührung", "Смертельное касание"],
   ["Defender", "Difensore", "Defensor", "Défenseur", "Defensor", "Verteidiger", "Защитник"],
   ["Rebirth", "Rinascita", "Renacer", "Renaissance", "Renascimento", "Wiedergeburt", "Возрождение"],
   ["First Strike", "Primo colpo", "Primer golpe", "Première frappe", "Primeiro golpe", "Erstschlag", "Первый удар"],
   ["Double Attack", "Doppio attacco", "Ataque doble", "Double attaque", "Ataque duplo", "Doppelangriff", "Двойная атака"],
   ["Snipe", "Tiro di precisione", "Disparo certero", "Tir de précision", "Tiro certeiro", "Präzisionsschuss", "Меткий выстрел"],
-  ["Move", "Muovere", "Mover", "Déplacer", "Mover", "Bewegen", "Переместить"],
-  ["Stun", "Stordisci", "Aturde", "Étourdir", "Atordoa", "Betäube", "Оглушает"],
+  ["Move", "Muovere", "Mover", "Déplacer", "Mover", "Bewegen", "Перемещение"],
+  ["Stun", "Stordisci", "Aturde", "Étourdir", "Atordoa", "Betäube", "Оглушение"],
 ];
 
 const LANGUAGE: Record<string, string> = {
@@ -161,7 +161,7 @@ const DECK_GUIDE_INTRO =
 export const TRANSLATION_RULES = `Rules:
 1. Translate faithfully: same meaning, same tone, same level of detail. Do not add, remove, summarize, explain, correct or comment anything.
 2. Keep exactly as written, in English: card names, location names and deck names. The names found in this guide are listed under NAMES. Good, Evil, Neutral and Conquest also stay in English.
-3. The game is officially translated: write its keywords with the official name of the target language from GLOSSARY, with the initial capital as in the game, even when the guide uses the English name or another language ("with Trample" becomes "con Travolgere" in Italian, "con Arrollar" in Spanish, "avec Piétinement" in French, "com Atropelar" in Portuguese, "mit Überrennen" in German, "с Натиском" in Russian). When the keyword stands for the ability itself, say so: "its On Reveal" becomes "la sua abilità Alla rivelazione" in Italian, "su habilidad Al revelar" in Spanish, "sa capacité À la révélation" in French, "a sua habilidade Ao revelar" in Portuguese, "ihre Fähigkeit Beim Aufdecken" in German, "её способность При раскрытии" in Russian. In English use the English names. The space a card occupies on the board is "spazio" in Italian, "espacio" in Spanish, "case" in French, "espaço" in Portuguese, "Feld" in German and "ячейка" in Russian (never "casella", "casilla" or "emplacement"); a location is "luogo", "ubicación", "lieu", "local", "Ort", "локация"; Power and Health are "Potenza/Salute", "Poder/Salud", "Puissance/Santé", "Poder/Vida", "Kraft/Leben", "Сила/Здоровье". In Portuguese a Legendary is "Lendária", a spell is "feitiço", a round is "rodada", the graveyard is "cemitério" and the barrier is "barreira". In German a Legendary is "Legendäre" (a Legendary card: "Legendäre Karte"), a spell is "Zauber", a round is "Runde", the graveyard is "Friedhof", the board is "Spielfeld" and the barrier is "Barriere"; card text is written in the imperative with "du" ("Ziehe eine Karte", "Füge 3 Schaden zu"). In Russian a Legendary is "Легендарная карта", a spell is "заклинание", a round is "раунд", the graveyard is "кладбище" and the barrier is "барьер"; ANY in card text is "ЛЮБОЙ"/"ЛЮБУЮ"/"ЛЮБОЕ", in capitals and agreeing with its noun.
+3. The game is officially translated: write its keywords with the official name of the target language from GLOSSARY, with the initial capital as in the game, even when the guide uses the English name or another language ("with Trample" becomes "con Travolgere" in Italian, "con Arrollar" in Spanish, "avec Piétinement" in French, "com Atropelar" in Portuguese, "mit Überrennen" in German, "с Пробивным ударом" in Russian). When the keyword stands for the ability itself, say so: "its On Reveal" becomes "la sua abilità Alla rivelazione" in Italian, "su habilidad Al revelar" in Spanish, "sa capacité À la révélation" in French, "a sua habilidade Ao revelar" in Portuguese, "ihre Fähigkeit Beim Aufdecken" in German, "её способность При раскрытии" in Russian. In English use the English names. The space a card occupies on the board is "spazio" in Italian, "espacio" in Spanish, "case" in French, "espaço" in Portuguese, "Feld" in German and "ячейка" in Russian (never "casella", "casilla" or "emplacement"); a location is "luogo", "ubicación", "lieu", "local", "Ort", "локация"; Power and Health are "Potenza/Salute", "Poder/Salud", "Puissance/Santé", "Poder/Vida", "Kraft/Leben", "Сила/Здоровье". In Portuguese a Legendary is "Lendária", a spell is "feitiço", a round is "rodada", the graveyard is "cemitério" and the barrier is "barreira". In German a Legendary is "Legendäre" (a Legendary card: "Legendäre Karte"), a spell is "Zauber", a round is "Runde", the graveyard is "Friedhof", the board is "Spielfeld" and the barrier is "Barriere"; card text is written in the imperative with "du" ("Ziehe eine Karte", "Füge 3 Schaden zu"). In Russian a Legendary is "Легендарная карта", a spell is "заклинание", a round is "раунд", the graveyard is "кладбище" and the barrier is "барьер"; ANY in card text is "ЛЮБОЙ"/"ЛЮБОГО"/"ЛЮБОМУ", in capitals and agreeing with its noun; card text speaks in the third person as in the game ("Наносит 2 урона", "Призывает…", "Даёт…", "Исцеляет 3 урона"), the character in the first person ("получаю", "перемещаюсь"), and the imperative with "вы" only for "Возьмите карту", "Сбросьте", "Выберите"; Good and Evil characters are "Добрый персонаж" and "Злой персонаж".
 4. Keep numbers, stats such as 3/2 or +2⚔️/+2❤️, emoji, line breaks, list markers ("-", "•", "1.") and the order of the lines.
 5. Player jargon (mulligan, midrange, aggro, control, combo, tempo, value, ladder, meta, buff, nerf) stays the way players say it in the target language.
 6. Plain text only: no Markdown, no HTML.

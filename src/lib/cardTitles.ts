@@ -112,7 +112,7 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     removed: "Karte aus Origins TCG, nicht in der Demo",
     removedLegendary: "Legendäre aus Origins TCG, nicht in der Demo",
   },
-  // russo (docs/russo.md, glossario provvisorio): "Легендарная" con la maiuscola come la rarità, "созданная карта" per
+  // russo (docs/russo.md, glossario del gioco): "Легендарная" con la maiuscola come la rarità, "созданная карта" per
   // i token; il nome del gioco non si declina, quindi sta dopo "карта" come apposizione ("карта Origins TCG")
   ru: {
     legendary: "Легендарная карта Origins TCG",
@@ -266,7 +266,7 @@ const descWords: Record<Locale, DescWords> = {
     tail: "Werte, veröffentlichte Decks und Herkunft der Legende auf OriginsMeta.",
     shortTail: "Alle Details auf OriginsMeta.",
   },
-  // Russo (glossario provvisorio di docs/russo.md): "персонаж" e "заклинание" con l'aggettivo accordato ("Легендарный
+  // Russo (glossario del gioco di docs/russo.md): "персонаж" e "заклинание" con l'aggettivo accordato ("Легендарный
   // персонаж", "Легендарное заклинание"), l'allineamento in inglese dopo il tipo; il costo con "ед. маны", che regge
   // ogni numero senza declinare ("1 ед. маны", "5 ед. маны"). Chi crea la carta: "создаёт карта" / "создают карты".
   ru: {

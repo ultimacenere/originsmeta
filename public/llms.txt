@@ -39,7 +39,7 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 
 ## Legendaries
 
-The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…) and Russian (/ru/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese and German, and the balance history.
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…) and Russian (/ru/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.
 
 - [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
@@ -255,7 +255,7 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Создать свой тир-лист](https://originsmeta.com/ru/tier-list/create): ваш собственный тир-лист Origins TCG — перетащите карты Demo 2.0 по уровням от S до D, легендарные отдельно, ссылкой можно поделиться. Бесплатно, без аккаунта.
 - [Тир-лист по оценкам карт](https://originsmeta.com/ru/tier-list/votes): каждая карта Origins TCG с оценкой от 1 (слабая) до 10 (сильная); среднее по голосам участников даёт тир-лист легендарных и базовых карт.
 - [MetaShifting](https://originsmeta.com/ru/metashifting): патчноуты Origins TCG: каждое изменение баланса, карта за картой и патч за патчем, сначала новые, по официальным публикациям Koin Games.
-- [Список карт](https://originsmeta.com/ru/cards): все карты Demo 2.0 с актуальными характеристиками, официальным английским текстом, русским текстом (наш перевод, ещё не сверенный с игрой), историей изменений и легендой, стоящей за каждой картой.
+- [Список карт](https://originsmeta.com/ru/cards): все карты Demo 2.0 с актуальными характеристиками, официальным английским текстом, официальным русским текстом из игры, историей изменений и легендой, стоящей за каждой картой.
 - [Локации](https://originsmeta.com/ru/locations): локации Demo 2.0 с их эффектами, с поиском и фильтрами.
 - [Колоды](https://originsmeta.com/ru/decks): деклисты, опубликованные сообществом в конструкторе колод, каждый с гайдом и оценкой от 1 до 5 звёзд.
 - [Турнирные колоды](https://originsmeta.com/ru/decks/tournament): тройки колод Conquest для турниров вроде Crimson Cup, опубликованные игроками с общим гайдом: три разные легендарные, коды игры и оценки.

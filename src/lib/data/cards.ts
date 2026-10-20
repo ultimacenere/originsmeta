@@ -30,9 +30,9 @@ export type L10n = Record<Locale, string>;
  * elenco avrebbe il testo etichettato come traduzione nostra, e il JSON-LD non lo dichiarerebbe (cardLdTexts). Il tedesco
  * (card-lore-de.ts) è partito il 20/10/2026 con una traduzione nostra provvisoria ed è entrato qui la sera stessa, letti
  * nel gioco i 122 testi (docs/testi-ufficiali/de.tsv, `node scripts/official-texts.mjs de --apply`). Il russo
- * (card-lore-ru.ts, dal 20/10/2026) è fuori di proposito: testi provvisori nostri finché non si legge il gioco in russo.
+ * (card-lore-ru.ts) come il tedesco: provvisorio il pomeriggio del 20/10/2026, letti nel gioco la notte stessa (docs/testi-ufficiali/ru.tsv).
  */
-export const officialTextLocales: readonly Locale[] = ["en", "it", "es", "fr", "pt", "de"];
+export const officialTextLocales: readonly Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru"];
 export type CardType = "unit" | "spell" | "token";
 export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
 /**
@@ -316,7 +316,7 @@ export const cards: Card[] = data.cards.map((w) => {
   const pt = ptLore[w.slug];
   // Il tedesco (card-lore-de.ts, dal 20/10/2026) come il portoghese: testo ufficiale letto nel gioco (dalla sera del 20/10), traduzione nostra per create e rimosse.
   const de = deLore[w.slug];
-  // Il russo (card-lore-ru.ts, dal 20/10/2026): traduzione nostra provvisoria finché non si legge il gioco in russo.
+  // Il russo (card-lore-ru.ts, dal 20/10/2026) come il tedesco: testo ufficiale letto nel gioco (dalla notte del 20/10), traduzione nostra per create e rimosse.
   const ru = ruLore[w.slug];
   if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn, fr: fr?.text ?? abilityEn, pt: pt?.text ?? abilityEn, de: de?.text ?? abilityEn, ru: ru?.text ?? abilityEn };
   if (lore?.origin) card.origin = { ...lore.origin, fr: fr?.origin ?? lore.origin.en, pt: pt?.origin ?? lore.origin.en, de: de?.origin ?? lore.origin.en, ru: ru?.origin ?? lore.origin.en };
