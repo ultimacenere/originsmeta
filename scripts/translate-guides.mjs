@@ -202,21 +202,9 @@ if (flag("--dry-run")) {
   console.log(`${saved} traduzioni salvate (le pagine si aggiornano da sole entro qualche minuto: ISR)`);
   await db.end();
 } else {
-  // --via-site (20/10/2026): la chiave su Vercel è "Sensitive"; si passa dalla rotta temporanea /api/cron/anthropic del sito,
-  // con il segreto del cron di .env.local al posto della chiave (vedi src/app/api/cron/anthropic/v1/messages/route.ts).
-  const viaSite = process.argv.includes("--via-site");
-  const key = viaSite ? process.env.CRON_SECRET || env.CRON_SECRET : process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error(viaSite ? "serve CRON_SECRET in .env.local" : "serve ANTHROPIC_API_KEY (variabile d'ambiente o .env.local), oppure --via-site");
-  // La rotta del sito non inoltra l'intestazione anthropic-beta: senza la beta il campo fallbacks va tolto.
-  const viaSiteFetch = (url, init) => {
-    if (init && typeof init.body === "string") {
-      const body = JSON.parse(init.body);
-      delete body.fallbacks;
-      init = { ...init, body: JSON.stringify(body) };
-    }
-    return fetch(url, init);
-  };
-  const client = new Anthropic({ apiKey: key, maxRetries: 2, ...(viaSite ? { baseURL: "https://originsmeta.com/api/cron/anthropic", timeout: 300_000, fetch: viaSiteFetch } : {}) });
+  const key = process.env.ANTHROPIC_API_KEY || env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error("serve ANTHROPIC_API_KEY (variabile d'ambiente o .env.local), oppure --export/--from");
+  const client = new Anthropic({ apiKey: key, maxRetries: 2 });
   let saved = 0;
   for (const r of todo) {
     const names = namesIn(G.guideTranslationDoc(r.g), NAMES);
