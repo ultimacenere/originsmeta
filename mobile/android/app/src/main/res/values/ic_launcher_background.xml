@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generato da scripts/icons.mjs: il verde dello sfondo del logo (src/app/icon.svg). -->
+<resources>
+    <color name="ic_launcher_background">#0B2E25</color>
+</resources>

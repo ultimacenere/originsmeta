@@ -1,0 +1,21 @@
+{
+  "name": "originsmeta-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "App Android di OriginsMeta: il sito dentro un'app, con funzioni native (fan project, non affiliato a Koin Games).",
+  "author": "OriginsMeta",
+  "scripts": {
+    "icons": "node scripts/icons.mjs",
+    "sync": "cap sync android",
+    "apk": "node scripts/apk.mjs",
+    "test": "node --test scripts/config.test.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/splash-screen": "8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

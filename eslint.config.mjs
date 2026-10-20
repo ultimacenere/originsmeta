@@ -17,6 +17,10 @@ const eslintConfig = defineConfig([
     "tracker/out/**",
     "tracker/node_modules/**",
     "tracker/scripts/*.cjs",
+    // app Android (mobile/, pacchetto proprio): si controllano gli script, non il progetto nativo né le dipendenze
+    "mobile/node_modules/**",
+    "mobile/android/**",
+    "mobile/out/**",
   ]),
 ]);
 

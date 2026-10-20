@@ -1,0 +1,33 @@
+{
+  "appId": "com.originsmeta.app",
+  "appName": "OriginsMeta",
+  "webDir": "www",
+  "backgroundColor": "#150c2c",
+  "server": {
+    "url": "https://originsmeta.com",
+    "errorPath": "offline.html",
+    "allowNavigation": [
+      "originsmeta.com",
+      "*.originsmeta.com",
+      "obpnprlzxrlbvncpqlpq.supabase.co",
+      "discord.com",
+      "*.discord.com"
+    ]
+  },
+  "android": {
+    "appendUserAgent": "OriginsMetaApp/0.1.0",
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#150c2c",
+      "showSpinner": false
+    },
+    "SystemBars": {
+      "insetsHandling": "css",
+      "style": "DARK"
+    }
+  }
+}

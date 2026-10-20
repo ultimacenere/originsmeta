@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+  Pagina dell'app quando originsmeta.com non si carica (server.errorPath di capacitor.config.json).
+  Su Android qui i plugin di Capacitor non ci sono: solo HTML, CSS e un po' di JavaScript, niente file esterni.
+  Testi nelle cinque lingue del sito, scelti dalla lingua del telefono; la dicitura su Koin Games non si toglie mai.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>OriginsMeta</title>
+<style>
+  :root {
+    --felt: #150c2c;
+    --night: #182238;
+    --sky: #3fc4e8;
+    --pale: #c8d1dd;
+    --pale-muted: #8e9bb1;
+    --mint: #31e3bd;
+    --ink: #16102a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--felt); color: var(--pale); }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+  main {
+    width: 100%;
+    max-width: 420px;
+    background: var(--night);
+    border: 3px solid var(--sky);
+    border-radius: 16px;
+    padding: 28px 22px;
+    text-align: center;
+  }
+  svg { width: 72px; height: 72px; }
+  h1 { color: var(--sky); font-size: 1.25rem; margin: 16px 0 8px; }
+  p { margin: 0 0 20px; line-height: 1.5; }
+  button {
+    font: inherit;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--mint);
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 28px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+  small { display: block; margin-top: 24px; color: var(--pale-muted); font-size: 0.8125rem; line-height: 1.4; }
+</style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 64 64" aria-hidden="true">
+    <rect width="64" height="64" rx="14" fill="#0b2e25"/>
+    <rect x="17" y="10" width="30" height="44" rx="5" fill="#f5efe0" stroke="#14110c" stroke-width="1.5"/>
+    <rect x="21" y="14" width="22" height="36" rx="3" fill="none" stroke="#14110c" stroke-opacity="0.25"/>
+    <text x="32" y="40" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="22" fill="#e3b341">M</text>
+    <circle cx="45" cy="16" r="5" fill="#c8102e"/>
+  </svg>
+  <h1 id="title">You're offline</h1>
+  <p id="body">OriginsMeta needs an internet connection. Check your connection and try again.</p>
+  <button id="retry" type="button">Try again</button>
+  <small id="note">OriginsMeta is an independent project and is not affiliated with Koin Games.</small>
+</main>
+<script>
+  var SITE = "https://originsmeta.com/";
+  var TEXTS = {
+    en: ["You're offline", "OriginsMeta needs an internet connection. Check your connection and try again.", "Try again",
+      "OriginsMeta is an independent project and is not affiliated with Koin Games."],
+    it: ["Sei offline", "OriginsMeta ha bisogno di internet. Controlla la connessione e riprova.", "Riprova",
+      "OriginsMeta è un progetto indipendente e non è affiliato a Koin Games."],
+    es: ["Estás sin conexión", "OriginsMeta necesita internet. Revisa tu conexión y vuelve a intentarlo.", "Reintentar",
+      "OriginsMeta es un proyecto independiente y no está afiliado a Koin Games."],
+    fr: ["Vous êtes hors ligne", "OriginsMeta a besoin d'une connexion Internet. Vérifiez votre connexion et réessayez.", "Réessayer",
+      "OriginsMeta est un projet indépendant qui n'est pas affilié à Koin Games."],
+    pt: ["Você está offline", "O OriginsMeta precisa de internet. Confira sua conexão e tente de novo.", "Tentar de novo",
+      "OriginsMeta é um projeto independente e não é afiliado à Koin Games."]
+  };
+  var lang = (navigator.language || "en").slice(0, 2).toLowerCase();
+  var t = TEXTS[lang] || TEXTS.en;
+  document.documentElement.lang = TEXTS[lang] ? (lang === "pt" ? "pt-BR" : lang) : "en";
+  document.getElementById("title").textContent = t[0];
+  document.getElementById("body").textContent = t[1];
+  document.getElementById("retry").textContent = t[2];
+  document.getElementById("note").textContent = t[3];
+  function retry() { location.replace(SITE); }
+  document.getElementById("retry").addEventListener("click", retry);
+  addEventListener("online", retry);
+</script>
+</body>
+</html>
