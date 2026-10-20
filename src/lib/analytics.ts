@@ -87,7 +87,7 @@
  *     live_now_open       clic su "Ora live" nella striscia del calendario        placement (calendar)
  *                         (28/09/2026, compare solo se qualcuno è in diretta; attributi sul link, TickerMarquee)
  *     official_live_view  la diretta compare in home al posto dello slider: quella placement (home_hero), stream
- *                         ufficiale di Origins TCG o il cast della Crimson Cup     (official | coachcrono)
+ *                         ufficiale di Origins TCG o il cast della Crimson Cup     (official | coachcrono | robip)
  *                         in italiano (18/10/2026)
  *                         posto dello slider (18/10/2026, OfficialLiveHero): una volta per pagina vista; chi la
  *                         avvia sul sito è video_play con placement home_hero
@@ -236,8 +236,8 @@ export type EventParams = {
   tier_entry_click: { tier_source: string; target: string };
   creator_link_click: { kind: string; placement: string };
   live_now_open: { placement: string };
-  official_live_view: { placement: "home_hero"; stream: "official" | "coachcrono" };
-  official_live_twitch: { placement: "home_hero"; method: "button" | "player"; stream: "official" | "coachcrono" };
+  official_live_view: { placement: "home_hero"; stream: "official" | "coachcrono" | "robip" };
+  official_live_twitch: { placement: "home_hero"; method: "button" | "player"; stream: "official" | "coachcrono" | "robip" };
   stream_tools_open: { placement: string };
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };

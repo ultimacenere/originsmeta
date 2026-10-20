@@ -20,6 +20,7 @@ import {
 const official = { originstcg: { channel: "https://www.twitch.tv/originstcg", viewers: 321, title: "  Crimson Cup day 1  " } };
 const coach = { coachcrono: { channel: "https://www.twitch.tv/coachcrono", viewers: 34, title: "Cast ITA" } };
 const both = { ...official, ...coach };
+const robip = { "robip-origins": { channel: "https://www.twitch.tv/r0bip", viewers: 5, title: "Castiamo il torneo!" } };
 const before = Date.parse("2026-10-18T21:59:00Z"); // 18/10 23:59 in Italia
 const during = Date.parse("2026-10-20T18:00:00Z");
 const lastMinute = Date.parse("2026-10-21T21:59:30Z"); // 21/10 23:59:30 in Italia
@@ -47,6 +48,14 @@ describe("diretta in home", () => {
     assert.equal(heroLiveOf(official, "it", during)?.id, "official");
     assert.equal(heroLiveOf(coach, "it", during)?.id, "coachcrono");
     assert.equal(heroLiveOf({}, "it", during), null);
+  });
+  test("Robip: secondo in italiano, dopo il coach e prima di quella ufficiale (20/10/2026)", () => {
+    assert.equal(heroLiveOf({ ...both, ...robip }, "it", during)?.id, "coachcrono", "il coach resta primo");
+    assert.deepEqual(heroLiveOf({ ...official, ...robip }, "it", during), { id: "robip", name: "Robip", channel: "r0bip", viewers: 5, title: "Castiamo il torneo!" });
+    assert.equal(heroLiveOf(robip, "it", during)?.id, "robip");
+    assert.equal(heroLiveOf({ ...official, ...robip }, "it", after)?.id, "official", "dopo il 21");
+    for (const l of ["en", "es", "fr", "pt", "de"]) assert.equal(heroLiveOf({ ...official, ...robip }, l, during)?.id, "official", l);
+    assert.equal(heroHeading(officialLiveLabels.it, { id: "robip", name: "Robip" }), "La Crimson Cup in diretta in italiano con Robip");
   });
   test("periodi delle dirette", () => {
     const cast = HERO_STREAMS.find((s: { id: string }) => s.id === "coachcrono");
