@@ -10,9 +10,9 @@ import { initials, sagaHue } from "@/lib/cardArt";
 
 /**
  * Parole chiave del gioco da evidenziare nel testo. I testi italiani e spagnoli delle carte sono quelli ufficiali del
- * gioco, che traduce le parole chiave: qui ci sono i loro nomi nelle cinque lingue (glossario in `docs/testi-di-gioco.md`;
+ * gioco, che traduce le parole chiave: qui ci sono i loro nomi nelle sei lingue (glossario in `docs/testi-di-gioco.md`;
  * il francese, letto nel gioco l'08/10/2026, in `docs/francese.md`; il portoghese del Brasile, letto il 20/10/2026, in
- * `docs/portoghese.md`).
+ * `docs/portoghese.md`; il tedesco, glossario PROVVISORIO del 20/10/2026 non ancora letto nel gioco, in `docs/tedesco.md`).
  */
 const KEYWORDS = [
   // inglese
@@ -30,6 +30,9 @@ const KEYWORDS = [
   // portoghese del Brasile (Defensor ed Escudo come lo spagnolo)
   ...["Ao revelar", "Ao morrer", "Ao matar", "Primeiro golpe", "Ataque duplo", "Toque mortífero", "Renascimento"],
   ...["Tiro certeiro", "Atordoa", "Atropelar"],
+  // tedesco (glossario provvisorio, docs/tedesco.md)
+  ...["Beim Aufdecken", "Beim Tod", "Beim Töten", "Erstschlag", "Doppelangriff", "Todesberührung", "Verteidiger", "Wiedergeburt"],
+  ...["Schild", "Präzisionsschuss", "Betäube", "Trampeln"],
 ];
 /** Le più lunghe prima: nell'alternativa della regex vince la prima che combacia. */
 const KEYWORD_PATTERN = [...KEYWORDS].sort((a, b) => b.length - a.length).map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
@@ -52,16 +55,16 @@ const ALIGN: Record<string, { label: string; bg: string; fg: string; ring: strin
  * Il testo viene dal nostro database (non da input degli utenti): niente HTML in ingresso, solo nodi React.
  */
 function formatAbility(text: string): React.ReactNode[] {
-  // danni e "qualsiasi" nelle cinque lingue del testo: "3 damage", "3 danni", "1 danno", "3 de daño", "3 dégâts", "1 dégât",
-  // "3 de dano"; ANY, QUALSIASI, CUALQUIER, N'IMPORTE QUEL / N'IMPORTE QUELLE, QUALQUER
-  const pattern = new RegExp(`(${KEYWORD_PATTERN}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni|danno|de daño|de dano|dégâts|dégât)\\b|\\bQUALSIASI\\b|\\bCUALQUIER\\b|\\bQUALQUER\\b|\\bANY\\b|N'IMPORTE QUELLE?)`, "g");
+  // danni e "qualsiasi" nelle sei lingue del testo: "3 damage", "3 danni", "1 danno", "3 de daño", "3 dégâts", "1 dégât",
+  // "3 de dano", "3 Schaden"; ANY, QUALSIASI, CUALQUIER, N'IMPORTE QUEL / N'IMPORTE QUELLE, QUALQUER, BELIEBIGEN / BELIEBIGE / BELIEBIGER, IRGENDEIN / IRGENDEINE (ALL resta ALLE)
+  const pattern = new RegExp(`(${KEYWORD_PATTERN}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni|danno|de daño|de dano|dégâts|dégât|Schaden)\\b|\\bQUALSIASI\\b|\\bCUALQUIER\\b|\\bQUALQUER\\b|\\bBELIEBIGE[NMRS]?\\b|\\bIRGENDEINE?[NMRS]?\\b|\\bANY\\b|N'IMPORTE QUELLE?)`, "g");
   return text.split(pattern).map((part, i) => {
     if (!part) return null;
     if (KEYWORDS.includes(part)) return <b key={i} className="gc-kw">{part}</b>;
     if (/⚔️$/.test(part)) return <b key={i} className="gc-atk">{part.replace("⚔️", "⚔")}</b>;
     if (/❤️$/.test(part)) return <b key={i} className="gc-hp">{part.replace("❤️", "♥")}</b>;
-    if (/^\d+ (damage|danni|danno|de daño|de dano|dégâts|dégât)$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
-    if (part === "QUALSIASI" || part === "CUALQUIER" || part === "QUALQUER" || part === "ANY" || part === "N'IMPORTE QUEL" || part === "N'IMPORTE QUELLE") return <b key={i} className="gc-any">{part}</b>;
+    if (/^\d+ (damage|danni|danno|de daño|de dano|dégâts|dégât|Schaden)$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
+    if (part === "QUALSIASI" || part === "CUALQUIER" || part === "QUALQUER" || /^(?:BELIEBIGE[NMRS]?|IRGENDEINE?[NMRS]?)$/.test(part) || part === "ANY" || part === "N'IMPORTE QUEL" || part === "N'IMPORTE QUELLE") return <b key={i} className="gc-any">{part}</b>;
     return <span key={i}>{part}</span>;
   });
 }
@@ -71,7 +74,8 @@ const line = (t: L10n | undefined, locale: Locale) => (t ? t[locale] ?? t.en : "
 /**
  * Tipo della carta sulla riga del tipo, nella lingua della pagina (corto, come sulla carta del gioco). Le carte create
  * con il glossario del sito (docs/spagnolo.md, docs/francese.md, docs/portoghese.md): "created card", "carta generata",
- * "carta creada", "carte créée", "carta criada"; in portoghese il tipo del gioco è "Personagem".
+ * "carta creada", "carte créée", "carta criada", "erschaffene Karte"; in portoghese il tipo del gioco è "Personagem", in
+ * tedesco "Charakter" (glossario provvisorio, docs/tedesco.md).
  */
 const TYPE_LABEL: Record<string, Record<"unit" | "spell" | "token", string>> = {
   en: { unit: "Unit", spell: "Spell", token: "Created" },
@@ -79,6 +83,7 @@ const TYPE_LABEL: Record<string, Record<"unit" | "spell" | "token", string>> = {
   es: { unit: "Unidad", spell: "Hechizo", token: "Creada" },
   fr: { unit: "Unité", spell: "Sort", token: "Créée" },
   pt: { unit: "Personagem", spell: "Feitiço", token: "Criada" },
+  de: { unit: "Charakter", spell: "Zauber", token: "Erschaffen" },
 };
 
 export function GameCard({ card, locale, className = "", priority = false }: { card: Card; locale: Locale; className?: string; priority?: boolean }) {

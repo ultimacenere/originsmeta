@@ -5,8 +5,8 @@ import type { Locale } from "@/lib/i18n";
  * (campo "EULA or Terms of Service URL") e valgono per tutto quello che fa OriginsMeta: il sito, l'app OriginsMeta
  * Tracker e l'estensione OriginsMeta Deck tracker. Pagina /terms, noindex come /privacy, link nel footer.
  * Regole dei testi: mai il nome né il dominio della fonte dei dati delle carte, mai "con il permesso di Koin"
- * (`KOIN_PERMISSION_PUBLIC` è spento), sempre "non affiliato a Koin Games". Le ancore (`id`) sono uguali nelle cinque
- * lingue. Test in termsLabels.test.ts.
+ * (`KOIN_PERMISSION_PUBLIC` è spento), sempre "non affiliato a Koin Games". Le ancore (`id`) sono uguali in tutte
+ * le lingue (sei dal 20/10/2026, con il tedesco). Test in termsLabels.test.ts.
  */
 export type TermsSection = { id: string; title: string; body: string[] };
 
@@ -417,5 +417,84 @@ export const termsLabels: Record<Locale, TermsLabels> = {
       },
     ],
     footer: "Termos de uso",
+  },
+  de: {
+    title: "Nutzungsbedingungen",
+    description: "Die Nutzungsbedingungen von OriginsMeta: die Website, die App OriginsMeta Tracker und die Erweiterung OriginsMeta Deck tracker für Twitch.",
+    updated: "Zuletzt aktualisiert: 14. Oktober 2026",
+    intro:
+      "Diese Bedingungen gelten für originsmeta.com, für die App OriginsMeta Tracker für Windows und für die Erweiterung OriginsMeta Deck tracker für Twitch (zusammen „OriginsMeta“). Wenn du OriginsMeta nutzt, akzeptierst du sie. Wenn nicht, nutze OriginsMeta bitte nicht.",
+    sections: [
+      {
+        id: "who",
+        title: "Wer wir sind",
+        body: [
+          "OriginsMeta ist eine inoffizielle Fanseite zu Origins TCG, betrieben von Pierluigi Cella. Sie ist nicht mit Koin Games verbunden und wird von Koin Games weder unterstützt noch gesponsert. Du erreichst uns unter staff@originsmeta.com.",
+        ],
+      },
+      {
+        id: "service",
+        title: "Der Dienst",
+        body: [
+          "OriginsMeta ist kostenlos. Wir können jeden Teil davon jederzeit ändern, pausieren oder beenden, auch die App und die Erweiterung. Spenden über PayPal sind freiwillig und begründen keine Rechte oder Gegenleistungen.",
+        ],
+      },
+      {
+        id: "account",
+        title: "Dein Konto",
+        body: [
+          "Du meldest dich mit Discord oder mit einem Link per E-Mail an. Du bist für das verantwortlich, was du mit deinem Konto tust. Rollen und Tags vergibt das Staff. Wir können Inhalte ausblenden oder ein Konto sperren, das gegen diese Bedingungen verstößt, und du kannst dein Konto jederzeit löschen.",
+        ],
+      },
+      {
+        id: "content",
+        title: "Was du veröffentlichst",
+        body: [
+          "Decks, Guides, Tier-Lists, Comics, Bewertungen und Nachrichten, die du veröffentlichst, bleiben deine. Mit der Veröffentlichung erlaubst du OriginsMeta, sie auf der Website zu zeigen, sie automatisch in die Sprachen der Website zu übersetzen und sie auf unserem Discord-Server und in der Erweiterung zu teilen, solange sie online sind.",
+          "Veröffentliche nichts Illegales, Beleidigendes, Irreführendes, keinen Spam, keine personenbezogenen Daten anderer und keine Werke, die du nicht teilen darfst. Das Staff kann Inhalte ausblenden oder entfernen, die gegen diese Regeln verstoßen.",
+        ],
+      },
+      {
+        id: "game",
+        title: "Inhalte von Origins TCG",
+        body: [
+          "Origins TCG, seine Karten, Namen, Texte und Bilder gehören Koin Games. OriginsMeta zeigt sie, um über das Spiel zu sprechen; sie gehören nicht uns und fallen nicht unter diese Bedingungen. Kartendaten, Balance-Änderungen und Statistiken können Fehler enthalten: Sie dienen nur zur Information.",
+        ],
+      },
+      {
+        id: "tracker",
+        title: "OriginsMeta Tracker",
+        body: [
+          "Die App liest auf deinem PC nur die Dateien, die das Spiel speichert, und das Fenster des Spiels, und sie verändert das Spiel nie. Sie funktioniert nur, wenn sie mit einem OriginsMeta-Konto verbunden ist, und schickt der Website, was die Datenschutzerklärung beschreibt. Du installierst und nutzt sie auf eigenes Risiko; du kannst die Verbindung jederzeit trennen und deine Partien in deinem Konto löschen. Die aus den Partien berechneten Statistiken sind Schätzungen.",
+        ],
+      },
+      {
+        id: "twitch",
+        title: "OriginsMeta Deck tracker für Twitch",
+        body: [
+          "Die Erweiterung zeigt den Zuschauern das Deck und die Karten des Streamers, übernommen aus OriginsMeta Tracker: nie Namen, Ränge oder Kennungen von Spielern oder Partien. Zuschauer brauchen kein Konto. Wer einen Kanal verbindet, ist für das verantwortlich, was er streamt. Zusätzlich gelten die Bedingungen von Twitch.",
+        ],
+      },
+      {
+        id: "liability",
+        title: "Keine Gewährleistung",
+        body: [
+          "OriginsMeta wird „wie besehen“ bereitgestellt, ohne Gewährleistung. Soweit das Gesetz es zulässt, haften wir nicht für indirekte Schäden oder für Verluste durch Fehler in den Daten, Unterbrechungen des Dienstes oder die Nutzung der App und der Erweiterung. Nichts in diesen Bedingungen schränkt die Rechte ein, die dir das Recht deines Landes als Verbraucher gibt.",
+        ],
+      },
+      {
+        id: "privacy",
+        title: "Datenschutz",
+        body: ["Wie wir Daten verwenden, erklärt die Datenschutzerklärung."],
+      },
+      {
+        id: "changes",
+        title: "Änderungen und anwendbares Recht",
+        body: [
+          "Wir können diese Bedingungen aktualisieren: Das Datum oben sagt dir, wann. Wenn du OriginsMeta nach einer Änderung weiter nutzt, akzeptierst du die neue Fassung. Für diese Bedingungen gilt italienisches Recht, unbeschadet der zwingenden Vorschriften deines Wohnsitzlandes.",
+        ],
+      },
+    ],
+    footer: "Nutzungsbedingungen",
   },
 };

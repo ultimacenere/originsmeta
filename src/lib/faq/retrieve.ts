@@ -24,6 +24,8 @@ const STOPWORDS = new Set([
 const normalizza = (s: string) =>
   s
     .toLowerCase()
+    // la ß del tedesco non si scompone con NFD e la regex qui sotto la toglierebbe spezzando la parola ("heißt")
+    .replace(/ß/g, "ss")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9\s'-]/g, " ");
@@ -85,12 +87,19 @@ const PT_FAQ = [
   ...["o", "a", "os", "as", "um", "uma", "uns", "umas", "de", "do", "da", "dos", "das", "em", "no", "na", "nos", "nas", "por", "pelo", "pela", "pelos", "pelas", "para", "pra", "com", "sem", "sobre", "entre", "desde", "ate", "que", "quem", "qual", "quais", "quando", "onde", "como", "quanto", "quanta", "quantos", "quantas", "porque", "e", "ou", "mas", "se", "nao", "sim", "eu", "voce", "voces", "ele", "ela", "eles", "elas", "me", "te", "lhe", "meu", "minha", "meus", "minhas", "seu", "sua", "seus", "suas", "isso", "isto", "esse", "essa", "esses", "essas", "este", "esta", "estes", "estas", "aquele", "aquela"],
   ...["sao", "estao", "foi", "ser", "estar", "ter", "tem", "tenho", "pode", "posso", "podem", "faz", "fazer", "jogo", "jogar", "joga", "carta", "cartas", "deck", "decks", "todas", "todos", "todo", "toda", "cada", "outra", "outro", "outras", "outros", "tambem", "ainda", "comeca", "comecam", "funciona", "funcionam", "bem", "melhor", "melhores", "mais", "menos", "muito", "depois", "antes", "existe", "existem", "preciso", "quero", "saber", "acho", "encontro", "serve", "servem"],
 ];
+// tedesco (20/10/2026): senza umlaut come escono da `normalizza` ("fur" per "für", "uber" per "über", "konnen" per
+// "können"), la ß già diventata "ss" ("muss", "dass"); "deck" e "decks" come li dicono i giocatori (docs/tedesco.md)
+const DE_FAQ = [
+  ...["der", "die", "das", "den", "dem", "des", "ein", "eine", "einen", "einem", "einer", "eines", "und", "oder", "aber", "wenn", "dass", "denn", "nicht", "kein", "keine", "keinen", "ist", "sind", "war", "sein", "bin", "bist", "hat", "haben", "habe", "hast", "wird", "werden", "kann", "kannst", "konnen", "muss", "musst", "soll", "sollte", "ich", "du", "er", "sie", "es", "wir", "ihr", "man", "mich", "mir", "dich", "dir", "mein", "meine", "meinen", "dein", "deine", "deinen", "seine", "ihre", "was", "wer", "wie", "wo", "wann", "warum", "welche", "welcher", "welches", "wieviel", "viele", "viel"],
+  ...["im", "in", "am", "an", "auf", "aus", "bei", "mit", "nach", "von", "vom", "vor", "zu", "zum", "zur", "fur", "uber", "unter", "gegen", "ohne", "durch", "um", "gibt", "spiel", "spiele", "spielen", "spielt", "karte", "karten", "deck", "decks", "alle", "allen", "jede", "jeden", "jeder", "jedes", "andere", "anderen", "auch", "noch", "schon", "gut", "besser", "beste", "besten", "mehr", "weniger", "sehr", "funktioniert", "funktionieren", "startet", "beginnt", "vorher", "danach", "finde", "finden", "brauche", "mochte", "will", "wissen", "hier", "dort", "jetzt", "dieser", "diese", "dieses", "diesen", "sich", "macht", "machen", "beim", "gern", "gerne", "woher", "eines"],
+];
 const STOPWORDS_FAQ: Record<Locale, Set<string>> = {
   en: new Set([...COMUNI_FAQ, ...EN_FAQ]),
   it: new Set([...COMUNI_FAQ, ...EN_FAQ, ...IT_FAQ]),
   es: new Set([...COMUNI_FAQ, ...EN_FAQ, ...ES_FAQ]),
   fr: new Set([...COMUNI_FAQ, ...EN_FAQ, ...FR_FAQ]),
   pt: new Set([...COMUNI_FAQ, ...EN_FAQ, ...PT_FAQ]),
+  de: new Set([...COMUNI_FAQ, ...EN_FAQ, ...DE_FAQ]),
 };
 
 /** Parole di un testo per le risposte approvate: normalizzate e divise anche sull'apostrofo ("c'è", "un'abilità"). */

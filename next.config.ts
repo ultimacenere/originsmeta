@@ -12,7 +12,7 @@ const spamKeys = ["r", "channel"] as const;
 
 /**
  * Lingua del visitatore per i redirect senza lingua (la radice e le sezioni): italiano; spagnolo anche per catalano,
- * galiziano e basco, che leggono lo spagnolo; francese (dal 07/10/2026); portoghese, anche europeo (dal 20/10/2026); altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
+ * galiziano e basco, che leggono lo spagnolo; francese (dal 07/10/2026); portoghese, anche europeo, e tedesco (dal 20/10/2026); altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
  * solo la prima lingua dell'header (è un'espressione regolare); i link brevi dei tornei pesano tutto l'elenco
  * (`preferredLocale` in src/app/t/locale.ts).
  */
@@ -23,6 +23,8 @@ const browserLocales = [
   { locale: "fr", acceptLanguage: "^fr.*" },
   // portoghese dal 20/10/2026 (quinta lingua, quello del Brasile): anche per chi legge il portoghese europeo (pt-PT)
   { locale: "pt", acceptLanguage: "^pt.*" },
+  // tedesco dal 20/10/2026 (sesta lingua): Germania, Austria e Svizzera (de-DE, de-AT, de-CH…)
+  { locale: "de", acceptLanguage: "^de.*" },
 ] as const;
 
 const acceptLanguage = (value: string) => [{ type: "header" as const, key: "accept-language", value }];
@@ -124,7 +126,7 @@ const nextConfig: NextConfig = {
       // viene incorniciata altrove; il sito incornicia altri (YouTube, Twitch, Turnstile), e questo non cambia.
       // X-Frame-Options per i browser che non leggono frame-ancestors. L'overlay (/overlay/…) non rientra nel percorso.
       {
-        source: "/:locale(en|it|es|fr|pt)/:path*",
+        source: "/:locale(en|it|es|fr|pt|de)/:path*",
         headers: [
           { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -184,7 +186,7 @@ const nextConfig: NextConfig = {
       // verso /analytics, che ora è la pagina delle statistiche (Pierluigi: "non si chiama più win rate ma si chiama
       // analytics"); la pagina dell'app è /tracker. Una sola regola per le quattro lingue, con l'ancora che resta.
       {
-        source: "/:locale(en|it|es|fr|pt)/tier-list/win-rate",
+        source: "/:locale(en|it|es|fr|pt|de)/tier-list/win-rate",
         destination: "/:locale/analytics",
         permanent: true,
       },

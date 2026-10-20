@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { draftLabels } from "./draftLabels.ts";
 
-const locales = ["en", "it", "es", "fr", "pt"] as const;
+const locales = ["en", "it", "es", "fr", "pt", "de"] as const;
 
 describe("testi del draft", () => {
   for (const l of locales) {

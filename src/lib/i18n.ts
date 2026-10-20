@@ -3,12 +3,14 @@ import { it } from "./dictionaries/it";
 import { es } from "./dictionaries/es";
 import { fr } from "./dictionaries/fr";
 import { pt } from "./dictionaries/pt";
+import { de } from "./dictionaries/de";
 
 /**
  * Lingue del sito: inglese (riferimento dei dizionari), italiano, dal 25/09/2026 spagnolo, dal 07/10/2026 francese e dal
- * 20/10/2026 portoghese del Brasile (indirizzo /pt, hreflang "pt", html lang "pt-BR": docs/portoghese.md).
+ * 20/10/2026 portoghese del Brasile (indirizzo /pt, hreflang "pt", html lang "pt-BR": docs/portoghese.md) e tedesco
+ * (/de, docs/tedesco.md).
  */
-export const locales = ["en", "it", "es", "fr", "pt"] as const;
+export const locales = ["en", "it", "es", "fr", "pt", "de"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
@@ -18,6 +20,7 @@ export const localeNames: Record<Locale, string> = {
   es: "Español",
   fr: "Français",
   pt: "Português",
+  de: "Deutsch",
 };
 
 export const ogLocale: Record<Locale, string> = {
@@ -26,10 +29,11 @@ export const ogLocale: Record<Locale, string> = {
   es: "es_ES",
   fr: "fr_FR",
   pt: "pt_BR",
+  de: "de_DE",
 };
 
 /** Valore di <html lang> e della lingua dei dati strutturati: il portoghese del sito è quello del Brasile. */
-export const htmlLang: Record<Locale, string> = { en: "en", it: "it", es: "es", fr: "fr", pt: "pt-BR" };
+export const htmlLang: Record<Locale, string> = { en: "en", it: "it", es: "es", fr: "fr", pt: "pt-BR", de: "de" };
 
 export function isLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);
@@ -37,7 +41,7 @@ export function isLocale(value: string): value is Locale {
 
 export type Dictionary = typeof en;
 
-const dictionaries: Record<Locale, Dictionary> = { en, it, es, fr, pt };
+const dictionaries: Record<Locale, Dictionary> = { en, it, es, fr, pt, de };
 
 export function getDictionary(locale: Locale): Dictionary {
   return dictionaries[locale];

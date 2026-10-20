@@ -44,6 +44,11 @@ const labels: Record<Locale, { title: string; text: string; link: string }> = {
     text: "Estas cartas foram removidas em versões anteriores e não estão na Demo 2.0, por isso o Deck builder não as aceita. Cada uma mantém a sua página, com o último texto e as últimas estatísticas conhecidas e a lenda de onde vem.",
     link: "Todas as cartas fora da demo",
   },
+  de: {
+    title: "Karten, die nicht in der Demo sind",
+    text: "Diese Karten wurden in früheren Builds entfernt und sind nicht in der Demo 2.0, deshalb nimmt der Deckbuilder sie nicht an. Jede behält ihre Seite, mit dem letzten bekannten Text, den letzten bekannten Werten und der Legende, aus der sie stammt.",
+    link: "Alle Karten, die nicht in der Demo sind",
+  },
 };
 
 /**

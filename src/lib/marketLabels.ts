@@ -2,11 +2,11 @@ import type { Locale } from "./i18n";
 import type { MarketKind, MarketRange } from "./market/market";
 
 /**
- * Testi del tracker dei prezzi del mercato di Steam (17/10/2026) nelle cinque lingue: pagine /market, /market/<oggetto>,
+ * Testi del tracker dei prezzi del mercato di Steam (17/10/2026) in tutte le lingue del sito: pagine /market, /market/<oggetto>,
  * /market/demo (la controfigura) e il grafico. Funzioni pure, senza import a runtime: i test (market.test.ts)
  * controllano titoli e description con le regole di `pageTitle` e `cleanDescription` e gli stessi segnaposto in ogni
  * lingua. Nomi ufficiali del mercato: Steam Community Market / Mercato della Comunità di Steam / Mercado de la Comunidad
- * de Steam / Marché de la communauté Steam. Francese con lo spazio insecabile (U+00A0) prima di : ; ? ! (docs/francese.md).
+ * de Steam / Marché de la communauté Steam / Steam-Communitymarkt. Francese con lo spazio insecabile (U+00A0) prima di : ; ? ! (docs/francese.md).
  */
 
 type Labels = {
@@ -512,7 +512,98 @@ const pt: Labels = {
   },
 };
 
-export const marketLabels: Record<Locale, Labels> = { en, it, es, fr, pt };
+// tedesco (20/10/2026, docs/tedesco.md): "Steam-Communitymarkt" come lo chiama Steam in tedesco, du
+const de: Labels = {
+  meta: {
+    title: "Origins TCG Kartenpreise auf dem Steam-Communitymarkt",
+    description: "Preise auf dem Steam-Communitymarkt für jede Karte, Variante und jeden Gegenstand von Origins TCG: Tiefstpreis, Angebote und Preisverlauf in Euro und Dollar.",
+    demoTitle: "Steam-Preistracker: Test der Engine",
+    demoDescription: "Unser Preistracker für den Steam-Communitymarkt mit einem Spiel, das dort schon gehandelt wird, bevor Origins TCG startet: Preis, Angebote und Verlauf.",
+    itemSuffix: "Steam-Preis",
+    itemDescription: "{name}: Tiefstpreis auf dem Steam-Communitymarkt, Zahl der Angebote und Preisverlauf in Euro und Dollar, alle 10 Minuten geprüft.",
+  },
+  h1: "Origins TCG Preise auf dem Steam-Communitymarkt",
+  demoH1: "Preistracker: Test der Engine",
+  locked: { kicker: "Interner Test", text: "Der Preistracker für den Steam-Communitymarkt ist in einem internen Test mit dem Team von OriginsMeta. Er öffnet für alle, sobald der Handel mit Origins TCG beginnt.", back: "Zurück zur Startseite" },
+  crumb: "Markt",
+  status: {
+    closed: "Der Steam-Communitymarkt für Origins TCG ist noch nicht geöffnet.",
+    checking: "Wir prüfen ihn alle {min} Minuten: Ab dem ersten Gegenstand im Verkauf speichert die Website Preis und Angebote jeder Karte, Variante und jedes Gegenstands und baut ihren eigenen Preisverlauf auf.",
+    lastCheck: "Letzte Prüfung:",
+    neverChecked: "Erste Prüfung folgt in Kürze.",
+    unavailable: "Der Preistracker ist noch nicht aktiv.",
+    live: "Preise vom Steam-Communitymarkt, alle {min} Minuten geprüft.",
+    utc: "UTC",
+    sweep: "Bei vielen Gegenständen braucht eine vollständige Runde mehr als eine Prüfung: Jeder Gegenstand wird mindestens alle {min} Minuten aktualisiert.",
+  },
+  soon: {
+    title: "Was du hier findest",
+    points: [
+      "Den niedrigsten Verkaufspreis und die Zahl der Angebote jeder Karte, Variante und jedes Gegenstands, in Euro oder Dollar.",
+      "Ein Preisdiagramm für jeden Gegenstand: letzte 24 Stunden, 7 Tage, 30 Tage und der ganze Verlauf.",
+      "Die größten Gewinner und Verlierer der letzten 24 Stunden.",
+    ],
+    when: "Koin Games hat gesagt, dass die Sammelobjekte von Origins TCG auf dem Steam-Communitymarkt handelbar sein werden; das Startdatum ist noch nicht offiziell.",
+    sets: "Sets, Seltenheiten und Grading",
+    guide: "Die Sammlerökonomie",
+  },
+  demoLink: {
+    title: "Sieh die Engine in Aktion",
+    text: "Bis der Handel mit Origins TCG startet, läuft der Tracker mit einer Kollektion von Counter-Strike 2, dem größten Markt auf Steam.",
+    cta: "Test der Engine öffnen",
+  },
+  demo: {
+    banner: "Das ist ein Test der Engine mit der Kollektion Dreams & Nightmares von Counter-Strike 2 (Valve), dem größten Markt auf Steam: Skins mit Seltenheiten, Abnutzung und StatTrak-Versionen, so wie die Karten von Origins TCG Seltenheiten, Grades und Varianten haben werden. Es sind keine Karten von Origins TCG.",
+    back: "Zurück zu den Preisen von Origins TCG",
+  },
+  currency: { label: "Währung" },
+  board: {
+    search: "Suchen",
+    searchPlaceholder: "Name des Gegenstands…",
+    kind: "Typ",
+    kinds: { all: "Alle", card: "Karten", pack: "Packs", other: "Andere Gegenstände" },
+    demoKinds: { all: "Alle", card: "Skins", pack: "Kisten", other: "Andere Gegenstände" },
+    sort: "Sortieren nach",
+    sorts: { name: "Name", price: "Preis", change: "Änderung in 24 Std.", listings: "Angebote" },
+    sortDirs: { az: "A bis Z", za: "Z bis A", high: "höchste zuerst", low: "niedrigste zuerst" },
+    columns: { item: "Gegenstand", price: "Tiefstpreis", change24h: "24 Std.", change7d: "7 Tage", listings: "Angebote" },
+    count: "{n} Gegenstände",
+    countOne: "1 Gegenstand",
+    noResults: "Kein Gegenstand passt zu den Filtern.",
+    noOffers: "Keine Angebote",
+    variants: { normal: "Normal", foil: "Foil" },
+  },
+  movers: { title: "Letzte 24 Stunden", up: "Steigend", down: "Fallend", none: "Noch keine Änderung zu zeigen: Der Vergleich beginnt nach 24 Stunden Verlauf." },
+  item: {
+    back: "Alle Preise",
+    price: "Tiefstpreis",
+    listings: "Angebote",
+    change24h: "24 Stunden",
+    change7d: "7 Tage",
+    change30d: "30 Tage",
+    firstSeen: "Auf dem Markt seit",
+    lastSeen: "Letzte Prüfung",
+    onSteam: "Auf Steam ansehen",
+    chartTitle: "Niedrigster Verkaufspreis",
+    chartAria: "Niedrigster Verkaufspreis von {name}, {range}",
+    ranges: { "24h": "24 Std.", "7d": "7 Tage", "30d": "30 Tage", all: "Alles" },
+    noHistory: "Der Verlauf beginnt jetzt: Das Diagramm füllt sich mit jeder Prüfung.",
+    table: { show: "Daten anzeigen", time: "Zeit", low: "Tief", high: "Hoch", close: "Letzter", listings: "Angebote" },
+    kind: "Typ",
+    variant: "Variante",
+  },
+  notes: {
+    title: "Wie wir die Preise lesen",
+    points: [
+      "Quelle: die öffentlichen Seiten des Steam-Communitymarkts. Für jeden Gegenstand speichern wir den niedrigsten Verkaufspreis und die Zahl der Angebote; Steam veröffentlicht seinen Verkaufsverlauf nicht ohne Konto, deshalb baut OriginsMeta den Verlauf auf dieser Seite selbst auf, Prüfung für Prüfung.",
+      "Die Preise in Dollar sind die von Steam; die Preise in Euro werden mit dem Referenzkurs der Europäischen Zentralbank vom selben Tag umgerechnet und können daher um einige Cent von dem abweichen, was Steam in Euro anzeigt.",
+      "Der niedrigste Verkaufspreis ist nicht der Preis des letzten Verkaufs. Die Preise dienen nur zur Information und sind keine Finanzberatung.",
+      "OriginsMeta ist nicht mit Koin Games oder Valve verbunden.",
+    ],
+  },
+};
+
+export const marketLabels: Record<Locale, Labels> = { en, it, es, fr, pt, de };
 export type MarketLabels = Labels;
 
 /** Riempie i segnaposto {nome} di un testo. */

@@ -2,12 +2,13 @@ import type { Locale } from "../i18n";
 import type { GuideSlug } from "../content/guides";
 import { frText, type NewsCopy } from "./news-fr";
 import { ptText } from "./news-pt";
+import { deText } from "./news-de";
 
 /**
  * Le lingue scritte in questo file; il francese (dal 07/10/2026) sta in news-fr.ts e il portoghese (dal 20/10/2026) in
- * news-pt.ts, e si uniscono in fondo (`withTranslations`).
+ * news-pt.ts, il tedesco (dal 20/10/2026) in news-de.ts, e si uniscono in fondo (`withTranslations`).
  */
-type Base = Exclude<Locale, "fr" | "pt">;
+type Base = Exclude<Locale, "fr" | "pt" | "de">;
 type BaseL10n = Record<Base, string>;
 type L10n = Record<Locale, string>;
 type Highlight = { label: string; text?: string; anchor: string };
@@ -90,16 +91,22 @@ type RawNews = Omit<NewsItem, "title" | "metaTitle" | "summary" | "description" 
 };
 
 /** Le lingue delle news scritte in file a parte, ognuna con i suoi testi per slug. */
-const translations = { fr: { text: frText, file: "news-fr.ts" }, pt: { text: ptText, file: "news-pt.ts" } } as const;
+const translations = {
+  fr: { text: frText, file: "news-fr.ts" },
+  pt: { text: ptText, file: "news-pt.ts" },
+  de: { text: deText, file: "news-de.ts" },
+} as const;
+type TranslatedLocale = keyof typeof translations;
 
 /**
- * Unisce a una news i suoi testi francesi (news-fr.ts) e portoghesi (news-pt.ts). Lancia alla build se una delle due
- * lingue manca o se ha un campo che l'articolo non ha nelle altre lingue (o viceversa): una news nuova si scrive sempre
- * nelle cinque lingue.
+ * Unisce a una news i testi delle lingue scritte in file a parte (`translations`: francese, portoghese, tedesco).
+ * Lancia alla build se una lingua manca o se ha un campo che l'articolo non ha nelle altre lingue (o viceversa): una
+ * news nuova si scrive sempre in tutte le lingue del sito.
  */
 function withTranslations(item: RawNews): NewsItem {
-  const copies = {} as Record<keyof typeof translations, NewsCopy>;
-  for (const [lang, { text, file }] of Object.entries(translations) as [keyof typeof translations, (typeof translations)[keyof typeof translations]][]) {
+  const copies = {} as Record<TranslatedLocale, NewsCopy>;
+  for (const lang of Object.keys(translations) as TranslatedLocale[]) {
+    const { text, file } = translations[lang];
     const copy: NewsCopy | undefined = text[item.slug];
     if (!copy) throw new Error(`news "${item.slug}": manca il testo ${lang} in src/lib/data/${file}`);
     for (const field of ["body", "highlights", "faq"] as const) {
@@ -107,17 +114,18 @@ function withTranslations(item: RawNews): NewsItem {
     }
     copies[lang] = copy;
   }
-  const { fr, pt } = copies;
+  const langs = Object.keys(copies) as TranslatedLocale[];
+  const pick = <K extends keyof NewsCopy>(key: K) => Object.fromEntries(langs.map((l) => [l, copies[l][key]])) as Record<TranslatedLocale, NonNullable<NewsCopy[K]>>;
   const { title, metaTitle, summary, description, body, highlights, faq, ...rest } = item;
   return {
     ...rest,
-    title: { ...title, fr: fr.title, pt: pt.title },
-    metaTitle: { ...metaTitle, fr: fr.metaTitle, pt: pt.metaTitle },
-    summary: { ...summary, fr: fr.summary, pt: pt.summary },
-    description: { ...description, fr: fr.description, pt: pt.description },
-    ...(body && fr.body && pt.body ? { body: { ...body, fr: fr.body, pt: pt.body } } : {}),
-    ...(highlights && fr.highlights && pt.highlights ? { highlights: { ...highlights, fr: fr.highlights, pt: pt.highlights } } : {}),
-    ...(faq && fr.faq && pt.faq ? { faq: { ...faq, fr: fr.faq, pt: pt.faq } } : {}),
+    title: { ...title, ...pick("title") },
+    metaTitle: { ...metaTitle, ...pick("metaTitle") },
+    summary: { ...summary, ...pick("summary") },
+    description: { ...description, ...pick("description") },
+    ...(body ? { body: { ...body, ...pick("body") } } : {}),
+    ...(highlights ? { highlights: { ...highlights, ...pick("highlights") } } : {}),
+    ...(faq ? { faq: { ...faq, ...pick("faq") } } : {}),
   };
 }
 
@@ -8259,7 +8267,7 @@ export function newsReadTime(item: NewsItem, locale: Locale): number {
  * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
  * import senza estensione.
  */
-export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20" };
+export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20" };
 
 /** Data di modifica (giorno ISO) di un articolo nella lingua `locale`, secondo la regola qui sopra. */
 export function modifiedIn(locale: Locale, day: string): string {

@@ -144,7 +144,7 @@ describe("pulizia dello stato", () => {
     assert.deepEqual(strict.players[0].decks[0].cards, ["roo"]);
   });
   test("lato della lista e lingua solo fra i valori ammessi", () => {
-    const s = sanitizeState({ lang: "de", players: [{ list: "top" }, { list: "off" }] }, isCard);
+    const s = sanitizeState({ lang: "ja", players: [{ list: "top" }, { list: "off" }] }, isCard);
     assert.equal(s.lang, "en");
     assert.equal(s.players[0].list, "right");
     assert.equal(s.players[1].list, "off");
@@ -282,9 +282,9 @@ describe("mazzi da codici e tornei", () => {
 });
 
 describe("testi e partita di prova", () => {
-  test("le cinque lingue hanno le stesse chiavi e la dicitura su Koin Games", () => {
+  test("tutte le lingue hanno le stesse chiavi e la dicitura su Koin Games", () => {
     const keys = (o: object) => JSON.stringify(Object.keys(o).sort());
-    for (const lang of ["it", "es", "fr", "pt"] as const) assert.equal(keys(overlayLabels[lang]), keys(overlayLabels.en));
+    for (const lang of ["it", "es", "fr", "pt", "de"] as const) assert.equal(keys(overlayLabels[lang]), keys(overlayLabels.en));
     for (const l of Object.values(overlayLabels)) assert.match(l.unofficial, /Koin Games/);
     assert.match(overlayLabels.fr.copied, / !$/, "francese: spazio insecabile prima del punto esclamativo");
   });

@@ -22,6 +22,8 @@ import { es } from "./dictionaries/es.ts";
 import { fr } from "./dictionaries/fr.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { pt } from "./dictionaries/pt.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { de } from "./dictionaries/de.ts";
 
 type Dict = typeof en;
 const dicts: [string, Dict][] = [
@@ -30,6 +32,7 @@ const dicts: [string, Dict][] = [
   ["es", es],
   ["fr", fr],
   ["pt", pt],
+  ["de", de],
 ];
 
 /** Stesse costanti di src/lib/page.ts (TITLE_MAX, DESCRIPTION_MAX). */
@@ -118,7 +121,8 @@ for (const [locale, d] of dicts) {
     });
 
     test("le patch notes sono di MetaShifting, non di /news", () => {
-      assert.match(d.metashifting.title, /patch notes|notas del parche/i);
+      // in tedesco "Patchnotes" è una parola sola (docs/tedesco.md)
+      assert.match(d.metashifting.title, /patch ?notes|notas del parche/i);
       assert.doesNotMatch(d.news.metaTitle, /patch|parche/i);
     });
 
@@ -128,7 +132,7 @@ for (const [locale, d] of dicts) {
       assert.match(d.tier.metaTitle, /meta\b/i);
       assert.doesNotMatch(d.faq.metaTitle, /decks?\b|mazzi|mazos/i);
       assert.doesNotMatch(d.decks.metaTitle, /codes?\b|codici|códigos/i);
-      assert.match(d.decks.metaTitle, /guides|guide|guías|guias/i);
+      assert.match(d.decks.metaTitle, /Guides|Guide|guías|guias/i);
     });
 
     test("/tournaments nomina la Crimson Cup ma lascia posti e premi alla news delle regole", () => {
@@ -152,7 +156,7 @@ for (const [locale, d] of dicts) {
     });
 
     test("la dicitura del footer dice sempre che il sito non è affiliato a Koin Games", () => {
-      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games|não é afiliado à Koin Games/);
+      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games|não é afiliado à Koin Games|nicht mit Koin Games verbunden/);
     });
 
     test("le frasi costruite con i dati hanno i loro segnaposto", () => {

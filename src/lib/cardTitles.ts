@@ -9,7 +9,7 @@ import type { Card } from "./data/cards";
  * e senza la parola "carta"; la description era un elenco di campi senza "Origins TCG" né "Koin Games", e sui nomi
  * condivisi con altri giochi (Merlin in Grand Archive e Sorcery, Riftbound Origins) lo snippet non diceva di che gioco
  * si parla. Qui c'è un modello per tipo di carta (Leggendaria, carta base, carta creata, carta non nella demo) nelle
- * cinque lingue (francese dal 07/10/2026, portoghese del Brasile dal 20/10/2026), e la description è una frase vera fatta solo con i dati della scheda: tipo,
+ * sei lingue (francese dal 07/10/2026, portoghese del Brasile e tedesco dal 20/10/2026), e la description è una frase vera fatta solo con i dati della scheda: tipo,
  * allineamento, costo, statistiche, stato, chi crea la carta, testo e origine della leggenda.
  *
  * Funzioni pure che importano solo tipi: `node --test` le prova su tutto il database carte (cardTitles.test.ts).
@@ -102,6 +102,15 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     created: "carta criada de Origins TCG",
     removed: "carta de Origins TCG fora da demo",
     removedLegendary: "Lendária de Origins TCG fora da demo",
+  },
+  // tedesco (docs/tedesco.md): "aus Origins TCG", "Legendäre" come aggettivo del gioco (glossario provvisorio),
+  // "erschaffene Karte" per i token; "Demo" è il nome comune, "Demo 2.0" il prodotto
+  de: {
+    legendary: "Legendäre Karte aus Origins TCG",
+    card: "Karte aus Origins TCG",
+    created: "erschaffene Karte aus Origins TCG",
+    removed: "Karte aus Origins TCG, nicht in der Demo",
+    removedLegendary: "Legendäre aus Origins TCG, nicht in der Demo",
   },
 };
 
@@ -232,6 +241,22 @@ const descWords: Record<Locale, DescWords> = {
     tail: "Estatísticas, decks publicados e origem da lenda no OriginsMeta.",
     shortTail: "Ficha completa no OriginsMeta.",
   },
+  // Tedesco: il tipo del glossario provvisorio (Charakter e Zauber, maschili: "Legendärer Charakter", "Legendärer
+  // Zauber"), l'allineamento in inglese dopo il tipo come nelle altre lingue; "Mana" con la maiuscola (sostantivo).
+  de: {
+    stats: (m, p, h) => (p === undefined ? `${m ?? "?"} Mana` : `${m ?? "?"} Mana, ${p}/${h ?? "?"}`),
+    former: (x) => ` (früher ${x})`,
+    and: " und ",
+    active: (h) => `${h.name}, ${h.legendary ? "Legendärer " : ""}${h.spell ? "Zauber" : "Charakter"} ${h.align} aus Origins TCG (Koin Games): ${h.stats}.`,
+    created: (h) =>
+      h.creators
+        ? `${h.name}, Karte ${h.align}, erschaffen von ${h.creators} in Origins TCG (Koin Games): ${h.stats}.`
+        : `${h.name}, erschaffene Karte ${h.align} aus Origins TCG (Koin Games): ${h.stats}.`,
+    removed: (h) => `${h.name}, ${h.legendary ? "Legendärer " : ""}${h.spell ? "Zauber" : "Charakter"} ${h.align} aus Origins TCG (Koin Games), nicht in der Demo: ${h.stats}.`,
+    // Lunga come quella francese e portoghese: regge anche una carta senza testo né origine tedesca
+    tail: "Werte, veröffentlichte Decks und Herkunft der Legende auf OriginsMeta.",
+    shortTail: "Alle Details auf OriginsMeta.",
+  },
 };
 
 /** Per confrontare nomi e testi senza badare all'apostrofo tipografico (il database li usa tutti e due). */
@@ -312,7 +337,9 @@ const stopWords = new Set(
     "le la les un une des du de au aux à et ou mais si en dans sur sous par pour avec sans vers chez ce cet cette ces " +
     "son sa ses votre vos leur leurs mon ma mes qui que dont où quand lorsque ne pas " +
     "o os as um uns uma umas do dos da das no nos na nas ao aos em com por para ou mas se quando seu seus sua suas " +
-    "meu meus minha minhas este esta estes estas esse essa à às pelo pela"
+    "meu meus minha minhas este esta estes estas esse essa à às pelo pela " +
+    "der die das den dem des ein eine einen einem einer eines und oder aber wenn mit von vom zu zum zur im ins auf aus für " +
+    "bei nach durch um dein deine deinen deinem deiner deines dieser diese diesen diesem dieses jeden jede jedes"
   ).split(" "),
 );
 
@@ -447,6 +474,9 @@ export const DECK_TITLE_MAX = CARD_TITLE_MAX - " · Origins TCG".length;
  * - Portoghese del Brasile (20/10/2026): "deck" anche qui (docs/portoghese.md, mai "baralho"), con la preposizione che
  *   lo distingue dal francese: "Spellcast, deck de Merlin", "Deck de Merlin", "Dorothy Combo, deck de Origins TCG",
  *   "Spellcast Deck com Merlin", "Merlin Deck para Origins TCG".
+ * - Tedesco (20/10/2026): "Deck" (das Deck, docs/tedesco.md) con "mit" e "für", che lo distinguono dalle altre lingue:
+ *   "Spellcast, Deck mit Merlin", "Deck mit Merlin", "Dorothy Combo, Deck für Origins TCG", "Spellcast Deck mit Merlin",
+ *   "Merlin Deck für Origins TCG".
  */
 const deckTitles: Record<
   Locale,
@@ -499,6 +529,14 @@ const deckTitles: Record<
     withWord: (l, n) => `${n} com ${l}`,
     namedWord: (n) => `${n} para Origins TCG`,
   },
+  de: {
+    with: (l, n) => `${n}, Deck mit ${l}`,
+    only: (l) => `Deck mit ${l}`,
+    named: (n) => `${n}, Deck für Origins TCG`,
+    word: /(?<!\p{L})decks?(?!\p{L})/iu,
+    withWord: (l, n) => `${n} mit ${l}`,
+    namedWord: (n) => `${n} für Origins TCG`,
+  },
 };
 
 /**
@@ -545,6 +583,7 @@ export function deckLead(deck: { name: string; legendary?: string; author: strin
   if (locale === "es") return `${l ? `Mazo de ${l} para Origins TCG` : "Mazo de Origins TCG"}: ${name} de ${deck.author}, arquetipo ${arch}.`;
   if (locale === "fr") return `${l ? `Deck ${l} pour Origins TCG` : "Deck pour Origins TCG"}\u00a0: ${name} par ${deck.author}, archétype ${arch}.`;
   if (locale === "pt") return `${l ? `Deck de ${l} para Origins TCG` : "Deck de Origins TCG"}: ${name} de ${deck.author}, arquétipo ${arch}.`;
+  if (locale === "de") return `${l ? `Deck mit ${l} für Origins TCG` : "Deck für Origins TCG"}: ${name} von ${deck.author}, Archetyp ${arch}.`;
   return `${l ? `${l} deck for Origins TCG` : "Origins TCG deck"}: ${name} by ${deck.author}, ${arch} archetype.`;
 }
 
@@ -559,4 +598,5 @@ export const deckShortTail: Record<Locale, string> = {
   es: "Lista completa en OriginsMeta.",
   fr: "Liste complète sur OriginsMeta.",
   pt: "Lista completa no OriginsMeta.",
+  de: "Vollständige Liste auf OriginsMeta.",
 };

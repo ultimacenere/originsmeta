@@ -386,7 +386,7 @@ export function metaMapLayout(points: readonly MapPoint[], opts: { W: number; na
 
 /* ---------- numeri nella lingua della pagina ---------- */
 
-const TAG: Record<Locale, string> = { en: "en-GB", it: "it-IT", es: "es-ES", fr: "fr-FR", pt: "pt-BR" };
+const TAG: Record<Locale, string> = { en: "en-GB", it: "it-IT", es: "es-ES", fr: "fr-FR", pt: "pt-BR", de: "de-DE" };
 /** In francese lo spazio delle migliaia e quello prima del "%" sono insecabili (U+00A0, docs/francese.md). */
 const fixSpaces = (s: string) => s.replace(/[   ]/g, " ");
 
@@ -399,8 +399,11 @@ export function fmtInt(n: number, locale: Locale): string {
 export function fmtDec(n: number, locale: Locale, digits = 1): string {
   return new Intl.NumberFormat(TAG[locale], { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(n);
 }
-/** Il segno "%" della lingua: attaccato in inglese e italiano, con lo spazio insecabile in spagnolo e francese ("98 %"). */
-export const pctUnit = (locale: Locale) => (locale === "es" || locale === "fr" ? " %" : "%");
+/**
+ * Il segno "%" della lingua: attaccato in inglese, italiano e portoghese, con lo spazio insecabile in spagnolo, francese
+ * e tedesco ("98 %", in tedesco come vuole la norma DIN: docs/tedesco.md).
+ */
+export const pctUnit = (locale: Locale) => (locale === "es" || locale === "fr" || locale === "de" ? " %" : "%");
 /** Percentuale di una quota fra 0 e 1, solo il numero ("57,1"), con `digits` decimali. */
 export const pctNum = (r: number, locale: Locale, digits = 1) => fmtDec(r * 100, locale, digits);
 /** Percentuale completa ("57,1%", "57,1 %"). */

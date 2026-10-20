@@ -22,7 +22,7 @@ import {
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./data/card-lore.ts";
 
-type Label = { it: string; es: string; fr: string; pt: string; game?: true };
+type Label = { it: string; es: string; fr: string; pt: string; de: string; game?: true };
 const labels = keywordLabels as Record<string, Label>;
 const woo = JSON.parse(readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8")) as { cards: { name: string; keywords?: string[] }[] };
 
@@ -48,6 +48,12 @@ describe("keywordLabel", () => {
     assert.equal(keywordLabel("Snipe", "pt"), "Tiro certeiro");
     assert.equal(keywordLabel("Summon", "pt"), "Invoca");
   });
+  test("in tedesco il glossario provvisorio del 20/10/2026 (docs/tedesco.md)", () => {
+    assert.equal(keywordLabel("On Reveal", "de"), "Beim Aufdecken");
+    assert.equal(keywordLabel("Trample", "de"), "Trampeln");
+    assert.equal(keywordLabel("Snipe", "de"), "Präzisionsschuss");
+    assert.equal(keywordLabel("Summon", "de"), "Beschwöre");
+  });
   test("le categorie di World of Origins hanno il verbo delle carte", () => {
     assert.equal(keywordLabel("Summon", "it"), "Evoca");
     assert.equal(keywordLabel("Draw", "es"), "Roba");
@@ -58,11 +64,11 @@ describe("keywordLabel", () => {
 });
 
 describe("copertura", () => {
-  test("ogni tag del database carte ha l'etichetta italiana, spagnola, francese e portoghese", () => {
+  test("ogni tag del database carte ha l'etichetta italiana, spagnola, francese, portoghese e tedesca", () => {
     const tags = new Set<string>();
     for (const c of woo.cards) for (const k of c.keywords ?? []) tags.add(k);
     for (const lore of Object.values(cardLore as Record<string, { keywords?: string[] }>)) for (const k of lore.keywords ?? []) tags.add(k);
-    const missing = [...tags].filter((t) => !labels[t]?.it?.trim() || !labels[t]?.es?.trim() || !labels[t]?.fr?.trim() || !labels[t]?.pt?.trim());
+    const missing = [...tags].filter((t) => !labels[t]?.it?.trim() || !labels[t]?.es?.trim() || !labels[t]?.fr?.trim() || !labels[t]?.pt?.trim() || !labels[t]?.de?.trim());
     assert.deepEqual(missing, [], `tag senza etichetta: ${missing.join(", ")}`);
   });
 });
@@ -71,7 +77,7 @@ describe("glossario del traduttore dei mazzi", () => {
   test("le parole chiave del gioco sono le stesse delle etichette", () => {
     const fromLabels = Object.entries(labels)
       .filter(([, l]) => l.game)
-      .map(([en, l]) => [en, l.it, l.es, l.fr, l.pt].join(" = "))
+      .map(([en, l]) => [en, l.it, l.es, l.fr, l.pt, l.de].join(" = "))
       .sort();
     const fromPrompt = (GAME_KEYWORDS as readonly (readonly string[])[]).map((row) => row.join(" = ")).sort();
     assert.deepEqual(fromPrompt, fromLabels);

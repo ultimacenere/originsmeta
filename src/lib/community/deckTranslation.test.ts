@@ -142,6 +142,12 @@ describe("translationRequest", () => {
     assert.match(req.messages[0].content, /TARGET LANGUAGE: Brazilian Portuguese/);
     assert.match(req.messages[0].content, /"você"/);
   });
+
+  test("tedesco: lingua d'arrivo con il du (20/10/2026)", () => {
+    const req = translationRequest(g("en", "Game plan"), "de" as never, []);
+    assert.match(req.messages[0].content, /TARGET LANGUAGE: German/);
+    assert.match(req.messages[0].content, /"du"/);
+  });
 });
 
 describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", () => {
@@ -152,11 +158,12 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.equal(textHash(["es", "Plan", "", "", "", "", "", ""]), "cefco0o2ne");
   });
 
-  test("le istruzioni dei mazzi sono quelle del 20/10/2026 (impronta SHA-256: portoghese del Brasile con il glossario del gioco)", () => {
+  test("le istruzioni dei mazzi sono quelle del 20/10/2026 (impronta SHA-256: tedesco con il glossario provvisorio)", () => {
     // fino al 06/10/2026: cfaf38c952aaddcb4e33503e4fdac9abb85d5e44d6841420bc4843a376a24413 (tre lingue)
     // 07/10/2026: 20942417f73164d41f52aca4f4aefc4eaaba5ccea79d59f41b49423b60413882 (francese con il glossario provvisorio)
     // 08/10/2026: 4bc9eff49034ca648f06a32c32f63a986f35abb34e2805d2806e440e25ebcee4 (glossario francese letto nel gioco)
-    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "d115ffa7dac5a08bdc60921cc6ffa6a3ca2dbd4c43c0e511675adbbe178b5f27");
+    // 20/10/2026: d115ffa7dac5a08bdc60921cc6ffa6a3ca2dbd4c43c0e511675adbbe178b5f27 (portoghese del Brasile con il glossario del gioco)
+    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "5c2cd841a7dc0da9302babb3bfbc6e0b4cece42e24b61898f7d03c2b3c081ae5");
     assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
   });
 
@@ -165,8 +172,8 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /heading_N/);
     assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /"title" is the title of the guide/);
     assert.doesNotMatch(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /never translated/);
-    assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar = À la révélation = Ao revelar/);
-    assert.match(TRANSLATION_RULES, /Snipe = Tiro di precisione = Disparo certero = Tir de précision = Tiro certeiro/);
+    assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar = À la révélation = Ao revelar = Beim Aufdecken/);
+    assert.match(TRANSLATION_RULES, /Snipe = Tiro di precisione = Disparo certero = Tir de précision = Tiro certeiro = Präzisionsschuss/);
   });
 
   test("translationRequestFor: campi qualsiasi, lingua di partenza e istruzioni scelte da chi chiama", () => {

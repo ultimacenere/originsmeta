@@ -244,5 +244,9 @@ describe("numeri nelle cinque lingue", () => {
     assert.equal(fmtInt(1240, "pt"), "1.240");
     assert.equal(pct(4 / 7, "pt"), "57,1%");
     assert.equal(deltaText(4 / 7, "pt"), "+7,1");
+    // tedesco (20/10/2026, docs/tedesco.md): "10.000", "3,5", "98 %" con lo spazio insecabile
+    assert.equal(fmtInt(1240, "de"), "1.240");
+    assert.equal(pct(4 / 7, "de"), "57,1 %");
+    assert.equal(deltaText(4 / 7, "de"), "+7,1");
   });
 });

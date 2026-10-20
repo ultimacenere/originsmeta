@@ -41,7 +41,7 @@ export type Event = {
   ld?: { name?: L10n; alternateName?: L10n; startAt?: string; image?: string; free?: boolean; festival?: boolean };
 };
 
-const n = (en: string, it: string, es: string, fr: string, pt: string): L10n => ({ en, it, es, fr, pt });
+const n = (en: string, it: string, es: string, fr: string, pt: string, de: string): L10n => ({ en, it, es, fr, pt, de });
 
 /**
  * Lo Steam Next Fest di ottobre 2026: il festival delle demo giocabili di Valve (non di Koin Games), di cui fa parte
@@ -64,15 +64,15 @@ export const events: Event[] = [
     official: true,
     guide: "steam-next-fest-2026",
     // testo del link dalla mappa delle query (C12): "Crimson Cup rules" / "regole della Crimson Cup" / "reglas de la Crimson Cup"
-    rules: { news: "crimson-cup-format-check-in", label: n("Crimson Cup rules", "Regole della Crimson Cup", "Reglas de la Crimson Cup", "Règles de la Crimson Cup", "Regras da Crimson Cup") },
+    rules: { news: "crimson-cup-format-check-in", label: n("Crimson Cup rules", "Regole della Crimson Cup", "Reglas de la Crimson Cup", "Règles de la Crimson Cup", "Regras da Crimson Cup", "Regeln des Crimson Cup") },
     // i numeri ufficiali di Koin qualificazione per qualificazione (20/10/2026), pagina /analytics/crimson-cup
-    stats: { path: "/analytics/crimson-cup", label: n("Crimson Cup numbers", "Numeri della Crimson Cup", "Números de la Crimson Cup", "Chiffres de la Crimson Cup", "Números da Crimson Cup") },
+    stats: { path: "/analytics/crimson-cup", label: n("Crimson Cup numbers", "Numeri della Crimson Cup", "Números de la Crimson Cup", "Chiffres de la Crimson Cup", "Números da Crimson Cup", "Zahlen zum Crimson Cup") },
     start: "2026-10-19",
     end: "2026-10-25",
     // Titolo visibile invariato (striscia del calendario e schede): il nome ufficiale "Crimson Cup" sta in `ld.name`, nei
     // dati strutturati. Metterlo in testa anche qui è un cambio editoriale da far decidere a Pierluigi (Ondata 2, GEO-09).
-    title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Torneo del Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)", "Torneio do Steam Next Fest (Crimson Cup)"),
-    where: n("Online, in game; sign-ups on the official Discord", "Online, in gioco; iscrizioni sul Discord ufficiale", "Online, en el juego; inscripciones en el Discord oficial", "En ligne, en jeu ; inscriptions sur le Discord officiel", "On-line, no jogo; inscrições no Discord oficial"),
+    title: n("Steam Next Fest Tournament (Crimson Cup)", "Torneo dello Steam Next Fest (Crimson Cup)", "Torneo del Steam Next Fest (Crimson Cup)", "Tournoi du Steam Next Fest (Crimson Cup)", "Torneio do Steam Next Fest (Crimson Cup)", "Turnier zum Steam Next Fest (Crimson Cup)"),
+    where: n("Online, in game; sign-ups on the official Discord", "Online, in gioco; iscrizioni sul Discord ufficiale", "Online, en el juego; inscripciones en el Discord oficial", "En ligne, en jeu ; inscriptions sur le Discord officiel", "On-line, no jogo; inscrições no Discord oficial", "Online, im Spiel; Anmeldung im offiziellen Discord"),
     // formato completato con l'annuncio sul Discord ufficiale del 24/09/2026 (news `crimson-cup-format-check-in`) e con il
     // post Steam del 05/10/2026 (news `crimson-cup-prizepool-qualifiers`: cinque qualificazioni, montepremi, sette luoghi
     // esclusi); orari e fusi come li scrive la grafica ufficiale del calendario allegata a quel post
@@ -83,6 +83,7 @@ export const events: Event[] = [
       "Cinco clasificatorios de 512 plazas cada uno, abiertos a todos, con 32 que pasan de cada uno: AMER el 19 de octubre a las 19:00 EST, EMEA el 20 a las 19:00 CEST, AMER el 21 a las 21:00 EST, APAC el 22 a las 19:00 SGT y EMEA el 22 a las 19:00 CEST, más 96 wild cards. Playoffs el 24 a las 10:00 EST (16:00 CEST) con 256 plazas; cuatro de sus jugadores llegan a las finales del 25, a las 10:00 EST. Conquest con tres mazos y al menos 8 cartas únicas entre cada par de mazos, listas ocultas hasta el top 4 (en el ban solo ves la Legendaria). Enfrentamientos al mejor de tres, gran final al mejor de cinco: ahí no hay ban, tienes que ganar con los tres mazos. Siete ubicaciones quedan fuera del pool del torneo: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum y Nostradamus' Call. Puedes inscribirte en más de un clasificatorio.",
       "Cinq qualifications de 512 places chacune, ouvertes à tous, avec 32 qualifiés dans chacune : AMER le 19 octobre à 19:00 EST, EMEA le 20 à 19:00 CEST, AMER le 21 à 21:00 EST, APAC le 22 à 19:00 SGT et EMEA le 22 à 19:00 CEST, plus 96 wild cards. Playoffs le 24 à 10:00 EST (16:00 CEST) avec 256 places, dont quatre joueurs atteignent les finales du 25 à 10:00 EST. Conquest à trois decks avec au moins 8 cartes uniques entre chaque paire de decks, listes cachées jusqu'au top 4 (lors du ban, vous ne voyez que la Légendaire). Matchs au meilleur des trois manches, grande finale au meilleur des cinq : pas de ban, il faut gagner avec les trois decks. Sept lieux sont hors du pool du tournoi : Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum et Nostradamus' Call. Vous pouvez vous inscrire à plus d'une qualification.",
       "Cinco classificatórias de 512 vagas cada, abertas a todos, com 32 classificados em cada uma: AMER em 19 de outubro às 19:00 EST, EMEA no dia 20 às 19:00 CEST, AMER no dia 21 às 21:00 EST, APAC no dia 22 às 19:00 SGT e EMEA no dia 22 às 19:00 CEST, mais 96 wild cards. Playoffs no dia 24 às 10:00 EST (16:00 CEST) com 256 vagas, das quais quatro chegam às finais do dia 25 às 10:00 EST. Conquest com três decks e pelo menos 8 cartas únicas entre cada par de decks, listas ocultas até o top 4 (no ban você só vê a Lendária). Partidas em melhor de três, grande final em melhor de cinco: ali não há ban, é preciso vencer com os três decks. Sete locais estão fora do pool do torneio: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum e Nostradamus' Call. Você pode se inscrever em mais de uma classificatória.",
+      "Fünf Qualifikationen mit je 512 Plätzen, offen für alle, aus jeder kommen 32 weiter: AMER am 19. Oktober um 19:00 EST, EMEA am 20. um 19:00 CEST, AMER am 21. um 21:00 EST, APAC am 22. um 19:00 SGT und EMEA am 22. um 19:00 CEST, dazu 96 Wildcards. Playoffs am 24. um 10:00 EST (16:00 CEST) mit 256 Plätzen; vier Spieler davon erreichen die Finals am 25. um 10:00 EST. Conquest mit drei Decks und mindestens 8 einzigartigen Karten Unterschied zwischen je zwei Decks, Decklists verdeckt bis zu den Top 4 (beim Ban siehst du nur die Legendäre). Matches im Best-of-Three, großes Finale im Best-of-Five: Dort gibt es keinen Ban, du musst mit allen drei Decks gewinnen. Sieben Orte sind nicht im Pool des Turniers: Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum und Nostradamus' Call. Du kannst dich für mehr als eine Qualifikation anmelden.",
     ),
     prizes: n(
       "Prizes worth $10,000, split between cash, collectibles and exclusive promo cards (breakdown of 5 October): the winner gets a 1/1 Dracula promo card, two booster box cases and $1,500; 2nd a 1/8 Dracula promo card, one case and $750; 3rd and 4th a 1/8 promo card, two booster boxes and $350; the top 8 a booster box, a 1/8 promo card and $125; the top 16 a booster box and a Finalist Plus card; the top 32 ten packs and a Finalist card; then 8, 4 and 2 packs down to the top 256.",
@@ -90,6 +91,7 @@ export const events: Event[] = [
       "Premios por un valor de 10.000 dólares, repartidos entre dinero, coleccionables y cartas promo exclusivas (reparto del 5 de octubre): el ganador se lleva una carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares; el 2.º, una carta promo Dracula 1/8, un case y 750 dólares; 3.º y 4.º, una promo 1/8, dos cajas de sobres y 350 dólares; el top 8, una caja de sobres, una promo 1/8 y 125 dólares; el top 16, una caja de sobres y una carta Finalist Plus; el top 32, diez sobres y una carta Finalist; después 8, 4 y 2 sobres hasta el top 256.",
       "Des lots d'une valeur totale de 10 000 dollars, répartis entre argent, objets de collection et cartes promo exclusives (répartition du 5 octobre) : le vainqueur reçoit une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars ; le 2e une carte promo Dracula 1/8, une case et 750 dollars ; les 3e et 4e une carte promo 1/8, deux boîtes de boosters et 350 dollars ; le top 8 une boîte de boosters, une carte promo 1/8 et 125 dollars ; le top 16 une boîte de boosters et une carte Finalist Plus ; le top 32 dix boosters et une carte Finalist ; puis 8, 4 et 2 boosters jusqu'au top 256.",
       "Prêmios no valor de 10.000 dólares, divididos entre dinheiro, colecionáveis e cartas promocionais exclusivas (divisão de 5 de outubro): o vencedor leva uma carta promo Dracula 1/1, dois cases de caixas de boosters e 1.500 dólares; o 2º, uma carta promo Dracula 1/8, um case e 750 dólares; o 3º e o 4º, uma promo 1/8, duas caixas de boosters e 350 dólares; o top 8, uma caixa de boosters, uma promo 1/8 e 125 dólares; o top 16, uma caixa de boosters e uma carta Finalist Plus; o top 32, dez pacotes e uma carta Finalist; depois 8, 4 e 2 pacotes até o top 256.",
+      "Preise im Wert von 10.000 Dollar, aufgeteilt in Geld, Sammelobjekte und exklusive Promokarten (Aufteilung vom 5. Oktober): Der Sieger bekommt eine Dracula-Promokarte 1/1, zwei Cases mit Booster-Displays und 1.500 Dollar; Platz 2 eine Dracula-Promokarte 1/8, ein Case und 750 Dollar; Platz 3 und 4 eine Promokarte 1/8, zwei Booster-Displays und 350 Dollar; die Top 8 ein Booster-Display, eine Promokarte 1/8 und 125 Dollar; die Top 16 ein Booster-Display und eine Finalist-Plus-Karte; die Top 32 zehn Packs und eine Finalist-Karte; danach 8, 4 und 2 Packs bis zu den Top 256.",
     ),
     text: n(
       "Koin Games' biggest event so far, run during Steam Next Fest. You can join any qualifier regardless of where you live, but the team asks you to sign up only for the ones you can actually attend. Content creators get wildcard invites straight into the playoffs. Check-in opens two hours before each qualifier and closes five minutes before the start, together with deck submission: miss it and you can't play. The tournament runs on the main demo, which has the tournament card list (the playtest will diverge); patch 0.7 of 29 September is the last balance patch before it, and Koin hosts weekly no-stakes practice tournaments, announced on Discord.",
@@ -97,8 +99,9 @@ export const events: Event[] = [
       "El mayor evento de Koin Games hasta ahora, que se celebra durante el Steam Next Fest. Puedes participar en cualquier clasificatorio, vivas donde vivas, pero el equipo pide que te inscribas solo en los que de verdad puedas jugar. Los creadores de contenido reciben invitaciones wildcard directas a los playoffs. El check-in abre dos horas antes de cada clasificatorio y cierra cinco minutos antes del inicio, junto con la entrega de mazos: si te lo pierdes, no puedes jugar. El torneo se juega en la demo principal, que tiene la lista de cartas del torneo (el playtest pasará a ser distinto); el parche 0.7 del 29 de septiembre es el último parche de equilibrio antes del torneo, y Koin organiza torneos de práctica semanales sin nada en juego, anunciados en Discord.",
       "Le plus grand événement de Koin Games à ce jour, organisé pendant le Steam Next Fest. Vous pouvez participer à n'importe quelle qualification, où que vous viviez, mais l'équipe demande de ne vous inscrire qu'à celles auxquelles vous pouvez vraiment participer. Les créateurs de contenu reçoivent des invitations wildcard directement pour les playoffs. Le check-in ouvre deux heures avant chaque qualification et ferme cinq minutes avant le début, en même temps que la remise des decks : si vous le manquez, vous ne jouez pas. Le tournoi se joue sur la démo principale, qui a la liste de cartes du tournoi (le playtest va s'en écarter) ; le patch 0.7 du 29 septembre est le dernier patch d'équilibrage avant le tournoi, et Koin organise des tournois d'entraînement hebdomadaires sans enjeu, annoncés sur Discord.",
       "O maior evento da Koin Games até agora, durante o Steam Next Fest. Você pode participar de qualquer classificatória, não importa onde more, mas a equipe pede que você se inscreva só naquelas de que realmente pode participar. Criadores de conteúdo recebem convites wildcard direto para os playoffs. O check-in abre duas horas antes de cada classificatória e fecha cinco minutos antes do início, junto com a entrega dos decks: quem perde o check-in não joga. O torneio é jogado na demo principal, que tem a lista de cartas do torneio (o playtest vai se afastar dela); o patch 0.7 de 29 de setembro é o último patch de balanceamento antes do torneio, e a Koin organiza torneios de treino semanais sem nada em jogo, anunciados no Discord.",
+      "Das bisher größte Event von Koin Games, während des Steam Next Fest. Du kannst an jeder Qualifikation teilnehmen, egal wo du wohnst, aber das Team bittet dich, dich nur für die anzumelden, an denen du wirklich teilnehmen kannst. Content Creator erhalten Wildcard-Einladungen direkt in die Playoffs. Der Check-in öffnet zwei Stunden vor jeder Qualifikation und schließt fünf Minuten vor dem Start, zusammen mit der Abgabe der Decks: Wer ihn verpasst, kann nicht spielen. Das Turnier läuft auf der Hauptdemo, die die Kartenliste des Turniers hat (der Playtest wird davon abweichen); Patch 0.7 vom 29. September ist der letzte Balance-Patch davor, und Koin veranstaltet wöchentliche Trainingsturniere ohne Einsatz, die auf Discord angekündigt werden.",
     ),
-    signup: { label: n("Sign up on Discord", "Iscriviti su Discord", "Inscríbete en Discord", "S'inscrire sur Discord", "Inscreva-se no Discord"), url: "https://discord.gg/originstcg" },
+    signup: { label: n("Sign up on Discord", "Iscriviti su Discord", "Inscríbete en Discord", "S'inscrire sur Discord", "Inscreva-se no Discord", "Auf Discord anmelden"), url: "https://discord.gg/originstcg" },
     source: "https://store.steampowered.com/news/app/4429430/view/1843481262690278",
     // Inizio = qualificazione AMER aggiunta il 05/10/2026, 19 ottobre alle 19:00 "EST" della grafica ufficiale. Koin scrive
     // EST ma la sua stessa grafica fa coincidere le 10 EST con le 16 CEST, cioè l'ora legale della costa est (UTC-4, in vigore
@@ -107,8 +110,8 @@ export const events: Event[] = [
     // Iscriversi è gratis (offerta a prezzo 0 verso il Discord ufficiale). È il torneo di Koin dello Steam Next Fest: il
     // festival è il `superEvent`, come per la classificata qui sotto, e l'organizzatore resta Koin Games.
     ld: {
-      name: n("Crimson Cup", "Crimson Cup", "Crimson Cup", "Crimson Cup", "Crimson Cup"),
-      alternateName: n("Origins TCG Steam Next Fest tournament", "Torneo dello Steam Next Fest di Origins TCG", "Torneo del Steam Next Fest de Origins TCG", "Tournoi du Steam Next Fest d'Origins TCG", "Torneio do Steam Next Fest de Origins TCG"),
+      name: n("Crimson Cup", "Crimson Cup", "Crimson Cup", "Crimson Cup", "Crimson Cup", "Crimson Cup"),
+      alternateName: n("Origins TCG Steam Next Fest tournament", "Torneo dello Steam Next Fest di Origins TCG", "Torneo del Steam Next Fest de Origins TCG", "Tournoi du Steam Next Fest d'Origins TCG", "Torneio do Steam Next Fest de Origins TCG", "Origins TCG Turnier zum Steam Next Fest"),
       startAt: "2026-10-19T19:00:00-04:00",
       image: "/media/news-crimson-cup.webp",
       free: true,
@@ -122,16 +125,17 @@ export const events: Event[] = [
     guide: "origins-tcg-ranked",
     start: "2026-10-19",
     end: "2026-10-26",
-    title: n("Steam Next Fest: ranked opens in the demo", "Steam Next Fest: nella demo parte la classificata", "Steam Next Fest: la clasificatoria se abre en la demo", "Steam Next Fest : le classé ouvre dans la démo", "Steam Next Fest: a ranqueada abre na demo"),
-    where: n("Steam", "Steam", "Steam", "Steam", "Steam"),
+    title: n("Steam Next Fest: ranked opens in the demo", "Steam Next Fest: nella demo parte la classificata", "Steam Next Fest: la clasificatoria se abre en la demo", "Steam Next Fest : le classé ouvre dans la démo", "Steam Next Fest: a ranqueada abre na demo", "Steam Next Fest: Ranked startet in der Demo"),
+    where: n("Steam", "Steam", "Steam", "Steam", "Steam", "Steam"),
     text: n(
       "Ranked mode switches on in the demo with the start of the festival, with exclusive ranked rewards. The team announced it on 21 September, the day the first big demo update landed (new UI, test packs, the tentative Crimson Cup card list, progress kept from demo and playtest). OriginsMeta's first tier list will follow the Crimson Cup, built on its results.",
       "Con l'inizio del festival nella demo si accende la classificata, con ricompense esclusive. Lo ha annunciato il team il 21 settembre, il giorno in cui è uscito il primo grande aggiornamento della demo (nuova interfaccia, pacchetti di prova, lista carte provvisoria della Crimson Cup, progressi salvi da demo e playtest). La prima tier list di OriginsMeta arriverà dopo la Crimson Cup, sui suoi risultati.",
       "La clasificatoria se activa en la demo con el inicio del festival y tiene recompensas exclusivas. El equipo lo anunció el 21 de septiembre, el día en que llegó la primera gran actualización de la demo (nueva interfaz, sobres de prueba, la lista provisional de cartas de la Crimson Cup, progreso conservado de la demo y del playtest). La primera tier list de OriginsMeta llegará después de la Crimson Cup, con sus resultados.",
       "Le mode classé s'active dans la démo dès le début du festival, avec des récompenses exclusives. L'équipe l'a annoncé le 21 septembre, le jour de la première grande mise à jour de la démo (nouvelle interface, boosters d'essai, liste de cartes provisoire de la Crimson Cup, progression conservée de la démo et du playtest). La première tier list d'OriginsMeta suivra la Crimson Cup, construite sur ses résultats.",
       "O modo ranqueado é ativado na demo com o início do festival, com recompensas ranqueadas exclusivas. A equipe anunciou isso em 21 de setembro, dia em que chegou a primeira grande atualização da demo (nova interface, pacotes de teste, a lista provisória de cartas da Crimson Cup, progresso mantido da demo e do playtest). A primeira tier list do OriginsMeta virá depois da Crimson Cup, com base nos seus resultados.",
+      "Mit dem Start des Festivals wird in der Demo der Ranglisten-Modus freigeschaltet, mit exklusiven Ranked-Belohnungen. Das Team hat es am 21. September angekündigt, dem Tag, an dem das erste große Demo-Update erschien (neue Oberfläche, Test-Packs, die vorläufige Kartenliste des Crimson Cup, Fortschritt aus Demo und Playtest bleibt erhalten). Die erste Tier-List von OriginsMeta folgt nach dem Crimson Cup und basiert auf seinen Ergebnissen.",
     ),
-    signup: { label: n("Steam page", "Pagina Steam", "Página de Steam", "Page Steam", "Página da Steam"), url: "https://store.steampowered.com/app/4429430/Origins_TCG/" },
+    signup: { label: n("Steam page", "Pagina Steam", "Página de Steam", "Page Steam", "Página da Steam", "Steam-Seite"), url: "https://store.steampowered.com/app/4429430/Origins_TCG/" },
     source: "https://store.steampowered.com/sale/nextfest",
     // L'evento è di Koin (la classificata nella demo), dentro il festival di Valve: nei dati strutturati il nome porta
     // il gioco davanti e il festival diventa il `superEvent`. Nessun orario: il post dice solo "con l'inizio" del festival.
@@ -144,6 +148,7 @@ export const events: Event[] = [
         "Origins TCG: la clasificatoria se abre en la demo (Steam Next Fest)",
         "Origins TCG : le classé ouvre dans la démo (Steam Next Fest)",
         "Origins TCG: a ranqueada abre na demo (Steam Next Fest)",
+        "Origins TCG: Ranked startet in der Demo (Steam Next Fest)",
       ),
       image: "/media/keyart-queen-of-hearts.webp",
       festival: true,
@@ -153,24 +158,26 @@ export const events: Event[] = [
     slug: "big-bobs-playtest-battle",
     official: true,
     // la news dell'annuncio racconta il formato (primo Conquest, al meglio delle tre, eliminazione diretta)
-    rules: { news: "big-bobs-playtest-battle", label: n("Big Bob's format", "Formato del Big Bob's", "Formato del Big Bob's", "Format du Big Bob's", "Formato do Big Bob's") },
+    rules: { news: "big-bobs-playtest-battle", label: n("Big Bob's format", "Formato del Big Bob's", "Formato del Big Bob's", "Format du Big Bob's", "Formato do Big Bob's", "Format von Big Bob's") },
     start: "2026-08-28",
-    title: n("Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle"),
-    where: n("Playtest build; brackets on Discord", "Build del playtest; tabelloni su Discord", "Versión del playtest; cuadros en Discord", "Build du playtest ; tableaux sur Discord", "Build do playtest; chaves no Discord"),
+    title: n("Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle", "Big Bob's Playtest Battle"),
+    where: n("Playtest build; brackets on Discord", "Build del playtest; tabelloni su Discord", "Versión del playtest; cuadros en Discord", "Build du playtest ; tableaux sur Discord", "Build do playtest; chaves no Discord", "Playtest-Build; Turnierbäume auf Discord"),
     format: n(
       "Best-of-3, single elimination. First ever use of the Conquest format: several decks, a different Legendary in each, at least nine cards of difference, one ban.",
       "Best-of-3, eliminazione diretta. Primo uso del formato Conquest: più mazzi, una Leggendaria diversa in ciascuno, almeno nove carte di differenza, un ban.",
       "Al mejor de tres, eliminación directa. Estreno del formato Conquest: varios mazos, una Legendaria distinta en cada uno, al menos nueve cartas de diferencia, un ban.",
       "Au meilleur des trois manches, élimination directe. Première utilisation du format Conquest : plusieurs decks, une Légendaire différente dans chacun, au moins neuf cartes de différence, un ban.",
       "Melhor de três, eliminação simples. Primeiro uso do formato Conquest: vários decks, uma Lendária diferente em cada um, pelo menos nove cartas de diferença, um ban.",
+      "Best-of-Three, K.-o.-System. Erster Einsatz des Conquest-Formats: mehrere Decks, in jedem eine andere Legendäre, mindestens neun Karten Unterschied, ein Ban.",
     ),
-    prizes: n("Wildcard invite to the Next Fest tournament and Collector Packs.", "Invito wildcard al torneo del Next Fest e Collector Pack.", "Invitación wildcard al torneo del Next Fest y Collector Packs.", "Invitation wildcard au tournoi du Next Fest et Collector Packs.", "Convite wildcard para o torneio do Next Fest e Collector Packs."),
+    prizes: n("Wildcard invite to the Next Fest tournament and Collector Packs.", "Invito wildcard al torneo del Next Fest e Collector Pack.", "Invitación wildcard al torneo del Next Fest y Collector Packs.", "Invitation wildcard au tournoi du Next Fest et Collector Packs.", "Convite wildcard para o torneio do Next Fest e Collector Packs.", "Wildcard-Einladung zum Turnier des Next Fest und Collector Packs."),
     text: n(
       "Over 130 players registered. Played on patch 0.6.3, released two days earlier.",
       "Oltre 130 iscritti. Giocato sulla patch 0.6.3, uscita due giorni prima.",
       "Más de 130 jugadores inscritos. Se jugó en el parche 0.6.3, publicado dos días antes.",
       "Plus de 130 inscrits. Joué sur le patch 0.6.3, sorti deux jours plus tôt.",
       "Mais de 130 jogadores inscritos. Jogado no patch 0.6.3, lançado dois dias antes.",
+      "Über 130 Spieler angemeldet. Gespielt auf Patch 0.6.3, der zwei Tage vorher erschienen war.",
     ),
     source: "https://store.steampowered.com/news/app/4429430/view/1841579228677617",
   },
@@ -178,16 +185,17 @@ export const events: Event[] = [
     slug: "first-demo-tournament",
     official: true,
     start: "2026-07-24",
-    title: n("First demo tournament", "Primo torneo della demo", "Primer torneo de la demo", "Premier tournoi de la démo", "Primeiro torneio da demo"),
-    where: n("Discord", "Discord", "Discord", "Discord", "Discord"),
-    format: n("For fun, demo decks.", "Amichevole, mazzi della demo.", "Amistoso, con mazos de la demo.", "Amical, decks de la démo.", "Amistoso, com decks da demo."),
-    prizes: n("Wildcard invite to the Next Fest tournament and a secret prize.", "Invito wildcard al torneo del Next Fest e un premio segreto.", "Invitación wildcard al torneo del Next Fest y un premio secreto.", "Invitation wildcard au tournoi du Next Fest et un prix secret.", "Convite wildcard para o torneio do Next Fest e um prêmio secreto."),
+    title: n("First demo tournament", "Primo torneo della demo", "Primer torneo de la demo", "Premier tournoi de la démo", "Primeiro torneio da demo", "Erstes Turnier der Demo"),
+    where: n("Discord", "Discord", "Discord", "Discord", "Discord", "Discord"),
+    format: n("For fun, demo decks.", "Amichevole, mazzi della demo.", "Amistoso, con mazos de la demo.", "Amical, decks de la démo.", "Amistoso, com decks da demo.", "Zum Spaß, mit Decks der Demo."),
+    prizes: n("Wildcard invite to the Next Fest tournament and a secret prize.", "Invito wildcard al torneo del Next Fest e un premio segreto.", "Invitación wildcard al torneo del Next Fest y un premio secreto.", "Invitation wildcard au tournoi du Next Fest et un prix secret.", "Convite wildcard para o torneio do Next Fest e um prêmio secreto.", "Wildcard-Einladung zum Turnier des Next Fest und ein geheimer Preis."),
     text: n(
       "Announced with the first demo stats: over 1,000 players and 13,000 matches in the first week, with a median play time of 1h51m.",
       "Annunciato insieme ai primi numeri della demo: oltre 1.000 giocatori e 13.000 partite nella prima settimana, con un tempo di gioco mediano di 1h51m.",
       "Anunciado junto con las primeras cifras de la demo: más de 1.000 jugadores y 13.000 partidas en la primera semana, con una mediana de tiempo de juego de 1 h 51 min.",
       "Annoncé avec les premiers chiffres de la démo : plus de 1 000 joueurs et 13 000 parties la première semaine, pour un temps de jeu médian de 1 h 51 min.",
       "Anunciado junto com os primeiros números da demo: mais de 1.000 jogadores e 13.000 partidas na primeira semana, com tempo de jogo mediano de 1h51min.",
+      "Angekündigt zusammen mit den ersten Zahlen der Demo: über 1.000 Spieler und 13.000 Partien in der ersten Woche, bei einer mittleren Spielzeit von 1 Std. 51 Min.",
     ),
     source: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
   },
@@ -196,14 +204,15 @@ export const events: Event[] = [
     official: true,
     start: "2026-07-24",
     end: "2026-07-26",
-    title: n("Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale"),
-    where: n("Card show, Florida (USA)", "Fiera del collezionismo, Florida (USA)", "Feria de cartas coleccionables, Florida (EE. UU.)", "Salon de cartes, Floride (États-Unis)", "Feira de cartas colecionáveis, Flórida (EUA)"),
+    title: n("Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale", "Card Party, Fort Lauderdale"),
+    where: n("Card show, Florida (USA)", "Fiera del collezionismo, Florida (USA)", "Feria de cartas coleccionables, Florida (EE. UU.)", "Salon de cartes, Floride (États-Unis)", "Feira de cartas colecionáveis, Flórida (EUA)", "Kartenmesse, Florida (USA)"),
     text: n(
       "Part of the team took Origins to collectors, with the first public pack openings and a Slab giveaway for anyone pulling a 10/10 Alternate Art.",
       "Parte del team ha portato Origins ai collezionisti, con le prime aperture pubbliche di pacchetti e uno Slab in regalo a chi pescava un'Alternate Art 10/10.",
       "Parte del equipo llevó Origins a los coleccionistas, con las primeras aperturas públicas de sobres y un Slab de regalo para quien sacara una Alternate Art 10/10.",
       "Une partie de l'équipe a présenté Origins aux collectionneurs, avec les premières ouvertures publiques de boosters et un Slab offert à qui tirait une Alternate Art 10/10.",
       "Parte da equipe levou Origins aos colecionadores, com as primeiras aberturas públicas de pacotes e um Slab de presente para quem tirasse uma Alternate Art 10/10.",
+      "Ein Teil des Teams hat Origins zu den Sammlern gebracht, mit den ersten öffentlichen Pack-Openings und einem Slab als Geschenk für alle, die eine Alternate Art 10/10 gezogen haben.",
     ),
     source: "https://store.steampowered.com/news/app/4429430/view/1838407329269463",
   },

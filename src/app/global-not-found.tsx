@@ -32,12 +32,17 @@ export default function GlobalNotFound() {
             <span className="block font-display font-bold text-sky">Esta carta não existe.</span>
             A página que você procura não está na mesa.
           </p>
+          <p className="mt-4 text-pale-muted" lang="de">
+            <span className="block font-display font-bold text-sky">Diese Karte gibt es nicht.</span>
+            Die gesuchte Seite liegt nicht auf dem Tisch.
+          </p>
           <p className="mt-6 flex flex-wrap justify-center gap-3">
             <Link className="btn btn-ink" href="/en">English</Link>
             <Link className="btn btn-ink" href="/it">Italiano</Link>
             <Link className="btn btn-ink" href="/es">Español</Link>
             <Link className="btn btn-ink" href="/fr">Français</Link>
             <Link className="btn btn-ink" href="/pt">Português</Link>
+            <Link className="btn btn-ink" href="/de">Deutsch</Link>
           </p>
         </div>
       </body>

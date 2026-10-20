@@ -155,6 +155,11 @@ describe("messaggi", () => {
     assert.deepEqual(body.embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español", "🇫🇷 Français", "🇧🇷 Português", "MetaShifting"]);
     assert.equal(split(mdHref(body.embeds[0].fields[3].value)).clean, "https://originsmeta.com/pt/news/patch-x");
   });
+  test("tedesco: titolo collegato alla pagina /de, dopo il portoghese e prima del link di MetaShifting (dal 20/10/2026)", () => {
+    const body = payload("metashifting", { kind: "news", slug: "patch-x", patch: "demo-0921" }, html, en, "<h1>La última</h1>", "metashifting", "<h1>Le dernier</h1>", "<h1>A última</h1>", "<h1>Die letzte</h1>");
+    assert.deepEqual(body.embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español", "🇫🇷 Français", "🇧🇷 Português", "🇩🇪 Deutsch", "MetaShifting"]);
+    assert.equal(split(mdHref(body.embeds[0].fields[4].value)).clean, "https://originsmeta.com/de/news/patch-x");
+  });
   test("UTM su ogni link al sito: sorgente discord, mezzo social, campagna = tipo di contenuto, content = canale", () => {
     const es = `<h1>La última</h1>`;
     const news = payload("announcements", { kind: "news", slug: "prova" }, html, en, es).embeds[0];

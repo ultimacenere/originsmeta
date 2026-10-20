@@ -246,4 +246,50 @@ const pt: DeckVersionLabels = {
   },
 };
 
-export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es, fr, pt };
+const de: DeckVersionLabels = {
+  edit: {
+    title: "Karten des Decks",
+    current: "Version {n} · Patch {patch} · diese Karten seit {date}",
+    intro:
+      "Ein neuer Patch ist da? Ändere hier die Karten und behalte Name, Guide, Videos und Link. Neue Karten eröffnen Version {next}: Die Bewertungen beginnen wieder bei null, und die vorherige Version bleibt mit ihren eigenen Bewertungen auf der Deckseite.",
+    openBuilder: "Karten im Deck builder ändern",
+    updateTo: "Auf Version {patch} aktualisieren",
+    outdated: "Dieses Deck wurde für Patch {old} gebaut: Version {patch} ist erschienen.",
+    changedTitle: "Neue Karten, noch nicht gespeichert",
+    added: "Rein",
+    removed: "Raus",
+    legendary: "Legendäre: {from} → {to}",
+    saveNotice: "Beim Speichern wird das Deck zu Version {next} (Patch {patch}) und die Bewertung beginnt von vorn. Der Guide ändert sich nicht von selbst: Prüfe, ob er noch zu den neuen Karten passt.",
+    discard: "Aktuelle Karten behalten",
+    same: "Der Deck builder hat dieselben Karten zurückgeschickt, die das Deck schon hat: Es ändert sich nichts.",
+    invalid: "Die Karten im Link können nicht gelesen werden: Das Deck behält seine aktuellen Karten.",
+    unavailable: "Das Ändern der Karten ist noch nicht verfügbar: Name, Guide und Videos kannst du trotzdem bearbeiten.",
+  },
+  builder: {
+    banner: "Du aktualisierst die Karten von „{name}“, einem veröffentlichten Deck. Wenn du fertig bist, geh zurück und speichere: Bis dahin bleiben Guide und Bewertungen, wie sie sind.",
+    bannerNoName: "Du aktualisierst die Karten eines veröffentlichten Decks. Wenn du fertig bist, geh zurück und speichere.",
+    update: "Im veröffentlichten Deck speichern",
+    cancel: "Aktualisierung beenden",
+  },
+  deck: {
+    version: "Version {n}",
+    title: "Versionen dieses Decks",
+    hint: "Die Bewertungen zählen für die aktuelle Version. Frühere Versionen behalten die Karten und Bewertungen, die sie hatten.",
+    current: "aktuell",
+    option: "v{n} · {patch}",
+    optionNoPatch: "v{n}",
+    range: "{from} → {to}",
+    since: "seit {date}",
+    votes: "{avg} ★ · {n} Bewertungen",
+    oneVote: "{avg} ★ · 1 Bewertung",
+    noVotes: "Keine Bewertungen",
+    changes: "Änderungen gegenüber v{n}",
+    cards: "Karten der Version {n}",
+    openInBuilder: "v{n} im Deck builder öffnen",
+  },
+  errors: {
+    versionsUnavailable: "Das Ändern der Karten ist noch nicht verfügbar: Versuch es in ein paar Minuten noch einmal oder speichere, ohne die Karten zu ändern.",
+  },
+};
+
+export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es, fr, pt, de };

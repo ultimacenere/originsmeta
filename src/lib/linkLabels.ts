@@ -158,6 +158,31 @@ export const linkLabels: Record<Locale, LinkLabels> = {
     deckChange: "Mudança de deck",
     guideNews: "Notícias sobre este tema",
   },
+  de: {
+    explore: {
+      title: "Entdecken",
+      metashifting: "Patchnotes (MetaShifting)",
+      locations: "Orte",
+      mostPlayed: "Meistgespielt",
+      communityTierList: "Tier-List der Community",
+      makeTierList: "Erstelle deine Tier-List",
+      authors: "Redaktion",
+    },
+    relatedNews: "Ähnliche News",
+    patch: {
+      title: "Was sich in diesem Patch ändert",
+      introOne: "In diesem Patch ändert sich 1 Karte.",
+      introMany: "In diesem Patch ändern sich {n} Karten.",
+      swapsOne: "1 Karte gehört zu den Änderungen an den vorgefertigten Decks des Playtests.",
+      swapsMany: "{n} Karten gehören zu den Änderungen an den vorgefertigten Decks des Playtests.",
+      linksOne: "Ihr Name öffnet die Kartenseite mit der gesamten Balance-Historie.",
+      linksMany: "Jeder Name öffnet die Kartenseite mit der gesamten Balance-Historie.",
+      numbers: "Die Zahlen sind Mana · Stärke/Leben, vorher und nachher.",
+      metashifting: "Alle Balance-Änderungen in MetaShifting",
+    },
+    deckChange: "Deck-Änderung",
+    guideNews: "News zu diesem Thema",
+  },
 };
 
 // ---------- Modifiche di bilanciamento ----------

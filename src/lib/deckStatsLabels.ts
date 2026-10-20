@@ -173,6 +173,37 @@ export const deckStatsLabels: Record<Locale, DeckStatsLabels> = {
     deck: "Deck",
     by: "de",
   },
+  de: {
+    title: "Deine Statistiken",
+    intro:
+      "Wie deine veröffentlichten Decks laufen: Besuche, Kopien des Spielcodes (von der Deckseite und aus der Deckliste), Bewertungen, Klicks auf Links und gestartete Videos in den letzten 7 und 30 Tagen und insgesamt. Deine eigenen Besuche mit Anmeldung zählen nicht.",
+    estimate:
+      "Das sind Schätzungen: Jeder Browser-Tab zählt einmal pro Deck und pro Art, Bots und Staff-Traffic bleiben außen vor. Ein Besuch zählt nach ein paar Sekunden auf der Seite; ein Video beim ersten Klick auf den Player oder auf die Video-Schaltfläche. Die Tage sind in UTC.",
+    since: "Erster Tag mit Daten: {date}",
+    noData: "Noch keine Daten: Die Zahlen erscheinen nach den ersten Besuchen deiner Decks.",
+    unavailable: "Die Statistiken sind noch nicht verfügbar. Versuch es später noch einmal.",
+    d7: "7 Tage",
+    d30: "30 Tage",
+    total: "Gesamt",
+    metric: "Kennzahl",
+    views: "Besuche",
+    codeCopies: "Code-Kopien",
+    votes: "Bewertungen",
+    average: "Durchschnittsbewertung",
+    linkClicks: "Link-Klicks",
+    videoPlays: "Gestartete Videos",
+    allDecks: "Alle deine Decks",
+    chartTitle: "Besuche und Code-Kopien pro Tag, letzte 30 Tage",
+    chartAria: "Diagramm: Besuche und Code-Kopien pro Tag in den letzten 30 Tagen. Besuche: {views}; Code-Kopien: {copies}.",
+    hidden: "Ausgeblendet",
+    staffTitle: "Staff: die meistbesuchten Decks (30 Tage)",
+    staffIntro: "Dieses Ranking sehen nur Admins und der Staff: alle Community-Decks, mit denselben Schätzungen.",
+    staffEmpty: "In den letzten 30 Tagen wurden keine Besuche erfasst.",
+    partial: "Unvollständiges Ranking: Es gibt zu viele Zeilen, um alle zu lesen.",
+    notVisible: "Deck nicht sichtbar",
+    deck: "Deck",
+    by: "von",
+  },
 };
 
 /**
@@ -186,6 +217,7 @@ export const deckStatsPrivacy: Record<Locale, string> = {
   es: "Estadísticas de los mazos: en la página de un mazo de la comunidad, y cuando copias el código del juego desde la lista de mazos, el sitio cuenta, para cada mazo y cada día, las visitas, las copias del código del juego, los clics en los enlaces y los videos iniciados, y muestra estos totales solo a quien publicó el mazo y al staff de OriginsMeta (salvo los totales de todos los mazos publicados juntos que un perfil vitrina elige mostrar en su página pública: consulta “Logros y números públicos de los perfiles”). Solo se guardan los totales del día, en Supabase (Irlanda, UE): ninguna dirección IP, ninguna cuenta, ningún identificador. La solicitud pasa por los servidores de Supabase, que, como Vercel, conservan por poco tiempo los registros técnicos habituales (dirección IP incluida), nunca vinculados a los totales. Para que la misma visita no cuente dos veces, el navegador anota los mazos ya contados en la memoria de sesión de la pestaña, que se borra al cerrar la pestaña y nunca se envía. No se cuentan los bots, los navegadores del staff ni las visitas de quien ve sus propios mazos con la sesión iniciada.",
   fr: "Statistiques des decks : sur la page d'un deck de la communauté, et quand vous copiez un code du jeu depuis la liste des decks, le site compte, pour chaque deck et chaque jour, les visites, les copies du code du jeu, les clics sur les liens et les lectures de vidéos, et montre ces totaux uniquement à la personne qui a publié le deck et au staff d'OriginsMeta (à part les totaux de tous les decks publiés ensemble qu'un profil vitrine choisit d'afficher sur sa page publique : voir « Succès et chiffres publics des profils »). Seuls les totaux du jour sont enregistrés, sur Supabase (Irlande, UE) : aucune adresse IP, aucun compte, aucun identifiant. La requête passe par les serveurs de Supabase, qui, comme Vercel, conservent peu de temps les journaux techniques habituels (adresse IP comprise), jamais reliés aux totaux. Pour que la même visite ne compte pas deux fois, le navigateur note les decks déjà comptés dans la mémoire de session de l'onglet, effacée quand vous fermez l'onglet et jamais envoyée. Les bots, les navigateurs du staff et les personnes qui consultent leurs propres decks avec la session ouverte ne sont pas comptés.",
   pt: "Estatísticas dos decks: na página de um deck da comunidade, e quando você copia um código do jogo da lista de decks, o site conta, para cada deck e cada dia, as visitas, as cópias do código do jogo, os cliques nos links e os vídeos iniciados, e mostra esses totais só para quem publicou o deck e para o staff do OriginsMeta (fora os totais de todos os decks publicados juntos que um perfil vitrine escolhe mostrar na sua página pública: veja “Conquistas e números públicos dos perfis”). Só os totais do dia são salvos, no Supabase (Irlanda, UE): nenhum endereço IP, nenhuma conta, nenhum identificador. A solicitação passa pelos servidores do Supabase, que, como a Vercel, guardam por pouco tempo os registros técnicos habituais (endereço IP incluído), nunca ligados aos totais. Para que a mesma visita não conte duas vezes, o navegador anota os decks já contados na memória de sessão da aba, que é apagada quando você fecha a aba e nunca é enviada. Não são contados os bots, os navegadores do staff nem quem vê os próprios decks com o login feito.",
+  de: "Deck-Statistiken: Auf der Seite eines Community-Decks und wenn du einen Spielcode aus der Deckliste kopierst, zählt die Website für jedes Deck und jeden Tag die Besuche, die Kopien des Spielcodes, die Klicks auf Links und die gestarteten Videos und zeigt diese Summen nur der Person, die das Deck veröffentlicht hat, und dem Staff von OriginsMeta (abgesehen von den Gesamtsummen aller veröffentlichten Decks zusammen, die ein Schaufenster-Profil auf seiner öffentlichen Seite zeigen kann: siehe „Erfolge und öffentliche Zahlen in Profilen“). Gespeichert werden nur die Tagessummen, bei Supabase (Irland, EU): keine IP-Adresse, kein Konto, keine Kennung. Die Anfrage läuft über die Server von Supabase, die wie Vercel die üblichen technischen Logs (einschließlich IP-Adresse) für kurze Zeit aufbewahren, nie mit den Summen verknüpft. Damit derselbe Besuch nicht doppelt zählt, merkt sich der Browser die bereits gezählten Decks im Sitzungsspeicher des Tabs, der beim Schließen des Tabs gelöscht und nie gesendet wird. Nicht gezählt werden Bots, Browser des Staffs und Personen, die mit Anmeldung ihre eigenen Decks ansehen.",
 };
 
 /** Riempie i segnaposto `{nome}` (senza interpretare i `$` di `replace`). */

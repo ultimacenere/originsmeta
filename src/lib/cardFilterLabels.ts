@@ -80,4 +80,18 @@ const pt: CardFilterLabels = {
   active: "{n} ativos",
 };
 
-export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es, fr, pt };
+const de: CardFilterLabels = {
+  cost: "Kosten",
+  more: "Weitere Filter",
+  keyword: "Schlüsselwort",
+  gameKeywords: "Schlüsselwörter des Spiels",
+  effects: "Effekte",
+  power: "Stärke",
+  health: "Leben",
+  min: "min.",
+  max: "max.",
+  clear: "Filter zurücksetzen",
+  active: "{n} aktiv",
+};
+
+export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es, fr, pt, de };

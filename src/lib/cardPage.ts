@@ -4,9 +4,9 @@ import cardArt from "./data/card-art.json";
 import type { RelCard } from "./cardSynergy";
 
 /**
- * Testi della scheda carta costruiti dai dati, nelle cinque lingue (Ondata 2 del piano SEO/GEO, 25/09/2026: CARDS-05,
+ * Testi della scheda carta costruiti dai dati, nelle sei lingue (Ondata 2 del piano SEO/GEO, 25/09/2026: CARDS-05,
  * GEO-07, SCHEDE-06, SCHEDE-07, SCHEDE-10, SCHEDE-11, CARDS-09, CARDS-14, CARDS-16; francese dal 07/10/2026, portoghese
- * del Brasile dal 20/10/2026).
+ * del Brasile e tedesco dal 20/10/2026).
  *
  * - `cardLead`: la frase d'attacco sotto l'H1, che dice che cos'è la carta (tipo, costo, statistiche, allineamento,
  *   stato, mazzi pubblicati) senza nessun giudizio; per le carte create la prima cosa è chi le genera, per quelle
@@ -23,7 +23,10 @@ import type { RelCard } from "./cardSynergy";
  * allineamenti Good/Evil/Neutral in inglese come sulla carta; nomi di carte in inglese. In francese si dà del "vous" e
  * c'è lo spazio insecabile prima di : ; ? !, scritto `\u00a0` nelle stringhe (il carattere nudo si perde negli editor).
  * In portoghese (docs/portoghese.md) si dà del "você", il tipo è quello del gioco (personagem/feitiço/carta criada,
- * Poder/Vida, Lendária) e il soggetto si sottintende ("Custa 5 de mana…"). Nessun dato nuovo: tutto viene da `cards.ts`, dai mazzi
+ * Poder/Vida, Lendária) e il soggetto si sottintende ("Custa 5 de mana…"). In tedesco (docs/tedesco.md, dal 20/10/2026) si
+ * dà del "du", il glossario è PROVVISORIO (Charakter/Zauber/erschaffene Karte, Stärke/Leben, Legendär: il gioco in tedesco
+ * non è ancora stato letto), il pronome segue il tipo ("Er" per Charakter e Zauber, "Sie" per la carta creata) e i
+ * verbi vanno in fondo alla subordinata (catene con l'apposizione "ihrerseits erschaffen von"). Nessun dato nuovo: tutto viene da `cards.ts`, dai mazzi
  * pubblicati e dai testi.
  * Dove compare una patch si usa `patchLabel`, mai l'id (CLAUDE.md).
  * Funzioni pure (a parte `formatDate`, che usa Intl): test in `cardPage.test.ts`.
@@ -85,6 +88,7 @@ const andWord: Record<Locale, (next: string) => string> = {
   es: (next) => (/^h?i(?![aeiouáéíóú])/i.test(next) ? " e " : " y "),
   fr: () => " et ",
   pt: () => " e ",
+  de: () => " und ",
 };
 
 const orWord: Record<Locale, (next: string) => string> = {
@@ -94,6 +98,7 @@ const orWord: Record<Locale, (next: string) => string> = {
   es: (next) => (/^h?o/i.test(next) ? " u " : " o "),
   fr: () => " ou ",
   pt: () => " ou ",
+  de: () => " oder ",
 };
 
 /** Le carte come pezzi, unite con "e": Animate Object and Sorcerer's Apprentice. */
@@ -134,6 +139,12 @@ const frIl = (c: Pick<Card, "type">) => (frMasculine(c) ? "il" : "elle");
 
 /** In portoghese "personagem" (come nel gioco: "um personagem Bom") e "feitiço" sono maschili, "carta criada" femminile. */
 const ptMasculine = (c: Pick<Card, "type">) => c.type !== "token";
+
+/** In tedesco "Charakter" e "Zauber" sono maschili ("er"), "erschaffene Karte" femminile ("sie"). */
+const deMasculine = (c: Pick<Card, "type">) => c.type !== "token";
+
+/** Il pronome soggetto tedesco della carta, minuscolo: "er" per Charakter e Zauber, "sie" per le carte create. */
+const deEr = (c: Pick<Card, "type">) => (deMasculine(c) ? "er" : "sie");
 
 /**
  * Il nome di una patch da mostrare: `patchLabel` quando la patch è fra quelle del sito ("Demo · 21 set" per
@@ -433,6 +444,63 @@ export const cardLabels: Record<Locale, CardLabels> = {
     kind: { unit: "personagem", spell: "feitiço", token: "carta criada", legendaryUnit: "personagem Lendário", legendarySpell: "feitiço Lendário" },
     creditText: "Ilustração de {illus} · © Koin Games",
   },
+  // Tedesco (20/10/2026): glossario PROVVISORIO di docs/tedesco.md; "Deckbuilder" nel testo corrente. Il testo tedesco
+  // delle carte è una traduzione nostra non ancora confrontata con il gioco (`de` non è in `officialTextLocales`), e
+  // `textOurs` lo dice invece di "glossario del gioco".
+  de: {
+    decksLed: "Von {name} angeführte Decks",
+    decksWith: "Decks mit {name}",
+    decksCreating: "Decks, die {name} erschaffen",
+    tokenDecksOne: "1 veröffentlichtes Deck enthält {roots}.",
+    tokenDecksMany: "{n} veröffentlichte Decks enthalten {roots}.",
+    decksNote: "Zuerst die bewerteten Decks, nach Bewertung sortiert, dann die neuesten. Wie oft eine Karte gespielt wird, zeigt ihre Beliebtheit, keine Win-Rate:",
+    mostPlayed: "Meistgespielt",
+    moreDecksOne: "1 weiteres Deck mit dieser Karte steht in der Liste aller Decks.",
+    moreDecksMany: "{n} weitere Decks mit dieser Karte stehen in der Liste aller Decks.",
+    allDecks: "Alle Decks",
+    together: "Oft im selben Deck",
+    togetherIntroLed: "Karten in mindestens {min} der {n} von {name} angeführten Decks.",
+    togetherIntro: "Karten, die in mindestens {min} der {n} veröffentlichten Decks mit {name} stecken.",
+    togetherCount: "in {k} von {n}",
+    // Subjekt ist „die Karte“, weiblich, egal welcher Typ
+    creates: "Karten, die sie erschafft",
+    createdPast: "Karten, die sie erschuf",
+    createsIntro: "Laut Kartentext.",
+    createsNextOne: "{name} erschafft wiederum",
+    createsNextMany: "Diese erschaffen wiederum",
+    howToGet: "So bekommst du sie",
+    createdBy: "Erschaffen von",
+    createdByNext: "ihrerseits erschaffen von",
+    createdByEarlier: "In früheren Builds auch von",
+    noCreator: "Kein Kartentext sagt, welche Karte sie erschafft.",
+    brief: "Kurz gesagt",
+    textOfficial: "Offizieller Spieltext",
+    textEnglish: "Englischer Spieltext",
+    textEnglishWoo: "Englischer Text (nicht im Spiel überprüft)",
+    textOurs: "Übersetzung von OriginsMeta (nicht im Spiel überprüft)",
+    textWoo: "Kartentext (nicht im Spiel überprüft)",
+    textOutdated: "Ein späterer Patch hat diesen Text geändert: siehe den Balance-Verlauf weiter unten.",
+    asOfToken:
+      "Erschaffene Karte: Sie ist nicht in der Sammlung des Spiels, deshalb wurden ihr Text und ihre Werte nicht im Spiel überprüft. Die Balance-Hinweise stammen aus den offiziellen Patchnotes.",
+    asOfRemoved: "Nicht in der Demo 2.0: zuletzt bekannte Daten, Stand Patch {patch}; im Spiel nicht überprüfbar.",
+    community: "Tier-List der Community",
+    communityScoreOne: "Tier {tier}: Durchschnitt {avg} von 5 aus 1 Stimme.",
+    communityScore: "Tier {tier}: Durchschnitt {avg} von 5 aus {votes} Stimmen.",
+    communityUnranked: "Noch keine gespeicherte Tier-List hat sie eingestuft.",
+    communityInvite: "Stufe {name} in deiner eigenen Tier-List ein: Die Tier-List der Community startet ab {min} Listen",
+    communitySoFar: " (bisher {n})",
+    communityCta: "Erstelle deine Tier-List",
+    communityOpen: "Tier-List der Community öffnen",
+    deckGuide: "Deck-Guide",
+    sameSagaDemo: "Gleiche Saga in der Demo 2.0",
+    buildRoot: "Baue ein Deck mit {roots}",
+    buildRootText: "{name} ist eine erschaffene Karte und lässt sich im Deckbuilder nicht in ein Deck aufnehmen: Um sie im Match zu sehen, nimm {roots} in dein Deck.",
+    legendaryPower: "Legendäre Kraft",
+    alt: "{name}, {kind}: offizielle Karte aus Origins TCG, Illustration von {illus}, © Koin Games",
+    altNoCredit: "{name}, {kind}: offizielle Karte aus Origins TCG, © Koin Games",
+    kind: { unit: "Charakter", spell: "Zauber", token: "erschaffene Karte", legendaryUnit: "Legendärer Charakter", legendarySpell: "Legendärer Zauber" },
+    creditText: "Illustration von {illus} · © Koin Games",
+  },
 };
 
 /** Sostituisce i segnaposto {chiave} di un'etichetta. */
@@ -524,6 +592,12 @@ function statsClause(card: LeadCard, locale: Locale, tense: Tense): string {
     if (align) clauses.push(`${past ? "era" : "é"} ${align}`);
     return clauses.reduce((acc, c, i) => (i === 0 ? c : i === clauses.length - 1 ? `${acc} e ${c}` : `${acc}, ${c}`), "");
   }
+  if (locale === "de") {
+    if (m !== undefined) clauses.push(`${past ? "kostete" : "kostet"} ${m} Mana`);
+    if (p !== undefined) clauses.push(`${past ? "hatte" : "hat"} ${p} Stärke und ${h ?? "?"} Leben`);
+    if (align) clauses.push(`${past ? "war" : "ist"} ${align}`);
+    return clauses.reduce((acc, c, i) => (i === 0 ? c : i === clauses.length - 1 ? `${acc} und ${c}` : `${acc}, ${c}`), "");
+  }
   if (m !== undefined) clauses.push(`${past ? "cost" : "costs"} ${m} mana`);
   if (p !== undefined) clauses.push(`${past ? "had" : "has"} ${p} Power and ${h ?? "?"} Health`);
   if (align) clauses.push(`${past ? "was" : "is"} ${align}`);
@@ -540,6 +614,7 @@ function statsSentence(card: LeadCard, locale: Locale): string {
   if (!c) return "";
   if (locale === "en") return `It ${c}.`;
   if (locale === "fr") return `${cap(frIl(card))} ${c}.`;
+  if (locale === "de") return `${cap(deEr(card))} ${c}.`;
   return `${cap(c)}.`;
 }
 
@@ -550,6 +625,7 @@ function withArticle(card: Pick<Card, "type" | "legendary">, locale: Locale): st
   if (locale === "es") return esMasculine(card) ? `un ${word}` : `una ${word}`;
   if (locale === "fr") return frMasculine(card) ? `un ${word}` : `une ${word}`;
   if (locale === "pt") return ptMasculine(card) ? `um ${word}` : `uma ${word}`;
+  if (locale === "de") return deMasculine(card) ? `ein ${word}` : `eine ${word}`;
   return `${/^[aeio]/i.test(word) ? "an" : "a"} ${word}`;
 }
 
@@ -559,6 +635,8 @@ const gameName: Record<Locale, string> = {
   es: "Origins TCG, el juego de cartas digital de Koin Games",
   fr: "Origins TCG, le jeu de cartes numérique de Koin Games",
   pt: "Origins TCG, o jogo de cartas digital da Koin Games",
+  // al dativo: si usa sempre dopo "aus" e "von"
+  de: "Origins TCG, dem digitalen Kartenspiel von Koin Games",
 };
 
 /**
@@ -573,6 +651,8 @@ const notInBuilder: Record<Locale, string> = {
   fr: "impossible de l'ajouter à un deck dans le deck builder",
   // solo per le carte create: "adicionada" si accorda con "carta"
   pt: "não pode ser adicionada a um deck no deck builder",
+  // frase intera con la maiuscola: sta dopo i due punti e, con `cap`, a inizio frase; "sie" è la carta creata
+  de: "Im Deckbuilder lässt sie sich nicht in ein Deck aufnehmen",
 };
 
 /**
@@ -615,6 +695,14 @@ export function deckSentence(card: Pick<Card, "type" | "legendary">, count: Deck
     if (n === 0) return `Nenhum dos ${total} decks publicados no OriginsMeta usa esta carta${leg ? " como Lendária" : ""} ainda.`;
     return `${leg ? "Lidera" : "Está em"} ${n} dos ${total} decks publicados no OriginsMeta.`;
   }
+  if (locale === "de") {
+    const pron = cap(deEr(card));
+    if (total === 0) return "Auf OriginsMeta wurden noch keine Decks veröffentlicht.";
+    if (total === 1 && n === 1) return leg ? `${pron} führt das einzige auf OriginsMeta veröffentlichte Deck an.` : `${pron} steckt im einzigen auf OriginsMeta veröffentlichten Deck.`;
+    if (total === 1) return leg ? "Das einzige auf OriginsMeta veröffentlichte Deck wird von einer anderen Legendären angeführt." : "Das einzige auf OriginsMeta veröffentlichte Deck nutzt diese Karte nicht.";
+    if (n === 0) return `Keines der ${total} auf OriginsMeta veröffentlichten Decks nutzt diese Karte bisher${leg ? " als Legendäre" : ""}.`;
+    return leg ? `${pron} führt ${n} der ${total} auf OriginsMeta veröffentlichten Decks an.` : `${pron} steckt in ${n} der ${total} auf OriginsMeta veröffentlichten Decks.`;
+  }
   if (total === 0) return "No deck has been published on OriginsMeta yet.";
   if (total === 1 && n === 1) return leg ? "It leads the only deck published on OriginsMeta." : "It appears in the only deck published on OriginsMeta.";
   if (total === 1) return leg ? "The only deck published on OriginsMeta is led by another Legendary." : "The only deck published on OriginsMeta does not use it.";
@@ -629,6 +717,7 @@ function formerSentence(card: LeadCard, locale: Locale): string {
   if (locale === "es") return `En builds anteriores se llamaba ${card.formerName}.`;
   if (locale === "fr") return `Dans les builds précédentes, ${frIl(card)} s'appelait ${card.formerName}.`;
   if (locale === "pt") return `Em builds anteriores, se chamava ${card.formerName}.`;
+  if (locale === "de") return `In früheren Builds hieß ${deEr(card)} ${card.formerName}.`;
   return `In earlier builds it was called ${card.formerName}.`;
 }
 
@@ -639,7 +728,7 @@ function chainParts(chain: readonly RelCard[][], locale: Locale): Part[] {
   // il secondo passaggio solo se il primo è una carta sola: con più carte "a sua volta" non si capirebbe di chi.
   // In francese "elle-même" si accorda con la prima carta, che per avere a sua volta chi la genera è una carta creata.
   if (first.length === 1 && second?.length) {
-    const next = { en: ", which is in turn created by ", it: ", a sua volta generata da ", es: ", a su vez creada por ", fr: ", elle-même créée par ", pt: ", por sua vez criada por " }[locale];
+    const next = { en: ", which is in turn created by ", it: ", a sua volta generata da ", es: ", a su vez creada por ", fr: ", elle-même créée par ", pt: ", por sua vez criada por ", de: ", ihrerseits erschaffen von " }[locale];
     out.push(next, ...cardList(second, locale));
   }
   return out;
@@ -658,6 +747,8 @@ function tokenOrigin(facts: CardFacts, locale: Locale): Part[] {
       fr: ", et pendant la partie elle est créée par ",
       // al passivo, come il francese: vale per una o più carte
       pt: ", e durante a partida é criada por ",
+      // "durch" vale per una o più carte e non manda il verbo in fondo alla frase
+      de: "; im Match entsteht sie durch ",
     }[locale];
     return [verb, ...chainParts(facts.createdBy, locale), "."];
   }
@@ -670,6 +761,7 @@ function tokenOrigin(facts: CardFacts, locale: Locale): Part[] {
       es: ". Ningún texto de carta dice qué carta la crea.",
       fr: ". Aucun texte de carte ne dit quelle carte la crée.",
       pt: ". Nenhum texto de carta diz qual carta a cria.",
+      de: ". Kein Kartentext sagt, welche Karte sie erschafft.",
     }[locale],
   ];
 }
@@ -714,6 +806,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
       fr: " n'est pas dans la Demo 2.0\u00a0: impossible de l'ajouter dans le deck builder.",
       // "entrar em um deck": non cambia con il genere della carta
       pt: " não está na Demo 2.0, então não pode entrar em um deck no deck builder.",
+      de: " ist nicht in der Demo 2.0 und lässt sich daher im Deckbuilder nicht hinzufügen.",
     }[locale];
     const was = {
       en: `It was ${withArticle(card, locale)} in earlier builds of ${gameName.en}.`,
@@ -721,6 +814,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
       es: `Era ${withArticle(card, locale)} de las builds anteriores de ${gameName.es}.`,
       fr: `C'était ${withArticle(card, locale)} des builds précédentes d'${gameName.fr}.`,
       pt: `Era ${withArticle(card, locale)} das builds anteriores de ${gameName.pt}.`,
+      de: `${cap(deEr(card))} war ${withArticle(card, locale)} aus früheren Builds von ${gameName.de}.`,
     }[locale];
     const clause = statsClause(card, locale, "past");
     const stats = clause
@@ -730,6 +824,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
           es: `Últimas estadísticas conocidas: ${clause}.`,
           fr: `Dernières statistiques connues\u00a0: ${frIl(card)} ${clause}.`,
           pt: `Últimas estatísticas conhecidas: ${clause}.`,
+          de: `Zuletzt bekannte Werte: ${cap(deEr(card))} ${clause}.`,
         }[locale]
       : "";
     out.push(name, head, sp(was), sp(stats), sp(formerSentence(card, locale)));
@@ -743,6 +838,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
       es: ` es una carta creada de ${gameName.es}: ${notInBuilder.es}`,
       fr: ` est une carte créée d'${gameName.fr}\u00a0: ${notInBuilder.fr}`,
       pt: ` é uma carta criada de ${gameName.pt}: ${notInBuilder.pt}`,
+      de: ` ist eine erschaffene Karte aus ${gameName.de}: ${notInBuilder.de}`,
     }[locale];
     out.push(name, head, ...tokenOrigin(facts, locale), sp(statsSentence(card, locale)));
     return out.filter((p) => p !== "");
@@ -754,6 +850,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
     es: ` es ${withArticle(card, locale)} de ${gameName.es}.`,
     fr: ` est ${withArticle(card, locale)} d'${gameName.fr}.`,
     pt: ` é ${withArticle(card, locale)} de ${gameName.pt}.`,
+    de: ` ist ${withArticle(card, locale)} aus ${gameName.de}.`,
   }[locale];
   const demo = {
     en: `It is in Demo 2.0 (checked in the game on ${verifiedOn(locale)}).`,
@@ -761,6 +858,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
     es: `Está en la Demo 2.0 (${esMasculine(card) ? "verificado" : "verificada"} en el juego el ${verifiedOn(locale)}).`,
     fr: `${cap(frIl(card))} est dans la Demo 2.0 (${frMasculine(card) ? "vérifié" : "vérifiée"} dans le jeu le ${verifiedOn(locale)}).`,
     pt: `Está na Demo 2.0 (${ptMasculine(card) ? "verificado" : "verificada"} no jogo em ${verifiedOn(locale)}).`,
+    de: `Die Karte ist in der Demo 2.0 (am ${verifiedOn(locale)} im Spiel überprüft).`,
   }[locale];
   out.push(name, is, sp(statsSentence(card, locale)), sp(demo));
   if (facts.decks) out.push(sp(deckSentence(card, facts.decks, locale)));
@@ -785,6 +883,8 @@ function changeWhat(ch: Change, locale: Locale): string {
     es: { mana: "su coste", power: "su Poder", health: "su Salud" },
     fr: { mana: "son coût", power: "sa Puissance", health: "sa Santé" },
     pt: { mana: "o custo", power: "o Poder", health: "a Vida" },
+    // all'accusativo, dopo "änderte"
+    de: { mana: "die Kosten", power: "die Stärke", health: "das Leben" },
   }[locale];
   const fromTo = {
     en: (a: number, b: number) => `from ${a} to ${b}`,
@@ -792,6 +892,7 @@ function changeWhat(ch: Change, locale: Locale): string {
     es: (a: number, b: number) => `de ${a} a ${b}`,
     fr: (a: number, b: number) => `de ${a} à ${b}`,
     pt: (a: number, b: number) => `de ${a} para ${b}`,
+    de: (a: number, b: number) => `von ${a} auf ${b}`,
   }[locale];
   const bits: string[] = [];
   for (const k of ["mana", "power", "health"] as const) {
@@ -800,11 +901,11 @@ function changeWhat(ch: Change, locale: Locale): string {
     if (a !== undefined && b !== undefined && a !== b) bits.push(`${stat[k]} ${fromTo(a, b)}`);
   }
   if (ch.alignment) {
-    const [what, from, to] = { en: ["its alignment", "from", "to"], it: ["l'allineamento", "da", "a"], es: ["su alineamiento", "de", "a"], fr: ["son alignement", "de", "à"], pt: ["o alinhamento", "de", "para"] }[locale];
+    const [what, from, to] = { en: ["its alignment", "from", "to"], it: ["l'allineamento", "da", "a"], es: ["su alineamiento", "de", "a"], fr: ["son alignement", "de", "à"], pt: ["o alinhamento", "de", "para"], de: ["die Ausrichtung", "von", "auf"] }[locale];
     bits.push(`${what} ${from} ${alignWord[ch.alignment.from]} ${to} ${alignWord[ch.alignment.to]}`);
   }
-  if (!bits.length) return { en: "its text", it: "il testo", es: "su texto", fr: "son texte", pt: "o texto" }[locale];
-  const and = { en: " and ", it: " e ", es: " y ", fr: " et ", pt: " e " }[locale];
+  if (!bits.length) return { en: "its text", it: "il testo", es: "su texto", fr: "son texte", pt: "o texto", de: "den Text" }[locale];
+  const and = { en: " and ", it: " e ", es: " y ", fr: " et ", pt: " e ", de: " und " }[locale];
   return bits.length === 1 ? bits[0] : `${bits.slice(0, -1).join(", ")}${and}${bits[bits.length - 1]}`;
 }
 
@@ -821,6 +922,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
       es: `No: ningún parche desde el ${since} ha cambiado sus estadísticas ni su texto.`,
       fr: `Non\u00a0: aucun patch depuis la ${since} n'a modifié ses statistiques ni son texte.`,
       pt: `Não: nenhum patch desde o ${since} mudou as suas estatísticas ou o seu texto.`,
+      de: `Nein: Seit ${since} hat kein Patch die Werte oder den Text dieser Karte geändert.`,
     }[locale];
     const only = deckOnly.length
       ? {
@@ -829,6 +931,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
           es: ` Solo aparece en los cambios de los mazos predefinidos del playtest (${deckOnly.join(", ")}).`,
           fr: ` ${cap(frIl(card))} apparaît seulement dans les modifications des decks préconstruits du playtest (${deckOnly.join(", ")}).`,
           pt: ` Aparece apenas nas mudanças dos decks predefinidos do playtest (${deckOnly.join(", ")}).`,
+          de: ` Sie taucht nur in den Änderungen an den vorgefertigten Decks des Playtests auf (${deckOnly.join(", ")}).`,
         }[locale]
       : "";
     return [no + only];
@@ -847,6 +950,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
     if (locale === "es") return ["Sí: el parche ", patchPart, ` del ${date} cambió ${what}.`];
     if (locale === "fr") return ["Oui\u00a0: le patch ", patchPart, ` du ${date} a changé ${what}.`];
     if (locale === "pt") return ["Sim: o patch ", patchPart, ` de ${date} mudou ${what}.`];
+    if (locale === "de") return ["Ja: Patch ", patchPart, ` vom ${date} änderte ${what}.`];
     return ["Yes: patch ", patchPart, ` (${date}) changed ${what}.`];
   }
   // "patch" in italiano non cambia al plurale; in francese è maschile e fa "patchs"
@@ -854,6 +958,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
   if (locale === "es") return [`Sí, en ${k} parches. El último es el parche `, patchPart, ` del ${date}, que cambió ${what}.`];
   if (locale === "fr") return [`Oui, dans ${k} patchs. Le dernier est le patch `, patchPart, ` du ${date}, qui a changé ${what}.`];
   if (locale === "pt") return [`Sim, em ${k} patches. O último é o patch `, patchPart, ` de ${date}, que mudou ${what}.`];
+  if (locale === "de") return [`Ja, in ${k} Patches. Der letzte ist Patch `, patchPart, ` vom ${date}, der ${what} änderte.`];
   return [`Yes, in ${k} patches. The latest is patch `, patchPart, ` (${date}), which changed ${what}.`];
 }
 
@@ -864,6 +969,7 @@ const fromTexts: Record<Locale, string> = {
   es: " (según los textos de las cartas).",
   fr: " (d'après les textes des cartes).",
   pt: " (segundo os textos das cartas).",
+  de: " (laut den Kartentexten).",
 };
 
 /**
@@ -874,7 +980,7 @@ const fromTexts: Record<Locale, string> = {
 function createsParts(card: LeadCard, creates: readonly RelCard[][], locale: Locale): Part[] {
   const [first, second] = creates;
   const past = card.status === "removed";
-  const verb = past ? { en: " created ", it: " generava ", es: " creaba ", fr: " créait ", pt: " criava " } : { en: " creates ", it: " genera ", es: " crea ", fr: " crée ", pt: " cria " };
+  const verb = past ? { en: " created ", it: " generava ", es: " creaba ", fr: " créait ", pt: " criava ", de: " erschuf " } : { en: " creates ", it: " genera ", es: " crea ", fr: " crée ", pt: " cria ", de: " erschafft " };
   const out: Part[] = [cardRef(card), verb[locale], ...cardList(first, locale)];
   if (second?.length) {
     const one = first.length === 1;
@@ -884,6 +990,8 @@ function createsParts(card: LeadCard, creates: readonly RelCard[][], locale: Loc
       es: one ? ", que a su vez crea " : ", que a su vez crean ",
       fr: one ? ", qui crée à son tour " : ", qui créent à leur tour ",
       pt: one ? ", que por sua vez cria " : ", que por sua vez criam ",
+      // frase principale dopo il punto e virgola: il verbo resta al secondo posto
+      de: one ? "; diese erschafft wiederum " : "; diese erschaffen wiederum ",
     }[locale];
     out.push(next, ...cardList(second, locale));
   }
@@ -925,6 +1033,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
     es: `¿Está ${n} en la demo de Origins TCG?`,
     fr: `La carte ${n} est-elle dans la démo d'Origins TCG\u00a0?`,
     pt: `${n} está na demo de Origins TCG?`,
+    de: `Ist ${n} in der Demo von Origins TCG?`,
   }[locale];
   if (card.status === "removed") {
     items.push({
@@ -936,6 +1045,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           es: "No: estaba en builds anteriores de Origins TCG y no está en la Demo 2.0, así que no se puede añadir en el deck builder.",
           fr: "Non\u00a0: elle était dans les builds précédentes d'Origins TCG et n'est pas dans la Demo 2.0, donc impossible de l'ajouter dans le deck builder.",
           pt: "Não: estava em builds anteriores de Origins TCG e não está na Demo 2.0, então não pode entrar em um deck no deck builder.",
+          de: "Nein: Die Karte war in früheren Builds von Origins TCG und ist nicht in der Demo 2.0, daher lässt sie sich im Deckbuilder nicht hinzufügen.",
         }[locale],
       ],
     });
@@ -950,6 +1060,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           es: `Sí, como carta creada: ${notInBuilder.es}, pero llega a la partida desde una carta de la Demo 2.0.`,
           fr: `Oui, comme carte créée\u00a0: ${notInBuilder.fr}, mais elle entre en jeu grâce à une carte de la Demo 2.0.`,
           pt: `Sim, como carta criada: ${notInBuilder.pt}, mas chega à partida por meio de uma carta da Demo 2.0.`,
+          de: `Ja, als erschaffene Karte: ${notInBuilder.de}, aber sie kommt über eine Karte der Demo 2.0 ins Match.`,
         }[locale]
       : {
           en: `We cannot say for sure: no card text in Demo 2.0 creates it, and created cards are not in the game's collection. ${cap(notInBuilder.en)}.`,
@@ -957,6 +1068,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           es: `No se puede decir con certeza: ningún texto de las cartas de la Demo 2.0 la crea, y las cartas creadas no están en la colección del juego. ${cap(notInBuilder.es)}.`,
           fr: `Impossible de l'affirmer\u00a0: aucun texte de carte de la Demo 2.0 ne la crée, et les cartes créées ne sont pas dans la collection du jeu. ${cap(notInBuilder.fr)}.`,
           pt: `Não dá para afirmar com certeza: nenhum texto das cartas da Demo 2.0 a cria, e as cartas criadas não estão na coleção do jogo. ${cap(notInBuilder.pt)}.`,
+          de: `Das lässt sich nicht sicher sagen: Kein Kartentext der Demo 2.0 erschafft sie, und erschaffene Karten sind nicht in der Sammlung des Spiels. ${cap(notInBuilder.de)}.`,
         }[locale];
     items.push({ q: q1, a: [a] });
   } else {
@@ -968,6 +1080,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           es: `Sí: es una de las ${legendaries} Legendarias de la Demo 2.0, verificadas en el juego el ${date}, así que puede liderar un mazo en el deck builder.`,
           fr: `Oui\u00a0: c'est l'une des ${legendaries} Légendaires de la Demo 2.0, vérifiées dans le jeu le ${date}, donc elle peut mener un deck dans le deck builder.`,
           pt: `Sim: é uma das ${legendaries} Lendárias da Demo 2.0, verificadas no jogo em ${date}, então pode liderar um deck no deck builder.`,
+          de: `Ja: Die Karte ist eine der ${legendaries} Legendären der Demo 2.0, am ${date} im Spiel überprüft, und kann daher im Deckbuilder ein Deck anführen.`,
         }[locale]
       : {
           en: `Yes: it is one of the ${total} cards in Demo 2.0, checked in the game on ${date}, so you can put it in a deck in the deck builder.`,
@@ -975,30 +1088,31 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           es: `Sí: es una de las ${total} cartas de la Demo 2.0, verificadas en el juego el ${date}, así que puedes ponerla en un mazo en el deck builder.`,
           fr: `Oui\u00a0: c'est l'une des ${total} cartes de la Demo 2.0, vérifiées dans le jeu le ${date}, donc vous pouvez la mettre dans un deck dans le deck builder.`,
           pt: `Sim: é uma das ${total} cartas da Demo 2.0, verificadas no jogo em ${date}, então você pode colocá-la em um deck no deck builder.`,
+          de: `Ja: Die Karte ist eine der ${total} Karten der Demo 2.0, am ${date} im Spiel überprüft, du kannst sie also im Deckbuilder in ein Deck aufnehmen.`,
         }[locale];
     items.push({ q: q1, a: [a] });
   }
 
   // 2. Le patch l'hanno cambiata?
   items.push({
-    q: { en: `Has a patch changed ${n}?`, it: `Le patch hanno cambiato ${n}?`, es: `¿Algún parche ha cambiado ${n}?`, fr: `Un patch a-t-il changé ${n}\u00a0?`, pt: `Algum patch mudou ${n}?` }[locale],
+    q: { en: `Has a patch changed ${n}?`, it: `Le patch hanno cambiato ${n}?`, es: `¿Algún parche ha cambiado ${n}?`, fr: `Un patch a-t-il changé ${n}\u00a0?`, pt: `Algum patch mudou ${n}?`, de: `Hat ein Patch ${n} verändert?` }[locale],
     a: patchAnswer(card, locale),
   });
 
   // 3. Chi la genera, che cosa genera o con quali carte sta
   if (card.type === "token") {
-    const q = { en: `Which card creates ${n}?`, it: `Quale carta genera ${n}?`, es: `¿Qué carta crea ${n}?`, fr: `Quelle carte crée ${n}\u00a0?`, pt: `Qual carta cria ${n}?` }[locale];
+    const q = { en: `Which card creates ${n}?`, it: `Quale carta genera ${n}?`, es: `¿Qué carta crea ${n}?`, fr: `Quelle carte crée ${n}\u00a0?`, pt: `Qual carta cria ${n}?`, de: `Welche Karte erschafft ${n}?` }[locale];
     const [first] = facts.createdBy;
     const a: Part[] = [];
     if (first?.length) {
       const many = first.length > 1;
       a.push(
-        { en: "It is created by ", it: many ? "La generano " : "La genera ", es: many ? "La crean " : "La crea ", fr: "Elle est créée par ", pt: "É criada por " }[locale],
+        { en: "It is created by ", it: many ? "La generano " : "La genera ", es: many ? "La crean " : "La crea ", fr: "Elle est créée par ", pt: "É criada por ", de: "Sie entsteht durch " }[locale],
         ...chainParts(facts.createdBy, locale),
         fromTexts[locale],
       );
     } else {
-      a.push({ en: "No card text says so.", it: "Nessun testo di carta lo dice.", es: "Ningún texto de carta lo dice.", fr: "Aucun texte de carte ne le dit.", pt: "Nenhum texto de carta diz isso." }[locale]);
+      a.push({ en: "No card text says so.", it: "Nessun testo di carta lo dice.", es: "Ningún texto de carta lo dice.", fr: "Aucun texte de carte ne le dit.", pt: "Nenhum texto de carta diz isso.", de: "Kein Kartentext sagt das." }[locale]);
     }
     if (facts.createdByEarlier.length) {
       const many = facts.createdByEarlier.length > 1;
@@ -1009,6 +1123,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           es: many ? " En builds anteriores también la creaban " : " En builds anteriores también la creaba ",
           fr: " Dans les builds précédentes, elle était aussi créée par ",
           pt: " Em builds anteriores, também era criada por ",
+          de: " In früheren Builds entstand sie auch durch ",
         }[locale],
         ...cardList(facts.createdByEarlier, locale),
         ".",
@@ -1020,8 +1135,8 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
     // in francese l'inversione con il soggetto nominale: "Quelles cartes crée Merlin ?"
     items.push({
       q: past
-        ? { en: `Which cards did ${n} create?`, it: `Quali carte generava ${n}?`, es: `¿Qué cartas creaba ${n}?`, fr: `Quelles cartes créait ${n}\u00a0?`, pt: `Quais cartas ${n} criava?` }[locale]
-        : { en: `Which cards does ${n} create?`, it: `Quali carte genera ${n}?`, es: `¿Qué cartas crea ${n}?`, fr: `Quelles cartes crée ${n}\u00a0?`, pt: `Quais cartas ${n} cria?` }[locale],
+        ? { en: `Which cards did ${n} create?`, it: `Quali carte generava ${n}?`, es: `¿Qué cartas creaba ${n}?`, fr: `Quelles cartes créait ${n}\u00a0?`, pt: `Quais cartas ${n} criava?`, de: `Welche Karten erschuf ${n}?` }[locale]
+        : { en: `Which cards does ${n} create?`, it: `Quali carte genera ${n}?`, es: `¿Qué cartas crea ${n}?`, fr: `Quelles cartes crée ${n}\u00a0?`, pt: `Quais cartas ${n} cria?`, de: `Welche Karten erschafft ${n}?` }[locale],
       a: createsParts(card, facts.creates, locale),
     });
   } else if (card.status === "active" && facts.decks && facts.companions?.length) {
@@ -1033,6 +1148,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
       es: `¿Qué cartas suelen ir en el mismo mazo que ${n}?`,
       fr: `Quelles cartes sont souvent dans le même deck que ${n}\u00a0?`,
       pt: `Quais cartas costumam estar no mesmo deck que ${n}?`,
+      de: `Welche Karten sind oft im selben Deck wie ${n}?`,
     }[locale];
     const intro = {
       en: leg ? `The cards found most often in the ${d} decks it leads: ` : `The cards found most often in its ${d} published decks: `,
@@ -1040,6 +1156,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
       es: leg ? `Las cartas más presentes en los ${d} mazos que lidera: ` : `Las cartas más presentes en sus ${d} mazos publicados: `,
       fr: leg ? `Les cartes les plus présentes dans les ${d} decks qu'${frIl(card)} mène\u00a0: ` : `Les cartes les plus présentes dans ses ${d} decks publiés\u00a0: `,
       pt: leg ? `As cartas mais presentes nos ${d} decks que lidera: ` : `As cartas mais presentes nos seus ${d} decks publicados: `,
+      de: leg ? `Die häufigsten Karten in den ${d} Decks, die ${deEr(card)} anführt: ` : `Die häufigsten Karten in den ${d} veröffentlichten Decks mit dieser Karte: `,
     }[locale];
     items.push({ q, a: [intro, ...companionParts(facts.companions, d, locale), "."] });
   }
@@ -1103,7 +1220,7 @@ export function asOfLine(card: Pick<Card, "type" | "status">, locale: Locale, so
 
 /**
  * Potere leggendario delle 11 Leggendarie (SCHEDE-13), da leggere nella Demo 2.0 ("Game Start: …") e trascrivere qui
- * nelle cinque lingue, con il testo ufficiale del gioco: la scheda lo mostra in una sezione sua appena c'è. Resta vuoto
+ * nelle sei lingue, con il testo ufficiale del gioco: la scheda lo mostra in una sezione sua appena c'è. Resta vuoto
  * finché nessuno lo ha letto nel gioco: mai copiarlo da altri siti (CLAUDE.md, "niente dati inventati").
  */
 export const legendaryPowers: Readonly<Partial<Record<string, Record<Locale, string>>>> = {};

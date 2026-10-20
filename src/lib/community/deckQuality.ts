@@ -159,6 +159,10 @@ export const guideMeterLabels: Record<Locale, { below: string; ok: string }> = {
     below: "{n} de {min} palavras. Com pelo menos {min} palavras de guia (plano de jogo mais seções), a página do deck pode aparecer no Google; com menos, ela fica só no site.",
     ok: "{n} palavras: guia completo, a página do deck pode aparecer no Google.",
   },
+  de: {
+    below: "{n} von {min} Wörtern. Mit mindestens {min} Wörtern Guide (Spielplan plus Abschnitte) kann die Deckseite bei Google erscheinen; mit weniger bleibt sie nur auf der Website.",
+    ok: "{n} Wörter: vollständiger Guide, die Deckseite kann bei Google erscheinen.",
+  },
 };
 
 /** La frase dell'indicatore per un numero di parole. */
@@ -366,6 +370,34 @@ const profileWords: Record<Locale, ProfileWords> = {
     kinds: { legendaries: "Lendárias", cards: "cartas base" },
     and: " e ",
     tails: ["Perfil na comunidade do OriginsMeta, site de fãs não oficial de Origins TCG.", "Perfil na comunidade do OriginsMeta.", "Perfil na comunidade."],
+  },
+  // tedesco (20/10/2026, docs/tedesco.md): "Origins TCG Decks" come lo cercano i giocatori, "Tier-List" col trattino
+  de: {
+    title: {
+      both: "{name}: Origins TCG Decks und Tier-Lists",
+      decks: "{name}: Origins TCG Decks",
+      deck: "{name}: Origins TCG Deck",
+      decksGuides: "{name}: Origins TCG Decks und Guides",
+      guides: "{name}: Origins TCG Guides",
+      guide: "{name}: Origins TCG Guide",
+      none: "{name}: Community-Profil zu Origins TCG",
+      short: "{name}: Origins TCG",
+    },
+    decks: ({ name, n, list }) =>
+      n === 1
+        ? `Ein Origins TCG Deck von ${name}${list} mit Spielplan und vollständiger Kartenliste`
+        : `${n} Origins TCG Decks von ${name}${list} mit Spielplänen und vollständigen Kartenlisten`,
+    plusTiers: (k) => (k === 1 ? ", dazu eine gespeicherte Tier-List" : `, dazu ${k} gespeicherte Tier-Lists`),
+    plusGuides: (g) => (g === 1 ? ", dazu ein Guide" : `, dazu ${g} Guides`),
+    guidesOnly: ({ name, g }) => `${g === 1 ? "Ein Origins TCG Guide" : `${g} Origins TCG Guides`}, geschrieben von ${name} für andere Spieler`,
+    tiersOnly: ({ name, k, kinds }) => {
+      const head = `${k === 1 ? "Eine Origins TCG Tier-List" : `${k} Origins TCG Tier-Lists`} von ${name} (${kinds}), von S bis D eingestuft`;
+      return [`${head}, bereit zum Öffnen im Tool „Erstelle deine Tier-List“.`, `${head}.`];
+    },
+    none: (name) => `Das Profil von ${name} auf OriginsMeta, der Community-Website zu Origins TCG: noch keine veröffentlichten Decks oder Tier-Lists.`,
+    kinds: { legendaries: "Legendäre", cards: "Basiskarten" },
+    and: " und ",
+    tails: ["Ein Community-Profil auf OriginsMeta, der inoffiziellen Fanseite zu Origins TCG.", "Ein Community-Profil auf OriginsMeta.", "Community-Profil."],
   },
 };
 
@@ -602,5 +634,12 @@ export const communityPageLabels: Record<Locale, CommunityPageLabels> = {
     guideCallout: "O guia do OriginsMeta sobre este deck",
     authorPage: "Equipe editorial do OriginsMeta: {name}",
     tierList: "Tier list de Origins TCG",
+  },
+  de: {
+    sameLegendary: "Weitere Decks mit {legendary}",
+    moreAfter: "Andere Decks",
+    guideCallout: "Der Guide von OriginsMeta zu diesem Deck",
+    authorPage: "Redaktion von OriginsMeta: {name}",
+    tierList: "Origins TCG Tier-List",
   },
 };

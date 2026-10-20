@@ -22,8 +22,10 @@ import { es as dictEs } from "./dictionaries/es.ts";
 import { fr as dictFr } from "./dictionaries/fr.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { pt as dictPt } from "./dictionaries/pt.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { de as dictDe } from "./dictionaries/de.ts";
 
-const dictionaries = { en: dictEn, it: dictIt, es: dictEs, fr: dictFr, pt: dictPt } as const;
+const dictionaries = { en: dictEn, it: dictIt, es: dictEs, fr: dictFr, pt: dictPt, de: dictDe } as const;
 type Tree = { [key: string]: string | Tree };
 
 function leaves(obj: Tree, prefix = ""): Map<string, string> {
@@ -43,7 +45,7 @@ for (const [title, all] of [
 ] as const) {
   describe(title, () => {
     const en = leaves(all.en as unknown as Tree);
-    for (const locale of ["it", "es", "pt"] as const) {
+    for (const locale of ["it", "es", "fr", "pt", "de"] as const) {
       test(`${locale}: stesse chiavi e stessi segnaposto dell'inglese, nessun testo vuoto`, () => {
         const other = leaves(all[locale] as unknown as Tree);
         assert.deepEqual([...other.keys()].sort(), [...en.keys()].sort());
@@ -94,9 +96,10 @@ describe("contenuti", () => {
   test("followNavLabelsFor: lingua sconosciuta → inglese; fillFollowLabel lascia i segnaposto sconosciuti", () => {
     assert.equal(followNavLabelsFor("it").follow, "Segui");
     assert.equal(followNavLabelsFor("es").follow, "Seguir");
-    assert.equal(followNavLabelsFor("de").follow, "Follow");
+    assert.equal(followNavLabelsFor("nl").follow, "Follow");
     assert.equal(followNavLabelsFor("fr").follow, "Suivre");
     assert.equal(followNavLabelsFor("pt").follow, "Seguir");
+    assert.equal(followNavLabelsFor("de").follow, "Folgen");
     assert.equal(followNavLabelsFor("toString").follow, "Follow");
     assert.equal(fillFollowLabel("{name} · {x}", { name: "Vega" }), "Vega · {x}");
   });

@@ -305,7 +305,7 @@ const en: CreatorLabels = {
     inviteGuide: "Send us a guide",
     listName: "Origins TCG creators and authors on OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch" },
   privacy:
     "Public profile. The bio, channels and languages you write under \"Your public profile\" (My profile › Edit my public page) are public: they appear on your /u page and, if you have the Creator, Author, Pro or Staff role, on the Creators and authors page and next to your name on your decks. You can change or delete them at any time. For people with one of these roles and a Twitch channel, our server asks Twitch whether the channel is live on Origins TCG (public channel data) at most once every 90 seconds, when someone opens a page that shows the badge; your browser does not contact Twitch until you open the link.",
   footer: "Creators and authors",
@@ -426,7 +426,7 @@ const it: CreatorLabels = {
     inviteGuide: "Mandaci una guida",
     listName: "Creator e autori di Origins TCG su OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch" },
   privacy:
     "Profilo pubblico. La bio, i canali e le lingue che scrivi in «Il tuo profilo pubblico» (Il mio profilo › Modifica la mia pagina pubblica) sono pubblici: compaiono sulla tua pagina /u e, se hai il ruolo Creator, Autore, Pro o Staff, nella pagina Creator e autori e accanto al tuo nome nei tuoi mazzi. Puoi cambiarli o cancellarli quando vuoi. Per chi ha uno di questi ruoli e un canale Twitch, il nostro server chiede a Twitch se il canale è in diretta su Origins TCG (dati pubblici del canale) al massimo una volta ogni 90 secondi, quando qualcuno apre una pagina con il bollino; il tuo browser non contatta Twitch finché non apri il link.",
   footer: "Creator e autori",
@@ -547,7 +547,7 @@ const es: CreatorLabels = {
     inviteGuide: "Envíanos una guía",
     listName: "Creadores y autores de Origins TCG en OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch" },
   privacy:
     "Perfil público. La bio, los canales y los idiomas que escribes en «Tu perfil público» (Mi perfil › Editar mi página pública) son públicos: aparecen en tu página /u y, si tienes el rol Creator, Autor, Pro o Staff, en la página Creadores y autores y junto a tu nombre en tus mazos. Puedes cambiarlos o borrarlos cuando quieras. Para quien tiene uno de estos roles y un canal de Twitch, nuestro servidor pregunta a Twitch si el canal está en directo con Origins TCG (datos públicos del canal) como mucho una vez cada 90 segundos, cuando alguien abre una página con la etiqueta; tu navegador no contacta con Twitch hasta que abres el enlace.",
   footer: "Creadores y autores",
@@ -672,7 +672,7 @@ const fr: CreatorLabels = {
     inviteGuide: "Envoyez-nous un guide",
     listName: "Créateurs et auteurs d'Origins TCG sur OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch" },
   privacy:
     "Profil public. La bio, les chaînes et les langues que vous écrivez sous « Votre profil public » (Mon profil › Modifier ma page publique) sont publiques : elles apparaissent sur votre page /u et, si vous avez le rôle Creator, Auteur, Pro ou Staff, sur la page Créateurs et auteurs et à côté de votre nom sur vos decks. Vous pouvez les changer ou les supprimer à tout moment. Pour les personnes ayant l'un de ces rôles et une chaîne Twitch, notre serveur demande à Twitch si la chaîne est en direct sur Origins TCG (données publiques de la chaîne) au plus une fois toutes les 90 secondes, quand quelqu'un ouvre une page qui affiche le badge ; votre navigateur ne contacte pas Twitch tant que vous n'ouvrez pas le lien.",
   footer: "Créateurs et auteurs",
@@ -797,13 +797,138 @@ const pt: CreatorLabels = {
     inviteGuide: "Envie um guia para nós",
     listName: "Criadores e autores de Origins TCG no OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch" },
   privacy:
     "Perfil público. A bio, os canais e os idiomas que você escreve em “Perfil público” (Meu perfil › Editar minha página pública) são públicos: aparecem na sua página /u e, se você tem a função Creator, Autor, Pro ou Staff, na página Criadores e autores e ao lado do seu nome nos seus decks. Você pode alterá-los ou apagá-los quando quiser. Para quem tem uma dessas funções e um canal da Twitch, o nosso servidor pergunta à Twitch se o canal está ao vivo com Origins TCG (dados públicos do canal) no máximo uma vez a cada 90 segundos, quando alguém abre uma página que mostra o selo; o seu navegador não entra em contato com a Twitch até você abrir o link.",
   footer: "Criadores e autores",
 };
 
-export const creatorLabels: Record<Locale, CreatorLabels> = { en, it, es, fr, pt };
+/**
+ * Tedesco (20/10/2026, docs/tedesco.md): "du" minuscolo, ruoli Creator / Autor / Pro / Staff ("Rolle" per il ruolo),
+ * la directory è "Creator und Autoren" (footer dentro H1 e title, come nelle altre lingue).
+ */
+const de: CreatorLabels = {
+  channels: { website: "Website", newTab: "(öffnet sich in einem neuen Tab)", listOf: "Kanäle von {name}" },
+  live: { badge: "LIVE", title: "Jetzt live auf Twitch: {viewers} Zuschauer" },
+  liveNow: {
+    strip: { title: "Jetzt live", one: "{name} ist live", many: "{n} Creator live" },
+    page: {
+      kicker: "Live auf Twitch",
+      h1: "Creator von Origins TCG jetzt live",
+      metaTitle: "Creator von Origins TCG live auf Twitch",
+      description:
+        "Sieh nach, welche Creator, Autoren, Pro-Spieler und Staff von Origins TCG gerade auf Twitch streamen, und schau live zu, ohne OriginsMeta zu verlassen.",
+      intro:
+        "Wer von den Personen mit der Rolle Creator, Autor, Pro oder Staff auf OriginsMeta gerade Origins TCG auf Twitch streamt. Die Seite aktualisiert sich jede Minute von selbst.",
+      loading: "Wir prüfen, wer live ist…",
+      none: "Gerade streamt niemand Origins TCG. Schau später wieder vorbei: Diese Seite aktualisiert sich von selbst.",
+      off: "Der Live-Status ist gerade nicht verfügbar.",
+      viewers: "Zuschauer: {viewers}",
+      profile: "Profil",
+      openTwitch: "Auf Twitch öffnen",
+      watch: "Den Stream von {name} hier ansehen",
+      playerTitle: "{name} live auf Twitch",
+      consent: "Wenn du den Stream lädst, akzeptierst du die Cookies von Twitch.",
+      privacy: "Datenschutz",
+      narrow: "Auf einem kleinen Bildschirm öffnet sich der Stream auf Twitch.",
+      openAria: "Den Stream von {name} auf Twitch öffnen (neuer Tab)",
+      streamersTitle: "Die Streamer auf OriginsMeta",
+      streamersIntro: "Creator, Autoren, Pro-Spieler und Staff mit einem Twitch-Kanal im Profil: Wenn sie Origins TCG streamen, erscheinen sie hier oben.",
+      streamersEmpty: "Noch niemand hat einen Twitch-Kanal zu seinem Profil hinzugefügt.",
+      twitchChannel: "Twitch-Kanal",
+      howTo:
+        "Du streamst Origins TCG? Füge deinen Twitch-Kanal in deinem Konto hinzu, unter „Meine öffentliche Seite bearbeiten“. Mit der Rolle Creator, Autor, Pro oder Staff erscheinst du hier, während du in der Kategorie Origins TCG live bist oder „Origins TCG“ im Titel des Streams steht.",
+      allCreators: "Alle Creator und Autoren",
+    },
+  },
+  form: {
+    title: "Dein öffentliches Profil",
+    intro:
+      "Deine Bio, deine Kanäle und deine Sprachen erscheinen auf deiner öffentlichen Seite. Mit der Rolle Creator, Autor, Pro oder Staff erscheinen sie auch auf der Seite Creator und Autoren, und deine ersten drei Kanäle neben deinem Namen bei deinen Decks.",
+    bio: "Bio",
+    bioHint: "Reiner Text, höchstens {max} Zeichen und {lines} Zeilen. Keine Links hier: Die Kanäle kommen darunter.",
+    bioLinesOver: "Mehr als {lines} Zeilen: Beim Speichern werden die überzähligen Zeilen an die letzte angehängt.",
+    bioPlaceholder: "Z. B. deutscher Streamer, Control-Decks und Vorbereitung auf die Crimson Cup jeden Dienstagabend.",
+    langs: "Sprachen deiner Inhalte",
+    langsHint: "Für den Sprachfilter der Seite Creator und Autoren.",
+    channels: "Deine Kanäle",
+    channelsHint:
+      "Bis zu 8. Füge die Adresse des Kanals ein, oder bei Twitch, YouTube, X, TikTok, Instagram und Kick nur den Namen. Mit der Rolle Creator, Autor, Pro oder Staff erscheinen die ersten drei neben deinem Namen bei deinen Decks.",
+    kind: "Plattform",
+    url: "Adresse oder Name",
+    add: "Kanal hinzufügen",
+    remove: "Entfernen",
+    moveUp: "Nach oben",
+    save: "Profil speichern",
+    saving: "Wird gespeichert…",
+    saved: "Profil gespeichert.",
+    viewPage: "Deine öffentliche Seite ansehen",
+    shortLink: "Dein Kurzlink",
+    shortLinkHint: "Zum Sagen im Stream oder für deine Panels: Er öffnet deine Seite in der Sprache der Person, die ihn nutzt.",
+    copy: "Kopieren",
+    copied: "Kopiert",
+    missing: "Das öffentliche Profil kommt bald: Es ist mit dem nächsten Update der Website verfügbar.",
+    readError: "Wir können dein Profil gerade nicht lesen. Lade die Seite gleich noch einmal.",
+    errors: {
+      bioLong: "Deine Bio ist länger als {max} Zeichen.",
+      invalid: "Das ist keine Adresse eines {platform}-Kanals.",
+      invalidWebsite: "Das ist keine gültige Website-Adresse.",
+      http: "Die Adresse muss mit https:// beginnen.",
+      shortener: "Keine gekürzten Links (bit.ly, tinyurl…): Füge die echte Adresse ein.",
+      redirect: "Keine Weiterleitungslinks: Füge die Adresse der Seite selbst ein.",
+      platform: "Das ist eine {platform}-Adresse: Wähle {platform} als Plattform.",
+      long: "Diese Adresse ist zu lang.",
+      kind: "Wähle eine Plattform.",
+      tooMany: "Höchstens 8 Kanäle.",
+      tooFast: "Du hast gerade gespeichert: Warte ein paar Sekunden und versuch es noch einmal.",
+      notLoggedIn: "Melde dich an, um dein Profil zu bearbeiten.",
+      db: "Wir konnten dein Profil nicht speichern. Versuch es gleich noch einmal.",
+      disabled: "Konten sind gerade nicht verfügbar.",
+    },
+  },
+  profile: {
+    langs: "Inhalte auf",
+    organizedTitle: "Organisierte Turniere",
+    directoryLink: "Alle Creator und Autoren",
+  },
+  directory: {
+    kicker: "Community",
+    h1: "Creator und Autoren von Origins TCG",
+    metaTitle: "Creator und Autoren von Origins TCG",
+    description:
+      "Creator, Autoren und Streamer, die Inhalte zu Origins TCG machen: ihre Kanäle, Sprachen, auf OriginsMeta veröffentlichten Decks und wer gerade live ist.",
+    intro:
+      "Alle Personen mit der Rolle Creator, Autor, Pro oder Staff auf OriginsMeta, die ihr öffentliches Profil ausgefüllt haben. Filtere nach Rolle, Sprache und Plattform; wer gerade mit Origins TCG live ist, trägt das LIVE-Abzeichen.",
+    order: "Reihenfolge: zuerst Personen mit Inhalten in der Sprache dieser Seite, dann die mit mehr veröffentlichten Decks, dann nach Name.",
+    lang: "Sprache",
+    platform: "Plattform",
+    role: "Rolle",
+    allRoles: "Alle",
+    allLangs: "Alle",
+    allPlatforms: "Alle",
+    results: "{n} Profile",
+    resultsOne: "1 Profil",
+    noResults: "Kein Profil passt zu diesen Filtern.",
+    decksMany: "{n} Decks",
+    deckOne: "1 Deck",
+    noDecks: "Noch keine Decks",
+    profile: "Profil ansehen",
+    empty: "Hier erscheinen die Creator und Autoren von Origins TCG: Die Seite füllt sich, sobald das Staff die Rollen vergibt und die Personen mit einer Rolle ihr öffentliches Profil ausfüllen.",
+    inviteTitle: "Du machst Inhalte zu Origins TCG?",
+    inviteText:
+      "Frag nach einer Rolle. Creator: keine Obergrenze für veröffentlichte Decks und Turniere im Kalender der Website mit deinem eigenen Titelbild. Autor: bis zu {authorDecks} veröffentlichte Decks. Sobald dein öffentliches Profil ausgefüllt ist, erscheint deine Karte auf dieser Seite.",
+    inviteMail: "Schreib uns",
+    inviteMailSubject: "Rolle Creator oder Autor auf OriginsMeta",
+    inviteGuide: "Schick uns einen Guide",
+    listName: "Creator und Autoren von Origins TCG auf OriginsMeta",
+  },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch" },
+  privacy:
+    "Öffentliches Profil. Die Bio, die Kanäle und die Sprachen, die du unter „Dein öffentliches Profil“ (Mein Profil › Meine öffentliche Seite bearbeiten) einträgst, sind öffentlich: Sie erscheinen auf deiner /u-Seite und, wenn du die Rolle Creator, Autor, Pro oder Staff hast, auf der Seite Creator und Autoren und neben deinem Namen bei deinen Decks. Du kannst sie jederzeit ändern oder löschen. Bei Personen mit einer dieser Rollen und einem Twitch-Kanal fragt unser Server höchstens alle 90 Sekunden bei Twitch nach, ob der Kanal mit Origins TCG live ist (öffentliche Daten des Kanals), wenn jemand eine Seite öffnet, die das Abzeichen zeigt; dein Browser kontaktiert Twitch erst, wenn du den Link öffnest.",
+  footer: "Creator und Autoren",
+};
+
+export const creatorLabels: Record<Locale, CreatorLabels> = { en, it, es, fr, pt, de };
 
 /** Sostituisce i segnaposto {chiave} di un'etichetta. */
 export function fillCreator(template: string, values: Readonly<Record<string, string | number>>): string {

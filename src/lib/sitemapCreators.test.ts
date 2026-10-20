@@ -46,11 +46,11 @@ describe("sitemap del profilo pubblico e della directory dei creator", () => {
     const none = sitemapPages(base);
     assert.ok(!none.some((p) => p.path === "/creators"), "senza dati del profilo pubblico (migrazione non applicata) niente directory");
     const many = sitemapPages({ ...base, showcase: { creators: 4, latest: "2026-10-29T08:00:00+00:00", byUser: [] } });
-    for (const locale of ["en", "it", "es", "fr", "pt"] as const) {
+    for (const locale of ["en", "it", "es", "fr", "pt", "de"] as const) {
       const entry = sectionEntries(many, "pages", locale, TODAY).find((e) => e.url === `${SITE}/${locale}/creators`);
       assert.ok(entry, `manca /${locale}/creators`);
       assert.equal(entry.lastmod, "2026-10-29");
-      assert.equal(Object.keys(entry.alternates ?? {}).length, 6, "hreflang delle cinque lingue più x-default");
+      assert.equal(Object.keys(entry.alternates ?? {}).length, 7, "hreflang delle sei lingue più x-default");
     }
   });
   test("il lastmod di /u/<nome> segue la modifica del profilo, mai nel futuro", () => {

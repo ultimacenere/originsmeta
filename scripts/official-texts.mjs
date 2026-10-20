@@ -1,8 +1,8 @@
 // Confronta i testi ufficiali delle carte letti nel gioco con quelli di `src/lib/data/card-lore.ts` e, a richiesta,
 // li scrive nel file. Serve alla verifica da rifare dopo ogni patch (procedura in docs/testi-di-gioco.md).
 //
-//   node scripts/official-texts.mjs <it|es|fr|pt>      elenca le carte il cui testo è diverso da quello del gioco
-//   node scripts/official-texts.mjs <it|es|fr|pt> --apply  scrive il testo del gioco (card-lore.ts, -fr.ts, -pt.ts)
+//   node scripts/official-texts.mjs <it|es|fr|pt|de>      elenca le carte il cui testo è diverso da quello del gioco
+//   node scripts/official-texts.mjs <it|es|fr|pt|de> --apply  scrive il testo del gioco (card-lore.ts, -fr.ts, -pt.ts, -de.ts)
 //   --file <percorso>                                  trascrizione da usare (predefinita: docs/testi-ufficiali/<lingua>.tsv)
 //
 // La trascrizione ha una riga per carta: "Nome<TAB>testo", con \n letterale per gli a capo; le carte senza testo
@@ -18,13 +18,20 @@ const ts = require("typescript");
 
 const args = process.argv.slice(2);
 const lang = args[0];
-if (!["it", "es", "fr", "pt"].includes(lang)) {
-  console.error("Uso: node scripts/official-texts.mjs <it|es|fr|pt> [--apply] [--file <trascrizione>]");
+if (!["it", "es", "fr", "pt", "de"].includes(lang)) {
+  console.error("Uso: node scripts/official-texts.mjs <it|es|fr|pt|de> [--apply] [--file <trascrizione>]");
   process.exit(1);
 }
 const apply = args.includes("--apply");
 const fileArg = args.indexOf("--file");
 const source = fileArg >= 0 ? path.resolve(args[fileArg + 1]) : path.join(ROOT, "docs", "testi-ufficiali", `${lang}.tsv`);
+
+// Il tedesco (dal 20/10/2026) non ha ancora una trascrizione: i testi di card-lore-de.ts sono una traduzione nostra
+// provvisoria finché qualcuno non legge il gioco in tedesco e scrive docs/testi-ufficiali/de.tsv.
+if (!fs.existsSync(source)) {
+  console.error(`Manca la trascrizione ${path.relative(ROOT, source)}: prima vanno letti nel gioco i testi delle carte in questa lingua (procedura in docs/testi-di-gioco.md).`);
+  process.exit(1);
+}
 
 const official = new Map();
 for (const line of fs.readFileSync(source, "utf8").split(/\r?\n/)) {
@@ -37,7 +44,7 @@ for (const line of fs.readFileSync(source, "utf8").split(/\r?\n/)) {
 const woo = JSON.parse(fs.readFileSync(path.join(ROOT, "src/lib/data/woo-cards.json"), "utf8"));
 const active = woo.cards.filter((c) => c.status === "active" && c.type !== "token" && !c.tokenOnly);
 
-/** Le voci per slug di un file di dati (`cardLore` in card-lore.ts, `frLore` in card-lore-fr.ts, `ptLore` in card-lore-pt.ts), con il sorgente per riscriverlo. */
+/** Le voci per slug di un file di dati (`cardLore` in card-lore.ts, `frLore` in card-lore-fr.ts, `ptLore` in card-lore-pt.ts, `deLore` in card-lore-de.ts), con il sorgente per riscriverlo. */
 function readLore(relative, variable) {
   const file = path.join(ROOT, relative);
   const src = fs.readFileSync(file, "utf8");
@@ -54,10 +61,11 @@ function readLore(relative, variable) {
 }
 
 // Italiano e spagnolo stanno in card-lore.ts (campo con il nome della lingua); il francese (dal 07/10/2026) in
-// card-lore-fr.ts e il portoghese del Brasile (dal 20/10/2026) in card-lore-pt.ts, campo `text`. L'inglese di
+// card-lore-fr.ts, il portoghese del Brasile (dal 20/10/2026) in card-lore-pt.ts e il tedesco (dal 20/10/2026, per ora
+// tutto tradotto da noi) in card-lore-de.ts, campo `text`. L'inglese di
 // riferimento (gli a capo) è sempre quello di card-lore.ts o dell'import.
 const base = readLore("src/lib/data/card-lore.ts", "cardLore");
-const own = { fr: ["src/lib/data/card-lore-fr.ts", "frLore"], pt: ["src/lib/data/card-lore-pt.ts", "ptLore"] }[lang];
+const own = { fr: ["src/lib/data/card-lore-fr.ts", "frLore"], pt: ["src/lib/data/card-lore-pt.ts", "ptLore"], de: ["src/lib/data/card-lore-de.ts", "deLore"] }[lang];
 const target = own ? readLore(...own) : base;
 const field = own ? "text" : lang;
 const { file, src, eol, sf, lore } = target;

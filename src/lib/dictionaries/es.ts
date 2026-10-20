@@ -1059,7 +1059,7 @@ export const es: Dictionary = {
   footer: {
     /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
     disclaimer: "OriginsMeta es un sitio de fans independiente y no oficial sobre Origins TCG, el juego de cartas digital de Koin Games, y no está afiliado a Koin Games. Origins TCG y todos los nombres e ilustraciones relacionados pertenecen a sus respectivos titulares.",
-    built: "Construido sobre la mesa, en cinco idiomas.",
+    built: "Construido sobre la mesa, en seis idiomas.",
     links: "Enlaces",
     official: "Oficiales",
     legal: "Información legal",
@@ -1317,9 +1317,9 @@ export const es: Dictionary = {
     },
     kicker: "Mazo de Origins",
     guideLangNote: "Quien publicó el mazo escribió esta guía en {lang} y la mostramos tal cual: la traducción automática aún no está lista.",
-    langNames: { en: "inglés", it: "italiano", es: "español", fr: "francés", pt: "portugués" },
+    langNames: { en: "inglés", it: "italiano", es: "español", fr: "francés", pt: "portugués", de: "alemán" },
     /** "from <language>", after "Translated automatically" */
-    langFrom: { en: "del inglés", it: "del italiano", es: "del español", fr: "del francés", pt: "del portugués" },
+    langFrom: { en: "del inglés", it: "del italiano", es: "del español", fr: "del francés", pt: "del portugués", de: "del alemán" },
     translatedNote: "Traducida automáticamente {from}: los nombres de las cartas se mantienen en inglés, como en el juego.",
     originalText: "Texto original ({lang})",
     metaTail: "Lista completa, gráficos y código del juego en OriginsMeta.",

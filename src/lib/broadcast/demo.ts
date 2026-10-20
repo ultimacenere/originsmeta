@@ -13,6 +13,7 @@ const SPONSOR_PLACEHOLDER: Record<BroadcastLang, string> = {
   es: "Tu patrocinador aquí",
   fr: "Votre sponsor ici",
   pt: "O seu patrocinador aqui",
+  de: "Dein Sponsor hier",
 };
 
 const deck = (name: string, legendary: string, cards: string[], played: Record<string, number> = {}): BroadcastDeck => ({ name, legendary, cards, played });

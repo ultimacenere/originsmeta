@@ -206,7 +206,8 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               {dict.nav.about}
             </NavLink>
             {/* sotto 640 px il selettore lingua e il Discord stanno qui: nella riga dell'header non c'è spazio */}
-            <div className="mt-2 flex items-center justify-between gap-3 border-t border-felt-line px-3 pt-3 sm:hidden">
+            {/* con sei lingue (20/10/2026) le pastiglie vanno a capo sotto l'etichetta quando non ci stanno accanto */}
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-felt-line px-3 pt-3 sm:hidden">
               <span className="text-xs text-chalk-muted">{dict.nav.language}</span>
               <LocaleSwitcher locale={locale} label={dict.nav.language} variant="pills" />
             </div>

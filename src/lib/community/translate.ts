@@ -33,31 +33,32 @@ export function translationEnabled(): boolean {
 }
 
 /**
- * Lingua appena nata (il francese, 07/10/2026), che i trigger delle guide e dei fumetti della community ammettono nelle
+ * Lingue appena nate (il francese il 07/10/2026; portoghese e tedesco il 20/10/2026), che i trigger delle guide e dei fumetti della community ammettono nelle
  * traduzioni solo dopo la migrazione (blocco "07/10/2026: FRANCESE" di schema.sql). Finché il database la rifiuta
  * (errcode 23514, violazione di un check), `saveTranslations` salva senza, così le traduzioni nelle altre lingue non si
  * perdono e la pagina francese mostra l'originale con la sua nota; `scripts/translate-guides.mjs` recupera gli arretrati
- * dopo la migrazione. Messo a null l'08/10/2026, a migrazione applicata; dal 20/10/2026 vale "pt" (portoghese, blocco
- * "20/10/2026: PORTOGHESE") fino alla sua migrazione.
+ * dopo la migrazione. Era vuoto dall'08/10/2026, a migrazione applicata; dal 20/10/2026 contiene il portoghese e il
+ * tedesco (blocchi "20/10/2026: PORTOGHESE" e "20/10/2026: TEDESCO") fino alla loro migrazione: poi torna vuoto.
  */
-export const DB_PENDING_LOCALE: Locale | null = "pt"; // 20/10/2026: blocco "20/10/2026: PORTOGHESE" di schema.sql da migrare; a null dopo la migrazione
+export const DB_PENDING_LOCALES: readonly Locale[] = ["pt", "de"]; // 20/10/2026: da svuotare dopo db-migrate
 
 type SaveResult = PromiseLike<{ error: { code?: string; message: string } | null }>;
 
 /**
  * Scrive le traduzioni di una riga con `save` e restituisce le lingue davvero salvate (null se il salvataggio non è
- * riuscito, già scritto nel log con `tag`). Se il database rifiuta la lingua in attesa di migrazione, riprova senza.
+ * riuscito, già scritto nel log con `tag`). Se il database rifiuta le lingue in attesa di migrazione, riprova senza.
  */
 export async function saveTranslations<T extends Partial<Record<Locale, unknown>>>(save: (translations: T) => SaveResult, next: T, written: readonly Locale[], tag: string): Promise<Locale[] | null> {
   const { error } = await save(next);
   if (!error) return [...written];
-  if (error.code === "23514" && DB_PENDING_LOCALE && DB_PENDING_LOCALE in next) {
+  const pending = DB_PENDING_LOCALES.filter((l) => l in next);
+  if (error.code === "23514" && pending.length) {
     const retry = { ...next };
-    delete retry[DB_PENDING_LOCALE];
+    for (const l of pending) delete retry[l];
     const { error: again } = await save(retry);
     if (!again) {
-      console.error(`[${tag}] il database non ammette ancora la lingua "${DB_PENDING_LOCALE}" nelle traduzioni (migrazione del 07/10/2026 da lanciare): salvate le altre.`);
-      return written.filter((l) => l !== DB_PENDING_LOCALE);
+      console.error(`[${tag}] il database non ammette ancora le lingue ${pending.join(", ")} nelle traduzioni (migrazione da lanciare): salvate le altre.`);
+      return written.filter((l) => !pending.includes(l));
     }
     console.error(`[${tag}] salvataggio delle traduzioni non riuscito:`, again.message);
     return null;

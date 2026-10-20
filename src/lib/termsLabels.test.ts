@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { termsLabels, TERMS_UPDATED } from "./termsLabels.ts";
 
-const locales = ["en", "it", "es", "fr", "pt"] as const;
+const locales = ["en", "it", "es", "fr", "pt", "de"] as const;
 const all = (l: (typeof locales)[number]) => {
   const t = termsLabels[l];
   return [t.title, t.description, t.updated, t.intro, t.footer, ...t.sections.flatMap((s: { title: string; body: string[] }) => [s.title, ...s.body])];
@@ -22,7 +22,7 @@ describe("termini d'uso", () => {
   });
 
   test("non affiliato a Koin Games, niente fonte dei dati né permesso dichiarato", () => {
-    const affiliation = { en: "not affiliated with", it: "non è affiliato a koin games", es: "no está afiliado a koin games", fr: "ni affilié à koin games", pt: "não é afiliado à koin games" };
+    const affiliation = { en: "not affiliated with", it: "non è affiliato a koin games", es: "no está afiliado a koin games", fr: "ni affilié à koin games", pt: "não é afiliado à koin games", de: "nicht mit koin games verbunden" };
     for (const l of locales) {
       const text = all(l).join(" ").toLowerCase();
       assert.ok(text.includes(affiliation[l]), l);

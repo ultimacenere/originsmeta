@@ -135,4 +135,29 @@ const pt: FavoriteLabels = {
   },
 };
 
-export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr, pt };
+const de: FavoriteLabels = {
+  save: "Speichern",
+  saved: "Gespeichert",
+  countOne: "von 1 Spieler gespeichert",
+  count: "von {n} Spielern gespeichert",
+  countNone: "Speichere es, um es in deinem Profil wiederzufinden",
+  loginToSave: "Melde dich an, um zu speichern",
+  errors: {
+    limit: "Du hast 500 Decks gespeichert, das Maximum: entferne einige über dein Profil.",
+    invalid: "Dieses Deck kann nicht gespeichert werden.",
+    unavailable: "Das Speichern von Decks ist noch nicht verfügbar: versuch es in ein paar Minuten noch einmal.",
+    db: "Etwas ist schiefgelaufen: versuch es noch einmal.",
+  },
+  sortTrending: "Im Trend",
+  sortSaved: "Am meisten gespeichert",
+  favoritesShort: "☆ {n}",
+  account: {
+    title: "Gespeicherte Decks",
+    hint: "Die Decks, die du mit „Speichern“ gespeichert hast. Nur du siehst diese Liste.",
+    empty: "Noch keine gespeicherten Decks: öffne ein Deck und drücke auf „Speichern“.",
+    remove: "Entfernen",
+    unpublished: "Nicht mehr veröffentlicht",
+  },
+};
+
+export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr, pt, de };

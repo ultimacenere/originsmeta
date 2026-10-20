@@ -28,7 +28,7 @@ const after = Date.parse("2026-10-21T22:00:30Z"); // 22/10 00:00:30 in Italia
 describe("diretta in home", () => {
   test("il profilo ufficiale è OriginsTCG e vale sempre, in ogni lingua", () => {
     assert.equal(OFFICIAL_LIVE_USERNAME, "originstcg");
-    for (const l of ["en", "it", "es", "fr", "pt"]) assert.equal(heroLiveOf(official, l, before)?.id, "official", l);
+    for (const l of ["en", "it", "es", "fr", "pt", "de"]) assert.equal(heroLiveOf(official, l, before)?.id, "official", l);
   });
   test("nessuna diretta = lo slider", () => {
     assert.equal(heroLiveOf(null, "it", during), null);
@@ -40,7 +40,7 @@ describe("diretta in home", () => {
     assert.equal(heroLiveOf(both, "it", lastMinute)?.id, "coachcrono", "fino a fine 21 ottobre, ora italiana");
     assert.equal(heroLiveOf(both, "it", before)?.id, "official", "prima del 19");
     assert.equal(heroLiveOf(both, "it", after)?.id, "official", "dopo il 21");
-    for (const l of ["en", "es", "fr", "pt"]) assert.equal(heroLiveOf(both, l, during)?.id, "official", `${l}: sempre l'ufficiale`);
+    for (const l of ["en", "es", "fr", "pt", "de"]) assert.equal(heroLiveOf(both, l, during)?.id, "official", `${l}: sempre l'ufficiale`);
     assert.equal(heroLiveOf(coach, "en", during), null, "in inglese il coach da solo non sostituisce lo slider");
   });
   test("se il coach non è in diretta torna quella ufficiale; se nessuna, lo slider", () => {

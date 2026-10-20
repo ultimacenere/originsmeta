@@ -1,20 +1,20 @@
 import type { Locale } from "../i18n";
 
 type L10n = Record<Locale, string>;
-const n = (en: string, it: string, es: string, fr: string, pt: string): L10n => ({ en, it, es, fr, pt });
+const n = (en: string, it: string, es: string, fr: string, pt: string, de: string): L10n => ({ en, it, es, fr, pt, de });
 
 /** Archetipi (tag obbligatorio su ogni mazzo). */
 export const archetypeLabels: Record<string, L10n> = {
-  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large", "Swarm / jogar largo"),
+  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large", "Swarm / jogar largo", "Swarm / breit spielen"),
   // "Evil" si chiama "Big" dal 12/10/2026 (Pierluigi: "evil diventa big"); l'id resta `evil` per i mazzi già salvati
-  evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits", "Big / corpos grandes"),
-  discard: n("Discard", "Scarto", "Descarte", "Défausse", "Descarte"),
-  midrange: n("Midrange", "Midrange", "Midrange", "Midrange", "Midrange"),
+  evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits", "Big / corpos grandes", "Big / große Körper"),
+  discard: n("Discard", "Scarto", "Descarte", "Défausse", "Descarte", "Discard"),
+  midrange: n("Midrange", "Midrange", "Midrange", "Midrange", "Midrange", "Midrange"),
   // Tempo dal 12/10/2026 (Pierluigi, nota "winrate 2.0" e "sì aggiungilo"): lo sceglie chi pubblica, suggestArchetype non lo propone
-  tempo: n("Tempo", "Tempo", "Tempo", "Tempo", "Tempo"),
-  control: n("Control", "Controllo", "Control", "Contrôle", "Controle"),
-  aggro: n("Aggro", "Aggro", "Aggro", "Aggro", "Aggro"),
-  combo: n("Combo", "Combo", "Combo", "Combo", "Combo"),
+  tempo: n("Tempo", "Tempo", "Tempo", "Tempo", "Tempo", "Tempo"),
+  control: n("Control", "Controllo", "Control", "Contrôle", "Controle", "Control"),
+  aggro: n("Aggro", "Aggro", "Aggro", "Aggro", "Aggro", "Aggro"),
+  combo: n("Combo", "Combo", "Combo", "Combo", "Combo", "Combo"),
 };
 
 export type DeckSource = "playtest" | "official" | "community";

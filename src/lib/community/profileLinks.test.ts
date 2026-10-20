@@ -293,7 +293,8 @@ describe("bio e lingue", () => {
     }
   });
   test("lingue dei contenuti: solo quelle del sito, senza doppioni, nell'ordine del sito", () => {
-    assert.deepEqual(cleanContentLangs(["it", "de", "en", "it", 3]), ["en", "it"]);
+    assert.deepEqual(cleanContentLangs(["it", "ja", "en", "it", 3]), ["en", "it"]);
+    assert.deepEqual(cleanContentLangs(["de", "pt", "en"]), ["en", "pt", "de"]);
     assert.deepEqual(cleanContentLangs(["fr", "en"]), ["en", "fr"]);
     assert.deepEqual(cleanContentLangs("it"), []);
   });
@@ -317,7 +318,7 @@ describe("modulo di /account", () => {
   test("righe vuote saltate, doppioni tenuti una volta, lingue ripulite", () => {
     const r = parseProfileForm({
       bio: " Streamer italiano ",
-      langs: ["it", "en", "de"],
+      langs: ["it", "en", "ja"],
       kinds: ["twitch", "youtube", "twitch", "x"],
       urls: ["coachcrono", "", "https://www.twitch.tv/CoachCrono", "  "],
     });

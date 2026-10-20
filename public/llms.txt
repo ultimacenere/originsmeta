@@ -1,6 +1,6 @@
 # OriginsMeta
 
-> Unofficial companion site for Origins TCG, the digital trading card game by Koin Games: news, tier list, win-rate analytics, guides, the full card database, community decks, a deck builder and a draft, a match tracker app for Windows and a tournament calendar, in English, Italian, Spanish, French and Brazilian Portuguese.
+> Unofficial companion site for Origins TCG, the digital trading card game by Koin Games: news, tier list, win-rate analytics, guides, the full card database, community decks, a deck builder and a draft, a match tracker app for Windows and a tournament calendar, in English, Italian, Spanish, French, Brazilian Portuguese and German.
 
 OriginsMeta is a fan project run by players and is not affiliated with Koin Games. For rules, dates and announcements the official sources always win; everything here is sourced from them and says so on the page.
 
@@ -39,7 +39,7 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 
 ## Legendaries
 
-The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…) and Brazilian Portuguese (/pt/cards/…) with the same slug, the official text of the game in Italian, Spanish, French and Portuguese, and the balance history.
+The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…) and German (/de/cards/…) with the same slug, the official text of the game in Italian, Spanish, French and Portuguese (German: our translation, not yet checked in the game), and the balance history.
 
 - [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
@@ -83,7 +83,7 @@ The 11 Legendaries of the Demo 2.0: every deck is led by one of them. Data of th
 
 ## Guides
 
-Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…) and Brazilian Portuguese (/pt/guides/…) with the same slug.
+Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…), Brazilian Portuguese (/pt/guides/…) and German (/de/guides/…) with the same slug.
 
 - [The 11 Legendaries of Origins TCG: cards, stats, patches and decks](https://originsmeta.com/en/guides/origins-tcg-legendaries): All 11 Legendary cards of the Origins TCG Demo 2.0: cost, stats, official text, the cards they create, patch changes and the decks that use them.
 - [Origins TCG locations: how the three lanes change every game](https://originsmeta.com/en/guides/origins-tcg-locations): Locations are the third player at the table: they double damage, change costs and move your characters. How they work, which ones decide games, and how to build with them in mind.
@@ -218,10 +218,37 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Criadores e autores](https://originsmeta.com/pt/creators): os criadores, autores e streamers que fazem conteúdo de Origins TCG, com os seus canais e idiomas.
 - [Sobre](https://originsmeta.com/pt/about): quem somos, como trabalhamos e quais fontes usamos.
 
+## Seiten auf Deutsch
+
+- [Startseite](https://originsmeta.com/de): das Neueste auf der Website — News, Kalender, Tier-List und MetaShifting.
+- [FAQ](https://originsmeta.com/de/faq): die Antworten, die wir geschrieben und geprüft haben, jeweils mit Quelle und Datum: Release, Sprachen, Mobile, Demo-Fortschritt, Ranglisten-Modus, Legendäre, Deck-Codes, Crimson Cup und Kickstarter.
+- [Tier-List](https://originsmeta.com/de/tier-list): Decks, Legendäre und Basiskarten; das Ranking von OriginsMeta startet nach dem Crimson Cup (19.–25. Oktober 2026), auf Basis der Turnierergebnisse.
+- [Meistgespielt](https://originsmeta.com/de/tier-list/most-played): in wie vielen der auf OriginsMeta veröffentlichten Decks jede Legendäre und jede Karte vorkommt, mit den Archetypen der Decks. Beliebtheit, keine Win-Rate.
+- [Community-Tier-List](https://originsmeta.com/de/tier-list/community): der Durchschnitt der von Mitgliedern gespeicherten Tier-Lists, mit den Stimmen pro Karte; eine Vorschau bis 5 Listen.
+- [Eigene Tier-List erstellen](https://originsmeta.com/de/tier-list/create): deine eigene Tier-List für Origins TCG, indem du die Karten der Demo 2.0 in die Stufen S bis D ziehst, mit den Legendären separat, per Link teilbar. Kostenlos, ohne Konto.
+- [Tier-List der Kartenbewertungen](https://originsmeta.com/de/tier-list/votes): jede Karte von Origins TCG von 1 (schwach) bis 10 (stark) bewertet; der Durchschnitt der Stimmen der Mitglieder ergibt eine Tier-List der Legendären und Basiskarten.
+- [MetaShifting](https://originsmeta.com/de/metashifting): die Patchnotes von Origins TCG: jede Balance-Änderung, Karte für Karte und Patch für Patch, neueste zuerst, aus den offiziellen Beiträgen von Koin Games.
+- [Kartenliste](https://originsmeta.com/de/cards): alle Karten der Demo 2.0 mit aktuellen Werten, dem offiziellen englischen Text und unserer deutschen Übersetzung (noch nicht im Spiel geprüft), der Änderungshistorie und der Legende hinter jeder Karte.
+- [Orte](https://originsmeta.com/de/locations): die Orte der Demo 2.0 mit ihrem Effekt, mit Suche und Filtern.
+- [Decks](https://originsmeta.com/de/decks): von der Community im Deck builder veröffentlichte Decklists, jede mit Guide und einer Bewertung von 1 bis 5 Sternen.
+- [Turnierdecks](https://originsmeta.com/de/decks/tournament): Conquest-Trios aus drei Decks für Turniere wie den Crimson Cup, von Spielern mit einem gemeinsamen Guide veröffentlicht: drei verschiedene Legendäre, Spielcodes und Bewertungen.
+- [Draft](https://originsmeta.com/de/draft): kostenloser Draft für Origins TCG in drei Formaten gegen das Gehirn, unseren Bot, oder gegen einen Freund: Karten wählen, 1 Legendäre + 12 bauen und den Spielcode kopieren.
+- [Analytics](https://originsmeta.com/de/analytics): die Win-Rates von Origins TCG aus den Partien, die mit der App OriginsMeta Tracker aufgezeichnet wurden: Legendäre, Community-Decks, Archetypen, Karten und Matchups, Patch für Patch.
+- [OriginsMeta Tracker](https://originsmeta.com/de/tracker): unsere Windows-App, die deine Partien von Origins TCG selbst aufzeichnet, dein Deck neben dem Spiel verfolgt und ein Overlay für Streamer hat; sie funktioniert mit einem kostenlosen OriginsMeta-Konto. Installationsanleitung Schritt für Schritt.
+- [Deck builder](https://originsmeta.com/de/deck-builder): baue ein gültiges Deck im Browser — eine Legendäre plus zwölf verschiedene Basiskarten in je zwei Kopien, 25 Karten — und exportiere dann den Spielcode oder veröffentliche die Liste. Kostenlos, ohne Konto zum Bauen.
+- [Guides](https://originsmeta.com/de/guides): wie das Spiel funktioniert, die Roadmap, die Sammlerökonomie, wie man die Demo spielt, Deck-Guides und Matchups.
+- [Turniere und Events](https://originsmeta.com/de/tournaments): offizielle und Community-Events, dazu der Turnier-Organizer der Community.
+- [News](https://originsmeta.com/de/news): offizielle Ankündigungen, Demo-Updates, Events und auf der Website veröffentlichte Decks; jeder Patch hat auch einen eigenen Artikel. Jede News hat eine eigene, signierte Seite mit Datum, offizieller Quelle und den betroffenen Karten.
+- [Autoren](https://originsmeta.com/de/authors): die Menschen, die Guides, Decks und News zeichnen, und wofür jede und jeder zuständig ist.
+- [Community-Guides](https://originsmeta.com/de/guides/community): Guides von Autoren, Creators und Pro-Spielern von OriginsMeta, von ihren Autoren aktuell gehalten und von der Website übersetzt.
+- [Comics](https://originsmeta.com/de/news/comics): Comics über Origins TCG, gezeichnet von Creators der Community.
+- [Creator und Autoren](https://originsmeta.com/de/creators): die Creator, Autoren und Streamer, die Inhalte zu Origins TCG machen, mit ihren Kanälen und Sprachen.
+- [Über uns](https://originsmeta.com/de/about): wer wir sind, wie wir arbeiten und welche Quellen wir nutzen.
+
 ## Feeds, sitemaps and full text
 
 - [Full text (llms-full.txt)](https://originsmeta.com/llms-full.txt): every guide and news article in English as plain Markdown, plus every card of the Demo 2.0 collection with its official English text and, apart, the created cards (not checked in the game). Generated from the site's data at every deploy.
-- [News feed (RSS)](https://originsmeta.com/en/news/feed.xml): every news article as it is published; also in Italian (/it/news/feed.xml), Spanish (/es/news/feed.xml), French (/fr/news/feed.xml) and Portuguese (/pt/news/feed.xml).
+- [News feed (RSS)](https://originsmeta.com/en/news/feed.xml): every news article as it is published; also in Italian (/it/news/feed.xml), Spanish (/es/news/feed.xml), French (/fr/news/feed.xml), Portuguese (/pt/news/feed.xml) and German (/de/news/feed.xml).
 - [Sitemap index](https://originsmeta.com/sitemap.xml): one sitemap per section and language.
 
 ## Sources
@@ -231,14 +258,14 @@ Every OriginsMeta guide in English, the game first and then the deck guides; eac
 - [Steam news and patch notes](https://steamcommunity.com/app/4429430/allnews/): the source of every balance note on this site.
 - [Official Discord](https://discord.gg/originstcg): announcements, AMAs and tournament sign-ups.
 - [origins-tcg.com](https://origins-tcg.com/): the official game site by Koin Games.
-- The game itself: costs, stats, alignments and English texts of the cards of the Demo 2.0 collection were checked one by one in the game on 22 September 2026, the Italian and Spanish texts on 25 September 2026, the French texts on 8 October 2026, the Brazilian Portuguese texts on 20 October 2026. Created and removed cards are not in the game's collection and have not been checked there.
+- The game itself: costs, stats, alignments and English texts of the cards of the Demo 2.0 collection were checked one by one in the game on 22 September 2026, the Italian and Spanish texts on 25 September 2026, the French texts on 8 October 2026, the Brazilian Portuguese texts on 20 October 2026. The German card texts are still our own translation and have not been checked in the game yet. Created and removed cards are not in the game's collection and have not been checked there.
 
 ## Optional
 
-- [Privacy (EN)](https://originsmeta.com/en/privacy), [Privacy (IT)](https://originsmeta.com/it/privacy), [Privacy (ES)](https://originsmeta.com/es/privacy), [Privacy (FR)](https://originsmeta.com/fr/privacy) and [Privacy (PT)](https://originsmeta.com/pt/privacy): what the site collects and why. These pages are noindex and are not part of the site's content.
+- [Privacy (EN)](https://originsmeta.com/en/privacy), [Privacy (IT)](https://originsmeta.com/it/privacy), [Privacy (ES)](https://originsmeta.com/es/privacy), [Privacy (FR)](https://originsmeta.com/fr/privacy), [Privacy (PT)](https://originsmeta.com/pt/privacy) and [Privacy (DE)](https://originsmeta.com/de/privacy): what the site collects and why. These pages are noindex and are not part of the site's content.
 
 ## Notes
 
 - OriginsMeta is an independent project and is not affiliated with Koin Games.
-- Card art and card text © Koin Games (the Italian, Spanish, French and Portuguese card texts are the game's own). Sagas, origin notes and the Italian, Spanish, French and Portuguese text of created and removed cards are written by OriginsMeta.
+- Card art and card text © Koin Games (the Italian, Spanish, French and Portuguese card texts are the game's own). Sagas, origin notes and the Italian, Spanish, French, Portuguese and German text of created and removed cards (and, for now, all German card texts) are written by OriginsMeta.
 - Contact: staff@originsmeta.com

@@ -258,6 +258,53 @@ export const followLabels: Record<Locale, FollowLabels> = {
     privacy:
       "Seguir e notificações: com uma conta, você pode seguir os perfis com a função Creator, Autor, Pro ou Staff. No Supabase (servidores na Irlanda, UE) guardamos quem você segue e desde quando, e as notificações que criamos para você (um deck novo, um guia novo ou uma live na Twitch de um perfil que você segue), com a data e se você já as leu. Só você vê quem você segue e as suas notificações: um perfil mostra apenas quantos seguidores tem, nunca quem são. Para saber quem está ao vivo, a cada 10 minutos o nosso servidor pergunta à Twitch (Twitch Interactive Inc., Estados Unidos) se os canais da Twitch indicados nesses perfis estão transmitindo: nada seu é enviado à Twitch. As notificações ficam só no site (não enviamos e-mails) e são guardadas por 90 dias. Para evitar avisos duplicados ou frequentes demais, guardamos por 180 dias um registro de cada notificação enviada: qual perfil a causou (o deck, o guia ou a live), quando e para quantas pessoas, sem os nomes de quem a recebeu. Você pode deixar de seguir quando quiser pelo seu perfil, e tudo é apagado junto com a sua conta.",
   },
+  de: {
+    account: {
+      title: "Wem du folgst",
+      intro:
+        "Die Profile, denen du folgst (Rolle Creator, Autor, Pro oder Staff). Wenn sie ein Deck veröffentlichen oder auf Twitch mit Origins TCG live gehen, erscheint eine Benachrichtigung im Briefumschlag oben auf der Seite.",
+      countOne: "Du folgst 1 Profil.",
+      countMany: "Du folgst {n} Profilen (höchstens {max}).",
+      empty: "Du folgst noch niemandem: öffne die Seite eines Creators oder Autors und drücke auf „Folgen“.",
+      browse: "Creator und Autoren entdecken",
+      unfollow: "Nicht mehr folgen",
+      unfollowAria: "{name} nicht mehr folgen",
+      unfollowing: "Einen Moment…",
+      since: "Seit {date}",
+      unavailable: "Diese Liste ist gerade nicht verfügbar. Versuch es in ein paar Minuten noch einmal.",
+    },
+    notifications: {
+      title: "Benachrichtigungen",
+      intro: "Neues von den Profilen, denen du folgst: neue Decks, Guides und Comics sowie Twitch-Streams mit Origins TCG. Wir bewahren sie 90 Tage auf.",
+      unreadOne: "1 neue Benachrichtigung.",
+      unreadMany: "{n} neue Benachrichtigungen.",
+      jumpOne: "1 neue Benachrichtigung von den Profilen, denen du folgst",
+      jumpMany: "{n} neue Benachrichtigungen von den Profilen, denen du folgst",
+      markAll: "Alle als gelesen markieren",
+      marking: "Einen Moment…",
+      newBadge: "Neu",
+      kinds: { deck_published: "Deck", live: "Live", guide_published: "Guide", comic_published: "Comic", deck_set_published: "Turnierdeck", match_ready: "Turnier" },
+      deckPublished: "{name} hat ein Deck veröffentlicht: {deck}",
+      deckGone: "{name} hat ein Deck veröffentlicht, das nicht mehr online ist",
+      live: "{name} ist auf Twitch mit Origins TCG live gegangen",
+      guidePublished: "{name} hat einen Guide veröffentlicht: {guide}",
+      guideGone: "{name} hat einen Guide veröffentlicht, der nicht mehr online ist",
+      comicPublished: "{name} hat einen Comic veröffentlicht: {comic}",
+      comicGone: "{name} hat einen Comic veröffentlicht, der nicht mehr online ist",
+      deckSetPublished: "{name} hat ein Turnierdeck veröffentlicht: {deck}",
+      deckSetGone: "{name} hat ein Turnierdeck veröffentlicht, das nicht mehr online ist",
+      matchReady: "Dein Turniermatch gegen {name} ist bereit: öffne den Matchraum",
+      someone: "Ein Profil, dem du folgst",
+      empty: "Noch keine Benachrichtigungen. Folge Creatorn und Autoren, um zu erfahren, wann sie ein Deck veröffentlichen oder live gehen.",
+      browse: "Creator und Autoren entdecken",
+      manage: "Verwalten, wem du folgst",
+      unavailable: "Benachrichtigungen sind gerade nicht verfügbar. Versuch es in ein paar Minuten noch einmal.",
+      error: "Etwas ist schiefgelaufen: versuch es noch einmal.",
+      utcLabel: "UTC",
+    },
+    privacy:
+      "Folgen und Benachrichtigungen: Mit einem Konto kannst du den Profilen mit der Rolle Creator, Autor, Pro oder Staff folgen. Auf Supabase (Server in Irland, EU) speichern wir, wem du folgst und seit wann, sowie die Benachrichtigungen, die wir für dich erstellen (ein neues Deck, ein neuer Guide oder ein Twitch-Stream eines Profils, dem du folgst), mit ihrem Datum und ob du sie gelesen hast. Nur du siehst, wem du folgst, und deine Benachrichtigungen: Ein Profil zeigt nur, wie viele Follower es hat, nie, wer sie sind. Um zu wissen, wer live ist, fragt unser Server alle 10 Minuten bei Twitch (Twitch Interactive Inc., USA) nach, ob die in diesen Profilen angegebenen Twitch-Kanäle gerade streamen: Von dir wird nichts an Twitch gesendet. Benachrichtigungen bleiben nur auf der Website (wir verschicken keine E-Mails) und werden 90 Tage aufbewahrt. Um doppelte oder zu häufige Benachrichtigungen zu vermeiden, bewahren wir 180 Tage lang ein Protokoll jeder gesendeten Benachrichtigung auf: welches Profil sie ausgelöst hat (das Deck, der Guide oder der Stream), wann und an wie viele Personen, ohne die Namen der Empfänger. Du kannst jederzeit über dein Profil aufhören zu folgen, und mit deinem Konto wird alles gelöscht.",
+  },
 };
 
 /** Riempie i segnaposto {nome} di un'etichetta. */

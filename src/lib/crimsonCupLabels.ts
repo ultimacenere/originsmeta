@@ -2,7 +2,7 @@ import type { Locale } from "./i18n";
 
 /*
   Testi della pagina /analytics/crimson-cup, del riquadro "Nella Crimson Cup" delle schede carta e della fascia di
-  /analytics (20/10/2026), nelle cinque lingue. Nessun import a runtime: li legge anche il test (crimsonCup.test.ts), che
+  /analytics (20/10/2026), nelle sei lingue. Nessun import a runtime: li legge anche il test (crimsonCup.test.ts), che
   controlla title e description nei limiti di Google e gli stessi segnaposto {…} in ogni lingua.
 
   Parole: "mazzi consegnati" / decks submitted / mazos entregados / decks remis / decks entregues (la consegna dei mazzi
@@ -101,11 +101,12 @@ export type CrimsonLabels = {
   promo: { plate: string; title: string; text: string; cta: string; banned: string; brought: string; card: string };
 };
 
-/** Numero d'ordine nella lingua: 1st / 1ª / 1.ª / 1re / 1ª (Leggendaria e carta sono femminili dove serve). */
+/** Numero d'ordine nella lingua: 1st / 1ª / 1.ª / 1re / 1ª / 1. (Leggendaria e carta sono femminili dove serve). */
 export function crimsonOrdinal(n: number, locale: Locale): string {
   if (locale === "it" || locale === "pt") return `${n}ª`;
   if (locale === "es") return `${n}.ª`;
   if (locale === "fr") return n === 1 ? "1re" : `${n}e`;
+  if (locale === "de") return `${n}.`;
   const mod100 = n % 100;
   const suffix = mod100 >= 11 && mod100 <= 13 ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th");
   return `${n}${suffix}`;
@@ -735,6 +736,131 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       banned: "A mais banida",
       brought: "A mais levada",
       card: "A carta mais usada",
+    },
+  },
+  de: {
+    meta: {
+      title: "Origins TCG Crimson Cup: Bans und meistgespielte Karten",
+      description: "Zahlen zum Crimson Cup aus den offiziellen Tabellen von Koin Games: Ban-Rate jeder Legendären, eingereichte Decks, Top-Karten und Turnier gegen Ladder.",
+    },
+    h1: "Crimson Cup: das Meta des Turniers",
+    kicker: "Analytics",
+    back: "Analytics",
+    howTo: "So liest du die Zahlen",
+    rules: "Regeln des Crimson Cup",
+    picker: { label: "Qualifikationen", soon: "Zahlen noch nicht veröffentlicht", data: "offizielle Zahlen" },
+    index: { legendaries: "Legendäre", cards: "Meistgespielte Karten", versus: "Turnier gegen Ladder" },
+    snapshot: {
+      title: "Die Qualifikation auf einen Blick",
+      plate: "Crimson Cup",
+      source: "Offizielle Zahlen von Koin Games",
+      reached: "Legendäre in den Top 32",
+      reachedSub: "mit einem Deck in Runde {round}, der Runde der Qualifizierten",
+      bans: "Bans",
+      bansSub: "im Turnierbaum gebannte Legendäre",
+      mostBanned: "Am häufigsten gebannt",
+      mostBannedSub: "{b} Bans bei {s}-mal gesehen",
+      mostSubmitted: "Am häufigsten mitgebracht",
+      mostSubmittedSub: "{n} Decks · {p} der eingereichten",
+      topCard: "Meistgespielte Karte",
+      topCardSub: "in {n} der eingereichten Decks",
+    },
+    stories: {
+      label: "Die Qualifikation in drei Fakten",
+      banned: { kicker: "Die, die man bannt", text: "{name} ist die Legendäre, die die Gegner am meisten gefürchtet haben: gebannt in {p} der Fälle, in denen sie ihr beim Ban gegenüberstanden." },
+      brought: { kicker: "Am häufigsten mitgebracht", text: "{name} steckt in {n} Decks, {p} der eingereichten, mehr als jede andere Legendäre, und wird trotzdem in {ban} der Fälle gebannt." },
+      calm: { kicker: "Die am wenigsten gefürchtete", text: "{name} ist unter den mindestens {min}-mal gesehenen Legendären die am seltensten gebannte: {p}.", ladder: " In der Ladder gewinnt sie {wr}." },
+      link: "Turnier gegen Ladder",
+    },
+    legendaries: {
+      kicker: "Ban-Phase",
+      title: "Die Ban-Rate der Legendären",
+      meta: "{n} Legendäre · {b} Bans",
+      lead: "Beim Crimson Cup siehst du nur die drei Legendären deines Gegners und bannst dann eines seiner Decks. Die Ban-Rate gibt an, wie oft eine Legendäre gebannt wurde, gemessen an den Malen, in denen ein Gegner sie beim Ban vor sich hatte.",
+      bannedTitle: "Am häufigsten gebannt",
+      broughtTitle: "Am häufigsten mitgebracht",
+      broughtLead: "Eingereichte Decks mit jeder Legendären und ihr Anteil an den Decks in der Tabelle von Koin.",
+      rowBan: "{b} von {s}",
+      rowDecks: "{n} Decks",
+      roundTitle: "Weiteste Runde: {n}",
+      qualified: "hat die Runde der Qualifizierten erreicht",
+      tableSummary: "Die vollständige Tabelle von Koin",
+      tableCaption: "{name}: die Legendären in der Tabelle von Koin, von der am häufigsten gebannten an",
+      cols: { legendary: "Legendäre", banRate: "Ban-Rate", bannedSeen: "Gebannt / gesehen", submitted: "Decks", share: "Anteil", played: "Played", deepest: "Weiteste Runde" },
+    },
+    cards: {
+      kicker: "Decklists",
+      title: "Die meistgespielten Karten",
+      meta: "Top {n} der Tabelle von Koin",
+      lead: "Anteil aller eingereichten Decks, die die Karte enthalten: Er umfasst alle Teilnehmenden, nicht nur die, die ein Match gespielt haben.",
+      decks: "{n} Decks",
+      position: "Platz {n}",
+      tableSummary: "Die Tabelle",
+    },
+    versus: {
+      kicker: "Turnier gegen Ladder",
+      title: "Das Turnier neben der Ladder",
+      meta: "Ladder: {games} auf Patch {patch}",
+      lead: "Das Turnier zählt die Decks, die die Spieler eingereicht haben, die Ladder die mit OriginsMeta Tracker erfassten Matches. Eine Legendäre, die öfter zum Turnier mitgebracht wird, als sie in der Ladder gespielt wird, ist ein Deck, dem die Spieler vertrauen, wenn es darauf ankommt.",
+      legTitle: "Legendäre: Anteil der Decks im Turnier, Anteil der Matches in der Ladder",
+      legend: { crimson: "Crimson Cup", ladder: "Ladder" },
+      up: "{name} wird öfter zum Turnier mitgebracht ({c}), als sie in der Ladder gespielt wird ({l}).",
+      down: "{name} wird in der Ladder öfter gespielt ({l}), als sie zum Turnier mitgebracht wurde ({c}).",
+      aria: "{name}: {c} der Decks im Turnier, {l} der Matches in der Ladder",
+      cols: { legendary: "Legendäre", crimson: "Turnier", ladder: "Ladder", diff: "Differenz", ladderWr: "Win-Rate in der Ladder", banRate: "Ban-Rate" },
+      cardsTitle: "Die meistgespielten Karten, im Turnier und in der Ladder",
+      cardsLead: "Bei den Karten zählt die Ladder die erfassten Matches mit der Karte im Deck der Person, die erfasst: Die beiden Maße sind verschieden, vergleiche also eher die Karten untereinander als die einzelne Differenz.",
+      cardCols: { card: "Karte", crimson: "Turnier", ladder: "Ladder", diff: "Differenz" },
+      missing: "Die Zahlen der Ladder sind gerade nicht verfügbar: Der Vergleich kommt von selbst zurück.",
+      none: "nicht erfasst",
+    },
+    notes: {
+      title: "So liest du diese Zahlen",
+      intro: "Das sind die offiziellen Zahlen des Crimson Cup, die Koin Games nach jeder Qualifikation auf seinem Discord veröffentlicht: Wir ordnen sie und stellen sie neben die Ladder. Es sind Summen: Die Decklists bleiben bis zu den Top 4 verborgen, die einzelnen Listen sind also nicht bekannt.",
+      sourceLabel: "Quelle",
+      source: "die Tabellen, die Koin Games nach {name} ({date}) auf seinem offiziellen Discord veröffentlicht hat, gelesen am {read}.",
+      discord: "Offizieller Discord",
+      ladderLabel: "Ladder",
+      ladder: "die mit OriginsMeta Tracker auf Patch {patch} erfassten Matches, normale und Ranked zusammen.",
+      wordsTitle: "Die Begriffe",
+      glossary: [
+        { term: "Ban-Rate", text: "gebannt / gesehen: Von den Malen, in denen ein Gegner die Legendäre beim Ban vor sich hatte, wie oft er sie gebannt hat." },
+        { term: "Decks", text: "wie viele der für die Qualifikation eingereichten Decks diese Legendäre haben. Der Anteil bezieht sich auf die Decks, die in der Tabelle von Koin gezählt sind." },
+        { term: "Played", text: "die Spalte Played der Tabelle von Koin, so wie Koin sie zählt." },
+        { term: "Weiteste Runde", text: "die weiteste Runde im Turnierbaum, die ein Deck mit dieser Legendären erreicht hat: Runde {round} ist die Runde der 32 Qualifizierten." },
+        { term: "Anteil der Decks (Karten)", text: "der Anteil aller eingereichten Decks, die die Karte enthalten, so wie Koin ihn veröffentlicht." },
+        { term: "Ladder", text: "bei den Legendären der Anteil der Auftritte in den erfassten Matches, beide Seiten gezählt; bei den Karten der Anteil der erfassten Matches mit der Karte im Deck der Person, die erfasst." },
+      ],
+      dataTitle: "Was wir wissen und was nicht",
+      list: [
+        "Koin veröffentlicht die 20 meistgespielten Karten: Die anderen stehen nicht in der Tabelle und wir schätzen sie nicht.",
+        "Turnier und Ladder messen Verschiedenes (eingereichte Decks, gespielte Matches): Der Vergleich zeigt die Unterschiede, er ist keine Win-Rate.",
+        "Jede Qualifikation kommt hier dazu, wenn Koin ihre Zahlen veröffentlicht.",
+      ],
+      analyticsText: "Die Zahlen der Ladder auf diesem Patch, Legendäre für Legendäre:",
+      analyticsAnchor: "Analytics",
+      rulesText: "Format, Ban und verborgene Listen des Turniers:",
+      rulesAnchor: "Regeln des Crimson Cup",
+      conquestText: "So baust du drei Decks für Conquest:",
+      conquestAnchor: "Guide zu Conquest",
+    },
+    card: {
+      title: "Beim Crimson Cup",
+      legendary: "{q}: gebannt in {p} der Fälle, in denen sie beim Ban gesehen wurde ({b} von {s}), {rank} von {count}; in {share} der eingereichten Decks ({n}).",
+      reached: " Ein Deck mit ihr hat Runde {round} erreicht, die Runde der Qualifizierten.",
+      furthest: " Weiteste Runde: {round}.",
+      card: "{q}: in {p} der eingereichten Decks ({n}), {rank} der {count} meistgespielten Karten.",
+      link: "Alle Zahlen des Crimson Cup",
+      source: "Offizielle Zahlen von Koin Games",
+    },
+    promo: {
+      plate: "Crimson Cup",
+      title: "Die Zahlen des Turniers",
+      text: "Die offiziellen Tabellen von Koin Games nach {q}: wer gebannt wird, wer mitgebracht wird und die meistgespielten Karten, neben der Ladder.",
+      cta: "Zahlen des Crimson Cup öffnen",
+      banned: "Am häufigsten gebannt",
+      brought: "Am häufigsten mitgebracht",
+      card: "Meistgespielte Karte",
     },
   },
 };

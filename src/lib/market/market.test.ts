@@ -325,8 +325,8 @@ describe("prova riservata del Mercato (18/10/2026)", () => {
   });
   test("le pagine /market passano dal proxy, che rinnova la sessione", () => {
     const proxy = fs.readFileSync(new URL("../../proxy.ts", import.meta.url), "utf8");
-    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\)\/market"/);
-    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\)\/market\/:path\*"/);
+    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\|de\)\/market"/);
+    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\|de\)\/market\/:path\*"/);
   });
   test("pagina riservata e lucchetto nelle quattro lingue", () => {
     for (const l of Object.values(marketLabels)) assert.ok(l.locked.text.length > 40 && l.locked.kicker && l.locked.back);

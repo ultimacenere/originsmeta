@@ -47,9 +47,9 @@ const pageModule: typeof import("../page") = await import("../page.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const cardlinksModule: typeof import("../cardlinks") = await import("../cardlinks.ts");
 
-// il portoghese dal 20/10/2026 (il francese, nato prima di questi controlli, non è ancora qui)
-type Locale = "en" | "it" | "es" | "pt";
-const locales: Locale[] = ["en", "it", "es", "pt"];
+// il portoghese e il tedesco dal 20/10/2026 (il francese, nato prima di questi controlli, non è ancora qui)
+type Locale = "en" | "it" | "es" | "pt" | "de";
+const locales: Locale[] = ["en", "it", "es", "pt", "de"];
 const { getGuide, getGuides, guideSlugs } = guidesModule;
 const { cards, getCard } = cardsModule;
 const { news } = newsModule;
@@ -188,6 +188,7 @@ describe("guide dell'Ondata 3: sezioni e link", () => {
       assert.equal(anchorsOf(guide("es", s).body).has("en-resumen"), true, s);
       assert.equal(anchorsOf(guide("en", s).body).has("in-brief"), true, s);
       assert.equal(anchorsOf(guide("pt", s).body).has("em-resumo"), true, s);
+      assert.equal(anchorsOf(guide("de", s).body).has("kurz-gesagt"), true, s);
     }
   });
   test("link interni con il prefisso della lingua, verso pagine e ancore che esistono", () => {
@@ -276,7 +277,7 @@ describe("guida alle Leggendarie: coincide con il database delle carte", () => {
       // e la FAQ "quale Leggendaria è nel maggior numero di mazzi" dice lo stesso totale
       const declared = new RegExp(`\\b${total}\\b`);
       for (const f of guide(l, SLUG).faq ?? [])
-        if (/most decks|maggior numero di mazzi|más mazos/.test(f.q)) assert.match(f.a, declared, `${l}: FAQ sui mazzi`);
+        if (/most decks|maggior numero di mazzi|más mazos|meisten Decks/.test(f.q)) assert.match(f.a, declared, `${l}: FAQ sui mazzi`);
     }
   });
   test("una sezione per Leggendaria, nell'ordine dichiarato, con la riga dei dati e il testo ufficiale nella lingua della pagina", () => {
@@ -293,7 +294,7 @@ describe("guida alle Leggendarie: coincide con il database delle carte", () => {
         const start = body.indexOf(`{#${c.slug}}`);
         const next = body.indexOf("\n## ", start);
         const section = body.slice(start, next < 0 ? undefined : next);
-        assert.match(section, new RegExp(`^\\*\\*${c.mana} (mana|de maná) · `, "m"), `${l} ${c.slug}: costo`);
+        assert.match(section, new RegExp(`^\\*\\*${c.mana} (mana|de maná|Mana) · `, "m"), `${l} ${c.slug}: costo`);
         if (c.type === "unit") assert.ok(section.includes(` · ${c.power}/${c.health} · `), `${l} ${c.slug}: statistiche`);
         assert.ok(section.includes(` · ${align[c.alignment ?? ""]}**`), `${l} ${c.slug}: allineamento`);
         for (const line of (c.ability?.[l] ?? "").split("\n")) assert.ok(section.includes(`> ${line}\n`), `${l} ${c.slug}: manca "${line}"`);
@@ -303,9 +304,10 @@ describe("guida alle Leggendarie: coincide con il database delle carte", () => {
   });
   test("le Leggendarie fuori dalla demo sono tutte citate, e solo quelle", () => {
     const removed = cards.filter((c) => c.legendary && c.status !== "active").map((c) => c.slug).sort();
+    const notInDemo: Record<Locale, string> = { en: "not-in-the-demo", it: "fuori-dalla-demo", es: "fuera-de-la-demo", pt: "fora-da-demo", de: "nicht-in-der-demo" };
     for (const l of locales) {
       const body = guide(l, SLUG).body;
-      const start = body.indexOf(l === "en" ? "{#not-in-the-demo}" : l === "it" ? "{#fuori-dalla-demo}" : l === "pt" ? "{#fora-da-demo}" : "{#fuera-de-la-demo}");
+      const start = body.indexOf(`{#${notInDemo[l]}}`);
       assert.ok(start > 0, l);
       const section = body.slice(start, body.indexOf("\n## ", start));
       const linked = [...section.matchAll(/\]\(\/[a-z]{2}\/cards\/([a-z0-9-]+)\)/g)].map((m) => m[1]).sort();

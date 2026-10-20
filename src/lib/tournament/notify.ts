@@ -13,7 +13,7 @@ import { DISCORD_AVATAR_URL, DISCORD_USERNAME } from "@/lib/discordWebhook";
  *
  * Il tabellone parte da solo dentro le RPC (tm_autostart, chiamata da join_tournament e
  * submit_tournament_decks, che ritornano void) e nessuno avvisava i giocatori. Questo modulo manda un
- * messaggio breve, in inglese e in italiano (più lo spagnolo, il francese o il portoghese per i tornei in quella lingua), al canale Discord del sito quando:
+ * messaggio breve, in inglese e in italiano (più lo spagnolo, il francese, il portoghese o il tedesco per i tornei in quella lingua), al canale Discord del sito quando:
  *   - nasce un torneo pubblico (24/09/2026, Pierluigi: "quando pubblichiamo sul sito deve essere pubblicato live
  *     su Discord"): data, formato, posti e link per iscriversi;
  *   - il tabellone parte (da solo o avviato dall'organizzatore): abbinamenti del primo turno;
@@ -50,7 +50,7 @@ const MAX_PAIRINGS = 16;
 
 /**
  * Lingue dei messaggi del nostro Discord: inglese e italiano sempre. Un torneo in spagnolo (dal 25/09/2026, Ondata 1) o in
- * francese (dal 07/10/2026) o in portoghese (dal 20/10/2026) scrive prima nella sua lingua e poi nelle altre due; il link
+ * francese (dal 07/10/2026) o in portoghese e in tedesco (dal 20/10/2026) scrive prima nella sua lingua e poi nelle altre due; il link
  * breve apre la scheda nella lingua di chi clicca.
  */
 type Lang = Locale;
@@ -119,6 +119,8 @@ const ROUNDS: Record<Lang, { final: string; semifinal: string; quarterfinal: str
   fr: { final: "Finale", semifinal: "Demi-finales", quarterfinal: "Quarts de finale", of: "Tour des {n}", round: "Tour {n}" },
   // come il francese, al plurale: il nome del turno ("Semifinais", "Quartas de final")
   pt: { final: "Final", semifinal: "Semifinais", quarterfinal: "Quartas de final", of: "Rodada dos {n}", round: "Rodada {n}" },
+  // tedesco (20/10/2026): "Halbfinale" e "Viertelfinale" valgono per il turno; "Runde der letzten {n}" come "Round of {n}"
+  de: { final: "Finale", semifinal: "Halbfinale", quarterfinal: "Viertelfinale", of: "Runde der letzten {n}", round: "Runde {n}" },
 };
 
 function roundName(lang: Lang, round: number, size: number): string {
@@ -135,9 +137,9 @@ function pageUrl(t: TInfo): string {
   return `${siteUrl}/${t.lang}/tournaments/${t.slug}?${UTM}`;
 }
 
-/** Le righe del messaggio, prima la lingua del torneo: inglese e italiano sempre, spagnolo, francese e portoghese solo se il torneo è in quella lingua. */
+/** Le righe del messaggio, prima la lingua del torneo: inglese e italiano sempre, spagnolo, francese, portoghese e tedesco solo se il torneo è in quella lingua. */
 function inLanguages(lang: Locale, text: Record<Lang, string>): string[] {
-  const order: Lang[] = lang === "it" ? ["it", "en"] : lang === "es" ? ["es", "en", "it"] : lang === "fr" ? ["fr", "en", "it"] : lang === "pt" ? ["pt", "en", "it"] : ["en", "it"];
+  const order: Lang[] = lang === "it" ? ["it", "en"] : lang === "es" ? ["es", "en", "it"] : lang === "fr" ? ["fr", "en", "it"] : lang === "pt" ? ["pt", "en", "it"] : lang === "de" ? ["de", "en", "it"] : ["en", "it"];
   return order.map((l) => `${l.toUpperCase()} · ${text[l]}`);
 }
 
@@ -145,16 +147,16 @@ function header(t: TInfo, extra?: string): string {
   return `**${clean(t.name)}** · ${t.tag}${extra ? ` · ${extra}` : ""}`;
 }
 
-/** Riga del tabellone, che va all'ancora #bracket (senza anteprima); "Cuadro" solo nei tornei in spagnolo, "Tableau" in quelli in francese, "Chave" in quelli in portoghese. */
+/** Riga del tabellone, che va all'ancora #bracket (senza anteprima); "Cuadro" solo nei tornei in spagnolo, "Tableau" in quelli in francese, "Chave" in quelli in portoghese, "Turnierbaum" in quelli in tedesco. */
 function bracketLine(t: TInfo): string {
   // link mascherato (Discord li accetta anche nei webhook): l'indirizzo con gli UTM non si vede, <…> toglie l'anteprima
-  return `[Bracket / Tabellone${t.lang === "es" ? " / Cuadro" : t.lang === "fr" ? " / Tableau" : t.lang === "pt" ? " / Chave" : ""}](<${pageUrl(t)}#bracket>)`;
+  return `[Bracket / Tabellone${t.lang === "es" ? " / Cuadro" : t.lang === "fr" ? " / Tableau" : t.lang === "pt" ? " / Chave" : t.lang === "de" ? " / Turnierbaum" : ""}](<${pageUrl(t)}#bracket>)`;
 }
 
 function links(t: TInfo): string[] {
-  // il link breve apre la scheda nella lingua di chi clicca ("Torneo" vale per l'italiano e per lo spagnolo; "Tournoi" solo nei tornei in francese, "Torneio" in quelli in portoghese)
+  // il link breve apre la scheda nella lingua di chi clicca ("Torneo" vale per l'italiano e per lo spagnolo; "Tournoi" solo nei tornei in francese, "Torneio" in quelli in portoghese, "Turnier" in quelli in tedesco)
   const short = tournamentShortLink(siteUrl, t.tag);
-  return [`Tournament / Torneo${t.lang === "fr" ? " / Tournoi" : t.lang === "pt" ? " / Torneio" : ""}: [${short.replace(/^https?:\/\//, "")}](${short}?${UTM})`, bracketLine(t)];
+  return [`Tournament / Torneo${t.lang === "fr" ? " / Tournoi" : t.lang === "pt" ? " / Torneio" : t.lang === "de" ? " / Turnier" : ""}: [${short.replace(/^https?:\/\//, "")}](${short}?${UTM})`, bracketLine(t)];
 }
 
 function nameOf(names: Map<string, string>, id: string | null, fallback = "?"): string {
@@ -172,13 +174,13 @@ async function createdMessage(sb: Client, tid: string): Promise<string | null> {
   const when = `<t:${Math.floor(Date.parse(t.starts_at) / 1000)}:F>`;
   const mode =
     t.deck_mode === "conquest"
-      ? { en: `Conquest, ${t.conquest_decks} decks`, it: `Conquest, ${t.conquest_decks} mazzi`, es: `Conquest, ${t.conquest_decks} mazos`, fr: `Conquest, ${t.conquest_decks} decks`, pt: `Conquest, ${t.conquest_decks} decks` }
-      : { en: "one deck", it: "un mazzo", es: "un mazo", fr: "un deck", pt: "um deck" };
+      ? { en: `Conquest, ${t.conquest_decks} decks`, it: `Conquest, ${t.conquest_decks} mazzi`, es: `Conquest, ${t.conquest_decks} mazos`, fr: `Conquest, ${t.conquest_decks} decks`, pt: `Conquest, ${t.conquest_decks} decks`, de: `Conquest, ${t.conquest_decks} Decks` }
+      : { en: "one deck", it: "un mazzo", es: "un mazo", fr: "un deck", pt: "um deck", de: "ein Deck" };
   // finale con una lunghezza sua e check-in (05/10/2026)
-  const bo = t.final_best_of && t.final_best_of !== t.best_of ? { en: `Bo${t.best_of}, final Bo${t.final_best_of}`, it: `Bo${t.best_of}, finale Bo${t.final_best_of}`, es: `Bo${t.best_of}, final Bo${t.final_best_of}`, fr: `Bo${t.best_of}, finale Bo${t.final_best_of}`, pt: `Bo${t.best_of}, final Bo${t.final_best_of}` } : { en: `Bo${t.best_of}`, it: `Bo${t.best_of}`, es: `Bo${t.best_of}`, fr: `Bo${t.best_of}`, pt: `Bo${t.best_of}` };
+  const bo = t.final_best_of && t.final_best_of !== t.best_of ? { en: `Bo${t.best_of}, final Bo${t.final_best_of}`, it: `Bo${t.best_of}, finale Bo${t.final_best_of}`, es: `Bo${t.best_of}, final Bo${t.final_best_of}`, fr: `Bo${t.best_of}, finale Bo${t.final_best_of}`, pt: `Bo${t.best_of}, final Bo${t.final_best_of}`, de: `Bo${t.best_of}, Finale Bo${t.final_best_of}` } : { en: `Bo${t.best_of}`, it: `Bo${t.best_of}`, es: `Bo${t.best_of}`, fr: `Bo${t.best_of}`, pt: `Bo${t.best_of}`, de: `Bo${t.best_of}` };
   const checkin = t.checkin
-    ? { en: " Check-in opens 2 hours before the start and closes 5 minutes before: miss it and you don't play.", it: " Il check-in apre 2 ore prima dell'inizio e chiude 5 minuti prima: chi non lo fa non gioca.", es: " El check-in abre 2 horas antes del inicio y cierra 5 minutos antes: si no lo haces, no juegas.", fr: " Le check-in ouvre 2 heures avant le début et ferme 5 minutes avant : si vous ne le faites pas, vous ne jouez pas.", pt: " O check-in abre 2 horas antes do início e fecha 5 minutos antes: quem não fizer não joga." }
-    : { en: "", it: "", es: "", fr: "", pt: "" };
+    ? { en: " Check-in opens 2 hours before the start and closes 5 minutes before: miss it and you don't play.", it: " Il check-in apre 2 ore prima dell'inizio e chiude 5 minuti prima: chi non lo fa non gioca.", es: " El check-in abre 2 horas antes del inicio y cierra 5 minutos antes: si no lo haces, no juegas.", fr: " Le check-in ouvre 2 heures avant le début et ferme 5 minutes avant : si vous ne le faites pas, vous ne jouez pas.", pt: " O check-in abre 2 horas antes do início e fecha 5 minutos antes: quem não fizer não joga.", de: " Der Check-in öffnet 2 Stunden vor dem Start und schließt 5 Minuten vorher: Wer ihn verpasst, spielt nicht." }
+    : { en: "", it: "", es: "", fr: "", pt: "", de: "" };
   return [
     header(t),
     ...inLanguages(t.lang, {
@@ -187,6 +189,7 @@ async function createdMessage(sb: Client, tid: string): Promise<string | null> {
       es: `Nuevo torneo, inscripciones abiertas: ${when} · ${mode.es} · ${bo.es} · ${t.size} jugadores.${checkin.es}`,
       fr: `Nouveau tournoi, inscriptions ouvertes : ${when} · ${mode.fr} · ${bo.fr} · ${t.size} joueurs.${checkin.fr}`,
       pt: `Novo torneio, inscrições abertas: ${when} · ${mode.pt} · ${bo.pt} · ${t.size} jogadores.${checkin.pt}`,
+      de: `Neues Turnier, Anmeldung offen: ${when} · ${mode.de} · ${bo.de} · ${t.size} Spieler.${checkin.de}`,
     }),
     ...links(t),
   ].join("\n");
@@ -209,6 +212,7 @@ async function startedMessage(sb: Client, tid: string, before: string | undefine
       es: "¡El cuadro ya empezó! Emparejamientos de la primera ronda:",
       fr: "Le tableau est lancé ! Voici les appariements du premier tour :",
       pt: "A chave começou! Os confrontos da primeira rodada:",
+      de: "Der Turnierbaum läuft! Die Paarungen der ersten Runde:",
     }),
     ...pairings,
     ...inLanguages(t.lang, {
@@ -217,6 +221,7 @@ async function startedMessage(sb: Client, tid: string, before: string | undefine
       es: "Abre la sala de tu partida desde la página del torneo para escribirle a tu rival y reportar el resultado.",
       fr: "Ouvrez la salle de votre match depuis la page du tournoi pour écrire à votre adversaire et rapporter le résultat.",
       pt: "Abra a sala da sua partida na página do torneio para falar com o seu adversário e informar o resultado.",
+      de: "Öffne den Raum deines Matches auf der Turnierseite, um deinem Gegner zu schreiben und das Ergebnis zu melden.",
     }),
     ...links(t),
   ].join("\n");
@@ -235,7 +240,7 @@ async function resultMessage(sb: Client, mid: string): Promise<string | null> {
   const w = nameOf(names, m.winner);
   const l = nameOf(names, loser);
   const score = `${Math.max(m.score_a, m.score_b)}–${Math.min(m.score_a, m.score_b)}`;
-  const forfeit = m.forfeit ? { en: " (forfeit)", it: " (per forfait)", es: " (por abandono)", fr: " (par forfait)", pt: " (por W.O.)" } : { en: "", it: "", es: "", fr: "", pt: "" };
+  const forfeit = m.forfeit ? { en: " (forfeit)", it: " (per forfait)", es: " (por abandono)", fr: " (par forfait)", pt: " (por W.O.)", de: " (kampflos)" } : { en: "", it: "", es: "", fr: "", pt: "", de: "" };
   const next = matches.find((x) => x.round === m.round + 1 && x.position === Math.floor(m.position / 2));
   let text: Record<Lang, string>;
   if (!next) {
@@ -245,6 +250,7 @@ async function resultMessage(sb: Client, mid: string): Promise<string | null> {
       es: `Final: ${w} vence a ${l} ${score}${forfeit.es}.`,
       fr: `Finale : ${w} bat ${l} ${score}${forfeit.fr}.`,
       pt: `Final: ${w} vence ${l} ${score}${forfeit.pt}.`,
+      de: `Finale: ${w} schlägt ${l} ${score}${forfeit.de}.`,
     };
   } else {
     const opp = next.player_a === m.winner ? next.player_b : next.player_a;
@@ -255,6 +261,7 @@ async function resultMessage(sb: Client, mid: string): Promise<string | null> {
       es: `${w} vence a ${l} ${score}${forfeit.es}. ${roundName("es", next.round, size)}: ${vs ? `${w} contra ${vs}` : `${w} espera a su próximo rival`}.`,
       fr: `${w} bat ${l} ${score}${forfeit.fr}. ${roundName("fr", next.round, size)} : ${vs ? `${w} contre ${vs}` : `${w} attend son prochain adversaire`}.`,
       pt: `${w} vence ${l} ${score}${forfeit.pt}. ${roundName("pt", next.round, size)}: ${vs ? `${w} contra ${vs}` : `${w} espera o próximo adversário`}.`,
+      de: `${w} schlägt ${l} ${score}${forfeit.de}. ${roundName("de", next.round, size)}: ${vs ? `${w} gegen ${vs}` : `${w} wartet auf den nächsten Gegner`}.`,
     };
   }
   return [header(t, roundName(t.lang, m.round, size)), ...inLanguages(t.lang, text), bracketLine(t)].join("\n");
@@ -284,6 +291,7 @@ async function finishedMessage(sb: Client, tid: string): Promise<string | null> 
       es: `Torneo finalizado: ¡gana ${w}!${second ? ` Segundo puesto: ${second}.` : ""}`,
       fr: `Tournoi terminé : ${w} l'emporte !${second ? ` Deuxième place : ${second}.` : ""}`,
       pt: `Torneio encerrado: ${w} é o campeão!${second ? ` Segundo lugar: ${second}.` : ""}`,
+      de: `Turnier beendet: ${w} ist Champion!${second ? ` Zweiter Platz: ${second}.` : ""}`,
     }),
     ...inLanguages(t.lang, {
       en: "Bracket, results and decklists are now public on the tournament page.",
@@ -291,6 +299,7 @@ async function finishedMessage(sb: Client, tid: string): Promise<string | null> 
       es: "El cuadro, los resultados y las listas de los mazos ya son públicos en la página del torneo.",
       fr: "Le tableau, les résultats et les listes des decks sont désormais publics sur la page du tournoi.",
       pt: "A chave, os resultados e as listas dos decks agora são públicos na página do torneio.",
+      de: "Turnierbaum, Ergebnisse und Decklists sind jetzt auf der Turnierseite öffentlich.",
     }),
     ...links(t),
   ].join("\n");
