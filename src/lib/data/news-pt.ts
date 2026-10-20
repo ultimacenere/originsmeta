@@ -10,6 +10,73 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "crimson-cup-amer-1-qualifier-results": {
+    title: "Crimson Cup, primeira classificatória AMER: os 32 jogadores que vão aos playoffs",
+    metaTitle: "Crimson Cup de Origins TCG: classificados da AMER #1",
+    description:
+      "Primeira classificatória da Crimson Cup de Origins TCG, AMER #1 de 19 de outubro: os 32 jogadores nos playoffs, um dia de recorde e as próximas datas.",
+    summary:
+      "A primeira classificatória da Crimson Cup, AMER #1, foi jogada em 19 de outubro: 189 jogadores, eliminação simples, partidas em melhor de três no Conquest com três decks. Depois de três rodadas da chave restam 32 jogadores, que avançam aos playoffs de sábado, 24 de outubro. As classificatórias continuam com a EMEA #1 na terça-feira, 20 de outubro, às 19:00 CEST.",
+    highlights: [
+      { label: "32 jogadores nos playoffs", text: "os que seguem na disputa depois de três rodadas da chave da AMER #1", anchor: "classificados" },
+      { label: "Como foi", text: "189 jogadores, eliminação simples, melhor de três, Conquest com três decks", anchor: "como-foi" },
+      { label: "Um dia de recorde para Origins", text: "449 jogadores simultâneos e mais de 500 espectadores na Twitch, segundo o CEO da Koin", anchor: "dia-de-recorde" },
+      { label: "Decks ainda desconhecidos", text: "as listas ficam ocultas até o top 4", anchor: "decks" },
+      { label: "As próximas classificatórias", text: "EMEA #1 na terça-feira, 20 de outubro, às 19:00 CEST, depois AMER #2, APAC e EMEA #2", anchor: "proximas" },
+    ],
+    body: `## Como foi a primeira classificatória {#como-foi}
+
+A Crimson Cup (Copa Crimson no jogo), o torneio da Koin Games para o Steam Next Fest, começou na segunda-feira, 19 de outubro, às 19:00 EST, com a primeira classificatória para as Américas, a AMER #1. A chave reuniu 189 jogadores: eliminação simples, partidas em melhor de três, [Conquest](/pt/guides/origins-tcg-conquest) com três decks e decklists ocultas até o top 4.
+
+Depois de três rodadas da chave restaram 32 jogadores: são eles que avançam, porque cada classificatória manda 32 jogadores aos playoffs. No fim da noite a Koin escreveu no seu Discord oficial que a primeira classificatória tinha terminado, que vai adicionar o top 32 aos playoffs na terça-feira, 20 de outubro, e que vai tirar os classificados das outras classificatórias em que eles tinham se inscrito. Os prêmios, com a carta promo Dracula 1/1, dependem da classificação final: estão no nosso [artigo sobre prêmios e classificatórias](/pt/news/crimson-cup-prizepool-qualifiers#premios).
+
+A Koin transmitiu a classificatória no seu [canal oficial na Twitch](https://www.twitch.tv/originstcg) e nas suas outras redes; itzBolt e CodemanjackTCG narraram as partidas ao vivo no YouTube e na Twitch.
+
+## Os 32 classificados {#classificados}
+
+Estes são os nomes da chave oficial no Tourney Bot, ou seja, os nomes de usuário do Discord dos jogadores, que podem ser diferentes do nome no jogo. Em ordem alfabética:
+
+adctaco · alextga · animo0668 · anonymousjoker · arg0n · arthurbac · bald_hikikomori · bennypargo · damo1784 · gametender · getsniperd · _giordan · heroncrane · inactiveasian · kryzera · loym.btc · mawwin. · picklesword · pier2537 · plushd · ren_o_o · richardmoralesluis · ryaneffinmiles · sharp25lord · shatterskye · taytwo · timocu · ttvboj · tyrus5592 · unscathed · urugenxx · valca1510
+
+## Um dia de recorde para Origins {#dia-de-recorde}
+
+Na mesma noite, o CEO da Koin Games, Tim Jooste, escreveu no Discord oficial que o primeiro dia do Steam Next Fest bateu recordes para Origins: 449 jogadores simultâneos, mais de 22 streamers ao vivo ao mesmo tempo e mais de 500 espectadores simultâneos na Twitch, além da maior noite de jogos da comunidade até agora no Discord, com mais de 700 jogadores e colecionadores.
+
+## Os decks: por que ainda não os conhecemos {#decks}
+
+Na Crimson Cup as decklists ficam ocultas até o top 4: durante o ban você só vê as Lendárias do oponente ([as regras](/pt/news/crimson-cup-format-check-in#listas)). Por isso não sabemos com quais decks os 32 chegaram aos playoffs, e não publicamos listas nem palpites: as primeiras listas serão públicas a partir do top 4 dos playoffs. Enquanto isso, as Lendárias e os arquétipos mais jogados do patch 0.7 estão na nossa página [Analytics](/pt/analytics) e no [Meta Report de 19 de outubro](/pt/news/meta-report-2026-10-19).
+
+## As próximas classificatórias {#proximas}
+
+| Dia | Horário oficial | Classificatória |
+|---|---|---|
+| Terça-feira, 20 de outubro | 19:00 CEST | EMEA #1 |
+| Quarta-feira, 21 de outubro | 21:00 EST | AMER #2 |
+| Quinta-feira, 22 de outubro | 19:00 SGT | APAC |
+| Quinta-feira, 22 de outubro | 19:00 CEST | EMEA #2 |
+
+Cada uma manda 32 jogadores aos playoffs de sábado, 24 de outubro, às 10:00 EST (16:00 CEST); as finais são no domingo, 25 de outubro, às 10:00 EST. Você ainda pode se inscrever, ou entrar na lista de espera, no canal de torneios do [Discord oficial](https://discord.gg/originstcg): o check-in abre duas horas antes de cada classificatória e fecha cinco minutos antes do início. Onde assistir às partidas, e o nosso overlay gratuito para quem transmite, estão no [artigo de 19 de outubro](/pt/news/crimson-cup-qualifiers-where-to-watch#onde-assistir).
+
+## De onde vem {#fontes}
+
+- A chave oficial da classificatória AMER #1 no [Tourney Bot](https://tourneybot.gg/tourneys/73372), consultada em 20 de outubro de 2026.
+- As mensagens da Koin Games no [Discord oficial](https://discord.gg/originstcg) de 20 de outubro de 2026: o fim da classificatória e os números de Tim Jooste.
+- O anúncio da transmissão na [conta de Origins no X](https://x.com/origins_tcg/status/2112317368911487045) e os posts no X de itzBolt e CodemanjackTCG de 19 de outubro.`,
+    faq: [
+      {
+        q: "Quem se classificou na primeira classificatória AMER da Crimson Cup?",
+        a: "Os 32 jogadores que ainda estavam na chave depois de três rodadas da AMER #1, jogada em 19 de outubro de 2026; o artigo traz os nomes deles no Discord. A Koin Games os adiciona aos playoffs de 24 de outubro.",
+      },
+      {
+        q: "Quando são as próximas classificatórias da Crimson Cup?",
+        a: "EMEA #1 na terça-feira, 20 de outubro, às 19:00 CEST, AMER #2 na quarta-feira, 21 de outubro, às 21:00 EST, APAC na quinta-feira, 22 de outubro, às 19:00 SGT e EMEA #2 na quinta-feira, 22 de outubro, às 19:00 CEST. Playoffs em 24 de outubro e finais em 25 de outubro, os dois às 10:00 EST.",
+      },
+      {
+        q: "Com quais decks os classificados jogaram?",
+        a: "Ainda não se sabe: na Crimson Cup as decklists ficam ocultas até o top 4, e durante o ban só se veem as Lendárias do oponente. As primeiras listas serão públicas a partir do top 4 dos playoffs.",
+      },
+    ],
+  },
   "meta-report-2026-10-19": {
     title: "Meta Report de 19 de outubro: Pigs, Van Helsing e Robin Hood no topo do patch 0.7 no início da Crimson Cup",
     metaTitle: "Meta Report de Origins TCG de 19 de outubro: o meta",
