@@ -200,4 +200,50 @@ const fr: DeckVersionLabels = {
   },
 };
 
-export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es, fr };
+const pt: DeckVersionLabels = {
+  edit: {
+    title: "Cartas do deck",
+    current: "Versão {n} · patch {patch} · estas cartas desde {date}",
+    intro:
+      "Saiu um patch novo? Troque as cartas aqui e mantenha nome, guia, vídeos e link. Cartas novas abrem a versão {next}: os votos começam de novo do zero, e a versão anterior continua na página do deck com os votos dela.",
+    openBuilder: "Trocar as cartas no deck builder",
+    updateTo: "Atualizar para a versão {patch}",
+    outdated: "Este deck foi montado para o patch {old}: a versão {patch} já saiu.",
+    changedTitle: "Cartas novas, ainda não salvas",
+    added: "Entram",
+    removed: "Saem",
+    legendary: "Lendária: {from} → {to}",
+    saveNotice: "Ao salvar, o deck vira a versão {next} (patch {patch}) e a votação começa de novo. O guia não muda sozinho: confira se ele ainda combina com as cartas novas.",
+    discard: "Manter as cartas atuais",
+    same: "O deck builder devolveu as mesmas cartas que o deck já tem: nada muda.",
+    invalid: "Não dá para ler as cartas do link: o deck mantém as cartas atuais.",
+    unavailable: "A troca de cartas ainda não está disponível: você ainda pode editar nome, guia e vídeos.",
+  },
+  builder: {
+    banner: "Você está atualizando as cartas de “{name}”, um deck publicado. Quando terminar, volte para salvar: até lá, guia e votos ficam onde estão.",
+    bannerNoName: "Você está atualizando as cartas de um deck publicado. Quando terminar, volte para salvar.",
+    update: "Salvar no deck publicado",
+    cancel: "Parar de atualizar",
+  },
+  deck: {
+    version: "Versão {n}",
+    title: "Versões deste deck",
+    hint: "Os votos contam para a versão em vigor. As versões anteriores mantêm as cartas e os votos que tinham.",
+    current: "atual",
+    option: "v{n} · {patch}",
+    optionNoPatch: "v{n}",
+    range: "{from} → {to}",
+    since: "desde {date}",
+    votes: "{avg} ★ · {n} votos",
+    oneVote: "{avg} ★ · 1 voto",
+    noVotes: "Nenhum voto",
+    changes: "Mudanças em relação à v{n}",
+    cards: "Cartas da versão {n}",
+    openInBuilder: "Abrir a v{n} no deck builder",
+  },
+  errors: {
+    versionsUnavailable: "A troca de cartas ainda não está disponível: tente de novo em alguns minutos, ou salve sem trocar as cartas.",
+  },
+};
+
+export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es, fr, pt };

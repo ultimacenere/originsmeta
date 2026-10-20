@@ -1,7 +1,7 @@
 /**
  * Test delle date della sitemap (`lastmod.ts`) con il runner integrato di Node: `node --test src/lib/lastmod.test.ts`.
  * Le regole: il giorno più recente fra modello, dati e soglie; mai prima della nascita della lingua (lo spagnolo il
- * 25/09/2026); mai nel futuro; mai un orario.
+ * 25/09/2026, il francese il 07/10/2026, il portoghese il 20/10/2026); mai nel futuro; mai un orario.
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
@@ -46,19 +46,24 @@ describe("giorni", () => {
 });
 
 describe("lastmod di un URL", () => {
-  const today = "2026-10-20";
+  const today = "2026-11-30";
   test("vince la data più recente del contenuto", () => {
-    assert.equal(lastmodFor("en", ["2026-10-02", "2026-10-15", "2026-09-30"], today), "2026-10-15");
+    assert.equal(lastmodFor("en", ["2026-10-22", "2026-11-15", "2026-09-30"], today), "2026-11-15");
   });
-  test("nessuna pagina spagnola prima del 25/09/2026 né francese prima del 07/10/2026, qualunque data abbia il contenuto", () => {
+  test("nessuna pagina spagnola prima del 25/09/2026, francese prima del 07/10/2026 né portoghese prima del 20/10/2026, qualunque data abbia il contenuto", () => {
     assert.equal(LOCALE_SINCE.es, "2026-09-25");
     assert.equal(LOCALE_SINCE.fr, "2026-10-07");
-    // dal 07/10/2026 la soglia di tutto il sito (hreflang fr) supera la nascita dello spagnolo
+    assert.equal(LOCALE_SINCE.pt, "2026-10-20");
+    // dal 20/10/2026 la soglia di tutto il sito (hreflang pt) supera la nascita dello spagnolo e del francese
+    assert.equal(SITE_WIDE_CHANGE, "2026-10-20");
     assert.equal(lastmodFor("es", ["2026-08-27"], today), SITE_WIDE_CHANGE);
     assert.equal(lastmodFor("es", [], today), SITE_WIDE_CHANGE);
-    assert.equal(lastmodFor("fr", ["2026-09-25"], today), "2026-10-07");
-    assert.equal(lastmodFor("fr", [], today), "2026-10-07");
-    assert.equal(lastmodFor("fr", ["2026-10-12"], today), "2026-10-12");
+    assert.equal(lastmodFor("fr", ["2026-09-25"], today), SITE_WIDE_CHANGE);
+    assert.equal(lastmodFor("fr", ["2026-10-12"], today), SITE_WIDE_CHANGE);
+    assert.equal(lastmodFor("pt", ["2026-09-25"], today), "2026-10-20");
+    assert.equal(lastmodFor("pt", [], today), "2026-10-20");
+    assert.equal(lastmodFor("pt", ["2026-10-25"], today), "2026-10-25");
+    assert.equal(lastmodFor("fr", ["2026-10-25"], today), "2026-10-25");
   });
   test("la soglia comune è la nascita della lingua più recente, non un cambio di header o footer", () => {
     assert.equal(SITE_WIDE_CHANGE, latestDay(Object.values(LOCALE_SINCE)));
@@ -68,15 +73,15 @@ describe("lastmod di un URL", () => {
     assert.equal(lastmodFor("it", ["2026-08-21"], today), SITE_WIDE_CHANGE);
   });
   test("mai nel futuro: una data scritta in anticipo si ferma a oggi", () => {
-    assert.equal(lastmodFor("en", ["2026-11-01"], "2026-10-20"), "2026-10-20");
+    assert.equal(lastmodFor("en", ["2026-12-15"], "2026-11-30"), "2026-11-30");
     // anche le soglie: una sitemap generata prima del 25/09 non dichiara il 25/09
     assert.equal(lastmodFor("es", [], "2026-09-24"), "2026-09-24");
   });
   test("i timestamp dei mazzi (Supabase) diventano giorni", () => {
-    assert.equal(lastmodFor("it", ["2026-10-12T21:45:10.5+00:00"], today), "2026-10-12");
+    assert.equal(lastmodFor("it", ["2026-11-12T21:45:10.5+00:00"], today), "2026-11-12");
   });
   test("sempre e solo un giorno", () => {
-    for (const locale of ["en", "it", "es"] as const) {
+    for (const locale of ["en", "it", "es", "fr", "pt"] as const) {
       assert.match(lastmodFor(locale, ["2026-10-03T21:45:10Z"], today), ISO_DAY);
       assert.match(lastmodFor(locale, [], "2026-09-20T23:59:00Z"), ISO_DAY);
     }

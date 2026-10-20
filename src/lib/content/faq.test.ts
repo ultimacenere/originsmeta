@@ -56,8 +56,9 @@ const { faqs, suggerimenti } = faqModule;
 const { cards, activeCards, cardsVerified } = cardsModule;
 const { risposteApprovate, contestoPer } = retrieveModule;
 
-type Locale = "en" | "it" | "es";
-const locales: Locale[] = ["en", "it", "es"];
+// il portoghese dal 20/10/2026 (docs/portoghese.md)
+type Locale = "en" | "it" | "es" | "pt";
+const locales: Locale[] = ["en", "it", "es", "pt"];
 const byId = (l: Locale, id: string) => {
   const f = faqs[l].find((x) => x.id === id);
   assert.ok(f, `[${l}] manca la risposta ${id}`);
@@ -155,6 +156,7 @@ describe("numeri che cambiano con una patch", () => {
       en: (n) => `${n} is the only spell`,
       it: (n) => `${n} è l'unica magia`,
       es: (n) => `${n} es el único hechizo`,
+      pt: (n) => `${n} é o único feitiço`,
     };
     for (const l of locales) {
       const a = byId(l, "legendaries").a;
@@ -186,7 +188,7 @@ describe("dati delle carte senza fonte dell'import (decisione di Pierluigi del 2
     }
   });
   test("where-cards e card-list dicono che le carte create e le rimosse non sono verificate nel gioco", () => {
-    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game/, it: /non (?:sono state )?verificat[ei] nel gioco/, es: /sin comprobar en el juego|no se han comprobado en el juego/ };
+    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game/, it: /non (?:sono state )?verificat[ei] nel gioco/, es: /sin comprobar en el juego|no se han comprobado en el juego/, pt: /não foram verificad[oa]s no jogo/ };
     for (const l of locales) {
       assert.match(byId(l, "where-cards").a, notChecked[l], `[${l}] where-cards`);
       assert.match(byId(l, "card-list").a, notChecked[l], `[${l}] card-list`);
@@ -239,6 +241,14 @@ describe("risposte approvate per l'assistente", () => {
       ["¿Hay versión para Android?", "es", "mobile"],
       ["¿Se puede jugar en el teléfono?", "es", "mobile"],
       ["¿Cuál es la fecha de lanzamiento?", "es", "release-date"],
+      ["O jogo tem português?", "pt", "languages"],
+      ["Quais idiomas o jogo tem?", "pt", "languages"],
+      ["Qual é a data de lançamento?", "pt", "release-date"],
+      ["Tem versão para celular?", "pt", "mobile"],
+      ["Origins TCG está no Android?", "pt", "mobile"],
+      ["Quando começa a ranqueada?", "pt", "ranked"],
+      ["Como importo o código de um deck?", "pt", "deck-code"],
+      ["Quais são os prêmios da Crimson Cup?", "pt", "crimson-cup"],
     ];
     for (const [q, l, id] of cases) assert.equal(first(q, l), id, `[${l}] "${q}" → ${ids(q, l).join(", ") || "nessuna"}`);
   });

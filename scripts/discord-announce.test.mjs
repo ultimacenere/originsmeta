@@ -147,6 +147,14 @@ describe("messaggi", () => {
     // senza la pagina francese (HTML vuoto) il campo non c'è, come per lo spagnolo
     assert.deepEqual(payload("news", { kind: "news", slug: "x" }, html, en, es).embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español"]);
   });
+  test("portoghese: titolo collegato alla pagina /pt, dopo il francese e prima del link di MetaShifting (dal 20/10/2026)", () => {
+    const es = `<h1>La última</h1>`;
+    const fr = `<h1>Le dernier</h1>`;
+    const pt = `<h1>A última</h1>`;
+    const body = payload("metashifting", { kind: "news", slug: "patch-x", patch: "demo-0921" }, html, en, es, "metashifting", fr, pt);
+    assert.deepEqual(body.embeds[0].fields.map((f) => f.name), ["🇬🇧 English", "🇪🇸 Español", "🇫🇷 Français", "🇧🇷 Português", "MetaShifting"]);
+    assert.equal(split(mdHref(body.embeds[0].fields[3].value)).clean, "https://originsmeta.com/pt/news/patch-x");
+  });
   test("UTM su ogni link al sito: sorgente discord, mezzo social, campagna = tipo di contenuto, content = canale", () => {
     const es = `<h1>La última</h1>`;
     const news = payload("announcements", { kind: "news", slug: "prova" }, html, en, es).embeds[0];

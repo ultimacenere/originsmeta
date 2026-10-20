@@ -33,33 +33,37 @@ const mod: typeof import("./sitemapEntries") = await import("./sitemapEntries.ts
 const { COMMUNITY_SECTIONS, EMPTY_COMMUNITY, sectionEntries, sitemapIndexEntries, sitemapPages } = mod;
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const { getGuides }: typeof import("./content/guides") = await import("./content/guides.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const { SITE_WIDE_CHANGE }: typeof import("./lastmod") = await import("./lastmod.ts");
 
-type Locale = "en" | "it" | "es" | "fr";
+type Locale = "en" | "it" | "es" | "fr" | "pt";
 type Data = Parameters<typeof sitemapPages>[0];
 const SITE = "https://originsmeta.com";
 // dopo il 29/09/2026, ultimo cambio del modello delle pagine delle guide (PAGE_UPDATED): le date dei dati si vedono
-// dopo il 07/10/2026 (nascita del francese, soglia di tutto il sito), così le date dei contenuti si vedono
-const TODAY = "2026-10-13";
+// dopo il 20/10/2026 (nascita del portoghese, soglia di tutto il sito), così le date dei contenuti si vedono
+const TODAY = "2026-11-30";
 // Le guide editoriali si aggiornano a ogni patch o annuncio (`updated` in guides.ts): il test di /guides mette le date della
-// community DOPO l'ultima editoriale, così è la community a spostare il lastmod e il test non scade al prossimo aggiornamento.
+// community DOPO l'ultima editoriale, così è la community a spostare il lastmod e il test non scade al prossimo aggiornamento;
+// e mai prima della soglia di tutto il sito (SITE_WIDE_CHANGE, il 20/10/2026 con il portoghese), che altrimenti le coprirebbe.
 const addDays = (day: string, n: number) => new Date(Date.parse(day) + n * 86_400_000).toISOString().slice(0, 10);
-const EDITORIAL_LATEST = (["en", "it", "es", "fr"] as Locale[]).flatMap((l) => getGuides(l).map((g) => g.updated)).sort().at(-1)!;
+const EDITORIAL_LATEST = (["en", "it", "es", "fr", "pt"] as Locale[]).flatMap((l) => getGuides(l).map((g) => g.updated)).sort().at(-1)!;
+const HUB_BASE = [EDITORIAL_LATEST, SITE_WIDE_CHANGE].sort().at(-1)!;
 
 const community = {
   ...EMPTY_COMMUNITY,
   communityGuides: {
     guides: [
-      { slug: "dorothy-combo-ab12", locales: ["es"] as Locale[], dates: { es: "2026-10-10T10:00:00+00:00" }, image: "/media/keyart-mulan.webp" },
+      { slug: "dorothy-combo-ab12", locales: ["es"] as Locale[], dates: { es: "2026-10-25T10:00:00+00:00" }, image: "/media/keyart-mulan.webp" },
       {
         slug: "mulligan-cd34",
         locales: ["en", "it", "es"] as Locale[],
         // la versione inglese è cambiata quando è arrivata la sua traduzione
-        dates: { en: "2026-10-11T07:00:00.000Z", it: "2026-10-10T08:00:00+00:00", es: "2026-10-10T08:00:00+00:00" },
+        dates: { en: "2026-10-26T07:00:00.000Z", it: "2026-10-25T08:00:00+00:00", es: "2026-10-25T08:00:00+00:00" },
         image: "/media/keyart-king-arthur.webp",
       },
     ],
-    hub: { en: "2026-10-11T07:00:00.000Z", it: "2026-10-10T08:00:00+00:00", es: "2026-10-11T09:00:00+00:00" },
-    list: { en: "2026-10-11T07:00:00.000Z", it: "2026-10-10T08:00:00+00:00", es: "2026-10-11T09:00:00+00:00" },
+    hub: { en: "2026-10-26T07:00:00.000Z", it: "2026-10-25T08:00:00+00:00", es: "2026-10-26T09:00:00+00:00" },
+    list: { en: "2026-10-26T07:00:00.000Z", it: "2026-10-25T08:00:00+00:00", es: "2026-10-26T09:00:00+00:00" },
   },
 };
 
@@ -81,19 +85,19 @@ describe("guide della community nelle sitemap", () => {
     const solo = es.find((e) => e.url.endsWith("dorothy-combo-ab12"));
     assert.deepEqual(Object.keys(solo?.alternates ?? {}).sort(), ["es", "x-default"]);
     assert.equal(solo?.alternates?.["x-default"], `${SITE}/es/guides/community/dorothy-combo-ab12`);
-    assert.equal(solo?.lastmod, "2026-10-10");
+    assert.equal(solo?.lastmod, "2026-10-25");
     assert.deepEqual(solo?.images, [`${SITE}/media/keyart-mulan.webp`]);
     const en = sectionEntries(pages, "guides", "en", TODAY).find((e) => e.url.endsWith("/en/guides/community/mulligan-cd34"));
-    assert.equal(en?.lastmod, "2026-10-11", "la data della versione inglese");
-    assert.equal(it[0].lastmod, "2026-10-10");
+    assert.equal(en?.lastmod, "2026-10-26", "la data della versione inglese");
+    assert.equal(it[0].lastmod, "2026-10-25");
   });
 
   test("/guides si sposta con le guide della community che mostra nella lingua", () => {
     // dal 29/09/2026 le guide della community indicizzabili stanno nell'HTML di /guides (ISR), quindi ne spostano il lastmod.
-    // Date dopo l'ultima guida editoriale (EDITORIAL_LATEST): l'italiano un giorno dopo, lo spagnolo due, "oggi" quattro.
-    const itDay = addDays(EDITORIAL_LATEST, 1);
-    const esDay = addDays(EDITORIAL_LATEST, 2);
-    const today = addDays(EDITORIAL_LATEST, 4);
+    // Date dopo l'ultima guida editoriale e la soglia del sito (HUB_BASE): l'italiano un giorno dopo, lo spagnolo due, "oggi" quattro.
+    const itDay = addDays(HUB_BASE, 1);
+    const esDay = addDays(HUB_BASE, 2);
+    const today = addDays(HUB_BASE, 4);
     const laterGuides = { ...community.communityGuides, hub: { en: `${esDay}T07:00:00.000Z`, it: `${itDay}T08:00:00+00:00`, es: `${esDay}T09:00:00+00:00` } };
     const later: Data = { ...community, communityGuides: laterGuides };
     const hub = (l: Locale, data: Data = later) => sectionEntries(sitemapPages(data), "pages", l, today).find((e) => e.url === `${SITE}/${l}/guides`)?.lastmod;
@@ -108,8 +112,8 @@ describe("guide della community nelle sitemap", () => {
 
   test("/guides/community solo nelle lingue in cui l'elenco ha almeno una guida, con la sua data", () => {
     const listOf = (l: Locale, data: Data) => sectionEntries(sitemapPages(data), "pages", l, TODAY).find((e) => e.url === `${SITE}/${l}/guides/community`);
-    assert.equal(listOf("es", community)?.lastmod, "2026-10-11");
-    const onlyEs: Data = { ...community, communityGuides: { ...community.communityGuides, list: { es: "2026-10-11T09:00:00+00:00" } } };
+    assert.equal(listOf("es", community)?.lastmod, "2026-10-26");
+    const onlyEs: Data = { ...community, communityGuides: { ...community.communityGuides, list: { es: "2026-10-26T09:00:00+00:00" } } };
     assert.ok(listOf("es", onlyEs));
     assert.equal(listOf("it", onlyEs), undefined, "elenco vuoto in italiano: fuori dalla sitemap");
     assert.deepEqual(Object.keys(listOf("es", onlyEs)?.alternates ?? {}).sort(), ["es", "x-default"]);

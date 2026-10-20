@@ -25,9 +25,12 @@ on:
       - src/lib/content/guides-es.ts
       - src/lib/content/guides-fr.ts
       - src/lib/data/news-fr.ts
+      - src/lib/content/guides-pt.ts
+      - src/lib/data/news-pt.ts
       - src/lib/data/card-history.ts
       - src/lib/data/card-lore.ts
       - src/lib/data/card-lore-fr.ts
+      - src/lib/data/card-lore-pt.ts
       - src/lib/data/locations.ts
   workflow_dispatch:
     inputs:

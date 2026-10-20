@@ -260,7 +260,8 @@ export function changePct(now: number | null, before: number | null): number | n
 
 /** La valuta di partenza per lingua: dollari sulle pagine inglesi, euro sulle altre. */
 export function defaultCurrency(locale: string): MarketCurrency {
-  return locale === "en" ? "USD" : "EUR";
+  // il portoghese è quello del Brasile, dove il riferimento è il dollaro (Steam lì vende in real, che il mercato non ha)
+  return locale === "en" || locale === "pt" ? "USD" : "EUR";
 }
 
 /** Una riga del tabellone (funzione market_board). */

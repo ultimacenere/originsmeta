@@ -13,9 +13,9 @@ function useRest(locale: Locale): string {
 
 /**
  * Selettore della lingua. Nell'header, da 640 px, è una piccola tendina (18/10/2026, Pierluigi: "mettiamo il selettore
- * lingua con un mini menu a tendina e non come sono ora"): un tasto con la lingua corrente e, aperto, le quattro lingue
+ * lingua con un mini menu a tendina e non come sono ora"): un tasto con la lingua corrente e, aperto, tutte le lingue
  * con il loro nome; si chiude da solo al cambio pagina, al clic fuori e con Esc (AutoCloseDetails). Dentro il menu del
- * telefono, che è già una tendina, resta la fila delle quattro pastiglie (`variant="pills"`).
+ * telefono, che è già una tendina, resta la fila delle pastiglie (`variant="pills"`).
  */
 export function LocaleSwitcher({ locale, label, className = "", variant = "dropdown" }: { locale: Locale; label: string; className?: string; variant?: "dropdown" | "pills" }) {
   const rest = useRest(locale);
@@ -30,7 +30,7 @@ export function LocaleSwitcher({ locale, label, className = "", variant = "dropd
               href={`/${l}${rest}`}
               hrefLang={l}
               aria-current={active ? "page" : undefined}
-              className={`rounded-full px-2 py-1 font-mono text-[11px] uppercase tracking-wider transition ${active ? "bg-mint text-ink" : "text-chalk-muted hover:text-chalk"}`}
+              className={`rounded-full px-1.5 py-1 font-mono text-[11px] uppercase tracking-wider transition ${active ? "bg-mint text-ink" : "text-chalk-muted hover:text-chalk"}`}
             >
               {l}
             </Link>

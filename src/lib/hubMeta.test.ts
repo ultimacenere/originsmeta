@@ -20,6 +20,8 @@ import { it } from "./dictionaries/it.ts";
 import { es } from "./dictionaries/es.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { fr } from "./dictionaries/fr.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { pt } from "./dictionaries/pt.ts";
 
 type Dict = typeof en;
 const dicts: [string, Dict][] = [
@@ -27,6 +29,7 @@ const dicts: [string, Dict][] = [
   ["it", it],
   ["es", es],
   ["fr", fr],
+  ["pt", pt],
 ];
 
 /** Stesse costanti di src/lib/page.ts (TITLE_MAX, DESCRIPTION_MAX). */
@@ -125,7 +128,7 @@ for (const [locale, d] of dicts) {
       assert.match(d.tier.metaTitle, /meta\b/i);
       assert.doesNotMatch(d.faq.metaTitle, /decks?\b|mazzi|mazos/i);
       assert.doesNotMatch(d.decks.metaTitle, /codes?\b|codici|códigos/i);
-      assert.match(d.decks.metaTitle, /guides|guide|guías/i);
+      assert.match(d.decks.metaTitle, /guides|guide|guías|guias/i);
     });
 
     test("/tournaments nomina la Crimson Cup ma lascia posti e premi alla news delle regole", () => {
@@ -149,7 +152,7 @@ for (const [locale, d] of dicts) {
     });
 
     test("la dicitura del footer dice sempre che il sito non è affiliato a Koin Games", () => {
-      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games/);
+      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games|não é afiliado à Koin Games/);
     });
 
     test("le frasi costruite con i dati hanno i loro segnaposto", () => {

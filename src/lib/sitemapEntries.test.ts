@@ -37,18 +37,18 @@ const cardsModule: typeof import("./data/cards") = await import("./data/cards.ts
 const { EMPTY_COMMUNITY, HOME_SITEMAP_PATH, SITEMAP_SECTIONS, cardSection, homeEntries, sectionEntries, sectionSitemapPath, sitemapIndexEntries, sitemapPages } = mod;
 const { cards } = cardsModule;
 
-type Locale = "en" | "it" | "es" | "fr";
-const locales: Locale[] = ["en", "it", "es", "fr"];
+type Locale = "en" | "it" | "es" | "fr" | "pt";
+const locales: Locale[] = ["en", "it", "es", "fr", "pt"];
 const SITE = "https://originsmeta.com";
-// il giorno in cui è nato il francese (LOCALE_SINCE.fr e SITE_WIDE_CHANGE): le date di quel giorno si fermano qui
-const TODAY = "2026-10-07";
+// il giorno in cui è nato il portoghese (LOCALE_SINCE.pt e SITE_WIDE_CHANGE): le date di quel giorno si fermano qui
+const TODAY = "2026-10-20";
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Una community finta: un mazzo solo in italiano, uno in tre lingue, un torneo, un profilo con una data nel futuro. */
 const community = {
   decks: [
     { slug: "solo-italiano-1a2b", updated_at: "2026-09-24T10:00:00+00:00", locales: ["it"] as Locale[] },
-    { slug: "tre-lingue-3c4d", updated_at: "2026-09-23T08:00:00+00:00", locales: ["en", "it", "es", "fr"] as Locale[] },
+    { slug: "tre-lingue-3c4d", updated_at: "2026-09-23T08:00:00+00:00", locales: ["en", "it", "es", "fr", "pt"] as Locale[] },
   ],
   tournaments: [{ slug: "crimson-cup-om-ab12", updated_at: "2026-09-25T09:00:00+00:00" }],
   profiles: [{ username: "davdas", updated_at: "2026-09-22T12:00:00+00:00" }],
@@ -136,12 +136,12 @@ describe("sezioni", () => {
   });
   test("hreflang completo sulle pagine che esistono in tutte le lingue", () => {
     const faq = bySection("pages", "es").find((e) => e.url === `${SITE}/es/faq`);
-    assert.deepEqual(faq?.alternates, { en: `${SITE}/en/faq`, it: `${SITE}/it/faq`, es: `${SITE}/es/faq`, fr: `${SITE}/fr/faq`, "x-default": `${SITE}/en/faq` });
+    assert.deepEqual(faq?.alternates, { en: `${SITE}/en/faq`, it: `${SITE}/it/faq`, es: `${SITE}/es/faq`, fr: `${SITE}/fr/faq`, pt: `${SITE}/pt/faq`, "x-default": `${SITE}/en/faq` });
   });
 });
 
 describe("date", () => {
-  test("solo il giorno, mai nel futuro, lo spagnolo mai prima del 25/09/2026, il francese mai prima del 07/10/2026", () => {
+  test("solo il giorno, mai nel futuro, lo spagnolo mai prima del 25/09/2026, il francese mai prima del 07/10/2026, il portoghese mai prima del 20/10/2026", () => {
     const all = [...homeEntries(pages, TODAY)];
     for (const l of locales) for (const s of SITEMAP_SECTIONS) all.push(...bySection(s, l));
     for (const e of all) {
@@ -149,6 +149,7 @@ describe("date", () => {
       assert.ok((e.lastmod ?? "") <= TODAY, `${e.url} ${e.lastmod}`);
       if (e.url.startsWith(`${SITE}/es`)) assert.ok((e.lastmod ?? "") >= "2026-09-25", e.url);
       if (e.url.startsWith(`${SITE}/fr`)) assert.ok((e.lastmod ?? "") >= "2026-10-07", e.url);
+      if (e.url.startsWith(`${SITE}/pt`)) assert.ok((e.lastmod ?? "") >= "2026-10-20", e.url);
     }
     // la tier list di davdas porta una data del 30/09: il profilo si ferma a oggi
     assert.equal(bySection("community", "it").find((e) => e.url.endsWith("/u/davdas"))?.lastmod, TODAY);
@@ -183,7 +184,7 @@ describe("indice", () => {
     assert.equal(index[0].url, `${SITE}${HOME_SITEMAP_PATH}`);
     assert.equal(index.length, 1 + locales.length * SITEMAP_SECTIONS.length);
     for (const item of index.slice(1)) {
-      const [, l, s] = item.url.match(/^https:\/\/originsmeta\.com\/(en|it|es|fr)\/sitemap-([a-z-]+)\.xml$/) ?? [];
+      const [, l, s] = item.url.match(/^https:\/\/originsmeta\.com\/(en|it|es|fr|pt)\/sitemap-([a-z-]+)\.xml$/) ?? [];
       assert.ok(l && s, item.url);
       const days = bySection(s as (typeof SITEMAP_SECTIONS)[number], l as Locale).map((e) => e.lastmod ?? "");
       assert.equal(item.lastmod, days.sort().at(-1));

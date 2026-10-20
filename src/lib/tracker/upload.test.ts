@@ -217,7 +217,7 @@ describe("stats: soglie e letture", () => {
     // la soglia di prova (01/10/2026) può solo stare sotto quella del lancio, mai sopra; dal 12/10/2026 (Pierluigi: soglia
     // libera) nessun testo del sito la scrive, nemmeno l'informativa
     assert.deepEqual(S.TRACKER_STATS_LAUNCH, { minGames: 20, minPlayers: 3 });
-    for (const l of ["en", "it", "es", "fr"] as const) assert.doesNotMatch(TL.trackerPrivacy[l], /\b20\b[^.]*\b3\b/, l);
+    for (const l of ["en", "it", "es", "fr", "pt"] as const) assert.doesNotMatch(TL.trackerPrivacy[l], /\b20\b[^.]*\b3\b/, l);
     assert.ok(minGames >= 1 && minPlayers >= 1 && minGames <= 20 && minPlayers <= 3);
     assert.equal(S.testThresholds, minGames < 20 || minPlayers < 3);
     assert.equal(S.isEarly(99), true);

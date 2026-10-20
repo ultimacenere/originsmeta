@@ -308,7 +308,7 @@ describe("etichette nelle tre lingue", () => {
   const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
   const en = leaves(achievementLabels.en as unknown as Tree);
 
-  for (const locale of ["it", "es"] as const) {
+  for (const locale of ["it", "es", "fr", "pt"] as const) {
     test(`${locale}: stesse chiavi e stessi segnaposto dell'inglese, nessun testo vuoto`, () => {
       const other = leaves(achievementLabels[locale] as unknown as Tree);
       assert.deepEqual([...other.keys()].sort(), [...en.keys()].sort());
@@ -345,8 +345,8 @@ describe("etichette nelle tre lingue", () => {
     // i testi lo dicono invece di promettere "mai per giorno o per mazzo"
     for (const l of Object.values(achievementLabels)) {
       assert.doesNotMatch(l.privacy, /mai i numeri per giorno|never the figures per day|nunca las cifras por día/i);
-      assert.match(l.privacy, /single deck|solo mazzo|solo mazo|un seul deck/);
-      assert.match(l.account.intro, /single published deck|solo mazzo pubblicato|solo mazo publicado|un seul deck publié/);
+      assert.match(l.privacy, /single deck|solo mazzo|solo mazo|un seul deck|um só deck/);
+      assert.match(l.account.intro, /single published deck|solo mazzo pubblicato|solo mazo publicado|un seul deck publié|um só deck publicado/);
     }
   });
 });

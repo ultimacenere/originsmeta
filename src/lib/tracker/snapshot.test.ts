@@ -226,7 +226,7 @@ describe("mappa del meta", () => {
   });
 });
 
-describe("numeri nelle quattro lingue", () => {
+describe("numeri nelle cinque lingue", () => {
   test("migliaia, percentuali e delta", () => {
     assert.equal(fmtInt(1240, "en"), "1,240");
     assert.equal(fmtInt(1240, "it"), "1.240");
@@ -240,5 +240,9 @@ describe("numeri nelle quattro lingue", () => {
     assert.equal(deltaText(4 / 7, "it"), "+7,1");
     assert.equal(deltaText(0.4, "en"), "−10.0");
     assert.equal(deltaText(0.5, "fr"), "0,0");
+    // portoghese del Brasile (20/10/2026, docs/portoghese.md): "10.000", "3,5", "98%"
+    assert.equal(fmtInt(1240, "pt"), "1.240");
+    assert.equal(pct(4 / 7, "pt"), "57,1%");
+    assert.equal(deltaText(4 / 7, "pt"), "+7,1");
   });
 });

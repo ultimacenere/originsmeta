@@ -411,7 +411,7 @@ describe("fumetti: etichette", () => {
 
   test("stesse chiavi e stessi segnaposto nelle tre lingue", () => {
     const en = L.comicLabels.en;
-    for (const locale of ["it", "es"] as const) {
+    for (const locale of ["it", "es", "fr", "pt"] as const) {
       const other = L.comicLabels[locale];
       assert.deepEqual(sorted(paths(other)), sorted(paths(en)), locale);
       for (const p of paths(en)) assert.deepEqual(holes(String(at(other, p))), holes(String(at(en, p))), `${locale}: ${p}`);
@@ -665,8 +665,8 @@ describe("fumetti: script per unire i fumetti di più lingue (scripts/merge-comi
 describe("fumetti: collegamenti", () => {
   test("proxy, privacy, /account e set-badge", () => {
     const proxy = read("../../proxy.ts");
-    assert.ok(proxy.includes('"/:locale(en|it|es|fr)/news/comics/new"'));
-    assert.ok(proxy.includes('"/:locale(en|it|es|fr)/news/comics/:slug/edit"'));
+    assert.ok(proxy.includes('"/:locale(en|it|es|fr|pt)/news/comics/new"'));
+    assert.ok(proxy.includes('"/:locale(en|it|es|fr|pt)/news/comics/:slug/edit"'));
     const privacy = read("../../app/[locale]/(site)/privacy/page.tsx");
     assert.match(privacy, /id="community-comics"/);
     assert.match(privacy, /comicLabels\[locale\]\.privacy/);

@@ -1064,7 +1064,7 @@ export const en = {
   footer: {
     /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
     disclaimer: "OriginsMeta is an independent, unofficial fan site about Origins TCG, the digital card game by Koin Games, and is not affiliated with Koin Games. Origins TCG and all related names and artwork belong to their owners.",
-    built: "Built at the table, in three languages.",
+    built: "Built at the table, in five languages.",
     links: "Links",
     official: "Official",
     legal: "Legal",
@@ -1322,9 +1322,9 @@ export const en = {
     },
     kicker: "Origins deck",
     guideLangNote: "This guide was written in {lang} by whoever published the deck and is shown as written: the automatic translation is not ready yet.",
-    langNames: { en: "English", it: "Italian", es: "Spanish", fr: "French" },
+    langNames: { en: "English", it: "Italian", es: "Spanish", fr: "French", pt: "Portuguese" },
     /** "from <language>", after "Translated automatically" */
-    langFrom: { en: "from English", it: "from Italian", es: "from Spanish", fr: "from French" },
+    langFrom: { en: "from English", it: "from Italian", es: "from Spanish", fr: "from French", pt: "from Portuguese" },
     translatedNote: "Translated automatically {from}: card names stay in English, as in the game.",
     originalText: "Original text ({lang})",
     metaTail: "Full list, charts and the game's deck code on OriginsMeta.",

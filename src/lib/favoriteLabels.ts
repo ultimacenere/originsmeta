@@ -110,4 +110,29 @@ const fr: FavoriteLabels = {
   },
 };
 
-export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr };
+const pt: FavoriteLabels = {
+  save: "Salvar",
+  saved: "Salvo",
+  countOne: "salvo por 1 jogador",
+  count: "salvo por {n} jogadores",
+  countNone: "Salve para encontrá-lo de novo no seu perfil",
+  loginToSave: "Entre para salvar",
+  errors: {
+    limit: "Você salvou 500 decks, o máximo: remova alguns pelo seu perfil.",
+    invalid: "Este deck não pode ser salvo.",
+    unavailable: "Salvar decks ainda não está disponível: tente de novo em alguns minutos.",
+    db: "Algo deu errado: tente de novo.",
+  },
+  sortTrending: "Em alta",
+  sortSaved: "Mais salvos",
+  favoritesShort: "☆ {n}",
+  account: {
+    title: "Decks salvos",
+    hint: "Os decks que você salvou com “Salvar”. Só você vê esta lista.",
+    empty: "Nenhum deck salvo ainda: abra um deck e toque em “Salvar”.",
+    remove: "Remover",
+    unpublished: "Não está mais publicado",
+  },
+};
+
+export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr, pt };

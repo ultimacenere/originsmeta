@@ -10,7 +10,8 @@
  *        - news e guide nuove: le pagine nelle tre lingue, più /news o /guides e le home che le mostrano;
  *        - news e guide con le date cambiate (`updated`: un articolo rivisto);
  *        - guide con il testo spagnolo cambiato (guides-es.ts): la sola pagina /es; lo stesso per il francese
- *          (guides-fr.ts, news-fr.ts e card-lore-fr.ts, dal 07/10/2026): la sola pagina /fr;
+ *          (guides-fr.ts, news-fr.ts e card-lore-fr.ts, dal 07/10/2026): la sola pagina /fr; e per il portoghese
+ *          (guides-pt.ts, news-pt.ts e card-lore-pt.ts, dal 20/10/2026): la sola pagina /pt;
  *        - carte con lo storico o i testi cambiati (una patch, una rilettura nel gioco): le schede, più /metashifting
  *          quando cambia lo storico. Un testo cambiato in una lingua sola segnala solo quella (`changedLocales`): il
  *          protocollo chiede gli URL cambiati, e le schede nelle altre lingue non cambiano né di contenuto né di data;
@@ -38,7 +39,7 @@ import { pathToFileURL } from "node:url";
 import { INDEXNOW_SITE, indexNowUrls, keyFileUrl, localizedPaths, submitIndexNow } from "../src/lib/indexnow.ts";
 
 /** Le lingue del sito, come `locales` in src/lib/i18n.ts (il test controlla che coincidano). */
-export const LOCALES = ["en", "it", "es", "fr"];
+export const LOCALES = ["en", "it", "es", "fr", "pt"];
 
 const SITE = (process.env.SITE_URL || INDEXNOW_SITE).replace(/\/+$/, "");
 const DRY_RUN = process.env.DRY_RUN === "1";
@@ -58,9 +59,12 @@ export const FILES = {
   guidesEs: "src/lib/content/guides-es.ts",
   guidesFr: "src/lib/content/guides-fr.ts",
   newsFr: "src/lib/data/news-fr.ts",
+  guidesPt: "src/lib/content/guides-pt.ts",
+  newsPt: "src/lib/data/news-pt.ts",
   history: "src/lib/data/card-history.ts",
   lore: "src/lib/data/card-lore.ts",
   loreFr: "src/lib/data/card-lore-fr.ts",
+  lorePt: "src/lib/data/card-lore-pt.ts",
   locations: "src/lib/data/locations.ts",
 };
 
@@ -235,12 +239,18 @@ export function pushPaths({
   guidesFrB = "",
   newsFrA = "",
   newsFrB = "",
+  guidesPtA = "",
+  guidesPtB = "",
+  newsPtA = "",
+  newsPtB = "",
   historyA = "",
   historyB = "",
   loreA = "",
   loreB = "",
   loreFrA = "",
   loreFrB = "",
+  lorePtA = "",
+  lorePtB = "",
   locationsA = "",
   locationsB = "",
 }) {
@@ -270,6 +280,9 @@ export function pushPaths({
   // Lo stesso per il francese (dal 07/10/2026): guides-fr.ts e news-fr.ts hanno solo i testi, una voce per slug.
   for (const slug of changedKeys(recordChunks(guidesFrA), recordChunks(guidesFrB))) if (guidesAfter.has(slug) && !addedGuides.includes(slug)) changed.push(`/fr/guides/${slug}`);
   for (const slug of changedKeys(recordChunks(newsFrA), recordChunks(newsFrB))) if (newsAfter.has(slug) && !addedNews.includes(slug)) changed.push(`/fr/news/${slug}`);
+  // E per il portoghese (dal 20/10/2026): guides-pt.ts e news-pt.ts, una voce per slug come il francese.
+  for (const slug of changedKeys(recordChunks(guidesPtA), recordChunks(guidesPtB))) if (guidesAfter.has(slug) && !addedGuides.includes(slug)) changed.push(`/pt/guides/${slug}`);
+  for (const slug of changedKeys(recordChunks(newsPtA), recordChunks(newsPtB))) if (newsAfter.has(slug) && !addedNews.includes(slug)) changed.push(`/pt/news/${slug}`);
 
   // Carte: lo storico (una patch) cambia la scheda in tutte le lingue; i testi di card-lore.ts solo nelle lingue toccate.
   const historyChanged = new Set(changedKeys(recordChunks(historyA), recordChunks(historyB)));
@@ -282,6 +295,8 @@ export function pushPaths({
   }
   // I testi francesi delle carte stanno in card-lore-fr.ts (dal 07/10/2026): una voce cambiata tocca la sola scheda /fr.
   for (const slug of changedKeys(recordChunks(loreFrA), recordChunks(loreFrB))) if (!historyChanged.has(slug)) changed.push(`/fr/cards/${slug}`);
+  // Lo stesso per i testi portoghesi delle carte (card-lore-pt.ts, dal 20/10/2026): la sola scheda /pt.
+  for (const slug of changedKeys(recordChunks(lorePtA), recordChunks(lorePtB))) if (!historyChanged.has(slug)) changed.push(`/pt/cards/${slug}`);
   if (historyChanged.size) changed.push(...at("/metashifting"));
 
   // Luoghi: una pagina sola, /locations, nelle lingue i cui effetti sono cambiati.

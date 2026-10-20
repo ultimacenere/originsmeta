@@ -101,7 +101,7 @@ const en = {
       "Type your bot's line in your Twitch chat, as the channel owner or a moderator. The answer: deck name, Legendary, short link and game code. If !deck already exists, write edit instead of add (!commands edit, !command edit).",
     fossabot: "Fossabot (response of a command created in the dashboard)",
     langName: "English",
-    langHint: "The answer is in {lang}: for another language change lang={code} at the end of the link (en, it, es, fr).",
+    langHint: "The answer is in {lang}: for another language change lang={code} at the end of the link (en, it, es, fr, pt).",
     overlay: "OBS overlay with your latest deck",
   },
 };
@@ -188,7 +188,7 @@ const it: StreamLabels = {
       "Scrivi la riga del tuo bot nella chat di Twitch, da proprietario del canale o da moderatore. La risposta: nome del mazzo, Leggendaria, link breve e codice del gioco. Se !deck esiste già, al posto di add scrivi edit (!commands edit, !command edit).",
     fossabot: "Fossabot (risposta di un comando creato dalla dashboard)",
     langName: "italiano",
-    langHint: "La risposta è in {lang}: per un'altra lingua cambia lang={code} in fondo al link (en, it, es, fr).",
+    langHint: "La risposta è in {lang}: per un'altra lingua cambia lang={code} in fondo al link (en, it, es, fr, pt).",
     overlay: "Overlay per OBS con il tuo ultimo mazzo",
   },
 };
@@ -273,7 +273,7 @@ const es: StreamLabels = {
       "Escribe la línea de tu bot en el chat de Twitch, como dueño del canal o moderador. La respuesta: nombre del mazo, Legendaria, enlace corto y código del juego. Si !deck ya existe, en lugar de add escribe edit (!commands edit, !command edit).",
     fossabot: "Fossabot (respuesta de un comando creado en el panel)",
     langName: "español",
-    langHint: "La respuesta está en {lang}: para otro idioma cambia lang={code} al final del enlace (en, it, es, fr).",
+    langHint: "La respuesta está en {lang}: para otro idioma cambia lang={code} al final del enlace (en, it, es, fr, pt).",
     overlay: "Overlay para OBS con tu último mazo",
   },
 };
@@ -360,9 +360,96 @@ const fr: StreamLabels = {
       "Tapez la ligne de votre bot dans votre chat Twitch, en tant que propriétaire de la chaîne ou modérateur. La réponse : nom du deck, Légendaire, lien court et code du jeu. Si !deck existe déjà, écrivez edit à la place de add (!commands edit, !command edit).",
     fossabot: "Fossabot (réponse d'une commande créée dans le tableau de bord)",
     langName: "français",
-    langHint: "La réponse est en {lang} : pour une autre langue, changez lang={code} à la fin du lien (en, it, es, fr).",
+    langHint: "La réponse est en {lang} : pour une autre langue, changez lang={code} à la fin du lien (en, it, es, fr, pt).",
     overlay: "Overlay OBS avec votre dernier deck",
   },
 };
 
-export const streamLabels: Record<Locale, StreamLabels> = { en, it, es, fr };
+// Portoghese del Brasile dal 20/10/2026 (docs/portoghese.md): você, "deck de torneio" per il mazzo torneo, "overlay do
+// OBS", "ferramentas para lives"; i nomi dei bot e delle piattaforme restano; la riga della chat comincia col testo fisso.
+const pt: StreamLabels = {
+  chat: {
+    line: "Deck de {author}: {deck}",
+    legendary: "Lendária",
+    code: "Código do jogo",
+    setLine: "Deck de torneio de {author}: {set}",
+    noDecks: "{user} ainda não tem decks públicos no OriginsMeta.",
+    noUser: "Não existe nenhum usuário {user} no OriginsMeta.",
+    noDeck: "Deck não encontrado no OriginsMeta: confira a URL do comando.",
+    noSet: "Deck de torneio não encontrado no OriginsMeta: confira a URL do comando.",
+    usage: "Adicione ?u=<nome de usuário no OriginsMeta>, ?deck=<deck> ou ?set=<deck de torneio> à URL do comando.",
+    unavailable: "O OriginsMeta não está respondendo agora: tente de novo em um minuto.",
+  },
+  overlay: {
+    title: "Overlay do deck",
+    legendary: "Lendária",
+    by: "de",
+    cards: "Cartas (×2)",
+    noDeck: "Deck não encontrado: confira a URL da fonte de navegador.",
+    noDecks: "{user} ainda não tem decks públicos: publique um no OriginsMeta e ele aparece aqui em menos de um minuto.",
+    noUser: "Não existe nenhum usuário {user} no OriginsMeta.",
+    usage: "Adicione ?u=<nome de usuário no OriginsMeta> à URL, ou use /overlay/deck/<deck>.",
+    unavailable: "O OriginsMeta não está respondendo agora: o overlay tenta de novo a cada minuto.",
+    unofficial: "Site de fãs não oficial, não afiliado à Koin Games",
+    set: "Deck de torneio",
+    deck: "Deck {letter}",
+    noSet: "Deck de torneio não encontrado: confira a URL da fonte de navegador.",
+  },
+  image: {
+    kicker: "Origins TCG · Deck da comunidade",
+    by: "de",
+    legendary: "Lendária",
+    cards: "Cartas · 2 cópias de cada",
+    unofficial: "Site de fãs não oficial, não afiliado à Koin Games",
+    alt: "Lista do deck {deck} de {author}, com a Lendária {legendary}: as doze cartas e o custo de mana delas.",
+    altNoLegendary: "Lista do deck {deck} de {author}: as cartas e o custo de mana delas.",
+    setKicker: "Origins TCG · Deck de torneio · Conquest",
+    deck: "Deck {letter}",
+    setAlt: "Deck de torneio {set} de {author}: as listas dos seus três decks de Conquest, com as Lendárias {legendaries} e o custo de mana de cada carta.",
+  },
+  tools: {
+    summary: "Para streamers: link curto, comando de chat, overlay do OBS, imagem",
+    intro: "Para lives e vídeos. Nada para instalar: copie, cole e o deck está na tela.",
+    shortLink: "Link curto",
+    shortLinkHint: "Fale na live ou coloque na descrição do vídeo: ele abre este deck no idioma de quem assiste.",
+    chat: "Comando de chat para este deck",
+    chatHint:
+      "Digite no chat da sua Twitch como dono do canal ou moderador: a partir daí, !deck responde com este deck, o link curto dele e o código do jogo. Se !deck já existir, escreva edit no lugar de add (!commands edit no Nightbot, !command edit no StreamElements).",
+    nightbot: "Nightbot",
+    streamelements: "StreamElements",
+    overlay: "Overlay do OBS",
+    overlayHint: "No OBS: Fontes → + → Navegador, cole o link e defina {vw} × {vh} para o vertical, {hw} × {hh} para o horizontal. Fundo transparente, atualizado a cada minuto.",
+    vertical: "Vertical",
+    horizontal: "Horizontal",
+    open: "Prévia",
+    image: "Imagem do deck",
+    imageHint: "PNG pronto para miniaturas, posts e stories: a Lendária, as doze cartas com o custo delas e o link curto.",
+    download16x9: "Baixar 16:9 (1280 × 720)",
+    download9x16: "Baixar 9:16 (1080 × 1920)",
+    ownerOnly:
+      "O comando de chat e o overlay do OBS mostram textos escritos por quem publicou o deck, por isso só aparecem nos seus próprios decks. A sua conta tem os que sempre acompanham o seu deck mais recente.",
+    accountLink: "Ferramentas para lives na sua conta",
+    copy: "Copiar",
+    copied: "Copiado",
+    setShortLinkHint: "Fale na live ou coloque na descrição do vídeo: ele abre este deck de torneio no idioma de quem assiste.",
+    setChat: "Comando de chat para este deck de torneio",
+    setChatHint:
+      "Digite no chat da sua Twitch como dono do canal ou moderador: a partir daí, !deck responde com este deck de torneio, as suas três Lendárias e o link curto (os códigos do jogo estão na página, um por deck). Se !deck já existir, escreva edit no lugar de add (!commands edit no Nightbot, !command edit no StreamElements).",
+    setImage: "Imagem do deck de torneio",
+    setImageHint: "PNG pronto para miniaturas, posts e stories: os três decks com a Lendária de cada um, as doze cartas com o custo e o link curto.",
+  },
+  account: {
+    title: "Ferramentas para lives",
+    intro: "Um comando de chat e um overlay do OBS que sempre mostram o último deck que você publicou: publique um novo e eles passam para ele em menos de um minuto. Nada para instalar.",
+    noDecks: "Eles começam a funcionar com o seu primeiro deck publicado.",
+    command: "Comando de chat !deck",
+    commandHint:
+      "Digite a linha do seu bot no chat da sua Twitch, como dono do canal ou moderador. A resposta: nome do deck, Lendária, link curto e código do jogo. Se !deck já existir, escreva edit no lugar de add (!commands edit, !command edit).",
+    fossabot: "Fossabot (resposta de um comando criado no painel)",
+    langName: "português",
+    langHint: "A resposta está em {lang}: para outro idioma, mude lang={code} no final do link (en, it, es, fr, pt).",
+    overlay: "Overlay do OBS com o seu último deck",
+  },
+};
+
+export const streamLabels: Record<Locale, StreamLabels> = { en, it, es, fr, pt };

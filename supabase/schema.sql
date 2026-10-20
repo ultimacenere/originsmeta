@@ -240,7 +240,7 @@ create table if not exists public.tournaments (
   cover_url text,
   description text not null default '' check (char_length(description) <= 2000),
   rules text not null default '' check (char_length(rules) <= 2000),
-  lang text not null default 'en' check (lang in ('en','it','es','fr')),
+  lang text not null default 'en' check (lang in ('en','it','es','fr','pt')),
   starts_at timestamptz not null,
   size int not null check (size in (4,8,16,32,64,128)),
   format text not null default 'single_elim' check (format in ('single_elim')),
@@ -1291,7 +1291,7 @@ create trigger community_decks_touch before update on public.community_decks
 -- La lingua di un torneo è una delle lingue del sito: il vincolo scritto nella create table sopra vale solo per un
 -- database nuovo, su quello esistente si sostituisce qui (il nome è quello che Postgres dà ai check di colonna).
 alter table public.tournaments drop constraint if exists tournaments_lang_check;
-alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es','fr'));
+alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es','fr','pt'));
 
 -- ===== 26/09/2026: CREATOR =====
 -- =====================================================================================================
@@ -1402,7 +1402,7 @@ alter table public.profiles drop constraint if exists profiles_links_check;
 alter table public.profiles add constraint profiles_links_check check (public.profile_links_ok(links));
 alter table public.profiles drop constraint if exists profiles_content_langs_check;
 alter table public.profiles add constraint profiles_content_langs_check
-  check (content_langs <@ array['en','it','es','fr']::text[] and cardinality(content_langs) <= 4 and array_position(content_langs, null) is null);
+  check (content_langs <@ array['en','it','es','fr','pt']::text[] and cardinality(content_langs) <= 5 and array_position(content_langs, null) is null);
 
 -- Data dell'ultima modifica della vetrina (bio, canali, lingue, tag): la scrive solo questo trigger, gli utenti non
 -- hanno grant sulla colonna. Scatta anche quando lo staff cambia il tag con scripts/set-badge.mjs.
@@ -3138,7 +3138,7 @@ alter table public.community_guides drop constraint if exists community_guides_s
 alter table public.community_guides add constraint community_guides_slug_check
   check (char_length(slug) between 3 and 60 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
 alter table public.community_guides drop constraint if exists community_guides_lang_check;
-alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es','fr'));
+alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es','fr','pt'));
 alter table public.community_guides drop constraint if exists community_guides_status_check;
 alter table public.community_guides add constraint community_guides_status_check check (status in ('draft','published','hidden'));
 alter table public.community_guides drop constraint if exists community_guides_title_check;
@@ -3270,7 +3270,7 @@ begin
     if new.translations is distinct from old.translations then
       for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
         if v is distinct from (old.translations -> k) then
-          if k not in ('en', 'it', 'es', 'fr') or k = new.lang
+          if k not in ('en', 'it', 'es', 'fr', 'pt') or k = new.lang
              or not public.community_guide_translation_ok(v, jsonb_array_length(new.sections)) then
             raise exception 'guide_translation' using errcode = '23514';
           end if;
@@ -3755,7 +3755,7 @@ alter table public.community_comics drop constraint if exists community_comics_s
 alter table public.community_comics add constraint community_comics_slug_check
   check (char_length(slug) between 3 and 60 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
 alter table public.community_comics drop constraint if exists community_comics_lang_check;
-alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es','fr'));
+alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es','fr','pt'));
 alter table public.community_comics drop constraint if exists community_comics_status_check;
 alter table public.community_comics add constraint community_comics_status_check check (status in ('draft','published','hidden'));
 alter table public.community_comics drop constraint if exists community_comics_title_check;
@@ -3868,7 +3868,7 @@ begin
     if new.translations is distinct from old.translations then
       for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
         if v is distinct from (old.translations -> k) then
-          if k not in ('en', 'it', 'es', 'fr') or k = new.lang
+          if k not in ('en', 'it', 'es', 'fr', 'pt') or k = new.lang
              or not public.community_comic_translation_ok(v, jsonb_array_length(new.pages)) then
             raise exception 'comic_translation' using errcode = '23514';
           end if;
@@ -4169,7 +4169,7 @@ returns boolean language sql immutable set search_path = pg_catalog as $$
     else not exists (
       select 1 from jsonb_each(e) as x(k, v)
        where case
-         when k not in ('en', 'it', 'es', 'fr') or k = lang then true
+         when k not in ('en', 'it', 'es', 'fr', 'pt') or k = lang then true
          when jsonb_typeof(v) is distinct from 'object' then true
          when (v - 'title' - 'summary' - 'pages' - 'cover_path') <> '{}'::jsonb then true
          when jsonb_typeof(v -> 'title') is distinct from 'string' then true
@@ -4990,7 +4990,7 @@ create table if not exists public.analytics_interest (
   id bigint generated always as identity primary key,
   client_key text not null unique check (client_key ~ '^[0-9a-f]{32}$'),
   user_id uuid references public.profiles(id) on delete cascade,
-  locale text not null check (locale in ('en', 'it', 'es', 'fr')),
+  locale text not null check (locale in ('en', 'it', 'es', 'fr', 'pt')),
   source text not null check (source in ('top', 'bottom')),
   created_at timestamptz not null default now()
 );
@@ -5008,7 +5008,7 @@ declare
   uid uuid := auth.uid();
   n integer := 0;
 begin
-  if p_client is null or p_client !~ '^[0-9a-f]{32}$' or p_locale is null or p_locale not in ('en', 'it', 'es', 'fr')
+  if p_client is null or p_client !~ '^[0-9a-f]{32}$' or p_locale is null or p_locale not in ('en', 'it', 'es', 'fr', 'pt')
      or p_source is null or p_source not in ('top', 'bottom') then
     raise exception 'invalid';
   end if;
@@ -5268,7 +5268,7 @@ create index if not exists community_deck_sets_legendaries_idx on public.communi
 create or replace function public.deck_set_guide_ok(g jsonb)
 returns boolean language sql immutable set search_path = public, pg_temp as $$
   select jsonb_typeof(g) = 'object'
-     and coalesce(g->>'lang', '') in ('en', 'it', 'es', 'fr')
+     and coalesce(g->>'lang', '') in ('en', 'it', 'es', 'fr', 'pt')
      and jsonb_typeof(g->'summary') = 'string'
      and char_length(g->>'summary') between 20 and 600
      and not exists (
@@ -6414,7 +6414,7 @@ comment on function public.card_vote_totals() is 'Voti, votanti, carte votate e 
 -- che il database rifiuta (trigger delle guide e dei fumetti) si riprova senza il francese, così le altre lingue non si
 -- perdono, e la pagina francese mostra l'originale con la sua nota; scripts/translate-*.mjs recuperano gli arretrati dopo.
 alter table public.analytics_interest drop constraint if exists analytics_interest_locale_check;
-alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en', 'it', 'es', 'fr'));
+alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en', 'it', 'es', 'fr', 'pt'));
 
 -- ===== 13/10/2026: TWITCH =====
 -- =====================================================================================================
@@ -6579,7 +6579,7 @@ grant execute on function public.twitch_live_state(text) to anon, authenticated;
 create table if not exists public.tracker_downloads (
   id bigint generated always as identity primary key,
   owner uuid references public.profiles(id) on delete set null,
-  lang text check (lang in ('en', 'it', 'es', 'fr')),
+  lang text check (lang in ('en', 'it', 'es', 'fr', 'pt')),
   created_at timestamptz not null default now()
 );
 create index if not exists tracker_downloads_created_idx on public.tracker_downloads (created_at);
@@ -6595,7 +6595,7 @@ returns void language plpgsql security definer set search_path = public, pg_temp
 begin
   if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
   insert into public.tracker_downloads (owner, lang)
-  values ((select p.id from public.profiles p where p.id = p_owner), case when p_lang in ('en', 'it', 'es', 'fr') then p_lang end);
+  values ((select p.id from public.profiles p where p.id = p_owner), case when p_lang in ('en', 'it', 'es', 'fr', 'pt') then p_lang end);
 end $$;
 revoke all on function public.tracker_download_log(text, uuid, text) from public;
 grant execute on function public.tracker_download_log(text, uuid, text) to anon, authenticated;
@@ -6807,3 +6807,18 @@ language sql stable security invoker set search_path = public, pg_temp as $$
 $$;
 revoke all on function public.market_board(text) from public;
 grant execute on function public.market_board(text) to anon, authenticated;
+
+-- =====================================================================================================
+-- ===== 20/10/2026: PORTOGHESE =====
+-- =====================================================================================================
+-- Il portoghese del Brasile è la quinta lingua del sito (richiesta di Pierluigi del 20/10/2026, "procediamo con la lingua
+-- portoghese"; docs/portoghese.md). Come per il francese (blocco del 07/10/2026): i vincoli e le funzioni qui sopra ora
+-- dicono ('en','it','es','fr','pt') e le lingue dei contenuti del profilo sono al massimo 5; le funzioni sono "create or
+-- replace" e i vincoli con nome sono già in forma "drop if exists + add". Restano i check di colonna scritti nelle create
+-- table (valgono per un database nuovo): analytics_interest (sostituito nel blocco del francese, che ora dice anche 'pt')
+-- e tracker_downloads, sostituito qui con il nome che Postgres dà ai check di colonna. Il sito regge anche prima di questa
+-- migrazione: una traduzione portoghese che il database rifiuta (trigger delle guide e dei fumetti) si riprova senza il
+-- portoghese (DB_PENDING_LOCALE in src/lib/community/translate.ts), e la pagina portoghese mostra l'originale con la sua
+-- nota; scripts/translate-*.mjs recuperano gli arretrati dopo.
+alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
+alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt'));

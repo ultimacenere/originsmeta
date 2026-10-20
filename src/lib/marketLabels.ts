@@ -2,7 +2,7 @@ import type { Locale } from "./i18n";
 import type { MarketKind, MarketRange } from "./market/market";
 
 /**
- * Testi del tracker dei prezzi del mercato di Steam (17/10/2026) nelle quattro lingue: pagine /market, /market/<oggetto>,
+ * Testi del tracker dei prezzi del mercato di Steam (17/10/2026) nelle cinque lingue: pagine /market, /market/<oggetto>,
  * /market/demo (la controfigura) e il grafico. Funzioni pure, senza import a runtime: i test (market.test.ts)
  * controllano titoli e description con le regole di `pageTitle` e `cleanDescription` e gli stessi segnaposto in ogni
  * lingua. Nomi ufficiali del mercato: Steam Community Market / Mercato della Comunità di Steam / Mercado de la Comunidad
@@ -421,7 +421,98 @@ const fr: Labels = {
   },
 };
 
-export const marketLabels: Record<Locale, Labels> = { en, it, es, fr };
+// Portoghese del Brasile dal 20/10/2026 (docs/portoghese.md): nome del mercato in pt-BR "Mercado da Comunidade Steam".
+const pt: Labels = {
+  meta: {
+    title: "Preços das cartas de Origins TCG no Mercado da Steam",
+    description: "Preços no Mercado da Comunidade Steam de cada carta, variante e item de Origins TCG: menor preço, ofertas e histórico de preços em euros e dólares.",
+    demoTitle: "Rastreador de preços da Steam: teste do motor",
+    demoDescription: "O nosso rastreador de preços do Mercado da Steam em um jogo que já está no mercado, antes da abertura do de Origins TCG: preço, ofertas e histórico.",
+    itemSuffix: "preço na Steam",
+    itemDescription: "{name}: menor preço no Mercado da Comunidade Steam, número de ofertas e histórico de preços em euros e dólares, verificados a cada 10 minutos.",
+  },
+  h1: "Preços de Origins TCG no Mercado da Steam",
+  demoH1: "Rastreador de preços: teste do motor",
+  locked: { kicker: "Teste privado", text: "O rastreador de preços do Mercado da Comunidade Steam está em teste privado com a equipe do OriginsMeta. Ele abre para todos quando as trocas de Origins TCG começarem.", back: "Voltar para a página inicial" },
+  crumb: "Mercado",
+  status: {
+    closed: "O Mercado da Comunidade Steam de Origins TCG ainda não abriu.",
+    checking: "Nós o verificamos a cada {min} minutos: a partir do primeiro item à venda, o site registra o preço e as ofertas de cada carta, variante e item e monta o seu próprio histórico de preços.",
+    lastCheck: "Última verificação:",
+    neverChecked: "Primeira verificação em breve.",
+    unavailable: "O rastreador de preços ainda não está ativo.",
+    live: "Preços do Mercado da Comunidade Steam, verificados a cada {min} minutos.",
+    utc: "UTC",
+    sweep: "Com muitos itens, uma rodada completa leva mais de uma verificação: cada item é atualizado pelo menos a cada {min} minutos.",
+  },
+  soon: {
+    title: "O que você vai encontrar aqui",
+    points: [
+      "O menor preço à venda e o número de ofertas de cada carta, variante e item, em euros ou dólares.",
+      "Um gráfico de preços para cada item: últimas 24 horas, 7 dias, 30 dias e todo o histórico.",
+      "As maiores altas e quedas das últimas 24 horas.",
+    ],
+    when: "A Koin Games disse que os colecionáveis de Origins TCG poderão ser negociados no Mercado da Comunidade Steam; a data de abertura ainda não é oficial.",
+    sets: "Coleções, raridades e graduação",
+    guide: "A economia dos colecionadores",
+  },
+  demoLink: {
+    title: "Veja o motor funcionando",
+    text: "Até as trocas de Origins TCG abrirem, o rastreador funciona com uma coleção de Counter-Strike 2, o maior mercado da Steam.",
+    cta: "Abrir o teste do motor",
+  },
+  demo: {
+    banner: "Este é um teste do motor com a coleção Dreams & Nightmares de Counter-Strike 2 (Valve), o maior mercado da Steam: skins com raridades, desgaste e versões StatTrak, do mesmo jeito que as cartas de Origins TCG terão raridades, graus e variantes. Não são cartas de Origins TCG.",
+    back: "Voltar para os preços de Origins TCG",
+  },
+  currency: { label: "Moeda" },
+  board: {
+    search: "Buscar",
+    searchPlaceholder: "Nome do item…",
+    kind: "Tipo",
+    kinds: { all: "Todos", card: "Cartas", pack: "Pacotes", other: "Outros itens" },
+    demoKinds: { all: "Todos", card: "Skins", pack: "Caixas", other: "Outros itens" },
+    sort: "Ordenar por",
+    sorts: { name: "Nome", price: "Preço", change: "Variação em 24h", listings: "Ofertas" },
+    sortDirs: { az: "de A a Z", za: "de Z a A", high: "maiores primeiro", low: "menores primeiro" },
+    columns: { item: "Item", price: "Menor preço", change24h: "24h", change7d: "7 dias", listings: "Ofertas" },
+    count: "{n} itens",
+    countOne: "1 item",
+    noResults: "Nenhum item corresponde aos filtros.",
+    noOffers: "Sem ofertas",
+    variants: { normal: "Normal", foil: "Foil" },
+  },
+  movers: { title: "Últimas 24 horas", up: "Em alta", down: "Em queda", none: "Ainda não há variações para mostrar: a comparação começa depois de 24 horas de histórico." },
+  item: {
+    back: "Todos os preços",
+    price: "Menor preço",
+    listings: "Ofertas",
+    change24h: "24 horas",
+    change7d: "7 dias",
+    change30d: "30 dias",
+    firstSeen: "No mercado desde",
+    lastSeen: "Última verificação",
+    onSteam: "Ver na Steam",
+    chartTitle: "Menor preço à venda",
+    chartAria: "Menor preço à venda de {name}, {range}",
+    ranges: { "24h": "24h", "7d": "7 dias", "30d": "30 dias", all: "Tudo" },
+    noHistory: "O histórico começa agora: o gráfico se preenche a cada verificação.",
+    table: { show: "Mostrar os dados", time: "Hora", low: "Mínimo", high: "Máximo", close: "Último", listings: "Ofertas" },
+    kind: "Tipo",
+    variant: "Variante",
+  },
+  notes: {
+    title: "Como lemos os preços",
+    points: [
+      "Fonte: as páginas públicas do Mercado da Comunidade Steam. Para cada item registramos o menor preço à venda e o número de ofertas; a Steam não publica o histórico de vendas sem uma conta, por isso o histórico desta página é montado pelo OriginsMeta, verificação após verificação.",
+      "Os preços em dólares são os da Steam; os preços em euros são convertidos com a taxa de referência do dia do Banco Central Europeu, por isso podem diferir em alguns centavos dos que a Steam mostra em euros.",
+      "O menor preço à venda não é o preço da última venda. Os preços são apenas informativos e não são recomendação financeira.",
+      "OriginsMeta não é afiliado à Koin Games nem à Valve.",
+    ],
+  },
+};
+
+export const marketLabels: Record<Locale, Labels> = { en, it, es, fr, pt };
 export type MarketLabels = Labels;
 
 /** Riempie i segnaposto {nome} di un testo. */
