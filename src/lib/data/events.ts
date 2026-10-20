@@ -25,6 +25,8 @@ export type Event = {
    * blocco "Altre news", a rotazione.
    */
   rules?: { news: string; label: L10n };
+  /** i numeri dell'evento su una pagina del sito (percorso senza lingua) e il testo del link (dal 20/10/2026, Crimson Cup) */
+  stats?: { path: string; label: L10n };
   /**
    * Dati strutturati dell'evento (schema.org Event, rilievo GEO-09 dell'Ondata 2, 25/09/2026), usati da
    * src/lib/jsonld/events.ts. Tutto facoltativo:
@@ -63,6 +65,8 @@ export const events: Event[] = [
     guide: "steam-next-fest-2026",
     // testo del link dalla mappa delle query (C12): "Crimson Cup rules" / "regole della Crimson Cup" / "reglas de la Crimson Cup"
     rules: { news: "crimson-cup-format-check-in", label: n("Crimson Cup rules", "Regole della Crimson Cup", "Reglas de la Crimson Cup", "Règles de la Crimson Cup", "Regras da Crimson Cup") },
+    // i numeri ufficiali di Koin qualificazione per qualificazione (20/10/2026), pagina /analytics/crimson-cup
+    stats: { path: "/analytics/crimson-cup", label: n("Crimson Cup numbers", "Numeri della Crimson Cup", "Números de la Crimson Cup", "Chiffres de la Crimson Cup", "Números da Crimson Cup") },
     start: "2026-10-19",
     end: "2026-10-25",
     // Titolo visibile invariato (striscia del calendario e schede): il nome ufficiale "Crimson Cup" sta in `ld.name`, nei

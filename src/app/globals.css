@@ -5715,3 +5715,318 @@
     }
   }
 }
+
+/*
+  /analytics/crimson-cup (20/10/2026): il selettore delle qualificazioni, le barre (ban rate, quote dei mazzi e delle carte)
+  e i "manubri" torneo/ladder. Stesso linguaggio di /analytics (.an-*): pannelli blu notte, menta per le quote, rosa per
+  i ban (il colore degli avvisi), cerchio celeste per il ladder. Niente bianco né nero pieni; a 375 px niente scroll
+  orizzontale: le barre scendono sotto il nome.
+*/
+@layer components {
+  .cc-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cc-pill {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 8px 14px;
+    border: 2px solid var(--color-night-3);
+    border-radius: 10px;
+    background: var(--color-night-2);
+    color: var(--color-pale);
+    text-align: left;
+    cursor: pointer;
+  }
+  .cc-pill b {
+    font: 800 0.9rem var(--font-display);
+    color: var(--color-chalk);
+  }
+  .cc-pill small {
+    font: 500 0.7rem var(--font-mono);
+    color: var(--color-pale-muted);
+  }
+  .cc-pill:hover {
+    border-color: var(--color-sky);
+  }
+  .cc-pill:focus-visible {
+    outline: 3px solid var(--color-sky);
+    outline-offset: 2px;
+  }
+  .cc-pill.is-on {
+    border-color: var(--color-mint);
+    background: color-mix(in srgb, var(--color-mint) 12%, var(--color-night-2));
+  }
+  .cc-pill.is-on b {
+    color: var(--color-mint);
+  }
+  .cc-pill.is-soon {
+    border-style: dashed;
+    cursor: default;
+  }
+  .cc-pill.is-soon:hover {
+    border-color: var(--color-night-3);
+  }
+  .cc-pill.is-soon b {
+    color: var(--color-pale-muted);
+  }
+
+  /* barre: rango, carta intera piccola, nome, barra, numero */
+  .cc-bars {
+    display: grid;
+    gap: 6px;
+    margin-top: 14px;
+    list-style: none;
+  }
+  .cc-bar-row {
+    display: grid;
+    grid-template-columns: 1.4rem 40px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "rank thumb name val"
+      "rank thumb track track";
+    align-items: center;
+    gap: 4px 10px;
+    padding: 6px 10px 6px 6px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-night) 72%, transparent);
+  }
+  @media (min-width: 760px) {
+    .cc-bar-row {
+      grid-template-columns: 1.6rem 40px minmax(11rem, 16rem) minmax(0, 1fr) 8.5rem;
+      grid-template-areas: "rank thumb name track val";
+    }
+  }
+  .cc-rank {
+    grid-area: rank;
+    text-align: right;
+    font: 700 0.8rem var(--font-mono);
+    color: var(--color-mint);
+  }
+  .cc-thumb {
+    grid-area: thumb;
+    display: block;
+    width: 40px;
+  }
+  .cc-name {
+    grid-area: name;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .cc-name a {
+    font-weight: 700;
+    color: var(--color-chalk);
+  }
+  .cc-name a:hover {
+    color: var(--color-sky);
+  }
+  .cc-name small {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.72rem;
+    color: var(--color-pale-muted);
+  }
+  .cc-track {
+    grid-area: track;
+    position: relative;
+    height: 10px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: var(--color-night-3);
+  }
+  .cc-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 99px;
+    background: var(--color-mint);
+    transform-origin: left;
+  }
+  .cc-fill.is-ban {
+    background: var(--color-pink);
+  }
+  .cc-val {
+    grid-area: val;
+    text-align: right;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  .cc-val b {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--color-chalk);
+  }
+  .cc-val small {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--color-pale-muted);
+  }
+  .cc-round {
+    font: 700 0.72rem var(--font-mono);
+    color: var(--color-pale-muted);
+  }
+  .cc-round.is-top {
+    color: var(--color-mint);
+  }
+
+  /* manubri: torneo (menta pieno) e ladder (cerchio celeste) sulla stessa scala */
+  .cc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--color-pale);
+  }
+  .cc-legend i {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border-radius: 50%;
+    vertical-align: -1px;
+  }
+  .cc-legend i.is-crimson,
+  .cc-dot.is-crimson {
+    background: var(--color-mint);
+  }
+  .cc-legend i.is-ladder,
+  .cc-dot.is-ladder {
+    border: 2px solid var(--color-sky);
+    background: var(--color-night);
+  }
+  .cc-dumbs {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+    list-style: none;
+  }
+  .cc-dumb-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "name diff"
+      "plot plot";
+    align-items: center;
+    gap: 6px 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-night) 72%, transparent);
+  }
+  @media (min-width: 760px) {
+    .cc-dumb-row {
+      grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr) 6.5rem;
+      grid-template-areas: "name plot diff";
+    }
+  }
+  .cc-dumb {
+    grid-area: plot;
+    position: relative;
+    height: 18px;
+    margin: 0 6px;
+  }
+  .cc-dumb::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 8px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--color-night-3);
+  }
+  .cc-dumb-line {
+    position: absolute;
+    top: 7px;
+    left: var(--lo);
+    width: calc(var(--hi) - var(--lo));
+    height: 4px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--color-sky) 55%, transparent);
+  }
+  .cc-dot {
+    position: absolute;
+    top: 3px;
+    width: 12px;
+    height: 12px;
+    margin-left: -6px;
+    border-radius: 50%;
+  }
+  .cc-diff {
+    grid-area: diff;
+    text-align: right;
+    white-space: nowrap;
+    font: 700 0.8rem var(--font-mono);
+  }
+  .cc-diff.is-up {
+    color: var(--color-good);
+  }
+  .cc-diff.is-down {
+    color: var(--color-bad);
+  }
+  .cc-diff.is-even {
+    color: var(--color-chalk-muted);
+  }
+
+  /* la fascia "Crimson Cup" di /analytics */
+  .cc-promo {
+    display: grid;
+    gap: 16px;
+    margin-top: 26px;
+    padding: 18px 20px;
+  }
+  @media (min-width: 900px) {
+    .cc-promo {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr);
+      align-items: center;
+      padding: 22px 26px;
+    }
+  }
+  .cc-promo p {
+    margin-top: 8px;
+    font-size: 0.88rem;
+    color: var(--color-pale);
+  }
+  .cc-promo-facts {
+    display: grid;
+    gap: 10px;
+  }
+  @media (min-width: 640px) {
+    .cc-promo-facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .cc-promo-fact {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+  }
+  .cc-promo-fact .kicker {
+    color: var(--color-sky);
+  }
+  .cc-promo-fact b {
+    display: block;
+    font: 700 0.9rem var(--font-display);
+    color: var(--color-chalk);
+    overflow-wrap: anywhere;
+  }
+  .cc-promo-fact span.font-mono {
+    font-size: 0.85rem;
+    color: var(--color-pale);
+  }
+  .an-reveal.is-pending .cc-fill {
+    transform: scaleX(0);
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s;
+  }
+  .an-reveal.is-pending.is-in .cc-fill {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .an-reveal.is-pending .cc-fill {
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+}

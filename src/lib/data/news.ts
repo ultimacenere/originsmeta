@@ -123,6 +123,372 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Meta Report della Crimson Cup, AMER #1 (20/10/2026). Pierluigi: "meta report della crimson cup", con le due tabelle
+    // che Koin Games ha pubblicato sul Discord ufficiale dopo la prima qualificazione ("arriva da discord", "solo AMER #1"):
+    // ban rate, bandite/viste, mazzi consegnati, Played e turno più avanzato delle Leggendarie; le 20 carte più giocate
+    // ("Share of all submitted decks containing the card"). Numeri trascritti in src/lib/data/crimsonCup.ts (test in
+    // crimsonCup.test.ts); la pagina nuova /analytics/crimson-cup li mostra con il confronto con il ladder. Ladder: la pagina
+    // /analytics/crimson-cup letta il 20/10/2026 (OriginsMeta Tracker, patch 0.7, 2.950 partite; Leggendarie a due lati, carte
+    // dal lato di chi registra). Regole: mai il numero di iscritti né di giocatori (Pierluigi ha chiesto di non parlare di chi
+    // non si è presentato), niente stime sulle carte che Koin non pubblica, Dracula e Legion senza win rate (le "due misure"
+    // del Meta Report del 19/10 vanno sempre insieme: qui solo le quote). Copertina: la carta di Merlin, la seconda più
+    // bandita, mai usata da una news.
+    slug: "crimson-cup-meta-report-amer-1",
+    image: "/cards/cover/merlin.webp",
+    guides: ["origins-tcg-legendaries", "origins-tcg-conquest"],
+    cards: ["van-helsing", "merlin", "three-not-so-little-pigs", "robin-hood", "legion-of-the-dead", "baby-bear", "obliterate"],
+    date: "2026-10-20",
+    title: n(
+      "Crimson Cup Meta Report: Van Helsing the most banned, Pigs the most brought in AMER #1",
+      "Meta Report della Crimson Cup: Van Helsing la più bandita, Pigs la più portata nella AMER #1",
+      "Meta Report de la Crimson Cup: Van Helsing, la más baneada, y Pigs, la más llevada en el AMER #1",
+    ),
+    metaTitle: n(
+      "Origins TCG Crimson Cup Meta Report: AMER #1 bans",
+      "Meta Report della Crimson Cup di Origins TCG: AMER #1",
+      "Meta Report de la Crimson Cup de Origins TCG: AMER #1",
+    ),
+    description: n(
+      "Origins TCG Crimson Cup, AMER #1 in Koin's official numbers: Van Helsing banned 44.4%, Pigs in 168 decks, Baby Bear in 47.2% of decks, and the ladder gaps.",
+      "Crimson Cup di Origins TCG, la AMER #1 nei numeri ufficiali di Koin: Van Helsing bandita il 44,4%, Pigs in 168 mazzi, Baby Bear nel 47,2% e il ladder.",
+      "Crimson Cup de Origins TCG, el AMER #1 en los números oficiales de Koin: Van Helsing baneada el 44,4%, Pigs en 168 mazos, Baby Bear en el 47,2% y el ladder.",
+    ),
+    summary: n(
+      "Koin Games has published the first official numbers of the Crimson Cup, from the AMER #1 qualifier: which Legendaries got banned, which ones players brought and the most played cards. Van Helsing is the most banned (44.4%), Three Not So Little Pigs the most brought (168 decks) and Baby Bear is in 47.2% of the decks. Every number, qualifier by qualifier and next to the ladder, is on our new Crimson Cup page.",
+      "Koin Games ha pubblicato i primi numeri ufficiali della Crimson Cup, dalla qualificazione AMER #1: quali Leggendarie sono state bandite, quali i giocatori hanno portato e le carte più giocate. Van Helsing è la più bandita (44,4%), Three Not So Little Pigs la più portata (168 mazzi) e Baby Bear è nel 47,2% dei mazzi. Tutti i numeri, qualificazione per qualificazione e accanto al ladder, sono nella nostra nuova pagina della Crimson Cup.",
+      "Koin Games ha publicado los primeros números oficiales de la Crimson Cup, del clasificatorio AMER #1: qué Legendarias se banearon, cuáles llevaron los jugadores y las cartas más usadas. Van Helsing es la más baneada (44,4%), Three Not So Little Pigs la más llevada (168 mazos) y Baby Bear está en el 47,2% de los mazos. Todos los números, clasificatorio a clasificatorio y junto al ladder, están en nuestra nueva página de la Crimson Cup.",
+    ),
+    highlights: {
+      en: [
+        { label: "Van Helsing, the one to ban", text: "banned 44.4% of the times it was seen, Merlin right behind at 42.2%", anchor: "bans" },
+        { label: "Pigs, the most brought", text: "168 decks, 23.3% of those submitted, and still banned 32.8%", anchor: "brought" },
+        { label: "Robin Hood, the least feared", text: "banned only 11.8%, yet among the strongest in the ladder", anchor: "robin-hood" },
+        { label: "Baby Bear in almost half the decks", text: "47.2%, then Roo, Spellbook and Mind Palace", anchor: "cards" },
+        { label: "Tournament vs ladder", text: "Pigs and Van Helsing brought more than they are played, Legion the opposite", anchor: "ladder" },
+        { label: "A page for the Crimson Cup", text: "Koin's numbers qualifier by qualifier, on Analytics and on the card pages", anchor: "page" },
+      ],
+      it: [
+        { label: "Van Helsing, quella da bandire", text: "bandita il 44,4% delle volte in cui è stata vista, Merlin subito dietro con il 42,2%", anchor: "ban" },
+        { label: "Pigs, la più portata", text: "168 mazzi, il 23,3% dei consegnati, e comunque bandita il 32,8%", anchor: "portate" },
+        { label: "Robin Hood, la meno temuta", text: "bandita solo l'11,8%, eppure fra le più forti in ladder", anchor: "robin-hood" },
+        { label: "Baby Bear in quasi metà dei mazzi", text: "47,2%, poi Roo, Spellbook e Mind Palace", anchor: "carte" },
+        { label: "Torneo contro ladder", text: "Pigs e Van Helsing portate più di quanto si giochino, Legion il contrario", anchor: "ladder" },
+        { label: "Una pagina per la Crimson Cup", text: "i numeri di Koin qualificazione per qualificazione, in Analytics e nelle schede carta", anchor: "pagina" },
+      ],
+      es: [
+        { label: "Van Helsing, la que hay que banear", text: "baneada el 44,4% de las veces que se vio, Merlin justo detrás con el 42,2%", anchor: "bans" },
+        { label: "Pigs, la más llevada", text: "168 mazos, el 23,3% de los entregados, y aun así baneada el 32,8%", anchor: "llevadas" },
+        { label: "Robin Hood, la menos temida", text: "baneada solo el 11,8%, y sin embargo entre las más fuertes en ladder", anchor: "robin-hood" },
+        { label: "Baby Bear en casi la mitad de los mazos", text: "47,2%, luego Roo, Spellbook y Mind Palace", anchor: "cartas" },
+        { label: "Torneo frente a ladder", text: "Pigs y Van Helsing se llevan más de lo que se juegan, Legion al revés", anchor: "ladder" },
+        { label: "Una página para la Crimson Cup", text: "los números de Koin clasificatorio a clasificatorio, en Analytics y en las fichas de carta", anchor: "pagina" },
+      ],
+    },
+    body: n(
+      `## The numbers Koin published {#numbers}
+
+After the first Crimson Cup qualifier, AMER #1 of 19 October, Koin Games published two tables on its official Discord: the ban phase of every Legendary and the most played cards in the decks submitted. They are totals: decklists stay hidden until the top 4 ([the rules](/en/news/crimson-cup-format-check-in#decklists)), so they don't show the single lists, but they say what players feared and what they trusted. We gathered them, next to the ladder, on a new page: [the Crimson Cup numbers](/en/analytics/crimson-cup).
+
+## The ban: Van Helsing first, Merlin right behind {#bans}
+
+In the Crimson Cup you only see your opponent's three Legendaries, then you ban one of their decks. The ban rate is how many times a Legendary was banned out of the times an opponent found it at the ban.
+
+| Legendary | Ban rate | Banned / seen | Decks | Furthest round |
+|---|---|---|---|---|
+| Van Helsing | 44.4% | 96/216 | 135 | 4 |
+| Merlin | 42.2% | 38/90 | 71 | 4 |
+| Three Not So Little Pigs | 32.8% | 86/262 | 168 | 4 |
+| Dorothy | 23.1% | 6/26 | 23 | 4 |
+| King Arthur | 22.7% | 15/66 | 46 | 4 |
+| Queen of Hearts | 21.0% | 13/62 | 47 | 4 |
+| Mulan | 20.3% | 13/64 | 48 | 4 |
+| Legion of the Dead | 19.2% | 19/99 | 67 | 4 |
+| Dracula | 14.1% | 9/64 | 53 | 4 |
+| Robin Hood | 11.8% | 8/68 | 52 | 4 |
+| Wicked Stepmother | 11.1% | 1/9 | 11 | 3 |
+
+Van Helsing was banned almost one time in two. Merlin is the surprise: brought far less (71 decks), but when it showed up it got banned 42.2% of the time, even though in the ladder it wins 48.1%. Ten Legendaries out of eleven had a deck in round 4, the round of the 32 qualified: only Wicked Stepmother stopped at round 3.
+
+## Pigs, the most brought {#brought}
+
+Three Not So Little Pigs is in 168 decks, 23.3% of those counted in Koin's table: almost one deck in four, more than any other Legendary. It still gets banned 32.8% of the time, so whoever brings it often has to win with the other two. Van Helsing follows with 135 decks (18.7%), then Merlin (71) and Legion of the Dead (67); at the bottom Dorothy (23) and Wicked Stepmother (11).
+
+## Robin Hood, the least feared {#robin-hood}
+
+Robin Hood is the least banned of the Legendaries seen at least 30 times: 8 bans out of 68, 11.8%. Yet in the ladder it is one of the three strongest: it wins 60.6%, next to Pigs (60.7%) and Van Helsing (59.8%), and in our [Meta Report of 19 October](/en/news/meta-report-2026-10-19#triangle) it was the one that beats Van Helsing. In the tournament it was brought less (52 decks, 7.2%) and almost never banned. Our reading: right now it is the Legendary that most often stays on the table.
+
+## The cards in almost half the decks {#cards}
+
+Share of all the decks submitted that contain the card, as Koin published it: it counts everyone who entered, not only those who played a match.
+
+| # | Card | Share of decks | Decks |
+|---|---|---|---|
+| 1 | Baby Bear | 47.2% | 341 |
+| 2 | Roo | 33.7% | 244 |
+| 3 | Spellbook | 32.4% | 234 |
+| 4 | Mind Palace | 31.7% | 229 |
+| 5 | Golden Egg | 30.2% | 218 |
+| 6 | Trash for Treasure | 29.9% | 216 |
+| 7 | Ali Baba | 28.2% | 204 |
+| 8 | Dark Omen | 27.4% | 198 |
+| 9 | Mummy | 24.9% | 180 |
+| 10 | Sandman | 23.9% | 173 |
+| 11 | Impundulu | 22.3% | 161 |
+| 12 | Forbidden Knowledge | 22.3% | 161 |
+| 13 | Scarecrow | 22.1% | 160 |
+| 14 | Defense Matrix | 22.1% | 160 |
+| 15 | En Passant | 21.7% | 157 |
+| 16 | Bullseye | 21.6% | 156 |
+| 17 | Tin Woodman | 21.6% | 156 |
+| 18 | Reinforcements | 21.3% | 154 |
+| 19 | Obliterate | 20.9% | 151 |
+| 20 | Shahrazad | 20.3% | 147 |
+
+Baby Bear was already the most played card of patch 0.7 in the ladder, and in the tournament it is in almost half of the decks. Koin publishes the top 20: the other cards are not in the table and we don't estimate them.
+
+## Tournament vs ladder {#ladder}
+
+Next to the ladder, that is the matches recorded with OriginsMeta Tracker on patch 0.7 (read on 20 October), the gaps say what players trust when it counts:
+
+- **Pigs and Van Helsing** are brought to the tournament more than they are played in the ladder: 23.3% of the decks against 17.4% of the ladder appearances, and 18.7% against 13.2%.
+- **Legion of the Dead** goes the other way: 15.3% in the ladder, 9.3% of the tournament decks; Dracula 10.6% against 7.4%.
+- Among the cards, **Obliterate** (34.9% in the ladder, 20.9% in the tournament), **Golden Egg** and **Mummy** drop the most; **Shahrazad** and **Scarecrow** rise. The two measures are different (decks submitted, recorded games), so compare the cards with each other more than the single gap.
+
+## What it means for the next qualifiers {#next}
+
+Our reading for EMEA #1, AMER #2, APAC and EMEA #2:
+
+- bringing Van Helsing or Pigs means expecting a ban, almost one time in two for Van Helsing: the third deck counts as much as the first two;
+- Robin Hood is rarely banned and in the ladder it beats Van Helsing: it is the Legendary most likely to stay on the table;
+- Merlin draws bans well beyond its ladder results: in a trio it can take the ban away from your other two decks.
+
+## A page for the Crimson Cup {#page}
+
+From today Analytics has a [Crimson Cup page](/en/analytics/crimson-cup) with Koin's official numbers qualifier by qualifier: ban rate, decks, most played cards and the comparison with the ladder. The pages of the Legendaries and of the most played cards show their Crimson Cup numbers too, like [Van Helsing](/en/cards/van-helsing) and [Baby Bear](/en/cards/baby-bear). We add each qualifier when Koin publishes its numbers.
+
+## Where this comes from {#sources}
+
+- The tables Koin Games published on the [official Discord](https://discord.gg/originstcg) after the AMER #1 qualifier, read on 20 October 2026.
+- The ladder: matches recorded with OriginsMeta Tracker on patch 0.7, normal and ranked together, read on our [Crimson Cup page](/en/analytics/crimson-cup) on 20 October 2026.`,
+      `## I numeri pubblicati da Koin {#numeri}
+
+Dopo la prima qualificazione della Crimson Cup, la AMER #1 del 19 ottobre, Koin Games ha pubblicato sul suo Discord ufficiale due tabelle: la fase di ban di ogni Leggendaria e le carte più giocate nei mazzi consegnati. Sono totali: le liste restano segrete fino alla top 4 ([le regole](/it/news/crimson-cup-format-check-in#liste)), quindi non mostrano le singole liste, ma dicono che cosa i giocatori hanno temuto e di che cosa si sono fidati. Li abbiamo raccolti, accanto al ladder, in una pagina nuova: [i numeri della Crimson Cup](/it/analytics/crimson-cup).
+
+## Il ban: prima Van Helsing, subito dietro Merlin {#ban}
+
+Nella Crimson Cup dell'avversario vedi solo le tre Leggendarie, poi ne bandisci un mazzo. Il ban rate dice quante volte una Leggendaria è stata bandita sulle volte in cui un avversario se l'è trovata davanti al ban.
+
+| Leggendaria | Ban rate | Bandita / vista | Mazzi | Turno più avanzato |
+|---|---|---|---|---|
+| Van Helsing | 44,4% | 96/216 | 135 | 4 |
+| Merlin | 42,2% | 38/90 | 71 | 4 |
+| Three Not So Little Pigs | 32,8% | 86/262 | 168 | 4 |
+| Dorothy | 23,1% | 6/26 | 23 | 4 |
+| King Arthur | 22,7% | 15/66 | 46 | 4 |
+| Queen of Hearts | 21,0% | 13/62 | 47 | 4 |
+| Mulan | 20,3% | 13/64 | 48 | 4 |
+| Legion of the Dead | 19,2% | 19/99 | 67 | 4 |
+| Dracula | 14,1% | 9/64 | 53 | 4 |
+| Robin Hood | 11,8% | 8/68 | 52 | 4 |
+| Wicked Stepmother | 11,1% | 1/9 | 11 | 3 |
+
+Van Helsing è stata bandita quasi una volta su due. La sorpresa è Merlin: portata molto meno (71 mazzi), ma quando c'era è stata bandita il 42,2% delle volte, anche se in ladder vince il 48,1%. Dieci Leggendarie su undici hanno avuto un mazzo al turno 4, quello dei 32 qualificati: solo Wicked Stepmother si è fermata al turno 3.
+
+## Pigs, la più portata {#portate}
+
+Three Not So Little Pigs è in 168 mazzi, il 23,3% di quelli contati nella tabella di Koin: quasi un mazzo su quattro, più di qualsiasi altra Leggendaria. Viene comunque bandita il 32,8% delle volte, quindi chi la porta spesso deve vincere con gli altri due. Segue Van Helsing con 135 mazzi (18,7%), poi Merlin (71) e Legion of the Dead (67); in fondo Dorothy (23) e Wicked Stepmother (11).
+
+## Robin Hood, la meno temuta {#robin-hood}
+
+Robin Hood è la meno bandita fra le Leggendarie viste almeno 30 volte: 8 ban su 68, l'11,8%. Eppure in ladder è una delle tre più forti: vince il 60,6%, accanto a Pigs (60,7%) e Van Helsing (59,8%), e nel nostro [Meta Report del 19 ottobre](/it/news/meta-report-2026-10-19#triangolo) era quella che batte Van Helsing. Nel torneo è stata portata meno (52 mazzi, 7,2%) e quasi mai bandita. La nostra lettura: in questo momento è la Leggendaria che resta più spesso in tavola.
+
+## Le carte in quasi metà dei mazzi {#carte}
+
+Quota di tutti i mazzi consegnati che contengono la carta, come l'ha pubblicata Koin: conta tutti gli iscritti, non solo chi ha giocato una partita.
+
+| # | Carta | Quota dei mazzi | Mazzi |
+|---|---|---|---|
+| 1 | Baby Bear | 47,2% | 341 |
+| 2 | Roo | 33,7% | 244 |
+| 3 | Spellbook | 32,4% | 234 |
+| 4 | Mind Palace | 31,7% | 229 |
+| 5 | Golden Egg | 30,2% | 218 |
+| 6 | Trash for Treasure | 29,9% | 216 |
+| 7 | Ali Baba | 28,2% | 204 |
+| 8 | Dark Omen | 27,4% | 198 |
+| 9 | Mummy | 24,9% | 180 |
+| 10 | Sandman | 23,9% | 173 |
+| 11 | Impundulu | 22,3% | 161 |
+| 12 | Forbidden Knowledge | 22,3% | 161 |
+| 13 | Scarecrow | 22,1% | 160 |
+| 14 | Defense Matrix | 22,1% | 160 |
+| 15 | En Passant | 21,7% | 157 |
+| 16 | Bullseye | 21,6% | 156 |
+| 17 | Tin Woodman | 21,6% | 156 |
+| 18 | Reinforcements | 21,3% | 154 |
+| 19 | Obliterate | 20,9% | 151 |
+| 20 | Shahrazad | 20,3% | 147 |
+
+Baby Bear era già la carta più giocata della patch 0.7 in ladder, e nel torneo è in quasi metà dei mazzi. Koin pubblica le prime 20: le altre carte non sono nella tabella e non le stimiamo.
+
+## Torneo contro ladder {#ladder}
+
+Accanto al ladder, cioè alle partite registrate con OriginsMeta Tracker sulla patch 0.7 (lette il 20 ottobre), le differenze dicono di che cosa i giocatori si fidano quando conta:
+
+- **Pigs e Van Helsing** sono portate al torneo più di quanto si giochino in ladder: il 23,3% dei mazzi contro il 17,4% delle presenze in ladder, e il 18,7% contro il 13,2%.
+- **Legion of the Dead** va al contrario: il 15,3% in ladder, il 9,3% dei mazzi del torneo; Dracula il 10,6% contro il 7,4%.
+- Fra le carte scendono di più **Obliterate** (34,9% in ladder, 20,9% nel torneo), **Golden Egg** e **Mummy**; salgono **Shahrazad** e **Scarecrow**. Le due misure sono diverse (mazzi consegnati, partite registrate), quindi conta il confronto fra una carta e l'altra più della singola differenza.
+
+## Che cosa vuol dire per le prossime qualificazioni {#prossime}
+
+La nostra lettura per EMEA #1, AMER #2, APAC ed EMEA #2:
+
+- portare Van Helsing o Pigs vuol dire mettere in conto un ban, quasi una volta su due per Van Helsing: il terzo mazzo conta quanto i primi due;
+- Robin Hood viene bandita di rado e in ladder batte Van Helsing: è la Leggendaria che ha più probabilità di restare in tavola;
+- Merlin attira ban ben oltre i suoi risultati in ladder: in un trio può togliere il ban agli altri due mazzi.
+
+## Una pagina per la Crimson Cup {#pagina}
+
+Da oggi Analytics ha una [pagina della Crimson Cup](/it/analytics/crimson-cup) con i numeri ufficiali di Koin qualificazione per qualificazione: ban rate, mazzi, carte più giocate e confronto con il ladder. Anche le schede delle Leggendarie e delle carte più giocate mostrano i loro numeri della Crimson Cup, come [Van Helsing](/it/cards/van-helsing) e [Baby Bear](/it/cards/baby-bear). Aggiungiamo ogni qualificazione quando Koin ne pubblica i numeri.
+
+## Da dove arriva {#fonti}
+
+- Le tabelle pubblicate da Koin Games sul [Discord ufficiale](https://discord.gg/originstcg) dopo la qualificazione AMER #1, lette il 20 ottobre 2026.
+- Il ladder: partite registrate con OriginsMeta Tracker sulla patch 0.7, normali e classificate insieme, lette sulla nostra [pagina della Crimson Cup](/it/analytics/crimson-cup) il 20 ottobre 2026.`,
+      `## Los números que publicó Koin {#numeros}
+
+Después del primer clasificatorio de la Crimson Cup, el AMER #1 del 19 de octubre, Koin Games publicó en su Discord oficial dos tablas: la fase de ban de cada Legendaria y las cartas más usadas en los mazos entregados. Son totales: las listas siguen ocultas hasta el top 4 ([las reglas](/es/news/crimson-cup-format-check-in#listas)), así que no muestran las listas concretas, pero dicen qué temieron los jugadores y en qué confiaron. Los hemos reunido, junto al ladder, en una página nueva: [los números de la Crimson Cup](/es/analytics/crimson-cup).
+
+## El ban: primero Van Helsing, justo detrás Merlin {#bans}
+
+En la Crimson Cup del rival solo ves las tres Legendarias y luego baneas uno de sus mazos. El ban rate dice cuántas veces se baneó una Legendaria de las veces que un rival se la encontró en el ban.
+
+| Legendaria | Ban rate | Baneada / vista | Mazos | Ronda más avanzada |
+|---|---|---|---|---|
+| Van Helsing | 44,4% | 96/216 | 135 | 4 |
+| Merlin | 42,2% | 38/90 | 71 | 4 |
+| Three Not So Little Pigs | 32,8% | 86/262 | 168 | 4 |
+| Dorothy | 23,1% | 6/26 | 23 | 4 |
+| King Arthur | 22,7% | 15/66 | 46 | 4 |
+| Queen of Hearts | 21,0% | 13/62 | 47 | 4 |
+| Mulan | 20,3% | 13/64 | 48 | 4 |
+| Legion of the Dead | 19,2% | 19/99 | 67 | 4 |
+| Dracula | 14,1% | 9/64 | 53 | 4 |
+| Robin Hood | 11,8% | 8/68 | 52 | 4 |
+| Wicked Stepmother | 11,1% | 1/9 | 11 | 3 |
+
+A Van Helsing la banearon casi una vez de cada dos. La sorpresa es Merlin: se llevó mucho menos (71 mazos), pero cuando aparecía la banearon el 42,2% de las veces, aunque en ladder gana el 48,1%. Diez Legendarias de once tuvieron un mazo en la ronda 4, la de los 32 clasificados: solo Wicked Stepmother se quedó en la ronda 3.
+
+## Pigs, la más llevada {#llevadas}
+
+Three Not So Little Pigs está en 168 mazos, el 23,3% de los contados en la tabla de Koin: casi un mazo de cada cuatro, más que cualquier otra Legendaria. Aun así la banean el 32,8% de las veces, así que quien la lleva a menudo tiene que ganar con los otros dos. Le sigue Van Helsing con 135 mazos (18,7%), luego Merlin (71) y Legion of the Dead (67); abajo, Dorothy (23) y Wicked Stepmother (11).
+
+## Robin Hood, la menos temida {#robin-hood}
+
+Robin Hood es la menos baneada de las Legendarias vistas al menos 30 veces: 8 bans de 68, el 11,8%. Y sin embargo en ladder es una de las tres más fuertes: gana el 60,6%, junto a Pigs (60,7%) y Van Helsing (59,8%), y en nuestro [Meta Report del 19 de octubre](/es/news/meta-report-2026-10-19#triangulo) era la que gana a Van Helsing. En el torneo se llevó menos (52 mazos, 7,2%) y casi nunca la banearon. Nuestra lectura: ahora mismo es la Legendaria que más a menudo se queda en la mesa.
+
+## Las cartas en casi la mitad de los mazos {#cartas}
+
+Cuota de todos los mazos entregados que contienen la carta, tal como la publicó Koin: cuenta a todos los inscritos, no solo a quienes jugaron una partida.
+
+| # | Carta | Cuota de mazos | Mazos |
+|---|---|---|---|
+| 1 | Baby Bear | 47,2% | 341 |
+| 2 | Roo | 33,7% | 244 |
+| 3 | Spellbook | 32,4% | 234 |
+| 4 | Mind Palace | 31,7% | 229 |
+| 5 | Golden Egg | 30,2% | 218 |
+| 6 | Trash for Treasure | 29,9% | 216 |
+| 7 | Ali Baba | 28,2% | 204 |
+| 8 | Dark Omen | 27,4% | 198 |
+| 9 | Mummy | 24,9% | 180 |
+| 10 | Sandman | 23,9% | 173 |
+| 11 | Impundulu | 22,3% | 161 |
+| 12 | Forbidden Knowledge | 22,3% | 161 |
+| 13 | Scarecrow | 22,1% | 160 |
+| 14 | Defense Matrix | 22,1% | 160 |
+| 15 | En Passant | 21,7% | 157 |
+| 16 | Bullseye | 21,6% | 156 |
+| 17 | Tin Woodman | 21,6% | 156 |
+| 18 | Reinforcements | 21,3% | 154 |
+| 19 | Obliterate | 20,9% | 151 |
+| 20 | Shahrazad | 20,3% | 147 |
+
+Baby Bear ya era la carta más usada del parche 0.7 en ladder, y en el torneo está en casi la mitad de los mazos. Koin publica las 20 primeras: las demás cartas no están en la tabla y no las estimamos.
+
+## Torneo frente a ladder {#ladder}
+
+Junto al ladder, es decir, las partidas registradas con OriginsMeta Tracker en el parche 0.7 (consultadas el 20 de octubre), las diferencias dicen en qué confían los jugadores cuando importa:
+
+- **Pigs y Van Helsing** se llevan al torneo más de lo que se juegan en ladder: el 23,3% de los mazos frente al 17,4% de las apariciones en ladder, y el 18,7% frente al 13,2%.
+- **Legion of the Dead** va al revés: el 15,3% en ladder, el 9,3% de los mazos del torneo; Dracula, el 10,6% frente al 7,4%.
+- Entre las cartas bajan más **Obliterate** (34,9% en ladder, 20,9% en el torneo), **Golden Egg** y **Mummy**; suben **Shahrazad** y **Scarecrow**. Las dos medidas son distintas (mazos entregados, partidas registradas), así que cuenta más la comparación entre cartas que cada diferencia por separado.
+
+## Qué significa para los próximos clasificatorios {#proximos}
+
+Nuestra lectura para EMEA #1, AMER #2, APAC y EMEA #2:
+
+- llevar Van Helsing o Pigs es contar con un ban, casi una vez de cada dos con Van Helsing: el tercer mazo pesa tanto como los dos primeros;
+- a Robin Hood la banean poco y en ladder gana a Van Helsing: es la Legendaria con más opciones de quedarse en la mesa;
+- Merlin atrae bans muy por encima de sus resultados en ladder: en un trío puede quitarles el ban a tus otros dos mazos.
+
+## Una página para la Crimson Cup {#pagina}
+
+Desde hoy Analytics tiene una [página de la Crimson Cup](/es/analytics/crimson-cup) con los números oficiales de Koin clasificatorio a clasificatorio: ban rate, mazos, cartas más usadas y la comparación con el ladder. Las fichas de las Legendarias y de las cartas más usadas también muestran sus números de la Crimson Cup, como [Van Helsing](/es/cards/van-helsing) y [Baby Bear](/es/cards/baby-bear). Añadimos cada clasificatorio cuando Koin publica sus números.
+
+## De dónde viene {#fuentes}
+
+- Las tablas que Koin Games publicó en el [Discord oficial](https://discord.gg/originstcg) después del clasificatorio AMER #1, consultadas el 20 de octubre de 2026.
+- El ladder: partidas registradas con OriginsMeta Tracker en el parche 0.7, normales y clasificatorias juntas, consultadas en nuestra [página de la Crimson Cup](/es/analytics/crimson-cup) el 20 de octubre de 2026.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "Which Legendary was banned most in the Crimson Cup?",
+          a: "Van Helsing: in the AMER #1 qualifier of 19 October 2026 opponents banned it 96 times out of 216 (44.4%), according to Koin Games' official numbers. Merlin follows at 42.2% and Three Not So Little Pigs at 32.8%.",
+        },
+        {
+          q: "What are the most played cards in the Crimson Cup?",
+          a: "Baby Bear, in 47.2% of the decks submitted for AMER #1, then Roo (33.7%), Spellbook (32.4%), Mind Palace (31.7%) and Golden Egg (30.2%). Koin publishes the top 20.",
+        },
+        {
+          q: "Are the Crimson Cup decklists public?",
+          a: "Not yet: they stay hidden until the top 4. Koin publishes totals (bans, Legendaries and most played cards), which we gather qualifier by qualifier on our Crimson Cup page in Analytics.",
+        },
+      ],
+      it: [
+        {
+          q: "Qual è la Leggendaria più bandita della Crimson Cup?",
+          a: "Van Helsing: nella qualificazione AMER #1 del 19 ottobre 2026 gli avversari l'hanno bandita 96 volte su 216 (44,4%), secondo i numeri ufficiali di Koin Games. Seguono Merlin con il 42,2% e Three Not So Little Pigs con il 32,8%.",
+        },
+        {
+          q: "Quali sono le carte più giocate della Crimson Cup?",
+          a: "Baby Bear, nel 47,2% dei mazzi consegnati per la AMER #1, poi Roo (33,7%), Spellbook (32,4%), Mind Palace (31,7%) e Golden Egg (30,2%). Koin pubblica le prime 20.",
+        },
+        {
+          q: "Le liste della Crimson Cup sono pubbliche?",
+          a: "Non ancora: restano segrete fino alla top 4. Koin pubblica dei totali (ban, Leggendarie e carte più giocate), che raccogliamo qualificazione per qualificazione nella nostra pagina della Crimson Cup in Analytics.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Cuál es la Legendaria más baneada de la Crimson Cup?",
+          a: "Van Helsing: en el clasificatorio AMER #1 del 19 de octubre de 2026 los rivales la banearon 96 veces de 216 (44,4%), según los números oficiales de Koin Games. Le siguen Merlin con el 42,2% y Three Not So Little Pigs con el 32,8%.",
+        },
+        {
+          q: "¿Cuáles son las cartas más usadas de la Crimson Cup?",
+          a: "Baby Bear, en el 47,2% de los mazos entregados para el AMER #1, luego Roo (33,7%), Spellbook (32,4%), Mind Palace (31,7%) y Golden Egg (30,2%). Koin publica las 20 primeras.",
+        },
+        {
+          q: "¿Las listas de la Crimson Cup son públicas?",
+          a: "Todavía no: siguen ocultas hasta el top 4. Koin publica totales (bans, Legendarias y cartas más usadas), que reunimos clasificatorio a clasificatorio en nuestra página de la Crimson Cup en Analytics.",
+        },
+      ],
+    },
+    url: "https://discord.gg/originstcg",
+    source: "press",
+  },
+  {
     // Meta Report del lunedì, numero zero (19/10/2026). Pierluigi: "un nuovo articolo con cadenza settimanale, ogni lunedì,
     // dove analizziamo come si sta muovendo il meta basandoci sui nostri analytics e su eventuali patch", nome "Meta Report",
     // bozza automatica ogni lunedì, Discord sui canali di sempre (niente #metashifting), numero zero subito. Numeri dalla

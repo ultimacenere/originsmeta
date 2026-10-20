@@ -5,6 +5,8 @@ import { tierList, tierOf } from "./data/tierlist";
 import { getGuides, type Guide } from "./content/guides";
 import { pageLastmod, type Day } from "./lastmod";
 import type { TextSource } from "./cardTitles";
+import { crimsonQualifiers } from "./data/crimsonCup";
+import { crimsonCardDay } from "./crimsonCup";
 
 /**
  * Date di una scheda carta, in un posto solo (Ondata 1 SEO/GEO, correzione del 25/09/2026 dopo la revisione): le
@@ -55,6 +57,9 @@ export function cardDates(card: Card, locale: Locale, guides: readonly Guide[] =
     (locale === "it" || locale === "es") && lore?.[locale] ? localizedTextsRead[locale] : undefined,
     ...guides.filter((g) => g.tags?.cards?.includes(card.slug)).map((g) => g.updated),
     tier && tier !== "unranked" ? tierList.updated : undefined,
+    // il riquadro "Nella Crimson Cup" (20/10/2026): solo le carte che le tabelle di Koin nominano, dal giorno in cui le
+    // abbiamo lette (il modello delle schede non cambia per le altre, quindi PAGE_UPDATED resta com'è)
+    crimsonCardDay(card.slug, crimsonQualifiers),
   ];
 }
 

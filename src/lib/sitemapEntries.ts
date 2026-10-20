@@ -14,6 +14,8 @@ import { directoryIndexable } from "./community/creatorDirectory";
 import type { SitemapComic } from "./community/comics";
 import { isEarly } from "./tracker/stats";
 import { ANALYTICS_PUBLIC } from "./community/badges";
+import { crimsonQualifiers } from "./data/crimsonCup";
+import { withStats } from "./crimsonCup";
 
 /**
  * Le pagine della sitemap, divise per sezione e per lingua (Ondata 2 del piano SEO/GEO, 25/09/2026: TECH-07, TRJ-06,
@@ -207,6 +209,9 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     ...(ANALYTICS_PUBLIC && data.winrateGames && !isEarly(data.winrateGames)
       ? [{ path: "/analytics", section: "pages", route: "/analytics", dates: [] } satisfies SitemapPage]
       : []),
+    // Crimson Cup (20/10/2026): i numeri ufficiali di Koin, statici; la data è quella dell'ultima lettura delle tabelle.
+    // Il confronto con il ladder cambia a ogni partita registrata, come /analytics: non conta.
+    { path: "/analytics/crimson-cup", section: "pages", route: "/analytics/crimson-cup", dates: withStats(crimsonQualifiers).map((q) => q.stats.read) },
     // Il database cambia con la più recente delle sue schede (nella lingua della pagina).
     { path: "/cards", section: "pages", route: "/cards", dates: (l) => [latestDay(cardDatesBy(l).flat())] },
     // I Luoghi cambiano con la rotazione del gioco (una patch) o con una verifica nel gioco.

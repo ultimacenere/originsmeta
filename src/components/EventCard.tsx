@@ -56,6 +56,12 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
             {event.rules.label[locale]}
           </Link>
         ) : null}
+        {/* i numeri dell'evento su una pagina del sito (Crimson Cup, 20/10/2026: /analytics/crimson-cup) */}
+        {event.stats ? (
+          <Link href={href(locale, event.stats.path)} className="btn btn-ink text-xs">
+            {event.stats.label[locale]}
+          </Link>
+        ) : null}
         {event.signup ? (
           isSteamUrl(event.signup.url) ? (
             <SteamButton href={event.signup.url} size="sm">

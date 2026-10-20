@@ -45,6 +45,7 @@ import { CardCompanions, CardDecks, CardRootDecks } from "@/components/card/Card
 import { CardRelations, CardRootCta } from "@/components/card/CardRelations";
 import { CardBrief, CardCommunityScore } from "@/components/card/CardBrief";
 import { CardCollectible } from "@/components/card/CardCollectible";
+import { CardCrimson } from "@/components/card/CardCrimson";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -330,6 +331,10 @@ export default async function CardPage({ params }: { params: Params }) {
       {token ? <CardRelations card={card} locale={locale} rel={rel} /> : null}
 
       {!removed ? decksSection : null}
+
+      {/* Crimson Cup (20/10/2026): ban rate e mazzi consegnati delle Leggendarie, quota delle carte più giocate, dalle
+          tabelle ufficiali di Koin; niente sulle carte che le tabelle non nominano */}
+      {playable ? <CardCrimson slug={card.slug} locale={locale} /> : null}
 
       {playable ? <CardCompanions card={card} locale={locale} list={together} decks={withCard.length} min={2} /> : null}
 

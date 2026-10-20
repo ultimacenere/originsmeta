@@ -55,6 +55,7 @@ import { MetaMap } from "@/components/analytics/MetaMap";
 import { CardStatsTable, type CardStatRow } from "@/components/analytics/CardStatsTable";
 import { MatchupExplorer, type MxCell, type MxLeg } from "@/components/analytics/MatchupExplorer";
 import { AnalyticsReveal } from "@/components/analytics/AnalyticsReveal";
+import { CrimsonPromo } from "@/components/crimson/CrimsonPromo";
 
 /*
   Analytics (12/10/2026, Pierluigi: "non si chiama più win rate ma si chiama analytics" e le statistiche "solo sotto
@@ -473,6 +474,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
           <div className="felt-panel-mint max-w-3xl p-6">
             <p className="text-pale">{w.empty}</p>
           </div>
+          <CrimsonPromo locale={locale} legendaryLabel={legendaryLabel} />
         </div>
       ) : (
         <>
@@ -513,6 +515,8 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
                   {stories}
                 </div>
               ) : null}
+              {/* Crimson Cup (20/10/2026): i numeri ufficiali del torneo hanno una pagina loro, /analytics/crimson-cup */}
+              <CrimsonPromo locale={locale} legendaryLabel={legendaryLabel} />
             </div>
           </section>
 
