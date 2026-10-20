@@ -81,5 +81,4 @@ donazione «Поддержать».
 
 Interfaccia `src/lib/dictionaries/ru.ts`; news `src/lib/data/news-ru.ts`; guide `src/lib/content/guides-ru.ts`; carte
 `src/lib/data/card-lore-ru.ts`; chiave `ru` accanto a `de` in tutto il resto (storico, luoghi, FAQ, etichette).
-Database: blocco `-- ===== 20/10/2026: RUSSO =====` di `schema.sql` e `ru` in `DB_PENDING_LOCALES` di `translate.ts`
-finché la migrazione non è fatta (poi vuoto e arretrati con `translate-decks.mjs` e `translate-guides.mjs`).
+Database: blocco `-- ===== 20/10/2026: RUSSO =====` di `schema.sql` e migrazione fatta la notte del 20/10/2026 (`DB_PENDING_LOCALES` vuoto).
