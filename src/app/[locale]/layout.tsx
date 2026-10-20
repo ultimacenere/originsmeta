@@ -3,7 +3,7 @@ import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat, Reenie_Beanie } 
 import { notFound } from "next/navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
-import { getDictionary, href, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
+import { getDictionary, href, htmlLang, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -73,7 +73,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const l: Locale = locale;
   const d = getDictionary(l);
   return (
-    <html lang={l} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable} ${pen.variable} h-full`}>
+    <html lang={htmlLang[l]} className={`${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable} ${pen.variable} h-full`}>
       <body className="min-h-full flex flex-col">
         {/* Feed RSS delle news nella lingua della pagina (Ondata 2): React 19 porta i <link> nel <head>. Percorso e titolo
             dal modulo leggero newsFeedMeta.ts (non da newsFeed.ts, che legge news, autori e file). Non passa dai

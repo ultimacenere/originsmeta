@@ -1,4 +1,4 @@
-# Testi di gioco in italiano e spagnolo (dal 25/09/2026) e in francese (dall'08/10/2026)
+# Testi di gioco in italiano e spagnolo (dal 25/09/2026), in francese (dall'08/10/2026) e in portoghese (dal 20/10/2026)
 
 Il gioco è tradotto: nella Demo 2.0 le carte hanno un testo ufficiale anche in italiano e in spagnolo, con le parole
 chiave tradotte. Il 25/09/2026 li abbiamo letti tutti nel gioco (122 carte, collezione con le carte non possedute) e
@@ -10,6 +10,16 @@ trascrizione in `docs/testi-ufficiali/fr.tsv`, `node scripts/official-texts.mjs 
 `src/lib/data/card-lore-fr.ts`) e allineato glossario, etichette, carte create, luoghi, guide e news. Il glossario
 francese del gioco sta in `docs/francese.md` (Première frappe, case, Mauvais, "se produire"). In francese Twister Toss
 ha già il testo della patch 0.7, che in inglese, italiano e spagnolo non abbiamo ancora riletto nel gioco.
+
+**Portoghese (20/10/2026)**: il gioco è tradotto anche in portoghese del Brasile ("Português - Brasil"). Questa volta
+i testi sono stati letti nel gioco prima di scrivere il resto: il 20/10/2026 le 122 carte della collezione (demo 0.7.1,
+testi della patch 0.7, tasto "Não obtidas" acceso), trascrizione in `docs/testi-ufficiali/pt.tsv`,
+`node scripts/official-texts.mjs pt --apply` scrive in `src/lib/data/card-lore-pt.ts` (campo `text`), `pt` sta in
+`officialTextLocales`. Carte create e rimosse sono una traduzione nostra con il glossario del gioco, che sta in
+`docs/portoghese.md` (Ao revelar, Atropelar, Toque mortífero, Primeiro golpe, Tiro certeiro, espaço, local, Maligno,
+"acontece"; "Comida", il Food delle carte rimosse, è una scelta nostra). La trascrizione tiene le incoerenze del gioco: forme europee come
+"se ainda lá não estiver" (Van Helsing) ed "Escolhe uma", "Mover um aliado" all'infinito (En Passant), "volto" minuscolo
+dopo i due punti (Koschei). Anche qui Twister Toss ha già il testo della patch 0.7.
 
 ## La regola
 
@@ -90,7 +100,7 @@ Stile del gioco da imitare nei testi nostri:
 2. Si trascrive in `docs/testi-ufficiali/<lingua>.tsv`, una carta per riga ("Nome<TAB>testo", `\n` per gli a capo,
    statistiche come nel sito: `[5⚔️/3❤️]`). Il file com'è oggi è la lettura del 25/09/2026: basta correggere le righe
    che cambiano.
-3. `node scripts/official-texts.mjs it` (o `es`, o `fr`) elenca le carte il cui testo nel sito è diverso dalla trascrizione e
+3. `node scripts/official-texts.mjs it` (o `es`, `fr`, `pt`) elenca le carte il cui testo nel sito è diverso dalla trascrizione e
    controlla che ci siano tutte le carte e gli stessi a capo dell'inglese; con `--apply` scrive in `card-lore.ts` (per il
-   francese in `card-lore-fr.ts`, campo `text`).
+   francese in `card-lore-fr.ts`, per il portoghese in `card-lore-pt.ts`, campo `text`).
 4. Le carte nuove della patch prendono anche la riga `origin` e il resto della voce, come sempre.

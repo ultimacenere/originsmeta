@@ -47,8 +47,9 @@ const pageModule: typeof import("../page") = await import("../page.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const cardlinksModule: typeof import("../cardlinks") = await import("../cardlinks.ts");
 
-type Locale = "en" | "it" | "es";
-const locales: Locale[] = ["en", "it", "es"];
+// il portoghese dal 20/10/2026 (il francese, nato prima di questi controlli, non è ancora qui)
+type Locale = "en" | "it" | "es" | "pt";
+const locales: Locale[] = ["en", "it", "es", "pt"];
 const { getGuide, getGuides, guideSlugs } = guidesModule;
 const { cards, getCard } = cardsModule;
 const { news } = newsModule;
@@ -186,6 +187,7 @@ describe("guide dell'Ondata 3: sezioni e link", () => {
       assert.equal(anchorsOf(guide("it", s).body).has("in-breve"), true, s);
       assert.equal(anchorsOf(guide("es", s).body).has("en-resumen"), true, s);
       assert.equal(anchorsOf(guide("en", s).body).has("in-brief"), true, s);
+      assert.equal(anchorsOf(guide("pt", s).body).has("em-resumo"), true, s);
     }
   });
   test("link interni con il prefisso della lingua, verso pagine e ancore che esistono", () => {
@@ -303,7 +305,7 @@ describe("guida alle Leggendarie: coincide con il database delle carte", () => {
     const removed = cards.filter((c) => c.legendary && c.status !== "active").map((c) => c.slug).sort();
     for (const l of locales) {
       const body = guide(l, SLUG).body;
-      const start = body.indexOf(l === "en" ? "{#not-in-the-demo}" : l === "it" ? "{#fuori-dalla-demo}" : "{#fuera-de-la-demo}");
+      const start = body.indexOf(l === "en" ? "{#not-in-the-demo}" : l === "it" ? "{#fuori-dalla-demo}" : l === "pt" ? "{#fora-da-demo}" : "{#fuera-de-la-demo}");
       assert.ok(start > 0, l);
       const section = body.slice(start, body.indexOf("\n## ", start));
       const linked = [...section.matchAll(/\]\(\/[a-z]{2}\/cards\/([a-z0-9-]+)\)/g)].map((m) => m[1]).sort();

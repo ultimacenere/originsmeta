@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n";
  * (campo "EULA or Terms of Service URL") e valgono per tutto quello che fa OriginsMeta: il sito, l'app OriginsMeta
  * Tracker e l'estensione OriginsMeta Deck tracker. Pagina /terms, noindex come /privacy, link nel footer.
  * Regole dei testi: mai il nome né il dominio della fonte dei dati delle carte, mai "con il permesso di Koin"
- * (`KOIN_PERMISSION_PUBLIC` è spento), sempre "non affiliato a Koin Games". Le ancore (`id`) sono uguali nelle quattro
+ * (`KOIN_PERMISSION_PUBLIC` è spento), sempre "non affiliato a Koin Games". Le ancore (`id`) sono uguali nelle cinque
  * lingue. Test in termsLabels.test.ts.
  */
 export type TermsSection = { id: string; title: string; body: string[] };
@@ -338,5 +338,84 @@ export const termsLabels: Record<Locale, TermsLabels> = {
       },
     ],
     footer: "Conditions d'utilisation",
+  },
+  pt: {
+    title: "Termos de uso",
+    description: "Os termos de uso do OriginsMeta: o site, o aplicativo OriginsMeta Tracker e a extensão OriginsMeta Deck tracker para a Twitch.",
+    updated: "Última atualização: 14 de outubro de 2026",
+    intro:
+      "Estes termos valem para originsmeta.com, para o aplicativo OriginsMeta Tracker para Windows e para a extensão OriginsMeta Deck tracker para a Twitch (em conjunto, “OriginsMeta”). Ao usar o OriginsMeta, você os aceita. Se não aceitar, não o use.",
+    sections: [
+      {
+        id: "who",
+        title: "Quem somos",
+        body: [
+          "O OriginsMeta é um site de fãs não oficial sobre Origins TCG, mantido por Pierluigi Cella. Não é afiliado à Koin Games, nem aprovado ou patrocinado pela Koin Games. Você pode nos escrever em staff@originsmeta.com.",
+        ],
+      },
+      {
+        id: "service",
+        title: "O serviço",
+        body: [
+          "O OriginsMeta é gratuito. Podemos mudar, pausar ou encerrar qualquer parte dele a qualquer momento, inclusive o aplicativo e a extensão. As doações pelo PayPal são voluntárias e não dão direitos nem recompensas.",
+        ],
+      },
+      {
+        id: "account",
+        title: "A sua conta",
+        body: [
+          "Você entra com o Discord ou com um link enviado por e-mail. Você é responsável pelo que faz com a sua conta. Os papéis e as tags são atribuídos pela staff. Podemos ocultar conteúdos ou suspender uma conta que não respeite estes termos, e você pode excluir a sua conta a qualquer momento.",
+        ],
+      },
+      {
+        id: "content",
+        title: "O que você publica",
+        body: [
+          "Os decks, guias, tier lists, quadrinhos, votos e mensagens que você publica continuam sendo seus. Ao publicá-los, você autoriza o OriginsMeta a mostrá-los no site, traduzi-los automaticamente para os idiomas do site e compartilhá-los no nosso servidor do Discord e na extensão, enquanto estiverem on-line.",
+          "Não publique nada ilegal, ofensivo, enganoso, spam, dados pessoais de outras pessoas nem obras que você não tem o direito de compartilhar. A staff pode ocultar ou remover os conteúdos que não respeitem estas regras.",
+        ],
+      },
+      {
+        id: "game",
+        title: "Os conteúdos de Origins TCG",
+        body: [
+          "Origins TCG, as suas cartas, nomes, textos e imagens pertencem à Koin Games. O OriginsMeta os mostra para falar do jogo; não são nossos e não estão cobertos por estes termos. Os dados das cartas, as mudanças de balanceamento e as estatísticas podem conter erros: são fornecidos apenas a título informativo.",
+        ],
+      },
+      {
+        id: "tracker",
+        title: "OriginsMeta Tracker",
+        body: [
+          "O aplicativo só lê, no seu PC, os arquivos que o jogo salva e a janela do jogo, e nunca altera o jogo. Ele só funciona vinculado a uma conta do OriginsMeta e envia ao site o que a política de privacidade descreve. Você o instala e usa por sua conta e risco; pode desvinculá-lo e excluir as suas partidas na sua conta a qualquer momento. As estatísticas calculadas a partir das partidas são estimativas.",
+        ],
+      },
+      {
+        id: "twitch",
+        title: "OriginsMeta Deck tracker para a Twitch",
+        body: [
+          "A extensão mostra aos espectadores o deck e as cartas do streamer, vindos do OriginsMeta Tracker: nunca nomes, ranks ou identificadores de jogadores ou de partidas. Os espectadores não precisam de conta. O streamer que vincula um canal é responsável pelo que transmite. Os termos da própria Twitch também se aplicam.",
+        ],
+      },
+      {
+        id: "liability",
+        title: "Sem garantias",
+        body: [
+          "O OriginsMeta é oferecido “no estado em que se encontra”, sem garantias. Na medida permitida pela lei, não somos responsáveis por danos indiretos nem por perdas causadas por erros nos dados, interrupções do serviço ou pelo uso do aplicativo e da extensão. Nada nestes termos limita os direitos que a lei do seu país lhe dá como consumidor.",
+        ],
+      },
+      {
+        id: "privacy",
+        title: "Privacidade",
+        body: ["A política de privacidade explica como usamos os dados."],
+      },
+      {
+        id: "changes",
+        title: "Mudanças e lei aplicável",
+        body: [
+          "Podemos atualizar estes termos: a data no topo mostra quando. Se você continuar usando o OriginsMeta depois de uma mudança, aceita a nova versão. Estes termos são regidos pela lei italiana, sem prejuízo das normas obrigatórias do seu país de residência.",
+        ],
+      },
+    ],
+    footer: "Termos de uso",
   },
 };

@@ -282,9 +282,9 @@ describe("mazzi da codici e tornei", () => {
 });
 
 describe("testi e partita di prova", () => {
-  test("le quattro lingue hanno le stesse chiavi e la dicitura su Koin Games", () => {
+  test("le cinque lingue hanno le stesse chiavi e la dicitura su Koin Games", () => {
     const keys = (o: object) => JSON.stringify(Object.keys(o).sort());
-    for (const lang of ["it", "es", "fr"] as const) assert.equal(keys(overlayLabels[lang]), keys(overlayLabels.en));
+    for (const lang of ["it", "es", "fr", "pt"] as const) assert.equal(keys(overlayLabels[lang]), keys(overlayLabels.en));
     for (const l of Object.values(overlayLabels)) assert.match(l.unofficial, /Koin Games/);
     assert.match(overlayLabels.fr.copied, / !$/, "francese: spazio insecabile prima del punto esclamativo");
   });

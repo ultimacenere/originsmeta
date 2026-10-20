@@ -1,7 +1,7 @@
 import type { BroadcastLang, PhaseLabels } from "./state";
 
 /**
- * Testi dell'overlay di Broadcasting OM nelle quattro lingue del sito (la lingua la sceglie la regia: è quella della
+ * Testi dell'overlay di Broadcasting OM nelle cinque lingue del sito (la lingua la sceglie la regia: è quella della
  * diretta, non del browser di chi guarda). Francese con lo spazio insecabile prima di ! ? : ; (docs/francese.md).
  * La dicitura "non affiliato a Koin Games" c'è sempre, in ogni lingua.
  */
@@ -84,6 +84,21 @@ export const overlayLabels: Record<BroadcastLang, OverlayLabels> = {
     wins: `Victoire de ${"{name}"}`,
     unofficial: "OriginsMeta · non affilié à Koin Games",
     phases: { final: "Finale", semi: "Demi-finale", quarter: "Quart de finale", round: "Tour {n}" },
+  },
+  pt: {
+    score: "Placar",
+    deck: "Deck {n}",
+    showDeck: "Clique para ver o deck",
+    hideDeck: "Fechar o deck",
+    inPlay: "Em jogo",
+    copyDeck: "Copiar deck",
+    copied: "Copiado!",
+    noCode: "Código indisponível",
+    left: "restantes",
+    bestOf: "Bo{n}",
+    wins: "{name} vence",
+    unofficial: "OriginsMeta · não afiliado à Koin Games",
+    phases: { final: "Final", semi: "Semifinal", quarter: "Quartas de final", round: "Rodada {n}" },
   },
 };
 

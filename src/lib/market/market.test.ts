@@ -265,7 +265,7 @@ describe("tabellone e storico", () => {
   });
 });
 
-describe("testi nelle quattro lingue", () => {
+describe("testi nelle cinque lingue", () => {
   const TITLE_MAX = 60;
   const fullTitle = (t: string) => (/origins tcg|originsmeta/i.test(t) ? t : `${t} · Origins TCG`);
   const keys = (o: unknown, p = ""): string[] =>
@@ -325,8 +325,8 @@ describe("prova riservata del Mercato (18/10/2026)", () => {
   });
   test("le pagine /market passano dal proxy, che rinnova la sessione", () => {
     const proxy = fs.readFileSync(new URL("../../proxy.ts", import.meta.url), "utf8");
-    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\)\/market"/);
-    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\)\/market\/:path\*"/);
+    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\)\/market"/);
+    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\)\/market\/:path\*"/);
   });
   test("pagina riservata e lucchetto nelle quattro lingue", () => {
     for (const l of Object.values(marketLabels)) assert.ok(l.locked.text.length > 40 && l.locked.kicker && l.locked.back);

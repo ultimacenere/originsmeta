@@ -140,7 +140,38 @@ const fr: DeckArtLabels = {
   },
 };
 
-export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es, fr };
+const pt: DeckArtLabels = {
+  form: {
+    title: "Artwork da Lendária",
+    roles: "Creator e Staff",
+    hint: "Substitua a ilustração de {legendary} neste deck pela sua: na página do deck, nas listas de decks, no seu perfil e nas tier lists. Formato de carta 5:7, no mínimo {minw} × {minh} px (o ideal é {w} × {h}), PNG, JPG ou WebP de até 2 MB: cortamos no centro em 5:7. Só imagens suas ou que você tenha o direito de usar. A carta oficial continua na página dela e na prévia.",
+    upload: "Enviar o artwork",
+    replace: "Trocar o artwork",
+    uploading: "Enviando…",
+    remove: "Usar a carta oficial",
+    official: "Carta oficial",
+    custom: "Seu artwork",
+    notOwner: "Só quem publicou o deck pode enviar o artwork dele; aqui você pode removê-lo.",
+    noRole: "O artwork da Lendária é para Creators e Staff: aqui você só pode removê-lo.",
+    errors: {
+      type: "Este arquivo não é uma imagem PNG, JPG ou WebP.",
+      tooBig: "A imagem continua pesada demais mesmo depois da compressão: tente uma menor.",
+      upload: "O envio não deu certo: verifique sua conexão e tente de novo.",
+      limit: "Você chegou ao limite de imagens enviadas: remova as que não usa mais, ou escreva para o staff.",
+    },
+  },
+  errors: {
+    artFile: "O artwork não foi encontrado ou não pode ser usado: envie de novo, ou use a carta oficial.",
+    artRole: "O artwork da Lendária é para Creators e Staff.",
+    artUnavailable: "O artwork do deck ainda não pode ser salvo: tente de novo em alguns minutos, ou publique com a carta oficial.",
+  },
+  deck: {
+    caption: "Artwork do Creator",
+    alt: "{legendary}: artwork do deck de {author}",
+  },
+};
+
+export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es, fr, pt };
 
 /** Le etichette del modulo nella lingua della pagina, con gli errori delle Server Action. */
 export function deckArtFormLabels(locale: Locale): DeckArtFormLabels {

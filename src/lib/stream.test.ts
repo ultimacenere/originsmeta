@@ -431,7 +431,7 @@ describe("etichette", () => {
     const keys = (o: object, prefix = ""): string[] =>
       Object.entries(o).flatMap(([k, v]) => (v && typeof v === "object" ? keys(v, `${prefix}${k}.`) : [`${prefix}${k}`]));
     const en = keys(streamLabels.en).sort();
-    for (const l of locales) assert.deepEqual(keys(streamLabels[l]).sort(), en, l);
+    for (const l of [...locales, "fr", "pt"] as const) assert.deepEqual(keys(streamLabels[l]).sort(), en, l);
   });
 
   test("i segnaposto delle etichette sono gli stessi nelle tre lingue", () => {
@@ -442,6 +442,6 @@ describe("etichette", () => {
         else if (v && typeof v === "object") walk(v as Record<string, unknown>, b[k] as Record<string, unknown>, `${path}${k}.`);
       }
     };
-    for (const l of ["it", "es"] as const) walk(streamLabels.en, streamLabels[l], `${l}.`);
+    for (const l of ["it", "es", "fr", "pt"] as const) walk(streamLabels.en, streamLabels[l], `${l}.`);
   });
 });

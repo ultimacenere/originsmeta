@@ -16,6 +16,7 @@ const loadingText: Record<string, string> = {
   it: "Caricamento…",
   es: "Cargando…",
   fr: "Chargement…",
+  pt: "Carregando…",
 };
 
 function Bar({ className }: { className: string }) {

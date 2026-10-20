@@ -41,7 +41,8 @@ describe("404 dentro le lingue", () => {
     assert.equal(notFoundTitle("it"), "404 · Pagina non trovata · OriginsMeta");
     assert.equal(notFoundTitle("en"), "404 · Page not found · OriginsMeta");
     assert.equal(notFoundTitle("fr"), "404 · Page introuvable · OriginsMeta");
-    assert.deepEqual(Object.keys(NOT_FOUND_TITLE).sort(), ["en", "es", "fr", "it"]);
+    assert.equal(notFoundTitle("pt"), "404 · Página não encontrada · OriginsMeta");
+    assert.deepEqual(Object.keys(NOT_FOUND_TITLE).sort(), ["en", "es", "fr", "it", "pt"]);
   });
   test("lingua, H1 e testo sono nell'HTML, con i link alla home e alle carte", () => {
     const html = notFoundHtml(es);
@@ -133,7 +134,7 @@ function publicFiles(dir = new URL("../../../../../public/", import.meta.url), b
   );
 }
 
-const languages = ["it-IT,it;q=0.9,en;q=0.8", "es-MX,es;q=0.9", "ca-ES,ca;q=0.9", "en-GB,en;q=0.9", "de-DE,de;q=0.9", "fr-CA,fr;q=0.9,en;q=0.8"];
+const languages = ["it-IT,it;q=0.9,en;q=0.8", "es-MX,es;q=0.9", "ca-ES,ca;q=0.9", "en-GB,en;q=0.9", "de-DE,de;q=0.9", "fr-CA,fr;q=0.9,en;q=0.8", "pt-BR,pt;q=0.9,en;q=0.8"];
 
 describe("sezioni senza lingua", () => {
   const sectionRules = redirects.filter((r) => r.source.startsWith("/:section("));
@@ -145,7 +146,7 @@ describe("sezioni senza lingua", () => {
       .map((e) => e.name);
     assert.deepEqual([...sections].sort(), dirs.sort());
   });
-  test("redirect temporanei, sezione sola e con il percorso: italiano, spagnolo (anche ca, gl, eu), francese (dal 07/10/2026), poi inglese", () => {
+  test("redirect temporanei, sezione sola e con il percorso: italiano, spagnolo (anche ca, gl, eu), francese (dal 07/10/2026), portoghese (dal 20/10/2026), poi inglese", () => {
     assert.deepEqual(
       sectionRules.map((r) => [r.destination, r.has?.[0]?.value ?? null, r.permanent]),
       [
@@ -155,6 +156,8 @@ describe("sezioni senza lingua", () => {
         ["/es/:section/:path", "^(?:es|ca|gl|eu).*", false],
         ["/fr/:section", "^fr.*", false],
         ["/fr/:section/:path", "^fr.*", false],
+        ["/pt/:section", "^pt.*", false],
+        ["/pt/:section/:path", "^pt.*", false],
         ["/en/:section", null, false],
         ["/en/:section/:path", null, false],
       ],
@@ -164,6 +167,7 @@ describe("sezioni senza lingua", () => {
     assert.equal(root("it"), "^it.*");
     assert.equal(root("es"), "^(?:es|ca|gl|eu).*");
     assert.equal(root("fr"), "^fr.*");
+    assert.equal(root("pt"), "^pt.*");
   });
   test("Next accetta le regole (la sua verifica all'avvio, che su una regola sbagliata chiude il processo)", () => {
     checkCustomRoutes(redirects, "redirect");
@@ -183,6 +187,8 @@ describe("sezioni senza lingua", () => {
       ["/cards/merlin", languages[3], "/en/cards/merlin"],
       ["/cards/merlin", languages[4], "/en/cards/merlin"],
       ["/cards/merlin", languages[5], "/fr/cards/merlin"],
+      ["/cards/merlin", languages[6], "/pt/cards/merlin"],
+      ["/faq", "pt-PT,pt;q=0.9", "/pt/faq"],
       ["/news/demo-patch-notes-0921", languages[1], "/es/news/demo-patch-notes-0921"],
       ["/guides/is-origins-tcg-pay-to-win", "gl", "/es/guides/is-origins-tcg-pay-to-win"],
       ["/faq", languages[0], "/it/faq"],
@@ -197,12 +203,14 @@ describe("sezioni senza lingua", () => {
     }
   });
   test("non tocca le lingue, le altre rotte, i percorsi con un punto né la radice con i parametri di spam", () => {
-    for (const path of ["/en/cards", "/it/cards/merlin", "/es", "/fr", "/fr/cards/merlin", "/t/OM-ABCD", "/api/calendar", "/auth/callback", "/xx/foo", "/cardsx", "/sitemap.xml", "/news/a.b"])
+    for (const path of ["/en/cards", "/it/cards/merlin", "/es", "/fr", "/fr/cards/merlin", "/pt", "/pt/cards/merlin", "/t/OM-ABCD", "/api/calendar", "/auth/callback", "/xx/foo", "/cardsx", "/sitemap.xml", "/news/a.b"])
       for (const language of languages) assert.equal(redirectOf(path, language), null, `${path} (${language})`);
     assert.equal(redirectOf("/", languages[0]), "/it");
     assert.equal(redirectOf("/", languages[4]), "/en");
     assert.equal(redirectOf("/", languages[0], { r: "x", channel: "y" }), null);
     // il francese è una lingua del sito dal 07/10/2026: niente più 308 verso l'inglese
     assert.equal(redirectOf("/", languages[5]), "/fr");
+    // il portoghese (del Brasile, anche per pt-PT) dal 20/10/2026
+    assert.equal(redirectOf("/", languages[6]), "/pt");
   });
 });

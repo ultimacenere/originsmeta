@@ -1,9 +1,13 @@
 import type { Locale } from "../i18n";
 import type { GuideSlug } from "../content/guides";
 import { frText, type NewsCopy } from "./news-fr";
+import { ptText } from "./news-pt";
 
-/** Le lingue scritte in questo file; il francese (dal 07/10/2026) sta in news-fr.ts e si unisce in fondo (`withFrench`). */
-type Base = Exclude<Locale, "fr">;
+/**
+ * Le lingue scritte in questo file; il francese (dal 07/10/2026) sta in news-fr.ts e il portoghese (dal 20/10/2026) in
+ * news-pt.ts, e si uniscono in fondo (`withTranslations`).
+ */
+type Base = Exclude<Locale, "fr" | "pt">;
 type BaseL10n = Record<Base, string>;
 type L10n = Record<Locale, string>;
 type Highlight = { label: string; text?: string; anchor: string };
@@ -74,7 +78,7 @@ export type NewsItem = {
   guides?: GuideSlug[];
 };
 
-/** Una news come è scritta qui sotto: inglese, italiano e spagnolo; il francese arriva da news-fr.ts. */
+/** Una news come è scritta qui sotto: inglese, italiano e spagnolo; francese e portoghese arrivano da news-fr.ts e news-pt.ts. */
 type RawNews = Omit<NewsItem, "title" | "metaTitle" | "summary" | "description" | "body" | "highlights" | "faq"> & {
   title: BaseL10n;
   metaTitle: BaseL10n;
@@ -85,26 +89,35 @@ type RawNews = Omit<NewsItem, "title" | "metaTitle" | "summary" | "description" 
   faq?: Record<Base, Qa[]>;
 };
 
+/** Le lingue delle news scritte in file a parte, ognuna con i suoi testi per slug. */
+const translations = { fr: { text: frText, file: "news-fr.ts" }, pt: { text: ptText, file: "news-pt.ts" } } as const;
+
 /**
- * Unisce a una news i suoi testi francesi (news-fr.ts). Lancia alla build se il francese manca o se ha un campo che
- * l'articolo non ha nelle altre lingue (o viceversa): una news nuova si scrive sempre nelle quattro lingue.
+ * Unisce a una news i suoi testi francesi (news-fr.ts) e portoghesi (news-pt.ts). Lancia alla build se una delle due
+ * lingue manca o se ha un campo che l'articolo non ha nelle altre lingue (o viceversa): una news nuova si scrive sempre
+ * nelle cinque lingue.
  */
-function withFrench(item: RawNews): NewsItem {
-  const fr: NewsCopy | undefined = frText[item.slug];
-  if (!fr) throw new Error(`news "${item.slug}": manca il francese in src/lib/data/news-fr.ts`);
-  for (const field of ["body", "highlights", "faq"] as const) {
-    if (Boolean(item[field]) !== Boolean(fr[field])) throw new Error(`news "${item.slug}": il campo ${field} c'è solo in ${item[field] ? "news.ts" : "news-fr.ts"}`);
+function withTranslations(item: RawNews): NewsItem {
+  const copies = {} as Record<keyof typeof translations, NewsCopy>;
+  for (const [lang, { text, file }] of Object.entries(translations) as [keyof typeof translations, (typeof translations)[keyof typeof translations]][]) {
+    const copy: NewsCopy | undefined = text[item.slug];
+    if (!copy) throw new Error(`news "${item.slug}": manca il testo ${lang} in src/lib/data/${file}`);
+    for (const field of ["body", "highlights", "faq"] as const) {
+      if (Boolean(item[field]) !== Boolean(copy[field])) throw new Error(`news "${item.slug}": il campo ${field} c'è solo in ${item[field] ? "news.ts" : file}`);
+    }
+    copies[lang] = copy;
   }
+  const { fr, pt } = copies;
   const { title, metaTitle, summary, description, body, highlights, faq, ...rest } = item;
   return {
     ...rest,
-    title: { ...title, fr: fr.title },
-    metaTitle: { ...metaTitle, fr: fr.metaTitle },
-    summary: { ...summary, fr: fr.summary },
-    description: { ...description, fr: fr.description },
-    ...(body && fr.body ? { body: { ...body, fr: fr.body } } : {}),
-    ...(highlights && fr.highlights ? { highlights: { ...highlights, fr: fr.highlights } } : {}),
-    ...(faq && fr.faq ? { faq: { ...faq, fr: fr.faq } } : {}),
+    title: { ...title, fr: fr.title, pt: pt.title },
+    metaTitle: { ...metaTitle, fr: fr.metaTitle, pt: pt.metaTitle },
+    summary: { ...summary, fr: fr.summary, pt: pt.summary },
+    description: { ...description, fr: fr.description, pt: pt.description },
+    ...(body && fr.body && pt.body ? { body: { ...body, fr: fr.body, pt: pt.body } } : {}),
+    ...(highlights && fr.highlights && pt.highlights ? { highlights: { ...highlights, fr: fr.highlights, pt: pt.highlights } } : {}),
+    ...(faq && fr.faq && pt.faq ? { faq: { ...faq, fr: fr.faq, pt: pt.faq } } : {}),
   };
 }
 
@@ -7850,7 +7863,7 @@ Las reglas, los horarios del check-in y lo que aún no sabemos están en [nuestr
   },
 ];
 
-export const news: NewsItem[] = raw.map(withFrench);
+export const news: NewsItem[] = raw.map(withTranslations);
 
 export const sortedNews = [...news].sort((a, b) => b.date.localeCompare(a.date));
 
@@ -7873,14 +7886,14 @@ export function newsReadTime(item: NewsItem, locale: Locale): number {
  * Date delle versioni tradotte, una sola regola per news e guide (revisione dell'Ondata 1, 25/09/2026): la data di
  * pubblicazione (`datePublished`, "Pubblicato il") resta quella originale dell'articolo in ogni lingua; la data di
  * modifica di una lingua nata dopo gli articoli non va mai prima del giorno in cui quella lingua è andata online.
- * Vale per lo spagnolo, dal 25/09/2026, e per il francese, dal 07/10/2026: gli stessi giorni di `LOCALE_SINCE` in
+ * Vale per lo spagnolo, dal 25/09/2026, per il francese, dal 07/10/2026, e per il portoghese, dal 20/10/2026: gli stessi giorni di `LOCALE_SINCE` in
  * src/lib/lastmod.ts, che vale per la sitemap (lo controlla `newsMeta.test.ts`). Inglese e italiano sono le lingue
  * degli originali.
  * La usano la pagina della news (con `newsDates`: dati strutturati, Open Graph e firma) e `getGuides` in guides.ts.
  * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
  * import senza estensione.
  */
-export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07" };
+export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20" };
 
 /** Data di modifica (giorno ISO) di un articolo nella lingua `locale`, secondo la regola qui sopra. */
 export function modifiedIn(locale: Locale, day: string): string {

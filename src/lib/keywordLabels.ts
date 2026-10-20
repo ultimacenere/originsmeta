@@ -13,49 +13,51 @@ import type { Locale } from "./i18n";
  *   prenderlo.
  * - Il francese (07/10/2026) usa le parole del gioco lette l'08/10/2026 (docs/francese.md): fino a quel giorno era un
  *   glossario provvisorio nostro (First Strike era "Initiative", ora "Première frappe").
+ * - Il portoghese del Brasile (20/10/2026) usa le parole del gioco lette quel giorno (docs/portoghese.md); le categorie
+ *   hanno il verbo dei testi delle carte in terza persona, come il gioco (Invoca, Compra, Descarta).
  * Un tag nuovo portato da `npm run import:woo` senza etichetta qui si mostra in inglese e fa fallire il test.
  */
-type Label = { it: string; es: string; fr: string; game?: true };
+type Label = { it: string; es: string; fr: string; pt: string; game?: true };
 
 export const keywordLabels: Record<string, Label> = {
   // parole chiave del gioco: nomi ufficiali
-  "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", game: true },
-  "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", game: true },
-  "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", game: true },
-  Shield: { it: "Scudo", es: "Escudo", fr: "Bouclier", game: true },
-  Trample: { it: "Travolgere", es: "Arrollar", fr: "Piétinement", game: true },
-  Deathtouch: { it: "Tocco letale", es: "Toque mortal", fr: "Contact mortel", game: true },
-  Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", game: true },
-  Rebirth: { it: "Rinascita", es: "Renacer", fr: "Renaissance", game: true },
-  "First Strike": { it: "Primo colpo", es: "Primer golpe", fr: "Première frappe", game: true },
-  "Double Attack": { it: "Doppio attacco", es: "Ataque doble", fr: "Double attaque", game: true },
-  Snipe: { it: "Tiro di precisione", es: "Disparo certero", fr: "Tir de précision", game: true },
-  Move: { it: "Muovere", es: "Mover", fr: "Déplacer", game: true },
-  Stun: { it: "Stordisci", es: "Aturde", fr: "Étourdir", game: true },
-  Ongoing: { it: "Ongoing", es: "Ongoing", fr: "Ongoing" },
+  "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", pt: "Ao revelar", game: true },
+  "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", pt: "Ao morrer", game: true },
+  "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", pt: "Ao matar", game: true },
+  Shield: { it: "Scudo", es: "Escudo", fr: "Bouclier", pt: "Escudo", game: true },
+  Trample: { it: "Travolgere", es: "Arrollar", fr: "Piétinement", pt: "Atropelar", game: true },
+  Deathtouch: { it: "Tocco letale", es: "Toque mortal", fr: "Contact mortel", pt: "Toque mortífero", game: true },
+  Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", pt: "Defensor", game: true },
+  Rebirth: { it: "Rinascita", es: "Renacer", fr: "Renaissance", pt: "Renascimento", game: true },
+  "First Strike": { it: "Primo colpo", es: "Primer golpe", fr: "Première frappe", pt: "Primeiro golpe", game: true },
+  "Double Attack": { it: "Doppio attacco", es: "Ataque doble", fr: "Double attaque", pt: "Ataque duplo", game: true },
+  Snipe: { it: "Tiro di precisione", es: "Disparo certero", fr: "Tir de précision", pt: "Tiro certeiro", game: true },
+  Move: { it: "Muovere", es: "Mover", fr: "Déplacer", pt: "Mover", game: true },
+  Stun: { it: "Stordisci", es: "Aturde", fr: "Étourdir", pt: "Atordoa", game: true },
+  Ongoing: { it: "Ongoing", es: "Ongoing", fr: "Ongoing", pt: "Ongoing" },
   // categorie di World of Origins: il verbo o il nome che usa il testo delle carte
-  "Deal Damage": { it: "Infliggi danni", es: "Inflige daño", fr: "Infligez des dégâts" },
-  Summon: { it: "Evoca", es: "Invoca", fr: "Invoquez" },
-  Discard: { it: "Scarta", es: "Descarta", fr: "Défaussez" },
-  Draw: { it: "Pesca", es: "Roba", fr: "Piochez" },
-  Add: { it: "Aggiungi", es: "Añade", fr: "Ajoutez" },
-  Destroy: { it: "Distruggi", es: "Destruye", fr: "Détruisez" },
-  Return: { it: "Riporta", es: "Devuelve", fr: "Renvoyez" },
-  Heal: { it: "Cura", es: "Cura", fr: "Soignez" },
-  Transform: { it: "Trasforma", es: "Transforma", fr: "Transformez" },
-  Shuffle: { it: "Mescola", es: "Baraja", fr: "Mélangez" },
-  Choose: { it: "Scegli", es: "Elige", fr: "Choisissez" },
-  Buff: { it: "Potenziamento", es: "Mejora", fr: "Amélioration" },
-  "Self Buff": { it: "Autopotenziamento", es: "Automejora", fr: "Auto-amélioration" },
-  Debuff: { it: "Indebolimento", es: "Penalización", fr: "Affaiblissement" },
-  Spell: { it: "Magia", es: "Hechizo", fr: "Sort" },
-  Vanilla: { it: "Senza abilità", es: "Sin habilidad", fr: "Sans capacité" },
-  Mana: { it: "Mana", es: "Maná", fr: "Mana" },
-  Food: { it: "Cibo", es: "Comida", fr: "Nourriture" },
-  Graveyard: { it: "Cimitero", es: "Cementerio", fr: "Cimetière" },
-  Location: { it: "Luogo", es: "Ubicación", fr: "Lieu" },
-  Good: { it: "Personaggi Buoni", es: "Personajes Buenos", fr: "Personnages Bons" },
-  Evil: { it: "Personaggi Malvagi", es: "Personajes Malvados", fr: "Personnages Mauvais" },
+  "Deal Damage": { it: "Infliggi danni", es: "Inflige daño", fr: "Infligez des dégâts", pt: "Causa dano" },
+  Summon: { it: "Evoca", es: "Invoca", fr: "Invoquez", pt: "Invoca" },
+  Discard: { it: "Scarta", es: "Descarta", fr: "Défaussez", pt: "Descarta" },
+  Draw: { it: "Pesca", es: "Roba", fr: "Piochez", pt: "Compra" },
+  Add: { it: "Aggiungi", es: "Añade", fr: "Ajoutez", pt: "Adiciona" },
+  Destroy: { it: "Distruggi", es: "Destruye", fr: "Détruisez", pt: "Destrói" },
+  Return: { it: "Riporta", es: "Devuelve", fr: "Renvoyez", pt: "Devolve" },
+  Heal: { it: "Cura", es: "Cura", fr: "Soignez", pt: "Cura" },
+  Transform: { it: "Trasforma", es: "Transforma", fr: "Transformez", pt: "Transforma" },
+  Shuffle: { it: "Mescola", es: "Baraja", fr: "Mélangez", pt: "Embaralha" },
+  Choose: { it: "Scegli", es: "Elige", fr: "Choisissez", pt: "Escolhe" },
+  Buff: { it: "Potenziamento", es: "Mejora", fr: "Amélioration", pt: "Fortalecimento" },
+  "Self Buff": { it: "Autopotenziamento", es: "Automejora", fr: "Auto-amélioration", pt: "Autofortalecimento" },
+  Debuff: { it: "Indebolimento", es: "Penalización", fr: "Affaiblissement", pt: "Enfraquecimento" },
+  Spell: { it: "Magia", es: "Hechizo", fr: "Sort", pt: "Feitiço" },
+  Vanilla: { it: "Senza abilità", es: "Sin habilidad", fr: "Sans capacité", pt: "Sem habilidade" },
+  Mana: { it: "Mana", es: "Maná", fr: "Mana", pt: "Mana" },
+  Food: { it: "Cibo", es: "Comida", fr: "Nourriture", pt: "Comida" },
+  Graveyard: { it: "Cimitero", es: "Cementerio", fr: "Cimetière", pt: "Cemitério" },
+  Location: { it: "Luogo", es: "Ubicación", fr: "Lieu", pt: "Local" },
+  Good: { it: "Personaggi Buoni", es: "Personajes Buenos", fr: "Personnages Bons", pt: "Personagens Bons" },
+  Evil: { it: "Personaggi Malvagi", es: "Personajes Malvados", fr: "Personnages Mauvais", pt: "Personagens Malignos" },
 };
 
 /** Etichetta di un tag nella lingua della pagina; l'inglese è il tag stesso, un tag sconosciuto resta com'è. */

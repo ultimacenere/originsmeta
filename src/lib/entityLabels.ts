@@ -199,6 +199,44 @@ export const entityLabels: Record<Locale, EntityLabels> = {
       ],
     },
   },
+  pt: {
+    about: {
+      description:
+        "Quem faz o OriginsMeta, o site de fãs independente de Origins TCG: fontes oficiais, cartas da demo verificadas uma a uma no jogo e contato.",
+      p2: "Somos jogadores, não a editora do jogo. Datas, regras e eventos vêm só de fontes oficiais; as cartas da Demo 2.0 são verificadas uma a uma no jogo; e cada página informa quando foi atualizada pela última vez.",
+      newToGame: "Não conhece o jogo? Comece por {link}.",
+      newToGameLink: "o que é Origins TCG",
+      checkTitle: "Como verificamos os dados",
+      check: [
+        "Datas, regras, eventos e mudanças de balanceamento vêm só de fontes oficiais: a página da Steam, as notas do patch na Steam, o Discord oficial e os comunicados da Koin Games. Quando um detalhe está só no Discord, o artigo diz isso.",
+        "As mudanças de balanceamento de cada novo patch são copiadas das notas oficiais do patch para as páginas das cartas, com a data e o link para a publicação.",
+        "Em {date} comparamos uma a uma todas as {count} cartas da demo com a coleção do jogo: custos, estatísticas e alinhamentos coincidiam, e os textos em inglês que tinham ficado para trás agora são os do jogo. Os textos das cartas em italiano e em espanhol também são os oficiais, lidos no jogo em {textsDate}, e os textos em português são os oficiais lidos no jogo em 20 de outubro de 2026. Repetimos a verificação depois de cada patch.",
+        "As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo, e as páginas delas dizem isso; os textos delas nas outras línguas são nossos, escritos com o glossário oficial do jogo. Os locais também ainda não foram verificados um a um no jogo: a página dos locais vai dizer quando forem, e os efeitos deles nas outras línguas são nossos, com o mesmo glossário. As sagas e as notas sobre cada lenda também são nossas.",
+      ],
+      checkErrors: "Encontrou um erro? Escreva para {email}: nós corrigimos, e a página mostra a nova data.",
+      disclaimer:
+        "OriginsMeta não é afiliado à Koin Games, nem aprovado ou patrocinado pela Koin Games. Origins TCG é uma marca do seu titular. Os nomes das cartas, as ilustrações e os dados do jogo pertencem à Koin Games; o material oficial do site (ilustrações das cartas, key art, capturas de tela) é usado como conteúdo, para informar e comentar, e nunca como identidade visual do OriginsMeta.",
+      disclaimerPermission:
+        "OriginsMeta não é afiliado à Koin Games, nem aprovado ou patrocinado pela Koin Games. Origins TCG é uma marca do seu titular. Os nomes das cartas, as ilustrações e os dados do jogo pertencem à Koin Games; o material oficial do site (ilustrações das cartas, key art, capturas de tela) é usado como conteúdo, com a permissão que a Koin Games nos deu em 19 de setembro de 2026, e nunca como identidade visual do OriginsMeta.",
+    },
+    author: {
+      communityProfile: "Perfil na comunidade",
+      allAuthors: "Toda a equipe editorial",
+    },
+    builder: {
+      appDescription:
+        "Deck builder gratuito para Origins TCG, o jogo de cartas digital da Koin Games: verifica as regras do deck ({legendary} Lendária mais {cards} cartas base, cada uma em {copies} cópias: {size} cartas), lê e escreve os códigos de deck do jogo e verifica {decks} decks juntos para o formato Conquest da Crimson Cup.",
+      features: [
+        "Verificação das regras do deck: {legendary} Lendária mais {cards} cartas base, cada uma em {copies} cópias ({size} cartas)",
+        "Importação e exportação dos códigos de deck do jogo Origins TCG",
+        "Modo Conquest: {decks} decks verificados juntos, uma Lendária diferente em cada um e pelo menos {min} cartas únicas entre cada par",
+        "Importação e exportação de listas de deck em texto",
+        "Curva de mana do deck",
+        "Link para compartilhar e salvamento automático no navegador",
+        "Salvamento privado e publicação com um guia, com uma conta gratuita",
+      ],
+    },
+  },
 };
 
 /**

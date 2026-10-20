@@ -210,13 +210,13 @@ describe("date della scheda con i mazzi", () => {
   });
 
   test("il giorno più recente fra la scheda e i suoi mazzi, mai nel futuro né prima della lingua", () => {
-    // date dopo il 07/10/2026 (nascita del francese, soglia di tutto il sito), così si vedono quelle della scheda e dei mazzi
-    assert.equal(cardPageLastmod("2026-10-08", "en", ["2026-10-09"], "2026-10-20"), "2026-10-09");
-    assert.equal(cardPageLastmod("2026-10-08", "en", ["2026-11-02"], "2026-10-20"), "2026-10-20");
-    assert.equal(cardPageLastmod("2026-10-08", "it", [], "2026-10-20"), "2026-10-08");
-    // lo spagnolo nasce il 25/09/2026 e il francese il 07/10/2026: un mazzo di prima non sposta la data della scheda
-    assert.equal(cardPageLastmod("2026-10-08", "es", ["2026-09-20"], "2026-10-20"), "2026-10-08");
-    assert.equal(cardPageLastmod("2026-09-25", "fr", ["2026-09-20"], "2026-10-20"), "2026-10-07");
+    // date dopo il 20/10/2026 (nascita del portoghese, soglia di tutto il sito), così si vedono quelle della scheda e dei mazzi
+    assert.equal(cardPageLastmod("2026-10-25", "en", ["2026-10-27"], "2026-11-30"), "2026-10-27");
+    assert.equal(cardPageLastmod("2026-10-25", "en", ["2026-12-05"], "2026-11-30"), "2026-11-30");
+    assert.equal(cardPageLastmod("2026-10-25", "it", [], "2026-11-30"), "2026-10-25");
+    // lo spagnolo nasce il 25/09/2026 e il portoghese il 20/10/2026: un mazzo di prima non sposta la data della scheda
+    assert.equal(cardPageLastmod("2026-10-25", "es", ["2026-09-20"], "2026-11-30"), "2026-10-25");
+    assert.equal(cardPageLastmod("2026-09-25", "pt", ["2026-09-20"], "2026-11-30"), "2026-10-20");
   });
 });
 

@@ -1,20 +1,20 @@
 import type { Locale } from "../i18n";
 
 type L10n = Record<Locale, string>;
-const n = (en: string, it: string, es: string, fr: string): L10n => ({ en, it, es, fr });
+const n = (en: string, it: string, es: string, fr: string, pt: string): L10n => ({ en, it, es, fr, pt });
 
 /** Archetipi (tag obbligatorio su ogni mazzo). */
 export const archetypeLabels: Record<string, L10n> = {
-  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large"),
+  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large", "Swarm / jogar largo"),
   // "Evil" si chiama "Big" dal 12/10/2026 (Pierluigi: "evil diventa big"); l'id resta `evil` per i mazzi già salvati
-  evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits"),
-  discard: n("Discard", "Scarto", "Descarte", "Défausse"),
-  midrange: n("Midrange", "Midrange", "Midrange", "Midrange"),
+  evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits", "Big / corpos grandes"),
+  discard: n("Discard", "Scarto", "Descarte", "Défausse", "Descarte"),
+  midrange: n("Midrange", "Midrange", "Midrange", "Midrange", "Midrange"),
   // Tempo dal 12/10/2026 (Pierluigi, nota "winrate 2.0" e "sì aggiungilo"): lo sceglie chi pubblica, suggestArchetype non lo propone
-  tempo: n("Tempo", "Tempo", "Tempo", "Tempo"),
-  control: n("Control", "Controllo", "Control", "Contrôle"),
-  aggro: n("Aggro", "Aggro", "Aggro", "Aggro"),
-  combo: n("Combo", "Combo", "Combo", "Combo"),
+  tempo: n("Tempo", "Tempo", "Tempo", "Tempo", "Tempo"),
+  control: n("Control", "Controllo", "Control", "Contrôle", "Controle"),
+  aggro: n("Aggro", "Aggro", "Aggro", "Aggro", "Aggro"),
+  combo: n("Combo", "Combo", "Combo", "Combo", "Combo"),
 };
 
 export type DeckSource = "playtest" | "official" | "community";

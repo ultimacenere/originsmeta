@@ -79,11 +79,18 @@ const FR_FAQ = [
   ...["le", "la", "les", "l", "un", "une", "des", "du", "de", "d", "et", "ou", "que", "qu", "qui", "quoi", "quel", "quelle", "quels", "quelles", "comment", "quand", "combien", "pourquoi", "est", "sont", "ete", "etre", "a", "ai", "as", "avez", "avons", "ont", "avoir", "peut", "peux", "peuvent", "faut", "fait", "faire", "on", "je", "tu", "il", "elle", "nous", "vous", "ils", "elles", "me", "te", "se", "moi", "lui", "leur", "leurs", "mon", "ma", "mes", "ton", "ta", "tes", "son", "sa", "ses", "notre", "nos", "votre", "vos", "ce", "cette", "ces", "cet", "ca", "cela"],
   ...["dans", "sur", "pour", "avec", "sans", "par", "en", "au", "aux", "chez", "vers", "entre", "depuis", "y", "ne", "pas", "plus", "moins", "tres", "si", "non", "oui", "jeu", "jouer", "joue", "jouent", "carte", "cartes", "deck", "decks", "tous", "toutes", "tout", "toute", "chaque", "autre", "autres", "aussi", "encore", "deja", "meme", "memes", "bien", "mieux", "meilleur", "meilleure", "meilleurs", "meilleures", "patch", "commence", "commencent", "fonctionne", "fonctionnent", "marche", "apres", "avant", "quand", "trouve", "trouver", "sert", "servent", "sais", "savoir", "veux", "voulez", "dois", "devez"],
 ];
+// portoghese del Brasile (20/10/2026): senza accenti come escono da `normalizza` ("nao" per "não", "e" anche per "é",
+// "voce" per "você", "ja" per "já"); "deck" e "decks" come nel gioco (docs/portoghese.md)
+const PT_FAQ = [
+  ...["o", "a", "os", "as", "um", "uma", "uns", "umas", "de", "do", "da", "dos", "das", "em", "no", "na", "nos", "nas", "por", "pelo", "pela", "pelos", "pelas", "para", "pra", "com", "sem", "sobre", "entre", "desde", "ate", "que", "quem", "qual", "quais", "quando", "onde", "como", "quanto", "quanta", "quantos", "quantas", "porque", "e", "ou", "mas", "se", "nao", "sim", "eu", "voce", "voces", "ele", "ela", "eles", "elas", "me", "te", "lhe", "meu", "minha", "meus", "minhas", "seu", "sua", "seus", "suas", "isso", "isto", "esse", "essa", "esses", "essas", "este", "esta", "estes", "estas", "aquele", "aquela"],
+  ...["sao", "estao", "foi", "ser", "estar", "ter", "tem", "tenho", "pode", "posso", "podem", "faz", "fazer", "jogo", "jogar", "joga", "carta", "cartas", "deck", "decks", "todas", "todos", "todo", "toda", "cada", "outra", "outro", "outras", "outros", "tambem", "ainda", "comeca", "comecam", "funciona", "funcionam", "bem", "melhor", "melhores", "mais", "menos", "muito", "depois", "antes", "existe", "existem", "preciso", "quero", "saber", "acho", "encontro", "serve", "servem"],
+];
 const STOPWORDS_FAQ: Record<Locale, Set<string>> = {
   en: new Set([...COMUNI_FAQ, ...EN_FAQ]),
   it: new Set([...COMUNI_FAQ, ...EN_FAQ, ...IT_FAQ]),
   es: new Set([...COMUNI_FAQ, ...EN_FAQ, ...ES_FAQ]),
   fr: new Set([...COMUNI_FAQ, ...EN_FAQ, ...FR_FAQ]),
+  pt: new Set([...COMUNI_FAQ, ...EN_FAQ, ...PT_FAQ]),
 };
 
 /** Parole di un testo per le risposte approvate: normalizzate e divise anche sull'apostrofo ("c'è", "un'abilità"). */

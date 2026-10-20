@@ -22,7 +22,7 @@ export type BroadcastCard = {
   power?: number;
   health?: number;
   alignment?: Alignment;
-  /** testo della carta in ognuna delle quattro lingue dell'overlay */
+  /** testo della carta in ognuna delle cinque lingue dell'overlay */
   ability?: Partial<Record<BroadcastLang, string>>;
 };
 

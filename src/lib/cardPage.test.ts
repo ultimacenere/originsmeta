@@ -59,8 +59,8 @@ type BriefCompanion = import("./cardPage").BriefCompanion;
 const { cardRelations } = synergy;
 const { cards, cardSource, getCard } = cardsModule;
 
-type Locale = "en" | "it" | "es" | "fr";
-const locales: Locale[] = ["en", "it", "es", "fr"];
+type Locale = "en" | "it" | "es" | "fr" | "pt";
+const locales: Locale[] = ["en", "it", "es", "fr", "pt"];
 
 const card = (slug: string) => {
   const c = getCard(slug);
@@ -87,6 +87,10 @@ describe("frase d'attacco: esempi", () => {
       lead("merlin", "es", decks),
       "Merlin es una unidad Legendaria de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 5 de maná, tiene 5 de Poder y 5 de Salud y es Neutral. Está en la Demo 2.0 (verificada en el juego el 22 de septiembre de 2026). Lidera 1 de los 16 mazos publicados en OriginsMeta.",
     );
+    assert.equal(
+      lead("merlin", "pt", decks),
+      "Merlin é um personagem Lendário de Origins TCG, o jogo de cartas digital da Koin Games. Custa 5 de mana, tem 5 de Poder e 5 de Vida e é Neutral. Está na Demo 2.0 (verificado no jogo em 22 de setembro de 2026). Lidera 1 dos 16 decks publicados no OriginsMeta.",
+    );
   });
 
   test("senza la lettura dei mazzi la frase non dice niente sui mazzi (mai \"nessun mazzo\" per un errore)", () => {
@@ -100,6 +104,7 @@ describe("frase d'attacco: esempi", () => {
       "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la Demo 2.0 (verificado en el juego el 22 de septiembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
     );
     assert.match(lead("spellbook", "it", decks), /^Spellbook è una magia di Origins TCG.*Costa 4 mana ed è Neutral\..*Nessuno dei 16 mazzi pubblicati su OriginsMeta la usa ancora\.$/);
+    assert.match(lead("spellbook", "pt", decks), /^Spellbook é um feitiço de Origins TCG.*Custa 4 de mana e é Neutral\. Está na Demo 2\.0 \(verificado no jogo .*Nenhum dos 16 decks publicados no OriginsMeta usa esta carta ainda\.$/);
   });
 
   test("una carta creata: non si aggiunge nel deck builder e chi la genera, con la catena dai testi", () => {
@@ -114,6 +119,10 @@ describe("frase d'attacco: esempi", () => {
     assert.equal(
       lead("garlic", "es"),
       "Garlic es una carta creada de Origins TCG, el juego de cartas digital de Koin Games: no se puede añadir a un mazo en el deck builder, durante la partida la crea Van Helsing's Tools, a su vez creada por Van Helsing. Cuesta 1 de maná y es Neutral.",
+    );
+    assert.equal(
+      lead("garlic", "pt"),
+      "Garlic é uma carta criada de Origins TCG, o jogo de cartas digital da Koin Games: não pode ser adicionada a um deck no deck builder, e durante a partida é criada por Van Helsing's Tools, por sua vez criada por Van Helsing. Custa 1 de mana e é Neutral.",
     );
     // i nomi delle carte della catena sono link alle loro schede
     const parts = cardLead(card("garlic"), facts("garlic"), "it");
@@ -132,7 +141,7 @@ describe("frase d'attacco: esempi", () => {
     for (const c of cards.filter((x) => x.type === "token"))
       for (const l of locales) {
         const text = partsText(cardLead(c, facts(c.slug), l)) + cardBrief(c, facts(c.slug), l).map((i) => partsText(i.a)).join(" ");
-        assert.doesNotMatch(text, /never goes in a deck|non si mette nel mazzo|nunca va en el mazo/, `${l} ${c.slug}`);
+        assert.doesNotMatch(text, /never goes in a deck|non si mette nel mazzo|nunca va en el mazo|nunca vai em um deck/, `${l} ${c.slug}`);
       }
   });
 
@@ -140,6 +149,7 @@ describe("frase d'attacco: esempi", () => {
     assert.match(lead("reflection", "en"), /deck builder\. No card text says which card creates it\. It costs/);
     assert.match(lead("reflection", "it"), /deck builder\. Nessun testo di carta dice quale carta la genera\. Costa/);
     assert.match(lead("reflection", "es"), /deck builder\. Ningún texto de carta dice qué carta la crea\. Cuesta/);
+    assert.match(lead("reflection", "pt"), /deck builder\. Nenhum texto de carta diz qual carta a cria\. Custa/);
     for (const l of locales) assert.doesNotMatch(lead("reflection", l), /Mulan/, l);
   });
 
@@ -161,12 +171,17 @@ describe("frase d'attacco: esempi", () => {
       lead("baker", "es"),
       "Baker no está en la Demo 2.0, así que no se puede añadir en el deck builder. Era una unidad de las builds anteriores de Origins TCG, el juego de cartas digital de Koin Games. Últimas estadísticas conocidas: costaba 3 de maná, tenía 2 de Poder y 1 de Salud y era Evil.",
     );
+    assert.equal(
+      lead("baker", "pt"),
+      "Baker não está na Demo 2.0, então não pode entrar em um deck no deck builder. Era um personagem das builds anteriores de Origins TCG, o jogo de cartas digital da Koin Games. Últimas estatísticas conhecidas: custava 3 de mana, tinha 2 de Poder e 1 de Vida e era Evil.",
+    );
   });
 
   test("il vecchio nome chiude la frase: è anche una ricerca", () => {
     assert.match(lead("boots", "en"), /In earlier builds it was called Puss in Boots\.$/);
     assert.match(lead("boots", "it"), /Nelle build precedenti si chiamava Puss in Boots\.$/);
     assert.match(lead("boots", "es"), /En builds anteriores se llamaba Puss in Boots\.$/);
+    assert.match(lead("boots", "pt"), /Em builds anteriores, se chamava Puss in Boots\.$/);
   });
 });
 
@@ -185,10 +200,10 @@ describe("frase d'attacco: tutte le carte", () => {
           // "verificata nel gioco" solo sulle carte della collezione della demo (CARDS-09)
           !playable && /checked in the game|verificat|verificad|vérifié/.test(text) && "verificata",
           playable && !/checked in the game|verificat|verificad|vérifié/.test(text) && "stato",
-          c.status === "removed" && !/is not in Demo 2\.0|non è nella Demo 2\.0|no está en la Demo 2\.0|n'est pas dans la Demo 2\.0/.test(text.slice(c.name.length, c.name.length + 36)) && "prima riga",
+          c.status === "removed" && !/is not in Demo 2\.0|non è nella Demo 2\.0|no está en la Demo 2\.0|n'est pas dans la Demo 2\.0|não está na Demo 2\.0/.test(text.slice(c.name.length, c.name.length + 36)) && "prima riga",
           c.type === "token" &&
             c.status === "active" &&
-            !/cannot be added to a deck in the deck builder|non si può mettere nel mazzo con il deck builder|no se puede añadir a un mazo en el deck builder|impossible de l'ajouter à un deck dans le deck builder/.test(text) &&
+            !/cannot be added to a deck in the deck builder|non si può mettere nel mazzo con il deck builder|no se puede añadir a un mazo en el deck builder|impossible de l'ajouter à un deck dans le deck builder|não pode ser adicionada a um deck no deck builder/.test(text) &&
             "deck builder",
         ].filter(Boolean);
         if (problems.length) bad.push(`${l} ${c.slug}: ${problems.join(", ")} — ${text}`);
@@ -205,6 +220,9 @@ describe("deckSentence", () => {
     assert.equal(deckSentence(merlin, { n: 1, total: 1 }, "en"), "It leads the only deck published on OriginsMeta.");
     assert.equal(deckSentence(spellbook, { n: 0, total: 1 }, "es"), "El único mazo publicado en OriginsMeta no lo usa.");
     assert.equal(deckSentence(spellbook, { n: 1, total: 1 }, "it"), "È nell'unico mazzo pubblicato su OriginsMeta.");
+    assert.equal(deckSentence(merlin, { n: 0, total: 0 }, "pt"), "Ainda não há decks publicados no OriginsMeta.");
+    assert.equal(deckSentence(merlin, { n: 0, total: 1 }, "pt"), "O único deck publicado no OriginsMeta é liderado por outra Lendária.");
+    assert.equal(deckSentence(spellbook, { n: 0, total: 1 }, "pt"), "O único deck publicado no OriginsMeta não usa esta carta.");
   });
   test("l'articolo italiano davanti ai numeri: dei 16, degli 11, degli 8", () => {
     assert.equal(itDei(16), "dei");
@@ -228,6 +246,8 @@ describe("In breve", () => {
     assert.equal(partsText(items[1].a), "Yes: patch 0.6.3 (August 27, 2026) changed its Power from 3 to 5.");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "it")[1].a), "Sì: la patch 0.6.3 del 27 agosto 2026 ha cambiato la Potenza da 3 a 5.");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "es")[1].a), "Sí: el parche 0.6.3 del 27 de agosto de 2026 cambió su Poder de 3 a 5.");
+    assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "pt")[1].a), "Sim: o patch 0.6.3 de 27 de agosto de 2026 mudou o Poder de 3 para 5.");
+    assert.equal(cardBrief(card("merlin"), facts("merlin"), "pt")[0].q, "Merlin está na demo de Origins TCG?");
     assert.ok(items[1].a.some((p) => typeof p !== "string" && "path" in p && p.path === "/news/patch-0-6-3"));
   });
 
@@ -245,6 +265,7 @@ describe("In breve", () => {
     assert.match(partsText(cardBrief(card("merlin"), facts("merlin", { n: 8, total: 16 }, mates), "it")[2].a), /^Le carte più presenti negli 8 mazzi che guida: Captain Ahab \(in 2 su 8\)/);
     assert.match(partsText(cardBrief(card("genie"), facts("genie", { n: 8, total: 16 }, [mate("dracula", 3)]), "it")[2].a), /^Le carte più presenti nei suoi 8 mazzi pubblicati: Dracula \(in 3 su 8\)\.$/);
     assert.match(partsText(cardBrief(card("genie"), facts("genie", { n: 3, total: 16 }, [mate("dracula", 3)]), "es")[2].a), /^Las cartas más presentes en sus 3 mazos publicados: Dracula \(en 3 de 3\)\.$/);
+    assert.match(partsText(cardBrief(card("genie"), facts("genie", { n: 3, total: 16 }, [mate("dracula", 3)]), "pt")[2].a), /^As cartas mais presentes nos seus 3 decks publicados: Dracula \(em 3 de 3\)\.$/);
     assert.equal(itNei(8), "negli");
     assert.equal(itNei(16), "nei");
   });
@@ -259,6 +280,7 @@ describe("In breve", () => {
       assert.match(partsText(cardBrief(card(slug), facts(slug), "en")[0].a), /^We cannot say for sure: no card text in Demo 2\.0 creates it, and created cards are not in the game's collection\. /, slug);
       assert.match(partsText(cardBrief(card(slug), facts(slug), "it")[0].a), /^Non si può dire con certezza: nessun testo delle carte della Demo 2\.0 la genera, /, slug);
       assert.match(partsText(cardBrief(card(slug), facts(slug), "es")[0].a), /^No se puede decir con certeza: ningún texto de las cartas de la Demo 2\.0 la crea, /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "pt")[0].a), /^Não dá para afirmar com certeza: nenhum texto das cartas da Demo 2\.0 a cria, /, slug);
       assert.equal(partsText(cardBrief(card(slug), facts(slug), "en")[2].a), "No card text says so.", slug);
     }
     for (const c of cards.filter((x) => x.type === "token"))
@@ -271,17 +293,24 @@ describe("In breve", () => {
     assert.equal(partsText(en[2].a), "Headless Horseman created Pumpkin (from the card texts).");
     assert.equal(partsText(cardBrief(card("necromancer"), facts("necromancer"), "it")[2].a), "Necromancer generava Zombie (dai testi delle carte).");
     assert.equal(partsText(cardBrief(card("pumpkin-patch"), facts("pumpkin-patch"), "es")[2].a), "Pumpkin Patch creaba Pumpkin (según los textos de las cartas).");
+    assert.equal(cardBrief(card("headless-horseman"), facts("headless-horseman"), "pt")[2].q, "Quais cartas Headless Horseman criava?");
+    assert.equal(partsText(cardBrief(card("headless-horseman"), facts("headless-horseman"), "pt")[2].a), "Headless Horseman criava Pumpkin (segundo os textos das cartas).");
   });
 
   test("le carte create dicono chi le genera, anche nelle build precedenti", () => {
     const it = cardBrief(card("pumpkin"), facts("pumpkin"), "it");
     assert.equal(it[2].q, "Quale carta genera Pumpkin?");
     assert.equal(partsText(it[2].a), "La genera Old MacDonald (dai testi delle carte). Nelle build precedenti la generavano anche Headless Horseman e Pumpkin Patch.");
+    const pt = cardBrief(card("pumpkin"), facts("pumpkin"), "pt");
+    assert.equal(pt[2].q, "Qual carta cria Pumpkin?");
+    assert.equal(partsText(pt[2].a), "É criada por Old MacDonald (segundo os textos das cartas). Em builds anteriores, também era criada por Headless Horseman e Pumpkin Patch.");
   });
 
   test("le carte che generano: la catena in avanti", () => {
     const es = cardBrief(card("van-helsing"), facts("van-helsing", { n: 2, total: 16 }), "es");
     assert.equal(partsText(es[2].a), "Van Helsing crea Van Helsing's Tools, que a su vez crea Garlic, Holy Water, Silver Bullet y Wooden Stake (según los textos de las cartas).");
+    const pt = cardBrief(card("van-helsing"), facts("van-helsing", { n: 2, total: 16 }), "pt");
+    assert.equal(partsText(pt[2].a), "Van Helsing cria Van Helsing's Tools, que por sua vez cria Garlic, Holy Water, Silver Bullet e Wooden Stake (segundo os textos das cartas).");
   });
 
   test("un cambio di allineamento e un cambio del solo testo", () => {
@@ -297,7 +326,7 @@ describe("In breve", () => {
         const items = cardBrief(c, { decks: playable ? { n: 0, total: 16 } : undefined, ...cardRelations(c, cards) }, l);
         if (items.length < 2 || items.length > 3) bad.push(`${l} ${c.slug}: ${items.length} domande`);
         for (const it of items) if (/undefined|NaN|\{|\}| {2}/.test(it.q + partsText(it.a))) bad.push(`${l} ${c.slug}: ${it.q} ${partsText(it.a)}`);
-        if (c.status === "removed" && !/^(No|No:|Non)/.test(partsText(items[0].a))) bad.push(`${l} ${c.slug}: demo`);
+        if (c.status === "removed" && !/^(No|No:|Non|Não)/.test(partsText(items[0].a))) bad.push(`${l} ${c.slug}: demo`);
       }
     assert.deepEqual(bad, []);
   });
@@ -308,7 +337,7 @@ describe("etichette e fonti", () => {
   const keys = (o: object, prefix = ""): string[] =>
     Object.entries(o).flatMap(([k, v]) => (v && typeof v === "object" ? keys(v as object, `${prefix}${k}.`) : [`${prefix}${k}`])).sort();
 
-  test("le tre lingue hanno le stesse etichette, tutte scritte, con gli stessi segnaposto", () => {
+  test("le cinque lingue hanno le stesse etichette, tutte scritte, con gli stessi segnaposto", () => {
     const en = keys(cardLabels.en);
     for (const l of locales) assert.deepEqual(keys(cardLabels[l]), en, l);
     const flat = (o: object): Record<string, string> =>
@@ -334,6 +363,8 @@ describe("etichette e fonti", () => {
     assert.equal(cardLabels.it.textEnglishWoo, "Testo inglese (non verificato nel gioco)");
     assert.equal(cardLabels.es.textEnglishWoo, "Texto en inglés (no verificado en el juego)");
     assert.equal(cardLabels.en.textWoo, "Card text (not checked in the game)");
+    assert.equal(cardLabels.pt.textOurs, "Tradução do OriginsMeta (glossário do jogo)");
+    assert.equal(cardLabels.pt.brief, "Em resumo");
   });
 
   test("\"Spesso nello stesso mazzo\": davanti a \"suoi\" l'articolo è sempre \"dei\", davanti al numero cambia", () => {
@@ -352,7 +383,7 @@ describe("etichette e fonti", () => {
     const merlin = cardLdTexts(card("merlin"), false);
     assert.deepEqual(
       merlin.map((t) => t.lang),
-      ["en", "it", "es", "fr"],
+      ["en", "it", "es", "fr", "pt"],
     );
     assert.ok(merlin.every((t) => !/\n| {2}/.test(t.text)));
     // carte create e rimosse: il solo inglese, mai la nostra traduzione
@@ -374,6 +405,7 @@ describe("etichette e fonti", () => {
     assert.equal(cardImageAlt(merlin, "en"), `Merlin, Legendary unit: official Origins TCG card, art by ${illus}, © Koin Games`);
     assert.equal(cardImageAlt(merlin, "it"), `Merlin, unità Leggendaria: carta ufficiale di Origins TCG, illustrazione di ${illus}, © Koin Games`);
     assert.equal(cardImageAlt(card("legion-of-the-dead"), "es").split(":")[0], "Legion of the Dead, hechizo Legendario");
+    assert.equal(cardImageAlt(merlin, "pt"), `Merlin, personagem Lendário: carta oficial de Origins TCG, ilustração de ${illus}, © Koin Games`);
     for (const c of cards) for (const l of locales) assert.match(cardImageAlt(c, l), /Origins TCG.*© Koin Games$/, `${l} ${c.slug}`);
   });
 
@@ -384,6 +416,7 @@ describe("etichette e fonti", () => {
       it: /non sono stati verificati nel gioco|non si può verificare nel gioco/,
       es: /no se han verificado en el juego|no se puede verificar en el juego/,
       fr: /n'ont pas été vérifiés dans le jeu|impossible à vérifier dans le jeu|pas vérifié[es]* dans le jeu/,
+      pt: /não foram verificados no jogo|não é possível verificar no jogo/,
     };
     for (const l of locales) {
       for (const slug of ["garlic", "baker"]) {

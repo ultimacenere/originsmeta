@@ -70,6 +70,19 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
     feedbackNotSaved: "Cette fois, nous n'avons pas pu l'enregistrer dans votre messagerie : si vous souhaitez une réponse, écrivez au staff depuis la messagerie.",
     openInbox: "Ouvrir la messagerie",
   },
+  pt: {
+    messages: "Mensagens",
+    envelopeOne: "Mensagens, 1 não lida",
+    envelopeMany: "Mensagens, {n} não lidas",
+    staffInbox: "Mensagens do staff",
+    unreadOne: "1 conversa não lida",
+    unreadMany: "{n} conversas não lidas",
+    writeToUser: "Escrever para este usuário",
+    feedbackNote: "Você está conectado: seu feedback ficará vinculado à sua conta e responderemos na sua caixa de mensagens no OriginsMeta.",
+    feedbackSaved: "Também salvamos na sua caixa de mensagens: você vai encontrar nossa resposta lá.",
+    feedbackNotSaved: "Desta vez não conseguimos salvar na sua caixa de mensagens: se quiser uma resposta, escreva para o staff de lá.",
+    openInbox: "Abrir a caixa de mensagens",
+  },
 };
 
 /**

@@ -68,6 +68,7 @@ const MONTHS: Record<Locale, readonly string[]> = {
   it: ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"],
   es: ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"],
   fr: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
+  pt: ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"],
 };
 
 /**
@@ -82,6 +83,7 @@ export function updateMarkers(locale: Locale, isoDate: string): string[] {
   // l'8 e l'11 vogliono l'apostrofo: "Aggiornamento dell'8 ottobre"
   if (locale === "it") return [day === 8 || day === 11 ? `Aggiornamento dell'${day} ${month}` : `Aggiornamento del ${day} ${month}`];
   if (locale === "es") return [`Actualización del ${day} de ${month}`];
+  if (locale === "pt") return [`Atualização de ${day} de ${month}`];
   if (locale === "fr") return [`Mise à jour du ${day} ${month}`, ...(day === 1 ? [`Mise à jour du 1er ${month}`] : [])];
   return [`Update, ${day} ${month}`, `Update of ${day} ${month}`];
 }

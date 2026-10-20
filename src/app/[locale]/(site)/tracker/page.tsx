@@ -37,10 +37,10 @@ const MATCHES = { width: 1200, height: 667 };
 /**
  * Lingua degli screenshot: l'app esiste in inglese, italiano e spagnolo, e gli screenshot sono quelli (fatti il
  * 02/10/2026). Il francese (07/10/2026) non ha screenshot propri e mostra quelli inglesi (l'app in francese parte in
- * inglese), senza copiare i file: le didascalie restano nella lingua della pagina.
+ * inglese), senza copiare i file: le didascalie restano nella lingua della pagina. Lo stesso il portoghese (20/10/2026).
  */
 type ShotLocale = "en" | "it" | "es";
-const SHOT_LOCALE: Record<Locale, ShotLocale> = { en: "en", it: "it", es: "es", fr: "en" };
+const SHOT_LOCALE: Record<Locale, ShotLocale> = { en: "en", it: "it", es: "es", fr: "en", pt: "en" };
 const OVERLAY: Record<ShotLocale, { width: number; height: number }> = { en: { width: 638, height: 243 }, it: { width: 688, height: 243 }, es: { width: 626, height: 243 } };
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {

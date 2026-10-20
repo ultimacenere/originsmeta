@@ -9,7 +9,7 @@ import type { Card } from "./data/cards";
  * e senza la parola "carta"; la description era un elenco di campi senza "Origins TCG" né "Koin Games", e sui nomi
  * condivisi con altri giochi (Merlin in Grand Archive e Sorcery, Riftbound Origins) lo snippet non diceva di che gioco
  * si parla. Qui c'è un modello per tipo di carta (Leggendaria, carta base, carta creata, carta non nella demo) nelle
- * quattro lingue (francese dal 07/10/2026), e la description è una frase vera fatta solo con i dati della scheda: tipo,
+ * cinque lingue (francese dal 07/10/2026, portoghese del Brasile dal 20/10/2026), e la description è una frase vera fatta solo con i dati della scheda: tipo,
  * allineamento, costo, statistiche, stato, chi crea la carta, testo e origine della leggenda.
  *
  * Funzioni pure che importano solo tipi: `node --test` le prova su tutto il database carte (cardTitles.test.ts).
@@ -94,6 +94,15 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     removed: "carte d'Origins TCG hors de la démo",
     removedLegendary: "Légendaire d'Origins TCG hors de la démo",
   },
+  // portoghese del Brasile (docs/portoghese.md): "Lendária" come la rarità del gioco, "carta criada" per i token;
+  // la carta base dice "do jogo", perché "carta de Origins TCG" è già il title spagnolo
+  pt: {
+    legendary: "carta Lendária de Origins TCG",
+    card: "carta do jogo Origins TCG",
+    created: "carta criada de Origins TCG",
+    removed: "carta de Origins TCG fora da demo",
+    removedLegendary: "Lendária de Origins TCG fora da demo",
+  },
 };
 
 /**
@@ -145,7 +154,8 @@ type DescWords = {
  * Attacco della description per tipo di carta, con "Origins TCG" e "Koin Games" sempre dentro: sulle ricerche
  * "<nome> origins tcg" lo snippet deve dire che si parla del gioco di Koin Games, non di un omonimo.
  * Termini di gioco come nel glossario (docs/testi-di-gioco.md, docs/spagnolo.md, docs/francese.md): unità/magia,
- * unidad/hechizo, unité/sort, Leggendaria/Legendaria/Légendaire, carta creata/creada, carte créée; spagnolo neutro;
+ * unidad/hechizo, unité/sort, personagem/feitiço, Leggendaria/Legendaria/Légendaire/Lendário, carta creata/creada,
+ * carte créée, carta criada; spagnolo neutro;
  * in francese lo spazio insecabile prima dei due punti, scritto `\u00a0` nelle stringhe (il carattere nudo si perde negli editor).
  */
 const descWords: Record<Locale, DescWords> = {
@@ -207,6 +217,21 @@ const descWords: Record<Locale, DescWords> = {
     tail: "Statistiques, decks publiés et origine de la légende sur OriginsMeta.",
     shortTail: "Fiche complète sur OriginsMeta.",
   },
+  pt: {
+    stats: (m, p, h) => (p === undefined ? `${m ?? "?"} de mana` : `${m ?? "?"} de mana, ${p}/${h ?? "?"}`),
+    former: (x) => ` (antes ${x})`,
+    and: " e ",
+    // Il tipo del gioco è "Personagem" (maschile, come "feitiço"): "personagem Lendário", "feitiço Lendário" (Legion of the Dead)
+    active: (h) => `${h.name}, ${h.spell ? "feitiço" : "personagem"}${h.legendary ? " Lendário" : ""} ${h.align} de Origins TCG (Koin Games): ${h.stats}.`,
+    created: (h) =>
+      h.creators
+        ? `${h.name}, carta ${h.align} criada por ${h.creators} em Origins TCG (Koin Games): ${h.stats}.`
+        : `${h.name}, carta criada ${h.align} de Origins TCG (Koin Games): ${h.stats}.`,
+    removed: (h) => `${h.name}, ${h.spell ? "feitiço" : "personagem"}${h.legendary ? " Lendário" : ""} ${h.align} de Origins TCG (Koin Games) fora da demo: ${h.stats}.`,
+    // Lunga come quella francese: regge anche una carta senza testo né origine portoghese
+    tail: "Estatísticas, decks publicados e origem da lenda no OriginsMeta.",
+    shortTail: "Ficha completa no OriginsMeta.",
+  },
 };
 
 /** Per confrontare nomi e testi senza badare all'apostrofo tipografico (il database li usa tutti e due). */
@@ -235,7 +260,7 @@ export function creatorsOf(card: TitleCard, all: readonly TitleCard[]): TitleCar
   const longer = all.map((c) => plain(c.name)).filter((n) => n.length > name.length && n.includes(name));
   const re = new RegExp(`(?<!\\p{L})${escapeRe(name)}(?:e?s)?(?!\\p{L})`, "u");
   const mentions = (c: TitleCard) =>
-    (["en", "it", "es", "fr"] as const).some((l) => {
+    (["en", "it", "es", "fr", "pt"] as const).some((l) => {
       let text = plain(c.ability?.[l] ?? "");
       for (const n of longer) text = text.split(n).join(" ");
       return re.test(text);
@@ -285,7 +310,9 @@ const stopWords = new Set(
     "con su sul sulla per e o ma se si che quando tuo tua tuoi tue suo sua suoi sue questo questa questi queste quel quella " +
     "el los las unos unas de del al en con por para y o pero si se que cuando tu tus su sus este esta estos estas ese esa " +
     "le la les un une des du de au aux à et ou mais si en dans sur sous par pour avec sans vers chez ce cet cette ces " +
-    "son sa ses votre vos leur leurs mon ma mes qui que dont où quand lorsque ne pas"
+    "son sa ses votre vos leur leurs mon ma mes qui que dont où quand lorsque ne pas " +
+    "o os as um uns uma umas do dos da das no nos na nas ao aos em com por para ou mas se quando seu seus sua suas " +
+    "meu meus minha minhas este esta estes estas esse essa à às pelo pela"
   ).split(" "),
 );
 
@@ -417,6 +444,9 @@ export const DECK_TITLE_MAX = CARD_TITLE_MAX - " · Origins TCG".length;
  * - Francese (07/10/2026): "deck" è la parola dei giocatori francesi (docs/francese.md), quindi "Spellcast, deck Merlin",
  *   "Deck Merlin", "Dorothy Combo, deck pour Origins TCG"; la parola da non ripetere è la stessa dell'inglese, e le forme
  *   restano diverse da quelle inglesi ("Spellcast Deck avec Merlin", "Merlin Deck pour Origins TCG").
+ * - Portoghese del Brasile (20/10/2026): "deck" anche qui (docs/portoghese.md, mai "baralho"), con la preposizione che
+ *   lo distingue dal francese: "Spellcast, deck de Merlin", "Deck de Merlin", "Dorothy Combo, deck de Origins TCG",
+ *   "Spellcast Deck com Merlin", "Merlin Deck para Origins TCG".
  */
 const deckTitles: Record<
   Locale,
@@ -460,6 +490,14 @@ const deckTitles: Record<
     word: /(?<!\p{L})decks?(?!\p{L})/iu,
     withWord: (l, n) => `${n} avec ${l}`,
     namedWord: (n) => `${n} pour Origins TCG`,
+  },
+  pt: {
+    with: (l, n) => `${n}, deck de ${l}`,
+    only: (l) => `Deck de ${l}`,
+    named: (n) => `${n}, deck de Origins TCG`,
+    word: /(?<!\p{L})decks?(?!\p{L})/iu,
+    withWord: (l, n) => `${n} com ${l}`,
+    namedWord: (n) => `${n} para Origins TCG`,
   },
 };
 
@@ -506,6 +544,7 @@ export function deckLead(deck: { name: string; legendary?: string; author: strin
   if (locale === "it") return `${l ? `Mazzo di ${l} per Origins TCG` : "Mazzo di Origins TCG"}: ${name} di ${deck.author}, archetipo ${arch}.`;
   if (locale === "es") return `${l ? `Mazo de ${l} para Origins TCG` : "Mazo de Origins TCG"}: ${name} de ${deck.author}, arquetipo ${arch}.`;
   if (locale === "fr") return `${l ? `Deck ${l} pour Origins TCG` : "Deck pour Origins TCG"}\u00a0: ${name} par ${deck.author}, archétype ${arch}.`;
+  if (locale === "pt") return `${l ? `Deck de ${l} para Origins TCG` : "Deck de Origins TCG"}: ${name} de ${deck.author}, arquétipo ${arch}.`;
   return `${l ? `${l} deck for Origins TCG` : "Origins TCG deck"}: ${name} by ${deck.author}, ${arch} archetype.`;
 }
 
@@ -519,4 +558,5 @@ export const deckShortTail: Record<Locale, string> = {
   it: "Lista completa su OriginsMeta.",
   es: "Lista completa en OriginsMeta.",
   fr: "Liste complète sur OriginsMeta.",
+  pt: "Lista completa no OriginsMeta.",
 };

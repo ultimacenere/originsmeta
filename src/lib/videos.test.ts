@@ -418,7 +418,7 @@ describe("etichette", () => {
   const shape = (o: unknown): unknown => (o && typeof o === "object" ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, shape(v)])) : typeof o);
 
   test("le tre lingue hanno le stesse chiavi e gli stessi segnaposto", () => {
-    for (const loc of ["it", "es"] as const) {
+    for (const loc of ["it", "es", "fr", "pt"] as const) {
       assert.deepEqual(shape(videoLabels[loc]), shape(videoLabels.en), loc);
       const walk = (a: unknown, b: unknown, path: string) => {
         if (typeof a === "string" && typeof b === "string") {
