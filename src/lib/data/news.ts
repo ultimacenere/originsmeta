@@ -133,6 +133,358 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Meta Report della Crimson Cup, EMEA #1 (21/10/2026). Pierluigi: "andrebbe fatto un articolo sulla seconda serata di
+    // qualificazioni". La seconda qualificazione è la EMEA #1 del 20/10 alle 19 CEST; le tabelle di Koin (Discord ufficiale)
+    // le ha passate Pierluigi il 21/10 e stanno in src/lib/data/crimsonCup.ts (commit 6179163): ban rate e quote calcolati da
+    // lì, confronto con la AMER #1 dello stesso file. Ladder: /analytics/crimson-cup letta il 21/10/2026 verso le 14 (3.879
+    // partite sulla patch 0.7). Stesse regole della news della AMER #1: mai il numero di iscritti né il totale dei mazzi,
+    // niente stime sulle carte che Koin non pubblica, Dracula e Legion solo con le quote (niente win rate da soli). Bagheera
+    // e Mulan: AMA del 02/10 ("Koin la vuole come carta per Mulan", cervello 70-meta-log [FONTE]). Copertina: la carta di
+    // Mulan, mai usata da una news.
+    slug: "crimson-cup-meta-report-emea-1",
+    image: "/cards/cover/mulan.webp",
+    guides: ["origins-tcg-legendaries", "origins-tcg-conquest"],
+    cards: ["van-helsing", "merlin", "three-not-so-little-pigs", "robin-hood", "king-arthur", "mulan", "bagheera", "baby-bear", "stroke-of-midnight", "jekyll"],
+    date: "2026-10-21",
+    title: n(
+      "Crimson Cup Meta Report: in EMEA #1 Van Helsing is banned more than one time in two, Bagheera comes in",
+      "Meta Report della Crimson Cup: nella EMEA #1 Van Helsing bandita più di una volta su due, entra Bagheera",
+      "Meta Report de la Crimson Cup: en el EMEA #1 Van Helsing, baneada más de una vez de cada dos; entra Bagheera",
+    ),
+    metaTitle: n(
+      "Origins TCG Crimson Cup Meta Report: EMEA #1 bans",
+      "Meta Report della Crimson Cup di Origins TCG: EMEA #1",
+      "Meta Report de la Crimson Cup de Origins TCG: EMEA #1",
+    ),
+    description: n(
+      "Crimson Cup EMEA #1 in Koin's official numbers: Van Helsing banned 51.1%, Pigs in 216 decks, Baby Bear in half the decks, Bagheera and Mulan on the rise.",
+      "La EMEA #1 della Crimson Cup nei numeri di Koin: Van Helsing bandita il 51,1%, Pigs in 216 mazzi, Baby Bear in metà dei mazzi, Bagheera e Mulan in salita.",
+      "El EMEA #1 de la Crimson Cup en los números de Koin: Van Helsing baneada el 51,1%, Pigs en 216 mazos, Baby Bear en la mitad, Bagheera y Mulan al alza.",
+    ),
+    summary: n(
+      "Koin Games has published the numbers of the second Crimson Cup qualifier, EMEA #1 of 20 October. Van Helsing gets banned more than one time in two (51.1%), Merlin is right behind, Three Not So Little Pigs is again the most brought Legendary and Baby Bear is now in half of the decks. New in the top 20 of cards: Stroke of Midnight, Bagheera and Jekyll, while Mulan is brought more than in AMER #1. All eleven Legendaries had a deck among the 32 qualified.",
+      "Koin Games ha pubblicato i numeri della seconda qualificazione della Crimson Cup, la EMEA #1 del 20 ottobre. Van Helsing viene bandita più di una volta su due (51,1%), Merlin è subito dietro, Three Not So Little Pigs è di nuovo la Leggendaria più portata e Baby Bear ora è in metà dei mazzi. Nuove fra le 20 carte più giocate: Stroke of Midnight, Bagheera e Jekyll, mentre Mulan è portata più che nella AMER #1. Tutte e undici le Leggendarie hanno avuto un mazzo fra i 32 qualificati.",
+      "Koin Games ha publicado los números del segundo clasificatorio de la Crimson Cup, el EMEA #1 del 20 de octubre. Van Helsing se banea más de una vez de cada dos (51,1%), Merlin va justo detrás, Three Not So Little Pigs vuelve a ser la Legendaria más llevada y Baby Bear ya está en la mitad de los mazos. Nuevas entre las 20 cartas más usadas: Stroke of Midnight, Bagheera y Jekyll, mientras Mulan se lleva más que en el AMER #1. Las once Legendarias tuvieron un mazo entre los 32 clasificados.",
+    ),
+    highlights: {
+      en: [
+        { label: "Van Helsing, banned more than one time in two", text: "51.1%, up from 44.4% in AMER #1; Merlin right behind at 48.6%", anchor: "bans" },
+        { label: "Pigs, the most brought again", text: "216 decks, 23.4%: the same share as in AMER #1", anchor: "brought" },
+        { label: "Robin Hood feared a bit more, King Arthur ignored", text: "Robin Hood banned 19.6%, King Arthur only 6.3%", anchor: "least-banned" },
+        { label: "All eleven in the top 32", text: "every Legendary had a deck in round 4, Wicked Stepmother too", anchor: "top-32" },
+        { label: "Baby Bear in half the decks, Bagheera comes in", text: "50.1%; Stroke of Midnight, Bagheera and Jekyll new in the top 20, Mulan brought more", anchor: "cards" },
+        { label: "Tournament vs ladder", text: "Van Helsing and Pigs brought more than they are played, Legion and Dracula less", anchor: "ladder" },
+      ],
+      it: [
+        { label: "Van Helsing, bandita più di una volta su due", text: "51,1%, era il 44,4% nella AMER #1; Merlin subito dietro con il 48,6%", anchor: "ban" },
+        { label: "Pigs, di nuovo la più portata", text: "216 mazzi, il 23,4%: la stessa quota della AMER #1", anchor: "portate" },
+        { label: "Robin Hood un po' più temuta, King Arthur ignorata", text: "Robin Hood bandita il 19,6%, King Arthur solo il 6,3%", anchor: "meno-bandite" },
+        { label: "Tutte e undici nella top 32", text: "ogni Leggendaria ha avuto un mazzo al turno 4, anche Wicked Stepmother", anchor: "top-32" },
+        { label: "Baby Bear in metà dei mazzi, entra Bagheera", text: "50,1%; Stroke of Midnight, Bagheera e Jekyll nuove nella top 20, Mulan più portata", anchor: "carte" },
+        { label: "Torneo contro ladder", text: "Van Helsing e Pigs portate più di quanto si giochino, Legion e Dracula meno", anchor: "ladder" },
+      ],
+      es: [
+        { label: "Van Helsing, baneada más de una vez de cada dos", text: "51,1%, era el 44,4% en el AMER #1; Merlin justo detrás con el 48,6%", anchor: "bans" },
+        { label: "Pigs, otra vez la más llevada", text: "216 mazos, el 23,4%: la misma cuota que en el AMER #1", anchor: "llevadas" },
+        { label: "Robin Hood, algo más temida; King Arthur, ignorada", text: "Robin Hood baneada el 19,6%, King Arthur solo el 6,3%", anchor: "menos-baneadas" },
+        { label: "Las once en el top 32", text: "todas las Legendarias tuvieron un mazo en la ronda 4, también Wicked Stepmother", anchor: "top-32" },
+        { label: "Baby Bear en la mitad de los mazos, entra Bagheera", text: "50,1%; Stroke of Midnight, Bagheera y Jekyll nuevas en el top 20, Mulan más llevada", anchor: "cartas" },
+        { label: "Torneo frente a ladder", text: "Van Helsing y Pigs se llevan más de lo que se juegan, Legion y Dracula menos", anchor: "ladder" },
+      ],
+    },
+    body: n(
+      `## The numbers of the second night {#numbers}
+
+The second Crimson Cup qualifier, EMEA #1, was played on 20 October at 7pm CEST, and the next day Koin Games published its two tables on the official Discord: the ban phase of every Legendary and the 20 most played cards in the decks submitted. They are totals, because decklists stay hidden until the top 4. Below we compare them with [AMER #1 of 19 October](/en/news/crimson-cup-meta-report-amer-1) and with the ladder; every number, qualifier by qualifier, is on [the Crimson Cup page](/en/analytics/crimson-cup).
+
+## The ban: Van Helsing more than one time in two {#bans}
+
+The ban rate is how many times a Legendary was banned out of the times an opponent found it at the ban.
+
+| Legendary | Ban rate | Banned / seen | AMER #1 | Decks | Share |
+|---|---|---|---|---|---|
+| Van Helsing | 51.1% | 139/272 | 44.4% | 182 | 19.7% |
+| Merlin | 48.6% | 54/111 | 42.2% | 90 | 9.7% |
+| Three Not So Little Pigs | 34.9% | 112/321 | 32.8% | 216 | 23.4% |
+| Robin Hood | 19.6% | 20/102 | 11.8% | 71 | 7.7% |
+| Legion of the Dead | 15.4% | 20/130 | 19.2% | 90 | 9.7% |
+| Mulan | 15.3% | 17/111 | 20.3% | 77 | 8.3% |
+| Dracula | 14.5% | 11/76 | 14.1% | 54 | 5.8% |
+| Dorothy | 10.0% | 2/20 | 23.1% | 21 | 2.3% |
+| Queen of Hearts | 8.0% | 6/75 | 21.0% | 62 | 6.7% |
+| King Arthur | 6.3% | 4/63 | 22.7% | 53 | 5.7% |
+| Wicked Stepmother | 0.0% | 0/6 | 11.1% | 8 | 0.9% |
+
+In Europe Van Helsing was banned more than one time in two, seven points more than in America. Merlin is again the second most banned while being in fewer than one deck in ten: whoever faces it at the ban takes it out almost one time in two. The three most banned Legendaries are the same three as on 19 October, in the same order.
+
+## Pigs, the most brought again {#brought}
+
+Three Not So Little Pigs is in 216 decks, 23.4% of those counted by Koin: almost one in four, the same share as in AMER #1 (23.3%). It still gets banned 34.9% of the time. Van Helsing follows (182 decks, 19.7%), then Legion of the Dead and Merlin (90 each).
+
+## Who gets banned least {#least-banned}
+
+Robin Hood is a little more feared than in America: banned 19.6%, up from 11.8%, and it remains the Legendary with the highest win rate in the ladder (61.6%). Now the least banned among those seen at least 30 times is King Arthur, 6.3%, which in the ladder wins 38.3%: players leave it on the table because they don't fear it. Queen of Hearts drops too, from 21.0% to 8.0%.
+
+## All eleven in the top 32 {#top-32}
+
+Every Legendary had at least one deck in round 4, the round of the 32 who qualify for the playoffs: in AMER #1 Wicked Stepmother had stopped at round 3, this time it got there too, with only 8 decks.
+
+## Baby Bear in half the decks, Bagheera comes in {#cards}
+
+Share of all the decks submitted that contain the card, as Koin published it.
+
+| # | Card | Share of decks | AMER #1 |
+|---|---|---|---|
+| 1 | Baby Bear | 50.1% | 1st, 47.2% |
+| 2 | Mind Palace | 33.0% | 4th |
+| 3 | Roo | 32.6% | 2nd |
+| 4 | Spellbook | 32.5% | 3rd |
+| 5 | Trash for Treasure | 31.0% | 6th |
+| 6 | Golden Egg | 29.3% | 5th |
+| 7 | Ali Baba | 28.8% | 7th |
+| 8 | Dark Omen | 28.7% | 8th |
+| 9 | Mummy | 26.6% | 9th |
+| 10 | Scarecrow | 25.6% | 13th |
+| 11 | Tin Woodman | 25.4% | 17th |
+| 12 | Obliterate | 23.8% | 19th |
+| 13 | En Passant | 23.5% | 15th |
+| 14 | Forbidden Knowledge | 23.2% | 12th |
+| 15 | Stroke of Midnight | 23.1% | new |
+| 16 | Sandman | 22.8% | 10th |
+| 17 | Bagheera | 22.7% | new |
+| 18 | Jekyll | 21.2% | new |
+| 19 | Impundulu | 21.1% | 11th |
+| 20 | Reinforcements | 21.0% | 18th |
+
+- **Baby Bear** goes past half of the decks (50.1%).
+- **Stroke of Midnight**, **Bagheera** and **Jekyll** enter the top 20; **Defense Matrix**, **Bullseye** and **Shahrazad** leave it (they are not in the table, so we don't know where they ended up).
+- **Bagheera** costs 2 since patch 0.7, and in its AMA of 2 October Koin said it wants it as a card for Mulan. In EMEA #1 Bagheera is in 22.7% of the decks and Mulan goes from 6.7% to 8.3% of the decks: our reading is that the pair the designers wanted is showing up in the tournament.
+- **Scarecrow**, **Tin Woodman** and **Obliterate** climb several places.
+
+## Tournament vs ladder {#ladder}
+
+Next to the ladder (3,879 matches recorded with OriginsMeta Tracker on patch 0.7, read on 21 October), the gaps between the share of tournament decks and the share of ladder matches:
+
+- **Van Helsing** +7.2 points (19.7% against 12.5%) and **Pigs** +6.1: brought more than they are played, the decks players trust when it counts;
+- **Legion of the Dead** −5.7 (9.7% against 15.5%) and **Dracula** −4.2: played in the ladder more than they are brought;
+- **Robin Hood** −3.5: the Legendary that wins most in the ladder is still brought less than it is played.
+
+Tournament and ladder measure different things (decks submitted, matches played): the comparison shows the gaps, it is not a win rate.
+
+## What comes next {#next}
+
+Three qualifiers are left: AMER #2 on 21 October at 9pm EST, then APAC at 7pm SGT and EMEA #2 at 7pm CEST on 22 October. The playoffs follow on 24 October, the finals on 25 October. The schedule and where to watch the matches are in [our article on the qualifiers](/en/news/crimson-cup-qualifiers-where-to-watch); the numbers of each qualifier go on the [Crimson Cup page](/en/analytics/crimson-cup) as soon as Koin publishes them.`,
+      `## I numeri della seconda serata {#numeri}
+
+La seconda qualificazione della Crimson Cup, la EMEA #1, si è giocata il 20 ottobre alle 19 CEST, e il giorno dopo Koin Games ne ha pubblicato le due tabelle sul Discord ufficiale: la fase di ban di ogni Leggendaria e le 20 carte più giocate nei mazzi consegnati. Sono totali, perché le liste restano segrete fino alla top 4. Qui sotto li confrontiamo con la [AMER #1 del 19 ottobre](/it/news/crimson-cup-meta-report-amer-1) e con il ladder; tutti i numeri, qualificazione per qualificazione, sono nella [pagina della Crimson Cup](/it/analytics/crimson-cup).
+
+## Il ban: Van Helsing più di una volta su due {#ban}
+
+Il ban rate dice quante volte una Leggendaria è stata bandita sulle volte in cui un avversario se l'è trovata davanti al ban.
+
+| Leggendaria | Ban rate | Bandita / vista | AMER #1 | Mazzi | Quota |
+|---|---|---|---|---|---|
+| Van Helsing | 51,1% | 139/272 | 44,4% | 182 | 19,7% |
+| Merlin | 48,6% | 54/111 | 42,2% | 90 | 9,7% |
+| Three Not So Little Pigs | 34,9% | 112/321 | 32,8% | 216 | 23,4% |
+| Robin Hood | 19,6% | 20/102 | 11,8% | 71 | 7,7% |
+| Legion of the Dead | 15,4% | 20/130 | 19,2% | 90 | 9,7% |
+| Mulan | 15,3% | 17/111 | 20,3% | 77 | 8,3% |
+| Dracula | 14,5% | 11/76 | 14,1% | 54 | 5,8% |
+| Dorothy | 10,0% | 2/20 | 23,1% | 21 | 2,3% |
+| Queen of Hearts | 8,0% | 6/75 | 21,0% | 62 | 6,7% |
+| King Arthur | 6,3% | 4/63 | 22,7% | 53 | 5,7% |
+| Wicked Stepmother | 0,0% | 0/6 | 11,1% | 8 | 0,9% |
+
+In Europa Van Helsing è stata bandita più di una volta su due, sette punti più che in America. Merlin è di nuovo la seconda più bandita pur stando in meno di un mazzo su dieci: chi se la trova davanti al ban la toglie quasi una volta su due. Le tre Leggendarie più bandite sono le stesse tre del 19 ottobre, nello stesso ordine.
+
+## Pigs, di nuovo la più portata {#portate}
+
+Three Not So Little Pigs è in 216 mazzi, il 23,4% di quelli contati da Koin: quasi uno su quattro, la stessa quota della AMER #1 (23,3%). Viene comunque bandita il 34,9% delle volte. Segue Van Helsing (182 mazzi, 19,7%), poi Legion of the Dead e Merlin (90 ciascuna).
+
+## Chi viene bandita meno {#meno-bandite}
+
+Robin Hood è un po' più temuta che in America: bandita il 19,6%, era l'11,8%, e resta la Leggendaria con il win rate più alto in ladder (61,6%). Ora la meno bandita fra quelle viste almeno 30 volte è King Arthur, il 6,3%, che in ladder vince il 38,3%: i giocatori la lasciano sul tavolo perché non la temono. Scende anche Queen of Hearts, dal 21,0% all'8,0%.
+
+## Tutte e undici nella top 32 {#top-32}
+
+Ogni Leggendaria ha avuto almeno un mazzo al turno 4, quello dei 32 che passano ai playoff: nella AMER #1 Wicked Stepmother si era fermata al turno 3, questa volta ci è arrivata anche lei, con appena 8 mazzi.
+
+## Baby Bear in metà dei mazzi, entra Bagheera {#carte}
+
+Quota di tutti i mazzi consegnati che contengono la carta, come l'ha pubblicata Koin.
+
+| # | Carta | Quota dei mazzi | AMER #1 |
+|---|---|---|---|
+| 1 | Baby Bear | 50,1% | 1ª, 47,2% |
+| 2 | Mind Palace | 33,0% | 4ª |
+| 3 | Roo | 32,6% | 2ª |
+| 4 | Spellbook | 32,5% | 3ª |
+| 5 | Trash for Treasure | 31,0% | 6ª |
+| 6 | Golden Egg | 29,3% | 5ª |
+| 7 | Ali Baba | 28,8% | 7ª |
+| 8 | Dark Omen | 28,7% | 8ª |
+| 9 | Mummy | 26,6% | 9ª |
+| 10 | Scarecrow | 25,6% | 13ª |
+| 11 | Tin Woodman | 25,4% | 17ª |
+| 12 | Obliterate | 23,8% | 19ª |
+| 13 | En Passant | 23,5% | 15ª |
+| 14 | Forbidden Knowledge | 23,2% | 12ª |
+| 15 | Stroke of Midnight | 23,1% | nuova |
+| 16 | Sandman | 22,8% | 10ª |
+| 17 | Bagheera | 22,7% | nuova |
+| 18 | Jekyll | 21,2% | nuova |
+| 19 | Impundulu | 21,1% | 11ª |
+| 20 | Reinforcements | 21,0% | 18ª |
+
+- **Baby Bear** supera la metà dei mazzi (50,1%).
+- **Stroke of Midnight**, **Bagheera** e **Jekyll** entrano nella top 20; ne escono **Defense Matrix**, **Bullseye** e **Shahrazad** (non sono nella tabella, quindi non sappiamo dove sono finite).
+- **Bagheera** costa 2 dalla patch 0.7, e nell'AMA del 2 ottobre Koin ha detto che la vuole come carta per Mulan. Nella EMEA #1 Bagheera è nel 22,7% dei mazzi e Mulan passa dal 6,7% all'8,3% dei mazzi: la nostra lettura è che la coppia voluta dai designer si sta vedendo nel torneo.
+- **Scarecrow**, **Tin Woodman** e **Obliterate** salgono di parecchie posizioni.
+
+## Torneo contro ladder {#ladder}
+
+Accanto al ladder (3.879 partite registrate con OriginsMeta Tracker sulla patch 0.7, lette il 21 ottobre), le differenze fra la quota dei mazzi del torneo e la quota delle partite in ladder:
+
+- **Van Helsing** +7,2 punti (19,7% contro 12,5%) e **Pigs** +6,1: portate più di quanto si giochino, i mazzi di cui i giocatori si fidano quando conta;
+- **Legion of the Dead** −5,7 (9,7% contro 15,5%) e **Dracula** −4,2: giocate in ladder più di quanto siano portate;
+- **Robin Hood** −3,5: la Leggendaria che vince di più in ladder è ancora portata meno di quanto si giochi.
+
+Torneo e ladder misurano cose diverse (mazzi consegnati, partite giocate): il confronto mostra le differenze, non è un win rate.
+
+## Che cosa viene adesso {#prossime}
+
+Restano tre qualificazioni: la AMER #2 il 21 ottobre alle 21 EST, poi la APAC alle 19 SGT e la EMEA #2 alle 19 CEST il 22 ottobre. Seguono i playoff il 24 ottobre e le finali il 25. Calendario e dove guardare le partite sono nel [nostro articolo sulle qualificazioni](/it/news/crimson-cup-qualifiers-where-to-watch); i numeri di ogni qualificazione arrivano nella [pagina della Crimson Cup](/it/analytics/crimson-cup) appena Koin li pubblica.`,
+      `## Los números de la segunda noche {#numeros}
+
+El segundo clasificatorio de la Crimson Cup, el EMEA #1, se jugó el 20 de octubre a las 19:00 CEST, y al día siguiente Koin Games publicó sus dos tablas en el Discord oficial: la fase de ban de cada Legendaria y las 20 cartas más usadas en los mazos entregados. Son totales, porque las listas siguen ocultas hasta el top 4. Abajo las comparamos con el [AMER #1 del 19 de octubre](/es/news/crimson-cup-meta-report-amer-1) y con el ladder; todos los números, clasificatorio a clasificatorio, están en la [página de la Crimson Cup](/es/analytics/crimson-cup).
+
+## El ban: Van Helsing, más de una vez de cada dos {#bans}
+
+El ban rate es cuántas veces se baneó una Legendaria sobre las veces que un rival se la encontró en el ban.
+
+| Legendaria | Ban rate | Baneada / vista | AMER #1 | Mazos | Cuota |
+|---|---|---|---|---|---|
+| Van Helsing | 51,1% | 139/272 | 44,4% | 182 | 19,7% |
+| Merlin | 48,6% | 54/111 | 42,2% | 90 | 9,7% |
+| Three Not So Little Pigs | 34,9% | 112/321 | 32,8% | 216 | 23,4% |
+| Robin Hood | 19,6% | 20/102 | 11,8% | 71 | 7,7% |
+| Legion of the Dead | 15,4% | 20/130 | 19,2% | 90 | 9,7% |
+| Mulan | 15,3% | 17/111 | 20,3% | 77 | 8,3% |
+| Dracula | 14,5% | 11/76 | 14,1% | 54 | 5,8% |
+| Dorothy | 10,0% | 2/20 | 23,1% | 21 | 2,3% |
+| Queen of Hearts | 8,0% | 6/75 | 21,0% | 62 | 6,7% |
+| King Arthur | 6,3% | 4/63 | 22,7% | 53 | 5,7% |
+| Wicked Stepmother | 0,0% | 0/6 | 11,1% | 8 | 0,9% |
+
+En Europa Van Helsing se baneó más de una vez de cada dos, siete puntos más que en América. Merlin vuelve a ser la segunda más baneada aun estando en menos de un mazo de cada diez: quien se la encuentra en el ban la quita casi una vez de cada dos. Las tres Legendarias más baneadas son las mismas tres del 19 de octubre, en el mismo orden.
+
+## Pigs, otra vez la más llevada {#llevadas}
+
+Three Not So Little Pigs está en 216 mazos, el 23,4% de los contados por Koin: casi uno de cada cuatro, la misma cuota que en el AMER #1 (23,3%). Aun así se banea el 34,9% de las veces. La sigue Van Helsing (182 mazos, 19,7%), luego Legion of the Dead y Merlin (90 cada una).
+
+## Quién se banea menos {#menos-baneadas}
+
+Robin Hood se teme algo más que en América: baneada el 19,6%, antes el 11,8%, y sigue siendo la Legendaria con el win rate más alto en ladder (61,6%). Ahora la menos baneada entre las vistas al menos 30 veces es King Arthur, el 6,3%, que en ladder gana el 38,3%: los jugadores la dejan en la mesa porque no la temen. También baja Queen of Hearts, del 21,0% al 8,0%.
+
+## Las once en el top 32 {#top-32}
+
+Todas las Legendarias tuvieron al menos un mazo en la ronda 4, la de los 32 que pasan a los playoffs: en el AMER #1 Wicked Stepmother se había quedado en la ronda 3, esta vez llegó también, con solo 8 mazos.
+
+## Baby Bear en la mitad de los mazos, entra Bagheera {#cartas}
+
+Cuota de todos los mazos entregados que contienen la carta, tal como la publicó Koin.
+
+| # | Carta | Cuota de mazos | AMER #1 |
+|---|---|---|---|
+| 1 | Baby Bear | 50,1% | 1.ª, 47,2% |
+| 2 | Mind Palace | 33,0% | 4.ª |
+| 3 | Roo | 32,6% | 2.ª |
+| 4 | Spellbook | 32,5% | 3.ª |
+| 5 | Trash for Treasure | 31,0% | 6.ª |
+| 6 | Golden Egg | 29,3% | 5.ª |
+| 7 | Ali Baba | 28,8% | 7.ª |
+| 8 | Dark Omen | 28,7% | 8.ª |
+| 9 | Mummy | 26,6% | 9.ª |
+| 10 | Scarecrow | 25,6% | 13.ª |
+| 11 | Tin Woodman | 25,4% | 17.ª |
+| 12 | Obliterate | 23,8% | 19.ª |
+| 13 | En Passant | 23,5% | 15.ª |
+| 14 | Forbidden Knowledge | 23,2% | 12.ª |
+| 15 | Stroke of Midnight | 23,1% | nueva |
+| 16 | Sandman | 22,8% | 10.ª |
+| 17 | Bagheera | 22,7% | nueva |
+| 18 | Jekyll | 21,2% | nueva |
+| 19 | Impundulu | 21,1% | 11.ª |
+| 20 | Reinforcements | 21,0% | 18.ª |
+
+- **Baby Bear** pasa de la mitad de los mazos (50,1%).
+- **Stroke of Midnight**, **Bagheera** y **Jekyll** entran en el top 20; salen **Defense Matrix**, **Bullseye** y **Shahrazad** (no están en la tabla, así que no sabemos dónde quedaron).
+- **Bagheera** cuesta 2 desde el parche 0.7, y en su AMA del 2 de octubre Koin dijo que la quiere como carta para Mulan. En el EMEA #1 Bagheera está en el 22,7% de los mazos y Mulan pasa del 6,7% al 8,3% de los mazos: nuestra lectura es que la pareja que querían los diseñadores se está viendo en el torneo.
+- **Scarecrow**, **Tin Woodman** y **Obliterate** suben varios puestos.
+
+## Torneo frente a ladder {#ladder}
+
+Junto al ladder (3.879 partidas registradas con OriginsMeta Tracker en el parche 0.7, leídas el 21 de octubre), las diferencias entre la cuota de mazos del torneo y la cuota de partidas en ladder:
+
+- **Van Helsing** +7,2 puntos (19,7% frente a 12,5%) y **Pigs** +6,1: se llevan más de lo que se juegan, los mazos en los que los jugadores confían cuando cuenta;
+- **Legion of the Dead** −5,7 (9,7% frente a 15,5%) y **Dracula** −4,2: se juegan en ladder más de lo que se llevan;
+- **Robin Hood** −3,5: la Legendaria que más gana en ladder sigue llevándose menos de lo que se juega.
+
+Torneo y ladder miden cosas distintas (mazos entregados, partidas jugadas): la comparación muestra las diferencias, no es un win rate.
+
+## Lo que viene {#lo-que-viene}
+
+Quedan tres clasificatorios: el AMER #2 el 21 de octubre a las 21:00 EST, luego el APAC a las 19:00 SGT y el EMEA #2 a las 19:00 CEST el 22 de octubre. Siguen los playoffs el 24 de octubre y las finales el 25. El calendario y dónde ver las partidas están en [nuestro artículo sobre los clasificatorios](/es/news/crimson-cup-qualifiers-where-to-watch); los números de cada clasificatorio llegan a la [página de la Crimson Cup](/es/analytics/crimson-cup) en cuanto Koin los publica.`,
+    ),
+    faq: {
+      en: [
+        {
+          q: "Which Legendary was banned most in Crimson Cup EMEA #1?",
+          a: "Van Helsing: banned 139 times out of the 272 times an opponent found it at the ban, 51.1%, up from 44.4% in AMER #1. Merlin followed at 48.6% and Three Not So Little Pigs at 34.9%, according to the tables Koin Games published on its official Discord.",
+        },
+        {
+          q: "What was the most played card in Crimson Cup EMEA #1?",
+          a: "Baby Bear, in 50.1% of the decks submitted for the qualifier, followed by Mind Palace (33.0%), Roo (32.6%) and Spellbook (32.5%). Stroke of Midnight, Bagheera and Jekyll entered the top 20 for the first time.",
+        },
+        {
+          q: "When are the next Crimson Cup qualifiers?",
+          a: "AMER #2 on 21 October 2026 at 9pm EST, then APAC at 7pm SGT and EMEA #2 at 7pm CEST on 22 October. The playoffs are on 24 October and the finals on 25 October.",
+        },
+      ],
+      it: [
+        {
+          q: "Qual è stata la Leggendaria più bandita nella EMEA #1 della Crimson Cup?",
+          a: "Van Helsing: bandita 139 volte sulle 272 in cui un avversario se l'è trovata davanti al ban, il 51,1%, contro il 44,4% della AMER #1. Seguono Merlin con il 48,6% e Three Not So Little Pigs con il 34,9%, secondo le tabelle che Koin Games ha pubblicato sul suo Discord ufficiale.",
+        },
+        {
+          q: "Qual è stata la carta più giocata nella EMEA #1 della Crimson Cup?",
+          a: "Baby Bear, nel 50,1% dei mazzi consegnati per la qualificazione, seguita da Mind Palace (33,0%), Roo (32,6%) e Spellbook (32,5%). Stroke of Midnight, Bagheera e Jekyll sono entrate per la prima volta fra le 20 più giocate.",
+        },
+        {
+          q: "Quando sono le prossime qualificazioni della Crimson Cup?",
+          a: "La AMER #2 il 21 ottobre 2026 alle 21 EST, poi la APAC alle 19 SGT e la EMEA #2 alle 19 CEST il 22 ottobre. I playoff sono il 24 ottobre e le finali il 25 ottobre.",
+        },
+      ],
+      es: [
+        {
+          q: "¿Qué Legendaria se baneó más en el EMEA #1 de la Crimson Cup?",
+          a: "Van Helsing: baneada 139 veces de las 272 en que un rival se la encontró en el ban, el 51,1%, frente al 44,4% del AMER #1. La siguen Merlin con el 48,6% y Three Not So Little Pigs con el 34,9%, según las tablas que Koin Games publicó en su Discord oficial.",
+        },
+        {
+          q: "¿Cuál fue la carta más usada en el EMEA #1 de la Crimson Cup?",
+          a: "Baby Bear, en el 50,1% de los mazos entregados para el clasificatorio, seguida de Mind Palace (33,0%), Roo (32,6%) y Spellbook (32,5%). Stroke of Midnight, Bagheera y Jekyll entraron por primera vez entre las 20 más usadas.",
+        },
+        {
+          q: "¿Cuándo son los próximos clasificatorios de la Crimson Cup?",
+          a: "El AMER #2 el 21 de octubre de 2026 a las 21:00 EST, luego el APAC a las 19:00 SGT y el EMEA #2 a las 19:00 CEST el 22 de octubre. Los playoffs son el 24 de octubre y las finales el 25 de octubre.",
+        },
+      ],
+    },
+    url: "https://discord.gg/originstcg",
+    source: "press",
+  },
+  {
     // Meta Report della Crimson Cup, AMER #1 (20/10/2026). Pierluigi: "meta report della crimson cup", con le due tabelle
     // che Koin Games ha pubblicato sul Discord ufficiale dopo la prima qualificazione ("arriva da discord", "solo AMER #1"):
     // ban rate, bandite/viste, mazzi consegnati, Played e turno più avanzato delle Leggendarie; le 20 carte più giocate
