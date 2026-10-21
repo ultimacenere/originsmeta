@@ -36,7 +36,7 @@
  *     deck_complete       il mazzo del builder arriva a 25 carte, una volta per    placement
  *                         casella e per scheda (di nuovo solo dopo "Svuota mazzo")
  *   ★ game_code_copy      copia RIUSCITA del codice del gioco (KGBLDC…)           placement (builder | tournament_builder |
- *                                                                                 deck_page | decks_list)
+ *                                                                                 deck_page | deck_header | decks_list)
  *     deck_share          link, lista in testo o "Condividi con…" dal builder      method (link | text | native), placement
  *     deck_open_builder   "Apri nel deck builder" dalla scheda di un mazzo (attributi) placement
  *     deck_original_open  dalla guida tradotta di un mazzo all'originale (attributi) guide_lang

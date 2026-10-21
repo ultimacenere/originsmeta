@@ -107,6 +107,7 @@ describe("eventi e link della scheda", () => {
   const origin = "https://originsmeta.com";
   test("la copia del codice del gioco dalla scheda è un contatore, le altre no", () => {
     assert.equal(statKindForEvent("game_code_copy", { placement: "deck_page" }), "code");
+    assert.equal(statKindForEvent("game_code_copy", { placement: "deck_header" }), "code");
     assert.equal(statKindForEvent("game_code_copy", { placement: "builder" }), null);
     assert.equal(statKindForEvent("deck_open_builder", { placement: "deck_page" }), null);
   });

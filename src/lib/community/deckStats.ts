@@ -85,7 +85,8 @@ export function addSeen(list: readonly string[], key: string, max: number = SEEN
  */
 export function statKindForEvent(name: string, params: Record<string, unknown>): DeckStatKind | null {
   // anche la scheda di un mazzo torneo (04/10/2026, placement deck_set_page): la ascolta il suo DeckStatsBeacon
-  if (name === "game_code_copy" && (params.placement === "deck_page" || params.placement === "deck_set_page")) return "code";
+  // e il tasto grande sotto l'autore (21/10/2026, placement deck_header): conta come quello in fondo
+  if (name === "game_code_copy" && (params.placement === "deck_page" || params.placement === "deck_header" || params.placement === "deck_set_page")) return "code";
   if (name === "video_play" && (params.placement === "deck_page" || params.placement === "deck_set_page")) return "video";
   return null;
 }

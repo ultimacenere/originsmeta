@@ -305,6 +305,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {/* "Segui" accanto al nome (pacchetto SEGUI, 27/09/2026): solo i ruoli con vetrina, caricato nel browser */}
               <FollowButton profileId={deck.owner} name={author} badge={deck.profile?.badge} locale={locale} placement="deck_page" compact />
             </p>
+            {/* Il codice del gioco in vista, grande, subito sotto l'autore (Pierluigi, 21/10/2026): è il gesto più
+                frequente della scheda. Il tasto in fondo accanto al builder resta; questo si misura con placement
+                deck_header e conta lo stesso nelle copie del mazzo (statKindForEvent). */}
+            {gameCode.code ? (
+              <CopyButton
+                text={gameCode.code}
+                label={c.copyGameCode}
+                copied={c.copied}
+                className="btn btn-primary mt-4 px-7 py-3 !text-base"
+                event={{ name: "game_code_copy", params: { placement: "deck_header" } }}
+              />
+            ) : null}
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
