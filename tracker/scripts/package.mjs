@@ -11,8 +11,14 @@
 // caricato nella stessa release, accanto all'altro (almeno nella 0.4.0, che deve restare fra le ultime 20 release del
 // repo: le app 0.3.x scelgono la più nuova che lo porta).
 //
-// Non firmata (Fase 5: certificato o Microsoft Store): Windows mostra "Windows ha protetto il PC" e si apre con
-// "Ulteriori informazioni" → "Esegui comunque". Dentro il pacchetto solo dist/ e package.json (asar): niente sorgenti.
+// Firma (21/10/2026, Pierluigi: certificato Certum da privato, chiave nel cloud SimplySign): dopo il packager l'exe si
+// firma con signtool, prima di fare gli zip (la copia "OriginsMeta Analytics.exe" è lo stesso file, quindi firmata
+// anch'essa). Serve SimplySign Desktop collegato: il certificato compare nell'archivio di Windows come una chiavetta.
+// Il certificato si sceglie con SIGN_SUBJECT (nome intestatario, di base "Pierluigi Cella") o SIGN_THUMBPRINT
+// (impronta SHA1, più sicura se ce ne sono due); signtool da SIGNTOOL o dal Windows SDK più recente. Senza firma il
+// pacchetto si ferma: per uno zip non firmato di prova `npm run package -- --unsigned`. Anche firmata, SmartScreen
+// mostra l'avviso finché il file non si fa una reputazione (qualche settimana di download).
+// Dentro il pacchetto solo dist/ e package.json (asar): niente sorgenti.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -29,7 +35,43 @@ const stableZip = path.join(out, "OriginsMeta-Tracker-win-x64.zip");
 const legacyZip = path.join(out, "OriginsMeta-Analytics-win-x64.zip");
 const legacyExe = "OriginsMeta Analytics.exe";
 const run = (cmd, args) => execFileSync(cmd, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
+const unsigned = process.argv.includes("--unsigned");
+const timestampUrl = "http://time.certum.pl";
 
+// signtool.exe: SIGNTOOL, altrimenti il Windows SDK più recente (Windows Kits\10\bin\<versione>\x64)
+function findSigntool() {
+  if (process.env.SIGNTOOL) return process.env.SIGNTOOL;
+  const kits = path.join(process.env["ProgramFiles(x86)"] ?? "C:\\Program Files (x86)", "Windows Kits", "10", "bin");
+  const versions = fs.existsSync(kits) ? fs.readdirSync(kits).filter((v) => /^10\./.test(v)) : [];
+  versions.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).reverse();
+  for (const v of versions) {
+    const exe = path.join(kits, v, "x64", "signtool.exe");
+    if (fs.existsSync(exe)) return exe;
+  }
+  throw new Error(
+    'signtool.exe non trovato: installa "Windows SDK Signing Tools" (Windows SDK) o indica il percorso in SIGNTOOL.\n' +
+      "Per uno zip non firmato di prova: npm run package -- --unsigned",
+  );
+}
+
+function sign(file) {
+  const signtool = findSigntool();
+  const cert = process.env.SIGN_THUMBPRINT
+    ? ["/sha1", process.env.SIGN_THUMBPRINT.replace(/\s/g, "")]
+    : ["/n", process.env.SIGN_SUBJECT ?? "Pierluigi Cella"];
+  try {
+    execFileSync(signtool, ["sign", ...cert, "/fd", "sha256", "/tr", timestampUrl, "/td", "sha256", "/d", name, file], { stdio: "inherit" });
+    execFileSync(signtool, ["verify", "/pa", file], { stdio: "inherit" });
+  } catch {
+    throw new Error(
+      `Firma di ${path.basename(file)} non riuscita: SimplySign Desktop è collegato (codice dall'app sul telefono)? ` +
+        "Il nome in SIGN_SUBJECT o l'impronta in SIGN_THUMBPRINT corrispondono al certificato?",
+    );
+  }
+}
+
+// via gli zip di prima: se la firma fallisce non deve restare in out/ uno zip vecchio (magari non firmato) da caricare
+for (const f of [zip, stableZip, legacyZip]) fs.rmSync(f, { force: true });
 run("node", ["build.mjs"]);
 run("npx", [
   "--yes",
@@ -51,11 +93,13 @@ run("npx", [
   '--ignore="^/(src|scripts|assets|out|tsconfig\\.json|build\\.mjs|README\\.md|\\.gitignore)($|/)"',
 ]);
 
-const readme = `${name} ${version} (versione di prova, non firmata)
+if (!unsigned) sign(path.join(folder, `${name}.exe`));
+
+const readme = `${name} ${version}${unsigned ? " (versione di prova, non firmata)" : ""}
 
 1. Scompatta lo zip in una cartella, per esempio Documenti\\${name}.
 2. Apri "${name}.exe". Windows può dire "Windows ha protetto il PC": premi "Ulteriori informazioni"
-   e poi "Esegui comunque" (l'app non è ancora firmata).
+   e poi "Esegui comunque"${unsigned ? " (l'app non è ancora firmata)" : " (l'app è firmata: l'avviso sparisce man mano che Windows la conosce)"}.
 3. L'app si apre e mette un'icona accanto all'orologio: mentre giochi a Origins TCG registra da sola le partite,
    15 secondi dopo la fine. Per chiuderla: il tasto "Chiudi l'app" in alto, la X della finestra o "Esci" dal menu
    dell'icona (si chiudono anche overlay e pannelli). Dalla 0.3.2 l'app si aggiorna da sola quando esce una versione
@@ -100,4 +144,5 @@ try {
 } finally {
   fs.rmSync(legacyCopy, { force: true });
 }
+console.log(unsigned ? "\nATTENZIONE: pacchetto NON firmato (--unsigned), non da pubblicare" : "\nexe firmato e verificato");
 console.log(`\n${zip} (${Math.round(fs.statSync(zip).size / 1024 / 1024)} MB)\n${stableZip} (per GitHub Releases)\n${legacyZip} (per GitHub Releases, stessa release: aggiornamento delle app 0.3.x)`);
