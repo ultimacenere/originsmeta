@@ -64,6 +64,26 @@ describe("Crimson Cup: dati trascritti", () => {
     for (const row of stats.legendaries) assert.equal(Math.round(banRate(row) * 1000) / 10, published[row.legendary], row.legendary);
   });
 
+  test("i ban rate calcolati sono quelli pubblicati da Koin (EMEA #1)", () => {
+    const published: Record<string, number> = {
+      "van-helsing": 51.1,
+      merlin: 48.6,
+      "three-not-so-little-pigs": 34.9,
+      "robin-hood": 19.6,
+      "legion-of-the-dead": 15.4,
+      mulan: 15.3,
+      dracula: 14.5,
+      dorothy: 10,
+      "queen-of-hearts": 8,
+      "king-arthur": 6.3,
+      "wicked-stepmother": 0, // "—" nella tabella: 0 su 6
+    };
+    const emea = crimsonQualifiers.find((q) => q.id === "emea-1")!.stats!;
+    assert.equal(emea.legendaries.length, Object.keys(published).length);
+    for (const row of emea.legendaries) assert.equal(Math.round(banRate(row) * 1000) / 10, published[row.legendary], row.legendary);
+    assert.equal(submittedTotal(emea), 924);
+  });
+
   test("ogni carta esiste nel database, attiva, e le Leggendarie sono Leggendarie", () => {
     for (const q of withStats(crimsonQualifiers)) {
       for (const r of q.stats.legendaries) {
@@ -132,19 +152,20 @@ describe("Crimson Cup: numeri derivati", () => {
     const [vh] = cardCrimsonFacts("van-helsing", crimsonQualifiers);
     assert.equal(vh.kind, "legendary");
     if (vh.kind === "legendary") {
-      assert.equal(vh.qualifier, "AMER #1");
+      assert.equal(vh.qualifier, "EMEA #1");
       assert.equal(vh.banRank, 1);
       assert.equal(vh.submittedRank, 2);
       assert.equal(vh.count, 11);
       assert.equal(vh.deepest, 4);
     }
     const [bear] = cardCrimsonFacts("baby-bear", crimsonQualifiers);
-    assert.deepEqual(bear, { kind: "card", qualifier: "AMER #1", decks: 341, share: 0.472, rank: 1, count: 20 });
+    assert.deepEqual(bear, { kind: "card", qualifier: "EMEA #1", decks: 463, share: 0.501, rank: 1, count: 20 });
+    assert.equal(cardCrimsonFacts("baby-bear", crimsonQualifiers)[1]?.qualifier, "AMER #1");
     assert.deepEqual(cardCrimsonFacts("cinderella", crimsonQualifiers), []);
-    assert.equal(crimsonCardSlugs(crimsonQualifiers).size, 31);
-    assert.equal(crimsonCardDay("obliterate", crimsonQualifiers), "2026-10-20");
+    assert.equal(crimsonCardSlugs(crimsonQualifiers).size, 34);
+    assert.equal(crimsonCardDay("obliterate", crimsonQualifiers), "2026-10-21");
     assert.equal(crimsonCardDay("cinderella", crimsonQualifiers), undefined);
-    assert.equal(latestWithStats(crimsonQualifiers)?.id, "amer-1");
+    assert.equal(latestWithStats(crimsonQualifiers)?.id, "emea-1");
   });
 
   test("torneo contro ladder: differenze, righe senza ladder in fondo, differenze più grandi", () => {
