@@ -7143,3 +7143,77 @@ begin
 end $$;
 revoke all on function public.deck_comment_report(bigint, text) from public, anon;
 grant execute on function public.deck_comment_report(bigint, text) to authenticated;
+
+-- =====================================================================================================
+-- ===== 22/10/2026: NUMERI DELLA DASHBOARD =====
+-- =====================================================================================================
+-- I numeri della dashboard privata di Pierluigi (22/10/2026: "vorrei crearne una con i numeri che mi interessano di
+-- originsmeta": visite giornaliere, iscrizioni, download del tracker, deck creati; scelte: aggiornamento ogni mattina,
+-- mazzi pubblicati e privati). Una funzione sola, kpi_daily, che restituisce SOLO conteggi per giorno (giorni di Roma,
+-- dal p_from a oggi, al massimo 400 giorni), mai righe, nomi o id: iscrizioni (profili creati), clic sul tasto di
+-- download del tracker con l'accesso fatto (cioè download veri: senza accesso si va alla pagina di accesso) e senza,
+-- account al loro primo download, mazzi creati (anche privati e nascosti) e quanti di quelli sono pubblicati oggi, mazzi
+-- torneo creati. La legge solo chi ha il segreto del cron (notify_key_ok, CRON_SECRET), cioè la rotta /api/staff/kpi:
+-- il numero di persone iscritte non si mostra mai sul sito. Le visite non stanno nel database (Vercel Web Analytics).
+-- Idempotente; nessuna tabella nuova, nessun permesso sulle tabelle.
+-- =====================================================================================================
+
+create or replace function public.kpi_daily(p_key text, p_from date default date '2026-09-15')
+returns table (
+  day date,
+  signups integer,
+  tracker_downloads integer,
+  tracker_new_accounts integer,
+  tracker_clicks_no_login integer,
+  decks_created integer,
+  decks_published integer,
+  deck_sets_created integer
+)
+language plpgsql stable security definer set search_path = public, pg_temp as $$
+#variable_conflict use_column
+declare
+  today date := (now() at time zone 'Europe/Rome')::date;
+  first_day date := greatest(coalesce(p_from, date '2026-09-15'), (now() at time zone 'Europe/Rome')::date - 399);
+  since timestamptz := (greatest(coalesce(p_from, date '2026-09-15'), (now() at time zone 'Europe/Rome')::date - 399))::timestamp at time zone 'Europe/Rome';
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden' using errcode = '42501'; end if;
+  return query
+  with days as (
+    select g::date as day from generate_series(first_day, today, interval '1 day') as g
+  ),
+  s as (
+    select (p.created_at at time zone 'Europe/Rome')::date as day, count(*)::int as n
+      from public.profiles p where p.created_at >= since group by 1
+  ),
+  t as (
+    select (x.created_at at time zone 'Europe/Rome')::date as day,
+           count(*) filter (where x.owner is not null)::int as dl,
+           count(*) filter (where x.owner is null)::int as nologin
+      from public.tracker_downloads x where x.created_at >= since group by 1
+  ),
+  tn as (
+    select (f.first_at at time zone 'Europe/Rome')::date as day, count(*)::int as n
+      from (select x.owner, min(x.created_at) as first_at from public.tracker_downloads x where x.owner is not null group by x.owner) f
+     where f.first_at >= since group by 1
+  ),
+  dk as (
+    select (c.created_at at time zone 'Europe/Rome')::date as day, count(*)::int as n,
+           count(*) filter (where c.status = 'published')::int as pub
+      from public.community_decks c where c.created_at >= since group by 1
+  ),
+  ds as (
+    select (c.created_at at time zone 'Europe/Rome')::date as day, count(*)::int as n
+      from public.community_deck_sets c where c.created_at >= since group by 1
+  )
+  select d.day, coalesce(s.n, 0), coalesce(t.dl, 0), coalesce(tn.n, 0), coalesce(t.nologin, 0), coalesce(dk.n, 0), coalesce(dk.pub, 0), coalesce(ds.n, 0)
+    from days d
+    left join s on s.day = d.day
+    left join t on t.day = d.day
+    left join tn on tn.day = d.day
+    left join dk on dk.day = d.day
+    left join ds on ds.day = d.day
+   order by d.day;
+end $$;
+revoke all on function public.kpi_daily(text, date) from public;
+grant execute on function public.kpi_daily(text, date) to anon, authenticated;
+comment on function public.kpi_daily(text, date) is 'Conteggi per giorno di Roma per la dashboard privata (22/10/2026): iscrizioni, download del tracker, mazzi creati. Solo con il segreto del cron.';

@@ -976,6 +976,11 @@ export type Database = {
       deck_comment_delete: { Args: { p_id: number }; Returns: string };
       deck_comment_hide: { Args: { p_id: number; p_hidden: boolean }; Returns: undefined };
       deck_comment_report: { Args: { p_id: number; p_reason: string }; Returns: boolean };
+      /** numeri della dashboard privata (blocco NUMERI DELLA DASHBOARD, 22/10/2026): solo con il segreto del cron */
+      kpi_daily: {
+        Args: { p_key: string; p_from?: string };
+        Returns: { day: string; signups: number; tracker_downloads: number; tracker_new_accounts: number; tracker_clicks_no_login: number; decks_created: number; decks_published: number; deck_sets_created: number }[];
+      };
       /** tetto ai mazzi pubblicati: 5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin (27/09/2026) */
       max_published_decks: { Args: { uid: string }; Returns: number };
       join_tournament: { Args: { tid: string }; Returns: undefined };
