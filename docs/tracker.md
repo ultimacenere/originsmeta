@@ -121,7 +121,8 @@ cartella Documenti di Windows, non un percorso scritto a mano. Su Mac il nome de
   con l'abbandono (una L);
 - `onboardingLastMatchId`: `offline_<uuid>` in tutte le partite viste (29/09: tutte contro l'IA);
 - `ActiveUserDeckIndex`: posizione del mazzo nell'ordine dell'inventario;
-- `BattleMode`: sempre "0" nelle partite viste (serve alla coda, vedi sotto).
+- `BattleMode`: sempre "0" nelle partite viste, anche dopo l'apertura della classificata nella demo 0.7.1 (controllato
+  il 22/10/2026): non distingue la coda (vedi "Coda").
 
 Non servono (significato ignoto o inaffidabile): `winWindow1/2`, `lossWindow1/2`, `ChallengeChallengeCounter`.
 
@@ -164,16 +165,48 @@ dall'altro e si abbinano per ora (`replayBelongsTo`, finestra di 2 minuti).
 ### Coda
 
 Richiesta di Pierluigi del 30/09/2026: ogni partita porta la coda, "ranked" o "normal" (`matchQueue` di
-`src/lib/tracker/queue.ts`, con i test), per poter tenere un giorno solo le classificate. Si ricava dalla modalità nel
-nome del replay e da `BattleMode` delle statistiche: vale "ranked" se `BattleMode` è in `RANKED_BATTLE_MODES` (vuoto
-finché non lo si vede) o se la modalità contiene "rank"; tutto il resto, "BotBattle" compreso, è "normal". Mai
-"BotBattle", mai un segnale bot.
+`src/lib/tracker/queue.ts`, con i test), per poter tenere un giorno solo le classificate. Mai "BotBattle", mai un
+segnale bot; la coda non si mostra partita per partita, né nell'app né in `/account/tracker`: serve solo a filtrare le
+statistiche anonime.
 
-**Da verificare quando apre la classificata** (il 29/09 era chiusa): come si chiamano i replay della classificata e
-che valore prende `BattleMode`, **sia contro una persona sia contro un bot**. Se nella classificata le partite contro i
-bot avessero un nome diverso da quelle contro le persone (per esempio ancora "BotBattle"), la coda dovrà venire solo da
-`BattleMode`, altrimenti "normal" dentro la classificata direbbe "bot". Per lo stesso motivo la coda non si mostra
-partita per partita, né nell'app né in `/account/tracker`: serve solo a filtrare le statistiche anonime.
+**Dalla 0.4.9 (22/10/2026) la classificata si riconosce dalla schermata VS.** Il 22/10, costruendo la dashboard privata
+dei numeri, è emerso che nessuna delle 4.721 partite sul sito era "ranked", nemmeno dopo l'apertura della classificata
+nella demo 0.7.1 (15/10/2026). Il motivo: i due segnali dei file non dicono niente. I replay non ci sono più dalla patch
+0.7, `BattleMode` resta "0" e la cache di Beamable non ha leghe né punti (statistiche e inventario controllati sul PC di
+Pierluigi). La demo 0.7.1 ha tre modalità, scelte dal tasto accanto a PLAY: Classificata, Allenamento e Partita
+amichevole (Crea/Entra).
+
+Il segnale vero è sullo schermo: **nella schermata VS della classificata sopra il ritratto di ciascun giocatore c'è la
+sua lega** ("IRON II"), nelle altre partite no. Verificato su 16 schermate VS salvate dallo scanner fra il 10 e il
+12/10: la lega c'è nelle 11 classificate del playtest e manca nelle 5 altre (3 partite della demo 0.7 prima della
+classificata, la Battaglia Boss contro RED (BOT), un allenamento contro Big Bob). Come funziona:
+
+- la finestra nascosta dello scanner, quando riconosce la schermata VS, ritaglia la zona sopra il **mio** ritratto
+  (`VS_MY_LEAGUE` in recognize.ts, fino a 4 ritagli a 600 ms perché la scritta entra con un'animazione), la riduce a
+  `LEAGUE_TEXT_H` pixel di altezza e la rende nera su bianco (`inkOnWhite`): l'OCR di Windows legge la scritta solo
+  così, a piena misura e con i colori del gioco non legge niente;
+- il processo principale la legge con l'OCR (main/ocr.ts, come il nome dei bot) e tiene solo "lega sì o no"
+  (`isLeagueText` di queue.ts: una parola di almeno tre lettere, perché le divisioni sotto il Grandmaster non sono tutte
+  note e l'OCR perde i numeri romani: "IRON II" si legge "IRON"); `leagueMatch` (shared/botNames.ts, come `botMatch`)
+  dice se la schermata VS della partita aveva la lega;
+- main.ts dà "ranked" alle partite registrate dallo schermo e a quelle dei file la cui schermata VS aveva la lega. Senza
+  scanner o senza schermata VS letta la partita resta "normal".
+
+La lega letta non si salva, non si mostra e non esce dal PC; conta solo la mia, mai quella dell'avversario. Le partite
+contro i bot non si registrano (0.4.7), quindi una classificata contro un bot non diventa una "normal" che direbbe "bot".
+Prova sui fotogrammi: `scripts/league-check.ts` (istruzioni in testa al file), che rifà il ritaglio della finestra
+nascosta con l'OCR vero; test in `tracker.test.ts` (letture vere dell'OCR) e `botNames.test.ts`.
+
+**Da verificare con la 0.4.9 sulla demo 0.7.1**: una classificata e un allenamento (la schermata VS della 0.7.1 ha le
+Leggendarie al loro posto, ma la lega non l'abbiamo ancora fotografata), e una partita amichevole: se anche lì comparisse
+la lega, le amichevoli diventerebbero "ranked". Dopo la partita, in `%APPDATA%\OriginsMeta Analytics\matches.jsonl`
+l'ultima riga deve avere `"queue":"ranked"`.
+
+**Le partite già sul sito** (fino alla 0.4.8) restano "normal": non c'è un dato che dica quali erano classificate. Quelle
+finite prima del 15/10/2026 alle 20:52 UTC nella demo erano comunque normali (la classificata non c'era), ma fra il 03 e
+il 15/10 il playtest aveva la classificata e la partita non dice da quale build viene. Le statistiche contano tutte le
+code (`tracker_stats_queue()` = null), quindi oggi non cambia niente; quando si passerà alle sole classificate si
+conteranno le partite dalla 0.4.9 in poi.
 
 ## Codice
 
@@ -849,7 +882,8 @@ dipende.
 - Win rate anche sulle schede carta e in home (punti 3 e 4 qui sopra); quando togliere il noindex e mettere la pagina in
   sitemap.
 - Quando mostrare il riquadro in `/account` a tutti (`TRACKER_ACCOUNT_LINK_PUBLIC`) e togliere il testo "in prova".
-- Soglia delle "prime stime" (100 partite) e quando passare alle sole classificate.
+- Soglia delle "prime stime" (100 partite) e quando passare alle sole classificate (dalla 0.4.9 la coda è vera, vedi
+  "Coda").
 - Firma e distribuzione dell'app (certificato annuale o Microsoft Store), pagina per scaricarla, aggiornamenti.
 - Uso dei dati del client (poteri leggendari, luoghi): contengono anche carte non annunciate.
 
@@ -857,7 +891,8 @@ dipende.
 
 - **Avvio con il gioco** (Pierluigi: "aggiungi avvio automatico con l'avvio del gioco ma senza aprire il builder, solo
   icona vicino all'orologio… a noi ci interessa il tracking delle sue partite principalmente"). `src/main/startup.ts`
-  (test `startup.test.ts`): tre scelte, "Con il gioco" (di default), "Con Windows", "Mai", nella pagina Setup e nel
+  (test `startup.test.ts`): tre scelte, "Con il gioco" (di default), "Con Windows", "Mai" (dalla 0.4.9 solo due: vedi
+  sotto), nella pagina Setup e nel
   menu dell'icona, salvate in `startup.json`. Windows non sa lanciare un programma quando ne parte un altro senza
   permessi da amministratore, quindi "con il gioco" è la stessa voce "Esegui all'avvio" di prima con
   `--hidden --wait-game`: l'app aspetta senza icona, finestre né letture e guarda ogni 10 secondi `tasklist`
@@ -879,3 +914,21 @@ dipende.
   `account.token`, e l'errore tornava a ogni giro. Ora guarda prima `engineOn` e legge `account?.token`. Sulla 0.4.7
   l'aggiornamento automatico parte solo quando il gioco è aperto e si installa a gioco chiuso, quindi a chi ha l'errore
   conviene scaricare la 0.4.8 a mano.
+
+## Classificata e avvio solo con il gioco (0.4.9, 22/10/2026)
+
+- **Classificata riconosciuta** dalla lega sopra il mio ritratto nella schermata VS: vedi "Coda". Prima tutte le partite
+  arrivavano al sito come "normal".
+- **Avvio solo con il gioco** (un giocatore: il tracker "si avvia alla partenza di Windows nonostante lui voglia che parta
+  all'avvio del gioco"; Pierluigi: "il tracker deve partire solo all'avvio del gioco"). Le scelte sono due, "Con il gioco"
+  e "Mai": "Con Windows" non c'è più. La 0.4.7 lasciava "Con Windows" a chi aveva acceso il vecchio "Avvia con Windows",
+  e a quei giocatori l'app si accendeva nella barra a ogni avvio del PC. Ora la scelta salvata "windows" vale "con il
+  gioco" (`readStartMode`), e al primo avvio della 0.4.9 la voce di avvio senza `--wait-game` si riscrive con lo stato
+  acceso o spento che aveva in Gestione attività (`loginItemFix`, test in `startup.test.ts`). Il testo sotto la scelta
+  lo dice: l'app non si apre all'avvio del PC, aspetta invisibile e parte quando si apre Origins TCG.
+- **Quello che resta**: Windows non sa avviare un programma quando ne parte un altro senza permessi da amministratore,
+  quindi "con il gioco" è sempre la voce di avvio con `--hidden --wait-game`: all'avvio del PC il processo c'è (lo si vede
+  in Gestione attività), senza icona né finestre, e guarda ogni 10 secondi se il gioco è aperto. Sul PC di Pierluigi il
+  22/10: avviato il 19/10 alle 23:37 con Windows, partito davvero il 20/10 alle 10:05 con il gioco. L'unico modo per non
+  averlo affatto prima del gioco sarebbero le opzioni di avvio di Steam (`"<percorso>\OriginsMeta Tracker.exe" %command%`),
+  che ogni giocatore dovrebbe scrivere a mano: non fatto.

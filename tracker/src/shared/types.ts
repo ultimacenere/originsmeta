@@ -157,7 +157,7 @@ export type AppState = {
   history: string;
   activeDeck: ActiveDeck;
   /** Avvio automatico (startup.ts, 16/10/2026). */
-  startMode: "off" | "game" | "windows";
+  startMode: "off" | "game";
   dataFolder: string;
   account: AccountState;
   overlay: OverlayState;
@@ -178,7 +178,7 @@ export type OverlayApi = {
 export type TrackerApi = {
   getState(): Promise<AppState>;
   onState(listener: (state: AppState) => void): () => void;
-  setStartMode(mode: "off" | "game" | "windows"): Promise<"off" | "game" | "windows">;
+  setStartMode(mode: "off" | "game"): Promise<"off" | "game">;
   openDataFolder(): Promise<void>;
   /** Solo indirizzi di originsmeta.com, nel browser predefinito. */
   openLink(url: string): Promise<void>;
@@ -241,6 +241,11 @@ export type FramesApi = {
    * lo legge con l'OCR di Windows solo per sapere se è un bot, poi lo dimentica.
    */
   name(png: Uint8Array): void;
+  /**
+   * Il ritaglio PNG, nero su bianco, della zona sopra il mio ritratto nella schermata VS (22/10/2026): il processo
+   * principale lo legge con l'OCR di Windows solo per sapere se c'è una lega (partita classificata), poi lo dimentica.
+   */
+  league(png: Uint8Array): void;
 };
 
 /**

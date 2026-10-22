@@ -46,7 +46,7 @@ const queueModule: typeof import("./queue") = await import("./queue.ts");
 const { parseReplay, readReplay, replayFileInfo, instanceDeck, cardOfInstance, ReplayFormatError, REPLAY_MAX_BYTES } = replayModule;
 const { readStatsFile, readInventoryFile, detectMatchEnd, resultsDelta } = profileModule;
 const { buildMatch, matchFingerprint, pickMe, replayBelongsTo, readTrackedMatch, PAIR_WINDOW_MS, TRACKED_MATCH_VERSION } = matchModule;
-const { matchQueue, TRACK_QUEUES } = queueModule;
+const { isLeagueText, matchQueue, TRACK_QUEUES } = queueModule;
 
 /* ---------- replay finti (codificatore in testing.ts, usato anche dai test dell'app) ---------- */
 
@@ -306,9 +306,23 @@ describe("matchQueue (coda della partita)", () => {
     assert.equal(matchQueue({ mode: null, battleMode: null }), "normal");
   });
 
-  test("classificata: un nome con \"rank\" (da confermare quando apre la classificata)", () => {
+  test("classificata: un nome con \"rank\" (replay, se tornano)", () => {
     assert.equal(matchQueue({ mode: "RankedBattle", battleMode: "0" }), "ranked");
     assert.equal(matchQueue({ mode: "Ranked", battleMode: null }), "ranked");
+  });
+
+  // letture vere dell'OCR di Windows sulla zona sopra il mio ritratto (22/10/2026): 16 schermate VS salvate dallo scanner
+  // fra il 10 e il 12/10/2026, ritagliate e rese nere su bianco come nell'app. Le 11 classificate del playtest ("IRON I",
+  // "IRON II", "IRON III" sullo schermo) danno "IRON" ("'RON" con il ritaglio più grande); le 5 partite non classificate
+  // (demo 0.7 prima della classificata, Battaglia Boss contro RED (BOT), allenamento contro Big Bob) non danno niente
+  test("classificata dalla schermata VS: c'è la lega sopra il mio ritratto (letture vere dell'OCR)", () => {
+    for (const text of ["IRON", "'RON", "IRON II", "GRANDMASTER", "Diamond IV"]) assert.equal(isLeagueText(text), true, text);
+    for (const text of ["", "   ", null, undefined, "II", "4", "|"]) assert.equal(isLeagueText(text), false, String(text));
+    assert.equal(matchQueue({ mode: null, battleMode: "0", league: isLeagueText("IRON") }), "ranked");
+    assert.equal(matchQueue({ mode: null, battleMode: "0", league: isLeagueText("") }), "normal");
+    // la 0.7.1 scrive BattleMode "0" anche in classificata: senza la schermata VS letta la partita resta "normal"
+    assert.equal(matchQueue({ mode: null, battleMode: "0", league: null }), "normal");
+    assert.equal(matchQueue({ mode: null, battleMode: "0" }), "normal");
   });
 
   test("mai un segnale bot: solo ranked o normal, e la stessa coda contro un bot o contro una persona", () => {

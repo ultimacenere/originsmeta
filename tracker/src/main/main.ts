@@ -9,9 +9,9 @@
  *   automatico" ed "Esci". Dal 10/10/2026 la X della finestra chiude tutta l'app (prima la nascondeva); avviata in
  *   automatico l'app resta solo nella barra finché non si apre la finestra o si sceglie "Esci".
  * - Avvio automatico (startup.ts, 16/10/2026): "Con il gioco" (di default dalla 0.4.7: voce di Windows "Esegui
- *   all'avvio" con `--hidden --wait-game`, l'app aspetta in silenzio che il gioco sia aperto e poi parte nella barra),
- *   "Con Windows" (`--hidden`, subito nella barra) o "Mai". Avviata così registra le partite ma non apre né la
- *   finestra né overlay e pannelli: si aprono quando il giocatore apre l'app.
+ *   all'avvio" con `--hidden --wait-game`, l'app aspetta in silenzio che il gioco sia aperto e poi parte nella barra)
+ *   o "Mai"; "Con Windows" non c'è più dalla 0.4.9 (22/10/2026: l'app deve partire solo con il gioco). Avviata così
+ *   registra le partite ma non apre né la finestra né overlay e pannelli: si aprono quando il giocatore apre l'app.
  * - Una sola copia aperta: la seconda riporta in primo piano la prima.
  * - Account OriginsMeta (Fase 3): collegamento con il codice di originsmeta.com/account/tracker, token cifrato con
  *   safeStorage (account.ts), invio delle partite a gruppi con i tentativi (sync.ts): subito dopo ogni partita, all'avvio
@@ -74,11 +74,12 @@ import { deckTrackerView } from "./deckTracker";
 import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
 import { buildMatch } from "../../../src/lib/tracker/match";
+import { matchQueue } from "../../../src/lib/tracker/queue";
 import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, PanelCustom, PanelTemplate, TrackedMatch } from "../shared/types";
 import { PANEL_TEMPLATES } from "../shared/types";
 import { clampWidth, DEFAULT_CUSTOM, defaultSpot, panelShape, readCustom, readTemplate, WIDTH_LIMITS, type PanelKind } from "./panelLayout";
 import { layerAction } from "./panelVisibility";
-import { gameRunning, GAME_POLL_MS, initialStartMode, readStartMode, START_MODES, startArgs, WAIT_GAME_ARG, type StartMode } from "./startup";
+import { gameRunning, GAME_POLL_MS, initialStartMode, loginItemFix, readStartMode, START_MODES, startArgs, WAIT_GAME_ARG, type StartMode } from "./startup";
 import { execFile } from "node:child_process";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
 
@@ -196,25 +197,25 @@ const lang = (): "en" | "it" | "es" => {
   return l.startsWith("it") ? "it" : l.startsWith("es") ? "es" : "en";
 };
 const TRAY = {
-  en: { open: "Open OriginsMeta Tracker", overlay: "Overlay above the game", deck: "Deck tracker", opp: "Opponent's cards", scanner: "Screen scanner", startup: "Start automatically", start: { game: "With the game", windows: "With Windows", off: "Never" }, quit: "Quit", listening: "tracking", waiting: "waiting for the game", locked: "link your OriginsMeta account to start", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
-  it: { open: "Apri OriginsMeta Tracker", overlay: "Overlay sopra il gioco", deck: "Deck tracker", opp: "Carte dell'avversario", scanner: "Scanner dello schermo", startup: "Avvio automatico", start: { game: "Con il gioco", windows: "Con Windows", off: "Mai" }, quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", locked: "collega il tuo account OriginsMeta per iniziare", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
-  es: { open: "Abrir OriginsMeta Tracker", overlay: "Overlay sobre el juego", deck: "Deck tracker", opp: "Cartas del rival", scanner: "Escáner de pantalla", startup: "Inicio automático", start: { game: "Con el juego", windows: "Con Windows", off: "Nunca" }, quit: "Salir", listening: "registrando", waiting: "esperando al juego", locked: "vincula tu cuenta de OriginsMeta para empezar", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
+  en: { open: "Open OriginsMeta Tracker", overlay: "Overlay above the game", deck: "Deck tracker", opp: "Opponent's cards", scanner: "Screen scanner", startup: "Start automatically", start: { game: "With the game", off: "Never" }, quit: "Quit", listening: "tracking", waiting: "waiting for the game", locked: "link your OriginsMeta account to start", today: (w: number, l: number) => `today ${w}–${l}`, none: "no matches today" },
+  it: { open: "Apri OriginsMeta Tracker", overlay: "Overlay sopra il gioco", deck: "Deck tracker", opp: "Carte dell'avversario", scanner: "Scanner dello schermo", startup: "Avvio automatico", start: { game: "Con il gioco", off: "Mai" }, quit: "Esci", listening: "in ascolto", waiting: "in attesa del gioco", locked: "collega il tuo account OriginsMeta per iniziare", today: (w: number, l: number) => `oggi ${w}–${l}`, none: "nessuna partita oggi" },
+  es: { open: "Abrir OriginsMeta Tracker", overlay: "Overlay sobre el juego", deck: "Deck tracker", opp: "Cartas del rival", scanner: "Escáner de pantalla", startup: "Inicio automático", start: { game: "Con el juego", off: "Nunca" }, quit: "Salir", listening: "registrando", waiting: "esperando al juego", locked: "vincula tu cuenta de OriginsMeta para empezar", today: (w: number, l: number) => `hoy ${w}–${l}`, none: "ninguna partida hoy" },
 };
 
-/* ---------- avvio automatico: con il gioco o con Windows (startup.ts) ---------- */
+/* ---------- avvio automatico: con il gioco o mai (startup.ts) ---------- */
 
 const START_FILE = "startup.json";
 let startMode: StartMode = "off";
 // in sviluppo si lancia electron.exe con la cartella dell'app; nell'app installata basta l'eseguibile
-const loginArgs = (mode: StartMode = startMode) => {
-  const args = startArgs(mode === "off" ? "windows" : mode);
-  return app.isPackaged ? args : [app.getAppPath(), ...args];
-};
+const loginArgs = () => (app.isPackaged ? startArgs() : [app.getAppPath(), ...startArgs()]);
 
-/** Registra la scelta: la voce "Esegui all'avvio" di Windows (una sola, cambiano gli argomenti) e startup.json. */
-function applyStartMode(mode: StartMode): StartMode {
+/**
+ * Registra la scelta: la voce "Esegui all'avvio" di Windows (una sola) e startup.json. `enabled`: lo stato in Gestione
+ * attività da tenere quando si riscrive una voce vecchia (`loginItemFix`); una scelta del giocatore la accende.
+ */
+function applyStartMode(mode: StartMode, enabled = true): StartMode {
   try {
-    app.setLoginItemSettings({ openAtLogin: mode !== "off", path: process.execPath, args: loginArgs(mode) });
+    app.setLoginItemSettings({ openAtLogin: mode !== "off", path: process.execPath, args: loginArgs(), enabled });
     startMode = mode;
     fs.writeFileSync(path.join(app.getPath("userData"), START_FILE), JSON.stringify({ mode }));
   } catch {
@@ -224,23 +225,29 @@ function applyStartMode(mode: StartMode): StartMode {
 }
 
 /**
- * La scelta salvata o, la prima volta (0.4.7), quella di partenza: con il gioco, tranne per chi aveva già acceso o
- * spento "Avvia con Windows" (`initialStartMode`). In sviluppo niente scelta automatica (registrerebbe electron.exe).
+ * La scelta salvata o, la prima volta (0.4.7), quella di partenza: con il gioco, tranne per chi aveva spento la voce da
+ * Gestione attività (`initialStartMode`). Dalla 0.4.9 la vecchia scelta "Con Windows" diventa "con il gioco" e la sua
+ * voce si riscrive con `--wait-game` (`loginItemFix`, 22/10/2026: un giocatore si ritrovava l'app accesa all'avvio del
+ * PC). In sviluppo niente scelta automatica (registrerebbe electron.exe).
  */
 function loadStartMode() {
   if (CAPTURE || process.platform !== "win32") return;
+  let raw: unknown;
   try {
-    const saved = readStartMode((JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), START_FILE), "utf8")) as { mode?: unknown }).mode);
-    if (saved) {
-      startMode = saved;
-      return;
-    }
+    raw = (JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), START_FILE), "utf8")) as { mode?: unknown }).mode;
   } catch {
-    // prima volta con questa versione
+    // prima volta con la 0.4.7 o dopo
   }
+  const saved = readStartMode(raw);
+  if (saved) startMode = saved;
   if (!app.isPackaged) return;
-  const items = app.getLoginItemSettings({ path: process.execPath, args: loginArgs("windows") }).launchItems ?? [];
-  applyStartMode(initialStartMode(items));
+  const items = app.getLoginItemSettings({ path: process.execPath, args: loginArgs() }).launchItems ?? [];
+  if (!saved) {
+    applyStartMode(initialStartMode(items));
+    return;
+  }
+  const fix = loginItemFix(items, saved);
+  if (fix || raw !== saved) applyStartMode(saved, fix?.enabled ?? true);
 }
 
 /**
@@ -270,7 +277,8 @@ function waitForGame(): Promise<void> {
 /**
  * Cambio di nome dell'eseguibile (0.4.0, 12/10/2026): chi aveva acceso "Avvia con Windows" con "OriginsMeta
  * Analytics.exe" (o con l'app in un'altra cartella) passa a quello che gira adesso, con lo stato abilitato o no che
- * aveva in Gestione attività. La voce ha lo stesso nome nel registro (l'AppUserModelId), quindi resta una sola.
+ * aveva in Gestione attività. La voce ha lo stesso nome nel registro (l'AppUserModelId), quindi resta una sola. Una
+ * voce senza `--wait-game` la sistema subito dopo `loadStartMode` (0.4.9).
  */
 function migrateLoginItem() {
   if (!app.isPackaged || CAPTURE || process.platform !== "win32") return;
@@ -358,11 +366,13 @@ async function finishFromScreen(at: number) {
     frames.event("match-bot", { source: "screen", endedAt, result: seen.result });
     return;
   }
-  const base = await buildMatch({ end: { endedAt, result: seen.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue: "normal" });
+  // la coda dalla schermata VS (22/10/2026): classificata se sopra il mio ritratto c'era la lega (queue.ts)
+  const queue = matchQueue({ mode: null, battleMode: null, league: frames.rankedMatch(at) });
+  const base = await buildMatch({ end: { endedAt, result: seen.result, matchId: null, deckIndex: null, missed: "" }, accountId: watcher.lastAccountId, deck: gameDeck, replay: null, queue });
   const m = applyScan(base, scan);
   if (!store.add(m)) return;
   fromScreen.push({ at, result: seen.result, used: false });
-  frames.event("match", { source: "screen", endedAt: m.endedAt, result: m.result, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });
+  frames.event("match", { source: "screen", endedAt: m.endedAt, result: m.result, queue: m.queue, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });
   push();
   scheduleSync(5000);
 }
@@ -1337,7 +1347,7 @@ const deckView = (deck: GameDeck | null): ActiveDeck => (deck ? { name: deck.nam
 
 async function boot() {
   if (WAIT_GAME && !CAPTURE) await waitForGame();
-  // avviata in automatico (con Windows o con il gioco): solo l'icona, pannelli e overlay quando si apre l'app
+  // avviata in automatico (con il gioco): solo l'icona, pannelli e overlay quando si apre l'app
   layersDeferred = HIDDEN && !openRequested && !CAPTURE;
   migrateLoginItem();
   loadStartMode();
@@ -1375,8 +1385,10 @@ async function boot() {
       frames.event("match-bot", { source: "files", endedAt: raw.endedAt, result: raw.result });
       return;
     }
-    // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date
-    const m = frames ? applyScan(raw, frames.matchFor(raw.endedAt ? Date.parse(raw.endedAt) : Date.now())) : raw;
+    // scanner: giocate e carte dell'avversario lette dallo schermo, se il replay non le ha date; la coda dalla schermata VS
+    // (22/10/2026), perché i file del gioco non distinguono la classificata
+    const at = Number.isFinite(end) ? end : Date.now();
+    const m = frames ? applyScan(frames.rankedMatch(at) ? { ...raw, queue: "ranked" as const } : raw, frames.matchFor(at)) : raw;
     if (store.add(m)) {
       // modalità cattura: la partita finita etichetta i fotogrammi (esito, mazzo e quello che lo scanner ha letto)
       frames?.event("match", { endedAt: m.endedAt, result: m.result, queue: m.queue, legendary: m.deck?.legendary ?? null, cards: m.deck?.cards ?? [], opponent: m.opponent, turns: m.turns, plays: m.plays });

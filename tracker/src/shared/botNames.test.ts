@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import names from "./bot-names.json";
-import { botKeys, botMatch, isBotName, nameKey, SAME_VERSUS_MS, VERSUS_LOOKBACK_MS } from "./botNames";
+import { botKeys, botMatch, isBotName, leagueMatch, nameKey, SAME_VERSUS_MS, VERSUS_LOOKBACK_MS } from "./botNames";
 
 test("Big Bob è nell'elenco dei bot", () => {
   assert.ok((names as string[]).some((n) => nameKey(n) === "BIGBOB"));
@@ -47,4 +47,18 @@ test("la partita è contro un bot se lo è la sua schermata VS, la più recente 
   assert.equal(botMatch([], end), false);
   // una lettura "bot" di una schermata VS precedente, più di SAME_VERSUS_MS prima dell'ultima, non conta
   assert.equal(botMatch([{ ms: vsBot - SAME_VERSUS_MS - 1, bot: true }, { ms: vsBot, bot: false }], end), false);
+});
+
+test("classificata se la schermata VS della partita aveva la lega sopra il mio ritratto (22/10/2026)", () => {
+  const end = 1_000_000_000;
+  const vs = end - 12 * 60_000;
+  // la scritta entra con un'animazione: il primo ritaglio non la vede, il secondo sì
+  assert.equal(leagueMatch([{ ms: vs, league: false }, { ms: vs + 600, league: true }], end), true);
+  // allenamento dopo una classificata: vale la schermata VS più recente
+  assert.equal(leagueMatch([{ ms: vs - 15 * 60_000, league: true }, { ms: vs, league: false }], end), false);
+  // nessuna schermata VS letta (scanner spento): coda normale
+  assert.equal(leagueMatch([], end), false);
+  // la schermata di una partita dopo la fine, o troppo vecchia, non conta
+  assert.equal(leagueMatch([{ ms: end + 1000, league: true }], end), false);
+  assert.equal(leagueMatch([{ ms: end - VERSUS_LOOKBACK_MS - 1, league: true }], end), false);
 });

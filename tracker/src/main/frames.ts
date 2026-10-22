@@ -12,6 +12,10 @@
  * l'OCR di Windows (ocr.ts) e resta solo se è un bot (`VersusName`, shared/botNames.ts), mai il nome: `botMatch` dice
  * a main.ts di non registrare la partita.
  *
+ * Classificata (22/10/2026): nella schermata VS la finestra nascosta manda anche il ritaglio della zona sopra il mio
+ * ritratto; qui lo legge l'OCR e resta solo "c'era una lega sì o no" (`LeagueRead`), mai la lega: `rankedMatch` dà a
+ * main.ts la coda della partita (src/lib/tracker/queue.ts).
+ *
  * Modalità cattura:
  * Ogni `POLL_MS` cerca la finestra del gioco per titolo esatto; quando c'è, una finestra nascosta la riprende (sola
  * lettura dello schermo, come OBS: niente processo del gioco) e manda qui un JPEG ogni `FRAME_MS`, solo se lo schermo
@@ -25,7 +29,8 @@ import { BrowserWindow, desktopCapturer, ipcMain, screen, session, type IpcMainE
 import fs from "node:fs";
 import path from "node:path";
 import { frameFileName, isJpegFrame, MAX_SESSION_BYTES, pickGameWindow, sessionDirName } from "../shared/frames";
-import { botMatch, isBotName, VERSUS_LOOKBACK_MS, type VersusName } from "../shared/botNames";
+import { botMatch, isBotName, leagueMatch, SAME_VERSUS_MS, VERSUS_LOOKBACK_MS, type LeagueRead, type VersusName } from "../shared/botNames";
+import { isLeagueText } from "../../../src/lib/tracker/queue";
 import { readNameText } from "./ocr";
 import { lastActivity, readScanFrame, reconstruct, resultAround, scanFor, splitMatches, type CardInfo, type ScanFrame, type ScannedMatch } from "../shared/reconstruct";
 
@@ -60,6 +65,8 @@ export class FrameRecorder {
   private scans: ScanFrame[] = [];
   /** Le schermate VS lette: ora e bot sì o no, mai il nome (14/10/2026). */
   private versus: VersusName[] = [];
+  /** Le leghe lette sopra il mio ritratto nella schermata VS: ora e lega sì o no, mai quale (22/10/2026). */
+  private leagues: LeagueRead[] = [];
 
   /** `save`: modalità cattura (anche i JPEG e `events.jsonl` sul PC). */
   private onScan: (f: ScanFrame) => void;
@@ -121,6 +128,11 @@ export class FrameRecorder {
     return Number.isFinite(endedAtMs) && botMatch(this.versus, endedAtMs);
   }
 
+  /** La partita finita a `endedAtMs` (ora del PC) era una classificata (lega sopra il mio ritratto nella sua schermata VS)? */
+  rankedMatch(endedAtMs: number): boolean {
+    return Number.isFinite(endedAtMs) && leagueMatch(this.leagues, endedAtMs);
+  }
+
   matchFor(endedAtMs: number): ScannedMatch | null {
     return Number.isFinite(endedAtMs) ? scanFor(this.scans, endedAtMs, this.cards) : null;
   }
@@ -150,6 +162,7 @@ export class FrameRecorder {
       ipcMain.on("frames:ended", (e) => this.ended(e));
       ipcMain.on("frames:scan", (e, raw: unknown) => this.scan(e, raw));
       ipcMain.on("frames:name", (e, raw: unknown) => void this.name(e, raw));
+      ipcMain.on("frames:league", (e, raw: unknown) => void this.league(e, raw));
     }
     void this.poll();
     this.timer = setInterval(() => void this.poll(), POLL_MS);
@@ -165,6 +178,7 @@ export class FrameRecorder {
     this.win = null;
     this.scans = [];
     this.versus = [];
+    this.leagues = [];
     this.liveCache = null;
     this.onChange();
   }
@@ -279,6 +293,22 @@ export class FrameRecorder {
     const bot = text !== null && isBotName(text);
     this.versus = [...this.versus.filter((v) => v.ms >= ms - VERSUS_LOOKBACK_MS), { ms, bot }];
     if (bot) this.event("versus", { bot: true });
+  }
+
+  /**
+   * La zona sopra il mio ritratto nella schermata VS: si legge con l'OCR e resta solo se c'era una lega (classificata).
+   * Dopo un "sì" gli altri ritagli della stessa schermata non si leggono più; una lettura non riuscita conta come "no".
+   */
+  private async league(e: IpcMainEvent, raw: unknown) {
+    if (!this.fromFrames(e) || !this.sourceId) return;
+    const png = raw instanceof Uint8Array ? raw : raw instanceof ArrayBuffer ? new Uint8Array(raw) : null;
+    if (!png) return;
+    const ms = Date.now();
+    if (this.leagues.some((r) => r.league && ms - r.ms <= SAME_VERSUS_MS)) return;
+    const text = await readNameText(path.join(this.root, "..", "ocr"), png);
+    const league = isLeagueText(text);
+    this.leagues = [...this.leagues.filter((r) => r.ms >= ms - VERSUS_LOOKBACK_MS), { ms, league }];
+    if (league) this.event("versus", { ranked: true });
   }
 
   private saveFrame(e: IpcMainInvokeEvent, data: unknown): boolean {

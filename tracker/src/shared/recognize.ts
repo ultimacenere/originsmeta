@@ -77,6 +77,31 @@ export const VS_OPP_NAME: Rect = { x: 0.77, y: 0.885, w: 0.23, h: 0.055 };
 export const VS_NAME_SHEAR = 0.25;
 export const VS_NAME_SCALE = 2;
 
+/**
+ * La lega sopra il **mio** ritratto nella schermata VS (22/10/2026, per la coda: src/lib/tracker/queue.ts). C'è solo
+ * nelle classificate ("IRON II", lettere rosa chiaro con il bordo scuro sullo sfondo verde acqua); nelle altre partite lì
+ * c'è lo sfondo o un pezzo del personaggio. Misurata sulle schermate VS del 10–12/10 (2560 × 1440): la scritta sta fra
+ * il 70,5% e il 74% dell'altezza, centrata sul ritratto; la zona è larga per le leghe dal nome lungo. Sui pixel veri
+ * l'OCR di Windows legge la scritta solo **nera su bianco** (`leagueInk`) e **piccola** (ritaglio alto `LEAGUE_TEXT_H`
+ * pixel, testo di circa 25): al doppio della misura o con i colori del gioco non legge niente.
+ */
+export const VS_MY_LEAGUE: Rect = { x: 0.02, y: 0.695, w: 0.2, h: 0.057 };
+export const LEAGUE_TEXT_H = 52;
+
+/** Un pixel della scritta della lega (chiaro e caldo: le lettere sono rosa chiaro, lo sfondo verde acqua ha poco rosso). */
+export const leagueInk = (r: number, g: number, b: number): boolean => r > 150 && g > 110 && b > 100;
+
+/** Il ritaglio della lega reso nero su bianco per l'OCR (RGBA, sul posto). */
+export function inkOnWhite(data: Uint8ClampedArray | Uint8Array): void {
+  for (let i = 0; i + 3 < data.length; i += 4) {
+    const v = leagueInk(data[i], data[i + 1], data[i + 2]) ? 0 : 255;
+    data[i] = v;
+    data[i + 1] = v;
+    data[i + 2] = v;
+    data[i + 3] = 255;
+  }
+}
+
 /** L'area 16:9 del gioco dentro l'immagine (centrata: bande nere ai lati o sopra e sotto). */
 export function gameArea(width: number, height: number): Rect {
   const target = 16 / 9;

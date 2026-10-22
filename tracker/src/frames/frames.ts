@@ -6,12 +6,14 @@
  *   risultato al processo principale (`scan`): poche decine di byte, i pixel restano qui;
  * - nella schermata VS (dal 14/10/2026) ritaglia il nome dell'avversario e lo manda al processo principale (`name`),
  *   che lo legge con l'OCR di Windows solo per riconoscere i bot (shared/botNames.ts) e non lo salva;
+ * - nella schermata VS (dal 22/10/2026) ritaglia anche la zona sopra il mio ritratto, nera su bianco (`league`): se il
+ *   processo principale ci legge una lega, la partita è una classificata (src/lib/tracker/queue.ts);
  * - nella modalità cattura (`--frames`) manda anche il JPEG, che il processo principale salva sul PC.
  */
 import type { FramesApi } from "../shared/types";
 import { SAME_VERSUS_MS } from "../shared/botNames";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { OPP_MANA_TEXT, VS_NAME_SCALE, VS_NAME_SHEAR, VS_OPP_NAME, inside, layoutFor, loadRefs, readBoard, readDirection, readOppHand, readHandAt, readLife, readMana, readPhase, readResult, readSpell, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
+import { inkOnWhite, LEAGUE_TEXT_H, OPP_MANA_TEXT, VS_MY_LEAGUE, VS_NAME_SCALE, VS_NAME_SHEAR, VS_OPP_NAME, inside, layoutFor, loadRefs, readBoard, readDirection, readOppHand, readHandAt, readLife, readMana, readPhase, readResult, readSpell, readVersus, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
 import cardArtExtra from "../card-art-extra.json";
 import cardArtHand from "../card-art-hand.json";
@@ -89,6 +91,39 @@ function shootName(vsArea: Layout["vs"], ms: number) {
   }, "image/png");
 }
 
+/**
+ * La lega sopra il mio ritratto nella schermata VS (22/10/2026, coda della partita: src/lib/tracker/queue.ts): fino a
+ * `LEAGUE_SHOTS` ritagli per schermata, ad almeno `LEAGUE_GAP_MS`, perché la scritta entra con un'animazione e nel primo
+ * fotogramma della schermata a volte non c'è ancora. Il ritaglio è alto `LEAGUE_TEXT_H` pixel e nero su bianco: così
+ * l'OCR di Windows la legge (vedi `VS_MY_LEAGUE`). Il processo principale smette di leggere al primo "sì".
+ */
+const LEAGUE_SHOTS = 4;
+const LEAGUE_GAP_MS = 600;
+let leagueShots = { lastVs: 0, lastShot: 0, count: 0 };
+const leagueCanvas = document.createElement("canvas");
+
+function shootLeague(vsArea: Layout["vs"], ms: number) {
+  if (ms - leagueShots.lastVs > SAME_VERSUS_MS) leagueShots = { lastVs: ms, lastShot: 0, count: 0 };
+  leagueShots.lastVs = ms;
+  if (leagueShots.count >= LEAGUE_SHOTS || ms - leagueShots.lastShot < LEAGUE_GAP_MS) return;
+  leagueShots.count++;
+  leagueShots.lastShot = ms;
+  const r = inside(vsArea, VS_MY_LEAGUE);
+  const h = LEAGUE_TEXT_H;
+  const w = Math.round((r.w * h) / r.h);
+  if (r.w < 20 || r.h < 8) return;
+  leagueCanvas.width = w;
+  leagueCanvas.height = h;
+  const g = leagueCanvas.getContext("2d", { willReadFrequently: true })!;
+  g.drawImage(full, r.x, r.y, r.w, r.h, 0, 0, w, h);
+  const px = g.getImageData(0, 0, w, h);
+  inkOnWhite(px.data);
+  g.putImageData(px, 0, 0);
+  leagueCanvas.toBlob((blob) => {
+    if (blob) void blob.arrayBuffer().then((buf) => api.league(new Uint8Array(buf)));
+  }, "image/png");
+}
+
 function stop() {
   if (timer) clearInterval(timer);
   timer = null;
@@ -154,7 +189,10 @@ function grab() {
     if (best !== layout.key) layout = { ...layout, key: best, at: layoutFor(JSON.parse(best)) };
     const { board, ui } = layout.at;
     const vs = readVersus(img, refs, layout.at.vs);
-    if (vs.me.key && vs.opp.key) shootName(layout.at.vs, ms);
+    if (vs.me.key && vs.opp.key) {
+      shootName(layout.at.vs, ms);
+      shootLeague(layout.at.vs, ms);
+    }
     const mana = readMana(img, board);
     const cards = readBoard(img, refs, board).map((m) => m.key);
     // la mano e la vita solo sul tabellone (mana letto): nei menu e nelle schermate di passaggio non ci sono

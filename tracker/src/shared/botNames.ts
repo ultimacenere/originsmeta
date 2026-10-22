@@ -54,14 +54,34 @@ export const VERSUS_LOOKBACK_MS = 40 * 60_000;
 /** Letture dello stesso nome a meno di questo intervallo sono la stessa schermata VS. */
 export const SAME_VERSUS_MS = 20_000;
 
+/** Le letture della schermata VS più recente prima di `endMs` (entro `VERSUS_LOOKBACK_MS`): quelle a meno di `SAME_VERSUS_MS` dall'ultima. */
+function lastVersus<T extends { ms: number }>(reads: readonly T[], endMs: number): T[] {
+  const before = reads.filter((r) => r.ms <= endMs && r.ms >= endMs - VERSUS_LOOKBACK_MS);
+  if (!before.length) return [];
+  const last = Math.max(...before.map((r) => r.ms));
+  return before.filter((r) => last - r.ms <= SAME_VERSUS_MS);
+}
+
 /**
  * La partita finita a `endMs` era contro un bot? Vale la schermata VS più recente prima della fine (entro
  * `VERSUS_LOOKBACK_MS`); di una schermata letta più volte basta una lettura "bot". Senza schermata VS letta: false (la
  * partita si registra come prima).
  */
 export function botMatch(reads: readonly VersusName[], endMs: number): boolean {
-  const before = reads.filter((r) => r.ms <= endMs && r.ms >= endMs - VERSUS_LOOKBACK_MS);
-  if (!before.length) return false;
-  const last = Math.max(...before.map((r) => r.ms));
-  return before.some((r) => r.bot && last - r.ms <= SAME_VERSUS_MS);
+  return lastVersus(reads, endMs).some((r) => r.bot);
+}
+
+/**
+ * Una lettura della zona sopra il mio ritratto nella schermata VS (22/10/2026): quando e se c'era una lega (partita
+ * classificata, src/lib/tracker/queue.ts). Mai quale lega.
+ */
+export type LeagueRead = { ms: number; league: boolean };
+
+/**
+ * La partita finita a `endMs` era una classificata? Come `botMatch`: vale la schermata VS più recente prima della fine
+ * e basta una lettura con la lega (la scritta entra con un'animazione: i primi ritagli possono non averla). Senza
+ * schermata VS letta: false, cioè coda "normal".
+ */
+export function leagueMatch(reads: readonly LeagueRead[], endMs: number): boolean {
+  return lastVersus(reads, endMs).some((r) => r.league);
 }

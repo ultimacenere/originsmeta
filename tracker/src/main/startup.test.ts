@@ -1,31 +1,46 @@
 /**
- * Test dell'avvio automatico (startup.ts, 16/10/2026): con il gioco di default, chi aveva "Avvia con Windows" lo tiene,
- * gioco riconosciuto da `tasklist`.
+ * Test dell'avvio automatico (startup.ts, 16/10/2026): con il gioco di default, gioco riconosciuto da `tasklist`. Dalla
+ * 0.4.9 (22/10/2026) solo "con il gioco" o "mai": il vecchio "Con Windows" diventa "con il gioco".
  */
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { gameRunning, initialStartMode, readStartMode, startArgs, WAIT_GAME_ARG } from "./startup";
+import { gameRunning, initialStartMode, loginItemFix, readStartMode, START_MODES, startArgs, WAIT_GAME_ARG } from "./startup";
 
 const EXE = "C:\\Users\\x\\OriginsMeta Tracker\\OriginsMeta Tracker.exe";
 
 describe("avvio automatico", () => {
-  test("argomenti: con il gioco aspetta il gioco, con Windows parte subito nella barra", () => {
-    assert.deepEqual(startArgs("game"), ["--hidden", WAIT_GAME_ARG]);
-    assert.deepEqual(startArgs("windows"), ["--hidden"]);
+  test("argomenti: la voce di avvio aspetta sempre il gioco, nascosta", () => {
+    assert.deepEqual(startArgs(), ["--hidden", WAIT_GAME_ARG]);
   });
 
-  test("primo avvio: con il gioco di default, chi aveva Avvia con Windows lo tiene, chi l'aveva disattivato resta spento", () => {
+  test("scelte: solo con il gioco o mai, niente avvio con Windows", () => {
+    assert.deepEqual([...START_MODES], ["game", "off"]);
+  });
+
+  test("primo avvio: con il gioco di default, anche chi aveva Avvia con Windows; chi l'aveva disattivato resta spento", () => {
     assert.equal(initialStartMode([]), "game");
-    assert.equal(initialStartMode([{ path: EXE, args: ["--hidden"], enabled: true }]), "windows");
+    assert.equal(initialStartMode([{ path: EXE, args: ["--hidden"], enabled: true }]), "game");
+    assert.equal(initialStartMode([{ path: EXE, args: ["--hidden"] }]), "game");
     assert.equal(initialStartMode([{ path: EXE, args: ["--hidden"], enabled: false }]), "off");
     assert.equal(initialStartMode([{ path: EXE, args: ["--hidden", WAIT_GAME_ARG] }]), "game");
   });
 
-  test("scelta salvata: solo i tre valori", () => {
+  test("scelta salvata: la vecchia \"windows\" vale con il gioco", () => {
     assert.equal(readStartMode("game"), "game");
+    assert.equal(readStartMode("windows"), "game");
     assert.equal(readStartMode("off"), "off");
     assert.equal(readStartMode("on"), null);
     assert.equal(readStartMode(undefined), null);
+  });
+
+  test("la voce del vecchio Con Windows si riscrive, con lo stato di Gestione attività", () => {
+    assert.deepEqual(loginItemFix([{ path: EXE, args: ["--hidden"], enabled: true }], "game"), { enabled: true });
+    assert.deepEqual(loginItemFix([{ path: EXE, args: ["--hidden"] }], "game"), { enabled: true });
+    assert.deepEqual(loginItemFix([{ path: EXE, args: ["--hidden"], enabled: false }], "game"), { enabled: false });
+    // già con il gioco, nessuna voce o avvio spento: niente da riscrivere
+    assert.equal(loginItemFix([{ path: EXE, args: ["--hidden", WAIT_GAME_ARG], enabled: true }], "game"), null);
+    assert.equal(loginItemFix([], "game"), null);
+    assert.equal(loginItemFix([{ path: EXE, args: ["--hidden"], enabled: true }], "off"), null);
   });
 
   test("gioco aperto secondo tasklist", () => {

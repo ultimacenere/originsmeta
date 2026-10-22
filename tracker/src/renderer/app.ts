@@ -85,8 +85,8 @@ const LABELS = {
     historySub: (n: number, w: number) => `The game keeps the results of all your matches (${n}, ${w} won). The app also recovers the result of matches played while it was closed, only win or loss.`,
     missed: (n: number) => `${n} ${n === 1 ? "match" : "matches"} played with the app closed`,
     startup: "Start automatically",
-    start: { game: "With the game", windows: "With Windows", off: "Never" },
-    startNote: "With the game (recommended): when Origins TCG opens, the app starts by itself next to the clock and records your matches; the window, overlay and panels open only when you open the app.",
+    start: { game: "With the game", off: "Never" },
+    startNote: "With the game: the app doesn't open when your PC starts. It waits invisibly, with no icon, and when you open Origins TCG it starts by itself next to the clock and records your matches; the window, overlay and panels open only when you open the app.",
     dataFolder: "Open the data folder",
     privacy: "OriginsMeta Tracker reads the files Origins TCG saves on this PC and, with the screen scanner on, the game window; it never touches the game. Screen images never leave this PC. Your matches are saved on this PC and sent to your OriginsMeta account, which the app needs in order to work. Card images load from originsmeta.com.",
     unofficial: "OriginsMeta is an unofficial fan site, not affiliated with Koin Games.",
@@ -274,8 +274,8 @@ const LABELS = {
     historySub: (n: number, w: number) => `Il gioco conserva gli esiti di tutte le tue partite (${n}, ${w} vinte). L'app recupera l'esito anche delle partite giocate mentre era chiusa, solo vittoria o sconfitta.`,
     missed: (n: number) => `${n} ${n === 1 ? "partita giocata" : "partite giocate"} ad app chiusa`,
     startup: "Avvio automatico",
-    start: { game: "Con il gioco", windows: "Con Windows", off: "Mai" },
-    startNote: "Con il gioco (consigliato): quando apri Origins TCG l'app parte da sola accanto all'orologio e registra le tue partite; finestra, overlay e pannelli si aprono solo quando apri l'app.",
+    start: { game: "Con il gioco", off: "Mai" },
+    startNote: "Con il gioco: l'app non si apre all'avvio del PC. Resta in attesa, invisibile e senza icona, e quando apri Origins TCG parte da sola accanto all'orologio e registra le tue partite; finestra, overlay e pannelli si aprono solo quando apri l'app.",
     dataFolder: "Apri la cartella dei dati",
     privacy: "OriginsMeta Tracker legge i file che Origins TCG salva su questo PC e, con lo scanner dello schermo acceso, la finestra del gioco; non tocca mai il gioco. Le immagini dello schermo non lasciano mai questo PC. Le tue partite si salvano su questo PC e vanno al tuo account OriginsMeta, che serve all'app per funzionare. Le immagini delle carte arrivano da originsmeta.com.",
     unofficial: "OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.",
@@ -463,8 +463,8 @@ const LABELS = {
     historySub: (n: number, w: number) => `El juego guarda los resultados de todas tus partidas (${n}, ${w} ganadas). El tracker también recupera el resultado de las partidas jugadas con él apagado, solo victoria o derrota.`,
     missed: (n: number) => `${n} ${n === 1 ? "partida jugada" : "partidas jugadas"} con la app cerrada`,
     startup: "Inicio automático",
-    start: { game: "Con el juego", windows: "Con Windows", off: "Nunca" },
-    startNote: "Con el juego (recomendado): cuando abres Origins TCG la app se inicia sola junto al reloj y registra tus partidas; la ventana, el overlay y los paneles se abren solo cuando abres la app.",
+    start: { game: "Con el juego", off: "Nunca" },
+    startNote: "Con el juego: la app no se abre al iniciar el PC. Espera invisible, sin icono, y cuando abres Origins TCG se inicia sola junto al reloj y registra tus partidas; la ventana, el overlay y los paneles se abren solo cuando abres la app.",
     dataFolder: "Abrir la carpeta de datos",
     privacy: "OriginsMeta Tracker lee los archivos que Origins TCG guarda en este PC y, con el escáner de pantalla activado, la ventana del juego; nunca toca el juego. Las imágenes de la pantalla nunca salen de este PC. Tus partidas se guardan en este PC y se envían a tu cuenta de OriginsMeta, que la app necesita para funcionar. Las imágenes de las cartas se cargan desde originsmeta.com.",
     unofficial: "OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.",
@@ -1006,9 +1006,9 @@ function overlayPanel(s: AppState) {
       ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}`);
 }
 
-/** Le opzioni dell'app, in Setup: avvio automatico (con il gioco, con Windows, mai), cartella dei dati, tutorial, guida e informativa. */
+/** Le opzioni dell'app, in Setup: avvio automatico (con il gioco o mai; "con Windows" tolto nella 0.4.9), cartella dei dati, tutorial, guida e informativa. */
 function appPanel(s: AppState) {
-  const start = (["game", "windows", "off"] as const)
+  const start = (["game", "off"] as const)
     .map((m) => `<label class="seg"><input type="radio" name="startup" value="${m}"${s.startMode === m ? " checked" : ""} /><span>${esc(L.start[m])}</span></label>`)
     .join("");
   return section("app", L.general, `v${s.version}`, `<div class="row"><span class="sub">${esc(L.startup)}</span><span class="segs">${start}</span></div>
