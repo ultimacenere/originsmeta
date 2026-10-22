@@ -21,7 +21,7 @@ export type CrimsonLabels = {
   howTo: string;
   rules: string;
   picker: { label: string; soon: string; data: string };
-  index: { legendaries: string; cards: string; versus: string };
+  index: { legendaries: string; cards: string; versus: string; across: string };
   snapshot: {
     title: string;
     plate: string;
@@ -78,6 +78,30 @@ export type CrimsonLabels = {
     missing: string;
     none: string;
   };
+  across: {
+    kicker: string;
+    title: string;
+    meta: string;
+    lead: string;
+    link: string;
+    storiesLabel: string;
+    banned: { kicker: string; all: string; some: string };
+    mover: { kicker: string; up: string; down: string };
+    card: { kicker: string; all: string; some: string };
+    banTitle: string;
+    banLead: string;
+    few: string;
+    shareTitle: string;
+    shareLead: string;
+    cardsTitle: string;
+    cardsLead: string;
+    cols: { legendary: string; card: string; all: string; change: string; inTop: string };
+    inTopValue: string;
+    cellBan: string;
+    cellShare: string;
+    cellCard: string;
+    notInTable: string;
+  };
   notes: {
     title: string;
     intro: string;
@@ -125,7 +149,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     howTo: "How to read the numbers",
     rules: "Crimson Cup rules",
     picker: { label: "Qualifiers", soon: "numbers not out yet", data: "official numbers" },
-    index: { legendaries: "Legendaries", cards: "Most played cards", versus: "Tournament vs ladder" },
+    index: { legendaries: "Legendaries", cards: "Most played cards", versus: "Tournament vs ladder", across: "Qualifiers compared" },
     snapshot: {
       title: "The qualifier at a glance",
       plate: "Crimson Cup",
@@ -190,6 +214,42 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       missing: "The ladder numbers are not available right now: the comparison comes back on its own.",
       none: "not recorded",
     },
+    across: {
+      kicker: "Qualifier by qualifier",
+      title: "The qualifiers compared",
+      meta: "{n} qualifiers",
+      lead: "The same official tables side by side: what stays the same from one qualifier to the next and what moves. Change is {last} compared with {prev}, in percentage points.",
+      link: "Compare the qualifiers",
+      storiesLabel: "The qualifiers in three facts",
+      banned: {
+        kicker: "The most banned",
+        all: "{name} is the most banned Legendary in all {n} qualifiers: its ban rate goes from {min} to {max}.",
+        some: "{name} is the most banned Legendary in {k} qualifiers out of {n}: its ban rate goes from {min} to {max}.",
+      },
+      mover: {
+        kicker: "The biggest move",
+        up: "{name} climbs more than any other between {prev} and {last}: banned {to} of the times it was seen, {d} points more than before ({from}).",
+        down: "{name} drops more than any other between {prev} and {last}: banned {to} of the times it was seen, {d} points fewer than before ({from}).",
+      },
+      card: {
+        kicker: "The cards that stay",
+        all: "{name} is the most played card in all {n} qualifiers, and {c} cards are among the {top} most played in every one.",
+        some: "{name} is the most played card in {k} qualifiers out of {n}, and {c} cards are among the {top} most played in every one.",
+      },
+      banTitle: "Ban rate, qualifier by qualifier",
+      banLead: "Out of the times each Legendary was seen at the ban, how many times it was banned. All together adds up the bans and the times seen of every qualifier.",
+      few: "In italics: seen fewer than {min} times at the ban, numbers that swing a lot from one qualifier to the next.",
+      shareTitle: "Decks brought, qualifier by qualifier",
+      shareLead: "Each Legendary's share of the decks in Koin's table. All together is the share of all the decks in the tables.",
+      cardsTitle: "The most played cards, qualifier by qualifier",
+      cardsLead: "Koin publishes the {top} most played cards of each qualifier. A dash means the card is not in that table: it is not zero, and we don't estimate it.",
+      cols: { legendary: "Legendary", card: "Card", all: "All together", change: "Change", inTop: "In the table" },
+      inTopValue: "{k} of {n}",
+      cellBan: "{q}: {b} of {s}",
+      cellShare: "{q}: {n} decks",
+      cellCard: "{q}: {n} decks, position {rank}",
+      notInTable: "not in the table",
+    },
     notes: {
       title: "How to read these numbers",
       intro: "These are the official numbers of the Crimson Cup, published by Koin Games on its Discord after each qualifier: we put them in order and set them next to the ladder. They are totals: decklists stay hidden until the top 4, so the single lists are not known.",
@@ -206,6 +266,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
         { term: "Furthest round", text: "the furthest round of the bracket reached by a deck with that Legendary: round {round} is the round of the 32 qualified." },
         { term: "Share of decks (cards)", text: "the share of all the decks submitted that contain the card, as Koin publishes it." },
         { term: "Ladder", text: "for the Legendaries the share of appearances in the recorded games, counting both players; for the cards the share of recorded games with the card in the deck of the player who records." },
+        { term: "All together", text: "the bans and the times seen of every qualifier added up; for the decks, the share of all the decks in the tables. Each qualifier counts its own decks." },
       ],
       dataTitle: "What we know and what we don't",
       list: [
@@ -250,7 +311,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     howTo: "Come leggere i numeri",
     rules: "Regole della Crimson Cup",
     picker: { label: "Qualificazioni", soon: "numeri non ancora usciti", data: "numeri ufficiali" },
-    index: { legendaries: "Leggendarie", cards: "Carte più giocate", versus: "Torneo contro ladder" },
+    index: { legendaries: "Leggendarie", cards: "Carte più giocate", versus: "Torneo contro ladder", across: "Qualificazioni a confronto" },
     snapshot: {
       title: "La qualificazione in sintesi",
       plate: "Crimson Cup",
@@ -315,6 +376,42 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       missing: "I numeri del ladder adesso non sono disponibili: il confronto torna da solo.",
       none: "non registrata",
     },
+    across: {
+      kicker: "Qualificazione per qualificazione",
+      title: "Le qualificazioni a confronto",
+      meta: "{n} qualificazioni",
+      lead: "Le stesse tabelle ufficiali una accanto all'altra: che cosa resta uguale da una qualificazione all'altra e che cosa si muove. La variazione è la {last} rispetto alla {prev}, in punti percentuali.",
+      link: "Le qualificazioni a confronto",
+      storiesLabel: "Le qualificazioni in tre fatti",
+      banned: {
+        kicker: "La più bandita",
+        all: "{name} è la Leggendaria più bandita in ognuna delle {n} qualificazioni: il suo ban rate va dal {min} al {max}.",
+        some: "{name} è la Leggendaria più bandita in {k} qualificazioni su {n}: il suo ban rate va dal {min} al {max}.",
+      },
+      mover: {
+        kicker: "Il cambio più grande",
+        up: "{name} sale più di tutte fra la {prev} e la {last}: bandita il {to} delle volte in cui è stata vista, {d} punti più di prima ({from}).",
+        down: "{name} scende più di tutte fra la {prev} e la {last}: bandita il {to} delle volte in cui è stata vista, {d} punti meno di prima ({from}).",
+      },
+      card: {
+        kicker: "Le carte che restano",
+        all: "{name} è la carta più giocata in ognuna delle {n} qualificazioni, e {c} carte sono fra le {top} più giocate in tutte.",
+        some: "{name} è la carta più giocata in {k} qualificazioni su {n}, e {c} carte sono fra le {top} più giocate in tutte.",
+      },
+      banTitle: "Il ban rate, qualificazione per qualificazione",
+      banLead: "Sulle volte in cui ogni Leggendaria è stata vista al ban, quante volte è stata bandita. Insieme somma i ban e le volte vista di tutte le qualificazioni.",
+      few: "In corsivo: viste meno di {min} volte al ban, numeri che cambiano molto da una qualificazione all'altra.",
+      shareTitle: "I mazzi portati, qualificazione per qualificazione",
+      shareLead: "La quota di ogni Leggendaria sui mazzi della tabella di Koin. Insieme è la quota su tutti i mazzi delle tabelle.",
+      cardsTitle: "Le carte più giocate, qualificazione per qualificazione",
+      cardsLead: "Koin pubblica le {top} carte più giocate di ogni qualificazione. Il trattino vuol dire che la carta non è in quella tabella: non è zero, e non la stimiamo.",
+      cols: { legendary: "Leggendaria", card: "Carta", all: "Insieme", change: "Variazione", inTop: "In tabella" },
+      inTopValue: "{k} su {n}",
+      cellBan: "{q}: {b} su {s}",
+      cellShare: "{q}: {n} mazzi",
+      cellCard: "{q}: {n} mazzi, posizione {rank}",
+      notInTable: "non in tabella",
+    },
     notes: {
       title: "Come leggere questi numeri",
       intro: "Sono i numeri ufficiali della Crimson Cup, pubblicati da Koin Games sul suo Discord dopo ogni qualificazione: noi li mettiamo in ordine e li affianchiamo al ladder. Sono totali: le liste restano segrete fino alla top 4, quindi le singole liste non si conoscono.",
@@ -331,6 +428,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
         { term: "Turno più avanzato", text: "il turno più avanzato del tabellone raggiunto da un mazzo con quella Leggendaria: il turno {round} è quello dei 32 qualificati." },
         { term: "Quota dei mazzi (carte)", text: "la quota di tutti i mazzi consegnati che contengono la carta, come la pubblica Koin." },
         { term: "Ladder", text: "per le Leggendarie la quota delle presenze nelle partite registrate, contando tutti e due i giocatori; per le carte la quota delle partite registrate con la carta nel mazzo di chi registra." },
+        { term: "Insieme", text: "i ban e le volte vista di tutte le qualificazioni sommati; per i mazzi, la quota su tutti i mazzi delle tabelle. Ogni qualificazione conta i suoi mazzi." },
       ],
       dataTitle: "Che cosa sappiamo e che cosa no",
       list: [
@@ -375,7 +473,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     howTo: "Cómo leer los números",
     rules: "Reglas de la Crimson Cup",
     picker: { label: "Clasificatorios", soon: "números aún no publicados", data: "números oficiales" },
-    index: { legendaries: "Legendarias", cards: "Cartas más usadas", versus: "Torneo frente a ladder" },
+    index: { legendaries: "Legendarias", cards: "Cartas más usadas", versus: "Torneo frente a ladder", across: "Clasificatorios comparados" },
     snapshot: {
       title: "El clasificatorio de un vistazo",
       plate: "Crimson Cup",
@@ -440,6 +538,42 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       missing: "Los números del ladder no están disponibles ahora mismo: la comparación vuelve sola.",
       none: "no registrada",
     },
+    across: {
+      kicker: "Clasificatorio a clasificatorio",
+      title: "Los clasificatorios comparados",
+      meta: "{n} clasificatorios",
+      lead: "Las mismas tablas oficiales, una al lado de la otra: qué se mantiene de un clasificatorio a otro y qué se mueve. La variación es el {last} frente al {prev}, en puntos porcentuales.",
+      link: "Compara los clasificatorios",
+      storiesLabel: "Los clasificatorios en tres datos",
+      banned: {
+        kicker: "La más baneada",
+        all: "{name} es la Legendaria más baneada en los {n} clasificatorios: su ban rate va del {min} al {max}.",
+        some: "{name} es la Legendaria más baneada en {k} de {n} clasificatorios: su ban rate va del {min} al {max}.",
+      },
+      mover: {
+        kicker: "El mayor cambio",
+        up: "{name} sube más que ninguna entre el {prev} y el {last}: baneada el {to} de las veces que se vio, {d} puntos más que antes ({from}).",
+        down: "{name} baja más que ninguna entre el {prev} y el {last}: baneada el {to} de las veces que se vio, {d} puntos menos que antes ({from}).",
+      },
+      card: {
+        kicker: "Las cartas que se quedan",
+        all: "{name} es la carta más usada en los {n} clasificatorios, y {c} cartas están entre las {top} más usadas en todos.",
+        some: "{name} es la carta más usada en {k} de {n} clasificatorios, y {c} cartas están entre las {top} más usadas en todos.",
+      },
+      banTitle: "El ban rate, clasificatorio a clasificatorio",
+      banLead: "De las veces que cada Legendaria se vio en el ban, cuántas veces fue baneada. En conjunto suma los bans y las veces vista de todos los clasificatorios.",
+      few: "En cursiva: vistas menos de {min} veces en el ban, números que cambian mucho de un clasificatorio a otro.",
+      shareTitle: "Los mazos llevados, clasificatorio a clasificatorio",
+      shareLead: "La cuota de cada Legendaria sobre los mazos de la tabla de Koin. En conjunto es la cuota sobre todos los mazos de las tablas.",
+      cardsTitle: "Las cartas más usadas, clasificatorio a clasificatorio",
+      cardsLead: "Koin publica las {top} cartas más usadas de cada clasificatorio. El guion significa que la carta no está en esa tabla: no es cero, y no la estimamos.",
+      cols: { legendary: "Legendaria", card: "Carta", all: "En conjunto", change: "Variación", inTop: "En la tabla" },
+      inTopValue: "{k} de {n}",
+      cellBan: "{q}: {b} de {s}",
+      cellShare: "{q}: {n} mazos",
+      cellCard: "{q}: {n} mazos, posición {rank}",
+      notInTable: "no está en la tabla",
+    },
     notes: {
       title: "Cómo leer estos números",
       intro: "Son los números oficiales de la Crimson Cup, publicados por Koin Games en su Discord después de cada clasificatorio: nosotros los ordenamos y los ponemos junto al ladder. Son totales: las listas siguen ocultas hasta el top 4, así que no se conocen las listas concretas.",
@@ -456,6 +590,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
         { term: "Ronda más avanzada", text: "la ronda más avanzada del cuadro a la que llegó un mazo con esa Legendaria: la ronda {round} es la de los 32 clasificados." },
         { term: "Cuota de mazos (cartas)", text: "la cuota de todos los mazos entregados que contienen la carta, tal como la publica Koin." },
         { term: "Ladder", text: "para las Legendarias, la cuota de apariciones en las partidas registradas contando a los dos jugadores; para las cartas, la cuota de partidas registradas con la carta en el mazo de quien registra." },
+        { term: "En conjunto", text: "los bans y las veces vista de todos los clasificatorios sumados; para los mazos, la cuota sobre todos los mazos de las tablas. Cada clasificatorio cuenta sus propios mazos." },
       ],
       dataTitle: "Qué sabemos y qué no",
       list: [
@@ -500,7 +635,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     howTo: "Comment lire les chiffres",
     rules: "Règles de la Crimson Cup",
     picker: { label: "Qualifications", soon: "chiffres pas encore publiés", data: "chiffres officiels" },
-    index: { legendaries: "Légendaires", cards: "Cartes les plus jouées", versus: "Tournoi et ladder" },
+    index: { legendaries: "Légendaires", cards: "Cartes les plus jouées", versus: "Tournoi et ladder", across: "Qualifications comparées" },
     snapshot: {
       title: "La qualification en un coup d'œil",
       plate: "Crimson Cup",
@@ -565,6 +700,42 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       missing: "Les chiffres du ladder ne sont pas disponibles pour le moment : la comparaison reviendra d'elle-même.",
       none: "non enregistrée",
     },
+    across: {
+      kicker: "Qualification par qualification",
+      title: "Les qualifications comparées",
+      meta: "{n} qualifications",
+      lead: "Les mêmes tableaux officiels côte à côte : ce qui reste pareil d'une qualification à l'autre et ce qui bouge. La variation compare la qualification {last} à la qualification {prev}, en points de pourcentage.",
+      link: "Comparer les qualifications",
+      storiesLabel: "Les qualifications en trois faits",
+      banned: {
+        kicker: "La plus bannie",
+        all: "{name} est la Légendaire la plus bannie dans les {n} qualifications : son ban rate va de {min} à {max}.",
+        some: "{name} est la Légendaire la plus bannie dans {k} qualifications sur {n} : son ban rate va de {min} à {max}.",
+      },
+      mover: {
+        kicker: "Le plus grand changement",
+        up: "{name} monte plus que toutes les autres entre {prev} et {last} : bannie {to} des fois où elle a été vue, {d} points de plus qu'avant ({from}).",
+        down: "{name} baisse plus que toutes les autres entre {prev} et {last} : bannie {to} des fois où elle a été vue, {d} points de moins qu'avant ({from}).",
+      },
+      card: {
+        kicker: "Les cartes qui restent",
+        all: "{name} est la carte la plus jouée dans les {n} qualifications, et {c} cartes figurent parmi les {top} plus jouées dans chacune.",
+        some: "{name} est la carte la plus jouée dans {k} qualifications sur {n}, et {c} cartes figurent parmi les {top} plus jouées dans chacune.",
+      },
+      banTitle: "Le ban rate, qualification par qualification",
+      banLead: "Sur les fois où chaque Légendaire a été vue au ban, combien de fois elle a été bannie. Ensemble additionne les bans et les fois où elle a été vue dans toutes les qualifications.",
+      few: "En italique : vues moins de {min} fois au ban, des chiffres qui varient beaucoup d'une qualification à l'autre.",
+      shareTitle: "Les decks apportés, qualification par qualification",
+      shareLead: "La part de chaque Légendaire dans les decks du tableau de Koin. Ensemble est la part sur tous les decks des tableaux.",
+      cardsTitle: "Les cartes les plus jouées, qualification par qualification",
+      cardsLead: "Koin publie les {top} cartes les plus jouées de chaque qualification. Un tiret signifie que la carte n'est pas dans ce tableau : ce n'est pas zéro, et nous ne l'estimons pas.",
+      cols: { legendary: "Légendaire", card: "Carte", all: "Ensemble", change: "Variation", inTop: "Dans le tableau" },
+      inTopValue: "{k} sur {n}",
+      cellBan: "{q} : {b} sur {s}",
+      cellShare: "{q} : {n} decks",
+      cellCard: "{q} : {n} decks, position {rank}",
+      notInTable: "pas dans le tableau",
+    },
     notes: {
       title: "Comment lire ces chiffres",
       intro: "Ce sont les chiffres officiels de la Crimson Cup, publiés par Koin Games sur son Discord après chaque qualification : nous les mettons en ordre et les plaçons à côté du ladder. Ce sont des totaux : les listes restent cachées jusqu'au top 4, on ne connaît donc pas les listes une par une.",
@@ -581,6 +752,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
         { term: "Tour le plus avancé", text: "le tour le plus avancé du tableau atteint par un deck avec cette Légendaire : le tour {round} est celui des 32 qualifiés." },
         { term: "Part des decks (cartes)", text: "la part de tous les decks remis qui contiennent la carte, telle que Koin la publie." },
         { term: "Ladder", text: "pour les Légendaires, la part des apparitions dans les parties enregistrées en comptant les deux joueurs ; pour les cartes, la part des parties enregistrées avec la carte dans le deck du joueur qui enregistre." },
+        { term: "Ensemble", text: "les bans et les fois où elle a été vue dans toutes les qualifications, additionnés ; pour les decks, la part sur tous les decks des tableaux. Chaque qualification compte ses propres decks." },
       ],
       dataTitle: "Ce que nous savons et ce que nous ne savons pas",
       list: [
@@ -625,7 +797,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     howTo: "Como ler os números",
     rules: "Regras da Crimson Cup",
     picker: { label: "Classificatórias", soon: "números ainda não publicados", data: "números oficiais" },
-    index: { legendaries: "Lendárias", cards: "Cartas mais usadas", versus: "Torneio contra ladder" },
+    index: { legendaries: "Lendárias", cards: "Cartas mais usadas", versus: "Torneio contra ladder", across: "Classificatórias comparadas" },
     snapshot: {
       title: "A classificatória em resumo",
       plate: "Crimson Cup",
@@ -690,6 +862,42 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       missing: "Os números da ladder não estão disponíveis agora: a comparação volta sozinha.",
       none: "não registrada",
     },
+    across: {
+      kicker: "Classificatória por classificatória",
+      title: "As classificatórias comparadas",
+      meta: "{n} classificatórias",
+      lead: "As mesmas tabelas oficiais lado a lado: o que se mantém de uma classificatória para a outra e o que se mexe. A variação é a {last} em relação à {prev}, em pontos percentuais.",
+      link: "Compare as classificatórias",
+      storiesLabel: "As classificatórias em três fatos",
+      banned: {
+        kicker: "A mais banida",
+        all: "{name} é a Lendária mais banida nas {n} classificatórias: o ban rate dela vai de {min} a {max}.",
+        some: "{name} é a Lendária mais banida em {k} de {n} classificatórias: o ban rate dela vai de {min} a {max}.",
+      },
+      mover: {
+        kicker: "A maior mudança",
+        up: "{name} sobe mais do que todas entre a {prev} e a {last}: banida em {to} das vezes em que foi vista, {d} pontos a mais do que antes ({from}).",
+        down: "{name} cai mais do que todas entre a {prev} e a {last}: banida em {to} das vezes em que foi vista, {d} pontos a menos do que antes ({from}).",
+      },
+      card: {
+        kicker: "As cartas que ficam",
+        all: "{name} é a carta mais usada nas {n} classificatórias, e {c} cartas estão entre as {top} mais usadas em todas.",
+        some: "{name} é a carta mais usada em {k} de {n} classificatórias, e {c} cartas estão entre as {top} mais usadas em todas.",
+      },
+      banTitle: "O ban rate, classificatória por classificatória",
+      banLead: "Das vezes em que cada Lendária foi vista no ban, quantas vezes foi banida. Juntas soma os bans e as vezes vista de todas as classificatórias.",
+      few: "Em itálico: vistas menos de {min} vezes no ban, números que mudam muito de uma classificatória para a outra.",
+      shareTitle: "Os decks levados, classificatória por classificatória",
+      shareLead: "A parcela de cada Lendária nos decks da tabela da Koin. Juntas é a parcela sobre todos os decks das tabelas.",
+      cardsTitle: "As cartas mais usadas, classificatória por classificatória",
+      cardsLead: "A Koin publica as {top} cartas mais usadas de cada classificatória. O traço quer dizer que a carta não está naquela tabela: não é zero, e não a estimamos.",
+      cols: { legendary: "Lendária", card: "Carta", all: "Juntas", change: "Variação", inTop: "Na tabela" },
+      inTopValue: "{k} de {n}",
+      cellBan: "{q}: {b} de {s}",
+      cellShare: "{q}: {n} decks",
+      cellCard: "{q}: {n} decks, posição {rank}",
+      notInTable: "fora da tabela",
+    },
     notes: {
       title: "Como ler estes números",
       intro: "São os números oficiais da Crimson Cup, publicados pela Koin Games no seu Discord depois de cada classificatória: nós os colocamos em ordem e ao lado da ladder. São totais: as listas ficam ocultas até o top 4, então as listas individuais não são conhecidas.",
@@ -706,6 +914,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
         { term: "Rodada mais avançada", text: "a rodada mais avançada da chave que um deck com essa Lendária alcançou: a rodada {round} é a dos 32 classificados." },
         { term: "Parcela dos decks (cartas)", text: "a parcela de todos os decks entregues que têm a carta, como a Koin a publica." },
         { term: "Ladder", text: "para as Lendárias, a parcela das aparições nas partidas registradas contando os dois jogadores; para as cartas, a parcela das partidas registradas com a carta no deck de quem registra." },
+        { term: "Juntas", text: "os bans e as vezes vista de todas as classificatórias somados; para os decks, a parcela sobre todos os decks das tabelas. Cada classificatória conta os próprios decks." },
       ],
       dataTitle: "O que sabemos e o que não sabemos",
       list: [
@@ -750,7 +959,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     howTo: "So liest du die Zahlen",
     rules: "Regeln des Crimson Cup",
     picker: { label: "Qualifikationen", soon: "Zahlen noch nicht veröffentlicht", data: "offizielle Zahlen" },
-    index: { legendaries: "Legendäre", cards: "Meistgespielte Karten", versus: "Turnier gegen Ladder" },
+    index: { legendaries: "Legendäre", cards: "Meistgespielte Karten", versus: "Turnier gegen Ladder", across: "Qualifikationen im Vergleich" },
     snapshot: {
       title: "Die Qualifikation auf einen Blick",
       plate: "Crimson Cup",
@@ -815,6 +1024,42 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       missing: "Die Zahlen der Ladder sind gerade nicht verfügbar: Der Vergleich kommt von selbst zurück.",
       none: "nicht erfasst",
     },
+    across: {
+      kicker: "Qualifikation für Qualifikation",
+      title: "Die Qualifikationen im Vergleich",
+      meta: "{n} Qualifikationen",
+      lead: "Dieselben offiziellen Tabellen nebeneinander: was von einer Qualifikation zur nächsten gleich bleibt und was sich bewegt. Die Veränderung vergleicht {last} mit {prev}, in Prozentpunkten.",
+      link: "Qualifikationen vergleichen",
+      storiesLabel: "Die Qualifikationen in drei Fakten",
+      banned: {
+        kicker: "Am häufigsten gebannt",
+        all: "{name} ist in allen {n} Qualifikationen die am häufigsten gebannte Legendäre: Ihre Ban-Rate reicht von {min} bis {max}.",
+        some: "{name} ist in {k} von {n} Qualifikationen die am häufigsten gebannte Legendäre: Ihre Ban-Rate reicht von {min} bis {max}.",
+      },
+      mover: {
+        kicker: "Die größte Bewegung",
+        up: "{name} steigt zwischen {prev} und {last} stärker als jede andere: gebannt in {to} der Fälle, in denen sie gesehen wurde, {d} Punkte mehr als vorher ({from}).",
+        down: "{name} fällt zwischen {prev} und {last} stärker als jede andere: gebannt in {to} der Fälle, in denen sie gesehen wurde, {d} Punkte weniger als vorher ({from}).",
+      },
+      card: {
+        kicker: "Die Karten, die bleiben",
+        all: "{name} ist in allen {n} Qualifikationen die meistgespielte Karte, und {c} Karten sind in jeder unter den {top} meistgespielten.",
+        some: "{name} ist in {k} von {n} Qualifikationen die meistgespielte Karte, und {c} Karten sind in jeder unter den {top} meistgespielten.",
+      },
+      banTitle: "Die Ban-Rate, Qualifikation für Qualifikation",
+      banLead: "Wie oft jede Legendäre gebannt wurde, gemessen an den Malen, in denen sie beim Ban gesehen wurde. Zusammen zählt die Bans und die Male aller Qualifikationen zusammen.",
+      few: "Kursiv: beim Ban weniger als {min}-mal gesehen, Zahlen, die von einer Qualifikation zur nächsten stark schwanken.",
+      shareTitle: "Mitgebrachte Decks, Qualifikation für Qualifikation",
+      shareLead: "Der Anteil jeder Legendären an den Decks in der Tabelle von Koin. Zusammen ist der Anteil an allen Decks der Tabellen.",
+      cardsTitle: "Die meistgespielten Karten, Qualifikation für Qualifikation",
+      cardsLead: "Koin veröffentlicht die {top} meistgespielten Karten jeder Qualifikation. Ein Strich heißt, dass die Karte nicht in dieser Tabelle steht: Das ist nicht null, und wir schätzen es nicht.",
+      cols: { legendary: "Legendäre", card: "Karte", all: "Zusammen", change: "Veränderung", inTop: "In der Tabelle" },
+      inTopValue: "{k} von {n}",
+      cellBan: "{q}: {b} von {s}",
+      cellShare: "{q}: {n} Decks",
+      cellCard: "{q}: {n} Decks, Platz {rank}",
+      notInTable: "nicht in der Tabelle",
+    },
     notes: {
       title: "So liest du diese Zahlen",
       intro: "Das sind die offiziellen Zahlen des Crimson Cup, die Koin Games nach jeder Qualifikation auf seinem Discord veröffentlicht: Wir ordnen sie und stellen sie neben die Ladder. Es sind Summen: Die Decklists bleiben bis zu den Top 4 verborgen, die einzelnen Listen sind also nicht bekannt.",
@@ -831,6 +1076,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
         { term: "Weiteste Runde", text: "die weiteste Runde im Turnierbaum, die ein Deck mit dieser Legendären erreicht hat: Runde {round} ist die Runde der 32 Qualifizierten." },
         { term: "Anteil der Decks (Karten)", text: "der Anteil aller eingereichten Decks, die die Karte enthalten, so wie Koin ihn veröffentlicht." },
         { term: "Ladder", text: "bei den Legendären der Anteil der Auftritte in den erfassten Matches, beide Seiten gezählt; bei den Karten der Anteil der erfassten Matches mit der Karte im Deck der Person, die erfasst." },
+        { term: "Zusammen", text: "die Bans und die Male, die sie in allen Qualifikationen gesehen wurde, zusammengezählt; bei den Decks der Anteil an allen Decks der Tabellen. Jede Qualifikation zählt ihre eigenen Decks." },
       ],
       dataTitle: "Was wir wissen und was nicht",
       list: [
@@ -875,7 +1121,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     howTo: "Как читать эти числа",
     rules: "Правила Crimson Cup",
     picker: { label: "Квалификации", soon: "числа ещё не опубликованы", data: "официальные числа" },
-    index: { legendaries: "Легендарные карты", cards: "Самые популярные карты", versus: "Турнир и ладдер" },
+    index: { legendaries: "Легендарные карты", cards: "Самые популярные карты", versus: "Турнир и ладдер", across: "Сравнение квалификаций" },
     snapshot: {
       title: "Квалификация в двух словах",
       plate: "Crimson Cup",
@@ -940,6 +1186,42 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
       missing: "Числа ладдера сейчас недоступны: сравнение вернётся само.",
       none: "не записано",
     },
+    across: {
+      kicker: "Квалификация за квалификацией",
+      title: "Сравнение квалификаций",
+      meta: "квалификаций: {n}",
+      lead: "Те же официальные таблицы рядом друг с другом: что остаётся неизменным от квалификации к квалификации, а что меняется. Изменение — это {last} по сравнению с {prev}, в процентных пунктах.",
+      link: "Сравнить квалификации",
+      storiesLabel: "Квалификации в трёх фактах",
+      banned: {
+        kicker: "Чаще всех банят",
+        all: "{name} — самая забаненная Легендарная карта во всех квалификациях ({n}): её бан-рейт — от {min} до {max}.",
+        some: "{name} — самая забаненная Легендарная карта в квалификациях: {k} из {n}; её бан-рейт — от {min} до {max}.",
+      },
+      mover: {
+        kicker: "Самое большое изменение",
+        up: "{name} растёт сильнее всех между {prev} и {last}: её банили в {to} случаев, когда встречали, на {d} п. п. больше, чем раньше ({from}).",
+        down: "{name} падает сильнее всех между {prev} и {last}: её банили в {to} случаев, когда встречали, на {d} п. п. меньше, чем раньше ({from}).",
+      },
+      card: {
+        kicker: "Карты, которые остаются",
+        all: "{name} — самая популярная карта во всех квалификациях ({n}), а ещё карт: {c} — входят в топ-{top} каждой из них.",
+        some: "{name} — самая популярная карта в квалификациях: {k} из {n}; карт в топ-{top} каждой квалификации: {c}.",
+      },
+      banTitle: "Бан-рейт по квалификациям",
+      banLead: "Сколько раз каждую Легендарную карту забанили из всех случаев, когда её встречали на этапе банов. «Вместе» складывает баны и появления всех квалификаций.",
+      few: "Курсивом: встречены на этапе банов меньше {min} раз, такие числа сильно меняются от квалификации к квалификации.",
+      shareTitle: "Взятые колоды по квалификациям",
+      shareLead: "Доля каждой Легендарной карты среди колод в таблице Koin. «Вместе» — доля среди всех колод в таблицах.",
+      cardsTitle: "Самые популярные карты по квалификациям",
+      cardsLead: "Koin публикует топ-{top} самых популярных карт каждой квалификации. Прочерк значит, что карты нет в этой таблице: это не ноль, и мы её не оцениваем.",
+      cols: { legendary: "Легендарная карта", card: "Карта", all: "Вместе", change: "Изменение", inTop: "В таблице" },
+      inTopValue: "{k} из {n}",
+      cellBan: "{q}: {b} из {s}",
+      cellShare: "{q}: колод: {n}",
+      cellCard: "{q}: колод: {n}, место {rank}",
+      notInTable: "нет в таблице",
+    },
     notes: {
       title: "Как читать эти числа",
       intro: "Это официальные числа Crimson Cup, которые Koin Games публикует в своём Discord после каждой квалификации: мы упорядочиваем их и ставим рядом с ладдером. Это итоги: списки колод скрыты до топ-4, поэтому отдельные списки неизвестны.",
@@ -956,6 +1238,7 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
         { term: "Самый дальний раунд", text: "самый дальний раунд сетки, которого достигла колода с этой Легендарной картой: раунд {round} — раунд 32 прошедших квалификацию." },
         { term: "Доля колод (карты)", text: "доля всех поданных колод, в которых есть карта, как её публикует Koin." },
         { term: "Ладдер", text: "для Легендарных карт — доля появлений в записанных партиях с учётом обоих игроков; для карт — доля записанных партий, где карта есть в колоде записывающего игрока." },
+        { term: "Вместе", text: "баны и появления на этапе банов во всех квалификациях, сложенные вместе; для колод — доля среди всех колод в таблицах. Каждая квалификация считает свои колоды." },
       ],
       dataTitle: "Что мы знаем и чего не знаем",
       list: [

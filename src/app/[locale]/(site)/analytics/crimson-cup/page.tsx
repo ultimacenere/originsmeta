@@ -5,7 +5,22 @@ import { formatDate, formatDateShort, href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { getCard, getCardByKey, patchLabel, type Card } from "@/lib/data/cards";
 import { CRIMSON_SOURCE_URL, crimsonQualifiers, crimsonRegions } from "@/lib/data/crimsonCup";
-import { biggestGaps, fillCrimson as fmt, headlines, latestWithStats, legendaryViews, MIN_SEEN_FOR_STORY, versusCards, versusLegendaries, withStats, type LadderLegendary, type QualifierWithStats } from "@/lib/crimsonCup";
+import {
+  acrossCards,
+  acrossHeadlines,
+  acrossLegendaries,
+  biggestGaps,
+  fillCrimson as fmt,
+  headlines,
+  latestWithStats,
+  legendaryViews,
+  MIN_SEEN_FOR_STORY,
+  versusCards,
+  versusLegendaries,
+  withStats,
+  type LadderLegendary,
+  type QualifierWithStats,
+} from "@/lib/crimsonCup";
 import { crimsonCupLabels } from "@/lib/crimsonCupLabels";
 import { readWinrate } from "@/lib/community/trackerStatsQueries";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
@@ -33,6 +48,13 @@ import { CrimsonTabs, type CrimsonTab } from "@/components/crimson/CrimsonTabs";
   ANALYTICS_PUBLIC spento) la sezione del confronto dice solo che non è disponibile.
 
   Indicizzabile in tutte le lingue, in sitemap. Legge il Tracker: ISR (revalidate 300, come /analytics); il resto è statico.
+
+  Le qualificazioni a confronto (22/10/2026, Pierluigi: "una dashboard dove i dati di ogni qualificazione parlano con le
+  altre qualificazioni", scelta: sul sito): fascia fuori dalle schede (#across), da due qualificazioni con i numeri, con tre
+  fatti che le legano e tre tabelle a una colonna per qualificazione (ban rate, mazzi portati, carte più giocate). Celle
+  colorate con una sola tinta per tabella (rosa per i ban, menta per le quote) e il numero sempre scritto; "Insieme" somma
+  le tabelle, "Variazione" è l'ultima qualificazione meno quella prima. Le carte che Koin non pubblica in una qualificazione
+  hanno il trattino: non zero, e nessuna stima.
 */
 export const revalidate = 300;
 
@@ -95,6 +117,8 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
   const region = (name: string) => crimsonRegions[name.split(" ")[0]]?.[locale] ?? "";
   const legName = (card: Card) => <CardName name={card.name} legendary legendaryLabel={legendaryLabel} />;
 
+  const hasAcross = ready.length >= 2;
+
   const tabs: CrimsonTab[] = crimsonQualifiers.map((q) => ({
     id: q.id,
     name: q.name,
@@ -138,9 +162,10 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
     const ladderLegFor = (slug: string) => ladder?.legendaries.get(slug);
 
     const index = [
-      { id: "legendaries", label: L.index.legendaries, count: legs.length },
-      { id: "cards", label: L.index.cards, count: cards.length },
-      { id: "versus", label: L.index.versus, count: undefined },
+      { href: `#${sec("legendaries")}`, label: L.index.legendaries, count: legs.length },
+      { href: `#${sec("cards")}`, label: L.index.cards, count: cards.length },
+      { href: `#${sec("versus")}`, label: L.index.versus, count: undefined },
+      ...(hasAcross ? [{ href: "#across", label: L.index.across, count: ready.length }] : []),
     ];
 
     return (
@@ -148,8 +173,8 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
         <nav aria-label={d.tier.onThisPage} className="an-index">
           <ol className="an-wrap">
             {index.map((it, i) => (
-              <li key={it.id}>
-                <a href={`#${sec(it.id)}`}>
+              <li key={it.href}>
+                <a href={it.href}>
                   <b>{String(i + 1).padStart(2, "0")}</b>
                   {it.label}
                   {it.count !== undefined ? <span className="an-index-count">{N(it.count)}</span> : null}
@@ -629,6 +654,247 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
 
   const latest = initial ?? ready[ready.length - 1];
 
+  /** Le qualificazioni a confronto: tre fatti e tre tabelle, una colonna per qualificazione (dalla seconda con i numeri). */
+  const acrossSection = () => {
+    const prevQ = ready[ready.length - 2];
+    const lastQ = ready[ready.length - 1];
+    const ah = acrossHeadlines(ready);
+    const legs = acrossLegendaries(ready).flatMap((l) => {
+      const card = getCard(l.legendary);
+      return card ? [{ ...l, card }] : [];
+    });
+    const byShare = [...legs].sort((a, b) => b.share - a.share || b.submitted - a.submitted || a.legendary.localeCompare(b.legendary));
+    const cards = acrossCards(ready).flatMap((c) => {
+      const card = getCard(c.card);
+      return card ? [{ ...c, info: card }] : [];
+    });
+    const banAxis = ceilTo(Math.max(...legs.flatMap((l) => l.points.map((p) => p?.banRate ?? 0))));
+    const shareAxis = ceilTo(Math.max(...legs.flatMap((l) => l.points.map((p) => p?.share ?? 0))));
+    const cardShares = cards.flatMap((c) => c.points.flatMap((p) => (p ? [p.share] : [])));
+    const cardLo = Math.min(...cardShares);
+    const cardHi = Math.max(...cardShares);
+    /**
+     * Intensità della tinta della cella fra lo (6%) e hi (fino al 50% per il rosa, al 35% per la menta: il testo chiaro resta
+     * sopra 4,5:1). Ban e quote delle Leggendarie partono da zero; le carte, tutte fra il 20 e il 50%, dalla quota più bassa.
+     */
+    const heat = (r: number, lo: number, hi: number, max: number) => {
+      const t = hi > lo ? Math.min(1, Math.max(0, (r - lo) / (hi - lo))) : 1;
+      return { "--heat": `${(6 + t * (max - 6)).toFixed(1)}%` } as CSSProperties;
+    };
+    const change = (diff: number | null) => {
+      if (diff === null) return "—";
+      const arrow = Math.abs(diff) < 0.0005 ? "=" : diff > 0 ? "▲" : "▼";
+      return `${arrow} ${deltaText(0.5 + diff, locale)} pt`;
+    };
+    const few = (seen: number) => seen < MIN_SEEN_FOR_STORY;
+    /** "AMER #2" non va a capo a metà */
+    const nb = (name: string) => name.replace(/ /g, "\u00a0");
+    const colon = locale === "fr" ? " :" : ":";
+    const topBanned = ah.topBanned ? getCard(ah.topBanned.legendary) : undefined;
+    const mover = ah.mover ? getCard(ah.mover.legendary) : undefined;
+    const topCard = ah.topCard ? getCard(ah.topCard.card) : undefined;
+    const qHead = ready.map((q) => (
+      <th key={q.id} scope="col" className={q.id === lastQ.id ? "cc-col-last" : undefined}>
+        {q.name}
+      </th>
+    ));
+
+    return (
+      <section id="across" className="an-band an-band--felt scroll-mt-36" aria-labelledby="across-h">
+        <div className="an-wrap">
+          <SectionHead num={4} kicker={L.across.kicker} title={L.across.title} id="across-h" meta={fmt(L.across.meta, { n: N(ready.length) })} />
+          <p className="an-lead">{fmt(L.across.lead, { last: nb(lastQ.name), prev: nb(prevQ.name) })}</p>
+
+          <div className="an-stories" role="group" aria-label={L.across.storiesLabel}>
+            {topBanned && ah.topBanned ? (
+              <article className="an-story is-down">
+                <span className="kicker">{L.across.banned.kicker}</span>
+                <p>
+                  {fmtNode(ah.topBanned.times === ah.qualifiers ? L.across.banned.all : L.across.banned.some, {
+                    name: <strong>{legName(topBanned)}</strong>,
+                    n: ah.qualifiers,
+                    k: ah.topBanned.times,
+                    min: P(ah.topBanned.min),
+                    max: P(ah.topBanned.max),
+                  })}
+                </p>
+              </article>
+            ) : null}
+            {mover && ah.mover ? (
+              <article className="an-story is-watch">
+                <span className="kicker">{L.across.mover.kicker}</span>
+                <p>
+                  {fmtNode(ah.mover.delta > 0 ? L.across.mover.up : L.across.mover.down, {
+                    name: <strong>{legName(mover)}</strong>,
+                    prev: nb(ah.mover.prev),
+                    last: nb(ah.mover.last),
+                    from: P(ah.mover.from),
+                    to: P(ah.mover.to),
+                    d: pctNum(Math.abs(ah.mover.delta), locale),
+                  })}
+                </p>
+              </article>
+            ) : null}
+            {topCard && ah.topCard ? (
+              <article className="an-story">
+                <span className="kicker">{L.across.card.kicker}</span>
+                <p>
+                  {fmtNode(ah.topCard.times === ah.qualifiers ? L.across.card.all : L.across.card.some, {
+                    name: (
+                      <strong>
+                        <CardName name={topCard.name} legendary={topCard.legendary} legendaryLabel={legendaryLabel} />
+                      </strong>
+                    ),
+                    n: ah.qualifiers,
+                    k: ah.topCard.times,
+                    c: N(ah.alwaysCards),
+                    top: ah.top,
+                  })}
+                </p>
+              </article>
+            ) : null}
+          </div>
+
+          <div className="an-block">
+            <h3 className="an-sub-h">{L.across.banTitle}</h3>
+            <p className="an-lead">{L.across.banLead}</p>
+            <p className="cc-heat-note">{fmt(L.across.few, { min: MIN_SEEN_FOR_STORY })}</p>
+            <div className="an-panel an-table-box">
+              <table className="an-table an-sticky-col cc-heat-table">
+                <caption className="sr-only">{L.across.banTitle}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{L.across.cols.legendary}</th>
+                    {qHead}
+                    <th scope="col">{L.across.cols.all}</th>
+                    <th scope="col">{L.across.cols.change}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {legs.map((l) => (
+                    <tr key={l.legendary}>
+                      <td>
+                        <Link href={cardHref(l.card)} prefetch={false} className="an-table-link">
+                          {legName(l.card)}
+                        </Link>
+                      </td>
+                      {l.points.map((p, i) =>
+                        p ? (
+                          <td
+                            key={ready[i].id}
+                            className={`is-num cc-heat is-ban${few(p.seen) ? " is-few" : ""}`}
+                            style={heat(p.banRate, 0, banAxis, 50)}
+                            title={fmt(L.across.cellBan, { q: ready[i].name, b: N(p.banned), s: N(p.seen) })}
+                          >
+                            {P(p.banRate)}
+                          </td>
+                        ) : (
+                          <td key={ready[i].id} className="is-num cc-heat is-none" title={`${ready[i].name}${colon} ${L.across.notInTable}`}>
+                            —
+                          </td>
+                        ),
+                      )}
+                      <td className={`is-num cc-heat is-ban${few(l.seen) ? " is-few" : ""}`} style={heat(l.banRate, 0, banAxis, 50)} title={fmt(L.legendaries.rowBan, { b: N(l.banned), s: N(l.seen) })}>
+                        <b>{P(l.banRate)}</b>
+                      </td>
+                      <td className={`is-num cc-change${l.points.slice(-2).some((p) => p && few(p.seen)) ? " is-few" : ""}`}>{change(l.banDelta)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="an-block">
+            <h3 className="an-sub-h">{L.across.shareTitle}</h3>
+            <p className="an-lead">{L.across.shareLead}</p>
+            <div className="an-panel an-table-box">
+              <table className="an-table an-sticky-col cc-heat-table">
+                <caption className="sr-only">{L.across.shareTitle}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{L.across.cols.legendary}</th>
+                    {qHead}
+                    <th scope="col">{L.across.cols.all}</th>
+                    <th scope="col">{L.across.cols.change}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {byShare.map((l) => (
+                    <tr key={l.legendary}>
+                      <td>
+                        <Link href={cardHref(l.card)} prefetch={false} className="an-table-link">
+                          {legName(l.card)}
+                        </Link>
+                      </td>
+                      {l.points.map((p, i) =>
+                        p ? (
+                          <td key={ready[i].id} className="is-num cc-heat" style={heat(p.share, 0, shareAxis, 35)} title={fmt(L.across.cellShare, { q: ready[i].name, n: N(p.submitted) })}>
+                            {P(p.share)}
+                          </td>
+                        ) : (
+                          <td key={ready[i].id} className="is-num cc-heat is-none" title={`${ready[i].name}${colon} ${L.across.notInTable}`}>
+                            —
+                          </td>
+                        ),
+                      )}
+                      <td className="is-num cc-heat" style={heat(l.share, 0, shareAxis, 35)} title={fmt(L.legendaries.rowDecks, { n: N(l.submitted) })}>
+                        <b>{P(l.share)}</b>
+                      </td>
+                      <td className="is-num cc-change">{change(l.shareDelta)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="an-block">
+            <h3 className="an-sub-h">{L.across.cardsTitle}</h3>
+            <p className="an-lead">{fmt(L.across.cardsLead, { top: ah.top })}</p>
+            <div className="an-panel an-table-box">
+              <table className="an-table an-sticky-col cc-heat-table">
+                <caption className="sr-only">{L.across.cardsTitle}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{L.across.cols.card}</th>
+                    {qHead}
+                    <th scope="col">{L.across.cols.inTop}</th>
+                    <th scope="col">{L.across.cols.change}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cards.map((c) => (
+                    <tr key={c.card}>
+                      <td>
+                        <Link href={cardHref(c.info)} prefetch={false} className="an-table-link">
+                          <CardName name={c.info.name} legendary={c.info.legendary} legendaryLabel={legendaryLabel} />
+                        </Link>
+                      </td>
+                      {c.points.map((p, i) =>
+                        p ? (
+                          <td key={ready[i].id} className="is-num cc-heat" style={heat(p.share, cardLo, cardHi, 35)} title={fmt(L.across.cellCard, { q: ready[i].name, n: N(p.decks), rank: p.rank })}>
+                            {P(p.share)}
+                          </td>
+                        ) : (
+                          <td key={ready[i].id} className="is-num cc-heat is-none" title={`${ready[i].name}${colon} ${L.across.notInTable}`}>
+                            —
+                          </td>
+                        ),
+                      )}
+                      <td className="is-num">{fmt(L.across.inTopValue, { k: c.inTop, n: ready.length })}</td>
+                      <td className="is-num cc-change">{change(c.delta)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  };
+
   return (
     <div className="an-page">
       <JsonLd
@@ -654,6 +920,11 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
           <Link href={href(locale, "/news/crimson-cup-format-check-in")} prefetch={false} className="link-mint text-sm font-bold">
             {L.rules}
           </Link>
+          {hasAcross ? (
+            <a href="#across" className="link-mint text-sm font-bold">
+              {L.across.link} ↓
+            </a>
+          ) : null}
           <a href="#how-to-read" className="link-mint text-sm font-bold">
             {L.howTo}
           </a>
@@ -665,6 +936,8 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
           <CrimsonTabs tabs={tabs} initial={latest.id} label={L.picker.label} panels={ready.map((q) => ({ id: q.id, node: panel(q) }))} />
         </div>
       ) : null}
+
+      {hasAcross ? acrossSection() : null}
 
       <div className="an-wrap an-closing">
         <PageNotes>

@@ -6032,6 +6032,37 @@
     color: var(--color-chalk-muted);
   }
 
+  /* le qualificazioni a confronto (22/10/2026): celle con una sola tinta per tabella, intensità in --heat (scritta dalla
+     pagina, al massimo 50% di rosa o 35% di menta sul blu notte: il testo chiaro resta sopra 4,5:1), numero sempre scritto */
+  .cc-heat-note {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--color-pale-muted);
+  }
+  .cc-heat-table th.cc-col-last {
+    color: var(--color-mint);
+  }
+  .an-table.cc-heat-table td.cc-heat {
+    background: color-mix(in srgb, var(--color-mint) var(--heat, 0%), var(--color-night));
+    color: var(--color-chalk);
+    box-shadow: inset 0 0 0 1px var(--color-night-2);
+  }
+  .an-table.cc-heat-table td.cc-heat.is-ban {
+    background: color-mix(in srgb, var(--color-pink) var(--heat, 0%), var(--color-night));
+  }
+  .an-table.cc-heat-table td.cc-heat.is-none {
+    background: var(--color-night);
+    color: var(--color-pale-muted);
+  }
+  /* viste poche volte al ban: corsivo, stesso colore (sul rosa il grigio scenderebbe sotto 4,5:1) */
+  .an-table.cc-heat-table td.is-few {
+    font-style: italic;
+  }
+  .an-table.cc-heat-table td.cc-change {
+    color: var(--color-chalk);
+  }
+
   /* la fascia "Crimson Cup" di /analytics */
   .cc-promo {
     display: grid;

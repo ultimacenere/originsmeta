@@ -181,5 +181,150 @@ export function biggestGaps<T extends { diff: number | null }>(rows: readonly T[
   return { up: (up.diff ?? 0) > 0 ? up : undefined, down: (down.diff ?? 0) < 0 ? down : undefined };
 }
 
+/* ---------- le qualificazioni a confronto (22/10/2026) ---------- */
+
+/** Una Leggendaria in una qualificazione. */
+export type AcrossPoint = { banned: number; seen: number; banRate: number; submitted: number; share: number; banRank: number; submittedRank: number };
+
+export type AcrossLegendary = {
+  legendary: string;
+  /** una voce per qualificazione con i numeri, nell'ordine del calendario; null dove la Leggendaria non è nella tabella */
+  points: (AcrossPoint | null)[];
+  /** tutte le qualificazioni insieme: ban e volte vista sommati */
+  banned: number;
+  seen: number;
+  banRate: number;
+  /** mazzi sommati, sulla somma dei mazzi delle tabelle */
+  submitted: number;
+  share: number;
+  /** ultima qualificazione meno quella prima (null se la Leggendaria manca in una delle due) */
+  banDelta: number | null;
+  shareDelta: number | null;
+};
+
+/** Le Leggendarie di tutte le qualificazioni con i numeri, una colonna per qualificazione, dalla più bandita nell'insieme. */
+export function acrossLegendaries(qualifiers: readonly CrimsonQualifier[]): AcrossLegendary[] {
+  const list = withStats(qualifiers);
+  const views = list.map((q) => new Map(legendaryViews(q.stats).map((v) => [v.legendary, v])));
+  const allSubmitted = list.reduce((t, q) => t + submittedTotal(q.stats), 0);
+  const slugs = [...new Set(list.flatMap((q) => q.stats.legendaries.map((r) => r.legendary)))];
+  const delta = (pick: (p: AcrossPoint) => number, points: (AcrossPoint | null)[]) => {
+    const [prev, last] = points.slice(-2);
+    return points.length >= 2 && prev && last ? pick(last) - pick(prev) : null;
+  };
+  return slugs
+    .map((legendary) => {
+      const points = views.map((m): AcrossPoint | null => {
+        const v = m.get(legendary);
+        return v ? { banned: v.banned, seen: v.seen, banRate: v.banRate, submitted: v.submitted, share: v.share, banRank: v.banRank, submittedRank: v.submittedRank } : null;
+      });
+      const here = points.filter((p): p is AcrossPoint => p !== null);
+      const banned = here.reduce((t, p) => t + p.banned, 0);
+      const seen = here.reduce((t, p) => t + p.seen, 0);
+      const submitted = here.reduce((t, p) => t + p.submitted, 0);
+      return {
+        legendary,
+        points,
+        banned,
+        seen,
+        banRate: seen > 0 ? banned / seen : 0,
+        submitted,
+        share: allSubmitted ? submitted / allSubmitted : 0,
+        banDelta: delta((p) => p.banRate, points),
+        shareDelta: delta((p) => p.share, points),
+      };
+    })
+    .sort((a, b) => b.banRate - a.banRate || b.seen - a.seen || a.legendary.localeCompare(b.legendary));
+}
+
+export type AcrossCard = {
+  card: string;
+  /** una voce per qualificazione con i numeri; null dove la carta non è fra quelle pubblicate da Koin (non vuol dire zero) */
+  points: ({ decks: number; share: number; rank: number } | null)[];
+  /** in quante tabelle compare */
+  inTop: number;
+  /** quota media nelle tabelle in cui compare */
+  avg: number;
+  /** ultima qualificazione meno quella prima (null se la carta manca in una delle due) */
+  delta: number | null;
+};
+
+/** Le carte pubblicate da Koin in almeno una qualificazione: prima quelle presenti in più tabelle, poi per quota media. */
+export function acrossCards(qualifiers: readonly CrimsonQualifier[]): AcrossCard[] {
+  const list = withStats(qualifiers);
+  const slugs = [...new Set(list.flatMap((q) => q.stats.cards.map((c) => c.card)))];
+  return slugs
+    .map((card) => {
+      const points = list.map((q) => {
+        const i = q.stats.cards.findIndex((c) => c.card === card);
+        return i >= 0 ? { decks: q.stats.cards[i].decks, share: q.stats.cards[i].share, rank: i + 1 } : null;
+      });
+      const here = points.filter((p) => p !== null);
+      const [prev, last] = points.slice(-2);
+      return {
+        card,
+        points,
+        inTop: here.length,
+        avg: here.length ? here.reduce((t, p) => t + p.share, 0) / here.length : 0,
+        delta: points.length >= 2 && prev && last ? last.share - prev.share : null,
+      };
+    })
+    .sort((a, b) => b.inTop - a.inTop || b.avg - a.avg || a.card.localeCompare(b.card));
+}
+
+export type AcrossHeadlines = {
+  /** qualificazioni con i numeri */
+  qualifiers: number;
+  /** la Leggendaria prima per ban rate più volte (almeno due), con il suo ban rate più basso e più alto */
+  topBanned?: { legendary: string; times: number; min: number; max: number };
+  /** il cambio di ban rate più grande fra le ultime due qualificazioni, fra le Leggendarie viste almeno MIN_SEEN_FOR_STORY volte in tutte e due */
+  mover?: { legendary: string; from: number; to: number; delta: number; prev: string; last: string };
+  /** la carta prima nella tabella più volte (almeno due) */
+  topCard?: { card: string; times: number };
+  /** quante carte sono in tutte le tabelle, e quante carte ha la tabella più corta */
+  alwaysCards: number;
+  top: number;
+};
+
+const mostOften = (ids: string[]) => {
+  const counts = new Map<string, number>();
+  for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
+  const best = [...counts].sort((a, b) => b[1] - a[1] || ids.indexOf(a[0]) - ids.indexOf(b[0]))[0];
+  return best && best[1] >= 2 ? { id: best[0], times: best[1] } : undefined;
+};
+
+/** I fatti che legano le qualificazioni fra loro; vuoto con meno di due qualificazioni con i numeri. */
+export function acrossHeadlines(qualifiers: readonly CrimsonQualifier[]): AcrossHeadlines {
+  const list = withStats(qualifiers);
+  const top = list.length ? Math.min(...list.map((q) => q.stats.cards.length)) : 0;
+  if (list.length < 2) return { qualifiers: list.length, alwaysCards: 0, top };
+  const legs = acrossLegendaries(list);
+  const cards = acrossCards(list);
+
+  const banned = mostOften(list.map((q) => legendaryViews(q.stats)[0]?.legendary).filter((s): s is string => Boolean(s)));
+  const bannedRow = banned && legs.find((l) => l.legendary === banned.id);
+  const rates = bannedRow ? bannedRow.points.filter((p) => p !== null).map((p) => p.banRate) : [];
+
+  const movers = legs
+    .map((l) => ({ l, prev: l.points[l.points.length - 2], last: l.points[l.points.length - 1] }))
+    .filter((m) => m.prev && m.last && m.prev.seen >= MIN_SEEN_FOR_STORY && m.last.seen >= MIN_SEEN_FOR_STORY)
+    .sort((a, b) => Math.abs(b.last!.banRate - b.prev!.banRate) - Math.abs(a.last!.banRate - a.prev!.banRate));
+  const m = movers[0];
+
+  const topCard = mostOften(list.map((q) => q.stats.cards[0]?.card).filter((s): s is string => Boolean(s)));
+
+  return {
+    qualifiers: list.length,
+    topBanned: bannedRow ? { legendary: bannedRow.legendary, times: banned.times, min: Math.min(...rates), max: Math.max(...rates) } : undefined,
+    mover:
+      m && m.prev && m.last && m.last.banRate !== m.prev.banRate
+        ? { legendary: m.l.legendary, from: m.prev.banRate, to: m.last.banRate, delta: m.last.banRate - m.prev.banRate, prev: list[list.length - 2].name, last: list[list.length - 1].name }
+        : undefined,
+    topCard: topCard ? { card: topCard.id, times: topCard.times } : undefined,
+    alwaysCards: cards.filter((c) => c.inTop === list.length).length,
+    top,
+  };
+}
+
 /** Sostituisce i segnaposto {nome} di un testo. */
 export const fillCrimson = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (m, k: string) => (k in v ? String(v[k]) : m));

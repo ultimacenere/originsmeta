@@ -11,6 +11,9 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {
+  acrossCards,
+  acrossHeadlines,
+  acrossLegendaries,
   banRate,
   biggestGaps,
   cardCrimsonFacts,
@@ -207,6 +210,56 @@ describe("Crimson Cup: numeri derivati", () => {
     assert.equal(cards[0].ladder, 0.53);
     assert.ok(Math.abs((cards[0].diff ?? 0) - (0.472 - 0.53)) < 1e-9);
     assert.equal(cards[1].ladder, null);
+  });
+});
+
+describe("Crimson Cup: le qualificazioni a confronto", () => {
+  const ready = withStats(crimsonQualifiers);
+
+  test("Leggendarie: una colonna per qualificazione, ban e viste sommati, dalla più bandita nell'insieme", () => {
+    const legs = acrossLegendaries(crimsonQualifiers);
+    assert.equal(legs.length, 11);
+    assert.deepEqual(
+      legs.slice(0, 3).map((l) => l.legendary),
+      ["van-helsing", "merlin", "three-not-so-little-pigs"],
+    );
+    const vh = legs[0];
+    assert.equal(vh.points.length, ready.length);
+    assert.equal(vh.banned, 96 + 139 + 90);
+    assert.equal(vh.seen, 216 + 272 + 186);
+    assert.ok(Math.abs((vh.banDelta ?? 0) - (90 / 186 - 139 / 272)) < 1e-9);
+    // le quote nell'insieme sono sui mazzi di tutte le tabelle: sommano 1
+    assert.ok(Math.abs(legs.reduce((t, l) => t + l.share, 0) - 1) < 1e-9);
+    assert.equal(legs.reduce((t, l) => t + l.submitted, 0), 721 + 924 + 891);
+  });
+
+  test("carte: prima quelle in tutte le tabelle, null dove Koin non la pubblica", () => {
+    const cards = acrossCards(crimsonQualifiers);
+    assert.equal(cards.length, 23);
+    assert.equal(cards[0].card, "baby-bear");
+    assert.equal(cards[0].inTop, 3);
+    assert.ok(Math.abs((cards[0].delta ?? 0) - (0.461 - 0.501)) < 1e-9);
+    const jekyll = cards.find((c) => c.card === "jekyll")!;
+    assert.deepEqual(jekyll.points.map((p) => p !== null), [false, true, false]);
+    assert.equal(jekyll.delta, null);
+    assert.equal(cards.filter((c) => c.inTop === 3).length, 15);
+    for (let i = 1; i < cards.length; i++) assert.ok(cards[i].inTop <= cards[i - 1].inTop, cards[i].card);
+  });
+
+  test("i fatti che legano le qualificazioni", () => {
+    const h = acrossHeadlines(crimsonQualifiers);
+    assert.equal(h.qualifiers, 3);
+    assert.deepEqual(h.topBanned, { legendary: "van-helsing", times: 3, min: 96 / 216, max: 139 / 272 });
+    // King Arthur: 4 su 63 nella EMEA #1, 18 su 75 nella AMER #2; Dorothy (9 volte vista) non conta
+    assert.equal(h.mover?.legendary, "king-arthur");
+    assert.equal(h.mover?.prev, "EMEA #1");
+    assert.equal(h.mover?.last, "AMER #2");
+    assert.ok(Math.abs((h.mover?.delta ?? 0) - (18 / 75 - 4 / 63)) < 1e-9);
+    assert.deepEqual(h.topCard, { card: "baby-bear", times: 3 });
+    assert.equal(h.alwaysCards, 15);
+    assert.equal(h.top, 20);
+    // con una sola qualificazione non c'è niente da confrontare
+    assert.deepEqual(acrossHeadlines(ready.slice(0, 1)), { qualifiers: 1, alwaysCards: 0, top: 20 });
   });
 });
 
