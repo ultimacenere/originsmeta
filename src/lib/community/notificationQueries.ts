@@ -90,10 +90,13 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   }
   const rows = ((res.data ?? []) as NotificationRow[]).filter((r) => isNotificationKind(r.kind));
   const actorIds = [...new Set(rows.map((r) => r.actor_id))];
-  const slugs = [...new Set(rows.flatMap((r) => (r.kind === "deck_published" ? [deckSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
+  // gli avvisi dei commenti (22/10/2026) portano a un mazzo singolo o a un mazzo torneo: il nome si legge come per i mazzi
+  const deckKind = (r: NotificationRow) => r.kind === "deck_published" || ((r.kind === "deck_comment" || r.kind === "comment_reply") && deckSlugOf(r.target) !== null);
+  const setKind = (r: NotificationRow) => r.kind === "deck_set_published" || ((r.kind === "deck_comment" || r.kind === "comment_reply") && deckSetSlugOf(r.target) !== null);
+  const slugs = [...new Set(rows.flatMap((r) => (deckKind(r) ? [deckSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const guideSlugs = [...new Set(rows.flatMap((r) => (r.kind === "guide_published" ? [guideSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const comicSlugs = [...new Set(rows.flatMap((r) => (r.kind === "comic_published" ? [comicSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
-  const setSlugs = [...new Set(rows.flatMap((r) => (r.kind === "deck_set_published" ? [deckSetSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
+  const setSlugs = [...new Set(rows.flatMap((r) => (setKind(r) ? [deckSetSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const none = Promise.resolve({ data: [], error: null });
   const [actors, decks, guides, comics, sets, unread] = await Promise.all([
     actorIds.length ? client.from("profiles").select("id, username, display_name, avatar_url, badge").in("id", actorIds) : none,
@@ -119,10 +122,10 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   const comicTitles = new Map(((comics.data ?? []) as { slug: string; title: string }[]).map((c) => [c.slug, c.title]));
   const setNames = new Map(((sets.data ?? []) as { slug: string; name: string }[]).map((x) => [x.slug, x.name]));
   const items = rows.map((r) => {
-    const slug = r.kind === "deck_published" ? deckSlugOf(r.target) : null;
+    const slug = deckKind(r) ? deckSlugOf(r.target) : null;
     const guide = r.kind === "guide_published" ? guideSlugOf(r.target) : null;
     const comic = r.kind === "comic_published" ? comicSlugOf(r.target) : null;
-    const set = r.kind === "deck_set_published" ? deckSetSlugOf(r.target) : null;
+    const set = setKind(r) ? deckSetSlugOf(r.target) : null;
     return {
       ...r,
       actor: byId.get(r.actor_id) ?? null,

@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { localeNames, locales } from "@/lib/i18n";
+import { isLocale, localeNames, locales, type Locale } from "@/lib/i18n";
 import { encodeOmCode } from "@/lib/deckcode";
 import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { suggestArchetype } from "@/lib/archetype";
@@ -32,6 +32,7 @@ import type { VideoFormLabels } from "@/lib/videoLabels";
 import type { LoginLabels } from "@/lib/loginLabels";
 import { DeckMediaFields } from "./DeckMediaFields";
 import { LoginPanel } from "./LoginPanel";
+import { MarkdownToolbar } from "./MarkdownToolbar";
 
 /** Carta del database per mostrare i nomi dei tre mazzi. */
 export type SetPoolCard = { slug: string; name: string };
@@ -116,6 +117,8 @@ function readDraft(codes: string): DraftValues | null {
  * builder di questo browser.
  */
 export function DeckSetForm({ locale, mode, pool, archetypes, initial, labels, deckLetterLabel, mediaLabels, loginLabels, builderHref, publishPath }: Props) {
+  // lingua dell'interfaccia per la barra di formattazione della guida (22/10/2026)
+  const uiLocale: Locale = isLocale(locale) ? locale : "en";
   const router = useRouter();
   const mounted = useMounted();
   const searchParams = useSearchParams();
@@ -350,8 +353,12 @@ export function DeckSetForm({ locale, mode, pool, archetypes, initial, labels, d
                     ))}
                   </select>
                 </label>
-                <label className="mt-3 block">
-                  <span className="kicker text-pale-muted">{fill(labels.deckRole, { deck: fill(deckLetterLabel, { letter: letter(i) }) })}</span>
+                {/* barra di formattazione fra etichetta e casella (22/10/2026): l'etichetta non avvolge più i tasti */}
+                <div className="mt-3">
+                  <label htmlFor={`set-deck_${i + 1}`} className="kicker block text-pale-muted">
+                    {fill(labels.deckRole, { deck: fill(deckLetterLabel, { letter: letter(i) }) })}
+                  </label>
+                  <MarkdownToolbar target={`set-deck_${i + 1}`} locale={uiLocale} />
                   <textarea
                     id={`set-deck_${i + 1}`}
                     name={`deck_${i + 1}`}
@@ -361,7 +368,7 @@ export function DeckSetForm({ locale, mode, pool, archetypes, initial, labels, d
                     defaultValue={v(GUIDE_FIELDS[i], g?.[GUIDE_FIELDS[i]])}
                     className={inputCls}
                   />
-                </label>
+                </div>
               </fieldset>
             ))}
           </div>
@@ -388,8 +395,11 @@ export function DeckSetForm({ locale, mode, pool, archetypes, initial, labels, d
             </span>
           </label>
         </div>
-        <label className="mt-4 block">
-          <span className="kicker text-pale-muted">{labels.summary} *</span>
+        <div className="mt-4">
+          <label htmlFor="set-summary" className="kicker block text-pale-muted">
+            {labels.summary} *
+          </label>
+          <MarkdownToolbar target="set-summary" locale={uiLocale} />
           <textarea
             id="set-summary"
             name="summary"
@@ -399,10 +409,13 @@ export function DeckSetForm({ locale, mode, pool, archetypes, initial, labels, d
             maxLength={DECK_SET_GUIDE_LIMITS.summaryMax}
             placeholder={labels.summaryPlaceholder}
             defaultValue={v("summary", g?.summary)}
+            aria-describedby="set-summary-hint"
             className={inputCls}
           />
-          <span className="mt-1 block text-xs text-pale-muted">{labels.summaryHint}</span>
-        </label>
+          <span id="set-summary-hint" className="mt-1 block text-xs text-pale-muted">
+            {labels.summaryHint}
+          </span>
+        </div>
         {meter ? (
           <p className={`mt-2 text-xs ${meter.ok ? "text-good" : "text-pale-muted"}`} aria-live="polite">
             {meter.text}
@@ -420,10 +433,13 @@ export function DeckSetForm({ locale, mode, pool, archetypes, initial, labels, d
             <span className="mt-1 block text-xs text-pale-muted">{labels.moreDetailsHint}</span>
           </summary>
           {(["strengths", "weaknesses", "matchups", "notes"] as const).map((k) => (
-            <label key={k} className="mt-4 block">
-              <span className="kicker text-pale-muted">{labels[k]}</span>
+            <div key={k} className="mt-4">
+              <label htmlFor={`set-${k}`} className="kicker block text-pale-muted">
+                {labels[k]}
+              </label>
+              <MarkdownToolbar target={`set-${k}`} locale={uiLocale} />
               <textarea id={`set-${k}`} name={k} rows={3} maxLength={DECK_SET_GUIDE_LIMITS.sectionMax} defaultValue={v(k, g?.[k])} className={inputCls} />
-            </label>
+            </div>
           ))}
           <DeckMediaFields
             labels={mediaLabels}

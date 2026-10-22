@@ -39,9 +39,11 @@ community" (kicker e briciole come le altre guide); gli indirizzi restano `/guid
 - **Permesso**: `canPublishGuides` in `badges.ts` e `can_publish_guides(uid)` nel database dicono la stessa cosa (lo
   controllano `badges.test.ts`, già in `npm test`, e `guides.test.ts`). Insert e update passano solo con quella
   funzione vera; lo staff aggiorna anche le guide altrui (per nasconderle o correggerle).
-- **Testo semplice**, mai Markdown né HTML: titolo 10-110 caratteri su una riga (si traduce dal 29/09/2026, vedi
+- **Testo semplice**, mai HTML (dal 22/10/2026 riassunto e testo delle sezioni ammettono i segni di formattazione di
+  `src/lib/userMarkdown.ts`: grassetto, corsivo, barrato, elenchi, citazioni, titoletti nel testo delle sezioni; README,
+  "Commenti ai mazzi e formattazione dei testi"): titolo 10-110 caratteri su una riga (si traduce dal 29/09/2026, vedi
   "Traduzioni"), riassunto 120-300, da 1 a 12 sezioni con titolo (fino a 80) e testo (fino a 4000). Una bozza si salva anche
-  a metà. I nomi delle carte diventano link da soli (`CardMentions`). Niente caratteri di controllo, segni di
+  a metà. I nomi delle carte diventano link da soli (`UserMarkdown`). Niente caratteri di controllo, segni di
   direzione, invisibili e riempitivi (Hangul U+3164 e simili, Braille vuoto: un titolo fatto solo di quelli sembra
   vuoto); al massimo una riga vuota di fila, anche se "vuota" di spazi Unicode. Le stesse regole nel codice
   (`cleanPlain`, `plainTextOk`) e nel database (`community_guide_text_ok`): il test confronta le liste.

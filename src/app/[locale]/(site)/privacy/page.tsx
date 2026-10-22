@@ -13,6 +13,7 @@ import { trackerPrivacy } from "@/lib/trackerLabels";
 import { draftPrivacy } from "@/lib/draftLabels";
 import { analyticsInterestPrivacy } from "@/lib/analyticsLabels";
 import { cardVoteLabels } from "@/lib/cardVoteLabels";
+import { deckCommentLabels } from "@/lib/deckCommentLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -98,6 +99,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Voti alle carte da 1 a 10 (06/10/2026): testo in src/lib/cardVoteLabels.ts, ancora #card-votes */}
         <p id="card-votes" className="mt-6 scroll-mt-24">
           {cardVoteLabels[locale].privacy}
+        </p>
+        {/* Commenti ai mazzi (22/10/2026): testo in src/lib/deckCommentLabels.ts, ancora #deck-comments */}
+        <p id="deck-comments" className="mt-6 scroll-mt-24">
+          {deckCommentLabels[locale].privacy}
         </p>
       </article>
     </div>

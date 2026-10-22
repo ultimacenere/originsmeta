@@ -356,12 +356,26 @@ export type FollowRow = { follower: string; followed: string; created_at: string
 export type NotificationRow = {
   id: number;
   user_id: string;
-  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready";
+  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready" | "deck_comment" | "comment_reply";
   actor_id: string;
   /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente>, /tournaments/<slug>/match/<id> */
   target: string;
   created_at: string;
   read_at: string | null;
+};
+
+/* ---------- commenti ai mazzi (22/10/2026, blocco COMMENTI AI MAZZI di supabase/schema.sql) ---------- */
+/** si leggono con RLS (mazzi pubblicati; i nascosti solo l'autore e lo staff), si scrivono solo con le funzioni deck_comment_* */
+export type DeckCommentRow = {
+  id: number;
+  deck_id: string | null;
+  set_id: string | null;
+  parent_id: number | null;
+  author: string;
+  body: string;
+  status: "visible" | "hidden" | "deleted";
+  created_at: string;
+  edited_at: string | null;
 };
 
 /* ---------- tracker/overlay (30/09/2026, blocco TRACKER di supabase/schema.sql) ---------- */
@@ -519,6 +533,35 @@ export type Database = {
             columns: ["deck_id"];
             isOneToOne: false;
             referencedRelation: "community_decks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      /** commenti ai mazzi (blocco COMMENTI AI MAZZI, 22/10/2026): lettura con RLS, scrittura solo con le funzioni deck_comment_* */
+      deck_comments: {
+        Row: DeckCommentRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "deck_comments_author_fkey";
+            columns: ["author"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "deck_comments_deck_id_fkey";
+            columns: ["deck_id"];
+            isOneToOne: false;
+            referencedRelation: "community_decks";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "deck_comments_set_id_fkey";
+            columns: ["set_id"];
+            isOneToOne: false;
+            referencedRelation: "community_deck_sets";
             referencedColumns: ["id"];
           },
         ];
@@ -927,6 +970,12 @@ export type Database = {
       /** preferiti e "Di tendenza" (blocco PREFERITI E TENDENZA, 30/09/2026): solo aggregati per mazzo pubblicato */
       deck_favorite_counts: { Args: Record<string, never>; Returns: { deck_id: string; favorites: number }[] };
       deck_trending: { Args: Record<string, never>; Returns: { deck_id: string; score: number }[] };
+      /** commenti ai mazzi (blocco COMMENTI AI MAZZI, 22/10/2026): chi scrive, testo e tetti li controlla il database */
+      deck_comment_add: { Args: { p_deck: string | null; p_set: string | null; p_parent: number | null; p_body: string }; Returns: number };
+      deck_comment_edit: { Args: { p_id: number; p_body: string }; Returns: undefined };
+      deck_comment_delete: { Args: { p_id: number }; Returns: string };
+      deck_comment_hide: { Args: { p_id: number; p_hidden: boolean }; Returns: undefined };
+      deck_comment_report: { Args: { p_id: number; p_reason: string }; Returns: boolean };
       /** tetto ai mazzi pubblicati: 5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin (27/09/2026) */
       max_published_decks: { Args: { uid: string }; Returns: number };
       join_tournament: { Args: { tid: string }; Returns: undefined };

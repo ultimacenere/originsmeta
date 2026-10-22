@@ -49,6 +49,8 @@
  *   ★ deck_vote          voto a un mazzo della community                         stars (1-5), vote_type (new | update)
  *     deck_save           "Salva" su un mazzo della community (30/09/2026)       placement (deck_page)
  *     deck_unsave         tolto dai mazzi salvati                                 placement (deck_page | account)
+ *     deck_comment        commento o risposta pubblicati sotto un mazzo           placement (deck_page | deck_set_page),
+ *                         (22/10/2026)                                            kind (comment | reply)
  *   ★ card_vote           voto a una carta da 1 a 10 (06/10/2026), dalla scheda   score (1-10), vote_type (new | update),
  *                         carta o dal dettaglio della tier list dei voti           placement (card_page | tier_list)
  *   ★ tierlist_created    prima tier list di un tipo salvata nel profilo (le      locale, kind (legendaries | cards)
@@ -216,6 +218,7 @@ export type EventParams = {
   deck_vote: { stars: number; vote_type: "new" | "update" };
   deck_save: { placement: string };
   deck_unsave: { placement: string };
+  deck_comment: { placement: "deck_page" | "deck_set_page"; kind: "comment" | "reply" };
   card_vote: { score: number; vote_type: "new" | "update"; placement: "card_page" | "tier_list" };
   tierlist_created: { locale: string; kind: string };
   tier_list_share: { method: "link" | "text"; kind: string };
@@ -226,7 +229,7 @@ export type EventParams = {
   message_read: { placement: "account" | "staff_area" };
   follow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" };
   unfollow: { placement: "profile" | "deck_page" | "guide_page" | "comic_page" | "account" };
-  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready" };
+  notification_open: { kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready" | "deck_comment" | "comment_reply" };
   faq_ask: { sources: number };
   steam_click: { target: string; placement: string; cta: string };
   discord_click: { server: DiscordServer; placement: string; cta: string };
@@ -271,6 +274,7 @@ export const VERCEL_PROPS = {
   deck_vote: ["stars", "vote_type"],
   deck_save: ["placement"],
   deck_unsave: ["placement"],
+  deck_comment: ["placement", "kind"],
   card_vote: ["score", "placement"],
   tierlist_created: ["kind"],
   tier_list_share: ["method", "kind"],

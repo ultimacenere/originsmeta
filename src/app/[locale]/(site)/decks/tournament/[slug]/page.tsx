@@ -25,7 +25,10 @@ import { authorHandle, authorName } from "@/lib/community/util";
 import { deckResources, deckVideos } from "@/lib/videos";
 import { DeckResources, DeckVideos } from "@/components/DeckMedia";
 import { CardName, DeckCardGrid } from "@/components/CardChip";
-import { CardMentions } from "@/components/CardMentions";
+import { UserMarkdown } from "@/components/UserMarkdown";
+import { DeckComments } from "@/components/comments/DeckComments";
+import { deckCommentLabels } from "@/lib/deckCommentLabels";
+import { stripMarkdown } from "@/lib/userMarkdown";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { StarRating } from "@/components/StarRating";
 import { CopyButton } from "@/components/CopyButton";
@@ -76,7 +79,8 @@ function setDescription(set: CommunityDeckSet, locale: Locale, max: number = DES
   const L = deckSetLabels[locale].page;
   const lead = fillLabel(L.lead, { author: authorName(set.profile), legendaries: legendaryNames(set).join(", ") });
   const view = localizedSetGuide(set, locale);
-  const own = view.lang === locale ? cleanDescription(view.text.summary, max) : "";
+  // senza i segni della formattazione (22/10/2026)
+  const own = view.lang === locale ? cleanDescription(stripMarkdown(view.text.summary), max) : "";
   const text = cleanDescription(own ? `${lead} ${own}` : lead, max);
   if (text.length >= 120 || text.length + 1 + L.metaTail.length > max) return text;
   return `${text} ${L.metaTail}`;
@@ -227,9 +231,7 @@ export default async function DeckSetPage({ params }: { params: Params }) {
 
         <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
           <p className="kicker text-mint">{S.page.summary}</p>
-          <p className="mt-2 whitespace-pre-line text-lg text-pale" lang={view.lang}>
-            <CardMentions text={view.text.summary} locale={locale} dict={d} id="cm-set-summary" />
-          </p>
+          <UserMarkdown text={view.text.summary} locale={locale} dict={d} lang={view.lang} className="mt-2 text-lg text-pale" />
         </div>
 
         <div className="mt-6">
@@ -303,9 +305,7 @@ export default async function DeckSetPage({ params }: { params: Params }) {
                 {role ? (
                   <div className="mt-3 rounded-lg border-2 border-sky bg-night-2/70 p-4">
                     <p className="kicker text-mint">{S.page.role}</p>
-                    <p className="mt-2 whitespace-pre-line text-sm text-pale" lang={view.lang}>
-                      <CardMentions text={role} locale={locale} dict={d} id={`cm-set-deck-${i}`} />
-                    </p>
+                    <UserMarkdown text={role} locale={locale} dict={d} lang={view.lang} className="mt-2 text-sm text-pale" />
                   </div>
                 ) : null}
                 <div className="mt-4">
@@ -357,9 +357,7 @@ export default async function DeckSetPage({ params }: { params: Params }) {
             {sections.map((k) => (
               <section key={k} className={`rounded-lg border-2 p-4 ${sectionStyle[k]?.box ?? "border-sky bg-night-2/70"} ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
                 <h3 className={`kicker ${sectionStyle[k]?.title ?? "text-mint"}`}>{S.page.sections[k]}</h3>
-                <p className="mt-2 whitespace-pre-line text-sm text-pale" lang={view.lang}>
-                  <CardMentions text={view.text[k] ?? ""} locale={locale} dict={d} id={`cm-set-${k}`} />
-                </p>
+                <UserMarkdown text={view.text[k] ?? ""} locale={locale} dict={d} lang={view.lang} className="mt-2 text-sm text-pale" />
               </section>
             ))}
           </div>
@@ -369,6 +367,17 @@ export default async function DeckSetPage({ params }: { params: Params }) {
       <CardMentionEdges />
       {/* statistiche per l'autore (come i mazzi singoli): visite, copie del codice, clic e video, solo nel browser */}
       <DeckStatsBeacon slug={set.slug} target="set" />
+
+      {/* Commenti (22/10/2026): li carica il browser quando la sezione si avvicina, fuori dall'HTML della pagina ISR */}
+      <DeckComments
+        target={{ kind: "set", id: set.id }}
+        ownerId={set.owner}
+        locale={locale}
+        loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(`${path}#comments`)}`}
+        placement="deck_set_page"
+        labels={deckCommentLabels[locale]}
+        badgeLabels={c.badges}
+      />
 
       {others.length ? (
         <section className="mt-10">

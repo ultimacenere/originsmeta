@@ -15,15 +15,21 @@ import type { InboxStatus } from "./messages";
  *     `/decks/tournament/<slug>`).
  *   - `match_ready`: la tua partita di torneo è pronta (05/10/2026, blocco TORNEO CRIMSON): non arriva da chi segui ma
  *     dal tabellone (`tm_notify_ready`), chi l'ha "causato" è l'avversario; porta alla stanza `/tournaments/<slug>/match/<id>`.
+ *   - `deck_comment` e `comment_reply` (22/10/2026, blocco COMMENTI AI MAZZI): un commento sotto un tuo mazzo, una
+ *     risposta a un tuo commento; li scrive `deck_comment_add`, chi l'ha "causato" è chi ha scritto; portano alla scheda
+ *     del mazzo (`/decks/community/<slug>` o `/decks/tournament/<slug>`), alla sezione dei commenti.
  * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida
  * (`/guides/community/<slug>`), il fumetto (`/news/comics/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
  * un link. Il database verifica che il mazzo o la guida esistano, siano pubblicati e siano dell'autore dell'avviso.
  */
 
-export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_set_published", "match_ready"] as const;
+export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_set_published", "match_ready", "deck_comment", "comment_reply"] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
-/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`), la partita pronta dal tabellone. */
-export type PublishKind = Exclude<NotificationKind, "live" | "match_ready">;
+/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`), la partita pronta dal tabellone, i commenti da `deck_comment_add`. */
+export type PublishKind = Exclude<NotificationKind, "live" | "match_ready" | "deck_comment" | "comment_reply">;
+
+/** Gli avvisi dei commenti (22/10/2026): portano alla sezione dei commenti della scheda. */
+export const COMMENT_KINDS: readonly NotificationKind[] = ["deck_comment", "comment_reply"];
 
 /** Quanti avvisi mostra la sezione "Notifiche" (i più recenti). */
 export const NOTIFICATIONS_SHOWN = 50;
@@ -123,9 +129,10 @@ export function notificationsSince(now: number = Date.now()): string {
   return new Date(now - NOTIFICATION_RETENTION_DAYS * 86_400_000).toISOString();
 }
 
-/** Il link di un avviso nella lingua di chi lo legge; null per un percorso che il sito non riconosce. */
-export function notificationHref(locale: string, target: string): string | null {
-  return isSafeTarget(target) ? `/${locale}${target}` : null;
+/** Il link di un avviso nella lingua di chi lo legge; null per un percorso che il sito non riconosce. Gli avvisi dei commenti portano alla loro sezione. */
+export function notificationHref(locale: string, target: string, kind?: NotificationKind): string | null {
+  if (!isSafeTarget(target)) return null;
+  return kind && COMMENT_KINDS.includes(kind) ? `/${locale}${target}#comments` : `/${locale}${target}`;
 }
 
 /**

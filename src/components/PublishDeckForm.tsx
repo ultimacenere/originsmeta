@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { isLocale, localeNames, locales, type Dictionary } from "@/lib/i18n";
+import { isLocale, localeNames, locales, type Dictionary, type Locale } from "@/lib/i18n";
 import { GAME_PREFIX, OM_PREFIX, baseKey, decodeGameCode, decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { RULES, validateDeck, type DeckState } from "@/lib/deckrules";
 import { publishDeck, updateDeck, type ActionState } from "@/lib/community/actions";
@@ -24,6 +24,7 @@ import { deckArtPathOk } from "@/lib/community/deckArt";
 import { PROFILE_MEDIA_BUCKET } from "@/lib/community/profileMedia";
 import type { DeckArtFormLabels } from "@/lib/deckArtLabels";
 import { DeckArtField } from "./DeckArtField";
+import { MarkdownToolbar } from "./MarkdownToolbar";
 
 /**
  * Carta del database per l'anteprima e per l'import dei codici del gioco (`key` = ID ufficiale, se noto). `image` solo per
@@ -181,6 +182,8 @@ function clearLocalDrafts() {
  * stanno in un <details> chiuso, e il testo scritto resta in una bozza locale finché non si pubblica.
  */
 export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, mediaLabels, artLabels, art, loginLabels, builderHref, publishPath }: Props) {
+  // lingua dell'interfaccia per la barra di formattazione dei campi della guida (22/10/2026)
+  const uiLocale: Locale = isLocale(locale) ? locale : "en";
   const router = useRouter();
   const mounted = useMounted();
   // ?deck e ?draft dal router: sempre quelli della pagina che si sta aprendo, anche con un <Link>
@@ -514,7 +517,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
           />
         ) : null}
 
-        <Field id="summary" label={labels.summary} hint={labels.summaryHint} placeholder={ph.summary} required minLength={20} maxLength={600} rows={4} defaultValue={v("summary", g?.summary)} />
+        <Field locale={uiLocale} id="summary" label={labels.summary} hint={labels.summaryHint} placeholder={ph.summary} required minLength={20} maxLength={600} rows={4} defaultValue={v("summary", g?.summary)} />
         {meter ? (
           <p className={`mt-2 text-xs ${meter.ok ? "text-good" : "text-pale-muted"}`} aria-live="polite">
             {meter.text}
@@ -532,12 +535,12 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
             </span>
             <span className="mt-1 block text-xs text-pale-muted">{labels.moreDetailsHint}</span>
           </summary>
-          <Field id="strengths" label={labels.strengths} placeholder={ph.strengths} rows={3} defaultValue={v("strengths", g?.strengths)} />
-          <Field id="weaknesses" label={labels.weaknesses} placeholder={ph.weaknesses} rows={3} defaultValue={v("weaknesses", g?.weaknesses)} />
-          <Field id="mulligan" label={labels.mulligan} hint={labels.mulliganHint} placeholder={ph.mulligan} rows={3} defaultValue={v("mulligan", g?.mulligan)} />
-          <Field id="combos" label={labels.combos} placeholder={ph.combos} rows={3} defaultValue={v("combos", g?.combos)} />
-          <Field id="matchups" label={labels.matchups} hint={labels.matchupsHint} placeholder={ph.matchups} rows={3} defaultValue={v("matchups", g?.matchups)} />
-          <Field id="notes" label={labels.notes} placeholder={ph.notes} rows={2} defaultValue={v("notes", g?.notes)} />
+          <Field locale={uiLocale} id="strengths" label={labels.strengths} placeholder={ph.strengths} rows={3} defaultValue={v("strengths", g?.strengths)} />
+          <Field locale={uiLocale} id="weaknesses" label={labels.weaknesses} placeholder={ph.weaknesses} rows={3} defaultValue={v("weaknesses", g?.weaknesses)} />
+          <Field locale={uiLocale} id="mulligan" label={labels.mulligan} hint={labels.mulliganHint} placeholder={ph.mulligan} rows={3} defaultValue={v("mulligan", g?.mulligan)} />
+          <Field locale={uiLocale} id="combos" label={labels.combos} placeholder={ph.combos} rows={3} defaultValue={v("combos", g?.combos)} />
+          <Field locale={uiLocale} id="matchups" label={labels.matchups} hint={labels.matchupsHint} placeholder={ph.matchups} rows={3} defaultValue={v("matchups", g?.matchups)} />
+          <Field locale={uiLocale} id="notes" label={labels.notes} placeholder={ph.notes} rows={2} defaultValue={v("notes", g?.notes)} />
           {/* fino a 3 video (YouTube, Twitch) e 5 risorse, con l'anteprima di ciò che il sito riconosce (26/09/2026) */}
           <DeckMediaFields
             labels={mediaLabels}
@@ -579,7 +582,9 @@ function Field({
   required,
   minLength,
   maxLength = 2000,
+  locale,
 }: {
+  locale: Locale;
   id: string;
   label: string;
   hint?: string;
@@ -590,15 +595,33 @@ function Field({
   minLength?: number;
   maxLength?: number;
 }) {
+  // Dal 22/10/2026 la guida si scrive con la formattazione (grassetto, elenchi…): la barra sta fra l'etichetta e la
+  // casella, quindi l'etichetta non avvolge più tutto (il nome della casella sarebbe diventato anche quello dei tasti).
   return (
-    <label className="mt-4 block">
-      <span className="kicker text-pale-muted">
+    <div className="mt-4">
+      <label htmlFor={`pub-${id}`} className="kicker block text-pale-muted">
         {label}
         {required ? " *" : ""}
-      </span>
-      <textarea id={`pub-${id}`} name={id} rows={rows} required={required} minLength={minLength} maxLength={maxLength} placeholder={placeholder} defaultValue={defaultValue} className={inputCls} />
-      {hint ? <span className="mt-1 block text-xs text-pale-muted">{hint}</span> : null}
-    </label>
+      </label>
+      <MarkdownToolbar target={`pub-${id}`} locale={locale} />
+      <textarea
+        id={`pub-${id}`}
+        name={id}
+        rows={rows}
+        required={required}
+        minLength={minLength}
+        maxLength={maxLength}
+        placeholder={placeholder}
+        defaultValue={defaultValue}
+        aria-describedby={hint ? `pub-${id}-hint` : undefined}
+        className={inputCls}
+      />
+      {hint ? (
+        <span id={`pub-${id}-hint`} className="mt-1 block text-xs text-pale-muted">
+          {hint}
+        </span>
+      ) : null}
+    </div>
   );
 }
 

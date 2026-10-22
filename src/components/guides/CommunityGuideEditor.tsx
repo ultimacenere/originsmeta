@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { isLocale, type Locale } from "@/lib/i18n";
 import { saveCommunityGuide, type GuideActionState } from "@/lib/community/guideActions";
 import {
   DEFAULT_GUIDE_COVER,
@@ -32,6 +33,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useMounted } from "@/lib/useMounted";
 import { DeckMediaFields } from "../DeckMediaFields";
 import { GuideCover } from "./GuideCover";
+import { MarkdownToolbar } from "../MarkdownToolbar";
 
 /** Una carta che si può collegare alla guida (attive e create: le guide citano anche le carte generate). */
 export type GuidePoolCard = { slug: string; name: string; legendary: boolean };
@@ -130,6 +132,8 @@ export function CommunityGuideEditor(props: Props) {
 }
 
 function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, langs, pool, justSaved, staff = false, draft }: Props & { draft: Draft | null }) {
+  // lingua dell'interfaccia per la barra di formattazione (22/10/2026)
+  const uiLocale: Locale = isLocale(locale) ? locale : "en";
   const router = useRouter();
   const mounted = useMounted();
   const formRef = useRef<HTMLFormElement>(null);
@@ -432,8 +436,12 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
               </select>
             </label>
           </div>
-          <label className="mt-4 block">
-            <span className="kicker text-pale-muted">{L.summary} *</span>
+          {/* barra di formattazione fra etichetta e casella (22/10/2026): l'etichetta non avvolge più i tasti */}
+          <div className="mt-4">
+            <label htmlFor="gd-summary" className="kicker block text-pale-muted">
+              {L.summary} *
+            </label>
+            <MarkdownToolbar target="gd-summary" locale={uiLocale} headings={false} />
             <textarea
               id="gd-summary"
               name="summary"
@@ -449,7 +457,7 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
               <span>{fillLabel(L.summaryHint, { min: String(GL.summaryMin), max: String(GL.summaryMax) })}</span>
               <span className={`font-mono ${codePoints(summary.trim()) > GL.summaryMax ? "text-bad" : ""}`}>{counter(codePoints(summary.trim()), GL.summaryMax)}</span>
             </span>
-          </label>
+          </div>
         </section>
 
         <section className="card-night min-w-0 p-5 sm:p-6" aria-labelledby="gd-sections-title">
@@ -496,8 +504,11 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
                       className={`${inputCls} font-semibold`}
                     />
                   </label>
-                  <label className="mt-2 block">
-                    <span className="text-xs font-semibold text-pale">{L.body}</span>
+                  <div className="mt-2">
+                    <label htmlFor={`gd-${f.body}`} className="block text-xs font-semibold text-pale">
+                      {L.body}
+                    </label>
+                    <MarkdownToolbar target={`gd-${f.body}`} locale={uiLocale} />
                     <textarea
                       id={`gd-${f.body}`}
                       name={f.body}
@@ -512,7 +523,7 @@ function EditorForm({ locale, mode, initial, labels, mediaLabels, categories, la
                     <span id={`gd-${f.body}-count`} className={`mt-1 block text-right font-mono text-xs ${codePoints(r.body.trim()) > GL.bodyMax ? "text-bad" : "text-pale-muted"}`}>
                       {counter(codePoints(r.body.trim()), GL.bodyMax)}
                     </span>
-                  </label>
+                  </div>
                 </li>
               );
             })}

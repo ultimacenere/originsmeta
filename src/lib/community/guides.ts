@@ -3,6 +3,7 @@ import type { DeckLink, StoredVideo } from "../videos";
 import { countWords } from "./deckQuality";
 import { textHash, type TranslationDoc } from "./deckTranslation";
 import { MEDIA_FILE_RE, PROFILE_MEDIA_BUCKET, UUID_RE, mediaPublicUrl } from "./profileMedia";
+import { stripMarkdown } from "../userMarkdown";
 
 /**
  * Guide della community pubblicate direttamente da chi ha un ruolo (pacchetto GUIDE, 27/09/2026; Pierluigi: "OK A
@@ -16,8 +17,9 @@ import { MEDIA_FILE_RE, PROFILE_MEDIA_BUCKET, UUID_RE, mediaPublicUrl } from "./
  * (`deckQuality.ts` e `deckTranslation.ts`, a loro volta puri): lo esegue `node --test`, lo carica il modulo nel browser,
  * lo usa scripts/translate-guides.mjs.
  *
- * Testo degli utenti: sempre testo semplice, mai Markdown né HTML. Il sito lo mostra come testo, con i nomi delle carte
- * trasformati in link (`CardMentions`), come le guide dei mazzi.
+ * Testo degli utenti: testo semplice con i soli segni di formattazione di src/lib/userMarkdown.ts (dal 22/10/2026:
+ * grassetto, corsivo, barrato, elenchi, citazioni, titoletti), mai HTML. Il sito lo disegna con `UserMarkdown`, con i
+ * nomi delle carte trasformati in link, come le guide dei mazzi; negli elenchi e nelle description senza i segni.
  */
 
 // ——— Limiti (uguali ai vincoli del blocco GUIDE di supabase/schema.sql) ———
@@ -579,7 +581,8 @@ export function communityGuideIndexable(g: WithText & { status?: string }): bool
 /** Il riassunto di una voce nella lingua della pagina, se la traduzione c'è; altrimenti quello dell'autore. */
 export function guideShapeSummary(g: GuideIndexShape & { summary: string }, locale: Locale): { text: string; lang: Locale } {
   const t = listTranslation(g, locale);
-  return t && t.summary !== null ? { text: t.summary, lang: locale } : { text: g.summary, lang: g.lang };
+  // negli elenchi il riassunto è testo semplice: senza i segni della formattazione (22/10/2026)
+  return t && t.summary !== null ? { text: stripMarkdown(t.summary), lang: locale } : { text: stripMarkdown(g.summary), lang: g.lang };
 }
 
 /**

@@ -6843,3 +6843,303 @@ alter table public.tracker_downloads add constraint tracker_downloads_lang_check
 -- questa migrazione (DB_PENDING_LOCALES in src/lib/community/translate.ts).
 alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
 alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru'));
+
+-- =====================================================================================================
+-- ===== 22/10/2026: COMMENTI AI MAZZI =====
+-- =====================================================================================================
+-- Commenti sotto i mazzi della community e i mazzi torneo (Pierluigi, 22/10/2026: "possiamo fare in modo che i mazzi si
+-- possano commentare"; scelte: tolgono un commento chi l'ha scritto, chi ha pubblicato il mazzo e lo staff; avviso nella
+-- busta a chi ha pubblicato il mazzo e a chi riceve una risposta; risposte a un solo livello). Il testo è quello degli
+-- utenti con la formattazione di src/lib/userMarkdown.ts (grassetto, corsivo, elenchi…, mai HTML).
+--
+--   deck_comments         un commento: mazzo singolo (`deck_id`) o mazzo torneo (`set_id`), mai tutti e due; `parent_id`
+--                         = il commento a cui risponde (solo commenti di primo livello: niente risposte alle risposte).
+--                         `status`: 'visible'; 'hidden' (nascosto dallo staff: lo vedono solo l'autore e lo staff);
+--                         'deleted' (eliminato quando aveva già delle risposte: resta il posto, senza testo, così le
+--                         risposte non perdono il filo). Si leggono i commenti dei mazzi pubblicati (anon compreso, la
+--                         scheda è pubblica); si scrivono SOLO con le funzioni deck_comment_* qui sotto (nessuna grant
+--                         di scrittura, policy restrittive), che controllano chi scrive, il testo e i tetti.
+--   deck_comment_events   registro degli invii (chi e quando, niente testo), per i tetti: eliminare un commento non li
+--                         azzera. Si pulisce da solo dopo 2 giorni. Nessun client lo legge.
+--   deck_comment_reports  segnalazioni (una per utente e per commento, 10 al giorno): lo staff riceve l'avviso su Discord
+--                         alla prima segnalazione di ogni commento (lo manda il sito). Nessun client le legge.
+--
+-- Tetti (uguali in COMMENT_LIMITS di src/lib/community/deckComments.ts, il test li confronta): testo da 1 a 2000
+-- caratteri e al massimo 40 righe, con le regole del testo semplice delle guide (community_guide_text_ok); 10 secondi fra
+-- due commenti, 20 l'ora, 100 al giorno; 1000 commenti per mazzo; lo staff non ha tetti.
+-- Avvisi (tabella notifications del blocco SEGUI, tipi nuovi 'deck_comment' e 'comment_reply'): a chi ha pubblicato il
+-- mazzo per ogni commento di un altro, a chi ha scritto il commento per ogni risposta di un altro (chi è tutte e due le
+-- cose ne riceve uno solo, la risposta). Un errore negli avvisi non ferma mai il commento.
+-- Il sito regge senza questo blocco: la scheda dice che i commenti non sono ancora attivi.
+-- Idempotente: si può rilanciare (create ... if not exists, create or replace, drop policy if exists). Nessuna grant né
+-- revoke su public.profiles.
+-- =====================================================================================================
+
+create table if not exists public.deck_comments (
+  id bigint generated always as identity primary key,
+  deck_id uuid references public.community_decks(id) on delete cascade,
+  set_id uuid references public.community_deck_sets(id) on delete cascade,
+  parent_id bigint references public.deck_comments(id) on delete cascade,
+  author uuid not null references public.profiles(id) on delete cascade,
+  body text not null default '' check (char_length(body) <= 2000),
+  status text not null default 'visible' check (status in ('visible', 'hidden', 'deleted')),
+  created_at timestamptz not null default now(),
+  edited_at timestamptz,
+  constraint deck_comments_one_target check (num_nonnulls(deck_id, set_id) = 1),
+  -- eliminato = senza testo; gli altri hanno sempre un testo
+  constraint deck_comments_deleted_empty check ((status = 'deleted') = (body = ''))
+);
+create index if not exists deck_comments_deck_idx on public.deck_comments (deck_id, created_at) where deck_id is not null;
+create index if not exists deck_comments_set_idx on public.deck_comments (set_id, created_at) where set_id is not null;
+create index if not exists deck_comments_parent_idx on public.deck_comments (parent_id) where parent_id is not null;
+create index if not exists deck_comments_author_idx on public.deck_comments (author, created_at desc);
+comment on table public.deck_comments is 'Commenti ai mazzi della community e ai mazzi torneo (22/10/2026): letti con RLS, scritti solo dalle funzioni deck_comment_*.';
+
+create table if not exists public.deck_comment_events (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+create index if not exists deck_comment_events_user_idx on public.deck_comment_events (user_id, created_at desc);
+comment on table public.deck_comment_events is 'Registro degli invii dei commenti (chi e quando) per i tetti orari e giornalieri; dura 2 giorni.';
+
+create table if not exists public.deck_comment_reports (
+  comment_id bigint not null references public.deck_comments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  reason text not null default '' check (char_length(reason) <= 500),
+  created_at timestamptz not null default now(),
+  primary key (comment_id, user_id)
+);
+create index if not exists deck_comment_reports_user_idx on public.deck_comment_reports (user_id, created_at desc);
+comment on table public.deck_comment_reports is 'Segnalazioni dei commenti ai mazzi: una per utente e per commento, 10 al giorno; lo staff è avvisato su Discord alla prima.';
+
+-- ---------- funzioni di servizio ----------
+-- Il mazzo (o il mazzo torneo) è pubblicato: i commenti si leggono e si scrivono solo lì.
+create or replace function public.deck_comment_target_published(p_deck uuid, p_set uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select case
+    when p_deck is not null then exists (select 1 from public.community_decks d where d.id = p_deck and d.status = 'published')
+    when p_set is not null then exists (select 1 from public.community_deck_sets s where s.id = p_set and s.status = 'published')
+    else false
+  end;
+$$;
+revoke all on function public.deck_comment_target_published(uuid, uuid) from public;
+grant execute on function public.deck_comment_target_published(uuid, uuid) to anon, authenticated;
+
+-- Chi guarda è dello staff (admin o ruolo Staff), per la policy di lettura: come is_staff(), ma eseguibile anche da anon
+-- (che riceve false), perché la policy vale anche per chi non ha fatto l'accesso.
+create or replace function public.deck_comments_is_staff()
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (
+    select 1 from public.profiles p where p.id = auth.uid() and (p.role = 'admin' or p.badge = 'staff')
+  );
+$$;
+revoke all on function public.deck_comments_is_staff() from public;
+grant execute on function public.deck_comments_is_staff() to anon, authenticated;
+
+-- Il testo di un commento: le regole del testo semplice delle guide, da 1 a 2000 caratteri, al massimo 40 righe.
+create or replace function public.deck_comment_body_ok(t text)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select public.community_guide_text_ok(t, 1, 2000, true)
+     and coalesce(array_length(string_to_array(t, chr(10)), 1), 0) <= 40;
+$$;
+revoke all on function public.deck_comment_body_ok(text) from public, anon, authenticated;
+
+-- ---------- lettura ----------
+alter table public.deck_comments enable row level security;
+alter table public.deck_comment_events enable row level security;
+alter table public.deck_comment_reports enable row level security;
+
+-- auth.uid() e lo staff dentro una (select …): calcolati una volta per richiesta, non per riga
+drop policy if exists "deck comments read" on public.deck_comments;
+create policy "deck comments read" on public.deck_comments for select to anon, authenticated
+  using (
+    (status <> 'hidden' and public.deck_comment_target_published(deck_id, set_id))
+    or author = (select auth.uid())
+    or (select public.deck_comments_is_staff())
+  );
+drop policy if exists "deck comments no direct insert" on public.deck_comments;
+create policy "deck comments no direct insert" on public.deck_comments as restrictive for insert to anon, authenticated with check (false);
+drop policy if exists "deck comments no direct update" on public.deck_comments;
+create policy "deck comments no direct update" on public.deck_comments as restrictive for update to anon, authenticated using (false) with check (false);
+drop policy if exists "deck comments no direct delete" on public.deck_comments;
+create policy "deck comments no direct delete" on public.deck_comments as restrictive for delete to anon, authenticated using (false);
+
+revoke all on public.deck_comments, public.deck_comment_events, public.deck_comment_reports from anon, authenticated;
+grant select (id, deck_id, set_id, parent_id, author, body, status, created_at, edited_at) on public.deck_comments to anon, authenticated;
+
+-- ---------- avvisi: due tipi nuovi ----------
+alter table public.notifications drop constraint if exists notifications_kind_check;
+-- `not valid`: vedi il blocco FUMETTI (l'elenco di ieri non ricontrolla le righe di oggi)
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready', 'deck_comment', 'comment_reply')) not valid;
+alter table public.notification_events drop constraint if exists notification_events_kind_check;
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready', 'deck_comment', 'comment_reply')) not valid;
+
+-- ---------- scrittura ----------
+-- Un commento nuovo (o una risposta, con p_parent): restituisce il suo id. Errori: not_logged_in, invalid_target,
+-- invalid_body, target_unavailable, invalid_parent, too_fast, rate_hour, rate_day, target_full.
+create or replace function public.deck_comment_add(p_deck uuid, p_set uuid, p_parent bigint, p_body text)
+returns bigint language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  staff boolean;
+  par public.deck_comments%rowtype;
+  owner_id uuid;
+  target_slug text;
+  target_path text;
+  last_at timestamptz;
+  new_id bigint;
+begin
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  if num_nonnulls(p_deck, p_set) <> 1 then raise exception 'invalid_target' using errcode = '22023'; end if;
+  if not public.deck_comment_body_ok(p_body) then raise exception 'invalid_body' using errcode = '22023'; end if;
+  if p_deck is not null then
+    select d.owner, d.slug into owner_id, target_slug from public.community_decks d where d.id = p_deck and d.status = 'published';
+    target_path := '/decks/community/' || target_slug;
+  else
+    select s.owner, s.slug into owner_id, target_slug from public.community_deck_sets s where s.id = p_set and s.status = 'published';
+    target_path := '/decks/tournament/' || target_slug;
+  end if;
+  if owner_id is null then raise exception 'target_unavailable' using errcode = 'P0002'; end if;
+  if p_parent is not null then
+    select * into par from public.deck_comments c where c.id = p_parent;
+    if not found or par.parent_id is not null or par.status <> 'visible'
+       or par.deck_id is distinct from p_deck or par.set_id is distinct from p_set then
+      raise exception 'invalid_parent' using errcode = '22023';
+    end if;
+  end if;
+  staff := exists (select 1 from public.profiles p where p.id = uid and (p.role = 'admin' or p.badge = 'staff'));
+  -- le richieste parallele della stessa persona in fila: i tetti non si superano con dieci clic insieme
+  perform pg_advisory_xact_lock(hashtextextended('deck_comments:' || uid::text, 0));
+  if not staff then
+    select max(e.created_at) into last_at from public.deck_comment_events e where e.user_id = uid;
+    if last_at is not null and last_at > now() - interval '10 seconds' then raise exception 'too_fast' using errcode = 'P0001'; end if;
+    if (select count(*) from public.deck_comment_events e where e.user_id = uid and e.created_at > now() - interval '1 hour') >= 20 then
+      raise exception 'rate_hour' using errcode = 'P0001';
+    end if;
+    if (select count(*) from public.deck_comment_events e where e.user_id = uid and e.created_at > now() - interval '1 day') >= 100 then
+      raise exception 'rate_day' using errcode = 'P0001';
+    end if;
+    if (select count(*) from public.deck_comments c where (p_deck is not null and c.deck_id = p_deck) or (p_set is not null and c.set_id = p_set)) >= 1000 then
+      raise exception 'target_full' using errcode = 'P0001';
+    end if;
+  end if;
+  insert into public.deck_comments (deck_id, set_id, parent_id, author, body) values (p_deck, p_set, p_parent, uid, p_body) returning id into new_id;
+  insert into public.deck_comment_events (user_id) values (uid);
+  delete from public.deck_comment_events e where e.user_id = uid and e.created_at < now() - interval '2 days';
+  -- avvisi: a chi ha scritto il commento a cui si risponde, a chi ha pubblicato il mazzo (uno solo se è la stessa persona)
+  begin
+    if p_parent is not null and par.author <> uid then
+      insert into public.notifications (user_id, kind, actor_id, target, event_key)
+      values (par.author, 'comment_reply', uid, target_path, 'comment:' || new_id)
+      on conflict (user_id, kind, event_key) do nothing;
+    end if;
+    if owner_id <> uid and (p_parent is null or par.author <> owner_id) then
+      insert into public.notifications (user_id, kind, actor_id, target, event_key)
+      values (owner_id, 'deck_comment', uid, target_path, 'comment:' || new_id)
+      on conflict (user_id, kind, event_key) do nothing;
+    end if;
+  exception when others then
+    raise notice 'deck_comment_add, avvisi: %', sqlerrm;
+  end;
+  return new_id;
+end $$;
+revoke all on function public.deck_comment_add(uuid, uuid, bigint, text) from public, anon;
+grant execute on function public.deck_comment_add(uuid, uuid, bigint, text) to authenticated;
+
+-- Modifica del testo: solo chi l'ha scritto, solo un commento visibile. Errori: not_logged_in, not_allowed, invalid_body.
+create or replace function public.deck_comment_edit(p_id bigint, p_body text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  c public.deck_comments%rowtype;
+begin
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  select * into c from public.deck_comments where id = p_id for update;
+  if not found or c.author <> uid or c.status <> 'visible' then raise exception 'not_allowed' using errcode = '42501'; end if;
+  if not public.deck_comment_body_ok(p_body) then raise exception 'invalid_body' using errcode = '22023'; end if;
+  if c.body = p_body then return; end if;
+  update public.deck_comments set body = p_body, edited_at = now() where id = p_id;
+end $$;
+revoke all on function public.deck_comment_edit(bigint, text) from public, anon;
+grant execute on function public.deck_comment_edit(bigint, text) to authenticated;
+
+-- Elimina un commento: chi l'ha scritto, chi ha pubblicato il mazzo, lo staff. Con delle risposte resta il posto senza
+-- testo ('emptied'), altrimenti si cancella ('deleted'), e con lui il commento eliminato a cui rispondeva se resta senza
+-- risposte; 'gone' se non c'era già più. Gli avvisi di quel commento se ne vanno. Errori: not_logged_in, not_allowed.
+create or replace function public.deck_comment_delete(p_id bigint)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  c public.deck_comments%rowtype;
+  owner_id uuid;
+  staff boolean;
+begin
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  select * into c from public.deck_comments where id = p_id for update;
+  if not found then return 'gone'; end if;
+  if c.deck_id is not null then
+    select d.owner into owner_id from public.community_decks d where d.id = c.deck_id;
+  else
+    select s.owner into owner_id from public.community_deck_sets s where s.id = c.set_id;
+  end if;
+  staff := exists (select 1 from public.profiles p where p.id = uid and (p.role = 'admin' or p.badge = 'staff'));
+  if c.author <> uid and owner_id is distinct from uid and not staff then raise exception 'not_allowed' using errcode = '42501'; end if;
+  delete from public.notifications n where n.kind in ('deck_comment', 'comment_reply') and n.event_key = 'comment:' || c.id;
+  if exists (select 1 from public.deck_comments r where r.parent_id = c.id) then
+    update public.deck_comments set status = 'deleted', body = '', edited_at = null where id = c.id;
+    return 'emptied';
+  end if;
+  delete from public.deck_comments where id = c.id;
+  if c.parent_id is not null then
+    delete from public.deck_comments p where p.id = c.parent_id and p.status = 'deleted'
+       and not exists (select 1 from public.deck_comments r where r.parent_id = p.id);
+  end if;
+  return 'deleted';
+end $$;
+revoke all on function public.deck_comment_delete(bigint) from public, anon;
+grant execute on function public.deck_comment_delete(bigint) to authenticated;
+
+-- Nasconde o rimette online un commento: solo lo staff. Errori: not_logged_in, not_allowed.
+create or replace function public.deck_comment_hide(p_id bigint, p_hidden boolean)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+begin
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  if not exists (select 1 from public.profiles p where p.id = uid and (p.role = 'admin' or p.badge = 'staff')) then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
+  update public.deck_comments set status = case when p_hidden then 'hidden' else 'visible' end
+   where id = p_id and status in ('visible', 'hidden');
+end $$;
+revoke all on function public.deck_comment_hide(bigint, boolean) from public, anon;
+grant execute on function public.deck_comment_hide(bigint, boolean) to authenticated;
+
+-- Segnala un commento visibile di un altro, su un mazzo pubblicato: true se è la prima segnalazione di quel commento (il
+-- sito avvisa lo staff), false se c'era già o se questa persona l'aveva già segnalato. Errori: not_logged_in,
+-- not_allowed, invalid_reason, report_rate.
+create or replace function public.deck_comment_report(p_id bigint, p_reason text)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  c public.deck_comments%rowtype;
+  first_one boolean;
+begin
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  select * into c from public.deck_comments where id = p_id;
+  if not found or c.status <> 'visible' or c.author = uid or not public.deck_comment_target_published(c.deck_id, c.set_id) then
+    raise exception 'not_allowed' using errcode = '42501';
+  end if;
+  if not public.community_guide_text_ok(coalesce(p_reason, ''), 0, 500, true) then raise exception 'invalid_reason' using errcode = '22023'; end if;
+  perform pg_advisory_xact_lock(hashtextextended('deck_comment_reports:' || uid::text, 0));
+  if (select count(*) from public.deck_comment_reports r where r.user_id = uid and r.created_at > now() - interval '1 day') >= 10 then
+    raise exception 'report_rate' using errcode = 'P0001';
+  end if;
+  first_one := not exists (select 1 from public.deck_comment_reports r where r.comment_id = p_id);
+  insert into public.deck_comment_reports (comment_id, user_id, reason) values (p_id, uid, coalesce(p_reason, ''))
+  on conflict (comment_id, user_id) do nothing;
+  if not found then return false; end if;
+  return first_one;
+end $$;
+revoke all on function public.deck_comment_report(bigint, text) from public, anon;
+grant execute on function public.deck_comment_report(bigint, text) to authenticated;

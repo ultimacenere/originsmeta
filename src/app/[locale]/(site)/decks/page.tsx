@@ -29,6 +29,7 @@ import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCoun
 import { CardName } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { deckCardsDate } from "@/lib/community/deckVersions";
+import { stripMarkdown } from "@/lib/userMarkdown";
 
 /**
  * Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. Per punti di codice e non per unità UTF-16 (04/10/2026):
@@ -118,8 +119,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
         statsSlug: deck.slug,
         name: deck.name,
         href: href(locale, `/decks/community/${deck.slug}`),
-        // riassunto nella lingua della pagina quando la traduzione del sito c'è (25/09/2026), altrimenti quello dell'autore
-        tagline: shorten(localizedGuide(deck, locale).text.summary, 140),
+        // riassunto nella lingua della pagina quando la traduzione del sito c'è (25/09/2026), altrimenti quello dell'autore;
+        // senza i segni della formattazione (22/10/2026)
+        tagline: shorten(stripMarkdown(localizedGuide(deck, locale).text.summary), 140),
         legendary: leg
           ? { slug: leg.slug, name: leg.name, href: href(locale, `/cards/${leg.slug}`), cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana }
           : legCustom

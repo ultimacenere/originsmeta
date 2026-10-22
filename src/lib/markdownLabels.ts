@@ -1,0 +1,121 @@
+import type { Locale } from "./i18n";
+
+/**
+ * Etichette della barra di formattazione (`MarkdownToolbar`, 22/10/2026) sopra le caselle di testo delle guide dei
+ * mazzi, dei mazzi torneo, delle guide della community e dei commenti. Segni ammessi in src/lib/userMarkdown.ts.
+ * `en` è il tipo di riferimento; i nomi dei tasti sono quelli degli editor di testo più comuni in ogni lingua.
+ */
+const en = {
+  toolbar: "Formatting",
+  bold: "Bold",
+  italic: "Italic",
+  strike: "Strikethrough",
+  bullets: "Bulleted list",
+  numbers: "Numbered list",
+  quote: "Quote",
+  heading: "Heading",
+  /** testo inserito fra i segni quando non c'è niente di selezionato */
+  placeholder: "text",
+  help: "How to format",
+  /** esempi della guida: si scrivono fra i segni e si vedono formattati accanto */
+  sample: { bold: "bold", italic: "italic", strike: "strikethrough", item: "list item", numbered: "numbered item", quote: "quote", heading: "heading" },
+  /** \* → */
+  escape: "an asterisk, not italic",
+  note: "Card names turn into links by themselves. Links and HTML stay plain text.",
+};
+
+export type MarkdownLabels = typeof en;
+
+export const markdownLabels: Record<Locale, MarkdownLabels> = {
+  en,
+  it: {
+    toolbar: "Formattazione",
+    bold: "Grassetto",
+    italic: "Corsivo",
+    strike: "Barrato",
+    bullets: "Elenco puntato",
+    numbers: "Elenco numerato",
+    quote: "Citazione",
+    heading: "Titoletto",
+    placeholder: "testo",
+    help: "Come si formatta",
+    sample: { bold: "grassetto", italic: "corsivo", strike: "barrato", item: "voce di elenco", numbered: "voce numerata", quote: "citazione", heading: "titoletto" },
+    escape: "un asterisco, non corsivo",
+    note: "I nomi delle carte diventano link da soli. Link e HTML restano testo.",
+  },
+  es: {
+    toolbar: "Formato",
+    bold: "Negrita",
+    italic: "Cursiva",
+    strike: "Tachado",
+    bullets: "Lista con viñetas",
+    numbers: "Lista numerada",
+    quote: "Cita",
+    heading: "Subtítulo",
+    placeholder: "texto",
+    help: "Cómo dar formato",
+    sample: { bold: "negrita", italic: "cursiva", strike: "tachado", item: "elemento de lista", numbered: "elemento numerado", quote: "cita", heading: "subtítulo" },
+    escape: "un asterisco, sin cursiva",
+    note: "Los nombres de las cartas se convierten en enlaces solos. Los enlaces y el HTML quedan como texto.",
+  },
+  fr: {
+    toolbar: "Mise en forme",
+    bold: "Gras",
+    italic: "Italique",
+    strike: "Barré",
+    bullets: "Liste à puces",
+    numbers: "Liste numérotée",
+    quote: "Citation",
+    heading: "Intertitre",
+    placeholder: "texte",
+    help: "Comment mettre en forme",
+    sample: { bold: "gras", italic: "italique", strike: "barré", item: "élément de liste", numbered: "élément numéroté", quote: "citation", heading: "intertitre" },
+    escape: "un astérisque, sans italique",
+    note: "Les noms des cartes deviennent des liens d’eux-mêmes. Les liens et le HTML restent du texte.",
+  },
+  pt: {
+    toolbar: "Formatação",
+    bold: "Negrito",
+    italic: "Itálico",
+    strike: "Tachado",
+    bullets: "Lista com marcadores",
+    numbers: "Lista numerada",
+    quote: "Citação",
+    heading: "Subtítulo",
+    placeholder: "texto",
+    help: "Como formatar",
+    sample: { bold: "negrito", italic: "itálico", strike: "tachado", item: "item da lista", numbered: "item numerado", quote: "citação", heading: "subtítulo" },
+    escape: "um asterisco, sem itálico",
+    note: "Os nomes das cartas viram links sozinhos. Links e HTML ficam como texto.",
+  },
+  de: {
+    toolbar: "Formatierung",
+    bold: "Fett",
+    italic: "Kursiv",
+    strike: "Durchgestrichen",
+    bullets: "Aufzählung",
+    numbers: "Nummerierte Liste",
+    quote: "Zitat",
+    heading: "Zwischenüberschrift",
+    placeholder: "Text",
+    help: "So formatierst du",
+    sample: { bold: "fett", italic: "kursiv", strike: "durchgestrichen", item: "Listenpunkt", numbered: "nummerierter Punkt", quote: "Zitat", heading: "Zwischenüberschrift" },
+    escape: "ein Sternchen, nicht kursiv",
+    note: "Kartennamen werden von selbst zu Links. Links und HTML bleiben einfacher Text.",
+  },
+  ru: {
+    toolbar: "Форматирование",
+    bold: "Жирный",
+    italic: "Курсив",
+    strike: "Зачёркнутый",
+    bullets: "Маркированный список",
+    numbers: "Нумерованный список",
+    quote: "Цитата",
+    heading: "Подзаголовок",
+    placeholder: "текст",
+    help: "Как оформить текст",
+    sample: { bold: "жирный", italic: "курсив", strike: "зачёркнутый", item: "пункт списка", numbered: "нумерованный пункт", quote: "цитата", heading: "подзаголовок" },
+    escape: "звёздочка, а не курсив",
+    note: "Названия карт сами становятся ссылками. Ссылки и HTML остаются обычным текстом.",
+  },
+};

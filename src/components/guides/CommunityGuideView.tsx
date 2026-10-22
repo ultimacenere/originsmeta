@@ -19,7 +19,8 @@ import { Avatar } from "../AccountMenu";
 import { AuthorChannels } from "../AuthorChannels";
 import { FollowButton } from "../follow/FollowButton";
 import { CardChipList } from "../CardChip";
-import { CardMentions } from "../CardMentions";
+import { UserMarkdown } from "../UserMarkdown";
+import { stripMarkdown } from "@/lib/userMarkdown";
 import { CardMentionEdges } from "../CardMentionEdges";
 import { NewDeckBanner } from "../NewDeckBanner";
 import { GuideCover } from "./GuideCover";
@@ -37,7 +38,8 @@ const langNamesOf = (names: Partial<Record<Locale, string>>): Partial<Record<Loc
 /** Description nella lingua della pagina: il riassunto quando si legge in questa lingua, altrimenti una frase coi fatti. */
 export function guideDescription(g: CommunityGuide, locale: Locale): string {
   const view = localizedCommunityGuide(g, locale);
-  if (view.lang === locale) return view.text.summary;
+  // senza i segni della formattazione (22/10/2026)
+  if (view.lang === locale) return stripMarkdown(view.text.summary);
   const L = communityGuideLabels[locale];
   const lang = langNamesOf(getDictionary(locale).community.langNames)[g.lang] ?? g.lang;
   return fillLabel(L.page.metaFallback, { title: g.title, author: authorName(g.profile), lang });
@@ -47,7 +49,8 @@ export function guideDescription(g: CommunityGuide, locale: Locale): string {
  * Il contenuto della pagina di una guida della community (pacchetto GUIDE, 27/09/2026), separato dalla rotta
  * /guides/community/[slug] che la legge: dati strutturati, copertina, firma con ruolo e canali, nota sulla traduzione,
  * riassunto, video, sezioni, carte, risorse, comandi dell'autore e dello staff, altre guide e segnalazione.
- * Componente server: i nomi delle carte diventano link con `CardMentions` (database carte solo sul server).
+ * Componente server: i nomi delle carte diventano link e dal 22/10/2026 il testo si legge con la formattazione
+ * (`UserMarkdown`; database carte solo sul server).
  */
 export async function CommunityGuideView({ guide, locale }: { guide: CommunityGuide; locale: Locale }) {
   const d = getDictionary(locale);
@@ -175,9 +178,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
         ) : null}
 
         <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
-          <p className="whitespace-pre-line break-words text-lg text-pale" lang={view.lang}>
-            <CardMentions text={view.text.summary} locale={locale} dict={d} />
-          </p>
+          <UserMarkdown text={view.text.summary} locale={locale} dict={d} lang={view.lang} className="text-lg text-pale" />
         </div>
 
         <CommunityGuideVideos videos={videos} title={title.text} locale={locale} />
@@ -185,9 +186,7 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
         {view.text.sections.map((s, i) => (
           <section key={i} className="mt-10 min-w-0" lang={view.lang}>
             <h2 className="t-section break-words">{s.heading}</h2>
-            <p className="mt-3 whitespace-pre-line break-words leading-relaxed text-pale">
-              <CardMentions text={s.body} locale={locale} dict={d} />
-            </p>
+            <UserMarkdown text={s.body} locale={locale} dict={d} headingLevel={3} className="mt-3 leading-relaxed text-pale" />
           </section>
         ))}
 

@@ -164,7 +164,7 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.equal(textHash(["es", "Plan", "", "", "", "", "", ""]), "cefco0o2ne");
   });
 
-  test("le istruzioni dei mazzi sono quelle del 20/10/2026 (impronta SHA-256: russo con il glossario del gioco)", () => {
+  test("le istruzioni dei mazzi sono quelle del 22/10/2026 (impronta SHA-256: i segni della formattazione restano)", () => {
     // fino al 06/10/2026: cfaf38c952aaddcb4e33503e4fdac9abb85d5e44d6841420bc4843a376a24413 (tre lingue)
     // 07/10/2026: 20942417f73164d41f52aca4f4aefc4eaaba5ccea79d59f41b49423b60413882 (francese con il glossario provvisorio)
     // 08/10/2026: 4bc9eff49034ca648f06a32c32f63a986f35abb34e2805d2806e440e25ebcee4 (glossario francese letto nel gioco)
@@ -172,8 +172,9 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     // 20/10/2026: 5c2cd841a7dc0da9302babb3bfbc6e0b4cece42e24b61898f7d03c2b3c081ae5 (tedesco con il glossario provvisorio)
     // 20/10/2026: ea952f1787a0fa3418d202a8034956c0b7bc9e67c7b08ce815d9ea20bd872aec (tedesco con il glossario del gioco)
     // 20/10/2026: 81413658e8b359c6cf2e0dc8acf976c44e5aa2cb56e0d41240a21944e8c962ac (russo con il glossario provvisorio)
-    // 20/10/2026 notte: russo con il glossario del gioco (Пробивной удар, Перемещение, Оглушение, terza persona)
-    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "d3e8f57851818084af9bff60c87d2e691943f45859ced93f28b5dd1bf7c490f0");
+    // 20/10/2026 notte: d3e8f57851818084af9bff60c87d2e691943f45859ced93f28b5dd1bf7c490f0 (russo con il glossario del gioco)
+    // 22/10/2026: regola 6, i testi degli utenti hanno grassetto, corsivo, elenchi… e i segni restano attorno alle parole tradotte
+    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "fb0f7396336cd418f14428fa82cdd3449c22bcdf6cf899f4be264d2180937786");
     assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
   });
 

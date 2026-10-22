@@ -1,5 +1,6 @@
 import type { Locale } from "../i18n";
 import { escapeDiscord, type DiscordWebhookPayload } from "../discordWebhook";
+import { stripMarkdown } from "../userMarkdown";
 import { discordUtm } from "../analytics";
 
 /**
@@ -77,7 +78,8 @@ export function guidePayload(g: AnnouncedGuide): DiscordWebhookPayload {
         title: g.title.slice(0, 256),
         url: `${SITE}/${g.lang}/guides/community/${g.slug}?${UTM}`,
         description: [
-          escapeDiscord(cut(g.summary, 300)),
+          // il riassunto senza i segni della formattazione del sito (22/10/2026), poi escapato come gli altri testi
+          escapeDiscord(cut(stripMarkdown(g.summary), 300)),
           "",
           ...(["it", "en", "es", "fr", "pt", "de", "ru"] as const).map((l) => `${g.category[l]} · ${BY[l]} ${author}`),
         ].join("\n"),

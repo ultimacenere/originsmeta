@@ -17,6 +17,7 @@ import { DeckSetExplorer, type ExplorerDeckSet } from "@/components/DeckSetExplo
 import { DeckSectionTabs } from "@/components/DeckSectionTabs";
 import { PageNotes } from "@/components/PageNotes";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
+import { stripMarkdown } from "@/lib/userMarkdown";
 
 /** In ISR come /decks: i trii pubblicati arrivano da Supabase, la pagina si rigenera al massimo ogni 5 minuti. */
 export const revalidate = 300;
@@ -49,7 +50,7 @@ export default async function TournamentDecksPage({ params }: { params: LocalePa
       createdLabel: formatDate(locale, s.created_at.slice(0, 10)),
       ...(patch ? { patch: patchLabel(patch, locale) } : {}),
       // il riassunto solo se si legge nella lingua della pagina (originale o tradotto)
-      summary: view.lang === locale ? view.text.summary : "",
+      summary: view.lang === locale ? stripMarkdown(view.text.summary) : "",
       rating,
       score: weightedRating(rating.avg, rating.votes),
       decks: s.decks.map((deck, i) => {

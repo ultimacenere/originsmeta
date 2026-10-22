@@ -89,6 +89,12 @@ function notificationText(n: NotificationItem, L: FollowLabels["notifications"])
   const name = n.actor ? authorName(n.actor) : L.someone;
   if (n.kind === "live") return fillFollowLabel(L.live, { name });
   if (n.kind === "match_ready") return fillFollowLabel(L.matchReady, { name });
+  // commenti (22/10/2026): il nome del mazzo singolo o del mazzo torneo, se è ancora online
+  if (n.kind === "deck_comment" || n.kind === "comment_reply") {
+    const deck = n.deckName ?? n.setName;
+    if (n.kind === "deck_comment") return deck ? fillFollowLabel(L.deckComment, { name, deck }) : fillFollowLabel(L.deckCommentGone, { name });
+    return deck ? fillFollowLabel(L.commentReply, { name, deck }) : fillFollowLabel(L.commentReplyGone, { name });
+  }
   if (n.kind === "guide_published") return n.guideTitle ? fillFollowLabel(L.guidePublished, { name, guide: n.guideTitle }) : fillFollowLabel(L.guideGone, { name });
   if (n.kind === "comic_published") return n.comicTitle ? fillFollowLabel(L.comicPublished, { name, comic: n.comicTitle }) : fillFollowLabel(L.comicGone, { name });
   if (n.kind === "deck_set_published") return n.setName ? fillFollowLabel(L.deckSetPublished, { name, deck: n.setName }) : fillFollowLabel(L.deckSetGone, { name });
@@ -99,8 +105,13 @@ function NotificationCard({ item: n, locale, L }: { item: NotificationItem; loca
   const unread = !n.read_at;
   const name = n.actor ? authorName(n.actor) : L.someone;
   // un mazzo o una guida non più online non ha link (porterebbe a una pagina che non c'è)
-  const gone = (n.kind === "deck_published" && !n.deckName) || (n.kind === "guide_published" && !n.guideTitle) || (n.kind === "comic_published" && !n.comicTitle) || (n.kind === "deck_set_published" && !n.setName);
-  const link = gone ? null : notificationHref(locale, n.target);
+  const gone =
+    (n.kind === "deck_published" && !n.deckName) ||
+    (n.kind === "guide_published" && !n.guideTitle) ||
+    (n.kind === "comic_published" && !n.comicTitle) ||
+    (n.kind === "deck_set_published" && !n.setName) ||
+    ((n.kind === "deck_comment" || n.kind === "comment_reply") && !n.deckName && !n.setName);
+  const link = gone ? null : notificationHref(locale, n.target, n.kind);
   const body = (
     <>
       <Avatar profile={n.actor} name={name} size={36} />

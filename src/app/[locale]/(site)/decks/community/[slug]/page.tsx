@@ -27,7 +27,10 @@ import { authorHandle, authorName } from "@/lib/community/util";
 import { deckResources, deckVideos } from "@/lib/videos";
 import { DeckResources, DeckVideos } from "@/components/DeckMedia";
 import { CardArt, DeckCardGrid } from "@/components/CardChip";
-import { CardMentions } from "@/components/CardMentions";
+import { UserMarkdown } from "@/components/UserMarkdown";
+import { DeckComments } from "@/components/comments/DeckComments";
+import { deckCommentLabels } from "@/lib/deckCommentLabels";
+import { stripMarkdown } from "@/lib/userMarkdown";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { StarRating } from "@/components/StarRating";
 import { CopyButton } from "@/components/CopyButton";
@@ -90,7 +93,8 @@ function deckDescription(deck: CommunityDeck, locale: Locale, dict: Dictionary, 
     locale,
   );
   const view = localizedGuide(deck, locale);
-  const own = view.lang === locale ? cleanDescription(view.text.summary, max) : "";
+  // il riassunto senza i segni della formattazione (22/10/2026): "**Merlin**" diventa "Merlin"
+  const own = view.lang === locale ? cleanDescription(stripMarkdown(view.text.summary), max) : "";
   const text = cleanDescription(own ? `${lead} ${own}` : lead, max);
   // Senza il riassunto (guida in un'altra lingua, traduzione non ancora pronta) restano i soli fatti, una
   // novantina di caratteri: troppo pochi per uno snippet. La coda dice che cosa si trova nella pagina, ma solo
@@ -364,7 +368,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           </div>
         ) : null}
 
-        {/* Testi della guida: i nomi ufficiali delle carte diventano link con anteprima (CardMentions, richiesta di Davdas).
+        {/* Testi della guida: i nomi ufficiali delle carte diventano link con anteprima (richiesta di Davdas) e dal
+            22/10/2026 si leggono grassetto, corsivo, elenchi e citazioni (UserMarkdown, src/lib/userMarkdown.ts).
             Dal 25/09/2026 il sito traduce le guide (deckTranslation.ts): la pagina mostra la traduzione nella sua lingua,
             dice che è automatica e porta all'originale, che sta nella versione della pagina nella lingua dell'autore.
             L'originale non si incorpora qui (nemmeno chiuso in un <details>): Google chiede una sola lingua per pagina
@@ -389,9 +394,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
           <p className="kicker text-mint">{c.summary}</p>
           {/* lang: la lingua del testo mostrato (quella della pagina se tradotto, dell'autore se la traduzione manca) */}
-          <p className="mt-2 whitespace-pre-line text-lg text-pale" lang={view.lang}>
-            <CardMentions text={view.text.summary} locale={locale} dict={d} id="cm-summary" />
-          </p>
+          <UserMarkdown text={view.text.summary} locale={locale} dict={d} lang={view.lang} className="mt-2 text-lg text-pale" />
         </div>
 
         <div className="mt-6">
@@ -544,9 +547,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               {sections.map((k) => (
                 <section key={k} className={`rounded-lg border-2 p-4 ${sectionStyle[k]?.box ?? "border-sky bg-night-2/70"} ${k === "matchups" || k === "notes" ? "md:col-span-2" : ""}`}>
                   <h3 className={`kicker ${sectionStyle[k]?.title ?? "text-mint"}`}>{c[k]}</h3>
-                  <p className="mt-2 whitespace-pre-line text-sm text-pale" lang={view.lang}>
-                    <CardMentions text={view.text[k] ?? ""} locale={locale} dict={d} id={`cm-${k}`} />
-                  </p>
+                  <UserMarkdown text={view.text[k] ?? ""} locale={locale} dict={d} lang={view.lang} className="mt-2 text-sm text-pale" />
                 </section>
               ))}
             </div>
@@ -559,6 +560,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
         {/* statistiche per l'autore (pacchetto STATS): visite, copie del codice, clic e video, solo nel browser */}
         <DeckStatsBeacon slug={deck.slug} />
       </article>
+
+      {/* Commenti (22/10/2026, Pierluigi: "possiamo fare in modo che i mazzi si possano commentare"): li carica il browser
+          quando la sezione si avvicina, quindi non entrano nell'HTML della pagina ISR (che resta in una lingua sola) */}
+      <DeckComments
+        target={{ kind: "deck", id: deck.id }}
+        ownerId={deck.owner}
+        locale={locale}
+        loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(`${path}#comments`)}`}
+        placement="deck_page"
+        labels={deckCommentLabels[locale]}
+        badgeLabels={c.badges}
+      />
 
       {guides.length ? (
         <section className="mt-10">
