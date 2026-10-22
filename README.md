@@ -371,7 +371,7 @@ Richiesta di Pierluigi: "vorrei crearne una con i numeri che mi interessano di o
 
 - **Iscrizioni, download, mazzi**: funzione `kpi_daily(p_key, p_from)` (blocco `-- ===== 22/10/2026: NUMERI DELLA DASHBOARD =====` di `schema.sql`): solo conteggi per giorno di Roma dal 15/09/2026 (iscrizioni, download con l'accesso, account al primo download, clic senza accesso, mazzi creati anche privati e quanti di quelli sono pubblicati, mazzi torneo), solo con il segreto del cron (`notify_key_ok`). La rotta `/api/staff/kpi?from=aaaa-mm-gg` la chiama con `Authorization: Bearer <CRON_SECRET>` (401 senza, `unavailable` prima della migrazione, mai in cache, noindex). Regole pure e test in `src/lib/kpi.ts`; prova a secco `node scripts/kpi-dry-run.mjs`.
 - **Visite**: Vercel Web Analytics (visitatori e pagine viste per giorno di Roma), lette da Claude dal Chrome di Pierluigi (serve l'accesso a Vercel).
-- **Aggiornamento**: un'attività pianificata di Claude ogni mattina legge le due fonti e rinnova i file della dashboard.
+- **Aggiornamento**: un'attività pianificata di Claude ogni mattina legge le due fonti e rinnova i file della dashboard; i conteggi del sito li scarica `node scripts/kpi-pull.mjs <file.json>` (legge CRON_SECRET da .env.local senza stamparlo).
 
 ## Pagina FAQ e assistente (dal 20/09/2026)
 
