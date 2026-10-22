@@ -10,6 +10,133 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "crimson-cup-meta-report-emea-1-amer-2": {
+    title: "Meta Report da Crimson Cup: Van Helsing ainda é a mais banida, King Arthur divide a Europa e as Américas",
+    metaTitle: "Crimson Cup de Origins TCG: números da EMEA #1 e da AMER #2",
+    description:
+      "Crimson Cup de Origins TCG, EMEA #1 e AMER #2 nos números da Koin: Van Helsing banida em 51,1% e 48,4%, King Arthur 6,3% na Europa, 24% nas Américas.",
+    summary:
+      "A Koin Games publicou os números oficiais de mais duas classificatórias da Crimson Cup, a EMEA #1 e a AMER #2. Van Helsing é de novo a Lendária mais banida (51,1% e 48,4%), Three Not So Little Pigs de novo a mais levada e Baby Bear de novo a carta mais usada. A novidade é King Arthur: banida em 6,3% das vezes na Europa, em 24% nas Américas. A nossa página da Crimson Cup agora coloca todas as classificatórias lado a lado.",
+    highlights: [
+      { label: "Van Helsing, banida em todo lugar", text: "a mais banida nas três classificatórias, 51,1% na EMEA #1 e 48,4% na AMER #2", anchor: "bans" },
+      { label: "King Arthur divide as regiões", text: "6,3% de bans na Europa, 22,7% e 24% nas duas classificatórias das Américas", anchor: "king-arthur" },
+      { label: "Robin Hood agora dá medo", text: "de 11,8% na AMER #1 a quase um ban a cada cinco", anchor: "robin-hood" },
+      { label: "Pigs, de novo a mais levada", text: "cerca de um quarto dos decks, e banida um pouco mais a cada vez", anchor: "levadas" },
+      { label: "Baby Bear em primeiro nas três", text: "50,1% e 46,1%; Bagheera e Stroke of Midnight entram no top 20", anchor: "cartas" },
+      { label: "Todas as classificatórias comparadas", text: "uma seção nova da nossa página da Crimson Cup", anchor: "pagina" },
+    ],
+    body: `## Mais duas classificatórias, as mesmas tabelas {#numeros}
+
+Depois da EMEA #1 (20 de outubro) e da AMER #2 (21 de outubro), a Koin Games publicou no seu Discord oficial as mesmas duas tabelas da primeira classificatória: a fase de ban de cada Lendária e as 20 cartas mais usadas nos decks entregues. Com três classificatórias de cinco, os números já podem ser comparados: o que se mantém de uma classificatória para a outra e o que muda entre a Europa e as Américas. Sobre a primeira, a AMER #1, está o nosso [Meta Report de 20 de outubro](/pt/news/crimson-cup-meta-report-amer-1).
+
+## Van Helsing em primeiro, Merlin em segundo, três de três {#bans}
+
+O ban rate diz quantas vezes uma Lendária foi banida nas vezes em que um adversário a encontrou no ban (as listas ficam ocultas até o top 4, então no ban só se veem as Lendárias: [as regras](/pt/news/crimson-cup-format-check-in#listas)).
+
+| Lendária | AMER #1 | EMEA #1 | AMER #2 |
+|---|---|---|---|
+| Van Helsing | 44,4% | 51,1% | 48,4% |
+| Merlin | 42,2% | 48,6% | 47,5% |
+| Three Not So Little Pigs | 32,8% | 34,9% | 36,1% |
+| Dorothy | 23,1% | 10,0% | 33,3% |
+| King Arthur | 22,7% | 6,3% | 24,0% |
+| Robin Hood | 11,8% | 19,6% | 18,6% |
+| Mulan | 20,3% | 15,3% | 14,0% |
+| Legion of the Dead | 19,2% | 15,4% | 10,6% |
+| Queen of Hearts | 21,0% | 8,0% | 12,0% |
+| Dracula | 14,1% | 14,5% | 9,2% |
+| Wicked Stepmother | 11,1% | 0% | 8,3% |
+
+Van Helsing foi banida 139 vezes em 272 na EMEA #1 e 90 em 186 na AMER #2: na Europa, mais de uma vez a cada duas. Merlin é a segunda nas três classificatórias, mesmo estando em menos de um deck a cada dez. Dorothy e Wicked Stepmother foram vistas no ban menos de 30 vezes por classificatória (Dorothy, 9 vezes na AMER #2): os números delas oscilam muito e dizem pouco.
+
+## King Arthur: banida nas Américas, quase nunca na Europa {#king-arthur}
+
+A maior diferença entre as classificatórias é King Arthur: banida 15 vezes em 66 na AMER #1 (22,7%), 4 em 63 na EMEA #1 (6,3%) e 18 em 75 na AMER #2 (24,0%). As amostras são parecidas, então não é acaso: nas duas classificatórias das Américas os jogadores a baniram mais ou menos uma vez a cada quatro; na Europa, quase nunca. Queen of Hearts mostra uma diferença menor no mesmo sentido (21,0% e 12,0% nas Américas, 8,0% na Europa). A nossa leitura: nas Américas o deck de King Arthur dá mais medo; a EMEA #2 vai dizer se a Europa o vê de outro jeito.
+
+## Robin Hood não é mais a menos temida {#robin-hood}
+
+Depois da AMER #1, Robin Hood era a menos banida entre as Lendárias vistas pelo menos 30 vezes (11,8%). Nas duas classificatórias seguintes ela foi banida quase uma vez a cada cinco: 20 vezes em 102 na EMEA #1 e 8 em 43 na AMER #2. Agora as menos temidas são outras: King Arthur na Europa (6,3%), Dracula (9,2%) e Legion of the Dead (10,6%) na AMER #2. Legion é banida cada vez menos (19,2%, 15,4%, 10,6%) e continua em cerca de um deck a cada dez.
+
+## Pigs, a mais levada, e banida um pouco mais a cada vez {#levadas}
+
+Parcela dos decks da tabela da Koin com cada Lendária:
+
+| Lendária | AMER #1 | EMEA #1 | AMER #2 |
+|---|---|---|---|
+| Three Not So Little Pigs | 23,3% | 23,4% | 24,0% |
+| Van Helsing | 18,7% | 19,7% | 20,1% |
+| Legion of the Dead | 9,3% | 9,7% | 9,8% |
+| Merlin | 9,8% | 9,7% | 9,0% |
+| Dracula | 7,4% | 5,8% | 7,2% |
+| Mulan | 6,7% | 8,3% | 7,0% |
+| King Arthur | 6,4% | 5,7% | 6,5% |
+| Robin Hood | 7,2% | 7,7% | 6,5% |
+| Queen of Hearts | 6,5% | 6,7% | 6,5% |
+| Dorothy | 3,2% | 2,3% | 2,2% |
+| Wicked Stepmother | 1,5% | 0,9% | 1,2% |
+
+Three Not So Little Pigs está em quase um deck a cada quatro em todas as classificatórias (216 decks na EMEA #1, 214 na AMER #2), e o ban rate dela sobe a cada vez: 32,8%, 34,9%, 36,1%. Pigs e Van Helsing juntas estão em mais de quatro decks a cada dez. A ordem das outras quase não se mexe: o meta do torneio é estável.
+
+## As cartas: Baby Bear em primeiro, 15 cartas sempre no top 20 {#cartas}
+
+Parcela de todos os decks entregues que têm a carta, como a Koin a publica, na ordem da AMER #2. O traço quer dizer que a carta não está no top 20 daquela classificatória: não é zero, e não a estimamos.
+
+| # | Carta | AMER #2 | EMEA #1 | AMER #1 |
+|---|---|---|---|---|
+| 1 | Baby Bear | 46,1% | 50,1% | 47,2% |
+| 2 | Mind Palace | 33,8% | 33,0% | 31,7% |
+| 3 | Spellbook | 32,5% | 32,5% | 32,4% |
+| 4 | Roo | 31,3% | 32,6% | 33,7% |
+| 5 | Trash for Treasure | 29,0% | 31,0% | 29,9% |
+| 6 | Golden Egg | 27,9% | 29,3% | 30,2% |
+| 7 | Ali Baba | 26,9% | 28,8% | 28,2% |
+| 8 | Scarecrow | 25,9% | 25,6% | 22,1% |
+| 9 | Dark Omen | 25,7% | 28,7% | 27,4% |
+| 10 | Impundulu | 24,7% | 21,1% | 22,3% |
+| 11 | Bagheera | 23,5% | 22,7% | — |
+| 12 | Tin Woodman | 23,3% | 25,4% | 21,6% |
+| 13 | Sandman | 23,2% | 22,8% | 23,9% |
+| 14 | Mummy | 22,2% | 26,6% | 24,9% |
+| 15 | Bullseye | 21,8% | — | 21,6% |
+| 16 | Defense Matrix | 21,2% | — | 22,1% |
+| 17 | Forbidden Knowledge | 21,1% | 23,2% | 22,3% |
+| 18 | En Passant | 21,0% | 23,5% | 21,7% |
+| 19 | Shahrazad | 20,8% | — | 20,3% |
+| 20 | Stroke of Midnight | 20,5% | 23,1% | — |
+
+Baby Bear é a carta mais usada nas três classificatórias, em metade dos decks na Europa (50,1%). Spellbook não se mexe (32,4%, 32,5%, 32,5%). Quinze cartas estão no top 20 de todas as classificatórias. Bagheera e Stroke of Midnight entraram na EMEA #1 e ficaram na AMER #2; na EMEA #1 o top 20 também tinha Obliterate (23,8%), Jekyll (21,2%) e Reinforcements (21,0%), que não estão na tabela da AMER #2.
+
+## O que isso significa para a APAC e a EMEA #2 {#proximas}
+
+As duas últimas classificatórias, APAC e EMEA #2, são jogadas em 22 de outubro. A nossa leitura:
+
+- Van Helsing e Merlin são banidas quase uma vez a cada duas em todo lugar: quem as leva deve contar com jogar com os outros dois decks;
+- Pigs é a Lendária mais levada e a que é banida cada vez mais: quanto mais a levam, mais ela atrai o ban;
+- na Europa, até agora, King Arthur quase nunca foi banida: se a EMEA #2 confirmar, lá ela é a Lendária com mais chances de ficar na mesa.
+
+## Todas as classificatórias comparadas {#pagina}
+
+A nossa [página da Crimson Cup](/pt/analytics/crimson-cup) tem uma seção nova, [as classificatórias comparadas](/pt/analytics/crimson-cup#across): ban rate, decks levados e cartas mais usadas com uma coluna por classificatória, todas juntas e a variação de uma classificatória para a outra. A página de cada classificatória continua como estava, com a comparação com a ladder; as páginas das cartas, como [King Arthur](/pt/cards/king-arthur) e [Baby Bear](/pt/cards/baby-bear), mostram os números da última classificatória.
+
+## De onde vêm os números {#fontes}
+
+- As tabelas que a Koin Games publicou no [Discord oficial](https://discord.gg/originstcg) depois da EMEA #1 (lidas em 21 de outubro de 2026) e depois da AMER #2 (lidas em 22 de outubro de 2026).
+- Para a AMER #1, as tabelas lidas em 20 de outubro de 2026, no nosso [primeiro Meta Report](/pt/news/crimson-cup-meta-report-amer-1).`,
+    faq: [
+      {
+        q: "Qual é a Lendária mais banida nas classificatórias da Crimson Cup?",
+        a: "Van Helsing, nas três classificatórias com números oficiais: 44,4% na AMER #1, 51,1% na EMEA #1 e 48,4% na AMER #2, segundo a Koin Games. Merlin é a segunda todas as vezes (42,2%, 48,6%, 47,5%).",
+      },
+      {
+        q: "O meta da Crimson Cup é diferente na Europa e nas Américas?",
+        a: "Em geral, não: são banidas e levadas as mesmas Lendárias, e Baby Bear é a carta mais usada em todo lugar. A exceção é King Arthur, banida em 6,3% das vezes na EMEA #1 contra 22,7% e 24,0% nas duas classificatórias das Américas.",
+      },
+      {
+        q: "Onde vejo os números de cada classificatória da Crimson Cup?",
+        a: "Na nossa página da Crimson Cup no Analytics: uma aba por classificatória, com as tabelas da Koin e a comparação com a ladder, e uma seção que coloca todas as classificatórias lado a lado.",
+      },
+    ],
+  },
   "crimson-cup-meta-report-amer-1": {
     title: "Meta Report da Crimson Cup: Van Helsing a mais banida, Pigs a mais levada na AMER #1",
     metaTitle: "Meta Report da Crimson Cup de Origins TCG: AMER #1",
