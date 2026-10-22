@@ -979,7 +979,7 @@ export type Database = {
       /** numeri della dashboard privata (blocco NUMERI DELLA DASHBOARD, 22/10/2026): solo con il segreto del cron */
       kpi_daily: {
         Args: { p_key: string; p_from?: string };
-        Returns: { day: string; signups: number; tracker_downloads: number; tracker_new_accounts: number; tracker_clicks_no_login: number; decks_created: number; decks_published: number; deck_sets_created: number }[];
+        Returns: { day: string; signups: number; tracker_downloads: number; tracker_new_accounts: number; tracker_clicks_no_login: number; decks_created: number; decks_published: number; deck_sets_created: number; tracker_matches: number; tracker_matches_ranked: number }[];
       };
       /** tetto ai mazzi pubblicati: 5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin (27/09/2026) */
       max_published_decks: { Args: { uid: string }; Returns: number };

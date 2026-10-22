@@ -28,13 +28,13 @@ describe("righe del database", () => {
   test("nomi della funzione → nomi della dashboard, numeri sporchi a zero, righe senza giorno scartate", () => {
     assert.deepEqual(
       kpiDays([
-        { day: "2026-10-21", signups: 4, tracker_downloads: "3", tracker_new_accounts: 2, tracker_clicks_no_login: 5, decks_created: 7, decks_published: 6, deck_sets_created: 1 },
+        { day: "2026-10-21", signups: 4, tracker_downloads: "3", tracker_new_accounts: 2, tracker_clicks_no_login: 5, decks_created: 7, decks_published: 6, deck_sets_created: 1, tracker_matches: 40, tracker_matches_ranked: "25" },
         { day: "boh", signups: 1 },
         { day: "2026-10-22", signups: -1, tracker_downloads: null },
       ]),
       [
-        { day: "2026-10-21", signups: 4, trackerDownloads: 3, trackerNewAccounts: 2, trackerClicksNoLogin: 5, decksCreated: 7, decksPublished: 6, deckSetsCreated: 1 },
-        { day: "2026-10-22", signups: 0, trackerDownloads: 0, trackerNewAccounts: 0, trackerClicksNoLogin: 0, decksCreated: 0, decksPublished: 0, deckSetsCreated: 0 },
+        { day: "2026-10-21", signups: 4, trackerDownloads: 3, trackerNewAccounts: 2, trackerClicksNoLogin: 5, decksCreated: 7, decksPublished: 6, deckSetsCreated: 1, trackerMatches: 40, trackerMatchesRanked: 25 },
+        { day: "2026-10-22", signups: 0, trackerDownloads: 0, trackerNewAccounts: 0, trackerClicksNoLogin: 0, decksCreated: 0, decksPublished: 0, deckSetsCreated: 0, trackerMatches: 0, trackerMatchesRanked: 0 },
       ],
     );
     assert.deepEqual(kpiDays(null), []);
@@ -48,12 +48,15 @@ describe("blocco NUMERI DELLA DASHBOARD di schema.sql", () => {
     assert.match(block, /language plpgsql stable security definer set search_path = public, pg_temp as/);
     assert.match(block, /if not public\.notify_key_ok\(p_key\) then raise exception 'forbidden'/);
     assert.ok(block.includes("revoke all on function public.kpi_daily(text, date) from public;"));
+    // il tipo restituito cambia con le colonne: la funzione si toglie prima di rifarla
+    assert.ok(block.indexOf("drop function if exists public.kpi_daily(text, date);") < block.indexOf("create or replace function public.kpi_daily("));
+    assert.match(block, /tracker_matches integer,\n  tracker_matches_ranked integer/);
   });
   test("stesso giorno del lancio e stesso tetto dei giorni del codice, giorni di Roma", () => {
     assert.ok(block.includes(`date '${KPI_SINCE}'`));
     assert.ok(block.includes(`::date - ${KPI_MAX_DAYS - 1}`));
     assert.ok(!/at time zone 'UTC'/.test(block));
-    assert.equal((block.match(/at time zone 'Europe\/Rome'/g) ?? []).length >= 7, true);
+    assert.equal((block.match(/at time zone 'Europe\/Rome'/g) ?? []).length >= 8, true);
   });
   test("solo conteggi: nessuna tabella nuova, nessun permesso sulle tabelle", () => {
     assert.ok(!/create table/.test(block));

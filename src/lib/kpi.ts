@@ -1,6 +1,7 @@
 /**
  * Numeri della dashboard privata di Pierluigi (22/10/2026: "vorrei crearne una con i numeri che mi interessano di
- * originsmeta": visite giornaliere, iscrizioni, download del tracker, deck creati). Iscrizioni, download e mazzi li dà la
+ * originsmeta": visite giornaliere, iscrizioni, download del tracker, deck creati; poi le partite registrate dal tracker).
+ * Iscrizioni, download, mazzi e partite li dà la
  * funzione `kpi_daily` del database (blocco "22/10/2026: NUMERI DELLA DASHBOARD" di supabase/schema.sql) attraverso la
  * rotta /api/staff/kpi, solo con il segreto del cron; le visite le legge Claude da Vercel Web Analytics. La dashboard è
  * una pagina privata su claude.ai, aggiornata ogni mattina. Il numero di persone iscritte non si mostra mai sul sito.
@@ -22,6 +23,9 @@ export type KpiDay = {
   decksCreated: number;
   decksPublished: number;
   deckSetsCreated: number;
+  /** partite registrate dall'app OriginsMeta Tracker, per giorno di fine partita (22/10/2026) */
+  trackerMatches: number;
+  trackerMatchesRanked: number;
 };
 
 /** Il parametro `from` della rotta: un giorno aaaa-mm-gg valido, altrimenti il giorno del lancio. */
@@ -53,6 +57,8 @@ export function kpiDays(rows: unknown): KpiDay[] {
         decksCreated: int(x.decks_created),
         decksPublished: int(x.decks_published),
         deckSetsCreated: int(x.deck_sets_created),
+        trackerMatches: int(x.tracker_matches),
+        trackerMatchesRanked: int(x.tracker_matches_ranked),
       },
     ];
   });

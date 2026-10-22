@@ -57,7 +57,7 @@ try {
     const sum = (k) => res.rows.reduce((n, r) => n + Number(r[k] ?? 0), 0);
     const first = res.rows[0].day instanceof Date ? res.rows[0].day.toISOString().slice(0, 10) : String(res.rows[0].day);
     check("parte dal 15/09/2026, un giorno per riga", res.rows.length === new Set(res.rows.map((r) => String(r.day))).size, `primo giorno ${first}`);
-    console.log("     totali dal 15/09:", { iscrizioni: sum("signups"), download_tracker: sum("tracker_downloads"), mazzi_creati: sum("decks_created"), mazzi_torneo: sum("deck_sets_created") });
+    console.log("     totali dal 15/09:", { iscrizioni: sum("signups"), download_tracker: sum("tracker_downloads"), mazzi_creati: sum("decks_created"), mazzi_torneo: sum("deck_sets_created"), partite_tracker: sum("tracker_matches"), in_classificata: sum("tracker_matches_ranked") });
   }
   const anonTable = await attempt("select count(*) from public.tracker_downloads");
   check("anon non legge le tabelle", Boolean(anonTable.error));
