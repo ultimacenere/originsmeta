@@ -123,3 +123,57 @@ export async function markConversationRead(id: string, seen: string | null): Pro
   }
   return { changed: data === true };
 }
+
+/** Al massimo tante conversazioni segnate a ogni ingresso nella casella (di solito sono una o due). */
+const SEEN_MAX_CONVERSATIONS = 100;
+/** Al massimo tanti avvisi a chiamata: il tetto di `notifications_mark_read`. */
+const SEEN_MAX_NOTIFICATIONS = 200;
+
+/**
+ * Entrare nella casella spegne la busta (22/10/2026, Pierluigi: "che io legga o non legga i messaggi, quelle notifiche
+ * da quel momento in poi devono sparire e segnare come letti i messaggi e notifiche varie, non esiste che uscendo in
+ * home ad esempio, io riveda ancora le notifiche"; scelta: per lo staff anche i messaggi degli utenti allo staff, che
+ * arrivano comunque anche sul canale Discord privato). La chiama il browser appena si apre /account/messages o l'area
+ * staff (`MarkInboxSeen`), mai il disegno della pagina sul server (prefetch, anteprime). Segna come letti, fino a `seen`
+ * (quando la pagina è stata disegnata: quello che arriva dopo resta da leggere), tutto quello che la busta conta: le
+ * proprie conversazioni con messaggi dello staff da leggere, i propri avvisi e, per chi è dello staff, le conversazioni
+ * degli altri con messaggi da leggere. Con le RPC di sempre (`inbox_mark_read`, `notifications_mark_read`): nessuna
+ * migrazione. `messages` = conversazioni segnate, `notifications` = avvisi segnati.
+ */
+export async function markInboxSeen(seen: string): Promise<{ messages: number; notifications: number }> {
+  const none = { messages: 0, notifications: 0 };
+  const { supabase, user } = await currentUser();
+  if (!supabase || !user) return none;
+  const parsed = typeof seen === "string" && seen.length <= 40 ? Date.parse(seen) : NaN;
+  const at = new Date(Number.isFinite(parsed) ? Math.min(parsed, Date.now()) : Date.now()).toISOString();
+  const [own, staff, notes] = await Promise.all([
+    supabase.from("conversations").select("id").eq("user_id", user.id).eq("unread_by_user", true).limit(SEEN_MAX_CONVERSATIONS),
+    supabase.rpc("is_staff"),
+    supabase.from("notifications").select("id").eq("user_id", user.id).is("read_at", null).lte("created_at", at).limit(SEEN_MAX_NOTIFICATIONS),
+  ]);
+  // la casella dello staff è condivisa: la lettura dello staff vale per tutto lo staff, come aprire una conversazione
+  const others =
+    staff.data === true
+      ? await supabase.from("conversations").select("id").eq("unread_by_staff", true).neq("user_id", user.id).limit(SEEN_MAX_CONVERSATIONS)
+      : null;
+  for (const [what, res] of [["conversazioni", own], ["avvisi", notes], ["conversazioni dello staff", others]] as const) {
+    // prima della migrazione di un pacchetto (avvisi) la tabella manca: niente da segnare, niente da dire
+    if (res?.error && res.error.code !== "PGRST205" && res.error.code !== "42P01") console.error(`[inbox] da segnare (${what}):`, res.error.code ?? "", res.error.message);
+  }
+  const conversations = [...(own.data ?? []), ...(others?.data ?? [])].map((r) => (r as { id: string }).id);
+  const marked = await Promise.all(
+    conversations.map(async (cid) => {
+      const { data, error } = await supabase.rpc("inbox_mark_read", { cid, seen: at });
+      if (error) console.error("[inbox] inbox_mark_read:", error.code ?? "", error.message);
+      return data === true;
+    }),
+  );
+  const noteIds = (notes.data ?? []).map((r) => Number((r as { id: number }).id));
+  let notifications = 0;
+  if (noteIds.length) {
+    const { data, error } = await supabase.rpc("notifications_mark_read", { p_ids: noteIds });
+    if (error) console.error("[inbox] notifications_mark_read:", error.code ?? "", error.message);
+    else notifications = Number(data ?? 0);
+  }
+  return { messages: marked.filter(Boolean).length, notifications };
+}

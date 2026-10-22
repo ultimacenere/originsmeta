@@ -11,6 +11,7 @@ import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { InboxSectionView, UnreadLine, UserConversationList } from "@/components/inbox/InboxSection";
 import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
 import { NotificationsJump, NotificationsSection } from "@/components/follow/NotificationsSection";
+import { MarkInboxSeen } from "@/components/inbox/MarkRead";
 
 /**
  * La casella messaggi dell'utente con lo staff (26/09/2026, pacchetto INBOX). Dal 27/09/2026 vive tutta qui, dove
@@ -39,9 +40,13 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(userInboxPath(locale, page))}`);
 
   const [list, status] = await Promise.all([listUserConversations(supabase, user.id, page), readInboxStatus(supabase)]);
+  // quando la pagina è stata disegnata: entrando si segna come letto quello che c'era fino a qui (MarkInboxSeen, 22/10/2026)
+  const seen = new Date().toISOString();
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+      {/* entrare nella casella spegne la busta: messaggi e avvisi letti, anche senza aprirli (22/10/2026) */}
+      <MarkInboxSeen seen={seen} view="user" />
       <p className="text-sm">
         <Link href={href(locale, "/account")} prefetch={false} className="link-mint font-bold">
           ← {L.thread.back}

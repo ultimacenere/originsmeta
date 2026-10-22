@@ -11,6 +11,7 @@ import { privateInboxMeta } from "@/lib/community/inboxPage";
 import { StaffConversationList } from "@/components/inbox/StaffConversationList";
 import { NewConversationForm } from "@/components/inbox/InboxForms";
 import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
+import { MarkInboxSeen } from "@/components/inbox/MarkRead";
 
 /**
  * Area staff della casella messaggi (26/09/2026, pacchetto INBOX): tutte le conversazioni fra gli utenti e lo staff,
@@ -55,9 +56,13 @@ export default async function StaffInboxPage({ params, searchParams }: { params:
   const page = pageNumber(sp.page);
   const to = cleanUsername(Array.isArray(sp.to) ? sp.to[0] : sp.to) ?? "";
   const list = await listStaffConversations(supabase, user.id, filter, page);
+  // quando la pagina è stata disegnata: entrando si segna come letto quello che c'era fino a qui (MarkInboxSeen, 22/10/2026)
+  const seen = new Date().toISOString();
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+      {/* entrare nell'area staff spegne la busta: messaggi degli utenti, propri messaggi e avvisi letti (22/10/2026) */}
+      <MarkInboxSeen seen={seen} view="staff" />
       <p className="text-sm">
         <Link href={userInboxPath(locale)} prefetch={false} className="link-mint font-bold">
           ← {L.thread.backInbox}
