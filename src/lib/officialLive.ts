@@ -10,13 +10,16 @@ import type { LiveUsers } from "./twitchLive";
  * italiano in sostituzione di quello ufficiale di Origins? se il coach non sta castando ritorna quello ufficiale").
  * Il 20/10/2026 anche Robip (profilo `robip-origins`, twitch.tv/r0bip) casta l'evento: viene subito dopo il coach
  * (Pierluigi: "metti lui come prio due dopo il coach se lui offline per la homepage italiana").
+ * Il 22/10/2026 vint3n (profilo `vint3n`, twitch.tv/vint3n) casta in inglese le qualificazioni APAC ed EMEA e i playoff:
+ * sulle pagine inglesi viene prima di quella ufficiale (Pierluigi: "aggiungi vint3n come prio 1 per gli inglesi quando ci
+ * sono i broadcasting dei tornei").
  *
  * Le dirette in `HERO_STREAMS` sono in ordine di priorità: vince la prima in diretta che vale per la lingua della pagina e
  * per il momento; nessuna = lo slider. Lo stato arriva da /api/live come per il bollino LIVE (stesse regole: categoria
  * Origins TCG o titolo che ne parla). Funzioni pure, senza import a runtime.
  */
 
-export type HeroStreamId = "official" | "coachcrono" | "robip";
+export type HeroStreamId = "official" | "coachcrono" | "robip" | "vint3n";
 
 export type HeroStream = {
   id: HeroStreamId;
@@ -34,11 +37,14 @@ export type HeroStream = {
 /**
  * In ordine di priorità. CoachCrono: dal 19 al 21 ottobre 2026 compresi, ora italiana (CEST, UTC+2), solo /it: le
  * giornate della Crimson Cup che casta in italiano. Robip: stesse pagine e stesso periodo, se il coach non è in diretta.
- * Fuori dal periodo, o se nessuno dei due è in diretta, vale il canale ufficiale.
+ * Fuori dal periodo, o se nessuno dei due è in diretta, vale il canale ufficiale. vint3n: solo /en, dal 22 ottobre 2026
+ * (ora italiana) alla fine del 25 sulla costa est (EDT, UTC-4: le finali sono il 25 alle 10 "EST" di Koin), cioè le ultime
+ * qualificazioni, i playoff e le finali della Crimson Cup; se non è in diretta vale il canale ufficiale.
  */
 export const HERO_STREAMS: readonly HeroStream[] = [
   { id: "coachcrono", username: "coachcrono", name: "CoachCrono", locales: ["it"], from: "2026-10-19T00:00:00+02:00", to: "2026-10-21T23:59:59+02:00" },
   { id: "robip", username: "robip-origins", name: "Robip", locales: ["it"], from: "2026-10-19T00:00:00+02:00", to: "2026-10-21T23:59:59+02:00" },
+  { id: "vint3n", username: "vint3n", name: "vint3n", locales: ["en"], from: "2026-10-22T00:00:00+02:00", to: "2026-10-25T23:59:59-04:00" },
   { id: "official", username: "originstcg", name: "Origins TCG" },
 ];
 

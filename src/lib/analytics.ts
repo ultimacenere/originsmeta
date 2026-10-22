@@ -239,8 +239,8 @@ export type EventParams = {
   tier_entry_click: { tier_source: string; target: string };
   creator_link_click: { kind: string; placement: string };
   live_now_open: { placement: string };
-  official_live_view: { placement: "home_hero"; stream: "official" | "coachcrono" | "robip" };
-  official_live_twitch: { placement: "home_hero"; method: "button" | "player"; stream: "official" | "coachcrono" | "robip" };
+  official_live_view: { placement: "home_hero"; stream: "official" | "coachcrono" | "robip" | "vint3n" };
+  official_live_twitch: { placement: "home_hero"; method: "button" | "player"; stream: "official" | "coachcrono" | "robip" | "vint3n" };
   stream_tools_open: { placement: string };
   stream_tool_copy: { tool: string; placement: string };
   deck_image_download: { format: string; placement: string };

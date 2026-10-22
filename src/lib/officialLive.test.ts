@@ -34,7 +34,8 @@ describe("diretta in home", () => {
   test("nessuna diretta = lo slider", () => {
     assert.equal(heroLiveOf(null, "it", during), null);
     assert.equal(heroLiveOf({}, "it", during), null);
-    assert.equal(heroLiveOf({ vint3n: { channel: "https://www.twitch.tv/vint3n", viewers: 2 } }, "it", during), null, "un altro creator non cambia la home");
+    assert.equal(heroLiveOf({ someone: { channel: "https://www.twitch.tv/someone", viewers: 2 } }, "it", during), null, "un altro creator non cambia la home");
+    assert.equal(heroLiveOf({ vint3n: { channel: "https://www.twitch.tv/vint3n", viewers: 2 } }, "it", Date.parse("2026-10-22T11:00:00Z")), null, "vint3n non cambia la home italiana");
   });
   test("CoachCrono: solo in italiano e solo dal 19 al 21 ottobre, prima di quella ufficiale", () => {
     assert.equal(heroLiveOf(both, "it", during)?.id, "coachcrono");
@@ -56,6 +57,21 @@ describe("diretta in home", () => {
     assert.equal(heroLiveOf({ ...official, ...robip }, "it", after)?.id, "official", "dopo il 21");
     for (const l of ["en", "es", "fr", "pt", "de"]) assert.equal(heroLiveOf({ ...official, ...robip }, l, during)?.id, "official", l);
     assert.equal(heroHeading(officialLiveLabels.it, { id: "robip", name: "Robip" }), "La Crimson Cup in diretta in italiano con Robip");
+  });
+  test("vint3n: primo in inglese dal 22 al 25 ottobre, prima di quella ufficiale (22/10/2026)", () => {
+    const vint3n = { vint3n: { channel: "https://www.twitch.tv/vint3n", viewers: 40, title: "Crimson Cup APAC qualifier" } };
+    const apac = Date.parse("2026-10-22T11:00:00Z"); // qualificazione APAC, 19:00 SGT
+    const finals = Date.parse("2026-10-25T14:00:00Z"); // finali, 10:00 EDT
+    const lastMinute25 = Date.parse("2026-10-26T03:59:30Z"); // 25/10 23:59:30 sulla costa est
+    assert.deepEqual(heroLiveOf({ ...official, ...vint3n }, "en", apac), { id: "vint3n", name: "vint3n", channel: "vint3n", viewers: 40, title: "Crimson Cup APAC qualifier" });
+    assert.equal(heroLiveOf({ ...official, ...vint3n }, "en", finals)?.id, "vint3n");
+    assert.equal(heroLiveOf({ ...official, ...vint3n }, "en", lastMinute25)?.id, "vint3n", "fino a fine 25 ottobre sulla costa est");
+    assert.equal(heroLiveOf(vint3n, "en", apac)?.id, "vint3n", "anche senza la diretta ufficiale");
+    assert.equal(heroLiveOf({ ...official, ...vint3n }, "en", during)?.id, "official", "prima del 22");
+    assert.equal(heroLiveOf({ ...official, ...vint3n }, "en", Date.parse("2026-10-26T04:00:30Z"))?.id, "official", "dopo il 25");
+    assert.equal(heroLiveOf(official, "en", apac)?.id, "official", "se vint3n non è in diretta torna quella ufficiale");
+    for (const l of ["it", "es", "fr", "pt", "de", "ru"]) assert.equal(heroLiveOf({ ...official, ...vint3n }, l, apac)?.id, "official", l);
+    assert.equal(heroHeading(officialLiveLabels.en, { id: "vint3n", name: "vint3n" }), "The Crimson Cup live with vint3n");
   });
   test("periodi delle dirette", () => {
     const cast = HERO_STREAMS.find((s: { id: string }) => s.id === "coachcrono");
