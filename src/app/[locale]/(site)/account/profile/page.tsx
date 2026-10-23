@@ -7,13 +7,15 @@ import { currentUser } from "@/lib/supabase/server";
 import { isShowcaseBadge } from "@/lib/community/badges";
 import type { Profile } from "@/lib/community/types";
 import { ProfileEditor } from "@/components/ProfileEditor";
+import { ProfileNameEditor } from "@/components/ProfileNameEditor";
+import { profileNameLabels } from "@/lib/profileNameLabels";
 import { ShowcaseEditor } from "@/components/showcase/ShowcaseEditor";
 import { ShowStatsSetting } from "@/components/achievements/ShowStatsSetting";
 
 /**
  * "Modifica la mia pagina pubblica" (01/10/2026, Pierluigi: "dobbiamo spostare tutte le opzioni della pagina profilo
  * pubblica in un sottomenu, altrimenti il profilo personale diventa innavigabile"). Qui sta tutto quello che cambia
- * /u/<nome>: profilo pubblico (#profile), foto profilo (#avatar), vetrina (#showcase) e numeri sulla vetrina
+ * /u/<nome>: nome e nome utente (#name, dal 23/10/2026), profilo pubblico (#profile), foto profilo (#avatar), vetrina (#showcase) e numeri sulla vetrina
  * (#showcase-stats); /account tiene il tasto che porta qui, sotto "La tua pagina pubblica", e rimanda qui le vecchie
  * ancore (`AccountHashRedirect`). Pagina privata, dinamica, noindex; fuori da sitemap e hreflang.
  */
@@ -44,6 +46,7 @@ export default async function AccountProfilePage({ params }: { params: LocalePar
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
   // i numeri sulla vetrina ci sono solo per i ruoli con vetrina (ShowStatsSetting non mostra nulla agli altri)
   const jump = [
+    { id: "name", label: profileNameLabels[locale].section },
     { id: "profile", label: P.sections.profile },
     { id: "avatar", label: P.sections.avatar },
     { id: "showcase", label: P.sections.showcase },
@@ -74,6 +77,8 @@ export default async function AccountProfilePage({ params }: { params: LocalePar
         ))}
       </nav>
 
+      {/* Nome mostrato e nome utente (23/10/2026, blocco NOME UTENTE di schema.sql) */}
+      <ProfileNameEditor supabase={supabase} userId={user.id} locale={locale} />
       {/* Profilo pubblico (pacchetto CREATOR, 26/09/2026): bio, canali, lingue e link breve /@nome */}
       <ProfileEditor supabase={supabase} userId={user.id} locale={locale} />
       {/* Foto profilo (tutti) e "Personalizza la vetrina" (Creator, Autore, Pro, Staff): pacchetto VETRINA, 27/09/2026 */}

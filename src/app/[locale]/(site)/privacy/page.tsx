@@ -14,6 +14,7 @@ import { draftPrivacy } from "@/lib/draftLabels";
 import { analyticsInterestPrivacy } from "@/lib/analyticsLabels";
 import { cardVoteLabels } from "@/lib/cardVoteLabels";
 import { deckCommentLabels } from "@/lib/deckCommentLabels";
+import { profileNameLabels } from "@/lib/profileNameLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -53,6 +54,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Profilo pubblico e stato in diretta (pacchetto CREATOR, 26/09/2026) */}
         <p id="profile" className="mt-6 scroll-mt-24">
           {creatorLabels[locale].privacy}
+        </p>
+        {/* Nome mostrato e nome utente cambiati dal profilo (23/10/2026): testo in src/lib/profileNameLabels.ts */}
+        <p id="profile-name" className="mt-6 scroll-mt-24">
+          {profileNameLabels[locale].privacy}
         </p>
         {/* Foto profilo caricate e vetrina (pacchetto VETRINA, 27/09/2026): testo in src/lib/showcaseLabels.ts */}
         <p id="profile-media" className="mt-6 scroll-mt-24">

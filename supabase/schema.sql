@@ -190,9 +190,14 @@ begin
   end if;
   -- 26/09/2026: lo stesso per le altre colonne riservate (ruolo, nome utente, id Discord, id, data di nascita del
   -- profilo), anche se un grant per colonna le riaprisse per sbaglio. is_admin() legge la riga com'era prima.
+  -- 23/10/2026 (blocco NOME UTENTE in fondo al file): il nome utente lo cambia anche l'utente, ma SOLO attraverso
+  -- profile_set_names, che controlla forma, nomi riservati, nomi già presi e i 30 giorni, e per la durata del suo UPDATE
+  -- scrive l'id del profilo nell'impostazione locale originsmeta.username_change (nessun client la può scrivere: la
+  -- Data API non espone set_config). Fuori da lì, come prima.
   if auth.uid() is not null and not public.is_admin() and (
        new.role is distinct from old.role
-    or new.username is distinct from old.username
+    or (new.username is distinct from old.username
+        and current_setting('originsmeta.username_change', true) is distinct from old.id::text)
     or new.discord_id is distinct from old.discord_id
     or new.id is distinct from old.id
     or new.created_at is distinct from old.created_at) then
@@ -7230,3 +7235,243 @@ end $$;
 revoke all on function public.kpi_daily(text, date) from public;
 grant execute on function public.kpi_daily(text, date) to anon, authenticated;
 comment on function public.kpi_daily(text, date) is 'Conteggi per giorno di Roma per la dashboard privata (22/10/2026): iscrizioni, download del tracker, mazzi creati, partite registrate dal tracker. Solo con il segreto del cron.';
+
+-- ===== 23/10/2026: NOME UTENTE =====
+-- =====================================================================================================
+-- Nome mostrato e nome utente cambiati dall'iscritto in /account/profile#name (Pierluigi, 23/10/2026: "diamo la
+-- possibilità che si possa cambiare il nickname profilo all'interno del sito"). Prima li cambiava solo lo staff con
+-- scripts/set-username.mjs (segnalazione di Fabio/EagleAxe93 del 06/10/2026: chi entra la prima volta con il link via
+-- email nasce con il nome preso dalla parte prima della @). Regole uguali in src/lib/community/profileNames.ts
+-- (profileNames.test.ts confronta espressioni, elenchi e numeri):
+--
+--   nome mostrato   da 2 a 40 caratteri, senza spazi ai lati né in fila, senza caratteri di controllo o invisibili;
+--                   per chi non è dello staff niente parole dello staff e del gioco (profile_display_name_reserved) e
+--                   niente nome uguale al nome utente di un Creator, Autore, Pro, Staff o admin ("lookalike", trattini e
+--                   maiuscole a parte); 10 secondi fra due cambi.
+--   nome utente     l'indirizzo della pagina (/u/<nome>, /@<nome>): da 3 a 39 caratteri fra minuscole, cifre e
+--                   trattini, mai un trattino all'inizio, alla fine o due di fila; per chi non è dello staff né un bot
+--                   di prova (bot-<n>) né un nome riservato, e una volta ogni 30 giorni; mai un nome di un altro
+--                   profilo né un vecchio nome di un altro.
+--
+--   profile_username_history   i nomi utente lasciati da un profilo: restano suoi finché l'account esiste (si
+--                   cancellano con lui), nessun altro li prende (né con profile_set_names né alla registrazione:
+--                   trigger profiles_username_free) e la pagina /u/<vecchio> porta con un 308 a quella nuova
+--                   (profile_username_moved, anche per il comando di chat e l'overlay con ?u=). Tornare a un nome
+--                   lasciato lo toglie dallo storico. Nessun client legge la tabella.
+--
+-- Scrive SOLO profile_set_names (security definer, con la sessione dell'utente): tutto o niente, un esito per campo
+-- (jsonb), nessuna grant né revoke su public.profiles (le due date nuove non hanno grant: le scrive solo la funzione).
+-- Il nome utente passa il trigger protect_profile_badge (base dello schema) solo durante il suo UPDATE, con
+-- l'impostazione locale originsmeta.username_change = id del profilo.
+-- Il sito regge senza questo blocco: il modulo dice che il cambio del nome non è ancora attivo.
+-- Idempotente: si può rilanciare.
+-- =====================================================================================================
+
+create table if not exists public.profile_username_history (
+  username text primary key,
+  profile_id uuid not null references public.profiles(id) on delete cascade,
+  changed_at timestamptz not null default now()
+);
+create index if not exists profile_username_history_profile_idx on public.profile_username_history (profile_id, changed_at desc);
+comment on table public.profile_username_history is 'Nomi utente lasciati da un profilo (23/10/2026): restano suoi, portano alla pagina nuova; scritti solo da profile_set_names.';
+alter table public.profile_username_history enable row level security;
+revoke all on public.profile_username_history from anon, authenticated;
+
+-- ultime modifiche fatte dal sito: le scrive solo profile_set_names (limiti di frequenza)
+alter table public.profiles add column if not exists username_changed_at timestamptz;
+alter table public.profiles add column if not exists display_name_changed_at timestamptz;
+
+-- ---------- regole ----------
+-- La forma di un nome utente scelto dal sito (USERNAME_RE in profileNames.ts, più niente trattini doppi).
+create or replace function public.profile_username_ok(u text)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select u is not null and u ~ '^[a-z0-9][a-z0-9-]{1,37}[a-z0-9]$' and position('--' in u) = 0;
+$$;
+revoke all on function public.profile_username_ok(text) from public, anon, authenticated;
+
+-- Nome utente riservato per chi non è dello staff: bot di prova, nomi dell'elenco, il sito e il gioco dentro il nome.
+create or replace function public.profile_username_reserved(u text)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select u ~ '^bot-[0-9]+(-[0-9]+)?$'
+      or u = any (array['admin', 'administrator', 'anonymous', 'bot', 'bots', 'deleted', 'everyone', 'help', 'here', 'koin', 'mod', 'moderator', 'mods', 'null', 'official', 'origins', 'owner', 'root', 'staff', 'support', 'system', 'team', 'undefined'])
+      or replace(u, '-', '') ~ '(originsmeta|originstcg|koingames)';
+$$;
+revoke all on function public.profile_username_reserved(text) from public, anon, authenticated;
+
+-- Il nome mostrato per i controlli: forma compatibile, minuscolo, solo a-z e cifre.
+create or replace function public.profile_display_name_key(n text)
+returns text language sql immutable set search_path = pg_catalog as $$
+  select regexp_replace(lower(normalize(coalesce(n, ''), NFKC)), '[^a-z0-9]', '', 'g');
+$$;
+revoke all on function public.profile_display_name_key(text) from public, anon, authenticated;
+
+-- La forma del nome mostrato (già pulito: niente spazi ai lati né in fila).
+create or replace function public.profile_display_name_ok(n text)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select n is not null
+     and char_length(n) between 2 and 40
+     and n = btrim(n)
+     and n !~ '\s{2,}'
+     and n !~ '[\u0001-\u001f\u007f-\u009f\u00ad\u034f\u061c\u115f\u1160\u17b4\u17b5\u180e\u200b-\u200f\u2028-\u202e\u2060-\u206f\u3164\ufeff\uffa0]';
+$$;
+revoke all on function public.profile_display_name_ok(text) from public, anon, authenticated;
+
+-- Nome mostrato con una parola dello staff o del gioco, per chi non è dello staff.
+create or replace function public.profile_display_name_reserved(n text)
+returns boolean language sql immutable set search_path = public, pg_catalog as $$
+  select public.profile_display_name_key(n) = any (array['admin', 'administrator', 'koin', 'mod', 'moderator', 'official', 'origins', 'staff', 'support', 'system', 'team'])
+      or public.profile_display_name_key(n) ~ '(admin|moderator|staff)'
+      or public.profile_display_name_key(n) ~ '(originsmeta|originstcg|koingames)';
+$$;
+revoke all on function public.profile_display_name_reserved(text) from public, anon, authenticated;
+
+-- ---------- registrazione: un nome lasciato da un altro non si assegna ----------
+-- handle_new_user (base dello schema) sceglie il nome guardando solo i profili: questo trigger, prima dell'inserimento,
+-- salta anche i nomi dello storico che appartengono a un altro profilo (stesso suffisso -n di handle_new_user).
+create or replace function public.profile_username_free()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  base text;
+  n int := 0;
+begin
+  if new.username is null
+     or not exists (select 1 from public.profile_username_history h where h.username = new.username and h.profile_id <> new.id) then
+    return new;
+  end if;
+  base := new.username;
+  loop
+    n := n + 1;
+    new.username := base || '-' || n;
+    exit when not exists (select 1 from public.profiles p where p.username = new.username)
+          and not exists (select 1 from public.profile_username_history h where h.username = new.username);
+  end loop;
+  return new;
+end $$;
+revoke all on function public.profile_username_free() from public, anon, authenticated;
+drop trigger if exists profiles_username_free on public.profiles;
+create trigger profiles_username_free before insert on public.profiles
+  for each row execute function public.profile_username_free();
+
+-- ---------- il cambio ----------
+-- Nome mostrato e/o nome utente della propria riga (null = quel campo non cambia). Tutto o niente: se un campo non va,
+-- non si scrive nulla. Risposta: {ok, changed, display, username, next_change} con un esito per campo ('same', 'ok' o il
+-- motivo: display 'invalid' | 'reserved' | 'lookalike' | 'too_fast'; username 'invalid' | 'reserved' | 'taken' |
+-- 'too_soon'), oppure {ok: false, error: 'not_logged_in' | 'no_profile'}. next_change = da quando si potrà cambiare
+-- di nuovo il nome utente (null se si può già, e sempre per lo staff).
+create or replace function public.profile_set_names(p_display text default null, p_username text default null)
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_uid uuid := auth.uid();
+  v_row public.profiles%rowtype;
+  v_staff boolean;
+  v_disp text;
+  v_user text;
+  v_key text;
+  s_disp text := 'same';
+  s_user text := 'same';
+  v_next timestamptz;
+begin
+  if v_uid is null then
+    return jsonb_build_object('ok', false, 'error', 'not_logged_in');
+  end if;
+  select * into v_row from public.profiles where id = v_uid for update;
+  if not found then
+    return jsonb_build_object('ok', false, 'error', 'no_profile');
+  end if;
+  v_staff := v_row.role = 'admin' or v_row.badge = 'staff';
+  v_next := case when v_staff or v_row.username_changed_at is null then null else v_row.username_changed_at + interval '30 days' end;
+  if v_next is not null and v_next <= now() then v_next := null; end if;
+
+  -- nome mostrato
+  if p_display is not null then
+    v_disp := btrim(regexp_replace(normalize(p_display, NFC), '\s+', ' ', 'g'));
+    if v_disp = coalesce(v_row.display_name, '') then
+      s_disp := 'same';
+    elsif not public.profile_display_name_ok(v_disp) then
+      s_disp := 'invalid';
+    elsif not v_staff and public.profile_display_name_reserved(v_disp) then
+      s_disp := 'reserved';
+    else
+      v_key := public.profile_display_name_key(v_disp);
+      -- solo contro i profili che qualcuno vorrebbe imitare (ruoli con vetrina e admin): un "Luca" resta libero
+      if not v_staff and char_length(v_key) >= 3 and exists (
+           select 1 from public.profiles p
+            where p.id <> v_uid and p.username is not null and replace(p.username, '-', '') = v_key
+              and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')) then
+        s_disp := 'lookalike';
+      elsif v_row.display_name_changed_at is not null and v_row.display_name_changed_at > now() - interval '10 seconds' then
+        s_disp := 'too_fast';
+      else
+        s_disp := 'ok';
+      end if;
+    end if;
+  end if;
+
+  -- nome utente
+  if p_username is not null then
+    v_user := lower(btrim(regexp_replace(btrim(p_username), '^@+', '')));
+    if v_user = coalesce(v_row.username, '') then
+      s_user := 'same';
+    elsif not public.profile_username_ok(v_user) then
+      s_user := 'invalid';
+    elsif not v_staff and public.profile_username_reserved(v_user) then
+      s_user := 'reserved';
+    else
+      -- due cambi contemporanei verso lo stesso nome: uno solo arriva al controllo alla volta
+      perform pg_advisory_xact_lock(hashtext('originsmeta.username:' || v_user));
+      if exists (select 1 from public.profiles p where p.username = v_user and p.id <> v_uid)
+         or exists (select 1 from public.profile_username_history h where h.username = v_user and h.profile_id <> v_uid) then
+        s_user := 'taken';
+      elsif v_next is not null then
+        s_user := 'too_soon';
+      else
+        s_user := 'ok';
+      end if;
+    end if;
+  end if;
+
+  if s_disp not in ('same', 'ok') or s_user not in ('same', 'ok') then
+    return jsonb_build_object('ok', false, 'error', null, 'display', s_disp, 'username', s_user, 'next_change', v_next);
+  end if;
+  if s_disp = 'same' and s_user = 'same' then
+    return jsonb_build_object('ok', true, 'changed', false, 'display', s_disp, 'username', s_user, 'next_change', v_next);
+  end if;
+
+  if s_user = 'ok' then
+    if v_row.username is not null then
+      insert into public.profile_username_history (username, profile_id, changed_at)
+      values (v_row.username, v_uid, now())
+      on conflict (username) do update set profile_id = excluded.profile_id, changed_at = excluded.changed_at;
+    end if;
+    -- il nome ripreso dallo storico torna solo il nome della pagina
+    delete from public.profile_username_history h where h.username = v_user and h.profile_id = v_uid;
+    perform set_config('originsmeta.username_change', v_uid::text, true);
+    update public.profiles set username = v_user, username_changed_at = now(), showcase_updated_at = now() where id = v_uid;
+    perform set_config('originsmeta.username_change', '', true);
+    v_next := case when v_staff then null else now() + interval '30 days' end;
+  end if;
+  if s_disp = 'ok' then
+    update public.profiles set display_name = v_disp, display_name_changed_at = now(), showcase_updated_at = now() where id = v_uid;
+  end if;
+  return jsonb_build_object('ok', true, 'changed', true, 'display', s_disp, 'username', s_user, 'next_change', v_next);
+end $$;
+revoke all on function public.profile_set_names(text, text) from public, anon;
+grant execute on function public.profile_set_names(text, text) to authenticated;
+comment on function public.profile_set_names(text, text) is 'Nome mostrato e nome utente della propria riga (23/10/2026): forma, nomi riservati, nomi presi, 30 giorni fra due nomi utente; tutto o niente.';
+
+-- ---------- i link di prima ----------
+-- Il nome utente di oggi del profilo che ha lasciato p_old (null se nessuno): la pagina /u/<vecchio> ci porta con un
+-- 308. Solo il nome, che era già pubblico.
+create or replace function public.profile_username_moved(p_old text)
+returns text language sql stable security definer set search_path = public, pg_temp as $$
+  select p.username
+    from public.profile_username_history h
+    join public.profiles p on p.id = h.profile_id
+   where h.username = lower(btrim(coalesce(p_old, '')))
+     and p.username is not null
+     and p.username <> h.username
+   limit 1;
+$$;
+revoke all on function public.profile_username_moved(text) from public;
+grant execute on function public.profile_username_moved(text) to anon, authenticated;
+comment on function public.profile_username_moved(text) is 'Nome utente di oggi di chi ha lasciato quel nome (23/10/2026): redirect 308 di /u/<vecchio>.';

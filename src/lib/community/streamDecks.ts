@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database";
 import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { supabasePublic, type Db } from "@/lib/supabase/public";
-import { rowOrThrow, rowsOrThrow } from "./queries";
+import { profileMovedTo, rowOrThrow, rowsOrThrow } from "./queries";
 import type { CommunityDeck } from "./types";
 
 /**
@@ -111,7 +111,12 @@ export type LatestDeck = { user: "missing" } | { user: "found"; deck: StreamDeck
 export async function latestDeckOfUser(username: string): Promise<LatestDeck> {
   const client = freshClient();
   if (!client) return { user: "missing" };
-  const profile = rowOrThrow<{ id: string }>("latestDeckOfUser (profilo)", await client.from("profiles").select("id").eq("username", username).maybeSingle());
+  let profile = rowOrThrow<{ id: string }>("latestDeckOfUser (profilo)", await client.from("profiles").select("id").eq("username", username).maybeSingle());
+  if (!profile) {
+    // nome utente cambiato dal profilo (23/10/2026): il comando e l'overlay già configurati con il nome di prima seguono quello nuovo
+    const moved = await profileMovedTo(username, client);
+    if (moved) profile = rowOrThrow<{ id: string }>("latestDeckOfUser (profilo)", await client.from("profiles").select("id").eq("username", moved).maybeSingle());
+  }
   if (!profile) return { user: "missing" };
   const res = await client
     .from("community_decks")

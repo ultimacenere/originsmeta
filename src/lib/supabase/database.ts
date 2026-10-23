@@ -49,6 +49,9 @@ export type ProfileRow = {
   vetrina_updated_at?: string | null;
   /** numeri pubblici sulla vetrina /u (pacchetto TRAGUARDI, blocco TRAGUARDI di supabase/schema.sql): solo ruoli con vetrina, difesa da trigger */
   show_stats: boolean;
+  /** ultimi cambi di nome utente e nome mostrato dal sito (blocco NOME UTENTE, 23/10/2026): li scrive solo profile_set_names */
+  username_changed_at?: string | null;
+  display_name_changed_at?: string | null;
 };
 
 export type CommunityDeckRow = {
@@ -961,6 +964,10 @@ export type Database = {
     };
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
+      /** nome mostrato e nome utente della propria riga (blocco NOME UTENTE, 23/10/2026): risposta jsonb letta da parseSetNamesResult */
+      profile_set_names: { Args: { p_display: string | null; p_username: string | null }; Returns: unknown };
+      /** il nome utente di oggi di chi ha lasciato p_old (redirect 308 di /u/<vecchio>) */
+      profile_username_moved: { Args: { p_old: string }; Returns: string | null };
       /** draft online (02/10/2026): solo dal server, con la sessione del giocatore e il segreto del cron (src/lib/draft/onlineActions.ts) */
       draft_room_create: { Args: { p_key: string; p_code: string; p_format: string; p_from?: string | null }; Returns: string };
       draft_room_get: { Args: { p_key: string; p_code: string }; Returns: (DraftRoomRow & { creator_name: string | null; joiner_name: string | null; seat: number | null; state: unknown })[] };

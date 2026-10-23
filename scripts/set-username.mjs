@@ -7,7 +7,13 @@
 // Uso: node scripts/set-username.mjs <username|email|parte del nome> <nuovo-username> [--display "Nome mostrato"] [--dry-run]
 // Il nuovo nome utente: minuscole, cifre e trattini, da 3 a 39 caratteri, né all'inizio né alla fine un trattino, mai
 // "bot-<n>" (riservato ai bot di seed-bots.mjs), e dev'essere libero. Le pagine (/u/<nome>, /@<nome>, mazzi, elenchi,
-// sitemap) si aggiornano da sole entro qualche minuto (ISR); il vecchio indirizzo /u/<vecchio> risponde 404.
+// sitemap) si aggiornano da sole entro qualche minuto (ISR).
+// Dal 23/10/2026 gli iscritti cambiano nome mostrato e nome utente da soli (/account/profile#name, funzione
+// profile_set_names del blocco NOME UTENTE di schema.sql, una volta ogni 30 giorni): lo script resta per lo staff (un nome
+// riservato, un cambio prima dei 30 giorni, un nome scritto nel codice del sito). Come la funzione, se lo storico dei
+// nomi c'è (migrazione fatta): rifiuta un vecchio nome di un altro profilo, mette quello lasciato nello storico (così
+// /u/<vecchio> porta con un 308 alla pagina nuova) e toglie dallo storico il nome ripreso. Non tocca i 30 giorni
+// dell'utente (username_changed_at). Senza lo storico, /u/<vecchio> risponde 404 come prima.
 import { readFileSync } from "node:fs";
 import pg from "pg";
 
@@ -64,6 +70,14 @@ try {
     console.error(`Il nome utente "${next}" è già di un altro profilo.`);
     process.exit(3);
   }
+  const history = (await db.query("select to_regclass('public.profile_username_history') is not null as there")).rows[0].there;
+  if (history) {
+    const left = await db.query("select 1 from public.profile_username_history where username = $1 and profile_id <> $2", [next, target.id]);
+    if (left.rowCount) {
+      console.error(`Il nome utente "${next}" è un vecchio nome di un altro profilo: porta alla sua pagina.`);
+      process.exit(3);
+    }
+  }
   const newDisplay = display ?? target.display_name;
   console.log(`${target.display_name ?? target.username} (@${target.username}, ${target.email}, tag ${target.badge ?? "community"})`);
   console.log(`  nome utente:  ${target.username} → ${next}`);
@@ -71,8 +85,17 @@ try {
   if (dryRun) {
     console.log("Prova a secco: niente scritto.");
   } else {
+    await db.query("begin");
+    if (history && target.username && target.username !== next) {
+      await db.query(
+        "insert into public.profile_username_history (username, profile_id, changed_at) values ($1, $2, now()) on conflict (username) do update set profile_id = excluded.profile_id, changed_at = excluded.changed_at",
+        [target.username, target.id],
+      );
+      await db.query("delete from public.profile_username_history where username = $1 and profile_id = $2", [next, target.id]);
+    }
     await db.query("update public.profiles set username = $1, display_name = $2 where id = $3", [next, newDisplay, target.id]);
-    console.log(`Fatto. Pagina pubblica: https://originsmeta.com/it/u/${next} (anche /@${next}); le pagine si aggiornano entro qualche minuto, /u/${target.username} risponderà 404.`);
+    await db.query("commit");
+    console.log(`Fatto. Pagina pubblica: https://originsmeta.com/it/u/${next} (anche /@${next}); le pagine si aggiornano entro qualche minuto, /u/${target.username} ${history ? "porterà alla pagina nuova" : "risponderà 404"}.`);
   }
 } catch (e) {
   console.error(e.message);

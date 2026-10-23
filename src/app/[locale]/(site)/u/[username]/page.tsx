@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
@@ -8,7 +8,7 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
-import { getProfileByUsername, listDecksByOwner } from "@/lib/community/queries";
+import { getProfileByUsername, listDecksByOwner, profileMovedTo } from "@/lib/community/queries";
 import { countEntries, listPublicTierLists } from "@/lib/community/tierlists";
 import {
   communityPageLabels,
@@ -152,7 +152,12 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
   const c = d.community;
   const p = c.profile;
   const data = await loadProfile(username);
-  if (!data) notFound();
+  if (!data) {
+    // un nome utente cambiato dal profilo (23/10/2026): i link di prima (mazzi, Discord, avvisi, motori) portano lì
+    const moved = await profileMovedTo(username);
+    if (moved) permanentRedirect(href(locale, `/u/${moved}`));
+    notFound();
+  }
   const { profile, decks, tierLists, guides, name, editorial, showcase, showcaseRole, vetrina } = data;
   // fumetti pubblicati (pacchetto FUMETTI, 29/09/2026): solo mostrati, non contano per l'indicizzazione del profilo
   const comics = comicFeedCards(data.comics, locale, supabaseUrl, authorName);

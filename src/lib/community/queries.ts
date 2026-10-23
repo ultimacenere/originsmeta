@@ -200,6 +200,22 @@ export async function getProfileByUsername(username: string): Promise<(Profile &
   return rowOrThrow<Profile & { id: string; created_at: string }>("getProfileByUsername", res);
 }
 
+/**
+ * Il nome utente di oggi di chi ha lasciato `username` (23/10/2026, blocco NOME UTENTE di schema.sql: storico dei nomi
+ * cambiati dal profilo): la pagina /u/<vecchio> ci porta con un 308, e il comando di chat e l'overlay con ?u= lo
+ * seguono. null se nessuno l'ha lasciato, se il nome non può essere un nome utente, se la funzione non c'è ancora o con
+ * un errore (allora resta la 404 e l'ISR riprova).
+ */
+export async function profileMovedTo(username: string, client: Db | null = supabasePublic()): Promise<string | null> {
+  if (!client || !/^[a-z0-9][a-z0-9-]{0,99}$/.test(username)) return null;
+  const res = await client.rpc("profile_username_moved", { p_old: username });
+  if (res.error) {
+    if (!["PGRST202", "42883", "42P01"].includes(res.error.code ?? "")) console.error("[community] profileMovedTo:", res.error.message);
+    return null;
+  }
+  return typeof res.data === "string" && res.data !== username ? res.data : null;
+}
+
 /** Mazzi pubblicati di un utente, dal più recente: quel che si vede sulla sua pagina pubblica. Con un errore lancia. */
 export async function listDecksByOwner(userId: string, limit = 50): Promise<CommunityDeck[]> {
   const client = supabasePublic();
