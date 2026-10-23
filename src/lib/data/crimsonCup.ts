@@ -213,7 +213,55 @@ export const crimsonQualifiers: CrimsonQualifier[] = [
       ],
     },
   },
-  { id: "apac", name: "APAC", startAt: "2026-10-22T19:00:00+08:00", zone: "SGT" },
+  {
+    // tabelle passate da Pierluigi il 23/10/2026 ("i dati di apac di ieri sera"; il primo invio era per sbaglio quello della
+    // AMER #2): 1383 mazzi sia dalle Leggendarie sia dalle carte. Koin scrive R5 come turno più avanzato per tutte le
+    // Leggendarie, dove nelle altre qualificazioni scriveva R4: il formato ufficiale resta 32 qualificati dopo il turno 4
+    // (events.ts), quindi qualifyRound resta 4 e R5 si mostra com'è.
+    id: "apac",
+    name: "APAC",
+    startAt: "2026-10-22T19:00:00+08:00",
+    zone: "SGT",
+    stats: {
+      read: "2026-10-23",
+      qualifyRound: 4,
+      legendaries: [
+        { legendary: "van-helsing", banned: 179, seen: 325, submitted: 317, played: 176, deepest: 5 },
+        { legendary: "merlin", banned: 49, seen: 133, submitted: 126, played: 72, deepest: 5 },
+        { legendary: "three-not-so-little-pigs", banned: 125, seen: 370, submitted: 355, played: 198, deepest: 5 },
+        { legendary: "dorothy", banned: 8, seen: 26, submitted: 28, played: 14, deepest: 5 },
+        { legendary: "mulan", banned: 14, seen: 67, submitted: 127, played: 40, deepest: 5 },
+        { legendary: "king-arthur", banned: 15, seen: 82, submitted: 62, played: 39, deepest: 5 },
+        { legendary: "wicked-stepmother", banned: 3, seen: 17, submitted: 11, played: 9, deepest: 5 },
+        { legendary: "dracula", banned: 11, seen: 81, submitted: 80, played: 43, deepest: 5 },
+        { legendary: "queen-of-hearts", banned: 9, seen: 76, submitted: 73, played: 42, deepest: 5 },
+        { legendary: "robin-hood", banned: 16, seen: 139, submitted: 99, played: 69, deepest: 5 },
+        { legendary: "legion-of-the-dead", banned: 12, seen: 124, submitted: 105, played: 69, deepest: 5 },
+      ],
+      cards: [
+        { card: "baby-bear", decks: 689, share: 0.498 },
+        { card: "spellbook", decks: 433, share: 0.313 },
+        { card: "roo", decks: 421, share: 0.304 },
+        { card: "mind-palace", decks: 418, share: 0.302 },
+        { card: "scarecrow", decks: 383, share: 0.277 },
+        { card: "ali-baba", decks: 377, share: 0.273 },
+        { card: "trash-for-treasure", decks: 359, share: 0.26 },
+        { card: "tin-woodman", decks: 353, share: 0.255 },
+        { card: "jekyll", decks: 346, share: 0.25 },
+        { card: "shahrazad", decks: 339, share: 0.245 },
+        { card: "dark-omen", decks: 335, share: 0.242 },
+        { card: "mummy", decks: 317, share: 0.229 },
+        { card: "stroke-of-midnight", decks: 317, share: 0.229 },
+        { card: "golden-egg", decks: 316, share: 0.228 },
+        { card: "bagheera", decks: 312, share: 0.226 },
+        { card: "obliterate", decks: 301, share: 0.218 },
+        { card: "sandman", decks: 294, share: 0.213 },
+        { card: "bullseye", decks: 292, share: 0.211 },
+        { card: "searing-light", decks: 283, share: 0.205 },
+        { card: "three-blind-mice", decks: 281, share: 0.203 },
+      ],
+    },
+  },
   { id: "emea-2", name: "EMEA #2", startAt: "2026-10-22T19:00:00+02:00", zone: "CEST" },
 ];
 
