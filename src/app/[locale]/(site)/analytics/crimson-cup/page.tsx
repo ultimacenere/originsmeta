@@ -22,6 +22,7 @@ import {
   type QualifierWithStats,
 } from "@/lib/crimsonCup";
 import { crimsonCupLabels } from "@/lib/crimsonCupLabels";
+import { crimsonPlayoffsLabels } from "@/lib/crimsonPlayoffsLabels";
 import { readWinrate } from "@/lib/community/trackerStatsQueries";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { bothSides, deltaText, fmtInt, pct, pctNum, pctUnit } from "@/lib/tracker/snapshot";
@@ -916,6 +917,10 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
         <div className="an-head-actions">
           <Link href={href(locale, "/analytics")} prefetch={false} className="btn btn-ghost text-xs">
             ← {L.back}
+          </Link>
+          {/* il tabellone dei playoff (25/10/2026), da Tourney Bot */}
+          <Link href={href(locale, "/analytics/crimson-cup/playoffs")} prefetch={false} className="btn btn-primary text-xs">
+            {crimsonPlayoffsLabels[locale].promo} →
           </Link>
           <Link href={href(locale, "/news/crimson-cup-format-check-in")} prefetch={false} className="link-mint text-sm font-bold">
             {L.rules}

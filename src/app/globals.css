@@ -6124,3 +6124,463 @@
     }
   }
 }
+
+/*
+  Playoff della Crimson Cup (25/10/2026), /analytics/crimson-cup/playoffs: il tabellone di Tourney Bot rifatto con le fasce
+  di /analytics. Partite a due righe (.po-match: vincitore verde, cornice menta per la partita aperta, tratteggio per quella
+  da definire, oro per il giocatore cercato), i quattro posti delle finali (.po-slot), chi è in corsa (.po-alive), gli
+  ultimi turni in colonne che scorrono di lato dentro il loro riquadro (.po-scroller), l'esploratore con ricerca, schede e
+  turni (.po-explorer). Il segno OriginsMeta (.po-om) è una pastiglia menta con il testo scuro.
+*/
+@layer components {
+  .po-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin-top: 12px;
+  }
+  .po-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 2px solid var(--color-crimson-soft);
+    background: color-mix(in srgb, var(--color-crimson-deep) 55%, transparent);
+    color: var(--color-chalk);
+    font: 700 0.75rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .po-pill.is-decided {
+    border-color: var(--color-gold);
+    background: color-mix(in srgb, var(--color-gold) 16%, transparent);
+    color: var(--color-gold);
+  }
+  .po-facts {
+    display: grid;
+    gap: 4px;
+    font-size: 0.875rem;
+    color: var(--color-pale);
+  }
+  @media (min-width: 640px) {
+    .po-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 14px;
+    }
+    .po-facts li + li::before {
+      content: "·";
+      margin-right: 14px;
+      color: var(--color-pale-muted);
+    }
+  }
+  .po-read {
+    flex-basis: 100%;
+    font-size: 0.8rem;
+    color: var(--color-pale-muted);
+  }
+  .po-lead {
+    max-width: 46rem;
+    margin-top: 10px;
+    color: var(--color-pale);
+    font-size: 0.9375rem;
+  }
+
+  /* i quattro posti delle finali */
+  .po-slots {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  @media (min-width: 1024px) {
+    .po-slots {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .po-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding: 14px;
+    border-radius: 14px;
+    border: 3px dashed var(--color-night-3);
+    background: color-mix(in srgb, var(--color-night) 70%, transparent);
+  }
+  .po-slot.is-in {
+    border-style: solid;
+    border-color: var(--color-gold);
+    background:
+      linear-gradient(180deg, rgba(242, 210, 60, 0.12), rgba(242, 210, 60, 0) 70%),
+      var(--color-night);
+  }
+  .po-slot-from {
+    font: 600 0.68rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-pale-muted);
+  }
+  .po-slot-name {
+    min-width: 0;
+    font: 700 1rem/1.2 var(--font-display);
+    color: var(--color-sky);
+    overflow-wrap: anywhere;
+  }
+  .po-slot.is-in .po-slot-name {
+    color: var(--color-gold);
+  }
+  .po-slot-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: 0.8rem;
+    color: var(--color-pale);
+  }
+  .po-slot-meta b {
+    color: var(--color-gold);
+  }
+
+  /* chi è ancora in corsa */
+  .po-alive {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  @media (min-width: 640px) {
+    .po-alive {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .po-alive {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .po-alive li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 2px solid var(--color-night-3);
+    background: var(--color-night-2);
+  }
+  .po-alive li.is-unbeaten {
+    border-color: var(--color-mint);
+  }
+  .po-alive-name {
+    min-width: 0;
+    font-weight: 700;
+    color: var(--color-chalk);
+  }
+  .po-alive-rec {
+    font-size: 0.8rem;
+    color: var(--color-mint);
+  }
+  .po-alive-where {
+    grid-column: 1 / -1;
+    font-size: 0.8rem;
+    color: var(--color-pale-muted);
+  }
+
+  /* una partita */
+  .po-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  @media (min-width: 640px) {
+    .po-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .po-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .po-match {
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 2px solid var(--color-sky);
+    background: var(--color-night-2);
+  }
+  .po-match.is-open {
+    border-color: var(--color-mint);
+    box-shadow: 0 0 0 3px rgba(49, 227, 189, 0.16);
+  }
+  .po-match.is-mine {
+    border-color: var(--color-gold);
+  }
+  .po-match.is-tbd {
+    border-style: dashed;
+    border-color: var(--color-night-3);
+    background: transparent;
+  }
+  .po-match-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px 0;
+    font: 600 0.66rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-pale-muted);
+  }
+  .po-match-head span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .po-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    font-size: 0.875rem;
+    color: var(--color-pale);
+  }
+  .po-row.is-win {
+    color: var(--color-good);
+    font-weight: 700;
+  }
+  .po-row.is-lose {
+    color: var(--color-pale-muted);
+  }
+  .po-row.is-me {
+    background: rgba(242, 210, 60, 0.12);
+  }
+  .po-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+  }
+  .po-name-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .po-score {
+    font: 700 0.8rem var(--font-mono);
+  }
+  .po-sep {
+    margin: 0 10px;
+    border-top: 1px solid rgba(63, 196, 232, 0.3);
+  }
+  .po-om {
+    flex-shrink: 0;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font: 700 0.6rem/1.4 var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  .po-om:hover,
+  .po-om:focus-visible {
+    background: var(--color-sky);
+  }
+
+  /* gli ultimi turni: colonne che scorrono di lato */
+  .po-scroll-hint {
+    margin-top: 12px;
+    font: 500 0.7rem var(--font-mono);
+    text-transform: uppercase;
+    color: var(--color-pale-muted);
+  }
+  .po-scroller {
+    overflow-x: auto;
+    margin-top: 8px;
+    padding-bottom: 8px;
+    scrollbar-color: var(--color-night-3) transparent;
+  }
+  .po-tree {
+    display: flex;
+    gap: 18px;
+    min-width: max-content;
+  }
+  .po-col {
+    display: flex;
+    flex-direction: column;
+    width: 14rem;
+  }
+  .po-col-head {
+    margin-bottom: 10px;
+    font: 700 0.72rem var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-mint);
+  }
+  .po-col > ol {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .po-col > ol.is-tree {
+    justify-content: space-around;
+  }
+  .po-waiting {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 2px solid var(--color-night-3);
+    background: color-mix(in srgb, var(--color-night) 60%, transparent);
+  }
+  .po-waiting ul {
+    display: grid;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--color-chalk);
+  }
+
+  /* l'esploratore */
+  .po-search {
+    position: relative;
+    max-width: 30rem;
+  }
+  .po-input {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 2px solid var(--color-sky);
+    background: var(--color-night-2);
+    color: var(--color-chalk);
+    font-size: 1rem;
+  }
+  .po-input:focus-visible {
+    outline: 3px solid var(--color-mint);
+    outline-offset: 2px;
+  }
+  .po-suggest {
+    display: grid;
+    gap: 2px;
+    margin-top: 6px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 2px solid var(--color-night-3);
+    background: var(--color-night);
+  }
+  .po-suggest button {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--color-pale);
+    text-align: left;
+  }
+  .po-suggest button:hover,
+  .po-suggest button:focus-visible {
+    background: var(--color-night-3);
+    color: var(--color-sky);
+  }
+  .po-path {
+    margin-top: 16px;
+    padding: 16px;
+  }
+  .po-path-list {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .po-path-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 2px 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--color-night-2);
+    border-left: 4px solid var(--color-night-3);
+    font-size: 0.875rem;
+  }
+  .po-path-item.is-won {
+    border-left-color: var(--color-good);
+  }
+  .po-path-item.is-lost {
+    border-left-color: var(--color-bad);
+  }
+  .po-path-item.is-pending {
+    border-left-color: var(--color-mint);
+  }
+  .po-path-round {
+    grid-column: 1 / -1;
+    font: 600 0.66rem var(--font-mono);
+    text-transform: uppercase;
+    color: var(--color-pale-muted);
+  }
+  .po-path-opp {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+  }
+  .po-path-score {
+    font: 700 0.8rem var(--font-mono);
+  }
+  .po-path-tag {
+    font: 700 0.68rem var(--font-mono);
+    text-transform: uppercase;
+  }
+  .po-path-tag.is-won {
+    color: var(--color-good);
+  }
+  .po-path-tag.is-lost {
+    color: var(--color-bad);
+  }
+  .po-path-tag.is-pending {
+    color: var(--color-mint);
+  }
+  .po-browse {
+    margin-top: 24px;
+  }
+  .po-tabs,
+  .po-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .po-chips {
+    margin-top: 10px;
+  }
+  .po-tabs button,
+  .po-chips button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 2px solid var(--color-night-3);
+    background: var(--color-night-2);
+    color: var(--color-pale);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .po-chips button {
+    min-width: 2.5rem;
+    font-family: var(--font-mono);
+  }
+  .po-tabs button.is-on,
+  .po-chips button.is-on {
+    border-color: var(--color-sky);
+    color: var(--color-sky);
+  }
+  .po-browse-title {
+    margin: 14px 0 10px;
+    font: 700 0.8rem var(--font-mono);
+    text-transform: uppercase;
+    color: var(--color-mint);
+  }
+}

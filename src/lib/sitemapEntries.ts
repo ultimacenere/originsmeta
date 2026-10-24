@@ -212,6 +212,9 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // Crimson Cup (20/10/2026): i numeri ufficiali di Koin, statici; la data è quella dell'ultima lettura delle tabelle.
     // Il confronto con il ladder cambia a ogni partita registrata, come /analytics: non conta.
     { path: "/analytics/crimson-cup", section: "pages", route: "/analytics/crimson-cup", dates: withStats(crimsonQualifiers).map((q) => q.stats.read) },
+    // Il tabellone dei playoff della Crimson Cup (25/10/2026): riletto da Tourney Bot ogni minuto mentre si gioca; la data
+    // è quella del modello della pagina.
+    { path: "/analytics/crimson-cup/playoffs", section: "pages", route: "/analytics/crimson-cup/playoffs", dates: [] },
     // Il database cambia con la più recente delle sue schede (nella lingua della pagina).
     { path: "/cards", section: "pages", route: "/cards", dates: (l) => [latestDay(cardDatesBy(l).flat())] },
     // I Luoghi cambiano con la rotazione del gioco (una patch) o con una verifica nel gioco.
