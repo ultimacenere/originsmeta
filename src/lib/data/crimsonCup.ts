@@ -213,15 +213,20 @@ export const crimsonQualifiers: CrimsonQualifier[] = [
       ],
     },
   },
+  // APAC: le tabelle Koin non le ha pubblicate. Il 23/10/2026 le abbiamo messe qui per sbaglio con quelle della EMEA #2
+  // (voce qui sotto, corretta il 24/10/2026): stats si aggiunge quando escono quelle vere.
+  { id: "apac", name: "APAC", startAt: "2026-10-22T19:00:00+08:00", zone: "SGT" },
   {
-    // tabelle passate da Pierluigi il 23/10/2026 ("i dati di apac di ieri sera"; il primo invio era per sbaglio quello della
-    // AMER #2): 1383 mazzi sia dalle Leggendarie sia dalle carte. Koin scrive R5 come turno più avanzato per tutte le
-    // Leggendarie, dove nelle altre qualificazioni scriveva R4: il formato ufficiale resta 32 qualificati dopo il turno 4
-    // (events.ts), quindi qualifyRound resta 4 e R5 si mostra com'è.
-    id: "apac",
-    name: "APAC",
-    startAt: "2026-10-22T19:00:00+08:00",
-    zone: "SGT",
+    // tabelle pubblicate da apix (Koin) sul Discord ufficiale il 23/10/2026 alle 08:54 CEST in #the-courtyard, senza dire di
+    // quale qualificazione fossero; a chi chiedeva la fonte ha risposto "data from last EMEA qual". Pierluigi le aveva
+    // passate il 23/10 come "i dati di apac di ieri sera" e fino al 24/10 sono state online sotto la APAC (ff29483).
+    // 1383 mazzi sia dalle Leggendarie sia dalle carte. Koin scrive R5 come turno più avanzato per tutte le Leggendarie,
+    // dove nelle altre qualificazioni scriveva R4: il formato ufficiale resta 32 qualificati dopo il turno 4 (events.ts),
+    // quindi qualifyRound resta 4 e R5 si mostra com'è.
+    id: "emea-2",
+    name: "EMEA #2",
+    startAt: "2026-10-22T19:00:00+02:00",
+    zone: "CEST",
     stats: {
       read: "2026-10-23",
       qualifyRound: 4,
@@ -262,7 +267,6 @@ export const crimsonQualifiers: CrimsonQualifier[] = [
       ],
     },
   },
-  { id: "emea-2", name: "EMEA #2", startAt: "2026-10-22T19:00:00+02:00", zone: "CEST" },
 ];
 
 /** La regione di ogni qualificazione, per la riga sotto il nome nel selettore. */

@@ -47,8 +47,8 @@ const bySlug = new Map(wooCards.map((c) => [c.slug, c]));
 
 const amer = crimsonQualifiers.find((q) => q.id === "amer-1")!;
 const stats = amer.stats!;
-/** Le qualificazioni fino alla APAC compresa e le prime tre con i numeri: i test restano validi con quelle che arrivano dopo. */
-const UP_TO_APAC = crimsonQualifiers.slice(0, crimsonQualifiers.findIndex((q) => q.id === "apac") + 1);
+/** Le qualificazioni fino alla EMEA #2 compresa e le prime tre con i numeri: i test restano validi con quelle che arrivano dopo. */
+const UP_TO_EMEA2 = crimsonQualifiers.slice(0, crimsonQualifiers.findIndex((q) => q.id === "emea-2") + 1);
 const FIRST_THREE = withStats(crimsonQualifiers).slice(0, 3);
 
 describe("Crimson Cup: dati trascritti", () => {
@@ -110,7 +110,7 @@ describe("Crimson Cup: dati trascritti", () => {
     assert.equal(submittedTotal(amer2), 891);
   });
 
-  test("i ban rate calcolati sono quelli pubblicati da Koin (APAC)", () => {
+  test("i ban rate calcolati sono quelli pubblicati da Koin (EMEA #2)", () => {
     const published: Record<string, number> = {
       "van-helsing": 55.1,
       merlin: 36.8,
@@ -124,10 +124,10 @@ describe("Crimson Cup: dati trascritti", () => {
       "robin-hood": 11.5,
       "legion-of-the-dead": 9.7,
     };
-    const apac = crimsonQualifiers.find((q) => q.id === "apac")!.stats!;
-    assert.equal(apac.legendaries.length, Object.keys(published).length);
-    for (const row of apac.legendaries) assert.equal(Math.round(banRate(row) * 1000) / 10, published[row.legendary], row.legendary);
-    assert.equal(submittedTotal(apac), 1383);
+    const emea2 = crimsonQualifiers.find((q) => q.id === "emea-2")!.stats!;
+    assert.equal(emea2.legendaries.length, Object.keys(published).length);
+    for (const row of emea2.legendaries) assert.equal(Math.round(banRate(row) * 1000) / 10, published[row.legendary], row.legendary);
+    assert.equal(submittedTotal(emea2), 1383);
   });
 
   test("ogni carta esiste nel database, attiva, e le Leggendarie sono Leggendarie", () => {
@@ -136,7 +136,7 @@ describe("Crimson Cup: dati trascritti", () => {
         const card = bySlug.get(r.legendary);
         assert.ok(card, `${q.id}: ${r.legendary} non esiste`);
         assert.equal(card!.legendary, true, `${r.legendary} non è una Leggendaria`);
-        // al massimo un turno dopo quello dei qualificati: Koin scrive R5 nella APAC
+        // al massimo un turno dopo quello dei qualificati: Koin scrive R5 nella EMEA #2
         assert.ok(r.banned <= r.seen && r.deepest >= 1 && r.deepest <= q.stats.qualifyRound + 1, r.legendary);
       }
       for (const c of q.stats.cards) {
@@ -153,7 +153,7 @@ describe("Crimson Cup: dati trascritti", () => {
     for (const q of withStats(crimsonQualifiers)) {
       for (let i = 1; i < q.stats.cards.length; i++) assert.ok(q.stats.cards[i].decks <= q.stats.cards[i - 1].decks, q.stats.cards[i].card);
       // ogni quota è arrotondata a un decimale (±0,05 punti): deve esserci un totale compatibile con tutte (AMER #1: 723,
-      // APAC: 1383); una tolleranza fissa non basta, perché l'arrotondamento pesa di più dove i mazzi sono di più
+      // EMEA #2: 1383); una tolleranza fissa non basta, perché l'arrotondamento pesa di più dove i mazzi sono di più
       const lo = Math.max(...q.stats.cards.map((c) => c.decks / (c.share + 0.0005)));
       const hi = Math.min(...q.stats.cards.map((c) => c.decks / (c.share - 0.0005)));
       assert.ok(lo <= hi, `${q.id}: quote incoerenti`);
@@ -198,25 +198,25 @@ describe("Crimson Cup: numeri derivati", () => {
   });
 
   test("righe delle schede carta: Leggendaria, carta, nessuna", () => {
-    const [vh] = cardCrimsonFacts("van-helsing", UP_TO_APAC);
+    const [vh] = cardCrimsonFacts("van-helsing", UP_TO_EMEA2);
     assert.equal(vh.kind, "legendary");
     if (vh.kind === "legendary") {
-      assert.equal(vh.qualifier, "APAC");
+      assert.equal(vh.qualifier, "EMEA #2");
       assert.equal(vh.banRank, 1);
       assert.equal(vh.submittedRank, 2);
       assert.equal(vh.count, 11);
       assert.equal(vh.deepest, 5);
     }
-    const [bear] = cardCrimsonFacts("baby-bear", UP_TO_APAC);
-    assert.deepEqual(bear, { kind: "card", qualifier: "APAC", decks: 689, share: 0.498, rank: 1, count: 20 });
-    assert.deepEqual(cardCrimsonFacts("baby-bear", UP_TO_APAC).map((f) => f.qualifier), ["APAC", "AMER #2", "EMEA #1", "AMER #1"]);
-    assert.deepEqual(cardCrimsonFacts("cinderella", UP_TO_APAC), []);
-    // AMER #1 20 carte, EMEA #1 3 nuove, APAC 2 nuove (Searing Light, Three Blind Mice), più le 11 Leggendarie
-    assert.equal(crimsonCardSlugs(UP_TO_APAC).size, 36);
-    assert.equal(crimsonCardDay("obliterate", UP_TO_APAC), "2026-10-23");
-    assert.equal(crimsonCardDay("impundulu", UP_TO_APAC), "2026-10-22");
-    assert.equal(crimsonCardDay("cinderella", UP_TO_APAC), undefined);
-    assert.equal(latestWithStats(UP_TO_APAC)?.id, "apac");
+    const [bear] = cardCrimsonFacts("baby-bear", UP_TO_EMEA2);
+    assert.deepEqual(bear, { kind: "card", qualifier: "EMEA #2", decks: 689, share: 0.498, rank: 1, count: 20 });
+    assert.deepEqual(cardCrimsonFacts("baby-bear", UP_TO_EMEA2).map((f) => f.qualifier), ["EMEA #2", "AMER #2", "EMEA #1", "AMER #1"]);
+    assert.deepEqual(cardCrimsonFacts("cinderella", UP_TO_EMEA2), []);
+    // AMER #1 20 carte, EMEA #1 3 nuove, EMEA #2 2 nuove (Searing Light, Three Blind Mice), più le 11 Leggendarie
+    assert.equal(crimsonCardSlugs(UP_TO_EMEA2).size, 36);
+    assert.equal(crimsonCardDay("obliterate", UP_TO_EMEA2), "2026-10-23");
+    assert.equal(crimsonCardDay("impundulu", UP_TO_EMEA2), "2026-10-22");
+    assert.equal(crimsonCardDay("cinderella", UP_TO_EMEA2), undefined);
+    assert.equal(latestWithStats(UP_TO_EMEA2)?.id, "emea-2");
   });
 
   test("torneo contro ladder: differenze, righe senza ladder in fondo, differenze più grandi", () => {
@@ -289,17 +289,17 @@ describe("Crimson Cup: le qualificazioni a confronto", () => {
     assert.deepEqual(acrossHeadlines(ready.slice(0, 1)), { qualifiers: 1, alwaysCards: 0, top: 20 });
   });
 
-  test("con la APAC: il cambio più grande è Merlin, 12 carte in tutte e quattro le tabelle", () => {
-    const h = acrossHeadlines(UP_TO_APAC);
+  test("con la EMEA #2: il cambio più grande è Merlin, 12 carte in tutte e quattro le tabelle", () => {
+    const h = acrossHeadlines(UP_TO_EMEA2);
     assert.equal(h.qualifiers, 4);
     assert.equal(h.topBanned?.legendary, "van-helsing");
     assert.equal(h.topBanned?.times, 4);
-    // Merlin: 38 su 80 nella AMER #2, 49 su 133 nella APAC
+    // Merlin: 38 su 80 nella AMER #2, 49 su 133 nella EMEA #2
     assert.equal(h.mover?.legendary, "merlin");
-    assert.equal(h.mover?.last, "APAC");
+    assert.equal(h.mover?.last, "EMEA #2");
     assert.ok(Math.abs((h.mover?.delta ?? 0) - (49 / 133 - 38 / 80)) < 1e-9);
     assert.equal(h.alwaysCards, 12);
-    assert.equal(acrossCards(UP_TO_APAC).length, 25);
+    assert.equal(acrossCards(UP_TO_EMEA2).length, 25);
   });
 });
 
