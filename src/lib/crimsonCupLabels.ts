@@ -1273,3 +1273,204 @@ export const crimsonCupLabels: Record<Locale, CrimsonLabels> = {
     },
   },
 };
+
+/*
+  La sezione "Le finali" di /analytics/crimson-cup (25/10/2026): il campione, le liste dei quattro finalisti, le
+  Leggendarie e le carte delle finali. Stesse regole dei testi qui sopra (francese con lo spazio insecabile, niente numero
+  di iscritti); i segnaposto li controlla crimsonCup.test.ts.
+*/
+export type CrimsonFinalsLabels = {
+  link: string;
+  kicker: string;
+  title: string;
+  lead: string;
+  prize: string;
+  places: { 1: string; 2: string; 3: string; 4: string };
+  deckAria: string;
+  copy: string;
+  copied: string;
+  open: string;
+  profile: string;
+  tabsLabel: string;
+  deckStats: string;
+  legendariesTitle: string;
+  legendaryRow: string;
+  cardsTitle: string;
+  cardsLead: string;
+  cardRow: string;
+  source: string;
+  resultLink: string;
+  bracketLink: string;
+  noTables: string;
+};
+
+export const crimsonFinalsLabels: Record<Locale, CrimsonFinalsLabels> = {
+  en: {
+    link: "The finals",
+    kicker: "The finals · 25 October",
+    title: "CoachCrono wins the Crimson Cup",
+    lead: "From the losers bracket, going {won}-{lost} on finals day as the official Origins TCG post puts it, he beat OrdinaryHarry and Felixnxx, then SouL in the grand final.",
+    prize: "The prize: the 1/1 Dracula promo card, two booster box cases and $1,500.",
+    places: { 1: "Champion", 2: "2nd place", 3: "3rd place", 4: "4th place" },
+    deckAria: "{name}'s {legendary} deck",
+    copy: "Copy game code",
+    copied: "Copied",
+    open: "Open in the deck builder",
+    profile: "Profile on OriginsMeta",
+    tabsLabel: "The four finalists",
+    deckStats: "Units {units} · Spells {spells} · Average cost {mana}",
+    legendariesTitle: "The Legendaries of the finals",
+    legendaryRow: "in {n} of {total} line-ups",
+    cardsTitle: "The cards of the finals",
+    cardsLead: "In how many of the {total} decks of the finals each card appears (at least {min}).",
+    cardRow: "{n} of {total} decks",
+    source: "Lists: the images apix (Koin Games) posted on the official Discord on 25 October. Result: the Koin Games announcement and the official Origins TCG post.",
+    resultLink: "The official post",
+    bracketLink: "The playoff bracket",
+    noTables: "Koin has not published the playoff and finals tables yet (bans, decks, cards): they will land here when they come out.",
+  },
+  it: {
+    link: "Le finali",
+    kicker: "Le finali · 25 ottobre",
+    title: "CoachCrono vince la Crimson Cup",
+    lead: "Dal tabellone dei perdenti, con un {won}-{lost} nel giorno delle finali come scrive il post ufficiale di Origins TCG, ha battuto OrdinaryHarry e Felixnxx, poi SouL nella gran finale.",
+    prize: "Il premio: la carta promo Dracula 1/1, due case di booster box e 1.500 $.",
+    places: { 1: "Campione", 2: "2° posto", 3: "3° posto", 4: "4° posto" },
+    deckAria: "Il mazzo {legendary} di {name}",
+    copy: "Copia codice del gioco",
+    copied: "Copiato",
+    open: "Apri nel deck builder",
+    profile: "Profilo su OriginsMeta",
+    tabsLabel: "I quattro finalisti",
+    deckStats: "Unità {units} · Magie {spells} · Costo medio {mana}",
+    legendariesTitle: "Le Leggendarie delle finali",
+    legendaryRow: "in {n} terne su {total}",
+    cardsTitle: "Le carte delle finali",
+    cardsLead: "In quanti dei {total} mazzi delle finali compare ogni carta (almeno {min}).",
+    cardRow: "{n} mazzi su {total}",
+    source: "Liste: le immagini che apix (Koin Games) ha pubblicato sul Discord ufficiale il 25 ottobre. Risultato: l'annuncio di Koin Games e il post ufficiale di Origins TCG.",
+    resultLink: "Il post ufficiale",
+    bracketLink: "Il tabellone dei playoff",
+    noTables: "Koin non ha ancora pubblicato le tabelle dei playoff e delle finali (ban, mazzi, carte): arrivano qui quando escono.",
+  },
+  es: {
+    link: "Las finales",
+    kicker: "Las finales · 25 de octubre",
+    title: "CoachCrono gana la Crimson Cup",
+    lead: "Desde el cuadro de perdedores, con un {won}-{lost} el día de las finales según la publicación oficial de Origins TCG, venció a OrdinaryHarry y a Felixnxx, y luego a SouL en la gran final.",
+    prize: "El premio: la carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares.",
+    places: { 1: "Campeón", 2: "2.º puesto", 3: "3.er puesto", 4: "4.º puesto" },
+    deckAria: "El mazo {legendary} de {name}",
+    copy: "Copiar código del juego",
+    copied: "Copiado",
+    open: "Abrir en el deck builder",
+    profile: "Perfil en OriginsMeta",
+    tabsLabel: "Los cuatro finalistas",
+    deckStats: "Unidades {units} · Hechizos {spells} · Coste medio {mana}",
+    legendariesTitle: "Las Legendarias de las finales",
+    legendaryRow: "en {n} de {total} tríos",
+    cardsTitle: "Las cartas de las finales",
+    cardsLead: "En cuántos de los {total} mazos de las finales aparece cada carta (al menos {min}).",
+    cardRow: "{n} de {total} mazos",
+    source: "Listas: las imágenes que apix (Koin Games) publicó en el Discord oficial el 25 de octubre. Resultado: el anuncio de Koin Games y la publicación oficial de Origins TCG.",
+    resultLink: "La publicación oficial",
+    bracketLink: "El cuadro de los playoffs",
+    noTables: "Koin todavía no ha publicado las tablas de los playoffs y de las finales (bans, mazos, cartas): llegarán aquí cuando salgan.",
+  },
+  fr: {
+    link: "Les finales",
+    kicker: "Les finales · 25 octobre",
+    title: "CoachCrono remporte la Crimson Cup",
+    lead: "Depuis le tableau des perdants, avec un {won}-{lost} le jour des finales selon la publication officielle d'Origins TCG, il a battu OrdinaryHarry et Felixnxx, puis SouL en grande finale.",
+    prize: "Le lot : la carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars.",
+    places: { 1: "Champion", 2: "2e place", 3: "3e place", 4: "4e place" },
+    deckAria: "Le deck {legendary} de {name}",
+    copy: "Copier le code du jeu",
+    copied: "Copié",
+    open: "Ouvrir dans le deck builder",
+    profile: "Profil sur OriginsMeta",
+    tabsLabel: "Les quatre finalistes",
+    deckStats: "Unités {units} · Sorts {spells} · Coût moyen {mana}",
+    legendariesTitle: "Les Légendaires des finales",
+    legendaryRow: "dans {n} trios sur {total}",
+    cardsTitle: "Les cartes des finales",
+    cardsLead: "Dans combien des {total} decks des finales chaque carte apparaît (au moins {min}).",
+    cardRow: "{n} decks sur {total}",
+    source: "Listes : les images publiées par apix (Koin Games) sur le Discord officiel le 25 octobre. Résultat : l'annonce de Koin Games et la publication officielle d'Origins TCG.",
+    resultLink: "La publication officielle",
+    bracketLink: "Le tableau des playoffs",
+    noTables: "Koin n'a pas encore publié les tableaux des playoffs et des finales (bans, decks, cartes) : ils arriveront ici à leur sortie.",
+  },
+  pt: {
+    link: "As finais",
+    kicker: "As finais · 25 de outubro",
+    title: "CoachCrono vence a Crimson Cup",
+    lead: "Vindo da chave dos perdedores, com um {won}-{lost} no dia das finais segundo a publicação oficial de Origins TCG, venceu OrdinaryHarry e Felixnxx, depois SouL na grande final.",
+    prize: "O prêmio: a carta promo Dracula 1/1, dois cases de caixas de boosters e 1.500 dólares.",
+    places: { 1: "Campeão", 2: "2º lugar", 3: "3º lugar", 4: "4º lugar" },
+    deckAria: "O deck {legendary} de {name}",
+    copy: "Copiar código do jogo",
+    copied: "Copiado",
+    open: "Abrir no deck builder",
+    profile: "Perfil no OriginsMeta",
+    tabsLabel: "Os quatro finalistas",
+    deckStats: "Personagens {units} · Feitiços {spells} · Custo médio {mana}",
+    legendariesTitle: "As Lendárias das finais",
+    legendaryRow: "em {n} de {total} trios",
+    cardsTitle: "As cartas das finais",
+    cardsLead: "Em quantos dos {total} decks das finais cada carta aparece (pelo menos {min}).",
+    cardRow: "{n} de {total} decks",
+    source: "Listas: as imagens que apix (Koin Games) publicou no Discord oficial em 25 de outubro. Resultado: o anúncio da Koin Games e a publicação oficial de Origins TCG.",
+    resultLink: "A publicação oficial",
+    bracketLink: "A chave dos playoffs",
+    noTables: "A Koin ainda não publicou as tabelas dos playoffs e das finais (bans, decks, cartas): elas chegam aqui quando saírem.",
+  },
+  de: {
+    link: "Die Finals",
+    kicker: "Die Finals · 25. Oktober",
+    title: "CoachCrono gewinnt den Crimson Cup",
+    lead: "Aus dem Loser-Bracket, mit einem {won}-{lost} am Finaltag, wie der offizielle Post von Origins TCG schreibt: Er schlug OrdinaryHarry und Felixnxx, dann SouL im großen Finale.",
+    prize: "Der Preis: die Dracula-Promokarte 1/1, zwei Cases mit Booster-Displays und 1.500 Dollar.",
+    places: { 1: "Champion", 2: "2. Platz", 3: "3. Platz", 4: "4. Platz" },
+    deckAria: "Das {legendary}-Deck von {name}",
+    copy: "Spielcode kopieren",
+    copied: "Kopiert",
+    open: "Im Deck-Builder öffnen",
+    profile: "Profil auf OriginsMeta",
+    tabsLabel: "Die vier Finalisten",
+    deckStats: "Charaktere {units} · Zauber {spells} · Durchschnittskosten {mana}",
+    legendariesTitle: "Die Legendären der Finals",
+    legendaryRow: "in {n} von {total} Aufstellungen",
+    cardsTitle: "Die Karten der Finals",
+    cardsLead: "In wie vielen der {total} Decks der Finals jede Karte steckt (mindestens {min}).",
+    cardRow: "{n} von {total} Decks",
+    source: "Listen: die Bilder, die apix (Koin Games) am 25. Oktober im offiziellen Discord gepostet hat. Ergebnis: die Ankündigung von Koin Games und der offizielle Post von Origins TCG.",
+    resultLink: "Der offizielle Post",
+    bracketLink: "Der Turnierbaum der Playoffs",
+    noTables: "Koin hat die Tabellen der Playoffs und der Finals (Bans, Decks, Karten) noch nicht veröffentlicht: Sie kommen hierher, sobald sie erscheinen.",
+  },
+  ru: {
+    link: "Финалы",
+    kicker: "Финалы · 25 октября",
+    title: "CoachCrono выигрывает Crimson Cup",
+    lead: "Из нижней сетки, со счётом {won}–{lost} в день финалов, как пишет официальный пост Origins TCG: он обыграл OrdinaryHarry и Felixnxx, а затем SouL в гранд-финале.",
+    prize: "Приз: промокарта Dracula 1/1, два кейса бустер-боксов и 1500 долларов.",
+    places: { 1: "Чемпион", 2: "2-е место", 3: "3-е место", 4: "4-е место" },
+    deckAria: "Колода {legendary} игрока {name}",
+    copy: "Скопировать код игры",
+    copied: "Скопировано",
+    open: "Открыть в конструкторе колод",
+    profile: "Профиль на OriginsMeta",
+    tabsLabel: "Четыре финалиста",
+    deckStats: "Персонажи {units} · Заклинания {spells} · Средняя стоимость {mana}",
+    legendariesTitle: "Легендарные карты финалов",
+    legendaryRow: "в {n} из {total} троек",
+    cardsTitle: "Карты финалов",
+    cardsLead: "В скольких из {total} колод финалов встречается каждая карта (не меньше {min}).",
+    cardRow: "{n} из {total} колод",
+    source: "Списки: изображения, которые apix (Koin Games) опубликовал в официальном Discord 25 октября. Результат: объявление Koin Games и официальный пост Origins TCG.",
+    resultLink: "Официальный пост",
+    bracketLink: "Сетка плей-офф",
+    noTables: "Koin ещё не опубликовала таблицы плей-офф и финалов (баны, колоды, карты): они появятся здесь, как только выйдут.",
+  },
+};

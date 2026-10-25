@@ -328,3 +328,27 @@ export function acrossHeadlines(qualifiers: readonly CrimsonQualifier[]): Across
 
 /** Sostituisce i segnaposto {nome} di un testo. */
 export const fillCrimson = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (m, k: string) => (k in v ? String(v[k]) : m));
+
+/* ---------- le finali (25/10/2026): conteggi dalle liste dei quattro finalisti ---------- */
+
+type FinalistLike = { decks: readonly { legendary: string; cards: readonly string[] }[] };
+
+/** In quante terne dei finalisti c'è ogni Leggendaria, dalla più presente (a parità, nell'ordine in cui compare). */
+export function finalsLegendaries(finalists: readonly FinalistLike[]): { legendary: string; players: number }[] {
+  const seen = new Map<string, number>();
+  for (const f of finalists) for (const l of new Set(f.decks.map((d) => d.legendary))) seen.set(l, (seen.get(l) ?? 0) + 1);
+  return [...seen].map(([legendary, players]) => ({ legendary, players })).sort((a, b) => b.players - a.players);
+}
+
+/** In quanti mazzi delle finali c'è ogni carta (Leggendarie escluse), dalle più presenti; solo quelle in almeno `min` mazzi. */
+export function finalsCards(finalists: readonly FinalistLike[], min = 1): { card: string; decks: number }[] {
+  const seen = new Map<string, number>();
+  for (const f of finalists) for (const d of f.decks) for (const c of new Set(d.cards)) seen.set(c, (seen.get(c) ?? 0) + 1);
+  return [...seen]
+    .map(([card, decks]) => ({ card, decks }))
+    .filter((c) => c.decks >= min)
+    .sort((a, b) => b.decks - a.decks || a.card.localeCompare(b.card));
+}
+
+/** I mazzi delle finali (tre per finalista). */
+export const finalsDeckCount = (finalists: readonly FinalistLike[]): number => finalists.reduce((s, f) => s + f.decks.length, 0);

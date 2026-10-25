@@ -10,6 +10,85 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "crimson-cup-coachcrono-wins": {
+    title: "CoachCrono vence a Crimson Cup de Origins TCG: três italianos entre os quatro finalistas",
+    metaTitle: "CoachCrono vence a Crimson Cup de Origins TCG",
+    description:
+      "CoachCrono vence a Crimson Cup de Origins TCG pela chave dos perdedores: três italianos entre os quatro finalistas, os decks deles e o resumo do torneio.",
+    summary:
+      "CoachCrono venceu a Crimson Cup, o maior torneio de Origins TCG até agora: ele se recuperou pela chave dos perdedores e derrotou SouL na grande final, levando para casa a carta promo Dracula 1/1. Três dos quatro finalistas são italianos: CoachCrono, SouL e Felixnxx. Aqui estão a campanha dele, os decks das finais e o resumo de uma semana de torneio.",
+    highlights: [
+      { label: "CoachCrono é o campeão", text: "pela chave dos perdedores, 9-3 no dia das finais segundo a publicação oficial", anchor: "vitoria" },
+      { label: "Três italianos de quatro", text: "CoachCrono, SouL e Felixnxx; o quarto finalista é OrdinaryHarry", anchor: "italianos" },
+      { label: "Uma só derrota antes da grande final", text: "contra SouL, o jogador que ele depois venceu para ficar com o título", anchor: "campanha" },
+      { label: "Pigs em todos os trios", text: "Three Not So Little Pigs nos quatro, Van Helsing em três", anchor: "decks" },
+      { label: "Uma semana de torneio", text: "cinco classificatórias, playoffs em eliminação dupla e as finais ao vivo", anchor: "torneio" },
+      { label: "O que ainda falta", text: "o placar da grande final e as tabelas da Koin dos playoffs e das finais", anchor: "o-que-nao-sabemos" },
+    ],
+    body: `## CoachCrono é o campeão da Crimson Cup {#vitoria}
+
+Parabéns, Coach. No domingo, 25 de outubro, [CoachCrono](/pt/u/coachcrono) venceu a Crimson Cup, o torneio com que a Koin Games encerrou a semana do Steam Next Fest. Quem anunciou foi apix, da Koin Games, no Discord oficial ("Congrats to @CoachCrono for winning our Origins Crimson Cup"), e a publicação oficial de Origins TCG no X resume assim: ele veio da chave dos perdedores, com um 9-3 no dia ("going 9-3 today").
+
+O prêmio é o da imagem oficial do vencedor: a carta promo Dracula 1/1, dois cases de caixas de boosters e 1.500 dólares. CoachCrono também é Creator no OriginsMeta: os canais e os decks dele estão no seu perfil.
+
+## Três italianos entre os quatro finalistas {#italianos}
+
+Quatro jogadores chegaram às finais e três deles são italianos: CoachCrono, SouL e Felixnxx. O quarto é OrdinaryHarry. Num torneio aberto a todos, com classificatórias nas Américas, na Europa e na Ásia, é um resultado enorme para a cena italiana de Origins TCG.
+
+A classificação final, segundo a chave dos playoffs no Tourney Bot e o anúncio da Koin:
+
+1. CoachCrono
+2. SouL
+3. Felixnxx
+4. OrdinaryHarry
+
+## Como ele chegou lá {#campanha}
+
+Os playoffs do sábado, 24 de outubro, foram em eliminação dupla, com partidas em melhor de três: quem perde uma vez cai para a chave dos perdedores, quem perde duas vezes está fora. CoachCrono venceu as suas seis primeiras partidas na chave dos vencedores, uma delas contra agraveinstream, outro creator do OriginsMeta, e parou na semifinal contra SouL, 0-2. Dali em diante não perdeu mais: 2-1 contra eotboltyou para entrar entre os quatro, depois, nas finais, 2-0 contra OrdinaryHarry, 2-0 contra Felixnxx e a grande final vencida contra SouL, que até então não tinha perdido nenhuma partida.
+
+Do outro lado, SouL passou pela chave dos vencedores sem derrotas, com um 2-1 contra Felixnxx na final dos vencedores. Felixnxx tinha vencido OrdinaryHarry por 2-1 na outra semifinal. Toda a campanha, partida por partida, está na nossa [chave dos playoffs](/pt/analytics/crimson-cup/playoffs).
+
+## Os decks das finais {#decks}
+
+A Koin publicou as listas dos quatro finalistas no dia das finais: a partir do top 4 as decklists ficam públicas, como dizem as regras. O trio vencedor de CoachCrono:
+
+- [Three Not So Little Pigs](/pt/cards/three-not-so-little-pigs): Bullseye, Glinda, Golden Egg, Guy of Gisborne, Mind Palace, Mummy, Obliterate, Reinforcements, Sandman, Stroke of Midnight, Three Blind Mice, Trash for Treasure;
+- [Van Helsing](/pt/cards/van-helsing): Ali Baba, Baby Bear, Bridge Troll, Dark Omen, First Aid, Forbidden Knowledge, Phuong Hoang, Puck, Searing Light, Shahrazad, Spellbook, Tin Woodman;
+- [Legion of the Dead](/pt/cards/legion-of-the-dead): Asanbosam, Baby Bear, Boogeyman, Bridge Troll, Dark Omen, En Passant, Golden Egg, Morgiana, Mummy, Obliterate, Paul Bunyan, Trash for Treasure.
+
+Os trios dos outros: SouL levou Merlin, Mulan e Three Not So Little Pigs; Felixnxx, Van Helsing, Legion of the Dead e Three Not So Little Pigs; OrdinaryHarry, Mulan, Van Helsing e Three Not So Little Pigs.
+
+Alguns números das 12 listas. Three Not So Little Pigs está no trio dos quatro, Van Helsing em três, Legion of the Dead e [Mulan](/pt/cards/mulan) em dois, [Merlin](/pt/cards/merlin) em um: as outras seis Lendárias não chegaram às finais. [Baby Bear](/pt/cards/baby-bear) é a carta mais presente (7 decks de 12), seguida de Golden Egg, Mind Palace, Obliterate e Tin Woodman (6). As listas completas, com o código do jogo e o link para o deck builder, estão na nossa [página da Crimson Cup](/pt/analytics/crimson-cup#finals).
+
+## O torneio em resumo {#torneio}
+
+A Crimson Cup foi o maior torneio de todos os tempos da Koin Games, como apix o chamou: cinco classificatórias abertas a todos entre 19 e 22 de outubro (AMER #1, EMEA #1, AMER #2, APAC e EMEA #2), 32 classificados de cada uma mais 96 wild cards, playoffs com 256 vagas em 24 de outubro e as finais em 25 de outubro, tudo ao vivo. O formato era Conquest: três decks com pelo menos 8 cartas únicas diferentes entre cada par, uma fase de ban e decklists ocultas até o top 4. Prêmios no valor total de 10.000 dólares. As regras em detalhe estão nas nossas [regras da Crimson Cup](/pt/news/crimson-cup-format-check-in).
+
+Nas quatro classificatórias com tabelas oficiais da Koin, Van Helsing foi sempre a Lendária mais banida (de 44,4% na AMER #1 a 55,1% na EMEA #2), Three Not So Little Pigs a mais levada e Baby Bear a carta mais usada. As finais mostraram o mesmo meta: Pigs em todos os trios, Van Helsing em três, Baby Bear em sete decks de doze. Todos os números das classificatórias estão na nossa [página da Crimson Cup](/pt/analytics/crimson-cup).
+
+## O que ainda não sabemos {#o-que-nao-sabemos}
+
+- O placar da grande final: no Tourney Bot ela ficou sem resultado e a Koin não o publicou; a publicação oficial só dá o 9-3 do dia.
+- As tabelas dos playoffs e das finais (bans, decks levados, cartas mais usadas): a Koin as publicou no Discord oficial depois das classificatórias, mas para os playoffs e as finais ainda não. Quando chegarem, vão para a nossa página da Crimson Cup.`,
+    faq: [
+      {
+        q: "Quem venceu a Crimson Cup de Origins TCG?",
+        a: "CoachCrono, em 25 de outubro de 2026: ele se recuperou pela chave dos perdedores e derrotou SouL na grande final. Quem anunciou foram a Koin Games, no Discord oficial, e Origins TCG, no X.",
+      },
+      {
+        q: "Com quais decks CoachCrono venceu a Crimson Cup?",
+        a: "Three Not So Little Pigs, Van Helsing e Legion of the Dead, no formato Conquest. As três listas completas, com o código do jogo, estão na página da Crimson Cup do OriginsMeta.",
+      },
+      {
+        q: "Quem foram os finalistas da Crimson Cup?",
+        a: "CoachCrono (primeiro), SouL (segundo), Felixnxx (terceiro) e OrdinaryHarry (quarto). Três dos quatro são italianos: CoachCrono, SouL e Felixnxx.",
+      },
+      {
+        q: "O que CoachCrono ganhou?",
+        a: "A carta promo Dracula 1/1, dois cases de caixas de boosters e 1.500 dólares, segundo a imagem oficial do vencedor.",
+      },
+    ],
+  },
   "crimson-cup-meta-report-emea-1-amer-2": {
     title: "Meta Report da Crimson Cup: Van Helsing ainda é a mais banida, King Arthur divide a Europa e as Américas",
     metaTitle: "Crimson Cup de Origins TCG: números da EMEA #1 e da AMER #2",

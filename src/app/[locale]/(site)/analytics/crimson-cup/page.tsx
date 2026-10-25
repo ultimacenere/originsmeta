@@ -4,11 +4,14 @@ import { Fragment, cache, type CSSProperties, type ReactNode } from "react";
 import { formatDate, formatDateShort, href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { getCard, getCardByKey, patchLabel, type Card } from "@/lib/data/cards";
-import { CRIMSON_SOURCE_URL, crimsonQualifiers, crimsonRegions } from "@/lib/data/crimsonCup";
+import { CRIMSON_RESULT_URL, CRIMSON_SOURCE_URL, crimsonFinals, crimsonQualifiers, crimsonRegions } from "@/lib/data/crimsonCup";
 import {
   acrossCards,
   acrossHeadlines,
   acrossLegendaries,
+  finalsCards,
+  finalsDeckCount,
+  finalsLegendaries,
   biggestGaps,
   fillCrimson as fmt,
   headlines,
@@ -21,12 +24,15 @@ import {
   type LadderLegendary,
   type QualifierWithStats,
 } from "@/lib/crimsonCup";
-import { crimsonCupLabels } from "@/lib/crimsonCupLabels";
+import { crimsonCupLabels, crimsonFinalsLabels } from "@/lib/crimsonCupLabels";
+import { deckGameCode } from "@/lib/deckGameCode";
+import { encodeOmCode } from "@/lib/deckcode";
+import { CopyButton } from "@/components/CopyButton";
 import { crimsonPlayoffsLabels } from "@/lib/crimsonPlayoffsLabels";
 import { readWinrate } from "@/lib/community/trackerStatsQueries";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
-import { bothSides, deltaText, fmtInt, pct, pctNum, pctUnit } from "@/lib/tracker/snapshot";
-import { CardName } from "@/components/CardChip";
+import { bothSides, deltaText, fmtDec, fmtInt, pct, pctNum, pctUnit } from "@/lib/tracker/snapshot";
+import { CardName, DeckCardGrid } from "@/components/CardChip";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { PageNotes } from "@/components/PageNotes";
 import { CardArt, SectionHead } from "@/components/analytics/parts";
@@ -119,6 +125,148 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
   const legName = (card: Card) => <CardName name={card.name} legendary legendaryLabel={legendaryLabel} />;
 
   const hasAcross = ready.length >= 2;
+
+  /* ---------- le finali (25/10/2026): il campione, le liste dei quattro, Leggendarie e carte ---------- */
+  const FL = crimsonFinalsLabels[locale];
+  const finalists = [...crimsonFinals.finalists].sort((a, b) => a.place - b.place);
+  const champion = finalists[0];
+  const finalsDecks = finalists.flatMap((f) => f.decks.map((dk) => ({ f, dk })));
+  const finalsCodes = await Promise.all(finalsDecks.map(({ dk }) => deckGameCode({ legendary: dk.legendary, cards: [...dk.cards] })));
+  const codeOf = (f: (typeof finalists)[number], dk: (typeof finalists)[number]["decks"][number]) => finalsCodes[finalsDecks.findIndex((x) => x.f === f && x.dk === dk)]?.code ?? null;
+  const builderHref = (dk: (typeof finalists)[number]["decks"][number]) =>
+    `${href(locale, "/deck-builder")}#${encodeOmCode({ name: getCard(dk.legendary)?.name ?? dk.legendary, legendary: dk.legendary, cards: [...dk.cards], customCards: [] })}`;
+  const finalsLegs = finalsLegendaries(finalists).flatMap((l) => {
+    const card = getCard(l.legendary);
+    return card ? [{ ...l, card }] : [];
+  });
+  const FINALS_MIN_DECKS = 4;
+  const finalsCardRows = finalsCards(finalists, FINALS_MIN_DECKS).flatMap((c) => {
+    const card = getCard(c.card);
+    return card ? [{ ...c, card }] : [];
+  });
+  const finalsTotal = finalsDeckCount(finalists);
+
+  type Finalist = (typeof finalists)[number];
+  /** Unità, magie e costo medio dei 13 carte di un mazzo (Leggendaria compresa), come la pagina delle liste di Koin. */
+  const deckNumbers = (dk: Finalist["decks"][number]) => {
+    const cards = [dk.legendary, ...dk.cards].map((s) => getCard(s)).filter((c): c is Card => Boolean(c));
+    const mana = cards.reduce((sum, c) => sum + (c.mana ?? 0), 0) / Math.max(1, cards.length);
+    return {
+      units: cards.filter((c) => c.type === "unit").length,
+      spells: cards.filter((c) => c.type === "spell").length,
+      mana: fmtDec(mana, locale, 1),
+    };
+  };
+  const finalistTabs: CrimsonTab[] = finalists.map((f) => ({ id: f.username, name: f.name, sub: FL.places[f.place], ready: true }));
+  const finalistPanel = (f: Finalist) => (
+    <div className="an-wrap">
+      <div className="cc-finalist-head mt-4">
+        <span className={`cc-place is-${f.place}`}>{FL.places[f.place]}</span>
+        <h3 className={`cc-finalist-name${f.place === 1 ? " is-champion" : ""}`}>{f.name}</h3>
+        {f.profile ? (
+          <Link href={href(locale, `/u/${f.profile}`)} prefetch={false} className="link-mint text-xs font-bold">
+            {FL.profile} →
+          </Link>
+        ) : null}
+      </div>
+      <div className="cc-final-decks">
+        {f.decks.map((dk) => {
+          const leg = getCard(dk.legendary);
+          const code = codeOf(f, dk);
+          return (
+            <article key={dk.legendary} className={`an-panel cc-final-deck${f.place === 1 ? " is-champion" : ""}`} aria-label={fmt(FL.deckAria, { name: f.name, legendary: leg?.name ?? dk.legendary })}>
+              <div className="cc-final-deck-head">
+                <h4 className="cc-final-deck-name">{leg ? legName(leg) : dk.legendary}</h4>
+                <p className="cc-final-deck-stats">{fmt(FL.deckStats, deckNumbers(dk))}</p>
+              </div>
+              <div className="mt-3">
+                <DeckCardGrid slugs={[...(leg ? [dk.legendary] : []), ...dk.cards.filter((s) => getCard(s))]} locale={locale} />
+              </div>
+              <div className="cc-final-actions">
+                {code ? <CopyButton text={code} label={FL.copy} copied={FL.copied} className="btn btn-ghost text-xs" event={{ name: "game_code_copy", params: { placement: "crimson_finals" } }} /> : null}
+                <Link href={builderHref(dk)} prefetch={false} className="link-mint text-xs font-bold">
+                  {FL.open} →
+                </Link>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const finalsSection = () => (
+    <section id="finals" className="an-band an-band--stage is-top" aria-labelledby="cc-h-finals">
+      <div className="an-wrap">
+        <span className="kicker an-sec-kicker">{FL.kicker}</span>
+        <h2 id="cc-h-finals" className="an-h2">
+          {FL.title}
+        </h2>
+        <div className="cc-final-hero">
+          <div className="cc-final-arts" aria-hidden="true">
+            {champion.decks.map((dk) => {
+              const card = getCard(dk.legendary);
+              return card ? <CardArt key={dk.legendary} src={card.image} thumb={card.thumb} name={card.name} width={92} eager /> : null;
+            })}
+          </div>
+          <div className="min-w-0">
+            <p className="cc-final-lead">{fmt(FL.lead, { won: crimsonFinals.championDay.won, lost: crimsonFinals.championDay.lost })}</p>
+            <p className="cc-final-prize">{FL.prize}</p>
+            <p className="cc-final-links">
+              <a href={CRIMSON_RESULT_URL} rel="noopener" target="_blank" className="link-mint font-bold">
+                {FL.resultLink} ↗
+              </a>
+              <Link href={href(locale, "/analytics/crimson-cup/playoffs")} prefetch={false} className="link-mint font-bold">
+                {FL.bracketLink} →
+              </Link>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* una scheda per finalista, come la pagina delle liste di Koin: carte intere, numeri del mazzo, codice e deck builder */}
+      <div className="mt-6">
+        <CrimsonTabs tabs={finalistTabs} initial={champion.username} label={FL.tabsLabel} panels={finalists.map((f) => ({ id: f.username, node: finalistPanel(f) }))} />
+      </div>
+
+      <div className="an-wrap">
+
+        <div className="cc-final-stats">
+          <div className="an-panel cc-final-stat">
+            <h3 className="an-h2">{FL.legendariesTitle}</h3>
+            <ul>
+              {finalsLegs.map((l) => (
+                <li key={l.legendary}>
+                  <CardArt src={l.card.image} thumb={l.card.thumb} name={l.card.name} width={34} />
+                  <span className="min-w-0">{legName(l.card)}</span>
+                  <span className="cc-final-count">{fmt(FL.legendaryRow, { n: l.players, total: finalists.length })}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="an-panel cc-final-stat">
+            <h3 className="an-h2">{FL.cardsTitle}</h3>
+            <p className="an-muted text-sm">{fmt(FL.cardsLead, { total: finalsTotal, min: FINALS_MIN_DECKS })}</p>
+            <ul>
+              {finalsCardRows.map((c) => (
+                <li key={c.card.slug}>
+                  <CardArt src={c.card.image} thumb={c.card.thumb} name={c.card.name} width={34} />
+                  <Link href={cardHref(c.card)} prefetch={false} className="min-w-0">
+                    {c.card.name}
+                  </Link>
+                  <span className="cc-final-count">{fmt(FL.cardRow, { n: c.decks, total: finalsTotal })}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p className="cc-final-source">
+          {FL.source} {FL.noTables}
+        </p>
+      </div>
+    </section>
+  );
 
   const tabs: CrimsonTab[] = crimsonQualifiers.map((q) => ({
     id: q.id,
@@ -925,6 +1073,9 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
           <Link href={href(locale, "/news/crimson-cup-format-check-in")} prefetch={false} className="link-mint text-sm font-bold">
             {L.rules}
           </Link>
+          <a href="#finals" className="link-mint text-sm font-bold">
+            {FL.link} ↓
+          </a>
           {hasAcross ? (
             <a href="#across" className="link-mint text-sm font-bold">
               {L.across.link} ↓
@@ -935,6 +1086,8 @@ export default async function CrimsonCupPage({ params }: { params: LocaleParams 
           </a>
         </div>
       </header>
+
+      {finalsSection()}
 
       {latest ? (
         <div className="mt-5">

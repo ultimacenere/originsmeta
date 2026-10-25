@@ -18,7 +18,7 @@ export type PlayoffsLabels = {
   back: string;
   source: string;
   howTo: string;
-  status: { live: string; decided: string };
+  status: { live: string; decided: string; finished: string };
   facts: { started: string; format: string; finals: string; read: string; snapshot: string };
   finals: { kicker: string; title: string; lead: string; fromWinners: string; fromLosers: string; tbd: string; sure: string };
   alive: { kicker: string; title: string; playing: string; waiting: string; unbeaten: string; oneLoss: string };
@@ -56,6 +56,7 @@ export type PlayoffsLabels = {
     grandReset: string;
   };
   om: { label: string; title: string };
+  champion: { kicker: string; title: string; text: string; finals: string; post: string };
   notes: { title: string; format: string; finals: string; waiting: string; source: string; om: string; link: string };
   promo: string;
 };
@@ -71,7 +72,7 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
     back: "Crimson Cup stats",
     source: "Official bracket on Tourney Bot",
     howTo: "How to read it",
-    status: { live: "Live", decided: "Top 4 decided" },
+    status: { live: "Live", decided: "Top 4 decided", finished: "Finished" },
     facts: {
       started: "Started: {date}",
       format: "Double elimination, best-of-{n} matches",
@@ -142,6 +143,13 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
       grandReset: "Grand final reset",
     },
     om: { label: "OriginsMeta", title: "{name} on OriginsMeta: open the profile" },
+    champion: {
+      kicker: "The Crimson Cup has its champion",
+      title: "{name} wins the Crimson Cup",
+      text: "From the losers bracket to the grand final won against {runnerUp}, according to the Koin Games announcement and the official Origins TCG post: on Tourney Bot the grand final has no score.",
+      finals: "The finals and the four line-ups",
+      post: "The official post",
+    },
     notes: {
       title: "How to read the bracket",
       format: "Double elimination: lose once and you drop to the losers bracket, lose twice and you are out. Matches are best of {n}.",
@@ -163,7 +171,7 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
     back: "I numeri della Crimson Cup",
     source: "Tabellone ufficiale su Tourney Bot",
     howTo: "Come leggerlo",
-    status: { live: "In corso", decided: "Top 4 decisa" },
+    status: { live: "In corso", decided: "Top 4 decisa", finished: "Concluso" },
     facts: {
       started: "Inizio: {date}",
       format: "Doppia eliminazione, partite al meglio delle {n}",
@@ -234,6 +242,13 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
       grandReset: "Gran finale, rivincita",
     },
     om: { label: "OriginsMeta", title: "{name} su OriginsMeta: apri il profilo" },
+    champion: {
+      kicker: "La Crimson Cup ha il suo campione",
+      title: "{name} vince la Crimson Cup",
+      text: "Dal tabellone dei perdenti alla gran finale vinta contro {runnerUp}, come dicono l'annuncio di Koin Games e il post ufficiale di Origins TCG: su Tourney Bot la gran finale è rimasta senza punteggio.",
+      finals: "Le finali e le liste dei quattro",
+      post: "Il post ufficiale",
+    },
     notes: {
       title: "Come leggere il tabellone",
       format: "Doppia eliminazione: chi perde una volta scende nel tabellone dei perdenti, chi perde due volte è fuori. Le partite sono al meglio delle {n}.",
@@ -255,7 +270,7 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
     back: "Las cifras de la Crimson Cup",
     source: "Cuadro oficial en Tourney Bot",
     howTo: "Cómo leerlo",
-    status: { live: "En curso", decided: "Top 4 decidido" },
+    status: { live: "En curso", decided: "Top 4 decidido", finished: "Terminado" },
     facts: {
       started: "Inicio: {date}",
       format: "Doble eliminación, enfrentamientos al mejor de {n}",
@@ -326,6 +341,13 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
       grandReset: "Gran final, revancha",
     },
     om: { label: "OriginsMeta", title: "{name} en OriginsMeta: abre el perfil" },
+    champion: {
+      kicker: "La Crimson Cup ya tiene campeón",
+      title: "{name} gana la Crimson Cup",
+      text: "Del cuadro de perdedores a la gran final ganada contra {runnerUp}, según el anuncio de Koin Games y la publicación oficial de Origins TCG: en Tourney Bot la gran final quedó sin resultado.",
+      finals: "Las finales y las listas de los cuatro",
+      post: "La publicación oficial",
+    },
     notes: {
       title: "Cómo leer el cuadro",
       format: "Doble eliminación: si pierdes una vez bajas al cuadro de perdedores, si pierdes dos veces quedas fuera. Los enfrentamientos son al mejor de {n}.",
@@ -347,7 +369,7 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
     back: "Les chiffres de la Crimson Cup",
     source: "Tableau officiel sur Tourney Bot",
     howTo: "Comment le lire",
-    status: { live: "En cours", decided: "Top 4 connu" },
+    status: { live: "En cours", decided: "Top 4 connu", finished: "Terminé" },
     facts: {
       started: "Début\u00a0: {date}",
       format: "Double élimination, matchs au meilleur des {n} manches",
@@ -418,6 +440,13 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
       grandReset: "Grande finale, revanche",
     },
     om: { label: "OriginsMeta", title: "{name} sur OriginsMeta\u00a0: ouvrir le profil" },
+    champion: {
+      kicker: "La Crimson Cup a son champion",
+      title: "{name} remporte la Crimson Cup",
+      text: "Du tableau des perdants à la grande finale gagnée contre {runnerUp}, selon l'annonce de Koin Games et la publication officielle d'Origins TCG\u00a0: sur Tourney Bot, la grande finale n'a pas de score.",
+      finals: "Les finales et les listes des quatre",
+      post: "La publication officielle",
+    },
     notes: {
       title: "Comment lire le tableau",
       format: "Double élimination\u00a0: une défaite vous envoie dans le tableau des perdants, deux défaites et c'est fini. Les matchs se jouent au meilleur des {n} manches.",
@@ -439,7 +468,7 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
     back: "Os números da Crimson Cup",
     source: "Chave oficial no Tourney Bot",
     howTo: "Como ler",
-    status: { live: "Ao vivo", decided: "Top 4 definido" },
+    status: { live: "Ao vivo", decided: "Top 4 definido", finished: "Encerrado" },
     facts: {
       started: "Início: {date}",
       format: "Eliminação dupla, partidas em melhor de {n}",
@@ -510,6 +539,13 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
       grandReset: "Grande final, revanche",
     },
     om: { label: "OriginsMeta", title: "{name} no OriginsMeta: abrir o perfil" },
+    champion: {
+      kicker: "A Crimson Cup tem seu campeão",
+      title: "{name} vence a Crimson Cup",
+      text: "Da chave dos perdedores à grande final vencida contra {runnerUp}, segundo o anúncio da Koin Games e a publicação oficial de Origins TCG: no Tourney Bot a grande final ficou sem placar.",
+      finals: "As finais e as listas dos quatro",
+      post: "A publicação oficial",
+    },
     notes: {
       title: "Como ler a chave",
       format: "Eliminação dupla: quem perde uma vez cai para a chave dos perdedores, quem perde duas vezes está fora. As partidas são em melhor de {n}.",
@@ -531,7 +567,7 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
     back: "Zahlen zum Crimson Cup",
     source: "Offizieller Turnierbaum auf Tourney Bot",
     howTo: "So liest du ihn",
-    status: { live: "Läuft", decided: "Top 4 steht fest" },
+    status: { live: "Läuft", decided: "Top 4 steht fest", finished: "Beendet" },
     facts: {
       started: "Start: {date}",
       format: "Double Elimination, Matches im Best-of-{n}",
@@ -602,6 +638,13 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
       grandReset: "Großes Finale, Reset",
     },
     om: { label: "OriginsMeta", title: "{name} auf OriginsMeta: Profil öffnen" },
+    champion: {
+      kicker: "Der Crimson Cup hat seinen Champion",
+      title: "{name} gewinnt den Crimson Cup",
+      text: "Aus dem Loser-Bracket bis zum gewonnenen großen Finale gegen {runnerUp}, laut der Ankündigung von Koin Games und dem offiziellen Post von Origins TCG: Auf Tourney Bot hat das große Finale kein Ergebnis.",
+      finals: "Die Finals und die Listen der vier",
+      post: "Der offizielle Post",
+    },
     notes: {
       title: "So liest du den Turnierbaum",
       format: "Double Elimination: Wer einmal verliert, rutscht ins Loser-Bracket, wer zweimal verliert, ist raus. Die Matches gehen über Best-of-{n}.",
@@ -623,7 +666,7 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
     back: "Цифры Crimson Cup",
     source: "Официальная сетка на Tourney Bot",
     howTo: "Как читать",
-    status: { live: "Идёт", decided: "Топ-4 определён" },
+    status: { live: "Идёт", decided: "Топ-4 определён", finished: "Завершён" },
     facts: {
       started: "Начало: {date}",
       format: "Двойное выбывание, матчи в формате Bo{n}",
@@ -694,6 +737,13 @@ export const crimsonPlayoffsLabels: Record<Locale, PlayoffsLabels> = {
       grandReset: "Гранд-финал, переигровка",
     },
     om: { label: "OriginsMeta", title: "{name} на OriginsMeta: открыть профиль" },
+    champion: {
+      kicker: "У Crimson Cup есть чемпион",
+      title: "{name} выигрывает Crimson Cup",
+      text: "Из нижней сетки до выигранного гранд-финала против {runnerUp}, по объявлению Koin Games и официальному посту Origins TCG: на Tourney Bot у гранд-финала нет счёта.",
+      finals: "Финалы и списки четырёх игроков",
+      post: "Официальный пост",
+    },
     notes: {
       title: "Как читать сетку",
       format: "Двойное выбывание: после первого поражения игрок переходит в нижнюю сетку, после второго выбывает. Матчи идут в формате Bo{n}.",

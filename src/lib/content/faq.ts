@@ -134,9 +134,9 @@ const en: Faq[] = [
   {
     id: "crimson-cup",
     q: "When is the Crimson Cup and what do you win?",
-    a: "From 19 to 25 October 2026, during Steam Next Fest: five qualifiers of 512 spots each between the 19th and the 22nd (AMER on the 19th at 7pm EST, EMEA on the 20th at 7pm CEST, AMER on the 21st at 9pm EST, APAC and EMEA on the 22nd), playoffs on the 24th, finals on the 25th. Prizes worth $10,000 in total, split between cash, collectibles and promo cards: the winner gets a 1/1 Dracula promo card, two booster box cases and $1,500, promo cards go down to the top 32 and packs to the top 256. Sign-ups are on Koin's official Discord, and check-in closes five minutes before each qualifier: miss it and you can't play.",
+    a: "From 19 to 25 October 2026, during Steam Next Fest: five qualifiers of 512 spots each between the 19th and the 22nd (AMER on the 19th at 7pm EST, EMEA on the 20th at 7pm CEST, AMER on the 21st at 9pm EST, APAC and EMEA on the 22nd), playoffs on the 24th, finals on the 25th. Prizes worth $10,000 in total, split between cash, collectibles and promo cards: the winner gets a 1/1 Dracula promo card, two booster box cases and $1,500, promo cards go down to the top 32 and packs to the top 256. Sign-ups are on Koin's official Discord, and check-in closes five minutes before each qualifier: miss it and you can't play. It was won by CoachCrono on 25 October 2026, from the losers bracket.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup rules" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono wins the Crimson Cup" }],
     keywords: ["prize", "prizes", "prize pool", "qualifier", "qualifiers", "check-in", "check in", "playoffs"],
   },
   {
@@ -262,9 +262,9 @@ const it: Faq[] = [
   {
     id: "crimson-cup",
     q: "Quando è la Crimson Cup e che cosa si vince?",
-    a: "Dal 19 al 25 ottobre 2026, durante lo Steam Next Fest: cinque qualificazioni da 512 posti fra il 19 e il 22 (AMER il 19 alle 19 EST, EMEA il 20 alle 19 CEST, AMER il 21 alle 21 EST, APAC ed EMEA il 22), playoff il 24, finali il 25. Premi per un valore complessivo di 10.000 $, divisi fra denaro, collezionabili e carte promo: chi vince prende una carta promo Dracula 1/1, due case di booster box e 1.500 $, le carte promo arrivano fino alla top 32 e i pacchetti fino alla top 256. Le iscrizioni sono sul Discord ufficiale di Koin, e il check-in chiude cinque minuti prima di ogni qualificazione: chi lo salta non gioca.",
+    a: "Dal 19 al 25 ottobre 2026, durante lo Steam Next Fest: cinque qualificazioni da 512 posti fra il 19 e il 22 (AMER il 19 alle 19 EST, EMEA il 20 alle 19 CEST, AMER il 21 alle 21 EST, APAC ed EMEA il 22), playoff il 24, finali il 25. Premi per un valore complessivo di 10.000 $, divisi fra denaro, collezionabili e carte promo: chi vince prende una carta promo Dracula 1/1, due case di booster box e 1.500 $, le carte promo arrivano fino alla top 32 e i pacchetti fino alla top 256. Le iscrizioni sono sul Discord ufficiale di Koin, e il check-in chiude cinque minuti prima di ogni qualificazione: chi lo salta non gioca. L'ha vinta CoachCrono il 25 ottobre 2026, risalendo dal tabellone dei perdenti.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Regole della Crimson Cup" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono vince la Crimson Cup" }],
     keywords: ["premi", "premio", "montepremi", "qualificazioni", "qualificazione", "check-in", "check in", "playoff"],
   },
   {
@@ -390,9 +390,9 @@ const es: Faq[] = [
   {
     id: "crimson-cup",
     q: "¿Cuándo es la Crimson Cup y qué se gana?",
-    a: "Del 19 al 25 de octubre de 2026, durante el Steam Next Fest: cinco clasificatorios de 512 plazas cada uno entre el 19 y el 22 (AMER el 19 a las 19:00 EST, EMEA el 20 a las 19:00 CEST, AMER el 21 a las 21:00 EST, APAC y EMEA el 22), playoffs el 24 y finales el 25. Premios por un valor total de 10.000 dólares, repartidos entre dinero, coleccionables y cartas promo: el ganador se lleva una carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares, las cartas promo llegan hasta el top 32 y los sobres hasta el top 256. Las inscripciones están en el Discord oficial de Koin, y el check-in cierra cinco minutos antes de cada clasificatorio: si te lo pierdes, no puedes jugar.",
+    a: "Del 19 al 25 de octubre de 2026, durante el Steam Next Fest: cinco clasificatorios de 512 plazas cada uno entre el 19 y el 22 (AMER el 19 a las 19:00 EST, EMEA el 20 a las 19:00 CEST, AMER el 21 a las 21:00 EST, APAC y EMEA el 22), playoffs el 24 y finales el 25. Premios por un valor total de 10.000 dólares, repartidos entre dinero, coleccionables y cartas promo: el ganador se lleva una carta promo Dracula 1/1, dos cases de cajas de sobres y 1.500 dólares, las cartas promo llegan hasta el top 32 y los sobres hasta el top 256. Las inscripciones están en el Discord oficial de Koin, y el check-in cierra cinco minutos antes de cada clasificatorio: si te lo pierdes, no puedes jugar. La ganó CoachCrono el 25 de octubre de 2026, remontando desde el cuadro de perdedores.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Reglas de la Crimson Cup" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono gana la Crimson Cup" }],
     keywords: ["premios", "premio", "bolsa de premios", "check-in", "check in", "playoffs"],
   },
   {
@@ -518,9 +518,9 @@ const fr: Faq[] = [
   {
     id: "crimson-cup",
     q: "Quand a lieu la Crimson Cup et que gagne-t-on ?",
-    a: "Du 19 au 25 octobre 2026, pendant le Steam Next Fest : cinq qualifications de 512 places chacune entre le 19 et le 22 (AMER le 19 à 19:00 EST, EMEA le 20 à 19:00 CEST, AMER le 21 à 21:00 EST, APAC et EMEA le 22), playoffs le 24, finales le 25. Des lots d'une valeur totale de 10 000 dollars, répartis entre argent, objets de collection et cartes promo : le vainqueur reçoit une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars, les cartes promo vont jusqu'au top 32 et les boosters jusqu'au top 256. Les inscriptions se font sur le Discord officiel de Koin, et le check-in ferme cinq minutes avant chaque qualification : si vous le manquez, vous ne jouez pas.",
+    a: "Du 19 au 25 octobre 2026, pendant le Steam Next Fest : cinq qualifications de 512 places chacune entre le 19 et le 22 (AMER le 19 à 19:00 EST, EMEA le 20 à 19:00 CEST, AMER le 21 à 21:00 EST, APAC et EMEA le 22), playoffs le 24, finales le 25. Des lots d'une valeur totale de 10 000 dollars, répartis entre argent, objets de collection et cartes promo : le vainqueur reçoit une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars, les cartes promo vont jusqu'au top 32 et les boosters jusqu'au top 256. Les inscriptions se font sur le Discord officiel de Koin, et le check-in ferme cinq minutes avant chaque qualification : si vous le manquez, vous ne jouez pas. CoachCrono l'a remportée le 25 octobre 2026, en remontant depuis le tableau des perdants.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Règles de la Crimson Cup" }],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Règles de la Crimson Cup" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono remporte la Crimson Cup" }],
     keywords: ["prix", "lots", "cagnotte", "qualification", "qualifications", "check-in", "check in", "playoffs"],
   },
   {
@@ -648,9 +648,9 @@ const pt: Faq[] = [
   {
     id: "crimson-cup",
     q: "Quando é a Crimson Cup e o que se ganha?",
-    a: "A Crimson Cup (Copa Crimson no jogo) vai de 19 a 25 de outubro de 2026, durante o Steam Next Fest: cinco classificatórias de 512 vagas cada entre os dias 19 e 22 (AMER no dia 19 às 19:00 EST, EMEA no dia 20 às 19:00 CEST, AMER no dia 21 às 21:00 EST, APAC e EMEA no dia 22), playoffs no dia 24, finais no dia 25. Prêmios no valor total de 10.000 dólares, divididos entre dinheiro, colecionáveis e cartas promocionais: o vencedor leva uma carta promo Dracula 1/1, dois cases de caixas de boosters e 1.500 dólares, as cartas promo vão até o top 32 e os pacotes até o top 256. As inscrições são no Discord oficial da Koin, e o check-in fecha cinco minutos antes de cada classificatória: quem perder o check-in não joga.",
+    a: "A Crimson Cup (Copa Crimson no jogo) vai de 19 a 25 de outubro de 2026, durante o Steam Next Fest: cinco classificatórias de 512 vagas cada entre os dias 19 e 22 (AMER no dia 19 às 19:00 EST, EMEA no dia 20 às 19:00 CEST, AMER no dia 21 às 21:00 EST, APAC e EMEA no dia 22), playoffs no dia 24, finais no dia 25. Prêmios no valor total de 10.000 dólares, divididos entre dinheiro, colecionáveis e cartas promocionais: o vencedor leva uma carta promo Dracula 1/1, dois cases de caixas de boosters e 1.500 dólares, as cartas promo vão até o top 32 e os pacotes até o top 256. As inscrições são no Discord oficial da Koin, e o check-in fecha cinco minutos antes de cada classificatória: quem perder o check-in não joga. CoachCrono venceu em 25 de outubro de 2026, vindo da chave dos perdedores.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Regras da Crimson Cup" }],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Regras da Crimson Cup" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono vence a Crimson Cup" }],
     keywords: ["premio", "premios", "premiacao", "classificatoria", "classificatorias", "check-in", "check in", "playoffs", "copa crimson"],
   },
   {
@@ -778,9 +778,9 @@ const de: Faq[] = [
   {
     id: "crimson-cup",
     q: "Wann ist der Crimson Cup und was gibt es zu gewinnen?",
-    a: "Vom 19. bis 25. Oktober 2026, während des Steam Next Fest: fünf Qualifikationen mit je 512 Plätzen zwischen dem 19. und dem 22. (AMER am 19. um 19:00 EST, EMEA am 20. um 19:00 CEST, AMER am 21. um 21:00 EST, APAC und EMEA am 22.), Playoffs am 24., Finals am 25. Preise im Gesamtwert von 10.000 Dollar, aufgeteilt in Geld, Sammelobjekte und Promokarten: Der Sieger bekommt eine Dracula-Promokarte 1/1, zwei Cases mit Booster-Displays und 1.500 Dollar, Promokarten gibt es bis zu den Top 32 und Packs bis zu den Top 256. Die Anmeldung läuft über den offiziellen Discord von Koin, und der Check-in schließt fünf Minuten vor jeder Qualifikation: Wer ihn verpasst, kann nicht spielen.",
+    a: "Vom 19. bis 25. Oktober 2026, während des Steam Next Fest: fünf Qualifikationen mit je 512 Plätzen zwischen dem 19. und dem 22. (AMER am 19. um 19:00 EST, EMEA am 20. um 19:00 CEST, AMER am 21. um 21:00 EST, APAC und EMEA am 22.), Playoffs am 24., Finals am 25. Preise im Gesamtwert von 10.000 Dollar, aufgeteilt in Geld, Sammelobjekte und Promokarten: Der Sieger bekommt eine Dracula-Promokarte 1/1, zwei Cases mit Booster-Displays und 1.500 Dollar, Promokarten gibt es bis zu den Top 32 und Packs bis zu den Top 256. Die Anmeldung läuft über den offiziellen Discord von Koin, und der Check-in schließt fünf Minuten vor jeder Qualifikation: Wer ihn verpasst, kann nicht spielen. Gewonnen hat ihn CoachCrono am 25. Oktober 2026, aus dem Loser-Bracket.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Regeln des Crimson Cup" }],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Regeln des Crimson Cup" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono gewinnt den Crimson Cup" }],
     keywords: ["preis", "preise", "preisgeld", "gewinnen", "qualifikation", "qualifikationen", "check-in", "check in", "playoffs"],
   },
   {
@@ -908,9 +908,9 @@ const ru: Faq[] = [
   {
     id: "crimson-cup",
     q: "Когда проходит Crimson Cup и что можно выиграть?",
-    a: "С 19 по 25 октября 2026, во время Steam Next Fest: пять квалификаций по 512 мест каждая с 19-го по 22-е (AMER 19-го в 19:00 EST, EMEA 20-го в 19:00 CEST, AMER 21-го в 21:00 EST, APAC и EMEA 22-го), плей-офф 24-го, финалы 25-го. Призы общей стоимостью 10 000 долларов делятся на деньги, коллекционные предметы и промокарты: победитель получает промокарту Dracula 1/1, два кейса бустер-боксов и 1500 долларов, промокарты достаются вплоть до топ-32, а паки — до топ-256. Регистрация проходит в официальном Discord Koin, а чек-ин закрывается за пять минут до каждой квалификации: пропустите его — и сыграть не получится.",
+    a: "С 19 по 25 октября 2026, во время Steam Next Fest: пять квалификаций по 512 мест каждая с 19-го по 22-е (AMER 19-го в 19:00 EST, EMEA 20-го в 19:00 CEST, AMER 21-го в 21:00 EST, APAC и EMEA 22-го), плей-офф 24-го, финалы 25-го. Призы общей стоимостью 10 000 долларов делятся на деньги, коллекционные предметы и промокарты: победитель получает промокарту Dracula 1/1, два кейса бустер-боксов и 1500 долларов, промокарты достаются вплоть до топ-32, а паки — до топ-256. Регистрация проходит в официальном Discord Koin, а чек-ин закрывается за пять минут до каждой квалификации: пропустите его — и сыграть не получится. Турнир выиграл CoachCrono 25 октября 2026 года, пройдя через нижнюю сетку.",
     guides: ["steam-next-fest-2026"],
-    news: [{ slug: "crimson-cup-format-check-in", label: "Правила Crimson Cup" }],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Правила Crimson Cup" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono выигрывает Crimson Cup" }],
     keywords: ["приз", "призы", "призовой", "призовой фонд", "выиграть", "квалификация", "квалификации", "чек-ин", "check-in", "check in", "плей-офф", "playoffs"],
   },
   {

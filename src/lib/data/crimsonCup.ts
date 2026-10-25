@@ -275,3 +275,66 @@ export const crimsonRegions: Record<string, L10n> = {
   EMEA: n("Europe, Middle East and Africa", "Europa, Medio Oriente e Africa", "Europa, Oriente Medio y África", "Europe, Moyen-Orient et Afrique", "Europa, Oriente Médio e África", "Europa, Naher Osten und Afrika", "Европа, Ближний Восток и Африка"),
   APAC: n("Asia-Pacific", "Asia-Pacifico", "Asia-Pacífico", "Asie-Pacifique", "Ásia-Pacífico", "Asien-Pazifik", "Азиатско-Тихоокеанский регион"),
 };
+
+/*
+  Le finali della Crimson Cup (25/10/2026). Pierluigi, la sera delle finali: "ha vinto coach crono!", "metti online tutte
+  le statistiche nella pagina della crimson". Fonti, tutte ufficiali:
+  - il risultato: l'annuncio di apix (Koin Games) nel canale degli annunci del Discord ufficiale (25/10/2026, 20:01 ora
+    italiana: "Congrats to @CoachCrono for winning our Origins Crimson Cup") e il post di Origins TCG su X
+    (`CRIMSON_RESULT_URL`: "Coming from the lower bracket going 9-3 today"), con la grafica del vincitore (premio e le tre
+    Leggendarie giocate);
+  - le liste: le quattro immagini che apix ha postato in #the-courtyard il 25/10/2026 alle 15:29 ("decks for today"), le
+    stesse della sua pagina con i codici del gioco: trascritte carta per carta, tutte nel database e valide per il Conquest
+    (lo controlla crimsonCup.test.ts);
+  - i piazzamenti: il tabellone dei playoff su Tourney Bot (torneo 73203, src/lib/crimsonPlayoffs.ts), che arriva fino ai
+    quattro: SouL batte Felixnxx nella finale del tabellone vincenti, CoachCrono batte OrdinaryHarry e poi Felixnxx in
+    quello dei perdenti; la gran finale fra SouL e CoachCrono su Tourney Bot è rimasta senza punteggio, il vincitore lo dice
+    l'annuncio. Il punteggio della gran finale non si scrive (Koin non l'ha pubblicato).
+  Le tabelle dei playoff e delle finali (ban rate, mazzi, carte) Koin non le ha ancora pubblicate: quando arrivano, voce
+  nuova come per le qualificazioni.
+*/
+
+export type CrimsonFinalDeck = { legendary: string; cards: string[] };
+
+export type CrimsonFinalist = {
+  /** nome come lo scrive Koin nelle liste delle finali */
+  name: string;
+  /** nome utente di Discord (lo stesso di Tourney Bot) */
+  username: string;
+  place: 1 | 2 | 3 | 4;
+  /** il suo profilo su OriginsMeta, solo se è un ruolo con vetrina (CoachCrono è Creator del sito, SouL Pro dal 26/10) */
+  profile?: string;
+  /** le tre liste nell'ordine di Koin: slug della Leggendaria e delle 12 carte */
+  decks: CrimsonFinalDeck[];
+};
+
+/** Il post ufficiale del risultato (Origins TCG su X, 25/10/2026, 19:59 UTC). */
+export const CRIMSON_RESULT_URL = "https://x.com/origins_tcg/status/2114431681780400222";
+
+export const crimsonFinals = {
+  date: "2026-10-25",
+  /** partite vinte e perse dal campione nel giorno delle finali, come le scrive il post ufficiale ("9-3 today") */
+  championDay: { won: 9, lost: 3 },
+  finalists: [
+    { name: "CoachCrono", username: "coachcrono", place: 1, profile: "coachcrono", decks: [
+      { legendary: "three-not-so-little-pigs", cards: ["bullseye", "glinda", "golden-egg", "guy-of-gisborne", "mind-palace", "mummy", "obliterate", "reinforcements", "sandman", "stroke-of-midnight", "three-blind-mice", "trash-for-treasure"] },
+      { legendary: "van-helsing", cards: ["ali-baba", "baby-bear", "bridge-troll", "dark-omen", "first-aid", "forbidden-knowledge", "phuong-hoang", "puck", "searing-light", "shahrazad", "spellbook", "tin-woodman"] },
+      { legendary: "legion-of-the-dead", cards: ["asanbosam", "baby-bear", "boogeyman", "bridge-troll", "dark-omen", "en-passant", "golden-egg", "morgiana", "mummy", "obliterate", "paul-bunyan", "trash-for-treasure"] },
+    ] },
+    { name: "SouL", username: "soulontwitch", place: 2, profile: "soulontwitch", decks: [
+      { legendary: "merlin", cards: ["baby-bear", "bridge-troll", "dark-omen", "first-aid", "forbidden-knowledge", "mind-palace", "obliterate", "piggy-bank", "puck", "roo", "scarecrow", "tin-woodman"] },
+      { legendary: "mulan", cards: ["bagheera", "boitata", "bullseye", "ellen-trechend", "frog-prince", "jack", "mind-palace", "puck", "scarecrow", "stroke-of-midnight", "tin-woodman", "white-queen"] },
+      { legendary: "three-not-so-little-pigs", cards: ["ali-baba", "bullseye", "glinda", "golden-egg", "mind-palace", "obliterate", "paul-bunyan", "reinforcements", "roo", "sandman", "stroke-of-midnight", "trash-for-treasure"] },
+    ] },
+    { name: "Felixnxx", username: "gladisfelice", place: 3, decks: [
+      { legendary: "van-helsing", cards: ["ali-baba", "baby-bear", "forbidden-knowledge", "jekyll", "jill", "mind-palace", "phuong-hoang", "rain-of-arrows", "scarecrow", "searing-light", "shahrazad", "tin-woodman"] },
+      { legendary: "legion-of-the-dead", cards: ["asanbosam", "boogeyman", "dark-omen", "en-passant", "flying-monkey", "golden-egg", "impundulu", "morgiana", "mummy", "paul-bunyan", "stroke-of-midnight", "trash-for-treasure"] },
+      { legendary: "three-not-so-little-pigs", cards: ["defense-matrix", "glinda", "golden-egg", "guy-of-gisborne", "mind-palace", "mummy", "musketeer", "obliterate", "reinforcements", "sandman", "three-blind-mice", "trash-for-treasure"] },
+    ] },
+    { name: "OrdinaryHarry", username: "ordinaryharry", place: 4, decks: [
+      { legendary: "mulan", cards: ["baby-bear", "bagheera", "black-knight", "ellen-trechend", "en-passant", "fairy-godmother", "jekyll", "mowgli", "puck", "stroke-of-midnight", "tin-woodman", "white-queen"] },
+      { legendary: "van-helsing", cards: ["ali-baba", "baby-bear", "boitata", "forbidden-knowledge", "jekyll", "jill", "phuong-hoang", "scarecrow", "searing-light", "shahrazad", "spellbook", "tin-woodman"] },
+      { legendary: "three-not-so-little-pigs", cards: ["ali-baba", "baby-bear", "boogeyman", "bridge-troll", "dark-omen", "en-passant", "golden-egg", "guy-of-gisborne", "jekyll", "obliterate", "roo", "rumple"] },
+    ] },
+  ] satisfies CrimsonFinalist[],
+};

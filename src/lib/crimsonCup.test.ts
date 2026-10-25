@@ -19,6 +19,9 @@ import {
   cardCrimsonFacts,
   crimsonCardDay,
   crimsonCardSlugs,
+  finalsCards,
+  finalsDeckCount,
+  finalsLegendaries,
   headlines,
   latestWithStats,
   legendaryViews,
@@ -30,9 +33,11 @@ import {
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./crimsonCup.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { CRIMSON_SOURCE_URL, crimsonQualifiers } from "./data/crimsonCup.ts";
+import { CRIMSON_RESULT_URL, CRIMSON_SOURCE_URL, crimsonFinals, crimsonQualifiers } from "./data/crimsonCup.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { crimsonCupLabels, crimsonOrdinal } from "./crimsonCupLabels.ts";
+import { differentCards } from "./deckrules.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { crimsonCupLabels, crimsonFinalsLabels, crimsonOrdinal } from "./crimsonCupLabels.ts";
 
 const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
 const TITLE_MAX = 60;
@@ -303,6 +308,55 @@ describe("Crimson Cup: le qualificazioni a confronto", () => {
   });
 });
 
+describe("Crimson Cup: le finali", () => {
+  const F = crimsonFinals.finalists;
+  test("quattro finalisti, piazzamenti dal primo al quarto, CoachCrono primo", () => {
+    assert.equal(F.length, 4);
+    assert.deepEqual(F.map((f) => f.place).sort(), [1, 2, 3, 4]);
+    assert.equal(F.find((f) => f.place === 1)?.username, "coachcrono");
+    assert.ok(CRIMSON_RESULT_URL.startsWith("https://x.com/origins_tcg/status/"));
+    assert.deepEqual(crimsonFinals.championDay, { won: 9, lost: 3 });
+  });
+  test("ogni lista: una Leggendaria e 12 carte diverse che esistono nel database", () => {
+    for (const f of F) {
+      assert.equal(f.decks.length, 3, f.name);
+      assert.equal(new Set(f.decks.map((d) => d.legendary)).size, 3, `${f.name}: tre Leggendarie diverse`);
+      for (const d of f.decks) {
+        assert.equal(bySlug.get(d.legendary)?.legendary, true, `${f.name}: ${d.legendary}`);
+        assert.equal(d.cards.length, 12, `${f.name} ${d.legendary}`);
+        assert.equal(new Set(d.cards).size, 12, `${f.name} ${d.legendary}: carte ripetute`);
+        for (const c of d.cards) {
+          assert.ok(bySlug.get(c), `${f.name} ${d.legendary}: ${c} non esiste`);
+          assert.ok(!bySlug.get(c)?.legendary, `${f.name} ${d.legendary}: ${c} è una Leggendaria`);
+        }
+      }
+    }
+  });
+  test("ogni terna rispetta la regola Conquest della Crimson Cup (almeno 8 carte diverse fra due mazzi)", () => {
+    for (const f of F) {
+      const decks = f.decks.map((d) => ({ name: d.legendary, legendary: d.legendary, cards: [...d.cards], customCards: [] }));
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) if (i !== j) assert.ok(differentCards(decks[i], decks[j]) >= 8, `${f.name}: ${decks[i].name} e ${decks[j].name}`);
+    }
+  });
+  test("Leggendarie e carte delle finali", () => {
+    assert.equal(finalsDeckCount(F), 12);
+    assert.deepEqual(finalsLegendaries(F), [
+      { legendary: "three-not-so-little-pigs", players: 4 },
+      { legendary: "van-helsing", players: 3 },
+      { legendary: "legion-of-the-dead", players: 2 },
+      { legendary: "mulan", players: 2 },
+      { legendary: "merlin", players: 1 },
+    ]);
+    assert.deepEqual(finalsCards(F, 6), [
+      { card: "baby-bear", decks: 7 },
+      { card: "golden-egg", decks: 6 },
+      { card: "mind-palace", decks: 6 },
+      { card: "obliterate", decks: 6 },
+      { card: "tin-woodman", decks: 6 },
+    ]);
+  });
+});
+
 describe("Crimson Cup: testi", () => {
   test("numeri d'ordine nelle cinque lingue", () => {
     assert.deepEqual([1, 2, 3, 4, 11, 12, 13, 21, 22].map((n) => crimsonOrdinal(n, "en")), ["1st", "2nd", "3rd", "4th", "11th", "12th", "13th", "21st", "22nd"]);
@@ -331,11 +385,13 @@ describe("Crimson Cup: testi", () => {
       else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) flat(v, path ? `${path}.${k}` : k, out);
       return out;
     };
-    const en = flat(crimsonCupLabels.en);
-    for (const l of LOCALES) {
-      const other = flat(crimsonCupLabels[l]);
-      assert.deepEqual([...other.keys()].sort(), [...en.keys()].sort(), `[${l}] chiavi diverse dall'inglese`);
-      for (const [k, v] of en) assert.equal(other.get(k), v, `[${l}] ${k}: segnaposto diversi`);
+    for (const labels of [crimsonCupLabels, crimsonFinalsLabels] as Record<string, unknown>[]) {
+      const en = flat(labels.en);
+      for (const l of LOCALES) {
+        const other = flat(labels[l]);
+        assert.deepEqual([...other.keys()].sort(), [...en.keys()].sort(), `[${l}] chiavi diverse dall'inglese`);
+        for (const [k, v] of en) assert.equal(other.get(k), v, `[${l}] ${k}: segnaposto diversi`);
+      }
     }
   });
 
@@ -346,6 +402,7 @@ describe("Crimson Cup: testi", () => {
       else if (o && typeof o === "object") Object.values(o).forEach(walk);
     };
     walk(crimsonCupLabels.fr);
+    walk(crimsonFinalsLabels.fr);
     for (const s of strings) assert.ok(!/ [:;?!]/.test(s), `spazio normale prima della punteggiatura: ${s}`);
   });
 });

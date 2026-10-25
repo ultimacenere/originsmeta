@@ -19,6 +19,7 @@ import {
 } from "@/lib/crimsonPlayoffs";
 import { crimsonPlayoffsLabels, fillPo, poRoundLabel } from "@/lib/crimsonPlayoffsLabels";
 import { CRIMSON_PLAYOFFS_URL, loadPlayoffs, readPlayoffCreators } from "@/lib/crimsonPlayoffsSource";
+import { CRIMSON_RESULT_URL, crimsonFinals } from "@/lib/data/crimsonCup";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { PageNotes } from "@/components/PageNotes";
 import { SectionHead } from "@/components/analytics/parts";
@@ -114,6 +115,13 @@ export default async function CrimsonPlayoffsPage({ params }: { params: LocalePa
   const roundText = (side: Side, round: number) => poRoundLabel(L, side, round, p.wbRounds, p.lbRounds);
 
   const decided = topFourDecided(p);
+  // il campione (25/10/2026): su Tourney Bot la gran finale è rimasta senza punteggio, il vincitore lo dicono l'annuncio di
+  // Koin Games e il post ufficiale (crimsonFinals di data/crimsonCup.ts); si mostra solo se è uno dei giocatori del tabellone
+  const seatOf = (username: string) => p.players.find((pl) => pl.name.toLowerCase() === username.toLowerCase())?.seat;
+  const champ = crimsonFinals.finalists.find((f) => f.place === 1);
+  const runnerUp = crimsonFinals.finalists.find((f) => f.place === 2);
+  const championSeat = champ ? seatOf(champ.username) : undefined;
+  const finished = championSeat !== undefined;
   const topRound = lbTopFourRound(p.wbRounds);
   const finalists = [...p.finalists.winners, ...p.finalists.losers];
   const alive = aliveRanked(p);
@@ -188,9 +196,9 @@ export default async function CrimsonPlayoffsPage({ params }: { params: LocalePa
       {crumbs}
       {head(
         <div className="po-status">
-          <span className={`po-pill${decided ? " is-decided" : ""}`}>
-            {decided ? null : <span className="live-dot" aria-hidden="true" />}
-            {decided ? L.status.decided : L.status.live}
+          <span className={`po-pill${decided || finished ? " is-decided" : ""}`}>
+            {decided || finished ? null : <span className="live-dot" aria-hidden="true" />}
+            {finished ? L.status.finished : decided ? L.status.decided : L.status.live}
           </span>
           <ul className="po-facts">
             {p.startTime ? <li>{fillNode(L.facts.started, { date: <LocalTime iso={p.startTime} locale={locale} utcLabel={d.tournaments.utc} /> })}</li> : null}
@@ -207,6 +215,21 @@ export default async function CrimsonPlayoffsPage({ params }: { params: LocalePa
         <div className="an-wrap">
           <SectionHead num={1} kicker={L.finals.kicker} title={L.finals.title} id="po-h-finals" />
           <p className="po-lead">{fillPo(L.finals.lead, { round: topRound })}</p>
+          {finished && champ ? (
+            <div className="po-champion">
+              <span className="kicker text-gold">{L.champion.kicker}</span>
+              <p className="po-champion-title">{fillNode(L.champion.title, { name: name(championSeat!) })}</p>
+              <p className="po-lead">{fillPo(L.champion.text, { runnerUp: runnerUp?.name ?? "?" })}</p>
+              <p className="po-champion-links">
+                <Link href={`${href(locale, "/analytics/crimson-cup")}#finals`} prefetch={false} className="link-mint font-bold">
+                  {L.champion.finals} →
+                </Link>
+                <a href={CRIMSON_RESULT_URL} rel="noopener" target="_blank" className="link-mint font-bold">
+                  {L.champion.post} ↗
+                </a>
+              </p>
+            </div>
+          ) : null}
           <ol className="po-slots">
             {slot(p.finalists.winners[0], L.finals.fromWinners, "w0")}
             {slot(p.finalists.winners[1], L.finals.fromWinners, "w1")}

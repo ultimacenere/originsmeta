@@ -7,6 +7,85 @@ import type { NewsCopy } from "./news-fr";
  * carte uguali a quelli del gioco (card-lore-ru.ts, docs/testi-ufficiali/ru.tsv): regole e glossario in docs/russo.md.
  */
 export const ruText: Record<string, NewsCopy> = {
+  "crimson-cup-coachcrono-wins": {
+    title: "CoachCrono выиграл Crimson Cup по Origins TCG: трое итальянцев среди четырёх финалистов",
+    metaTitle: "CoachCrono выиграл Crimson Cup по Origins TCG",
+    description:
+      "CoachCrono выиграл Crimson Cup по Origins TCG, пройдя через нижнюю сетку: трое итальянцев среди четырёх финалистов, их колоды и итоги турнира.",
+    summary:
+      "CoachCrono выиграл Crimson Cup, самый большой турнир Origins TCG на сегодняшний день: он поднялся из нижней сетки и обыграл SouL в гранд-финале, забрав промокарту Dracula 1/1. Трое из четырёх финалистов — итальянцы: CoachCrono, SouL и Felixnxx. Здесь — его путь к титулу, колоды финалов и итоги недели турнира.",
+    highlights: [
+      { label: "CoachCrono — чемпион", text: "из нижней сетки, 9:3 в день финалов, по данным официального поста", anchor: "chempion" },
+      { label: "Трое итальянцев из четырёх", text: "CoachCrono, SouL и Felixnxx; четвёртый финалист — OrdinaryHarry", anchor: "italyantsy" },
+      { label: "Одно поражение до гранд-финала", text: "от SouL, которого он потом и обыграл в матче за титул", anchor: "put-k-titulu" },
+      { label: "Pigs во всех трио", text: "Three Not So Little Pigs у всех четверых, Van Helsing у троих", anchor: "kolody-finalov" },
+      { label: "Неделя турнира", text: "пять квалификаций, плей-офф с двойным выбыванием и финалы в прямом эфире", anchor: "turnir" },
+      { label: "Чего пока нет", text: "счёта гранд-финала и таблиц Koin по плей-офф и финалам", anchor: "chego-my-poka-ne-znaem" },
+    ],
+    body: `## CoachCrono — чемпион Crimson Cup {#chempion}
+
+Поздравляем, Coach! В воскресенье, 25 октября, [CoachCrono](/ru/u/coachcrono) выиграл Crimson Cup — турнир, которым Koin Games завершила неделю Steam Next Fest. Об этом объявил apix из Koin Games на официальном Discord («Congrats to @CoachCrono for winning our Origins Crimson Cup»), а официальный пост Origins TCG в X подводит итог так: он пришёл из нижней сетки и за день набрал 9:3 («going 9-3 today»).
+
+Приз — тот, что на официальной графике победителя: промокарта Dracula 1/1, два кейса бустер-боксов и 1500 долларов. CoachCrono также Creator на OriginsMeta: его каналы и колоды — в его профиле.
+
+## Трое итальянцев среди четырёх финалистов {#italyantsy}
+
+До финалов дошли четверо, и трое из них — итальянцы: CoachCrono, SouL и Felixnxx. Четвёртый — OrdinaryHarry. В турнире, открытом для всех, с квалификациями в Америке, Европе и Азии, это огромный результат для итальянской сцены Origins TCG.
+
+Итоговые места — по сетке плей-офф на Tourney Bot и объявлению Koin:
+
+1. CoachCrono
+2. SouL
+3. Felixnxx
+4. OrdinaryHarry
+
+## Как он дошёл до титула {#put-k-titulu}
+
+Плей-офф в субботу, 24 октября, шёл по системе двойного выбывания, матчи best-of-three: после первого поражения игрок переходит в нижнюю сетку, после второго выбывает. CoachCrono выиграл первые шесть матчей в верхней сетке, в том числе против agraveinstream, ещё одного креатора OriginsMeta, и остановился в полуфинале верхней сетки против SouL — 0:2. После этого он больше не проигрывал: 2:1 против eotboltyou, чтобы попасть в последнюю четвёрку, затем в финалах 2:0 против OrdinaryHarry, 2:0 против Felixnxx и выигранный гранд-финал против SouL, который до этого не проиграл ни одного матча.
+
+С другой стороны сетки SouL прошёл верхнюю сетку без поражений и в её финале обыграл Felixnxx 2:1. Felixnxx до этого победил OrdinaryHarry 2:1 во втором полуфинале. Весь путь, матч за матчем, — в нашей [сетке плей-офф](/ru/analytics/crimson-cup/playoffs).
+
+## Колоды финалов {#kolody-finalov}
+
+Koin опубликовала списки четырёх финалистов в день финалов: начиная с топ-4 списки колод становятся публичными, как сказано в правилах. Победное трио CoachCrono:
+
+- [Three Not So Little Pigs](/ru/cards/three-not-so-little-pigs): Bullseye, Glinda, Golden Egg, Guy of Gisborne, Mind Palace, Mummy, Obliterate, Reinforcements, Sandman, Stroke of Midnight, Three Blind Mice, Trash for Treasure;
+- [Van Helsing](/ru/cards/van-helsing): Ali Baba, Baby Bear, Bridge Troll, Dark Omen, First Aid, Forbidden Knowledge, Phuong Hoang, Puck, Searing Light, Shahrazad, Spellbook, Tin Woodman;
+- [Legion of the Dead](/ru/cards/legion-of-the-dead): Asanbosam, Baby Bear, Boogeyman, Bridge Troll, Dark Omen, En Passant, Golden Egg, Morgiana, Mummy, Obliterate, Paul Bunyan, Trash for Treasure.
+
+Трио остальных: SouL взял Merlin, Mulan и Three Not So Little Pigs; Felixnxx — Van Helsing, Legion of the Dead и Three Not So Little Pigs; OrdinaryHarry — Mulan, Van Helsing и Three Not So Little Pigs.
+
+Несколько цифр по 12 спискам. Three Not So Little Pigs есть в трио у всех четверых, Van Helsing — у троих, Legion of the Dead и [Mulan](/ru/cards/mulan) — у двоих, [Merlin](/ru/cards/merlin) — у одного: остальные шесть Легендарных карт до финалов не дошли. [Baby Bear](/ru/cards/baby-bear) — самая частая карта (7 колод из 12), за ней Golden Egg, Mind Palace, Obliterate и Tin Woodman (по 6). Полные списки с кодом игры и ссылкой на конструктор колод — на нашей [странице Crimson Cup](/ru/analytics/crimson-cup#finals).
+
+## Турнир вкратце {#turnir}
+
+Crimson Cup — самый большой турнир в истории Koin Games, как назвал его apix: пять квалификаций, открытых для всех, с 19 по 22 октября (AMER #1, EMEA #1, AMER #2, APAC и EMEA #2), по 32 игрока из каждой плюс 96 wild card, плей-офф на 256 мест 24 октября и финалы 25 октября, всё в прямом эфире. Формат — Conquest: три колоды, не меньше 8 уникальных карт между каждой парой колод, фаза банов и списки колод, скрытые до топ-4. Призы — на 10 000 долларов в общей сложности. Подробно правила описаны в нашей статье о [правилах Crimson Cup](/ru/news/crimson-cup-format-check-in).
+
+В четырёх квалификациях с официальными таблицами Koin чаще всех неизменно банили Van Helsing (от 44,4% в AMER #1 до 55,1% в EMEA #2), чаще всех брали Three Not So Little Pigs, а самой популярной картой была Baby Bear. Финалы показали ту же мету: Pigs во всех трио, Van Helsing в трёх, Baby Bear в семи колодах из двенадцати. Все цифры квалификаций — на нашей [странице Crimson Cup](/ru/analytics/crimson-cup).
+
+## Чего мы пока не знаем {#chego-my-poka-ne-znaem}
+
+- Счёт гранд-финала: на Tourney Bot у него нет результата, и Koin его не публиковала; официальный пост называет только 9:3 за день.
+- Таблицы плей-офф и финалов (баны, взятые колоды, самые популярные карты): после квалификаций Koin публиковала их на официальном Discord, а по плей-офф и финалам — пока нет. Когда они появятся, мы добавим их на нашу страницу Crimson Cup.`,
+    faq: [
+      {
+        q: "Кто выиграл Crimson Cup по Origins TCG?",
+        a: "CoachCrono, 25 октября 2026: он поднялся из нижней сетки и обыграл SouL в гранд-финале. Об этом объявили Koin Games на официальном Discord и Origins TCG в X.",
+      },
+      {
+        q: "С какими колодами CoachCrono выиграл Crimson Cup?",
+        a: "Three Not So Little Pigs, Van Helsing и Legion of the Dead, в формате Conquest. Все три полных списка с кодом игры — на странице Crimson Cup на OriginsMeta.",
+      },
+      {
+        q: "Кто вышел в финалы Crimson Cup?",
+        a: "CoachCrono (первое место), SouL (второе), Felixnxx (третье) и OrdinaryHarry (четвёртое). Трое из четырёх — итальянцы: CoachCrono, SouL и Felixnxx.",
+      },
+      {
+        q: "Что выиграл CoachCrono?",
+        a: "Промокарту Dracula 1/1, два кейса бустер-боксов и 1500 долларов, по официальной графике победителя.",
+      },
+    ],
+  },
   "crimson-cup-meta-report-emea-1-amer-2": {
     title: "Meta Report Crimson Cup: Van Helsing по-прежнему банят чаще всех, King Arthur разделяет Европу и Америку",
     metaTitle: "Crimson Cup в Origins TCG: цифры EMEA #1 и AMER #2",
