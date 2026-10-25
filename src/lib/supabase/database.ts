@@ -16,6 +16,7 @@ export type ProfileRow = {
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
+  /** privata dal 25/10/2026 (blocco ID DISCORD PRIVATO): nessun client la legge, solo le funzioni security definer */
   discord_id: string | null;
   role: "user" | "admin";
   badge: string;
@@ -968,6 +969,8 @@ export type Database = {
       profile_set_names: { Args: { p_display: string | null; p_username: string | null }; Returns: unknown };
       /** il nome utente di oggi di chi ha lasciato p_old (redirect 308 di /u/<vecchio>) */
       profile_username_moved: { Args: { p_old: string }; Returns: string | null };
+      /** profili con vetrina per id Discord, al massimo 512 (blocco ID DISCORD PRIVATO, 25/10/2026): discord_id non si legge dalla tabella */
+      showcase_profiles_by_discord: { Args: { p_ids: string[] }; Returns: { discord_id: string; username: string; badge: string }[] };
       /** draft online (02/10/2026): solo dal server, con la sessione del giocatore e il segreto del cron (src/lib/draft/onlineActions.ts) */
       draft_room_create: { Args: { p_key: string; p_code: string; p_format: string; p_from?: string | null }; Returns: string };
       draft_room_get: { Args: { p_key: string; p_code: string }; Returns: (DraftRoomRow & { creator_name: string | null; joiner_name: string | null; seat: number | null; state: unknown })[] };

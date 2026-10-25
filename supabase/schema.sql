@@ -7475,3 +7475,38 @@ $$;
 revoke all on function public.profile_username_moved(text) from public;
 grant execute on function public.profile_username_moved(text) to anon, authenticated;
 comment on function public.profile_username_moved(text) is 'Nome utente di oggi di chi ha lasciato quel nome (23/10/2026): redirect 308 di /u/<vecchio>.';
+
+-- ===== 25/10/2026: ID DISCORD PRIVATO =====
+-- Fino a oggi `grant select on public.profiles, … to anon, authenticated` (in testa al file) dava la lettura dell'intera
+-- tabella, `discord_id` compreso: con la chiave pubblica chiunque poteva legare un profilo del sito al suo account Discord
+-- (visto il 25/10/2026 costruendo il tabellone dei playoff della Crimson Cup). Da qui la lettura è per colonna: tutte tranne
+-- `discord_id`, che leggono solo le funzioni security definer (handle_new_user la scrive, protect_profile_badge la difende,
+-- showcase_profiles_by_discord qui sotto risponde per i soli profili con vetrina).
+--
+-- ORDINE: questo blocco sta DOPO ogni `alter table public.profiles add column` (la grant nomina le colonne, che su un
+-- database nuovo devono esserci già) e resta in fondo al file. La revoke di sola lettura toglie la grant sull'intera tabella
+-- data in testa (rimessa a ogni migrazione) e le letture per colonna (Postgres le toglie insieme), non le grant di UPDATE
+-- per colonna. scripts/schema-guard.mjs la ammette (`PROFILES_SELECT_REVOKE`) e controlla che la grant qui sotto venga
+-- dopo, non contenga `discord_id` e copra ogni altra colonna di profiles.
+-- Una colonna nuova di profiles: si aggiunge a questa grant (e alla stessa riga di PROFILES_GRANTS in schema-guard.mjs),
+-- oppure a PRIVATE_PROFILE_COLUMNS se deve restare privata. Dal sito mai `select("*")` su profiles (con la lettura per
+-- colonna fallirebbe tutta la richiesta): sempre le colonne per nome.
+revoke select on public.profiles from anon, authenticated;
+grant select (id, username, display_name, avatar_url, role, created_at, badge, bio, links, content_langs, showcase_updated_at, avatar_path, cover_preset, cover_path, background_preset, background_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz, avatar_updated_at, vetrina_updated_at, show_stats, username_changed_at, display_name_changed_at) on public.profiles to anon, authenticated;
+
+-- I creator del tabellone dei playoff (src/lib/crimsonPlayoffsSource.ts): dati gli id Discord dei giocatori di Tourney Bot,
+-- nome utente e ruolo dei soli profili con vetrina (Creator, Autore, Pro, Staff: SHOWCASE_BADGES di
+-- src/lib/community/badges.ts), pubblici per scelta. Mai gli altri: un iscritto qualunque resta non collegabile al suo
+-- account Discord. Al massimo 512 id per chiamata (il tabellone ne ha 256).
+create or replace function public.showcase_profiles_by_discord(p_ids text[])
+returns table (discord_id text, username text, badge text)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select p.discord_id, p.username, p.badge
+    from public.profiles p
+   where p.discord_id = any ((coalesce(p_ids, '{}'::text[]))[1:512])
+     and p.badge in ('creator', 'author', 'pro', 'staff')
+     and p.username is not null;
+$$;
+revoke all on function public.showcase_profiles_by_discord(text[]) from public;
+grant execute on function public.showcase_profiles_by_discord(text[]) to anon, authenticated;
+comment on function public.showcase_profiles_by_discord(text[]) is 'Profili con vetrina (creator, author, pro, staff) per id Discord, al massimo 512 (25/10/2026): i segni OriginsMeta del tabellone dei playoff della Crimson Cup. discord_id non si legge più dalla tabella.';

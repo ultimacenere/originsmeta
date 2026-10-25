@@ -29,13 +29,32 @@ export const CREATOR_MARKER = "-- ===== 26/09/2026: CREATOR =====";
  * colonna, resta rifiutata. I test di TRAGUARDI confrontano gli insiemi, quelli della vetrina cercano la sua grant in
  * posizione 2: l'ordine resta questo (lo stesso dei blocchi in schema.sql). `schemaProblems` vuole la revoke di 6c6756d
  * prima di OGNI grant per colonna.
+ * - la lettura per colonna (blocco "25/10/2026: ID DISCORD PRIVATO", posizione 4, `PROFILES_SELECT_GRANT`): tutte le
+ *   colonne tranne `PRIVATE_PROFILE_COLUMNS`, dopo `PROFILES_SELECT_REVOKE`, che toglie la lettura dell'intera tabella data
+ *   dalla prima grant (rimessa a ogni migrazione e tolta di nuovo in fondo al file).
  */
 export const PROFILES_GRANTS = [
   "grant select on public.profiles, public.community_decks, public.deck_votes, public.deck_ratings to anon, authenticated",
   "grant update (bio, links, content_langs) on public.profiles to authenticated",
   "grant update (avatar_path, cover_preset, cover_path, background_preset, background_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz) on public.profiles to authenticated",
   "grant update (show_stats) on public.profiles to authenticated",
+  "grant select (id, username, display_name, avatar_url, role, created_at, badge, bio, links, content_langs, showcase_updated_at, avatar_path, cover_preset, cover_path, background_preset, background_path, accent, tagline, favorite_legendary, featured_deck, featured_video, schedule, schedule_tz, avatar_updated_at, vetrina_updated_at, show_stats, username_changed_at, display_name_changed_at) on public.profiles to anon, authenticated",
 ];
+
+/**
+ * Le colonne di public.profiles che nessun client legge (25/10/2026): `discord_id` lega un profilo del sito al suo account
+ * Discord. Le leggono solo le funzioni security definer (showcase_profiles_by_discord per i soli profili con vetrina).
+ */
+export const PRIVATE_PROFILE_COLUMNS = ["discord_id"];
+
+/** La lettura per colonna di public.profiles (tutte le colonne tranne `PRIVATE_PROFILE_COLUMNS`). */
+export const PROFILES_SELECT_GRANT = PROFILES_GRANTS[4];
+
+/**
+ * La sola revoke ammessa dopo le grant di UPDATE per colonna: toglie la lettura (dell'intera tabella e per colonna), non
+ * le grant di UPDATE. Deve venire dopo l'ultima grant di lettura sull'intera tabella e prima di `PROFILES_SELECT_GRANT`.
+ */
+export const PROFILES_SELECT_REVOKE = "revoke select on public.profiles from anon, authenticated";
 
 /**
  * schema.sql più i file dei pacchetti dell'ondata 2 (supabase/wave2-<PACCHETTO>.sql, 27/09/2026) che l'integratore
@@ -200,9 +219,15 @@ export function schemaProblems(sql) {
   if (grantAt >= 0 && revokeAt > grantAt) problems.push("la revoke su public.profiles viene dopo la grant per colonna e la cancellerebbe");
   if (grantAt >= 0) {
     stmts.slice(grantAt + 1).forEach((s) => {
+      if (s === PROFILES_SELECT_REVOKE) return; // solo lettura: le grant di UPDATE per colonna restano
       if (/^revoke\b/.test(s) && (ON_PROFILES.test(s) || ALL_TABLES.test(s))) problems.push(`revoke dopo la grant per colonna di public.profiles (la cancellerebbe): ${s}`);
     });
   }
+
+  // Lettura per colonna (25/10/2026): discord_id e le altre colonne private non le legge nessun client. Il blocco sta in
+  // fondo al file: la sola prima parte di splitSchema (db-migrate --base) non lo ha e non si controlla qui (applicata da
+  // sola rimette la lettura dell'intera tabella fino alla migrazione completa).
+  if (sql.includes(CREATOR_MARKER)) problems.push(...selectProblems(stmts));
 
   const defs = stmts.filter((s) => /^create (?:or replace )?function public\.protect_profile_badge\(/.test(s));
   const body = defs.at(-1);
@@ -235,12 +260,82 @@ export function schemaProblems(sql) {
   return problems;
 }
 
+/**
+ * Che cosa non va nella lettura per colonna di public.profiles (25/10/2026): la revoke di lettura assente o seguita da
+ * una nuova lettura dell'intera tabella (riaprirebbe discord_id), la lettura per colonna assente o prima della revoke
+ * (il sito non leggerebbe più i profili), una colonna privata dentro, una colonna della tabella fuori o una che la tabella
+ * non ha, una colonna aggiunta dopo la grant.
+ */
+export function selectProblems(stmts) {
+  const problems = [];
+  const revokeAt = stmts.lastIndexOf(PROFILES_SELECT_REVOKE);
+  const grantAt = stmts.lastIndexOf(PROFILES_SELECT_GRANT);
+  const tableGrantAt = stmts.lastIndexOf(PROFILES_GRANTS[0]);
+  if (revokeAt < 0) problems.push(`manca "${PROFILES_SELECT_REVOKE};": ${PRIVATE_PROFILE_COLUMNS.join(", ")} resterebbe leggibile con la chiave pubblica`);
+  else if (tableGrantAt > revokeAt) problems.push("la lettura dell'intera tabella public.profiles viene dopo la revoke di lettura e riapre le colonne private");
+  if (grantAt < 0 || grantAt < revokeAt) problems.push("manca la lettura per colonna di public.profiles dopo la revoke di lettura: il sito non leggerebbe più i profili");
+  const granted = selectColumns(PROFILES_SELECT_GRANT);
+  for (const c of PRIVATE_PROFILE_COLUMNS) if (granted.includes(c)) problems.push(`la lettura per colonna di public.profiles comprende ${c}, che è privata`);
+  const columns = profileColumns(stmts);
+  for (const c of columns) {
+    if (!granted.includes(c) && !PRIVATE_PROFILE_COLUMNS.includes(c)) problems.push(`colonna ${c} di public.profiles fuori dalla lettura per colonna: aggiungila a PROFILES_SELECT_GRANT (o a PRIVATE_PROFILE_COLUMNS)`);
+  }
+  for (const c of granted) if (!columns.includes(c)) problems.push(`la lettura per colonna di public.profiles nomina ${c}, che la tabella non ha`);
+  const lastAddColumn = stmts.reduce((at, s, i) => (/^alter table (?:only )?public\.profiles add column\b/.test(s) ? i : at), -1);
+  if (grantAt >= 0 && lastAddColumn > grantAt) problems.push("una colonna di public.profiles è aggiunta dopo la lettura per colonna: su un database nuovo la grant non la troverebbe");
+  return problems;
+}
+
 /** Il ruolo con vetrina come lo scrivono i trigger (SHOWCASE_BADGES di src/lib/community/badges.ts). */
 const SHOWCASE_SQL = "('creator', 'author', 'pro', 'staff')";
 
 /** Colonne di una grant per colonna di `PROFILES_GRANTS` (senza le parentesi). */
 function grantColumns(grant) {
   return (/^grant update \(([^)]+)\)/.exec(grant)?.[1] ?? "").split(",").map((c) => c.trim()).filter(Boolean);
+}
+
+/** Colonne di una grant di lettura per colonna (`grant select (a, b) on …`). */
+export function selectColumns(grant) {
+  return (/^grant select \(([^)]+)\)/.exec(grant)?.[1] ?? "").split(",").map((c) => c.trim()).filter(Boolean);
+}
+
+/**
+ * Le colonne di public.profiles come le costruisce lo schema (istruzioni di `sqlStatements`): quelle di `create table`
+ * più le `alter table … add column`, meno le `drop column`.
+ */
+export function profileColumns(stmts) {
+  const cols = [];
+  const create = stmts.find((s) => /^create table (?:if not exists )?public\.profiles \(/.test(s));
+  if (create) {
+    const open = create.indexOf("(");
+    let depth = 0;
+    let item = "";
+    const items = [];
+    for (const ch of create.slice(open + 1)) {
+      if (ch === "(") depth++;
+      if (ch === ")") {
+        if (depth === 0) break;
+        depth--;
+      }
+      if (ch === "," && depth === 0) {
+        items.push(item);
+        item = "";
+      } else item += ch;
+    }
+    items.push(item);
+    for (const it of items) {
+      const name = it.trim().split(/\s+/)[0];
+      if (name && !/^(?:constraint|primary|unique|check|foreign|exclude|like)$/.test(name)) cols.push(name.replace(/"/g, ""));
+    }
+  }
+  const COL = '"?([a-z_][a-z0-9_]*)"?';
+  for (const s of stmts) {
+    const add = new RegExp(`^alter table (?:only )?public\\.profiles add column (?:if not exists )?${COL}`).exec(s);
+    if (add && !cols.includes(add[1])) cols.push(add[1]);
+    const drop = new RegExp(`^alter table (?:only )?public\\.profiles drop column (?:if exists )?${COL}`).exec(s);
+    if (drop && cols.includes(drop[1])) cols.splice(cols.indexOf(drop[1]), 1);
+  }
+  return cols;
 }
 
 /**
@@ -280,6 +375,6 @@ export function splitSchema(sql) {
   if (at < 0) return [{ name: "schema", sql }];
   return [
     { name: "base (schema di sempre + correzione dei profili)", sql: sql.slice(0, at) },
-    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO, profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE, DATE E FOTO), IMMAGINI e FUMETTI del 29–30/09, TRACKER del 30/09, INTERESSE ANALYTICS e DRAFT ONLINE del 02/10, MAZZI TORNEO del 04/10, TORNEO CRIMSON del 05/10, VOTI ALLE CARTE del 06/10", sql: sql.slice(at) },
+    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO, profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE, DATE E FOTO), IMMAGINI e FUMETTI del 29–30/09, TRACKER del 30/09, INTERESSE ANALYTICS e DRAFT ONLINE del 02/10, MAZZI TORNEO del 04/10, TORNEO CRIMSON del 05/10, VOTI ALLE CARTE del 06/10, … ID DISCORD PRIVATO del 25/10", sql: sql.slice(at) },
   ];
 }

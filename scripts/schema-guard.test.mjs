@@ -6,7 +6,23 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { CREATOR_MARKER, GUARDED_GRANTS, PROFILES_GRANTS, PROFILES_REVOKE, overLongRepetitions, schemaProblems, splitSchema, sqlStatements, withPendingBlocks } from "./schema-guard.mjs";
+import {
+  CREATOR_MARKER,
+  GUARDED_GRANTS,
+  PRIVATE_PROFILE_COLUMNS,
+  PROFILES_GRANTS,
+  PROFILES_REVOKE,
+  PROFILES_SELECT_GRANT,
+  PROFILES_SELECT_REVOKE,
+  overLongRepetitions,
+  profileColumns,
+  schemaProblems,
+  selectColumns,
+  selectProblems,
+  splitSchema,
+  sqlStatements,
+  withPendingBlocks,
+} from "./schema-guard.mjs";
 
 const schema = readFileSync(new URL("../supabase/schema.sql", import.meta.url), "utf8");
 /*
@@ -206,5 +222,68 @@ describe("regex che Postgres rifiuta", () => {
   });
   test("lo schema vero non ha ripetizioni oltre 255", () => {
     assert.deepEqual(overLongRepetitions(schema), []);
+  });
+});
+
+/*
+  25/10/2026: discord_id si leggeva con la chiave pubblica (grant select sull'intera tabella). Il blocco "ID DISCORD
+  PRIVATO" in fondo a schema.sql toglie la lettura dell'intera tabella e la ridà per colonna, tutte tranne
+  PRIVATE_PROFILE_COLUMNS. schema-guard rifiuta ogni modo di riaprirla e ogni colonna nuova rimasta fuori.
+*/
+describe("lettura per colonna di public.profiles (discord_id privato)", () => {
+  const stmts = sqlStatements(full);
+  test("lo schema vero: revoke di lettura, poi la lettura per colonna, in fondo al file", () => {
+    const revokeAt = stmts.lastIndexOf(PROFILES_SELECT_REVOKE);
+    const grantAt = stmts.lastIndexOf(PROFILES_SELECT_GRANT);
+    assert.ok(revokeAt >= 0 && grantAt > revokeAt);
+    assert.ok(stmts.lastIndexOf(PROFILES_GRANTS[0]) < revokeAt, "la lettura dell'intera tabella viene prima della revoke");
+    assert.deepEqual(selectProblems(stmts), []);
+  });
+  test("discord_id fuori, ogni altra colonna dentro", () => {
+    const granted = selectColumns(PROFILES_SELECT_GRANT);
+    assert.ok(PRIVATE_PROFILE_COLUMNS.includes("discord_id"));
+    assert.ok(!granted.includes("discord_id"));
+    const columns = profileColumns(stmts);
+    assert.ok(columns.includes("discord_id") && columns.includes("show_stats") && columns.includes("display_name_changed_at"));
+    assert.deepEqual([...granted].sort(), columns.filter((c) => !PRIVATE_PROFILE_COLUMNS.includes(c)).sort());
+  });
+  test("la revoke di lettura non conta come revoke dopo le grant di UPDATE per colonna", () => {
+    assert.ok(!schemaProblems(full).some((p) => p.startsWith("revoke dopo")));
+  });
+  test("la funzione dei profili con vetrina c'è, security definer, e risponde solo per i ruoli con vetrina", () => {
+    const fn = stmts.filter((s) => s.startsWith("create or replace function public.showcase_profiles_by_discord(")).at(-1);
+    assert.ok(fn, "manca showcase_profiles_by_discord");
+    assert.ok(fn.includes("security definer"));
+    assert.ok(fn.includes("p.badge in ('creator', 'author', 'pro', 'staff')"));
+    assert.ok(fn.includes("[1:512]"));
+    const revokeAt = stmts.indexOf("revoke all on function public.showcase_profiles_by_discord(text[]) from public");
+    assert.ok(revokeAt >= 0 && stmts.indexOf("grant execute on function public.showcase_profiles_by_discord(text[]) to anon, authenticated") > revokeAt);
+  });
+  test("profileColumns: create table, add column, drop column", () => {
+    const cols = profileColumns(
+      sqlStatements(
+        "create table if not exists public.profiles (id uuid primary key, n numeric(10,2) not null, name text, constraint c check (n > 0));\n" +
+          'alter table public.profiles add column if not exists "extra" text;\nalter table public.profiles drop column if exists name;',
+      ),
+    );
+    assert.deepEqual(cols, ["id", "n", "extra"]);
+  });
+
+  const cases = {
+    "revoke di lettura tolta": replaced(`${PROFILES_SELECT_REVOKE};`, "select 1;"),
+    "lettura dell'intera tabella rimessa dopo la revoke": withTail(`${PROFILES_GRANTS[0]};`),
+    "lettura di discord_id": withTail("grant select (discord_id) on public.profiles to anon;"),
+    "lettura dell'intera tabella ad anon": withTail("grant select on public.profiles to anon;"),
+    "revoke di lettura dopo la lettura per colonna": withTail(`${PROFILES_SELECT_REVOKE};`),
+    "colonna nuova fuori dalla lettura": withTail("alter table public.profiles add column if not exists secret text;"),
+    "lettura per colonna tolta": replaced(`${PROFILES_SELECT_GRANT};`, "select 1;"),
+  };
+  for (const [name, sql] of Object.entries(cases)) {
+    test(`rifiutato: ${name}`, () => {
+      assert.notDeepEqual(schemaProblems(sql), [], "db-migrate lo applicherebbe");
+    });
+  }
+  test("la prima parte da sola (db-migrate --base) passa ancora", () => {
+    assert.deepEqual(schemaProblems(splitSchema(schema)[0].sql), []);
   });
 });
