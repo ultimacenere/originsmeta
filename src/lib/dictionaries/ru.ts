@@ -442,6 +442,8 @@ export const ru: Dictionary = {
       description: "Винрейт в Origins TCG по партиям, записанным в приложении OriginsMeta Tracker: Легендарные, колоды сообщества, архетипы и карты, патч за патчем.",
       intro:
         "Винрейт меты Origins TCG по партиям, которые игроки записывают в OriginsMeta Tracker, нашем приложении для Windows. Каждое число появляется, как только есть хотя бы одна партия.",
+      /** le statistiche non hanno risposto durante la build (25/10/2026): la pagina si rifà da sola */
+      unavailable: "Статистика обновляется: перезагрузите страницу через несколько минут.",
       empty:
         "Винрейта пока нет: числа берутся из партий, записанных в OriginsMeta Tracker, приложении OriginsMeta для Windows, и появляются здесь по мере поступления партий.",
       fallback: "В текущем патче ({current}) записанных партий пока нет: это числа патча {patch}.",

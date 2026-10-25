@@ -494,6 +494,8 @@ export const en = {
       description: "Origins TCG win rates from the games recorded with the OriginsMeta Tracker app: Legendaries, community decks, archetypes and cards, patch by patch.",
       intro:
         "The win rates of the Origins TCG meta, from the games players record with OriginsMeta Tracker, our Windows app. Every number shows up as soon as there is a game.",
+      /** le statistiche non hanno risposto durante la build (25/10/2026): la pagina si rifà da sola */
+      unavailable: "The statistics are updating: reload the page in a few minutes.",
       empty:
         "No win rates yet: the numbers come from the games recorded with OriginsMeta Tracker, the OriginsMeta app for Windows, and show up here as the games come in.",
       /* {current} = the patch in progress, {patch} = the one shown (a grey line, never a yellow box: 12/10/2026) */

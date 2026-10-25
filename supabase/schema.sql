@@ -7476,6 +7476,119 @@ revoke all on function public.profile_username_moved(text) from public;
 grant execute on function public.profile_username_moved(text) to anon, authenticated;
 comment on function public.profile_username_moved(text) is 'Nome utente di oggi di chi ha lasciato quel nome (23/10/2026): redirect 308 di /u/<vecchio>.';
 
+-- ===== 25/10/2026: STATISTICHE IN UNA LETTURA =====
+-- La notte del 25/10/2026 (Crimson Cup) le build del sito si fermavano su "canceling statement due to statement timeout"
+-- mentre generavano /analytics e /analytics/crimson-cup: ognuna delle sette funzioni tracker_stats_* qui sopra chiama
+-- tracker_stat_rows, che rilegge tutte le partite della patch con la colonna plays (le giocate, jsonb: serve solo alle
+-- carte) e le ordina; ogni pagina chiamava le sette funzioni e la build genera quattordici pagine insieme, con il timeout
+-- breve del ruolo anon.
+-- tracker_stats_bundle legge le partite UNA volta (CTE materializzata) e restituisce in un jsonb le stesse righe delle
+-- sette funzioni, con gli stessi nomi di colonna e lo stesso ordine: { overview, legendaries, lists, archetypes, cards,
+-- matchups, opponents }, ognuno un array di righe (overview vuoto sotto la soglia, come la funzione). La logica è quella
+-- delle funzioni qui sopra, copiata: chi cambia una delle due cambia anche l'altra (la prova a secco
+-- scripts/tracker-bundle-dry-run.mjs confronta le risposte sul database vero, src/lib/tracker/bundle.test.ts il testo).
+-- Le sette funzioni restano (le usa ancora il sito finché questa non c'è, e tracker-dry-run.mjs).
+create or replace function public.tracker_stats_bundle(p_patch text)
+returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
+  with r as materialized (
+    select distinct on (t.id) t.owner, t.id, t.result = 'W' as win, t.deck_legendary as legendary, t.deck_cards as cards,
+           t.deck_list as list, t.archetype, t.opponent_legendary as opponent, t.plays
+      from public.tracked_matches t
+     where p_patch is not null
+       and t.patch = p_patch
+       and t.result in ('W', 'L')
+       and (public.tracker_stats_queue() is null or t.queue = public.tracker_stats_queue())
+     order by t.id, t.created_at
+  ),
+  o as (select count(*) as n, count(distinct r.owner) as p from r where r.opponent is not null),
+  overview as (
+    select count(*) as games, count(*) filter (where r.win) as wins, count(distinct r.owner) as players,
+           (select case when public.tracker_stats_ok(o.n, o.p) then o.n end from o) as with_opponent
+      from r
+    having public.tracker_stats_ok(count(*), count(distinct r.owner))
+  ),
+  legendaries as (
+    select r.legendary, count(*) as games, count(*) filter (where r.win) as wins, count(distinct r.owner) as players
+      from r
+     where r.legendary is not null
+     group by r.legendary
+    having public.tracker_stats_ok(count(*), count(distinct r.owner))
+  ),
+  lists as (
+    select r.list, min(r.legendary) as legendary, count(*) as games, count(*) filter (where r.win) as wins, count(distinct r.owner) as players
+      from r
+     where r.list is not null
+     group by r.list
+    having public.tracker_stats_ok(count(*), count(distinct r.owner))
+  ),
+  archetypes as (
+    select r.archetype, count(*) as games, count(*) filter (where r.win) as wins, count(distinct r.owner) as players
+      from r
+     where r.archetype is not null
+     group by r.archetype
+    having public.tracker_stats_ok(count(*), count(distinct r.owner))
+  ),
+  in_deck as (
+    select c.card, count(distinct r.id) as games, count(distinct r.id) filter (where r.win) as wins, count(distinct r.owner) as players
+      from r cross join lateral unnest(r.cards) as c(card)
+     group by c.card
+  ),
+  first_play as (
+    select r.id, r.owner, r.win, p.x ->> 'c' as card, min((p.x ->> 't')::integer) as turn
+      from r cross join lateral jsonb_array_elements(r.plays) as p(x)
+     where p.x ->> 'm' = 'true' and jsonb_typeof(p.x -> 'c') = 'string'
+     group by r.id, r.owner, r.win, p.x ->> 'c'
+  ),
+  played as (
+    select f.card, count(*) as games, count(*) filter (where f.win) as wins, count(distinct f.owner) as players, round(avg(f.turn), 1) as avg_turn
+      from first_play f
+     group by f.card
+  ),
+  j as (
+    select coalesce(d.card, p.card) as card, d.games as dg, d.wins as dw, d.players as dp, p.games as pg, p.wins as pw, p.players as pp, p.avg_turn as pt,
+           public.tracker_stats_ok(d.games, d.players) as ok_d, public.tracker_stats_ok(p.games, p.players) as ok_p
+      from in_deck d full join played p on p.card = d.card
+  ),
+  cards as (
+    select j.card,
+           case when j.ok_d then j.dg end as deck_games, case when j.ok_d then j.dw end as deck_wins, case when j.ok_d then j.dp end as deck_players,
+           case when j.ok_p then j.pg end as played_games, case when j.ok_p then j.pw end as played_wins, case when j.ok_p then j.pp end as played_players,
+           case when j.ok_p then j.pt end as avg_turn
+      from j
+     where j.ok_d or j.ok_p
+  ),
+  matchups as (
+    select r.legendary, r.opponent, count(*) as games, count(*) filter (where r.win) as wins, count(distinct r.owner) as players
+      from r
+     where r.legendary is not null and r.opponent is not null
+     group by r.legendary, r.opponent
+    having public.tracker_stats_ok(count(*), count(distinct r.owner))
+  ),
+  opponents as (
+    select r.opponent, count(*) as games, count(*) filter (where r.win) as wins, count(distinct r.owner) as players
+      from r
+     where r.opponent is not null
+     group by r.opponent
+    having public.tracker_stats_ok(count(*), count(distinct r.owner))
+  )
+  select jsonb_build_object(
+    'overview', coalesce((select jsonb_agg(to_jsonb(x)) from overview x), '[]'::jsonb),
+    'legendaries', coalesce((select jsonb_agg(to_jsonb(x) order by x.games desc, x.legendary) from legendaries x), '[]'::jsonb),
+    'lists', coalesce((select jsonb_agg(to_jsonb(x) order by x.games desc, x.list) from lists x), '[]'::jsonb),
+    'archetypes', coalesce((select jsonb_agg(to_jsonb(x) order by x.games desc, x.archetype) from archetypes x), '[]'::jsonb),
+    'cards', coalesce((select jsonb_agg(to_jsonb(x) order by coalesce(x.deck_games, 0) desc, x.card) from cards x), '[]'::jsonb),
+    'matchups', coalesce((select jsonb_agg(to_jsonb(x) order by x.games desc, x.legendary, x.opponent) from matchups x), '[]'::jsonb),
+    'opponents', coalesce((select jsonb_agg(to_jsonb(x) order by x.games desc, x.opponent) from opponents x), '[]'::jsonb)
+  );
+$$;
+revoke all on function public.tracker_stats_bundle(text) from public;
+grant execute on function public.tracker_stats_bundle(text) to anon, authenticated;
+comment on function public.tracker_stats_bundle(text) is 'Tutte le statistiche anonime del Tracker di una patch in una lettura sola (25/10/2026): le righe delle sette tracker_stats_*, stessi nomi e stesso ordine.';
+
+-- Le partite di una patch nell'ordine di tracker_stat_rows e della funzione qui sopra (distinct on id, la più vecchia):
+-- con l'indice la lettura non deve più ordinare tutta la patch.
+create index if not exists tracked_matches_stats_idx on public.tracked_matches (patch, id, created_at) where result in ('W', 'L');
+
 -- ===== 25/10/2026: ID DISCORD PRIVATO =====
 -- Fino a oggi `grant select on public.profiles, … to anon, authenticated` (in testa al file) dava la lettura dell'intera
 -- tabella, `discord_id` compreso: con la chiave pubblica chiunque poteva legare un profilo del sito al suo account Discord

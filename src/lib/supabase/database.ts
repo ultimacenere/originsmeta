@@ -1146,6 +1146,8 @@ export type Database = {
       };
       tracker_stats_matchups: { Args: { p_patch: string }; Returns: (TrackerStatCount & { legendary: string; opponent: string })[] };
       tracker_stats_opponents: { Args: { p_patch: string }; Returns: (TrackerStatCount & { opponent: string })[] };
+      /** le sette qui sopra in una lettura sola (blocco STATISTICHE IN UNA LETTURA, 25/10/2026): un array di righe per parte */
+      tracker_stats_bundle: { Args: { p_patch: string }; Returns: unknown };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

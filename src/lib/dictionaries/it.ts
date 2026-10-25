@@ -486,6 +486,8 @@ export const it: Dictionary = {
       description: "I win rate di Origins TCG dalle partite registrate con l'app OriginsMeta Tracker: Leggendarie, mazzi della community, archetipi e carte, patch per patch.",
       intro:
         "I win rate del meta di Origins TCG, dalle partite che i giocatori registrano con OriginsMeta Tracker, la nostra app per Windows. Ogni numero compare appena c'è una partita.",
+      /** le statistiche non hanno risposto durante la build (25/10/2026): la pagina si rifà da sola */
+      unavailable: "Le statistiche si stanno aggiornando: ricarica la pagina tra qualche minuto.",
       empty:
         "Ancora nessun win rate: i numeri arrivano dalle partite registrate con OriginsMeta Tracker, l'app per Windows di OriginsMeta, e compaiono qui man mano che arrivano le partite.",
       fallback: "La patch in corso ({current}) non ha ancora partite registrate: questi sono i numeri della patch {patch}.",

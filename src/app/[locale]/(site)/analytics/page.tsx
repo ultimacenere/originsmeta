@@ -93,7 +93,9 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   await requireAnalyticsAccess();
   const w = dict.tier.winrate;
   const read = await loadWinrate();
-  const indexable = ANALYTICS_PUBLIC && read.status === "ok" && !isEarly(read.data.overview.games);
+  // "unavailable" (il database non ha risposto durante la build, 25/10/2026) non tocca l'indicizzazione: è un momento,
+  // l'ISR rifà la pagina con i numeri
+  const indexable = ANALYTICS_PUBLIC && (read.status === "unavailable" || (read.status === "ok" && !isEarly(read.data.overview.games)));
   const meta = pageMeta(locale, "/analytics", w.title, w.description, undefined, { noindex: !indexable });
   return indexable ? meta : dropHreflang(meta);
 }
@@ -472,7 +474,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
       {!data ? (
         <div className="an-wrap mt-8">
           <div className="felt-panel-mint max-w-3xl p-6">
-            <p className="text-pale">{w.empty}</p>
+            <p className="text-pale">{read.status === "unavailable" ? w.unavailable : w.empty}</p>
           </div>
           <CrimsonPromo locale={locale} legendaryLabel={legendaryLabel} />
         </div>

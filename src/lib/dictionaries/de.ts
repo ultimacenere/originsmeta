@@ -441,6 +441,8 @@ export const de: Dictionary = {
       description: "Win-Rates von Origins TCG aus den Spielen der App OriginsMeta Tracker: Legendäre, Community-Decks, Archetypen und Karten, Patch für Patch.",
       intro:
         "Die Win-Rates des Metas von Origins TCG, aus den Spielen, die Spieler mit OriginsMeta Tracker aufzeichnen, unserer App für Windows. Jede Zahl erscheint, sobald es ein Spiel gibt.",
+      /** le statistiche non hanno risposto durante la build (25/10/2026): la pagina si rifà da sola */
+      unavailable: "Die Statistiken werden gerade aktualisiert: Lade die Seite in ein paar Minuten neu.",
       empty:
         "Noch keine Win-Rates: Die Zahlen kommen aus den Spielen, die mit OriginsMeta Tracker aufgezeichnet werden, der App von OriginsMeta für Windows, und erscheinen hier, sobald Spiele eintreffen.",
       fallback: "Der aktuelle Patch ({current}) hat noch keine aufgezeichneten Spiele: Das sind die Zahlen von Patch {patch}.",
