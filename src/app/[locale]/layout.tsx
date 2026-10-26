@@ -13,6 +13,9 @@ import { feedbackLabels } from "@/lib/feedbackLabels";
 import { JsonLd, koinGames, organization, videoGame, website } from "@/components/JsonLd";
 import { defaultOgAlt } from "@/lib/page";
 import { newsFeedLabels, newsFeedPath } from "@/lib/newsFeedMeta";
+import { KickstarterBar } from "@/components/KickstarterBar";
+import { kickstarterPromoActive } from "@/lib/kickstarter";
+import { kickstarterLabels } from "@/lib/kickstarterLabels";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
@@ -97,6 +100,10 @@ export default async function LocaleLayout({ children, params }: Props) {
         >
           {d.nav.skipToContent}
         </a>
+        {/* Il Kickstarter della Alpha Edition (26/10/2026): una riga verso la landing, finché dura la promozione */}
+        {kickstarterPromoActive(new Date()) ? (
+          <KickstarterBar landingHref={href(l, "/kickstarter")} text={kickstarterLabels[l].bar.text} cta={kickstarterLabels[l].bar.cta} closeLabel={kickstarterLabels[l].bar.close} />
+        ) : null}
         <Header locale={l} dict={d} />
         {children}
         <Footer locale={l} dict={d} />

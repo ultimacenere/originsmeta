@@ -61,8 +61,11 @@ const SEEN_KEY = "originsmeta.feedback.v1";
 const AUTO_DELAY_MS = 5000;
 /** Sotto questa larghezza il deck builder ha la barra del mazzo fissa in basso (`lg:hidden` nel builder). */
 const SMALL_SCREEN = "(max-width: 1023.98px)";
-/** Deck builder e builder dei mazzi di un torneo (stesso componente, stessa barra). */
-const BUILDER_PATH = /\/(?:deck-builder|tournaments\/[^/]+\/deck)\/?$/;
+/**
+ * Pagine con una barra fissa in basso sul telefono: deck builder e builder dei mazzi di un torneo (stesso componente,
+ * stessa barra) e la landing del Kickstarter (26/10/2026, il tasto verso la campagna: il riquadro non deve coprirlo).
+ */
+const BUILDER_PATH = /\/(?:deck-builder|tournaments\/[^/]+\/deck|kickstarter)\/?$/;
 
 /** Anche con lo storage bloccato (finestra privata rigida) il pannello non si riapre da solo a ogni pagina. */
 let seenInThisTab = false;

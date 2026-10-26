@@ -64,6 +64,8 @@ const sections = [
   "draft",
   "faq",
   "guides",
+  // la landing del Kickstarter della Alpha Edition (26/10/2026): originsmeta.com/kickstarter da condividere
+  "kickstarter",
   "live",
   "locations",
   // tracker dei prezzi del mercato di Steam (17/10/2026)

@@ -21,6 +21,9 @@ import { events } from "@/lib/data/events";
 import { entityLabels } from "@/lib/entityLabels";
 import { eventNode } from "@/lib/jsonld/events";
 import { siteUrl } from "@/lib/i18n";
+import { ctaLabel, kickstarterLabels } from "@/lib/kickstarterLabels";
+import { kickstarterLive } from "@/lib/kickstarter";
+import { KickstarterButton } from "@/components/KickstarterButton";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -141,6 +144,23 @@ export default async function GuidePage({ params }: { params: Params }) {
         <div className="hero-art mt-8">
           <Image src={g.image} alt="" width={1600} height={900} sizes="(max-width: 768px) 92vw, 720px" className="w-full" priority />
         </div>
+      ) : null}
+
+      {/* Guida al Kickstarter (26/10/2026): la campagna con il link referral e la landing, subito sotto la copertina */}
+      {g.slug === "origins-tcg-kickstarter" ? (
+        <section className="card-night mt-6 p-5 sm:p-6" aria-labelledby="guide-ks">
+          <h2 id="guide-ks" className="t-item">
+            {kickstarterLabels[locale].guide.title}
+          </h2>
+          <p className="mt-2 text-pale">{kickstarterLabels[locale].guide.text}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <KickstarterButton placement="guide">{ctaLabel(kickstarterLabels[locale], kickstarterLive(new Date()))}</KickstarterButton>
+            <Link href={href(locale, "/kickstarter")} className="link-mint text-sm font-bold">
+              {kickstarterLabels[locale].guide.landing} →
+            </Link>
+          </div>
+          <p className="mt-3 text-xs text-pale-muted">{kickstarterLabels[locale].disclosure}</p>
+        </section>
       ) : null}
 
       {primaryDeck ? (
