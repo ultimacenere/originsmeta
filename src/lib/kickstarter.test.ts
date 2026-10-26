@@ -54,7 +54,7 @@ describe("link e date", () => {
     assert.equal(kickstarterPromoActive(new Date("2026-11-20T10:00:00Z"), "2026-11-20T12:00:00Z"), true);
     assert.equal(kickstarterPromoActive(new Date("2026-11-20T12:00:00Z"), "2026-11-20T12:00:00Z"), false);
   });
-  test("il tasto dice Sostienila dalla mezzanotte del 27 ottobre sulla costa est", () => {
+  test("il tasto dice Scegli la tua ricompensa Alpha dalla mezzanotte del 27 ottobre sulla costa est", () => {
     assert.equal(kickstarterLive(new Date("2026-10-27T03:59:59Z")), false);
     assert.equal(kickstarterLive(new Date("2026-10-27T04:00:00Z")), true);
   });

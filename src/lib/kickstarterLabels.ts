@@ -16,7 +16,7 @@ import { ru } from "./kickstarterLabels-ru";
  * - frasi brevi e oggettive, fatti prima degli aggettivi; solo fatti scritti da Koin Games (pagina VIP
  *   founder.origins-tcg.com e pagina della campagna lette il 26/10/2026, post su X dei set) o letti su Steam con la data,
  *   e le regole di Kickstarter (tutto o niente); nessun prezzo né livello finché la campagna non li mostra;
- * - tasto con verbo e destinazione, e sotto che cosa succede al clic; prima del lancio "Avvisami", dal lancio "Sostienila";
+ * - tasto con verbo e destinazione, e sotto che cosa succede al clic; prima del lancio "Avvisami", dal lancio "Scegli la tua ricompensa Alpha" (Pierluigi, 26/10/2026: un vantaggio concreto, non un aggettivo; il prezzo di partenza andrà sotto il tasto all'apertura);
  * - il link referral dichiarato accanto a ogni tasto, con il rapporto con Koin (`disclosure`): "non affiliato" da solo
  *   sembrerebbe in contraddizione con la commissione;
  * - nessuna urgenza o scarsità oltre a quelle che Koin ha scritto (Alpha mai ristampata, box e case solo in preordine).
@@ -32,7 +32,7 @@ export function fillKs(text: string, vars: Record<string, string | number>): str
   return text.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
 }
 
-/** Il testo del tasto: "Avvisami" prima del lancio, "Sostienila" dal lancio (`kickstarterLive` in kickstarter.ts). */
+/** Il testo del tasto: "Avvisami" prima del lancio, "Scegli la tua ricompensa Alpha" dal lancio (`kickstarterLive` in kickstarter.ts). */
 export function ctaLabel(k: KickstarterLabels, live: boolean): string {
   return live ? k.cta : k.ctaPre;
 }

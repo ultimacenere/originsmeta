@@ -26,7 +26,7 @@ export const KICKSTARTER_VIP_URL = "https://founder.origins-tcg.com";
 export const KICKSTARTER_LAUNCH_DAY = "2026-10-27";
 
 /**
- * Da quando il tasto dice "Sostienila su Kickstarter" invece di "Avvisami su Kickstarter": la mezzanotte del 27 ottobre
+ * Da quando il tasto dice "Scegli la tua ricompensa Alpha su Kickstarter" (Pierluigi, 26/10/2026, al posto di "Sostienila") invece di "Avvisami su Kickstarter": la mezzanotte del 27 ottobre
  * sulla costa est (Koin Games sta a Tampa, in Florida), le 6:00 in Italia. L'ora vera del lancio Koin non l'ha detta:
  * quando la dice, va scritta qui. La landing è in ISR, quindi l'etichetta cambia da sola entro 5 minuti.
  */

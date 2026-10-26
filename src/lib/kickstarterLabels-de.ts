@@ -16,7 +16,7 @@ export const de: KickstarterLabels = {
     "Zum Spielen nicht nötig: Die Spielkarten bleiben für alle kostenlos",
   ],
   ctaPre: "Auf Kickstarter benachrichtigen lassen",
-  cta: "Auf Kickstarter unterstützen",
+  cta: "Deine Alpha-Belohnung auf Kickstarter wählen",
   ctaNote: "Führt zur offiziellen Kampagne von Koin Games auf Kickstarter.",
   disclosure: "Empfehlungslink: OriginsMeta ist eine inoffizielle Fanseite und erhält von Koin Games eine Provision auf Unterstützungen, die von hier aus starten. Dein Preis bleibt gleich.",
   launchNote: "Die Kampagne startet am 27. Oktober 2026. Wenn sie noch nicht begonnen hat, kannst du dich auf Kickstarter zum Start benachrichtigen lassen.",

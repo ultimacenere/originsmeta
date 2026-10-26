@@ -22,7 +22,7 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
   rapporto con Koin; nessun altro link nel corpo che gli faccia concorrenza (solo la fonte delle probabilità, piccola, e
   la guida in fondo, dopo l'ultimo tasto). Solo fatti di Koin o di Steam con la data della lettura e le regole di
   Kickstarter; nessun prezzo finché la campagna non li mostra.
-  ISR ogni 5 minuti: l'etichetta del tasto passa da "Avvisami" a "Sostienila" da sola (`kickstarterLive`).
+  ISR ogni 5 minuti: l'etichetta del tasto passa da "Avvisami" a "Scegli la tua ricompensa Alpha" da sola (`kickstarterLive`).
   Noindex e fuori da hreflang e sitemap: alle ricerche sul Kickstarter risponde la guida /guides/origins-tcg-kickstarter
   (che ha il suo riquadro verso questa pagina); qui si arriva dalla home, dalla barra in cima al sito, dalla guida, dal
   Discord e dai social.

@@ -14,7 +14,7 @@ export const en = {
     "Not needed to play: gameplay cards stay free for everyone",
   ],
   ctaPre: "Get notified on Kickstarter",
-  cta: "Back it on Kickstarter",
+  cta: "Choose your Alpha reward on Kickstarter",
   ctaNote: "Takes you to the official Koin Games campaign on Kickstarter.",
   disclosure: "Referral link: OriginsMeta is an unofficial fan site and gets a commission from Koin Games on pledges that start here. Your price stays the same.",
   launchNote: "The campaign opens on 27 October 2026. If it hasn't started yet, Kickstarter lets you ask for a notification at launch.",
