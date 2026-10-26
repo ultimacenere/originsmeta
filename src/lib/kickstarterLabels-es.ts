@@ -111,6 +111,16 @@ export const es: KickstarterLabels = {
     guide: "Todo sobre el Kickstarter, con fechas y fuentes",
   },
   unofficial: "OriginsMeta es un sitio de fans no oficial y no está afiliado a Koin Games. Para el Kickstarter participa en el programa de referidos de Koin.",
+  tiers: {
+    title: "Los niveles de la campaña",
+    intro: "Los niveles de la campaña tal como los publica Koin Games, del más barato al más caro. Precios en dólares.",
+    digital: "Todas las recompensas del Kickstarter son productos digitales, como indica Koin Games.",
+    packs: { one: "{n} sobre", few: "{n} sobres", many: "{n} sobres", other: "{n} sobres" },
+    includes: "Todo lo que incluye este nivel",
+    from: "Niveles de {min} a {max}",
+    faq: "De {min} a {max}: los niveles y lo que incluyen están en la sección de arriba.",
+    source: "Niveles y contenidos de la campaña de Koin Games en Kickstarter.",
+  },
   stickyNote: "Enlace de referido · tu precio no cambia",
   bar: { text: "La Alpha Edition de Origins TCG está en Kickstarter desde el 27 de octubre", cta: "Descubre la Alpha Edition", close: "Cerrar" },
   slide: {

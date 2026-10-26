@@ -7,6 +7,8 @@ import { imageSizeOf } from "@/lib/imageSize";
 import { dropHreflang } from "@/lib/community/deckQuality";
 import { ANY_ALT_ART_ONE_IN, DEMO_REVIEWS, KICKSTARTER_FACTS_READ, KICKSTARTER_VIP_URL, PULL_RATES, kickstarterLive } from "@/lib/kickstarter";
 import { ctaLabel, fillKs, kickstarterLabels, type KickstarterLabels } from "@/lib/kickstarterLabels";
+// solo qui: i livelli non devono finire nel JavaScript del browser prima che Koin li pubblichi (kickstarterTiers.ts)
+import { KICKSTARTER_TIERS, KICKSTARTER_TIERS_PUBLIC, formatUsd, tierRange } from "@/lib/kickstarterTiers";
 import { KickstarterButton } from "@/components/KickstarterButton";
 import { KickstarterSticky } from "@/components/KickstarterSticky";
 import { newTabProps } from "@/components/SteamButton";
@@ -39,13 +41,29 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
   return dropHreflang(pageMeta(locale, "/kickstarter", k.meta.title, k.meta.description, HERO, { imageSize: imageSizeOf(HERO), imageAlt: k.heroAlt, noindex: true }));
 }
 
-/** Tasto più le due righe che dicono dove porta e che il link è referral: sempre insieme. */
-function Cta({ k, live, placement, id, center = false }: { k: KickstarterLabels; live: boolean; placement: string; id?: string; center?: boolean }) {
+/** "Livelli da 24 $ a 9.999 $": la riga del prezzo sotto i tasti, solo quando i livelli sono pubblici. */
+function priceLine(k: KickstarterLabels, locale: Locale): string | null {
+  if (!KICKSTARTER_TIERS_PUBLIC) return null;
+  const { min, max } = tierRange();
+  return fillKs(k.tiers.from, { min: formatUsd(locale, min), max: formatUsd(locale, max) });
+}
+
+/** "24 pacchetti", "24 бустера": la forma del plurale giusta per la lingua. */
+function packsText(k: KickstarterLabels, locale: Locale, n: number): string {
+  const forms = k.tiers.packs as Record<string, string>;
+  const form = forms[new Intl.PluralRules(locale).select(n)] ?? forms.other;
+  return fillKs(form, { n: new Intl.NumberFormat(locale, { useGrouping: "always" } as Intl.NumberFormatOptions).format(n) });
+}
+
+/** Tasto più le righe che dicono il prezzo, dove porta e che il link è referral: sempre insieme. */
+function Cta({ k, locale, live, placement, id, center = false }: { k: KickstarterLabels; locale: Locale; live: boolean; placement: string; id?: string; center?: boolean }) {
+  const price = priceLine(k, locale);
   return (
     <div id={id} className={center ? "flex flex-col items-center" : undefined}>
       <KickstarterButton placement={placement} size="lg">
         {ctaLabel(k, live)}
       </KickstarterButton>
+      {price ? <p className="mt-2 font-display text-base font-bold text-gold">{price}</p> : null}
       <p className="mt-2 text-sm text-pale">{k.ctaNote}</p>
       <p className="mt-1 max-w-xl text-xs text-pale-muted">{k.disclosure}</p>
     </div>
@@ -92,7 +110,7 @@ export default async function KickstarterPage({ params }: { params: LocaleParams
             ))}
           </ul>
           <div className="mt-6">
-            <Cta k={k} live={live} placement="landing_hero" id={HERO_CTA_ID} />
+            <Cta k={k} locale={locale} live={live} placement="landing_hero" id={HERO_CTA_ID} />
           </div>
           {live ? null : <p className="mt-4 text-sm text-pale">{k.launchNote}</p>}
           <p className="mt-3">
@@ -121,6 +139,49 @@ export default async function KickstarterPage({ params }: { params: LocaleParams
           ))}
         </ul>
       </section>
+
+      {/* I livelli della campagna (27/10/2026), solo quando sono pubblici: prezzo, prodotto sigillato e pacchetti in vista,
+          tutti i contenuti a scomparsa, un tasto per livello. Niente MSRP barrato né "bonus value" (kickstarterTiers.ts). */}
+      {KICKSTARTER_TIERS_PUBLIC ? (
+        <section id="tiers" className="mt-16 scroll-mt-24" aria-labelledby="ks-tiers">
+          <h2 id="ks-tiers" className="t-section">
+            {k.tiers.title}
+          </h2>
+          <p className="mt-2 max-w-3xl text-pale">{k.tiers.intro}</p>
+          <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {KICKSTARTER_TIERS.map((t) => (
+              <li key={t.name} className="card-night flex min-w-0 flex-col p-5">
+                <h3 className="t-item">{t.name}</h3>
+                <p className="mt-1 font-display text-2xl font-extrabold text-gold">{formatUsd(locale, t.usd)}</p>
+                <p className="mt-2 text-chalk">{t.sealed}</p>
+                <p className="font-mono text-sm text-mint">{packsText(k, locale, t.packs)}</p>
+                <details className="group mt-3 text-sm">
+                  <summary className="cursor-pointer text-pale-muted hover:text-chalk">{k.tiers.includes}</summary>
+                  <ul className="mt-2 grid gap-1 text-pale">
+                    {t.items.map((item) => (
+                      <li key={item} className="flex gap-2">
+                        <span aria-hidden="true" className="text-mint">
+                          ✓
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+                <div className="mt-auto pt-4">
+                  <KickstarterButton placement="landing_tiers" size="sm" className="w-full">
+                    {ctaLabel(k, live)}
+                  </KickstarterButton>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-sm text-pale">{k.tiers.digital}</p>
+          <p className="mt-1 text-xs text-pale-muted">
+            {k.tiers.source} {k.disclosure}
+          </p>
+        </section>
+      ) : null}
 
       {/* Le probabilità ufficiali, accanto al gioco in breve per chi arriva senza conoscerlo */}
       <section className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]" aria-labelledby="ks-rates">
@@ -188,7 +249,7 @@ export default async function KickstarterPage({ params }: { params: LocaleParams
         </ol>
         <p className="mt-4 max-w-3xl text-sm text-pale-muted">{k.how.note}</p>
         <div className="mt-6">
-          <Cta k={k} live={live} placement="landing_how" />
+          <Cta k={k} locale={locale} live={live} placement="landing_how" />
         </div>
       </section>
 
@@ -198,7 +259,7 @@ export default async function KickstarterPage({ params }: { params: LocaleParams
           {k.faq.title}
         </h2>
         <div className="mt-5 grid gap-3">
-          {k.faq.items.map((f) => (
+          {k.faq.items.map((f, i) => (
             <details key={f.q} className="card-night group p-4 sm:p-5">
               <summary className="cursor-pointer list-none font-display font-bold text-sky [&::-webkit-details-marker]:hidden">
                 <span className="flex items-start justify-between gap-4">
@@ -208,7 +269,8 @@ export default async function KickstarterPage({ params }: { params: LocaleParams
                   </span>
                 </span>
               </summary>
-              <p className="mt-3 text-pale">{f.a}</p>
+              {/* la seconda domanda è quella sul prezzo: con i livelli pubblici risponde con la forbice vera */}
+              <p className="mt-3 text-pale">{i === 1 && KICKSTARTER_TIERS_PUBLIC ? fillKs(k.tiers.faq, { min: formatUsd(locale, tierRange().min), max: formatUsd(locale, tierRange().max) }) : f.a}</p>
             </details>
           ))}
         </div>
@@ -221,7 +283,7 @@ export default async function KickstarterPage({ params }: { params: LocaleParams
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-pale">{k.final.text}</p>
         <div className="mt-6">
-          <Cta k={k} live={live} placement="landing_final" center />
+          <Cta k={k} locale={locale} live={live} placement="landing_final" center />
         </div>
       </section>
 

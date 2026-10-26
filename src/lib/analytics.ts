@@ -126,7 +126,7 @@
  *   ★ analytics_download  clic su "Scarica OriginsMeta Analytics" della pagina    placement (top | install: il tasto del
  *                         /analytics (10/10/2026; attributi sul link, verso lo     passo 2 della guida)
  *                         zip di GitHub Releases)
- *   ★ kickstarter_click   clic su un tasto verso la campagna Kickstarter con il    placement (landing_hero | landing_how |
+ *   ★ kickstarter_click   clic su un tasto verso la campagna Kickstarter con il    placement (landing_hero | landing_tiers | landing_how |
  *                         nostro link referral (26/10/2026, KickstarterButton;     landing_final | landing_sticky | guide; la
  *                         attributi sul link)                                      slide e la barra portano alla landing)
  *     kickstarter_landing_open clic verso la landing /kickstarter dalla slide     placement (slider | site_bar | guide)

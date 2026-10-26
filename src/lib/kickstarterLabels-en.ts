@@ -109,6 +109,16 @@ export const en = {
     guide: "Everything about the Kickstarter, with dates and sources",
   },
   unofficial: "OriginsMeta is an unofficial fan site and is not affiliated with Koin Games. For the Kickstarter it takes part in Koin's referral program.",
+  tiers: {
+    title: "Reward tiers",
+    intro: "The campaign's tiers as Koin Games publishes them, from the cheapest. Prices in US dollars.",
+    digital: "All Kickstarter rewards are digital products, as Koin Games states.",
+    packs: { one: "{n} pack", few: "{n} packs", many: "{n} packs", other: "{n} packs" },
+    includes: "Everything in this tier",
+    from: "Tiers from {min} to {max}",
+    faq: "From {min} to {max}: every tier and what it includes are in the section above.",
+    source: "Tiers and contents from the Koin Games campaign on Kickstarter.",
+  },
   stickyNote: "Referral link · same price for you",
   bar: { text: "The Origins TCG Alpha Edition is on Kickstarter from 27 October", cta: "Discover the Alpha Edition", close: "Close" },
   slide: {

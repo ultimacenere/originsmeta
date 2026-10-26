@@ -31,7 +31,38 @@ import { de } from "./kickstarterLabels-de.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { ru } from "./kickstarterLabels-ru.ts";
 
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { KICKSTARTER_TIERS, KICKSTARTER_TIERS_PUBLIC, formatUsd, tierRange } from "./kickstarterTiers.ts";
+
 const all = { en, it, es, fr, pt, de, ru } as Record<string, unknown>;
+
+describe("livelli della campagna", () => {
+  type Tier = { name: string; usd: number; packs: number; items: string[]; verify?: string };
+  const tiers = KICKSTARTER_TIERS as readonly Tier[];
+  test("non si accendono finché un dato delle schede è da verificare", () => {
+    if (KICKSTARTER_TIERS_PUBLIC) assert.deepEqual(tiers.filter((t) => t.verify).map((t) => t.name), []);
+  });
+  test("dal più economico, con pacchetti e contenuti", () => {
+    assert.deepEqual(tiers.map((t) => t.usd), [...tiers.map((t) => t.usd)].sort((a, b) => a - b));
+    for (const t of tiers) {
+      assert.ok(t.packs > 0 && t.items.length > 0, t.name);
+      assert.equal(new Set(t.items).size, t.items.length, `${t.name}: contenuti doppi`);
+    }
+    assert.deepEqual(tierRange(), { min: 24, max: 9999 });
+  });
+  test("prezzi in dollari nel formato della lingua", () => {
+    assert.equal(formatUsd("en", 2499), "$2,499");
+    // in italiano "24 USD" con lo spazio insecabile
+    assert.match(formatUsd("it", 24), /^24\sUSD$/);
+  });
+  test("la seconda domanda delle FAQ è quella sul prezzo (la pagina la sostituisce con la forbice vera)", () => {
+    for (const [locale, labels] of Object.entries(all)) {
+      const l = labels as typeof en;
+      assert.match(l.faq.items[1].a, /Koin/, `${locale}: la risposta provvisoria parla dei prezzi che pubblica Koin`);
+      assert.match(l.tiers.faq, /\{min\}.*\{max\}/, `${locale}: forbice dei prezzi`);
+    }
+  });
+});
 
 /** Le foglie di un oggetto di testi: percorso → stringa (gli array con l'indice). */
 function leaves(value: unknown, path = ""): Map<string, string> {

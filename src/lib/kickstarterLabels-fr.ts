@@ -111,6 +111,16 @@ export const fr: KickstarterLabels = {
     guide: "Tout sur le Kickstarter, avec les dates et les sources",
   },
   unofficial: "OriginsMeta est un site de fans non officiel et n'est pas affilié à Koin Games. Pour le Kickstarter, il participe au programme de parrainage de Koin.",
+  tiers: {
+    title: "Les paliers de la campagne",
+    intro: "Les paliers de la campagne tels que Koin Games les publie, du moins cher au plus cher. Prix en dollars américains.",
+    digital: "Toutes les récompenses du Kickstarter sont des produits numériques, comme l'indique Koin Games.",
+    packs: { one: "{n} booster", few: "{n} boosters", many: "{n} boosters", other: "{n} boosters" },
+    includes: "Tout ce que contient ce palier",
+    from: "Paliers de {min} à {max}",
+    faq: "De {min} à {max} : les paliers et leur contenu sont dans la section ci-dessus.",
+    source: "Paliers et contenus de la campagne de Koin Games sur Kickstarter.",
+  },
   stickyNote: "Lien de parrainage · même prix pour vous",
   bar: { text: "L'Alpha Edition d'Origins TCG est sur Kickstarter à partir du 27 octobre", cta: "Découvrir l'Alpha Edition", close: "Fermer" },
   slide: {
