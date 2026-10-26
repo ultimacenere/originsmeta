@@ -17,6 +17,8 @@ export type Slide = {
   cta: string;
   /** immagine nostra (uno screenshot di OriginsMeta Tracker, 12/10/2026): niente credito "Immagini ufficiali © Koin Games" su questa slide */
   ownImage?: boolean;
+  /** evento da contare al clic sul tasto (attributo data-om-event, src/lib/analytics.ts): la slide del Kickstarter, 27/10/2026 */
+  event?: string;
 };
 
 export type SliderLabels = { prev: string; next: string; goTo: string; credit: string; pause: string; play: string };
@@ -242,7 +244,14 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
                       </SteamButton>
                     ) : (
                       // il link c'è nell'HTML di ogni slide, ma si precarica solo quando la slide è quella visibile
-                      <Link href={s.href} prefetch={on ? undefined : false} className="btn btn-primary text-xs">
+                      // con `event` il clic conta anche come quell'evento, con placement "slider" (lo stesso `section` di home_route)
+                      <Link
+                        href={s.href}
+                        prefetch={on ? undefined : false}
+                        className="btn btn-primary text-xs"
+                        data-om-event={s.event}
+                        data-om-placement={s.event ? "slider" : undefined}
+                      >
                         {s.cta}
                       </Link>
                     )}

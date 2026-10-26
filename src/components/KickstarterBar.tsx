@@ -20,7 +20,13 @@ export function KickstarterBar({ landingHref, text, cta, closeLabel }: { landing
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2 text-sm sm:px-6">
         <p className="min-w-0 flex-1 text-center font-semibold leading-snug">
           <span>{text}</span>{" "}
-          <Link href={landingHref} prefetch={false} className="whitespace-nowrap font-extrabold underline underline-offset-2">
+          <Link
+            href={landingHref}
+            prefetch={false}
+            className="whitespace-nowrap font-extrabold underline underline-offset-2"
+            data-om-event="kickstarter_landing_open"
+            data-om-placement="site_bar"
+          >
             {cta} →
           </Link>
         </p>

@@ -129,6 +129,10 @@
  *   ★ kickstarter_click   clic su un tasto verso la campagna Kickstarter con il    placement (landing_hero | landing_how |
  *                         nostro link referral (26/10/2026, KickstarterButton;     landing_final | landing_sticky | guide; la
  *                         attributi sul link)                                      slide e la barra portano alla landing)
+ *     kickstarter_landing_open clic verso la landing /kickstarter dalla slide     placement (slider | site_bar | guide)
+ *                         della home, dalla barra in cima al sito o dalla guida
+ *                         (27/10/2026; le visite alla landing sono le pagine viste
+ *                         di /xx/kickstarter)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -257,6 +261,7 @@ export type EventParams = {
   donate_click: { placement: string };
   analytics_download: { placement: "top" | "install" };
   kickstarter_click: { placement: string };
+  kickstarter_landing_open: { placement: "slider" | "site_bar" | "guide" };
 };
 export type EventName = keyof EventParams;
 
@@ -314,6 +319,7 @@ export const VERCEL_PROPS = {
   donate_click: ["placement"],
   analytics_download: ["placement"],
   kickstarter_click: ["placement"],
+  kickstarter_landing_open: ["placement"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

@@ -170,7 +170,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
     // verso la landing /kickstarter (Tim Jooste di Koin, 26/10/2026: "make it the front page of Origins Meta"). Immagine:
     // la key art di Goldi del media kit, l'eroina della copertina dei pacchetti di Myths & Legends.
     ...(kickstarterPromoActive(new Date())
-      ? [{ src: "/media/keyart-goldi.webp", alt: ks.alt, kicker: ks.kicker, title: ks.title, text: ks.text, cta: ks.cta, href: href(locale, "/kickstarter") }]
+      ? [{ src: "/media/keyart-goldi.webp", alt: ks.alt, kicker: ks.kicker, title: ks.title, text: ks.text, cta: ks.cta, href: href(locale, "/kickstarter"), event: "kickstarter_landing_open" }]
       : []),
     // Prima slide dal 12/10/2026 al 26/10/2026: OriginsMeta Tracker 0.4.0 per tutti, verso la pagina dell'app. Immagine: uno screenshot
     // dell'app sopra una partita (contenuto, mai design; è la copertina della news upgrade-meta-1011, qui non è una news). È nostra: niente credito "Immagini ufficiali © Koin Games" (`ownImage`, 12/10/2026).

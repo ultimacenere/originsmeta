@@ -155,7 +155,7 @@ export default async function GuidePage({ params }: { params: Params }) {
           <p className="mt-2 text-pale">{kickstarterLabels[locale].guide.text}</p>
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
             <KickstarterButton placement="guide">{ctaLabel(kickstarterLabels[locale], kickstarterLive(new Date()))}</KickstarterButton>
-            <Link href={href(locale, "/kickstarter")} className="link-mint text-sm font-bold">
+            <Link href={href(locale, "/kickstarter")} className="link-mint text-sm font-bold" data-om-event="kickstarter_landing_open" data-om-placement="guide">
               {kickstarterLabels[locale].guide.landing} →
             </Link>
           </div>
