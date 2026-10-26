@@ -6749,9 +6749,13 @@
 }
 
 /*
-  Kickstarter della Alpha Edition (26/10/2026, src/lib/kickstarter.ts): il tasto verso la campagna ha il verde di
-  Kickstarter (#05ce78) con il testo ink (8,9:1), come i tasti Steam, Discord e PayPal hanno i colori del loro servizio:
-  chi lo vede riconosce dove porta. Non è un colore del sito. `.ks-sticky` è la barra in basso della landing sul telefono.
+  Kickstarter della Alpha Edition (26/10/2026, src/lib/kickstarter.ts). Dal 27/10/2026 il tasto verso la campagna ha il
+  gradiente stile Instagram dei bottoni primari del sito (Pierluigi: "usiamo anziché il verde il gradiente di instagram
+  arancio viola"; prima era il verde di Kickstarter): stesse regole di contrasto di `.btn-primary`, cioè sfondo largo il
+  doppio e fermo al 75% (sotto il testo la fascia rosso-magenta-viola, bianco da 4,76 a 6,5:1, l'arancio solo
+  nell'angolo), al passaggio verso il viola, mai verso l'arancio. `.ks-sticky` è la barra in basso della landing sul
+  telefono (bordo col gradiente), `.ks-bar` la barra in cima al sito: lì il testo corre su tutta la larghezza, quindi
+  il gradiente parte dal magenta (#cc2366, 5,25:1) e finisce sul viola (#833ab4, 6,5:1), senza l'arancio.
 */
 @layer components {
   .btn-kickstarter {
@@ -6765,19 +6769,25 @@
     font-weight: 800;
     line-height: 1.15;
     text-align: center;
-    color: var(--color-ink);
-    background: #05ce78;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    background-image: var(--grad-ig);
+    background-origin: border-box;
+    background-size: 200% 100%;
+    background-position: 75% 50%;
     border-radius: 9999px;
     padding: 0.8rem 1.6rem;
     text-decoration: none;
-    box-shadow: 0 10px 26px -14px rgba(5, 206, 120, 0.9);
+    box-shadow: 0 10px 24px -14px rgba(204, 35, 102, 0.9);
     transition:
-      background 120ms ease,
+      background-position 420ms ease,
+      box-shadow 200ms ease,
       transform 120ms ease;
   }
   .btn-kickstarter:hover {
-    background: #04b86b;
-    color: var(--color-ink);
+    background-position: 100% 50%;
+    color: #fff;
+    box-shadow: 0 12px 28px -12px rgba(188, 24, 136, 0.95);
   }
   .btn-kickstarter:active {
     transform: translateY(1px);
@@ -6804,14 +6814,15 @@
     z-index: 40;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
     background: color-mix(in srgb, var(--color-felt-deep) 92%, transparent);
-    border-top: 3px solid #05ce78;
+    border-top: 3px solid transparent;
+    border-image: linear-gradient(90deg, #f09433, #dc2743, #bc1888, #833ab4) 1;
     backdrop-filter: blur(6px);
   }
   .ks-bar {
-    background: #05ce78;
-    color: var(--color-ink);
+    background: linear-gradient(90deg, #cc2366 0%, #bc1888 50%, #833ab4 100%);
+    color: #fff;
   }
   .ks-bar a {
-    color: var(--color-ink);
+    color: #fff;
   }
 }

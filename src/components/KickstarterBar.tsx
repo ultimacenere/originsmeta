@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 /**
- * Barra verde in cima a ogni pagina durante il Kickstarter della Alpha Edition (26/10/2026, src/lib/kickstarter.ts):
+ * Barra col gradiente magenta-viola in cima a ogni pagina durante il Kickstarter della Alpha Edition (26/10/2026, src/lib/kickstarter.ts):
  * una riga verso la landing /kickstarter, che spiega e ha il tasto con il link referral. Non c'è sulla landing stessa.
  * Si chiude con la ×: come l'header, la barra sta nel layout della lingua e sopravvive alla navigazione, quindi resta
  * chiusa finché non si ricarica la pagina (nessuna memoria nel browser, niente da dichiarare nell'informativa).

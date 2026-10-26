@@ -3,7 +3,7 @@ import { KICKSTARTER_URL } from "@/lib/kickstarter";
 
 /**
  * Tasto verso la campagna Kickstarter della Alpha Edition con il link referral di OriginsMeta (26/10/2026,
- * src/lib/kickstarter.ts): verde Kickstarter (`.btn-kickstarter` in globals.css). Si apre nella stessa scheda, al
+ * src/lib/kickstarter.ts): gradiente stile Instagram dei bottoni primari (`.btn-kickstarter` in globals.css; dal 27/10/2026, prima era il verde di Kickstarter). Si apre nella stessa scheda, al
  * contrario degli altri tasti esterni del sito: è il tasto di una pagina con un solo obiettivo, e NN/g consiglia la stessa
  * scheda (una nuova solo avvisando); il testo sotto il tasto dice dove porta. `rel="sponsored"` perché il link è pagato
  * (regole di Google sui link in uscita). Il clic lo conta `onDocumentClick` con l'evento `kickstarter_click` (attributi
