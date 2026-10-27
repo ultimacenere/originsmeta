@@ -164,7 +164,8 @@ export function patchAt(date: string): PatchId | undefined {
 }
 
 /**
- * Ultima verifica carta per carta sul gioco (collezione della demo, My Decks → Cards): data e numero di
+ * Ultima verifica carta per carta sul gioco (collezione della demo, My Decks → Cards; le patch notes della 0.8 del 27/10/2026,
+ * prima versione dell'Accesso anticipato, non citano modifiche alle carte): data e numero di
  * carte confrontate. Il deck builder la mostra nel disclaimer sui dati; va aggiornata a ogni nuova verifica.
  */
 export const cardsVerified = { date: "2026-09-22", count: 122 };
@@ -337,7 +338,7 @@ export function getCardByKey(key: string): Card | undefined {
   return byKey.get(key);
 }
 
-/** Carte giocabili nella demo attuale (attive, non create da altre carte). */
+/** Carte giocabili oggi (attive, non create da altre carte). */
 export const activeCards: Card[] = cards.filter((c) => c.status === "active" && c.type !== "token");
 
 export function statLine(card: Pick<Card, "mana" | "power" | "health" | "type">): string {

@@ -20,7 +20,10 @@ import type { GuideSlug } from "./guides";
  * dice da dove viene ogni fatto, con la data in cui l'abbiamo letto. `links` (dalla stessa data) porta a una sezione
  * del sito quando la pagina primaria non è una guida né una news (il deck builder per i codici, il database carte):
  * `path` senza lingua, `label` scritta per quella lingua. I numeri che cambiano con una patch (le Leggendarie, le
- * carte della Demo 2.0) li controlla `faq.test.ts` sul database delle carte, così non restano indietro.
+ * carte del gioco) li controlla `faq.test.ts` sul database delle carte, così non restano indietro.
+ *
+ * Dal 28/10/2026 (fine della demo il 27/10/2026, Accesso anticipato 0.8) le risposte parlano del gioco in Accesso
+ * anticipato: la demo resta solo come fatto passato (date, patch della demo del 21/09, menu letto a settembre).
  * L'ordine è quello della pagina: prima le domande del festival sul gioco, poi demo ed eventi, poi i mazzi.
  *
  * Dati delle carte (decisione di Pierluigi del 25/09/2026, sera): le risposte non nominano la fonte dell'import
@@ -49,7 +52,7 @@ export type Faq = {
   keywords?: string[];
 };
 
-/** Le 11 Leggendarie della Demo 2.0 (patch della demo del 21/09/2026), per le schede sotto la risposta. */
+/** Le 11 Leggendarie del gioco (patch 0.7 del 29/09/2026; la 0.8 non cambia le carte), per le schede sotto la risposta. */
 const legendaries = [
   "dorothy",
   "dracula",
@@ -68,14 +71,14 @@ const en: Faq[] = [
   {
     id: "release-date",
     q: "When does Origins TCG come out?",
-    a: "The Steam store page lists the release for Q4 2026, with no more precise date (read on 25 September 2026). You can already play: the free demo has been on Steam since 15 July 2026, got its first big update on 21 September and switches on ranked mode with Steam Next Fest, 19–26 October 2026. Our roadmap keeps every confirmed date.",
+    a: "It is already out in Early Access: Origins TCG has been free to play on Steam since 27 October 2026, with version 0.8, the update that ended the demo. Koin Games aims to leave Early Access with version 1.0 around 17 March 2027, a date the Steam page gives as indicative and subject to change (read on 28 October 2026). Before that, the free demo was on Steam from 15 July to 27 October 2026. Our roadmap keeps every confirmed date.",
     guides: ["roadmap-and-dates", "play-the-demo"],
-    keywords: ["release", "released", "launch", "come out", "comes out", "release date", "launch date", "early access"],
+    keywords: ["release", "released", "launch", "come out", "comes out", "release date", "launch date", "early access", "full release", "1.0", "version 1.0"],
   },
   {
     id: "languages",
     q: "What languages is Origins TCG in?",
-    a: "Since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). On 30 September 2026 the Steam page lists the same 13 for the interface, with full audio in English only. To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian, Spanish, French (since 7 October 2026), Portuguese, German and Russian (all three since 20 October 2026), with the game's own card texts in Italian, Spanish, French, Portuguese, German and Russian (the German and Russian ones read in the game on 20 October 2026).",
+    a: "Since patch 0.7 of 29 September 2026 the game supports 13 languages: English, French, Italian, German, Spanish (Spain), Spanish (Latin America), Portuguese (Brazil), Portuguese (Portugal), Japanese, Korean, Polish, Russian and Simplified Chinese (official patch notes). The Steam page lists the same 13 for the interface, with full audio in English only (read on 30 September and again on 28 October 2026). To change language, right-click the game in your Steam library, then Properties, Language. OriginsMeta is in English, Italian, Spanish, French (since 7 October 2026), Portuguese, German and Russian (all three since 20 October 2026), with the game's own card texts in Italian, Spanish, French, Portuguese, German and Russian (the German and Russian ones read in the game on 20 October 2026).",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patch 0.7 notes" }],
     keywords: ["language", "english", "italian", "spanish", "french", "german", "russian", "translated", "translation", "subtitles", "voice", "espanol", "italiano"],
@@ -97,14 +100,14 @@ const en: Faq[] = [
   {
     id: "free-to-compete",
     q: "Is Origins TCG pay-to-win?",
-    a: "Koin Games says no: every player gets every card for free, and what you buy are collectible versions — graded, limited, tradable on the Steam Market — so money changes what you own, not what you can play. The game is not out yet: what is still unconfirmed is in our guide.",
+    a: "Koin Games says no: every player gets every card for free, and what you buy are collectible versions — graded, limited, tradable on the Steam Market — so money changes what you own, not what you can play. On the Steam page (read on 28 October 2026) Koin writes that the game will remain free-to-play and free-to-compete forever, during Early Access and after, that spending money will never unlock stronger cards or give an advantage in gameplay, and that Early Access will feature some premium paid features. What money buys, in detail, is in our guide.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "p2w", "free-to-play", "free to play", "free-to-compete", "microtransactions"],
   },
   {
     id: "kickstarter",
     q: "Is there a date for the Origins TCG Kickstarter?",
-    a: "Yes: 27 October 2026. Koin Games' CEO, Tim Jooste, gave the date on X on 17 September 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), and the demo's main menu shows the Kickstarter as “Coming soon – Oct 27” (read on 25 September 2026); neither says at what time it opens. Pre-registration is open on founder.origins-tcg.com: a 1 dollar deposit, refundable before launch, gives VIP status with 15% off. Our Kickstarter guide keeps everything up to date.",
+    a: "Yes: it opened on 27 October 2026, the day Origins TCG went into Early Access, and Koin Games announced it on Steam with the post “The Origins Kickstarter is LIVE”. The campaign is for the Alpha Set “Myths & Legends”, a Kickstarter exclusive of 218 cards that Koin says it will release gradually throughout Early Access. Koin Games' CEO, Tim Jooste, had given the date on X on 17 September 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), and the demo's main menu showed it as “Coming soon – Oct 27”. Our Kickstarter guide keeps everything up to date.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "Kickstarter AMA of 10 September" }],
     keywords: ["kickstarter", "crowdfunding", "pre-registration", "preregistration", "preregister", "deposit", "founder", "alpha"],
@@ -112,7 +115,7 @@ const en: Faq[] = [
   {
     id: "demo-progress",
     q: "Do I keep my progress from the Origins TCG demo?",
-    a: "Within the demo, yes. On 16 September 2026 a Koin Games staff member wrote on the official Discord that deck unlocks and boss progress from Demo 1 carry over to Demo 2, and the Steam post of 21 September adds that whoever played the demo, the playtest or both keeps whichever progress is further ahead, “so no one will have to unlock cards again”. For the full game, the launch post of 16 July says the exclusive demo collectibles will be tradeable on the Steam marketplace; no official Steam post says yet whether deck unlocks carry over too.",
+    a: "Yes. The demo ended on 27 October 2026 with version 0.8, and Koin Games' Steam post about it says: “Your account, collection, progression, and everything else now live in the Early Access version of Origins.” On the official Discord, Koin's Studio Head, Mawr, added that all progress has been transferred to Early Access and that the demo can be uninstalled. Earlier, on 21 September 2026, Koin had already let whoever played the demo, the playtest or both keep whichever progress was further ahead, “so no one will have to unlock cards again”.",
     guides: ["play-the-demo"],
     news: [
       { slug: "demo-first-big-update", label: "Demo update of 21 September" },
@@ -123,10 +126,10 @@ const en: Faq[] = [
   {
     id: "ranked",
     q: "When can I play ranked in Origins TCG?",
-    a: "With the start of Steam Next Fest, on Monday 19 October 2026, according to the Steam post of 21 September, which promises exclusive ranked rewards without detailing them yet. Ranked already existed in the closed playtest, from patch 0.6.1 of 14 August 2026: a ladder of divisions up to Grandmaster, with a world leaderboard for the Grandmaster division.",
+    a: "Right now: ranked opened in the demo with update 0.7.1 of 15 October 2026, four days before Steam Next Fest, and since 27 October 2026 it is part of the Early Access version. Version 0.8 opened the Grandmaster Division, with its world leaderboard, and the first ranked season of Early Access should end sometime in early December, with limited-edition rewards for those who finish at the highest ranks (Koin's plan, which may change). Ranked already existed in the closed playtest, from patch 0.6.1 of 14 August 2026: a ladder of divisions up to Grandmaster.",
     guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
     news: [
-      { slug: "demo-first-big-update", label: "Ranked at Steam Next Fest" },
+      { slug: "demo-patch-notes-0-7-1", label: "Demo 0.7.1: ranked opens" },
       { slug: "patch-0-6-1-ranked", label: "Patch 0.6.1: the ranked ladder" },
     ],
     keywords: ["ranked", "ladder", "grandmaster", "ranking", "leaderboard", "divisions"],
@@ -156,8 +159,8 @@ const en: Faq[] = [
   },
   {
     id: "legendaries",
-    q: "Which Legendaries are in the Origins TCG demo?",
-    a: "There are 11 in the Demo 2.0, as of patch 0.7 of 29 September 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other ten are units. Each has its own page in our card database, with the official text, the stats and the balance history.",
+    q: "Which Legendaries are in Origins TCG?",
+    a: "There are 11 in the game, with the stats of patch 0.7 of 29 September 2026 (the 0.8 patch notes of 27 October 2026 list no card changes): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other ten are units. Each has its own page in our card database, with the official text, the stats and the balance history.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Card database" }],
@@ -176,14 +179,14 @@ const en: Faq[] = [
   {
     id: "card-list",
     q: "Where can I see every Origins TCG card?",
-    a: "In our card database: the 122 cards of the Demo 2.0 with their current stats, the official text in English, Italian, Spanish and French as it reads in the game and the balance history of each one, plus 22 created cards, the ones that exist only when another card makes them, whose texts have not been checked in the game. In the game, the collection is under My Decks → Cards: turn on the “Unowned” filter to see the cards you don't own yet as well.",
+    a: "In our card database: the 122 cards of the game with their current stats, the official text in English, Italian, Spanish and French as it reads in the game and the balance history of each one, plus 22 created cards, the ones that exist only when another card makes them, whose texts have not been checked in the game. In the game, the collection was under My Decks → Cards when we checked it, before Early Access: turn on the “Unowned” filter to see the cards you don't own yet as well.",
     links: [{ path: "/cards", label: "Card database" }],
     keywords: ["card list", "list of cards", "all cards", "all the cards", "every card", "card database", "database", "collection", "unowned"],
   },
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "Costs, stats, alignments and texts of the 122 cards of the Demo 2.0 were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts, on the demo patch of 21 September 2026. Patch 0.7 of 29 September changed the cost of Bagheera, Mind Palace and Spellbook and reworked Twister Toss: the site applies those changes from the official patch notes on Steam, and the new text of Twister Toss has not been read in the game yet. The German and Russian card texts are the game's own too, read in the collection on 20 October 2026 with the texts of patch 0.7. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
+    a: "Costs, stats, alignments and texts of the 122 cards in the game's collection were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts, on the demo patch of 21 September 2026. Patch 0.7 of 29 September changed the cost of Bagheera, Mind Palace and Spellbook and reworked Twister Toss: the site applies those changes from the official patch notes on Steam, and the new text of Twister Toss has not been read in the game yet. The German and Russian card texts are the game's own too, read in the collection on 20 October 2026 with the texts of patch 0.7. The 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
     news: [
       { slug: "patch-0-7", label: "Patch 0.7 notes" },
       { slug: "demo-patch-notes-0921", label: "Demo patch notes of 21 September" },
@@ -196,14 +199,14 @@ const it: Faq[] = [
   {
     id: "release-date",
     q: "Quando esce Origins TCG?",
-    a: "La pagina Steam indica l'uscita nel quarto trimestre 2026 (“Q4 2026”), senza una data più precisa (letta il 25 settembre 2026). Intanto si gioca già: la demo gratuita è su Steam dal 15 luglio 2026, ha avuto il primo grande aggiornamento il 21 settembre e accende la classificata con lo Steam Next Fest, dal 19 al 26 ottobre 2026. La nostra roadmap raccoglie tutte le date confermate.",
+    a: "È già uscito in Accesso anticipato: Origins TCG si gioca gratis su Steam dal 27 ottobre 2026, con la versione 0.8, l'aggiornamento che ha chiuso la demo. Koin Games punta a uscire dall'Accesso anticipato con la versione 1.0 intorno al 17 marzo 2027, una data che la pagina Steam dà come indicativa e che può cambiare (letta il 28 ottobre 2026). Prima, dal 15 luglio al 27 ottobre 2026, su Steam c'era la demo gratuita. La nostra roadmap raccoglie tutte le date confermate.",
     guides: ["roadmap-and-dates", "play-the-demo"],
-    keywords: ["esce", "uscita", "lancio", "data di uscita", "early access", "accesso anticipato", "release"],
+    keywords: ["esce", "uscita", "lancio", "data di uscita", "early access", "accesso anticipato", "release", "1.0", "versione 1.0"],
   },
   {
     id: "languages",
     q: "In che lingue è Origins TCG?",
-    a: "Dalla patch 0.7 del 29 settembre 2026 il gioco supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), spagnolo (America latina), portoghese (Brasile), portoghese (Portogallo), giapponese, coreano, polacco, russo e cinese semplificato (patch notes ufficiali). Il 30 settembre 2026 la pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese. Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese, spagnolo, francese (dal 7 ottobre 2026), portoghese, tedesco e russo (tutti e tre dal 20 ottobre 2026), con i testi delle carte del gioco in italiano, spagnolo, francese, portoghese, tedesco e russo (quelli tedeschi e russi letti nel gioco il 20 ottobre 2026).",
+    a: "Dalla patch 0.7 del 29 settembre 2026 il gioco supporta 13 lingue: inglese, francese, italiano, tedesco, spagnolo (Spagna), spagnolo (America latina), portoghese (Brasile), portoghese (Portogallo), giapponese, coreano, polacco, russo e cinese semplificato (patch notes ufficiali). La pagina Steam elenca le stesse 13 per l'interfaccia, con l'audio completo solo in inglese (letta il 30 settembre e di nuovo il 28 ottobre 2026). Per cambiare lingua: tasto destro sul gioco nella libreria di Steam, Proprietà, Lingua. OriginsMeta è in italiano, inglese, spagnolo, francese (dal 7 ottobre 2026), portoghese, tedesco e russo (tutti e tre dal 20 ottobre 2026), con i testi delle carte del gioco in italiano, spagnolo, francese, portoghese, tedesco e russo (quelli tedeschi e russi letti nel gioco il 20 ottobre 2026).",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patch notes della 0.7" }],
     keywords: ["lingua", "lingue", "italiano", "inglese", "spagnolo", "francese", "tedesco", "russo", "tradotto", "traduzione", "sottotitoli", "doppiaggio", "ita"],
@@ -225,14 +228,14 @@ const it: Faq[] = [
   {
     id: "free-to-compete",
     q: "Origins TCG è pay-to-win?",
-    a: "Koin Games dice di no: tutte le carte si ottengono gratis, e quello che si compra sono le versioni da collezione — gradate, limitate, scambiabili sul Mercato Steam — quindi i soldi cambiano quello che possiedi, non quello che puoi giocare. Il gioco non è ancora uscito: quello che non è ancora confermato è nella nostra guida.",
+    a: "Koin Games dice di no: tutte le carte si ottengono gratis, e quello che si compra sono le versioni da collezione — gradate, limitate, scambiabili sul Mercato Steam — quindi i soldi cambiano quello che possiedi, non quello che puoi giocare. Sulla pagina Steam (letta il 28 ottobre 2026) Koin scrive che il gioco resterà free-to-play e free-to-compete per sempre, durante l'Accesso anticipato e dopo, che spendere soldi non sbloccherà mai carte più forti né darà un vantaggio in partita, e che l'Accesso anticipato avrà alcune funzioni premium a pagamento. Che cosa compra il denaro, nel dettaglio, è nella nostra guida.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "p2w", "gratis", "gratuito", "free-to-play", "free to play", "free-to-compete", "microtransazioni"],
   },
   {
     id: "kickstarter",
     q: "C'è una data per il Kickstarter di Origins TCG?",
-    a: "Sì: il 27 ottobre 2026. L'ha scritto il CEO di Koin Games, Tim Jooste, su X il 17 settembre 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), e il menu principale della demo mostra il Kickstarter come “Coming soon – Oct 27” (letto il 25 settembre 2026); nessuno dei due dice a che ora apre. La pre-registrazione è aperta su founder.origins-tcg.com: un deposito di 1 dollaro, rimborsabile prima del lancio, dà lo stato VIP con il 15% di sconto. La nostra guida al Kickstarter tiene tutto aggiornato.",
+    a: "Sì: è partito il 27 ottobre 2026, il giorno in cui Origins TCG è entrato in Accesso anticipato, e Koin Games l'ha annunciato su Steam con il post “The Origins Kickstarter is LIVE”. La campagna è per l'Alpha Set “Myths & Legends”, un'esclusiva del Kickstarter da 218 carte che Koin dice di voler rilasciare un po' alla volta durante l'Accesso anticipato. La data l'aveva data il CEO di Koin Games, Tim Jooste, su X il 17 settembre 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), e il menu principale della demo mostrava il Kickstarter come “Coming soon – Oct 27”. La nostra guida al Kickstarter tiene tutto aggiornato.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA sul Kickstarter del 10 settembre" }],
     keywords: ["kickstarter", "crowdfunding", "pre-registrazione", "preregistrazione", "preregistrarsi", "deposito", "founder", "alpha"],
@@ -240,7 +243,7 @@ const it: Faq[] = [
   {
     id: "demo-progress",
     q: "I progressi della demo di Origins TCG restano?",
-    a: "Dentro la demo sì. Il 16 settembre 2026 un membro dello staff di Koin Games ha scritto sul Discord ufficiale che gli sblocchi dei mazzi e i progressi contro i boss della Demo 1 passano alla Demo 2, e il post su Steam del 21 settembre aggiunge che chi ha giocato la demo, il playtest o entrambi conserva i progressi del percorso più avanzato, “così nessuno dovrà sbloccare di nuovo le carte”. Per il gioco completo, il post di lancio del 16 luglio dice che i collezionabili esclusivi della demo saranno scambiabili sul marketplace di Steam; nessun post ufficiale su Steam dice ancora se passeranno anche gli sblocchi dei mazzi.",
+    a: "Sì. La demo è finita il 27 ottobre 2026 con la versione 0.8, e il post di Koin Games su Steam lo dice chiaro: account, collezione, progressi e tutto il resto ora stanno nella versione in Accesso anticipato di Origins. Sul Discord ufficiale lo Studio Head di Koin, Mawr, ha aggiunto che tutti i progressi sono stati trasferiti all'Accesso anticipato e che la demo si può disinstallare. Già il 21 settembre 2026 Koin aveva fatto conservare a chi aveva giocato la demo, il playtest o entrambi i progressi del percorso più avanzato, “così nessuno dovrà sbloccare di nuovo le carte”.",
     guides: ["play-the-demo"],
     news: [
       { slug: "demo-first-big-update", label: "Aggiornamento della demo del 21 settembre" },
@@ -251,10 +254,10 @@ const it: Faq[] = [
   {
     id: "ranked",
     q: "Quando si può giocare la classificata di Origins TCG?",
-    a: "Con l'inizio dello Steam Next Fest, lunedì 19 ottobre 2026, secondo il post su Steam del 21 settembre, che promette ricompense esclusive per la classificata senza ancora dire quali. La classificata c'era già nel playtest chiuso, dalla patch 0.6.1 del 14 agosto 2026: una ladder a divisioni fino a Grandmaster, con una classifica mondiale per la divisione Grandmaster.",
+    a: "Già adesso: la classificata è partita nella demo con l'aggiornamento 0.7.1 del 15 ottobre 2026, quattro giorni prima dello Steam Next Fest, e dal 27 ottobre 2026 fa parte della versione in Accesso anticipato. La versione 0.8 ha aperto la divisione Grandmaster, con la sua classifica mondiale, e la prima stagione classificata dell'Accesso anticipato dovrebbe finire a inizio dicembre, con ricompense in edizione limitata per chi chiude ai ranghi più alti (è il piano di Koin, può cambiare). La classificata c'era già nel playtest chiuso, dalla patch 0.6.1 del 14 agosto 2026: una ladder a divisioni fino a Grandmaster.",
     guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
     news: [
-      { slug: "demo-first-big-update", label: "Classificata allo Steam Next Fest" },
+      { slug: "demo-patch-notes-0-7-1", label: "Demo 0.7.1: parte la classificata" },
       { slug: "patch-0-6-1-ranked", label: "Patch 0.6.1: la classificata" },
     ],
     keywords: ["classificata", "ranked", "ladder", "grandmaster", "divisioni"],
@@ -284,8 +287,8 @@ const it: Faq[] = [
   },
   {
     id: "legendaries",
-    q: "Quali Leggendarie ci sono nella demo di Origins TCG?",
-    a: "Nella Demo 2.0 ce ne sono 11, con la patch 0.7 del 29 settembre 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre dieci sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo ufficiale, le statistiche e lo storico dei bilanciamenti.",
+    q: "Quali Leggendarie ci sono in Origins TCG?",
+    a: "Nel gioco ce ne sono 11, con le statistiche della patch 0.7 del 29 settembre 2026 (le patch notes della 0.8 del 27 ottobre 2026 non citano modifiche alle carte): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre dieci sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo ufficiale, le statistiche e lo storico dei bilanciamenti.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Database carte" }],
@@ -304,14 +307,14 @@ const it: Faq[] = [
   {
     id: "card-list",
     q: "Dove si vedono tutte le carte di Origins TCG?",
-    a: "Nel nostro database carte: le 122 carte della Demo 2.0 con le statistiche attuali, il testo ufficiale in inglese, italiano, spagnolo e francese come nel gioco e lo storico dei bilanciamenti di ognuna, più 22 carte generate, quelle che esistono solo quando un'altra carta le crea, con testi non verificati nel gioco. Nel gioco la collezione sta in I miei deck → Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
+    a: "Nel nostro database carte: le 122 carte del gioco con le statistiche attuali, il testo ufficiale in inglese, italiano, spagnolo e francese come nel gioco e lo storico dei bilanciamenti di ognuna, più 22 carte generate, quelle che esistono solo quando un'altra carta le crea, con testi non verificati nel gioco. Nel gioco, quando l'abbiamo verificata, prima dell'Accesso anticipato, la collezione stava in I miei deck → Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
     links: [{ path: "/cards", label: "Database carte" }],
     keywords: ["lista delle carte", "lista carte", "elenco delle carte", "tutte le carte", "database", "collezione", "non posseduto"],
   },
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Costi, statistiche, allineamenti e testi delle 122 carte della Demo 2.0 sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco, sulla patch della demo del 21 settembre 2026. La patch 0.7 del 29 settembre ha cambiato il costo di Bagheera, Mind Palace e Spellbook e l'effetto di Twister Toss: il sito applica queste modifiche dalle patch notes ufficiali su Steam, e il testo nuovo di Twister Toss non è ancora stato letto nel gioco. Anche i testi tedeschi e russi delle carte sono quelli del gioco, letti nella collezione il 20 ottobre 2026 con i testi della patch 0.7. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
+    a: "Costi, statistiche, allineamenti e testi delle 122 carte della collezione del gioco sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco, sulla patch della demo del 21 settembre 2026. La patch 0.7 del 29 settembre ha cambiato il costo di Bagheera, Mind Palace e Spellbook e l'effetto di Twister Toss: il sito applica queste modifiche dalle patch notes ufficiali su Steam, e il testo nuovo di Twister Toss non è ancora stato letto nel gioco. Anche i testi tedeschi e russi delle carte sono quelli del gioco, letti nella collezione il 20 ottobre 2026 con i testi della patch 0.7. Le patch notes della 0.8 del 27 ottobre 2026, la prima versione dell'Accesso anticipato, non citano modifiche alle carte. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
     news: [
       { slug: "patch-0-7", label: "Patch notes della 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patch notes della demo del 21 settembre" },
@@ -324,14 +327,14 @@ const es: Faq[] = [
   {
     id: "release-date",
     q: "¿Cuándo sale Origins TCG?",
-    a: "La página de Steam indica el lanzamiento para el cuarto trimestre de 2026 (“Q4 2026”), sin una fecha más precisa (consultada el 25 de septiembre de 2026). Mientras tanto ya puedes jugar: la demo gratuita está en Steam desde el 15 de julio de 2026, recibió su primera gran actualización el 21 de septiembre y activa la clasificatoria con el Steam Next Fest, del 19 al 26 de octubre de 2026. Nuestra hoja de ruta reúne todas las fechas confirmadas.",
+    a: "Ya ha salido en Acceso anticipado: Origins TCG se juega gratis en Steam desde el 27 de octubre de 2026, con la versión 0.8, la actualización que cerró la demo. Koin Games quiere salir del Acceso anticipado con la versión 1.0 hacia el 17 de marzo de 2027, una fecha que la página de Steam da como orientativa y que puede cambiar (consultada el 28 de octubre de 2026). Antes, del 15 de julio al 27 de octubre de 2026, en Steam estaba la demo gratuita. Nuestra hoja de ruta reúne todas las fechas confirmadas.",
     guides: ["roadmap-and-dates", "play-the-demo"],
-    keywords: ["sale", "salida", "lanzamiento", "fecha de lanzamiento", "fecha de salida", "early access", "acceso anticipado", "release"],
+    keywords: ["sale", "salida", "lanzamiento", "fecha de lanzamiento", "fecha de salida", "early access", "acceso anticipado", "release", "1.0", "version 1.0"],
   },
   {
     id: "languages",
     q: "¿Origins TCG está en español?",
-    a: "Sí: desde el parche 0.7 del 29 de septiembre de 2026 el juego admite 13 idiomas, entre ellos el español de España y el de Latinoamérica (notas oficiales del parche); ya el 25 de septiembre la demo tenía la interfaz y los textos de las cartas en español (comprobado en el juego). El 30 de septiembre de 2026 la página de Steam indica los mismos 13 idiomas para la interfaz (inglés, francés, italiano, alemán, español de España y de Latinoamérica, portugués de Brasil y de Portugal, japonés, coreano, polaco, ruso y chino simplificado), con audio completo solo en inglés. Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés, italiano, francés (desde el 7 de octubre de 2026), portugués, alemán y ruso (los tres desde el 20 de octubre de 2026), con los textos de las cartas del juego en español, italiano, francés, portugués, alemán y ruso (los alemanes y los rusos, leídos en el juego el 20 de octubre de 2026).",
+    a: "Sí: desde el parche 0.7 del 29 de septiembre de 2026 el juego admite 13 idiomas, entre ellos el español de España y el de Latinoamérica (notas oficiales del parche); ya el 25 de septiembre de 2026 el juego tenía la interfaz y los textos de las cartas en español (comprobado en el juego). La página de Steam indica los mismos 13 idiomas para la interfaz (inglés, francés, italiano, alemán, español de España y de Latinoamérica, portugués de Brasil y de Portugal, japonés, coreano, polaco, ruso y chino simplificado), con audio completo solo en inglés (consultada el 30 de septiembre y de nuevo el 28 de octubre de 2026). Para cambiar el idioma: clic derecho sobre el juego en tu biblioteca de Steam, Propiedades, Idioma. OriginsMeta está en español, inglés, italiano, francés (desde el 7 de octubre de 2026), portugués, alemán y ruso (los tres desde el 20 de octubre de 2026), con los textos de las cartas del juego en español, italiano, francés, portugués, alemán y ruso (los alemanes y los rusos, leídos en el juego el 20 de octubre de 2026).",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notas del parche 0.7" }],
     keywords: ["idioma", "idiomas", "espanol", "castellano", "ingles", "italiano", "frances", "aleman", "ruso", "traducido", "traduccion", "subtitulos", "doblaje"],
@@ -353,14 +356,14 @@ const es: Faq[] = [
   {
     id: "free-to-compete",
     q: "¿Origins TCG es pay-to-win?",
-    a: "Koin Games dice que no: todos los jugadores consiguen todas las cartas gratis, y lo que compras son versiones de colección —gradeadas, limitadas, intercambiables en el Mercado de Steam—, así que el dinero cambia lo que posees, no lo que puedes jugar. El juego aún no ha salido: lo que todavía no está confirmado está en nuestra guía.",
+    a: "Koin Games dice que no: todos los jugadores consiguen todas las cartas gratis, y lo que compras son versiones de colección —gradeadas, limitadas, intercambiables en el Mercado de Steam—, así que el dinero cambia lo que posees, no lo que puedes jugar. En la página de Steam (consultada el 28 de octubre de 2026) Koin escribe que el juego seguirá siendo free-to-play y free-to-compete para siempre, durante el Acceso anticipado y después, que gastar dinero nunca desbloqueará cartas más fuertes ni dará ventaja en las partidas, y que el Acceso anticipado tendrá algunas funciones premium de pago. Qué compra el dinero, en detalle, está en nuestra guía.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "p2w", "gratis", "gratuito", "free-to-play", "free to play", "free-to-compete", "microtransacciones"],
   },
   {
     id: "kickstarter",
     q: "¿Hay fecha para el Kickstarter de Origins TCG?",
-    a: "Sí: el 27 de octubre de 2026. Lo escribió el CEO de Koin Games, Tim Jooste, en X el 17 de septiembre de 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), y el menú principal de la demo muestra el Kickstarter como “Coming soon – Oct 27” (consultado el 25 de septiembre de 2026); ninguno de los dos dice a qué hora abre. El prerregistro está abierto en founder.origins-tcg.com: un depósito de 1 dólar, reembolsable antes del lanzamiento, da el estatus VIP con un 15 % de descuento. Nuestra guía del Kickstarter lo mantiene todo al día.",
+    a: "Sí: abrió el 27 de octubre de 2026, el día en que Origins TCG entró en Acceso anticipado, y Koin Games lo anunció en Steam con la publicación “The Origins Kickstarter is LIVE”. La campaña es para el Alpha Set “Myths & Legends”, una exclusiva del Kickstarter de 218 cartas que Koin dice que irá publicando poco a poco durante el Acceso anticipado. La fecha la había dado el CEO de Koin Games, Tim Jooste, en X el 17 de septiembre de 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), y el menú principal de la demo mostraba el Kickstarter como “Coming soon – Oct 27”. Nuestra guía del Kickstarter lo mantiene todo al día.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA del Kickstarter del 10 de septiembre" }],
     keywords: ["kickstarter", "crowdfunding", "prerregistro", "preregistro", "prerregistrarse", "deposito", "founder", "alpha"],
@@ -368,7 +371,7 @@ const es: Faq[] = [
   {
     id: "demo-progress",
     q: "¿Conservo mi progreso de la demo de Origins TCG?",
-    a: "Dentro de la demo, sí. El 16 de septiembre de 2026 un miembro del staff de Koin Games escribió en el Discord oficial que los desbloqueos de mazos y el progreso contra los jefes de la Demo 1 pasan a la Demo 2, y la publicación de Steam del 21 de septiembre añade que quien haya jugado a la demo, al playtest o a ambos conserva el progreso del que esté más avanzado, “para que nadie tenga que volver a desbloquear cartas”. Para el juego completo, la publicación de lanzamiento del 16 de julio dice que los coleccionables exclusivos de la demo se podrán intercambiar en el mercado de Steam; ninguna publicación oficial en Steam dice todavía si también pasarán los desbloqueos de mazos.",
+    a: "Sí. La demo terminó el 27 de octubre de 2026 con la versión 0.8, y la publicación de Koin Games en Steam lo dice claro: la cuenta, la colección, el progreso y todo lo demás están ahora en la versión en Acceso anticipado de Origins. En el Discord oficial, el Studio Head de Koin, Mawr, añadió que todo el progreso se ha transferido al Acceso anticipado y que la demo se puede desinstalar. Ya el 21 de septiembre de 2026 Koin había hecho que quien jugó a la demo, al playtest o a ambos conservara el progreso del que estuviera más avanzado, “para que nadie tenga que volver a desbloquear cartas”.",
     guides: ["play-the-demo"],
     news: [
       { slug: "demo-first-big-update", label: "Actualización de la demo del 21 de septiembre" },
@@ -379,10 +382,10 @@ const es: Faq[] = [
   {
     id: "ranked",
     q: "¿Cuándo se puede jugar la clasificatoria de Origins TCG?",
-    a: "Con el inicio del Steam Next Fest, el lunes 19 de octubre de 2026, según la publicación de Steam del 21 de septiembre, que promete recompensas exclusivas de clasificatoria sin detallarlas todavía. La clasificatoria ya existía en el playtest cerrado desde el parche 0.6.1 del 14 de agosto de 2026: una ladder con divisiones hasta Grandmaster y un ranking mundial para la división Grandmaster.",
+    a: "Ya: la clasificatoria se abrió en la demo con la actualización 0.7.1 del 15 de octubre de 2026, cuatro días antes del Steam Next Fest, y desde el 27 de octubre de 2026 forma parte de la versión en Acceso anticipado. La versión 0.8 abrió la división Grandmaster, con su ranking mundial, y la primera temporada clasificatoria del Acceso anticipado debería terminar a principios de diciembre, con recompensas de edición limitada para quienes acaben en los rangos más altos (es el plan de Koin y puede cambiar). La clasificatoria ya existía en el playtest cerrado desde el parche 0.6.1 del 14 de agosto de 2026: una ladder con divisiones hasta Grandmaster.",
     guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
     news: [
-      { slug: "demo-first-big-update", label: "Clasificatoria en el Steam Next Fest" },
+      { slug: "demo-patch-notes-0-7-1", label: "Demo 0.7.1: se abre la clasificatoria" },
       { slug: "patch-0-6-1-ranked", label: "Parche 0.6.1: la clasificatoria" },
     ],
     keywords: ["clasificatoria", "ranked", "ladder", "grandmaster", "ranking", "divisiones"],
@@ -412,8 +415,8 @@ const es: Faq[] = [
   },
   {
     id: "legendaries",
-    q: "¿Qué Legendarias hay en la demo de Origins TCG?",
-    a: "En la Demo 2.0 hay 11, con el parche 0.7 del 29 de septiembre de 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras diez son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto oficial, las estadísticas y el historial de cambios.",
+    q: "¿Qué Legendarias hay en Origins TCG?",
+    a: "En el juego hay 11, con las estadísticas del parche 0.7 del 29 de septiembre de 2026 (las notas del parche 0.8 del 27 de octubre de 2026 no mencionan cambios en las cartas): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras diez son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto oficial, las estadísticas y el historial de cambios.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
@@ -432,14 +435,14 @@ const es: Faq[] = [
   {
     id: "card-list",
     q: "¿Dónde puedo ver todas las cartas de Origins TCG?",
-    a: "En nuestra base de datos de cartas: las 122 cartas de la Demo 2.0 con sus estadísticas actuales, el texto oficial en inglés, italiano, español y francés tal como aparece en el juego y el historial de cambios de cada una, además de 22 cartas creadas, las que solo existen cuando otra carta las crea, con textos sin comprobar en el juego. En el juego, la colección está en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
+    a: "En nuestra base de datos de cartas: las 122 cartas del juego con sus estadísticas actuales, el texto oficial en inglés, italiano, español y francés tal como aparece en el juego y el historial de cambios de cada una, además de 22 cartas creadas, las que solo existen cuando otra carta las crea, con textos sin comprobar en el juego. En el juego, cuando la comprobamos, antes del Acceso anticipado, la colección estaba en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
     keywords: ["lista de cartas", "todas las cartas", "base de datos", "coleccion", "no poseido"],
   },
   {
     id: "where-cards",
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
-    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la Demo 2.0 se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego, sobre el parche de la demo del 21 de septiembre de 2026. El parche 0.7 del 29 de septiembre cambió el coste de Bagheera, Mind Palace y Spellbook e hizo un rework de Twister Toss: el sitio aplica esos cambios a partir de las notas oficiales del parche en Steam, y el nuevo texto de Twister Toss todavía no se ha leído en el juego. Los textos de las cartas en alemán y en ruso también son los del juego, leídos en la colección el 20 de octubre de 2026, ya con los textos del parche 0.7. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
+    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la colección del juego se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego, sobre el parche de la demo del 21 de septiembre de 2026. El parche 0.7 del 29 de septiembre cambió el coste de Bagheera, Mind Palace y Spellbook e hizo un rework de Twister Toss: el sitio aplica esos cambios a partir de las notas oficiales del parche en Steam, y el nuevo texto de Twister Toss todavía no se ha leído en el juego. Los textos de las cartas en alemán y en ruso también son los del juego, leídos en la colección el 20 de octubre de 2026, ya con los textos del parche 0.7. Las notas del parche 0.8 del 27 de octubre de 2026, la primera versión del Acceso anticipado, no mencionan cambios en las cartas. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
     news: [
       { slug: "patch-0-7", label: "Notas del parche 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas del parche de la demo del 21 de septiembre" },
@@ -452,14 +455,14 @@ const fr: Faq[] = [
   {
     id: "release-date",
     q: "Quand sort Origins TCG ?",
-    a: "La page Steam indique une sortie au quatrième trimestre 2026 (« Q4 2026 »), sans date plus précise (lue le 25 septembre 2026). En attendant, vous pouvez déjà jouer : la démo gratuite est sur Steam depuis le 15 juillet 2026, a reçu sa première grande mise à jour le 21 septembre et active le mode classé avec le Steam Next Fest, du 19 au 26 octobre 2026. Notre feuille de route réunit toutes les dates confirmées.",
+    a: "Il est déjà sorti en Accès anticipé : Origins TCG se joue gratuitement sur Steam depuis le 27 octobre 2026, avec la version 0.8, la mise à jour qui a mis fin à la démo. Koin Games vise une sortie de l'Accès anticipé avec la version 1.0 vers le 17 mars 2027, une date que la page Steam donne comme indicative et susceptible de changer (lue le 28 octobre 2026). Avant cela, la démo gratuite était sur Steam du 15 juillet au 27 octobre 2026. Notre feuille de route réunit toutes les dates confirmées.",
     guides: ["roadmap-and-dates", "play-the-demo"],
-    keywords: ["sortie", "sort", "sortir", "lancement", "date de sortie", "date de lancement", "early access", "acces anticipe", "release"],
+    keywords: ["sortie", "sort", "sortir", "lancement", "date de sortie", "date de lancement", "early access", "acces anticipe", "release", "1.0", "version 1.0"],
   },
   {
     id: "languages",
     q: "Origins TCG est-il en français ?",
-    a: "Oui. Depuis le patch 0.7 du 29 septembre 2026, le jeu prend en charge 13 langues (notes de patch officielles) : anglais, français, italien, allemand, espagnol (Espagne), espagnol (Amérique latine), portugais (Brésil), portugais (Portugal), japonais, coréen, polonais, russe et chinois simplifié. Le 30 septembre 2026, la page Steam indique les mêmes 13 langues pour l'interface, avec l'audio complet en anglais seulement. Pour changer de langue : clic droit sur le jeu dans votre bibliothèque Steam, puis Propriétés, Langue. OriginsMeta est en français, anglais, italien, espagnol et, depuis le 20 octobre 2026, portugais, allemand et russe ; les textes des cartes sont ceux du jeu, en français comme en anglais, en italien, en espagnol, en portugais, en allemand et en russe (les textes allemands et russes lus dans le jeu le 20 octobre 2026).",
+    a: "Oui. Depuis le patch 0.7 du 29 septembre 2026, le jeu prend en charge 13 langues (notes de patch officielles) : anglais, français, italien, allemand, espagnol (Espagne), espagnol (Amérique latine), portugais (Brésil), portugais (Portugal), japonais, coréen, polonais, russe et chinois simplifié. La page Steam indique les mêmes 13 langues pour l'interface, avec l'audio complet en anglais seulement (lue le 30 septembre et de nouveau le 28 octobre 2026). Pour changer de langue : clic droit sur le jeu dans votre bibliothèque Steam, puis Propriétés, Langue. OriginsMeta est en français, anglais, italien, espagnol et, depuis le 20 octobre 2026, portugais, allemand et russe ; les textes des cartes sont ceux du jeu, en français comme en anglais, en italien, en espagnol, en portugais, en allemand et en russe (les textes allemands et russes lus dans le jeu le 20 octobre 2026).",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notes du patch 0.7" }],
     keywords: ["langue", "langues", "francais", "anglais", "italien", "espagnol", "allemand", "russe", "traduit", "traduction", "sous-titres", "doublage"],
@@ -481,14 +484,14 @@ const fr: Faq[] = [
   {
     id: "free-to-compete",
     q: "Origins TCG est-il pay-to-win ?",
-    a: "Koin Games dit non : chaque joueur obtient toutes les cartes gratuitement, et ce que vous achetez, ce sont des versions de collection — gradées, limitées, échangeables sur le Marché Steam —, donc l'argent change ce que vous possédez, pas ce que vous pouvez jouer. Le jeu n'est pas encore sorti : ce qui n'est pas encore confirmé est dans notre guide.",
+    a: "Koin Games dit non : chaque joueur obtient toutes les cartes gratuitement, et ce que vous achetez, ce sont des versions de collection — gradées, limitées, échangeables sur le Marché Steam —, donc l'argent change ce que vous possédez, pas ce que vous pouvez jouer. Sur la page Steam (lue le 28 octobre 2026), Koin écrit que le jeu restera free-to-play et free-to-compete pour toujours, pendant l'Accès anticipé et après, que dépenser de l'argent ne débloquera jamais de cartes plus fortes ni d'avantage en partie, et que l'Accès anticipé proposera quelques fonctions premium payantes. Ce que l'argent achète, en détail, est dans notre guide.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "p2w", "gratuit", "gratuite", "free-to-play", "free to play", "free-to-compete", "microtransactions"],
   },
   {
     id: "kickstarter",
     q: "Y a-t-il une date pour le Kickstarter d'Origins TCG ?",
-    a: "Oui : le 27 octobre 2026. Le CEO de Koin Games, Tim Jooste, a donné la date sur X le 17 septembre 2026 (« back the Alpha Edition Kickstarter (Oct 27th) »), et le menu principal de la démo affiche le Kickstarter comme « Coming soon – Oct 27 » (lu le 25 septembre 2026) ; ni l'un ni l'autre ne dit à quelle heure il ouvre. La préinscription est ouverte sur founder.origins-tcg.com : un dépôt de 1 dollar, remboursable avant le lancement, donne le statut VIP avec 15 % de réduction. Notre guide du Kickstarter tient tout à jour.",
+    a: "Oui : il a ouvert le 27 octobre 2026, le jour où Origins TCG est passé en Accès anticipé, et Koin Games l'a annoncé sur Steam avec le post « The Origins Kickstarter is LIVE ». La campagne porte sur l'Alpha Set « Myths & Legends », une exclusivité Kickstarter de 218 cartes que Koin dit vouloir sortir peu à peu pendant l'Accès anticipé. Le CEO de Koin Games, Tim Jooste, avait donné la date sur X le 17 septembre 2026 (« back the Alpha Edition Kickstarter (Oct 27th) »), et le menu principal de la démo l'affichait comme « Coming soon – Oct 27 ». Notre guide du Kickstarter tient tout à jour.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA Kickstarter du 10 septembre" }],
     keywords: ["kickstarter", "crowdfunding", "financement participatif", "preinscription", "pre-inscription", "depot", "founder", "alpha"],
@@ -496,7 +499,7 @@ const fr: Faq[] = [
   {
     id: "demo-progress",
     q: "Est-ce que je garde ma progression de la démo d'Origins TCG ?",
-    a: "Dans la démo, oui. Le 16 septembre 2026, un membre du staff de Koin Games a écrit sur le Discord officiel que les déblocages de decks et la progression contre les boss de la Demo 1 passent à la Demo 2, et le post Steam du 21 septembre ajoute que celui qui a joué à la démo, au playtest ou aux deux garde la progression la plus avancée, « pour que personne n'ait à débloquer les cartes de nouveau ». Pour le jeu complet, le post de lancement du 16 juillet dit que les objets de collection exclusifs de la démo seront échangeables sur le marché Steam ; aucun post officiel sur Steam ne dit encore si les déblocages de decks passeront aussi.",
+    a: "Oui. La démo a pris fin le 27 octobre 2026 avec la version 0.8, et le post de Koin Games sur Steam le dit clairement : le compte, la collection, la progression et tout le reste se trouvent désormais dans la version en Accès anticipé d'Origins. Sur le Discord officiel, le Studio Head de Koin, Mawr, a ajouté que toute la progression a été transférée vers l'Accès anticipé et que la démo peut être désinstallée. Dès le 21 septembre 2026, Koin avait laissé à ceux qui avaient joué à la démo, au playtest ou aux deux la progression la plus avancée, « pour que personne n'ait à débloquer les cartes de nouveau ».",
     guides: ["play-the-demo"],
     news: [
       { slug: "demo-first-big-update", label: "Mise à jour de la démo du 21 septembre" },
@@ -507,10 +510,10 @@ const fr: Faq[] = [
   {
     id: "ranked",
     q: "Quand peut-on jouer en classé dans Origins TCG ?",
-    a: "Avec le début du Steam Next Fest, le lundi 19 octobre 2026, selon le post Steam du 21 septembre, qui promet des récompenses exclusives pour le mode classé sans encore les détailler. Le classé existait déjà dans le playtest fermé, depuis le patch 0.6.1 du 14 août 2026 : un ladder de divisions jusqu'à Grandmaster, avec un classement mondial pour la division Grandmaster.",
+    a: "Dès maintenant : le mode classé a ouvert dans la démo avec la mise à jour 0.7.1 du 15 octobre 2026, quatre jours avant le Steam Next Fest, et depuis le 27 octobre 2026 il fait partie de la version en Accès anticipé. La version 0.8 a ouvert la division Grandmaster, avec son classement mondial, et la première saison classée de l'Accès anticipé devrait se terminer début décembre, avec des récompenses en édition limitée pour ceux qui finissent aux rangs les plus élevés (c'est le plan de Koin, il peut changer). Le classé existait déjà dans le playtest fermé, depuis le patch 0.6.1 du 14 août 2026 : un ladder de divisions jusqu'à Grandmaster.",
     guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
     news: [
-      { slug: "demo-first-big-update", label: "Le classé au Steam Next Fest" },
+      { slug: "demo-patch-notes-0-7-1", label: "Démo 0.7.1 : le classé ouvre" },
       { slug: "patch-0-6-1-ranked", label: "Patch 0.6.1 : le ladder classé" },
     ],
     keywords: ["classe", "classee", "ranked", "ladder", "grandmaster", "classement", "divisions"],
@@ -540,8 +543,8 @@ const fr: Faq[] = [
   },
   {
     id: "legendaries",
-    q: "Quelles Légendaires y a-t-il dans la démo d'Origins TCG ?",
-    a: "Il y en a 11 dans la Demo 2.0, avec le patch 0.7 du 29 septembre 2026 : Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing et Wicked Stepmother. Chaque deck est mené par exactement l'une d'elles ; Legion of the Dead est le seul sort, les dix autres sont des unités. Chacune a sa page dans notre base de données des cartes, avec le texte officiel, les statistiques et l'historique des équilibrages.",
+    q: "Quelles Légendaires y a-t-il dans Origins TCG ?",
+    a: "Il y en a 11 dans le jeu, avec les statistiques du patch 0.7 du 29 septembre 2026 (les notes du patch 0.8 du 27 octobre 2026 ne citent aucun changement de cartes) : Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing et Wicked Stepmother. Chaque deck est mené par exactement l'une d'elles ; Legion of the Dead est le seul sort, les dix autres sont des unités. Chacune a sa page dans notre base de données des cartes, avec le texte officiel, les statistiques et l'historique des équilibrages.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Base de données des cartes" }],
@@ -560,14 +563,14 @@ const fr: Faq[] = [
   {
     id: "card-list",
     q: "Où voir toutes les cartes d'Origins TCG ?",
-    a: "Dans notre base de données des cartes : les 122 cartes de la Demo 2.0 avec leurs statistiques actuelles, le texte officiel en français, en anglais, en italien et en espagnol tel qu'il se lit dans le jeu et l'historique des équilibrages de chacune, plus 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée, dont les textes n'ont pas été vérifiés dans le jeu. Dans le jeu, la collection se trouve dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées (« Unowned » en anglais) pour voir aussi celles que vous n'avez pas encore.",
+    a: "Dans notre base de données des cartes : les 122 cartes du jeu avec leurs statistiques actuelles, le texte officiel en français, en anglais, en italien et en espagnol tel qu'il se lit dans le jeu et l'historique des équilibrages de chacune, plus 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée, dont les textes n'ont pas été vérifiés dans le jeu. Dans le jeu, quand nous l'avons vérifiée, avant l'Accès anticipé, la collection se trouvait dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées (« Unowned » en anglais) pour voir aussi celles que vous n'avez pas encore.",
     links: [{ path: "/cards", label: "Base de données des cartes" }],
     keywords: ["liste des cartes", "toutes les cartes", "base de donnees", "collection", "non possedees", "unowned"],
   },
   {
     id: "where-cards",
     q: "D'où viennent les statistiques des cartes de ce site ?",
-    a: "Les coûts, les statistiques, les alignements et les textes des 122 cartes de la Demo 2.0 ont été vérifiés un par un dans le jeu le 22 septembre 2026, en anglais, puis le 25 septembre aussi en italien et en espagnol, qui sont les textes du jeu, sur le patch de la démo du 21 septembre 2026 ; les textes français ont été lus dans le jeu le 8 octobre 2026, les textes portugais, allemands et russes le 20 octobre 2026, sur le patch 0.7. Le patch 0.7 du 29 septembre a changé le coût de Bagheera, Mind Palace et Spellbook et retravaillé Twister Toss : le site applique ces changements d'après les notes de patch officielles sur Steam, et le nouveau texte de Twister Toss n'a pas encore été lu dans le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
+    a: "Les coûts, les statistiques, les alignements et les textes des 122 cartes de la collection du jeu ont été vérifiés un par un dans le jeu le 22 septembre 2026, en anglais, puis le 25 septembre aussi en italien et en espagnol, qui sont les textes du jeu, sur le patch de la démo du 21 septembre 2026 ; les textes français ont été lus dans le jeu le 8 octobre 2026, les textes portugais, allemands et russes le 20 octobre 2026, sur le patch 0.7. Le patch 0.7 du 29 septembre a changé le coût de Bagheera, Mind Palace et Spellbook et retravaillé Twister Toss : le site applique ces changements d'après les notes de patch officielles sur Steam, et le nouveau texte de Twister Toss n'a pas encore été lu dans le jeu. Les notes du patch 0.8 du 27 octobre 2026, la première version de l'Accès anticipé, ne citent aucun changement de cartes. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
     news: [
       { slug: "patch-0-7", label: "Notes du patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notes de patch de la démo du 21 septembre" },
@@ -582,14 +585,14 @@ const pt: Faq[] = [
   {
     id: "release-date",
     q: "Quando Origins TCG vai ser lançado?",
-    a: "A página da Steam indica o lançamento para o quarto trimestre de 2026, sem uma data mais precisa (lido em 25 de setembro de 2026). Você já pode jogar: a demo gratuita está na Steam desde 15 de julho de 2026, recebeu a primeira grande atualização em 21 de setembro e ativa o modo ranqueado com o Steam Next Fest, de 19 a 26 de outubro de 2026. O nosso roadmap reúne todas as datas confirmadas.",
+    a: "Já foi lançado em Acesso Antecipado: Origins TCG está de graça na Steam desde 27 de outubro de 2026, com a versão 0.8, a atualização que encerrou a demo. A Koin Games quer sair do Acesso Antecipado com a versão 1.0 por volta de 17 de março de 2027, uma data que a página da Steam dá como indicativa e sujeita a mudanças (lido em 28 de outubro de 2026). Antes disso, de 15 de julho a 27 de outubro de 2026, a demo gratuita esteve na Steam. O nosso roadmap reúne todas as datas confirmadas.",
     guides: ["roadmap-and-dates", "play-the-demo"],
-    keywords: ["lancamento", "lancado", "lanca", "data de lancamento", "quando sai", "sai quando", "acesso antecipado", "early access", "release"],
+    keywords: ["lancamento", "lancado", "lanca", "data de lancamento", "quando sai", "sai quando", "acesso antecipado", "early access", "release", "1.0", "versao 1.0"],
   },
   {
     id: "languages",
     q: "Origins TCG está em português?",
-    a: "Sim: desde o patch 0.7 de 29 de setembro de 2026 o jogo tem 13 idiomas: inglês, francês, italiano, alemão, espanhol (Espanha), espanhol (América Latina), português (Brasil), português (Portugal), japonês, coreano, polonês, russo e chinês simplificado (notas oficiais do patch). Em 30 de setembro de 2026 a página da Steam lista os mesmos 13 para a interface, com áudio completo só em inglês. Para mudar o idioma, clique com o botão direito no jogo na sua biblioteca da Steam e depois em Propriedades, Idioma. O OriginsMeta está em português, em alemão e em russo desde 20 de outubro de 2026, além de inglês, italiano, espanhol e francês, com os textos das cartas do próprio jogo em português, italiano, espanhol, francês, alemão e russo (os alemães e os russos lidos no jogo em 20 de outubro de 2026).",
+    a: "Sim: desde o patch 0.7 de 29 de setembro de 2026 o jogo tem 13 idiomas: inglês, francês, italiano, alemão, espanhol (Espanha), espanhol (América Latina), português (Brasil), português (Portugal), japonês, coreano, polonês, russo e chinês simplificado (notas oficiais do patch). A página da Steam lista os mesmos 13 para a interface, com áudio completo só em inglês (lido em 30 de setembro e de novo em 28 de outubro de 2026). Para mudar o idioma, clique com o botão direito no jogo na sua biblioteca da Steam e depois em Propriedades, Idioma. O OriginsMeta está em português, em alemão e em russo desde 20 de outubro de 2026, além de inglês, italiano, espanhol e francês, com os textos das cartas do próprio jogo em português, italiano, espanhol, francês, alemão e russo (os alemães e os russos lidos no jogo em 20 de outubro de 2026).",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Notas do patch 0.7" }],
     keywords: ["portugues", "brasil", "portugal", "idioma", "idiomas", "lingua", "linguas", "russo", "traduzido", "traducao", "legendas", "dublagem", "audio", "ingles", "espanhol"],
@@ -611,14 +614,14 @@ const pt: Faq[] = [
   {
     id: "free-to-compete",
     q: "Origins TCG é pay-to-win?",
-    a: "A Koin Games diz que não: todos os jogadores recebem todas as cartas de graça, e o que se compra são versões colecionáveis — graduadas, limitadas, negociáveis no Mercado da Steam —, então o dinheiro muda o que você tem, não o que você pode jogar. O jogo ainda não foi lançado: o que ainda não está confirmado está no nosso guia.",
+    a: "A Koin Games diz que não: todos os jogadores recebem todas as cartas de graça, e o que se compra são versões colecionáveis — graduadas, limitadas, negociáveis no Mercado da Steam —, então o dinheiro muda o que você tem, não o que você pode jogar. Na página da Steam (lido em 28 de outubro de 2026), a Koin escreve que o jogo vai continuar free-to-play e free-to-compete para sempre, durante o Acesso Antecipado e depois, que gastar dinheiro nunca vai desbloquear cartas mais fortes nem dar vantagem nas partidas, e que o Acesso Antecipado terá alguns recursos premium pagos. O que o dinheiro compra, em detalhe, está no nosso guia.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "pay-to-win", "p2w", "free-to-play", "free to play", "free-to-compete", "pagar para ganhar", "microtransacoes"],
   },
   {
     id: "kickstarter",
     q: "Já existe uma data para o Kickstarter de Origins TCG?",
-    a: "Sim: 27 de outubro de 2026. O CEO da Koin Games, Tim Jooste, deu a data no X em 17 de setembro de 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), e o menu principal da demo mostrava o Kickstarter como “Coming soon – Oct 27” (lido em 25 de setembro de 2026); nenhum dos dois diz a que horas abre. O pré-registro está aberto em founder.origins-tcg.com: um depósito de 1 dólar, reembolsável antes do lançamento, dá o status VIP com 15% de desconto. O nosso guia do Kickstarter mantém tudo atualizado.",
+    a: "Sim: ele abriu em 27 de outubro de 2026, o dia em que Origins TCG entrou em Acesso Antecipado, e a Koin Games o anunciou na Steam com o post “The Origins Kickstarter is LIVE”. A campanha é do Alpha Set “Myths & Legends”, uma exclusividade do Kickstarter com 218 cartas que a Koin diz que vai lançar aos poucos durante o Acesso Antecipado. O CEO da Koin Games, Tim Jooste, tinha dado a data no X em 17 de setembro de 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), e o menu principal da demo mostrava o Kickstarter como “Coming soon – Oct 27”. O nosso guia do Kickstarter mantém tudo atualizado.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA do Kickstarter de 10 de setembro" }],
     keywords: ["kickstarter", "financiamento coletivo", "crowdfunding", "pre-registro", "preregistro", "deposito", "founder", "alpha"],
@@ -626,7 +629,7 @@ const pt: Faq[] = [
   {
     id: "demo-progress",
     q: "Eu mantenho o meu progresso da demo de Origins TCG?",
-    a: "Dentro da demo, sim. Em 16 de setembro de 2026, um membro da equipe da Koin Games escreveu no Discord oficial que os desbloqueios de decks e o progresso contra os chefes da Demo 1 passam para a Demo 2, e o post na Steam de 21 de setembro acrescenta que quem jogou a demo, o playtest ou os dois fica com o progresso mais avançado, “so no one will have to unlock cards again”. Para o jogo completo, o post de lançamento de 16 de julho diz que os colecionáveis exclusivos da demo poderão ser negociados no mercado da Steam; nenhum post oficial na Steam diz ainda se os desbloqueios de decks também passam.",
+    a: "Sim. A demo terminou em 27 de outubro de 2026 com a versão 0.8, e o post da Koin Games na Steam diz: “Your account, collection, progression, and everything else now live in the Early Access version of Origins.” No Discord oficial, o Studio Head da Koin, Mawr, acrescentou que todo o progresso foi transferido para o Acesso Antecipado e que a demo pode ser desinstalada. Já em 21 de setembro de 2026 a Koin tinha deixado quem jogou a demo, o playtest ou os dois ficar com o progresso mais avançado, “so no one will have to unlock cards again”.",
     guides: ["play-the-demo"],
     news: [
       { slug: "demo-first-big-update", label: "Atualização da demo de 21 de setembro" },
@@ -637,10 +640,10 @@ const pt: Faq[] = [
   {
     id: "ranked",
     q: "Quando posso jogar ranqueada em Origins TCG?",
-    a: "Com o início do Steam Next Fest, na segunda-feira, 19 de outubro de 2026, segundo o post na Steam de 21 de setembro, que promete recompensas ranqueadas exclusivas sem detalhá-las ainda; no jogo, a ranqueada é o modo Competitivo. A ranqueada já existia no playtest fechado, desde o patch 0.6.1 de 14 de agosto de 2026: uma escada de divisões até Grandmaster, com um ranking mundial para a divisão Grandmaster.",
+    a: "Já: a ranqueada abriu na demo com a atualização 0.7.1 de 15 de outubro de 2026, quatro dias antes do Steam Next Fest, e desde 27 de outubro de 2026 faz parte da versão em Acesso Antecipado; no jogo, a ranqueada é o modo Competitivo. A versão 0.8 abriu a divisão Grandmaster, com o seu ranking mundial, e a primeira temporada ranqueada do Acesso Antecipado deve terminar no início de dezembro, com recompensas de edição limitada para quem terminar nos ranks mais altos (é o plano da Koin e pode mudar). A ranqueada já existia no playtest fechado, desde o patch 0.6.1 de 14 de agosto de 2026: uma escada de divisões até Grandmaster.",
     guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
     news: [
-      { slug: "demo-first-big-update", label: "A ranqueada no Steam Next Fest" },
+      { slug: "demo-patch-notes-0-7-1", label: "Demo 0.7.1: a ranqueada abre" },
       { slug: "patch-0-6-1-ranked", label: "Patch 0.6.1: a escada da ranqueada" },
     ],
     keywords: ["ranqueada", "ranqueado", "ranked", "competitivo", "ladder", "grandmaster", "ranking", "divisoes"],
@@ -670,8 +673,8 @@ const pt: Faq[] = [
   },
   {
     id: "legendaries",
-    q: "Quais Lendárias estão na demo de Origins TCG?",
-    a: "Há 11 na Demo 2.0, desde o patch 0.7 de 29 de setembro de 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Cada deck é liderado por exatamente uma delas; Legion of the Dead é o único feitiço, as outras dez são personagens. Cada uma tem a sua página no nosso banco de dados de cartas, com o texto oficial, as estatísticas e o histórico de balanceamento.",
+    q: "Quais são as Lendárias de Origins TCG?",
+    a: "Há 11 no jogo, com as estatísticas do patch 0.7 de 29 de setembro de 2026 (as notas do patch 0.8 de 27 de outubro de 2026 não citam mudanças nas cartas): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Cada deck é liderado por exatamente uma delas; Legion of the Dead é o único feitiço, as outras dez são personagens. Cada uma tem a sua página no nosso banco de dados de cartas, com o texto oficial, as estatísticas e o histórico de balanceamento.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Banco de dados de cartas" }],
@@ -690,14 +693,14 @@ const pt: Faq[] = [
   {
     id: "card-list",
     q: "Onde posso ver todas as cartas de Origins TCG?",
-    a: "No nosso banco de dados de cartas: as 122 cartas da Demo 2.0 com as estatísticas atuais, o texto oficial em inglês, italiano, espanhol, francês e português como aparece no jogo e o histórico de balanceamento de cada uma, mais 22 cartas criadas, as que só existem quando outra carta as gera, cujos textos não foram verificados no jogo. No jogo, a coleção fica em Os meus decks → Cartas: ative o filtro “Não obtidas” para ver também as cartas que você ainda não tem.",
+    a: "No nosso banco de dados de cartas: as 122 cartas do jogo com as estatísticas atuais, o texto oficial em inglês, italiano, espanhol, francês e português como aparece no jogo e o histórico de balanceamento de cada uma, mais 22 cartas criadas, as que só existem quando outra carta as gera, cujos textos não foram verificados no jogo. No jogo, quando a verificamos, antes do Acesso Antecipado, a coleção ficava em Os meus decks → Cartas: ative o filtro “Não obtidas” para ver também as cartas que você ainda não tem.",
     links: [{ path: "/cards", label: "Banco de dados de cartas" }],
     keywords: ["lista de cartas", "lista das cartas", "todas as cartas", "banco de dados", "database", "colecao", "nao obtidas"],
   },
   {
     id: "where-cards",
     q: "De onde vêm as estatísticas das cartas deste site?",
-    a: "Os custos, as estatísticas, os alinhamentos e os textos das 122 cartas da Demo 2.0 foram verificados um a um no jogo em 22 de setembro de 2026, em inglês, e em 25 de setembro também em italiano e espanhol, que são os textos do jogo, no patch da demo de 21 de setembro de 2026. Os textos em português, em alemão e em russo também são os do jogo, lidos na coleção em 20 de outubro de 2026, já com os textos do patch 0.7. O patch 0.7 de 29 de setembro mudou o custo de Bagheera, Mind Palace e Spellbook e reformulou Twister Toss: o site aplica essas mudanças a partir das notas oficiais do patch na Steam, e o novo texto de Twister Toss foi lido no jogo em português, mas ainda não em inglês. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
+    a: "Os custos, as estatísticas, os alinhamentos e os textos das 122 cartas da coleção do jogo foram verificados um a um no jogo em 22 de setembro de 2026, em inglês, e em 25 de setembro também em italiano e espanhol, que são os textos do jogo, no patch da demo de 21 de setembro de 2026. Os textos em português, em alemão e em russo também são os do jogo, lidos na coleção em 20 de outubro de 2026, já com os textos do patch 0.7. O patch 0.7 de 29 de setembro mudou o custo de Bagheera, Mind Palace e Spellbook e reformulou Twister Toss: o site aplica essas mudanças a partir das notas oficiais do patch na Steam, e o novo texto de Twister Toss foi lido no jogo em português, mas ainda não em inglês. As notas do patch 0.8 de 27 de outubro de 2026, a primeira versão do Acesso Antecipado, não citam mudanças nas cartas. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
     news: [
       { slug: "patch-0-7", label: "Notas do patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas do patch da demo de 21 de setembro" },
@@ -712,14 +715,14 @@ const de: Faq[] = [
   {
     id: "release-date",
     q: "Wann erscheint Origins TCG?",
-    a: "Die Steam-Seite nennt für den Release das vierte Quartal 2026 („Q4 2026“), ohne genaueres Datum (gelesen am 25. September 2026). Spielen kannst du schon jetzt: Die kostenlose Demo ist seit dem 15. Juli 2026 auf Steam, hat am 21. September ihr erstes großes Update bekommen und schaltet mit dem Steam Next Fest vom 19. bis 26. Oktober 2026 den Ranglisten-Modus frei. Unsere Roadmap sammelt alle bestätigten Termine.",
+    a: "Es ist bereits im Early Access erschienen: Origins TCG ist seit dem 27. Oktober 2026 kostenlos auf Steam spielbar, mit Version 0.8, dem Update, mit dem die Demo endete. Koin Games will den Early Access mit Version 1.0 etwa am 17. März 2027 verlassen, ein Datum, das die Steam-Seite als vorläufig angibt und das sich ändern kann (gelesen am 28. Oktober 2026). Davor war vom 15. Juli bis 27. Oktober 2026 die kostenlose Demo auf Steam. Unsere Roadmap sammelt alle bestätigten Termine.",
     guides: ["roadmap-and-dates", "play-the-demo"],
-    keywords: ["erscheint", "erscheinen", "release", "releasedatum", "erscheinungsdatum", "veröffentlichung", "launch", "early access", "wann kommt"],
+    keywords: ["erscheint", "erscheinen", "release", "releasedatum", "erscheinungsdatum", "veröffentlichung", "launch", "early access", "wann kommt", "1.0", "version 1.0"],
   },
   {
     id: "languages",
     q: "Gibt es Origins TCG auf Deutsch?",
-    a: "Ja: Seit Patch 0.7 vom 29. September 2026 unterstützt das Spiel 13 Sprachen: Englisch, Französisch, Italienisch, Deutsch, Spanisch (Spanien), Spanisch (Lateinamerika), Portugiesisch (Brasilien), Portugiesisch (Portugal), Japanisch, Koreanisch, Polnisch, Russisch und vereinfachtes Chinesisch (offizielle Patchnotes). Am 30. September 2026 nennt die Steam-Seite dieselben 13 Sprachen für die Oberfläche, mit vollständiger Sprachausgabe nur auf Englisch. Zum Wechseln der Sprache klickst du in deiner Steam-Bibliothek mit der rechten Maustaste auf das Spiel, dann auf Eigenschaften, Sprache. OriginsMeta gibt es seit dem 20. Oktober 2026 auch auf Deutsch und Russisch, neben Englisch, Italienisch, Spanisch, Französisch und Portugiesisch. Die Kartentexte auf Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch sind die des Spiels; die deutschen und russischen haben wir am 20. Oktober 2026 im Spiel gelesen.",
+    a: "Ja: Seit Patch 0.7 vom 29. September 2026 unterstützt das Spiel 13 Sprachen: Englisch, Französisch, Italienisch, Deutsch, Spanisch (Spanien), Spanisch (Lateinamerika), Portugiesisch (Brasilien), Portugiesisch (Portugal), Japanisch, Koreanisch, Polnisch, Russisch und vereinfachtes Chinesisch (offizielle Patchnotes). Die Steam-Seite nennt dieselben 13 Sprachen für die Oberfläche, mit vollständiger Sprachausgabe nur auf Englisch (gelesen am 30. September und erneut am 28. Oktober 2026). Zum Wechseln der Sprache klickst du in deiner Steam-Bibliothek mit der rechten Maustaste auf das Spiel, dann auf Eigenschaften, Sprache. OriginsMeta gibt es seit dem 20. Oktober 2026 auch auf Deutsch und Russisch, neben Englisch, Italienisch, Spanisch, Französisch und Portugiesisch. Die Kartentexte auf Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch sind die des Spiels; die deutschen und russischen haben wir am 20. Oktober 2026 im Spiel gelesen.",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Patchnotes zu 0.7" }],
     keywords: ["deutsch", "deutsche", "sprache", "sprachen", "russisch", "übersetzt", "übersetzung", "untertitel", "sprachausgabe", "synchronisation", "englisch", "lokalisierung"],
@@ -741,14 +744,14 @@ const de: Faq[] = [
   {
     id: "free-to-compete",
     q: "Ist Origins TCG Pay-to-Win?",
-    a: "Koin Games sagt nein: Jeder Spieler bekommt jede Karte kostenlos, und was du kaufst, sind Sammlerversionen – gegradet, limitiert, auf dem Steam-Markt handelbar –, also ändert Geld, was du besitzt, nicht, was du spielen kannst. Das Spiel ist noch nicht erschienen: Was noch nicht bestätigt ist, steht in unserem Guide.",
+    a: "Koin Games sagt nein: Jeder Spieler bekommt jede Karte kostenlos, und was du kaufst, sind Sammlerversionen – gegradet, limitiert, auf dem Steam-Markt handelbar –, also ändert Geld, was du besitzt, nicht, was du spielen kannst. Auf der Steam-Seite (gelesen am 28. Oktober 2026) schreibt Koin, dass das Spiel für immer Free-to-Play und Free-to-Compete bleibt, im Early Access und danach, dass Geld nie stärkere Karten freischaltet oder einen Vorteil im Spiel verschafft und dass der Early Access einige kostenpflichtige Premium-Funktionen haben wird. Was Geld im Einzelnen kauft, steht in unserem Guide.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "pay-to-win", "p2w", "free-to-play", "free to play", "free-to-compete", "mikrotransaktionen"],
   },
   {
     id: "kickstarter",
     q: "Gibt es schon ein Datum für den Kickstarter von Origins TCG?",
-    a: "Ja: den 27. Oktober 2026. Der CEO von Koin Games, Tim Jooste, hat das Datum am 17. September 2026 auf X genannt („back the Alpha Edition Kickstarter (Oct 27th)“), und das Hauptmenü der Demo zeigte den Kickstarter als „Coming soon – Oct 27“ (gelesen am 25. September 2026); keine der beiden Quellen sagt, um wie viel Uhr er startet. Die Vorregistrierung ist auf founder.origins-tcg.com offen: Eine Anzahlung von 1 Dollar, die vor dem Start erstattet werden kann, gibt dir den VIP-Status mit 15 % Rabatt. Unser Kickstarter-Guide hält alles aktuell.",
+    a: "Ja: Er ist am 27. Oktober 2026 gestartet, an dem Tag, an dem Origins TCG in den Early Access ging, und Koin Games hat ihn auf Steam mit dem Beitrag „The Origins Kickstarter is LIVE“ angekündigt. Die Kampagne gilt dem Alpha Set „Myths & Legends“, exklusiv auf Kickstarter: 218 Karten, die Koin nach eigenen Worten nach und nach im Laufe des Early Access veröffentlichen will. Das Datum hatte der CEO von Koin Games, Tim Jooste, am 17. September 2026 auf X genannt („back the Alpha Edition Kickstarter (Oct 27th)“), und das Hauptmenü der Demo zeigte den Kickstarter als „Coming soon – Oct 27“. Unser Kickstarter-Guide hält alles aktuell.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "Kickstarter-AMA vom 10. September" }],
     keywords: ["kickstarter", "crowdfunding", "vorregistrierung", "anzahlung", "founder", "alpha"],
@@ -756,7 +759,7 @@ const de: Faq[] = [
   {
     id: "demo-progress",
     q: "Behalte ich meinen Fortschritt aus der Demo von Origins TCG?",
-    a: "Innerhalb der Demo ja. Am 16. September 2026 schrieb ein Mitarbeiter von Koin Games im offiziellen Discord, dass freigeschaltete Decks und der Fortschritt gegen die Bosse aus Demo 1 in Demo 2 übernommen werden, und der Steam-Beitrag vom 21. September ergänzt, dass alle, die die Demo, den Playtest oder beides gespielt haben, den jeweils weiteren Fortschritt behalten, „so no one will have to unlock cards again“. Für das fertige Spiel sagt der Beitrag zum Start vom 16. Juli, dass die exklusiven Sammelobjekte der Demo auf dem Steam-Marktplatz handelbar sein werden; ob auch freigeschaltete Decks übernommen werden, sagt noch kein offizieller Steam-Beitrag.",
+    a: "Ja. Die Demo endete am 27. Oktober 2026 mit Version 0.8, und der Steam-Beitrag von Koin Games dazu sagt: „Your account, collection, progression, and everything else now live in the Early Access version of Origins.“ Im offiziellen Discord ergänzte Mawr, Studio Head von Koin, dass der gesamte Fortschritt in den Early Access übertragen wurde und die Demo deinstalliert werden kann. Schon am 21. September 2026 hatte Koin allen, die die Demo, den Playtest oder beides gespielt hatten, den jeweils weiteren Fortschritt gelassen, „so no one will have to unlock cards again“.",
     guides: ["play-the-demo"],
     news: [
       { slug: "demo-first-big-update", label: "Demo-Update vom 21. September" },
@@ -767,10 +770,10 @@ const de: Faq[] = [
   {
     id: "ranked",
     q: "Wann kann ich in Origins TCG Ranked spielen?",
-    a: "Mit dem Start des Steam Next Fest am Montag, 19. Oktober 2026, laut dem Steam-Beitrag vom 21. September, der exklusive Ranked-Belohnungen verspricht, ohne sie schon genauer zu beschreiben. Den Ranglisten-Modus gab es bereits im geschlossenen Playtest, seit Patch 0.6.1 vom 14. August 2026: eine Leiter aus Divisionen bis Grandmaster, mit einer weltweiten Bestenliste für die Division Grandmaster.",
+    a: "Schon jetzt: Ranked wurde in der Demo mit dem Update 0.7.1 vom 15. Oktober 2026 freigeschaltet, vier Tage vor dem Steam Next Fest, und seit dem 27. Oktober 2026 ist es Teil der Early-Access-Version. Version 0.8 hat die Division Grandmaster mit ihrer weltweiten Bestenliste geöffnet, und die erste Ranglisten-Saison des Early Access soll Anfang Dezember enden, mit Belohnungen in limitierter Auflage für alle, die in den höchsten Rängen abschließen (so plant es Koin, das kann sich ändern). Den Ranglisten-Modus gab es bereits im geschlossenen Playtest, seit Patch 0.6.1 vom 14. August 2026: eine Leiter aus Divisionen bis Grandmaster.",
     guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
     news: [
-      { slug: "demo-first-big-update", label: "Ranked zum Steam Next Fest" },
+      { slug: "demo-patch-notes-0-7-1", label: "Demo 0.7.1: Ranked startet" },
       { slug: "patch-0-6-1-ranked", label: "Patch 0.6.1: die Ranked-Leiter" },
     ],
     keywords: ["ranked", "rangliste", "ranglisten", "ranglistenmodus", "ladder", "grandmaster", "ranking", "divisionen", "bestenliste", "leaderboard"],
@@ -800,8 +803,8 @@ const de: Faq[] = [
   },
   {
     id: "legendaries",
-    q: "Welche Legendären gibt es in der Demo von Origins TCG?",
-    a: "In der Demo 2.0 sind es 11, Stand Patch 0.7 vom 29. September 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing und Wicked Stepmother. Jedes Deck wird von genau einer davon angeführt; Legion of the Dead ist der einzige Zauber, die anderen zehn sind Charaktere. Jede hat ihre eigene Seite in unserer Kartendatenbank, mit dem Kartentext des Spiels, den Werten und der Balance-Historie.",
+    q: "Welche Legendären gibt es in Origins TCG?",
+    a: "Im Spiel sind es 11, mit den Werten von Patch 0.7 vom 29. September 2026 (die Patchnotes zu 0.8 vom 27. Oktober 2026 nennen keine Kartenänderungen): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing und Wicked Stepmother. Jedes Deck wird von genau einer davon angeführt; Legion of the Dead ist der einzige Zauber, die anderen zehn sind Charaktere. Jede hat ihre eigene Seite in unserer Kartendatenbank, mit dem Kartentext des Spiels, den Werten und der Balance-Historie.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Kartendatenbank" }],
@@ -820,14 +823,14 @@ const de: Faq[] = [
   {
     id: "card-list",
     q: "Wo sehe ich alle Karten von Origins TCG?",
-    a: "In unserer Kartendatenbank: die 122 Karten der Demo 2.0 mit ihren aktuellen Werten, dem offiziellen Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch, wie er im Spiel steht, und der Balance-Historie jeder Karte, dazu 22 erschaffene Karten, die nur entstehen, wenn eine andere Karte sie erschafft, und deren Texte nicht im Spiel geprüft wurden. Im Spiel findest du die Sammlung unter My Decks → Cards: Schalte den Filter „Unowned“ ein, um auch die Karten zu sehen, die du noch nicht besitzt.",
+    a: "In unserer Kartendatenbank: die 122 Karten des Spiels mit ihren aktuellen Werten, dem offiziellen Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch, wie er im Spiel steht, und der Balance-Historie jeder Karte, dazu 22 erschaffene Karten, die nur entstehen, wenn eine andere Karte sie erschafft, und deren Texte nicht im Spiel geprüft wurden. Im Spiel lag die Sammlung, als wir sie vor dem Early Access geprüft haben, unter My Decks → Cards: Schalte den Filter „Unowned“ ein, um auch die Karten zu sehen, die du noch nicht besitzt.",
     links: [{ path: "/cards", label: "Kartendatenbank" }],
     keywords: ["kartenliste", "liste der karten", "alle karten", "jede karte", "kartendatenbank", "datenbank", "database", "sammlung", "unowned"],
   },
   {
     id: "where-cards",
     q: "Woher stammen die Kartenwerte auf dieser Website?",
-    a: "Kosten, Werte, Gesinnungen und Texte der 122 Karten der Demo 2.0 wurden am 22. September 2026 einzeln im Spiel geprüft, auf Englisch, und am 25. September auch auf Italienisch und Spanisch, die die Texte des Spiels sind, auf dem Demo-Patch vom 21. September 2026; die französischen Texte haben wir am 8. Oktober 2026 und die portugiesischen, deutschen und russischen am 20. Oktober 2026 im Spiel gelesen, auf Patch 0.7. Patch 0.7 vom 29. September hat die Kosten von Bagheera, Mind Palace und Spellbook geändert und Twister Toss überarbeitet: Die Website übernimmt diese Änderungen aus den offiziellen Patchnotes auf Steam, und der neue Text von Twister Toss wurde im Spiel auf Portugiesisch, Deutsch und Russisch gelesen, auf Englisch noch nicht. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
+    a: "Kosten, Werte, Gesinnungen und Texte der 122 Karten der Sammlung des Spiels wurden am 22. September 2026 einzeln im Spiel geprüft, auf Englisch, und am 25. September auch auf Italienisch und Spanisch, die die Texte des Spiels sind, auf dem Demo-Patch vom 21. September 2026; die französischen Texte haben wir am 8. Oktober 2026 und die portugiesischen, deutschen und russischen am 20. Oktober 2026 im Spiel gelesen, auf Patch 0.7. Patch 0.7 vom 29. September hat die Kosten von Bagheera, Mind Palace und Spellbook geändert und Twister Toss überarbeitet: Die Website übernimmt diese Änderungen aus den offiziellen Patchnotes auf Steam, und der neue Text von Twister Toss wurde im Spiel auf Portugiesisch, Deutsch und Russisch gelesen, auf Englisch noch nicht. Die Patchnotes zu 0.8 vom 27. Oktober 2026, der ersten Version des Early Access, nennen keine Kartenänderungen. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
     news: [
       { slug: "patch-0-7", label: "Patchnotes zu 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patchnotes der Demo vom 21. September" },
@@ -842,14 +845,14 @@ const ru: Faq[] = [
   {
     id: "release-date",
     q: "Когда выходит Origins TCG?",
-    a: "На странице Steam релиз указан на четвёртый квартал 2026 года («Q4 2026»), без более точной даты (по состоянию на 25 сентября 2026). Играть можно уже сейчас: бесплатная демоверсия есть в Steam с 15 июля 2026, 21 сентября получила первое крупное обновление, а со стартом Steam Next Fest, с 19 по 26 октября 2026, в ней открывается рейтинговый режим. В нашей дорожной карте собраны все подтверждённые даты.",
+    a: "Игра уже вышла в раннем доступе: Origins TCG бесплатно доступна в Steam с 27 октября 2026, в версии 0.8 — с этим обновлением завершилась демоверсия. Koin Games рассчитывает выйти из раннего доступа с версией 1.0 примерно 17 марта 2027; на странице Steam эта дата указана как ориентировочная и может измениться (по состоянию на 28 октября 2026). До этого, с 15 июля по 27 октября 2026, в Steam была бесплатная демоверсия. В нашей дорожной карте собраны все подтверждённые даты.",
     guides: ["roadmap-and-dates", "play-the-demo"],
-    keywords: ["выходит", "выход", "выйдет", "релиз", "релиза", "дата выхода", "дата релиза", "запуск", "early access", "ранний доступ"],
+    keywords: ["выходит", "выход", "выйдет", "релиз", "релиза", "дата выхода", "дата релиза", "запуск", "early access", "ранний доступ", "раннем доступе", "1.0", "версия 1.0"],
   },
   {
     id: "languages",
     q: "Есть ли Origins TCG на русском языке?",
-    a: "Да: с патча 0.7 от 29 сентября 2026 игра поддерживает 13 языков: английский, французский, итальянский, немецкий, испанский (Испания), испанский (Латинская Америка), португальский (Бразилия), португальский (Португалия), японский, корейский, польский, русский и упрощённый китайский (официальные патчноуты). 30 сентября 2026 страница Steam указывает те же 13 языков для интерфейса, а полная озвучка есть только на английском. Чтобы сменить язык, щёлкните правой кнопкой мыши по игре в библиотеке Steam, затем выберите «Свойства» и «Язык». OriginsMeta с 20 октября 2026 есть и на русском, а также на английском, итальянском, испанском, французском, португальском и немецком. Тексты карт на итальянском, испанском, французском, португальском, немецком и русском взяты из игры (немецкие и русские мы прочитали в игре 20 октября 2026).",
+    a: "Да: с патча 0.7 от 29 сентября 2026 игра поддерживает 13 языков: английский, французский, итальянский, немецкий, испанский (Испания), испанский (Латинская Америка), португальский (Бразилия), португальский (Португалия), японский, корейский, польский, русский и упрощённый китайский (официальные патчноуты). Страница Steam указывает те же 13 языков для интерфейса, а полная озвучка есть только на английском (по состоянию на 30 сентября и снова на 28 октября 2026). Чтобы сменить язык, щёлкните правой кнопкой мыши по игре в библиотеке Steam, затем выберите «Свойства» и «Язык». OriginsMeta с 20 октября 2026 есть и на русском, а также на английском, итальянском, испанском, французском, португальском и немецком. Тексты карт на итальянском, испанском, французском, португальском, немецком и русском взяты из игры (немецкие и русские мы прочитали в игре 20 октября 2026).",
     guides: ["play-the-demo"],
     news: [{ slug: "patch-0-7", label: "Патчноуты 0.7" }],
     keywords: ["русский", "русском", "русская", "язык", "языки", "языке", "языков", "перевод", "переведена", "локализация", "субтитры", "озвучка", "английский"],
@@ -871,14 +874,14 @@ const ru: Faq[] = [
   {
     id: "free-to-compete",
     q: "Origins TCG — это pay-to-win?",
-    a: "Koin Games говорит, что нет: каждый игрок получает все карты бесплатно, а покупаются коллекционные версии — с грейдингом, ограниченные, которыми можно торговать на Торговой площадке Steam. Так что деньги меняют то, чем вы владеете, а не то, чем вы можете играть. Игра ещё не вышла: что пока не подтверждено, написано в нашем гайде.",
+    a: "Koin Games говорит, что нет: каждый игрок получает все карты бесплатно, а покупаются коллекционные версии — с грейдингом, ограниченные, которыми можно торговать на Торговой площадке Steam. Так что деньги меняют то, чем вы владеете, а не то, чем вы можете играть. На странице Steam (по состоянию на 28 октября 2026) Koin пишет, что игра навсегда останется free-to-play и free-to-compete — и в раннем доступе, и после, что траты никогда не откроют более сильные карты и не дадут преимущества в игре, а в раннем доступе будут некоторые платные премиум-функции. Что именно покупают за деньги, подробно написано в нашем гайде.",
     guides: ["is-origins-tcg-pay-to-win"],
     keywords: ["pay to win", "pay-to-win", "p2w", "донат", "донатная", "free-to-play", "free to play", "free-to-compete", "микротранзакции"],
   },
   {
     id: "kickstarter",
     q: "Есть ли уже дата Kickstarter для Origins TCG?",
-    a: "Да: 27 октября 2026. Генеральный директор Koin Games Tim Jooste назвал дату в X 17 сентября 2026 («back the Alpha Edition Kickstarter (Oct 27th)»), а главное меню демоверсии показывало Kickstarter как «Coming soon – Oct 27» (по состоянию на 25 сентября 2026); ни там, ни там не сказано, во сколько он стартует. Предварительная регистрация открыта на founder.origins-tcg.com: депозит в 1 доллар, который можно вернуть до запуска, даёт статус VIP со скидкой 15%. В нашем гайде по Kickstarter всё самое актуальное.",
+    a: "Да: он открылся 27 октября 2026, в день, когда Origins TCG вышла в ранний доступ, и Koin Games объявила об этом в Steam постом «The Origins Kickstarter is LIVE». Кампания посвящена Alpha Set «Myths & Legends» — эксклюзиву Kickstarter из 218 карт, которые Koin, по её словам, будет постепенно выпускать в течение раннего доступа. Дату ещё 17 сентября 2026 назвал в X генеральный директор Koin Games Tim Jooste («back the Alpha Edition Kickstarter (Oct 27th)»), а главное меню демоверсии показывало Kickstarter как «Coming soon – Oct 27». В нашем гайде по Kickstarter всё самое актуальное.",
     guides: ["origins-tcg-kickstarter", "collector-economy"],
     news: [{ slug: "kickstarter-ama-pre-registration", label: "AMA по Kickstarter от 10 сентября" }],
     keywords: ["kickstarter", "кикстартер", "краудфандинг", "предрегистрация", "предварительная регистрация", "депозит", "founder", "alpha"],
@@ -886,7 +889,7 @@ const ru: Faq[] = [
   {
     id: "demo-progress",
     q: "Сохранится ли мой прогресс из демоверсии Origins TCG?",
-    a: "Внутри демоверсии — да. 16 сентября 2026 сотрудник Koin Games написал в официальном Discord, что открытые колоды и прогресс против боссов из Demo 1 переносятся в Demo 2, а пост в Steam от 21 сентября добавляет, что все, кто играл в демоверсию, в плейтест или и туда и туда, сохранят тот прогресс, который продвинулся дальше, «so no one will have to unlock cards again». О полной игре пост о запуске от 16 июля говорит, что эксклюзивными коллекционными предметами демоверсии можно будет торговать на Торговой площадке Steam; переносятся ли туда и открытые колоды, ни один официальный пост в Steam пока не говорит.",
+    a: "Да. Демоверсия завершилась 27 октября 2026 с выходом версии 0.8, и пост Koin Games в Steam говорит об этом так: «Your account, collection, progression, and everything else now live in the Early Access version of Origins». В официальном Discord глава студии Koin, Mawr, добавил, что весь прогресс перенесён в ранний доступ, а демоверсию можно удалить. Ещё 21 сентября 2026 Koin оставила всем, кто играл в демоверсию, в плейтест или и туда и туда, тот прогресс, который продвинулся дальше, «so no one will have to unlock cards again».",
     guides: ["play-the-demo"],
     news: [
       { slug: "demo-first-big-update", label: "Обновление демоверсии от 21 сентября" },
@@ -897,10 +900,10 @@ const ru: Faq[] = [
   {
     id: "ranked",
     q: "Когда в Origins TCG можно будет играть в рейтинговом режиме?",
-    a: "С началом Steam Next Fest, в понедельник 19 октября 2026, согласно посту в Steam от 21 сентября, который обещает эксклюзивные награды рейтингового режима, пока без подробностей. Рейтинговый режим уже был в закрытом плейтесте, начиная с патча 0.6.1 от 14 августа 2026: лестница дивизионов до Grandmaster с мировой таблицей лидеров для дивизиона Grandmaster.",
+    a: "Уже сейчас: рейтинговый режим открылся в демоверсии с обновлением 0.7.1 от 15 октября 2026, за четыре дня до Steam Next Fest, а с 27 октября 2026 он входит в версию раннего доступа. Версия 0.8 открыла дивизион Grandmaster с мировой таблицей лидеров, а первый рейтинговый сезон раннего доступа должен закончиться в начале декабря; те, кто завершит его на самых высоких рангах, получат награды ограниченного выпуска (таков план Koin, он может измениться). Рейтинговый режим уже был в закрытом плейтесте, начиная с патча 0.6.1 от 14 августа 2026: лестница дивизионов до Grandmaster.",
     guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
     news: [
-      { slug: "demo-first-big-update", label: "Рейтинговый режим на Steam Next Fest" },
+      { slug: "demo-patch-notes-0-7-1", label: "Демоверсия 0.7.1: открыт рейтинговый режим" },
       { slug: "patch-0-6-1-ranked", label: "Патч 0.6.1: рейтинговая лестница" },
     ],
     keywords: ["рейтинг", "рейтинговый", "рейтинговом", "рейтинговая", "ранкед", "ranked", "ladder", "лестница", "grandmaster", "грандмастер", "дивизион", "дивизионы", "таблица лидеров", "лидерборд"],
@@ -930,8 +933,8 @@ const ru: Faq[] = [
   },
   {
     id: "legendaries",
-    q: "Какие Легендарные карты есть в демоверсии Origins TCG?",
-    a: "В Demo 2.0 их 11, по состоянию на патч 0.7 от 29 сентября 2026: Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing и Wicked Stepmother. Каждую колоду возглавляет ровно одна из них; Legion of the Dead — единственное заклинание, остальные десять — персонажи. У каждой есть своя страница в нашей базе карт: с текстом карты, характеристиками и историей балансных изменений.",
+    q: "Какие Легендарные карты есть в Origins TCG?",
+    a: "В игре их 11, с характеристиками патча 0.7 от 29 сентября 2026 (в патчноутах 0.8 от 27 октября 2026 изменений карт нет): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing и Wicked Stepmother. Каждую колоду возглавляет ровно одна из них; Legion of the Dead — единственное заклинание, остальные десять — персонажи. У каждой есть своя страница в нашей базе карт: с текстом карты, характеристиками и историей балансных изменений.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "База карт" }],
@@ -950,14 +953,14 @@ const ru: Faq[] = [
   {
     id: "card-list",
     q: "Где посмотреть все карты Origins TCG?",
-    a: "В нашей базе карт: 122 карты Demo 2.0 с актуальными характеристиками, текстом и историей балансных изменений каждой, плюс 22 созданные карты — те, что появляются, только когда их создаёт другая карта, и чьи тексты не проверены в игре. Тексты карт на английском, итальянском, испанском, французском, португальском, немецком и русском — такие, как в игре. В самой игре коллекция находится в разделе My Decks → Cards: включите фильтр «Unowned», чтобы видеть и карты, которых у вас ещё нет.",
+    a: "В нашей базе карт: 122 карты игры с актуальными характеристиками, текстом и историей балансных изменений каждой, плюс 22 созданные карты — те, что появляются, только когда их создаёт другая карта, и чьи тексты не проверены в игре. Тексты карт на английском, итальянском, испанском, французском, португальском, немецком и русском — такие, как в игре. Когда мы проверяли игру до раннего доступа, коллекция находилась в разделе My Decks → Cards: включите фильтр «Unowned», чтобы видеть и карты, которых у вас ещё нет.",
     links: [{ path: "/cards", label: "База карт" }],
     keywords: ["список карт", "все карты", "каждую карту", "база карт", "база данных", "коллекция", "коллекции", "unowned"],
   },
   {
     id: "where-cards",
     q: "Откуда берутся характеристики карт на этом сайте?",
-    a: "Стоимость, характеристики, мировоззрения и тексты 122 карт Demo 2.0 были проверены в игре по одной 22 сентября 2026 на английском, а 25 сентября — также на итальянском и испанском, это игровые тексты, на патче демоверсии от 21 сентября 2026; французские тексты мы прочитали в игре 8 октября 2026, а португальские, немецкие и русские — 20 октября 2026, на патче 0.7. Патч 0.7 от 29 сентября изменил стоимость Bagheera, Mind Palace и Spellbook и переработал Twister Toss: сайт применяет эти изменения по официальным патчноутам в Steam, а новый текст Twister Toss прочитан в игре на португальском, немецком и русском, но ещё не на английском. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
+    a: "Стоимость, характеристики, мировоззрения и тексты 122 карт коллекции игры были проверены в игре по одной 22 сентября 2026 на английском, а 25 сентября — также на итальянском и испанском, это игровые тексты, на патче демоверсии от 21 сентября 2026; французские тексты мы прочитали в игре 8 октября 2026, а португальские, немецкие и русские — 20 октября 2026, на патче 0.7. Патч 0.7 от 29 сентября изменил стоимость Bagheera, Mind Palace и Spellbook и переработал Twister Toss: сайт применяет эти изменения по официальным патчноутам в Steam, а новый текст Twister Toss прочитан в игре на португальском, немецком и русском, но ещё не на английском. В патчноутах 0.8 от 27 октября 2026, первой версии раннего доступа, изменений карт нет. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
     news: [
       { slug: "patch-0-7", label: "Патчноуты 0.7" },
       { slug: "demo-patch-notes-0921", label: "Патчноуты демоверсии от 21 сентября" },
@@ -974,55 +977,55 @@ export const suggerimenti: Record<Locale, string[]> = {
     "What does Mulan do?",
     "Which cards work well with Van Helsing?",
     "How do I build a legal deck?",
-    "What changed in the demo patch of 21 September?",
-    "Which Legendaries are in the Demo 2.0?",
+    "What changed in the patch of 21 September?",
+    "Which Legendaries are in the game?",
     "What is On Reveal?",
   ],
   it: [
     "Che cosa fa Mulan?",
     "Quali carte funzionano bene con Van Helsing?",
     "Come si costruisce un mazzo legale?",
-    "Che cosa è cambiato nella patch della demo del 21 settembre?",
-    "Quali Leggendarie ci sono nella Demo 2.0?",
+    "Che cosa è cambiato nella patch del 21 settembre?",
+    "Quali Leggendarie ci sono nel gioco?",
     "Che cosa fa un'abilità Alla rivelazione?",
   ],
   es: [
     "¿Qué hace Mulan?",
     "¿Qué cartas funcionan bien con Van Helsing?",
     "¿Cómo construyo un mazo válido?",
-    "¿Qué cambió en el parche de la demo del 21 de septiembre?",
-    "¿Qué Legendarias hay en la Demo 2.0?",
+    "¿Qué cambió en el parche del 21 de septiembre?",
+    "¿Qué Legendarias hay en el juego?",
     "¿Qué hace una habilidad Al revelar?",
   ],  fr: [
     "Que fait Mulan ?",
     "Quelles cartes fonctionnent bien avec Van Helsing ?",
     "Comment construire un deck légal ?",
-    "Qu'est-ce qui a changé dans le patch de la démo du 21 septembre ?",
-    "Quelles Légendaires y a-t-il dans la Demo 2.0 ?",
+    "Qu'est-ce qui a changé dans le patch du 21 septembre ?",
+    "Quelles Légendaires y a-t-il dans le jeu ?",
     "Que fait une capacité À la révélation ?",
   ],
   pt: [
     "O que faz Mulan?",
     "Quais cartas funcionam bem com Van Helsing?",
     "Como montar um deck válido?",
-    "O que mudou no patch da demo de 21 de setembro?",
-    "Quais Lendárias há na Demo 2.0?",
+    "O que mudou no patch de 21 de setembro?",
+    "Quais Lendárias há no jogo?",
     "O que faz uma habilidade Ao revelar?",
   ],
   de: [
     "Was macht Mulan?",
     "Welche Karten passen gut zu Van Helsing?",
     "Wie baue ich ein gültiges Deck?",
-    "Was hat sich im Patch der Demo vom 21. September geändert?",
-    "Welche Legendären gibt es in der Demo 2.0?",
+    "Was hat sich im Patch vom 21. September geändert?",
+    "Welche Legendären gibt es im Spiel?",
     "Was macht eine Fähigkeit Beim Aufdecken?",
   ],
   ru: [
     "Что делает Mulan?",
     "Какие карты хорошо сочетаются с Van Helsing?",
     "Как собрать допустимую колоду?",
-    "Что изменилось в патче демоверсии от 21 сентября?",
-    "Какие Легендарные карты есть в Demo 2.0?",
+    "Что изменилось в патче от 21 сентября?",
+    "Какие Легендарные карты есть в игре?",
     "Что делает способность При раскрытии?",
   ],
 };

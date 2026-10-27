@@ -30,7 +30,7 @@ import { isUuid } from "./util";
  */
 export type TierActionState = { error?: string; ok?: boolean; href?: string; created?: boolean };
 
-/** Slug ammessi per ogni scheda: le carte attive della Demo 2.0, Leggendarie da una parte e carte base dall'altra. */
+/** Slug ammessi per ogni scheda: le carte attive del gioco, Leggendarie da una parte e carte base dall'altra. */
 function knownSlugs(): Record<TierKind, ReadonlySet<string>> {
   const playable = activeCards.filter((c) => c.type !== "token");
   return {

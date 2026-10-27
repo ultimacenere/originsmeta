@@ -68,7 +68,7 @@ export const fr: Dictionary = {
        ("decks" è di /decks: revisione dell'Ondata 1) */
     title: "FAQ Origins TCG",
     metaTitle: "FAQ Origins TCG : langues, règles et réponses rapides",
-    intro: "Posez une question : la réponse est construite à partir des données de ce site, la base de données des cartes (patch de la démo du 21 septembre 2026), nos guides et le calendrier des événements. Plus bas, les réponses que nous avons écrites et vérifiées.",
+    intro: "Posez une question : la réponse est construite à partir des données de ce site, la base de données des cartes (statistiques du patch 0.7 du 29 septembre 2026), nos guides et le calendrier des événements. Plus bas, les réponses que nous avons écrites et vérifiées.",
     /* intro con l'assistente spento: solo quello che la pagina offre davvero (le risposte approvate, di solito con la guida
        collegata); in quel caso approvedIntro non compare e il riquadro `offline` scende sotto le risposte */
     introOffline: "Des réponses courtes aux questions les plus fréquentes sur Origins TCG, le jeu de cartes de Koin Games, avec un lien vers le guide qui approfondit quand il existe.",
@@ -80,7 +80,7 @@ export const fr: Dictionary = {
     suggestions: "Essayez l'une de celles-ci",
     sources: "D'où ça vient",
     disclaimer: "Réponse construite par un assistant à partir des données de ce site. Nous ne sommes pas Koin Games : pour les règles, les dates et les annonces, les sources officielles l'emportent.",
-    coverage: "Il peut lire les {cards} cartes de la Demo 2.0 et les {created} cartes qu'elles créent, {guides} guides et le calendrier des événements. Les stats suivent le patch de la démo du {patch}.",
+    coverage: "Il peut lire les {cards} cartes du jeu et les {created} cartes qu'elles créent, {guides} guides et le calendrier des événements. Les stats suivent le patch du {patch}.",
     /* riquadro sotto le risposte quando l'assistente è spento: due strade che rispondono comunque, senza parlare dell'assistente */
     offlineTitle: "Vous n'avez pas trouvé votre réponse ?",
     offline: "Pour une carte précise, la base de données des cartes donne son texte officiel, ses stats et son historique d'équilibrage. Pour tout le reste, demandez à la communauté sur le Discord officiel.",
@@ -136,7 +136,7 @@ export const fr: Dictionary = {
     stats: "Stats",
     unknownStats: "stats pas encore publiées",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats au patch de la démo du 21 septembre 2026 : les 122 cartes de la démo ont été vérifiées dans le jeu le 22 septembre, et les notes d'équilibrage viennent des patch notes officielles.",
+    asOf: "Stats du patch 0.7 (29 septembre 2026) : les 122 cartes jouables ont été vérifiées dans le jeu le 22 septembre 2026, les changements du patch 0.7 viennent des patch notes officielles, et celles de la 0.8 (27 octobre 2026, Accès anticipé) ne citent aucun changement de carte.",
     alignment: "Alignement",
     good: "Good",
     evil: "Evil",
@@ -145,7 +145,7 @@ export const fr: Dictionary = {
     common: "Commune",
     rare: "Rare",
     epic: "Épique",
-    showRemoved: "Afficher les cartes retirées de la démo",
+    showRemoved: "Afficher les cartes retirées du jeu",
     formerName: "Ancien nom",
     results: "résultats",
     noResults: "Aucune carte ne correspond à cette recherche.",
@@ -156,7 +156,7 @@ export const fr: Dictionary = {
     sortMana: "Mana",
     sortPower: "Puissance",
     sortHealth: "Santé",
-    removed: "Hors de la démo",
+    removed: "Retirée du jeu",
     steamNews: "Publication officielle sur Steam",
     metashift: "MetaShifting",
     unranked: "Pas encore classée",
@@ -242,58 +242,58 @@ export const fr: Dictionary = {
       host: { title: "Organisez un tournoi", text: "Arbre automatique et lien court à coller sur Discord.", cta: "Créer un tournoi" },
     },
     guidesTitle: "Par où commencer",
-    guidesStartSub: "Vous découvrez Origins TCG ? Trois lectures courtes : ce qu'est le jeu, comment jouer à la démo et ce qui se passe au Steam Next Fest.",
+    guidesStartSub: "Vous découvrez Origins TCG ? Trois lectures courtes : ce qu'est le jeu, comment commencer à jouer et comment fonctionne le mode classé.",
     statusTitle: "État du jeu",
     /* "In breve" dentro Stato del gioco (decisione di Pierluigi del 25/09/2026): che cos'è il gioco e che cos'è il sito,
        solo con fatti già sul sito (slider, righe qui sotto, llms.txt) */
-    inBrief: "Origins TCG est le jeu de cartes numérique free-to-compete de Koin Games : la démo est gratuite sur Steam et la sortie est prévue au quatrième trimestre 2026, selon la page Steam. OriginsMeta est un site de fans non officiel en anglais, italien, espagnol et français, sans lien avec Koin Games.",
+    inBrief: "Origins TCG est le jeu de cartes numérique free-to-compete de Koin Games : il est gratuit sur Steam en Accès anticipé depuis le 27 octobre 2026, et Koin vise la version 1.0 vers mars 2027, selon la page Steam. OriginsMeta est un site de fans non officiel en sept langues, sans lien avec Koin Games.",
     status: {
-      demo: "Démo Steam",
-      demoValue: "Disponible depuis le 15 juillet 2026",
+      demo: "Accès anticipé",
+      demoValue: "Sur Steam depuis le 27 octobre 2026",
       reviews: "Avis Steam",
-      reviewsValue: "96 % positifs (206)",
-      launch: "Sortie",
-      launchValue: "4e trimestre 2026 (Steam)",
+      reviewsValue: "100 % positifs (22)",
+      launch: "Version 1.0",
+      launchValue: "Vers mars 2027 (Steam)",
       mobile: "Mobile",
       mobileValue: "2027",
       languages: "Langues du jeu",
       languagesValue: "13 langues",
-      matches: "Parties la première semaine",
-      matchesValue: "13 000+",
+      matches: "Listes de souhaits Steam",
+      matchesValue: "20 000+",
       kickstarter: "Kickstarter",
-      kickstarterValue: "27 octobre (menu de la démo)",
+      kickstarterValue: "Ouvert depuis le 27 octobre 2026",
     },
-    statusNote: "Chiffres tirés de la page Steam officielle, des annonces de Koin Games et de la démo elle-même (l'espagnol et la date du Kickstarter, vus dans le jeu), vérifiés le 25 septembre 2026 ; les avis et les langues le 18 octobre 2026.",
+    statusNote: "Chiffres tirés de la page Steam officielle et des annonces de Koin Games, vérifiés le 28 octobre 2026.",
     slider: { prev: "Image précédente", next: "Image suivante", goTo: "Aller à l'image {n}", credit: "Illustrations officielles © Koin Games", pause: "Mettre le diaporama en pause", play: "Lancer le diaporama" },
     slides: {
       // patch 0.7 (30/09/2026, Pierluigi: "metti la copertina anche nello slider con il tasto che rimanda all'articolo della patch")
       /* slide di OriginsMeta Tracker (12/10/2026), la prima dello slider */
-      tracker: { kicker: "Nouveau · OriginsMeta Tracker 0.4.0", title: "OriginsMeta Tracker", text: "Enregistre vos parties d'Origins TCG et suit votre deck en direct. Gratuit avec un compte.", cta: "Télécharger le Tracker", alt: "OriginsMeta Tracker pendant une partie de la Démo 2.0 : le Deck tracker avec les cartes piochées assombries, à côté du panneau de l'adversaire avec Dracula et les cartes révélées." },
+      tracker: { kicker: "Nouveau · OriginsMeta Tracker 0.4.0", title: "OriginsMeta Tracker", text: "Enregistre vos parties d'Origins TCG et suit votre deck en direct. Gratuit avec un compte.", cta: "Télécharger le Tracker", alt: "OriginsMeta Tracker pendant une partie : le Deck tracker avec les cartes piochées assombries, à côté du panneau de l'adversaire avec Dracula et les cartes révélées." },
       patch07: { kicker: "Patch notes · 29 septembre 2026", title: "Le patch 0.7 est sorti", text: "Le dernier patch d'équilibrage avant la Crimson Cup : Twister Toss reworkée, Bagheera, Mind Palace et Spellbook coûtent 1 de plus.", cta: "Lire les patch notes", alt: "Image officielle de la Steam Demo Update #2, version 0.7 : un chasseur à la barbe blanche, lunettes roses, cigare et fusil à l'épaule, tient une fiole d'eau bénite qui brille." },
-      keyArt: { kicker: "Démo Steam disponible · sortie au 4e trimestre 2026", title: "Origins TCG", text: "Le jeu de cartes numérique free-to-compete de Koin Games : des légendes de toutes les histoires, une Légendaire à la tête de chaque deck.", cta: "Jouer à la démo sur Steam", alt: "Illustration principale : une héroïne blonde sourit au milieu de cartes qui volent sur un fond rose et violet, à côté du logo Origins TCG." },
+      keyArt: { kicker: "Gratuit sur Steam · Accès anticipé", title: "Origins TCG", text: "Le jeu de cartes numérique free-to-compete de Koin Games : des légendes de toutes les histoires, une Légendaire à la tête de chaque deck.", cta: "Jouer gratuitement sur Steam", alt: "Illustration principale : une héroïne blonde sourit au milieu de cartes qui volent sur un fond rose et violet, à côté du logo Origins TCG." },
       rapunzel: { kicker: "Illustration officielle", title: "Des légendes de toutes les histoires", text: "Rapunzel sur la bannière officielle : la liste des Légendaires grandit à chaque révélation.", cta: "Base de données des cartes", alt: "Bannière officielle : Rapunzel assise avec un casque et une manette, ses très longs cheveux traversant toute l'image." },
       zeroPay: { kicker: "Écran de chargement officiel", title: "Zéro pay-to-win", text: "Chaque carte compétitive se gagne en jouant : c'est la promesse du modèle free-to-compete.", cta: "Est-ce pay-to-win ?", alt: "Écran de chargement : quatre boosters débloqués à 4, 8 et 12 victoires et au-delà, avec la promesse que chaque joueur obtient toutes les cartes." },
       realCollecting: { kicker: "Écran de chargement officiel", title: "De la vraie collection", text: "Les boosters de collectionneur contiennent des cartes échangeables : l'économie de la collection, expliquée.", cta: "Économie de la collection", alt: "Écran de chargement : une boîte scellée avec ses boosters à côté d'une carte gradée numériquement 10." },
-      collectAll: { kicker: "Écran de chargement officiel", title: "Attrapez-les toutes", text: "Toutes les cartes de la Demo 2.0 avec leurs stats, leur texte officiel et leur historique d'équilibrage.", cta: "Parcourir les cartes", alt: "Écran de chargement : quatre versions de la carte Alice côte à côte, de la version de départ aux illustrations alternatives et à une promo de tournoi." },
+      collectAll: { kicker: "Écran de chargement officiel", title: "Attrapez-les toutes", text: "Toutes les cartes du jeu avec leurs stats, leur texte officiel et leur historique d'équilibrage.", cta: "Parcourir les cartes", alt: "Écran de chargement : quatre versions de la carte Alice côte à côte, de la version de départ aux illustrations alternatives et à une promo de tournoi." },
     },
   },
   cards: {
     /* title = H1 (e briciole); metaTitle = titolo in SERP, costruito sulla ricerca "origins tcg cartes / liste des cartes" (piano SEO del 25/09/2026) */
     title: "Liste des cartes d'Origins TCG",
-    metaTitle: "Cartes Origins TCG : la liste complète de la Demo 2.0",
-    intro: "Toutes les cartes de la Demo 2.0, plus les cartes qu'elles créent et celles retirées des builds précédentes : stats actuelles, texte officiel en français, anglais, italien et espagnol tel qu'il se lit dans le jeu, historique d'équilibrage et légende dont chaque carte est tirée.",
-    description: "Toutes les cartes de la Demo 2.0 d'Origins TCG (Koin Games) : texte officiel, stats et historique d'équilibrage, filtres par type, saga et rareté.",
+    metaTitle: "Cartes Origins TCG : la liste complète",
+    intro: "Toutes les cartes du jeu, plus les cartes qu'elles créent et celles retirées des builds précédentes : stats actuelles, texte officiel en français, anglais, italien et espagnol tel qu'il se lit dans le jeu, historique d'équilibrage et légende dont chaque carte est tirée.",
+    description: "Toutes les cartes jouables d'Origins TCG (Koin Games) : texte officiel, stats et historique d'équilibrage, avec des filtres par type, saga et rareté.",
     /* placeholder della ricerca: la ricerca legge anche il testo della carta (24/09/2026) */
     searchHint: "Nom ou texte : Merlin, À la révélation…",
     /* l'unico tasto sotto il titolo di /cards (Pierluigi, 29/09/2026): i testi della pagina stanno in fondo */
     exploreLocations: "Explorer les lieux",
-    countLabel: "cartes dans la Demo 2.0",
+    countLabel: "cartes dans le jeu",
     countCreated: "cartes créées",
     countRemoved: "retirées des builds précédentes",
     legendNote: "Les cartes Légendaires mènent le deck : une par deck, marquée de l'étoile. Les sagas sont un classement propre à OriginsMeta, par légende d'origine ; le jeu ne les affiche pas.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Les coûts, les stats, les alignements et les textes des cartes de la Demo 2.0 sont vérifiés dans le jeu, en français, anglais, italien et espagnol ; les changements d'équilibrage viennent des patch notes officielles. Les cartes créées et retirées ne sont pas dans la collection du jeu : elles n'y ont donc pas été vérifiées. Texte des cartes © Koin Games. Les sagas, les notes d'origine et le texte français, italien et espagnol des cartes créées et retirées sont d'OriginsMeta.",
+      "Les coûts, les stats, les alignements et les textes des cartes jouables ont été vérifiés dans le jeu, en français, anglais, italien et espagnol ; les changements d'équilibrage viennent des patch notes officielles. Les cartes créées et retirées ne sont pas dans la collection du jeu : elles n'y ont donc pas été vérifiées. Texte des cartes © Koin Games. Les sagas, les notes d'origine et le texte français, italien et espagnol des cartes créées et retirées sont d'OriginsMeta.",
     detailKicker: "Carte",
     collectible: "Carte à collectionner",
     changesTitle: "Historique des équilibrages",
@@ -319,7 +319,7 @@ export const fr: Dictionary = {
     firstDecks: "Les premiers decks d'Origins",
     changes: "Changements dans les patch notes",
     legendariesTitle: "Les Légendaires",
-    legendariesText: "La Demo 2.0 compte {n} Légendaires jouables, une à la tête de chaque deck. Les voici toutes : chaque nom ouvre la page de la carte, avec son texte, ses stats et ses changements d'équilibrage. Celles du playtest absentes de la démo restent dans la base de données des cartes, marquées comme retirées.",
+    legendariesText: "Le jeu compte {n} Légendaires jouables, une à la tête de chaque deck. Les voici toutes : chaque nom ouvre la page de la carte, avec son texte, ses stats et ses changements d'équilibrage. Celles du playtest qui ne sont plus dans le jeu restent dans la base de données des cartes, marquées comme retirées.",
     detailKicker: "Deck",
     otherDecks: "Autres decks",
     /* "In breve" di /decks e di /tier-list (piano SEO/GEO del 25/09/2026): frasi costruite sul server con i dati dei mazzi
@@ -747,12 +747,12 @@ export const fr: Dictionary = {
   },
   tierMaker: {
     title: "Créez votre tier list Origins TCG",
-    description: "Créez votre tier list Origins TCG, gratuite et sans compte : glissez les cartes de la Demo 2.0 dans les tiers S à D, Légendaires à part, et partagez le lien.",
+    description: "Créez votre tier list Origins TCG, gratuite et sans compte : glissez les cartes du jeu dans les tiers S à D, Légendaires à part, et partagez le lien.",
     /* l'H1 della pagina è `title` (piano SEO del 25/09/2026); `h1` resta il nome di riserva di una lista salvata senza titolo */
     h1: "Créez votre tier list",
-    intro: "Classez les cartes de la Demo 2.0 à votre façon, de S à D : Légendaires et cartes de base sont deux listes séparées. Aucun compte nécessaire : votre liste s'enregistre dans ce navigateur et voyage avec un lien, prête pour Discord.",
+    intro: "Classez les cartes du jeu à votre façon, de S à D : Légendaires et cartes de base sont deux listes séparées. Aucun compte nécessaire : votre liste s'enregistre dans ce navigateur et voyage avec un lien, prête pour Discord.",
     officialLink: "Voir la tier list d'OriginsMeta",
-    dataNote: "Toutes les cartes actives dans la Demo 2.0, cartes créées exclues : {legendaries} Légendaires et {cards} cartes de base, vérifiées dans le jeu le {date}.",
+    dataNote: "Toutes les cartes actives du jeu, cartes créées exclues : {legendaries} Légendaires et {cards} cartes de base, vérifiées dans le jeu le {date}.",
     tabsLabel: "Type de tier list",
     tabLegendaries: "Légendaires",
     tabCards: "Cartes de base",
@@ -829,11 +829,11 @@ export const fr: Dictionary = {
   },
   locations: {
     title: "Lieux d'Origins TCG et leurs effets",
-    description: "Tous les lieux d'Origins TCG avec leur effet : recherchez, filtrez par type d'effet et passez aux cartes qu'ils invoquent. À jour de la Demo 2.0.",
+    description: "Tous les lieux d'Origins TCG enregistrés à ce jour, avec leur effet : recherchez, filtrez par type d'effet et passez aux cartes qu'ils invoquent.",
     /* nome breve della sezione (link da /cards); l'H1 della pagina è `headline`, con il gioco e quanti sono ({n}) */
     h1: "Lieux",
-    headline: "Lieux d'Origins TCG : les {n} de la Demo 2.0 et leurs effets",
-    intro: "Chaque partie d'Origins TCG se joue sur trois lieux, et ce sont eux qui décident de la partie : ils doublent les dégâts, changent les coûts, déplacent les personnages, en invoquent de nouveaux. La Demo 2.0 en fait tourner {n} ; le jeu complet en aura plus de cent. Les voici tous, avec leur effet.",
+    headline: "Lieux d'Origins TCG : les {n} enregistrés à ce jour et leurs effets",
+    intro: "Chaque partie d'Origins TCG se joue sur trois lieux, et ce sont eux qui décident de la partie : ils doublent les dégâts, changent les coûts, déplacent les personnages, en invoquent de nouveaux. Nous en avons enregistré {n} jusqu'ici ; d'après la page Steam, le jeu puise dans une réserve de plus de cent lieux. Les voici tous, avec leur effet.",
     facts: [
       "Les trois lieux d'une partie se révèlent un par manche pendant les trois premières manches : à partir de la quatrième, on joue avec tout le plateau en vue.",
       "Un lieu fonctionne pour les deux joueurs, pas seulement pour celui qui l'exploite le premier.",
@@ -958,9 +958,9 @@ export const fr: Dictionary = {
   news: {
     /* "patch notes" è di /metashifting (piano SEO del 25/09/2026): qui il titolo punta a news, aggiornamenti ed eventi */
     title: "Actus Origins TCG",
-    metaTitle: "Actus Origins TCG : mises à jour de la démo et événements",
+    metaTitle: "Actus Origins TCG : mises à jour du jeu et événements",
     intro: "Chaque annonce officielle, résumée et datée, avec le lien vers la source et les cartes concernées.",
-    description: "Actus Origins TCG, de Koin Games et de la communauté, résumées et datées : mises à jour de la démo, événements, nouveaux decks, avec la source officielle.",
+    description: "Actus Origins TCG, de Koin Games et de la communauté, résumées et datées : mises à jour du jeu, événements, nouveaux decks, avec la source officielle.",
     patchNotesText: "Chaque changement d'équilibrage, carte par carte et patch par patch :",
     patchNotesLink: "patch notes d'Origins TCG dans MetaShifting",
     readArticle: "Lire l'article",
@@ -975,7 +975,7 @@ export const fr: Dictionary = {
   about: {
     title: "À propos : OriginsMeta, site non officiel sur Origins TCG",
     p1: "OriginsMeta est un site indépendant consacré à Origins TCG, le jeu de cartes à collectionner free-to-compete de Koin Games. Nous suivons les actus, les patchs, les cartes, les decks et les tournois, en anglais, italien, espagnol et français.",
-    p3: "Le site est né en septembre 2026, pendant la démo Steam, pour que les archives soient complètes dès le premier jour à la sortie du jeu.",
+    p3: "Le site est né en septembre 2026, pendant la démo sur Steam, pour que les archives du jeu soient complètes dès le premier jour.",
     contactTitle: "Contact",
     contactText: "Corrections, listes de decks, tournois, partenariats :",
     disclaimerTitle: "Mentions légales",
@@ -983,7 +983,7 @@ export const fr: Dictionary = {
     sourcesTitle: "Sources officielles",
     sources: {
       steam: "Steam · Origins TCG",
-      demo: "Steam · Origins TCG Demo",
+      demo: "Steam · annonce de l'Accès anticipé (27 octobre 2026)",
       news: "Steam · actus et patch notes",
       discord: "Discord officiel",
       site: "origins-tcg.com",
@@ -1084,7 +1084,7 @@ export const fr: Dictionary = {
     intro: "Construisez un deck Origins légal : une Légendaire plus douze cartes différentes, chacune jouée en deux exemplaires (25 cartes). Votre deck s'enregistre dans ce navigateur au fil de la construction : partagez-le avec un lien ou un code du jeu, enregistrez-le en privé dans votre profil ou publiez-le avec un guide, et vérifiez trois decks à la fois pour le format de tournoi Conquest.",
     description: "Deck builder gratuit pour Origins TCG : 1 Légendaire plus 12 cartes de base, contrôle de légalité, mode Conquest à trois decks, liens et codes du jeu.",
     dataKicker: "Données des cartes",
-    dataNotice: "Cartes à jour de la Demo 2.0 au {date} : coûts, stats et textes des {count} cartes vérifiés un par un dans le jeu, patch du {patchDate} compris.",
+    dataNotice: "Cartes à jour au {date} : coûts, stats et textes des {count} cartes vérifiés un par un dans le jeu, patch du {patchDate} compris.",
     // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
     dataNoticePatch: "Cartes vérifiées une par une dans le jeu le {date} : coûts, stats et textes des {count} cartes. Le patch du {patchDate} est sorti après : ses changements viennent des patch notes officielles, et les textes qu'il a modifiés n'ont pas encore été vérifiés dans le jeu.",
     rulesTitle: "Règles du deck",
@@ -1101,7 +1101,7 @@ export const fr: Dictionary = {
     slotsHint: "chaque carte compte pour 2 exemplaires",
     slotsLeft: "Cartes de base encore à ajouter : {n}",
     pool: "Cartes disponibles",
-    poolHint: "les cartes de la Demo 2.0, avec les coûts et les stats du jeu",
+    poolHint: "les cartes jouables, avec leurs coûts et leurs stats dans le jeu",
     searchPool: "Rechercher parmi les cartes",
     /* la ricerca legge anche il testo della carta (primo feedback dal pop-up del sito, 24/09/2026) */
     searchPoolHint: "Nom ou texte : Reveal…",

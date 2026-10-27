@@ -68,7 +68,8 @@ export const ACHIEVEMENT_LOOK: Record<AchievementId, { icon: AchievementIcon; ma
 /**
  * "Dalla Demo 2.0": account creato prima dell'inizio dello Steam Next Fest, lunedì 19 ottobre 2026 alle 10:00 ora del
  * Pacifico (le 17:00 UTC, le 19:00 in Italia): lo stesso istante di `steamNextFest.startAt` in src/lib/data/events.ts
- * (il test lo controlla). Da lì in poi la demo è quella del Next Fest, con la classificata.
+ * (il test lo controlla). Da lì in poi la demo era quella del Next Fest, con la classificata (finita il 27/10/2026 con
+ * l'Accesso anticipato: il traguardo tiene il suo nome storico).
  */
 export const DEMO2_CUTOFF = "2026-10-19T17:00:00Z";
 

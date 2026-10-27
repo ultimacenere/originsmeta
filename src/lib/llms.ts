@@ -15,7 +15,7 @@ import { authorOfGuide, authorOfNews } from "./data/authors";
  *   gira in `npm test` solo se è elencato nello script "test" di package.json, che nomina i file uno per uno): va
  *   rilanciato dopo ogni patch che tocca una Leggendaria e dopo ogni guida nuova.
  * - `/llms-full.txt` (src/app/llms-full.txt/route.ts) è il testo completo, generato alla build: tutte le guide e le news
- *   in inglese (titolo, date, firma, indirizzo, Markdown pulito), le carte della collezione della Demo 2.0 con il testo
+ *   in inglese (titolo, date, firma, indirizzo, Markdown pulito), le carte della collezione del gioco con il testo
  *   ufficiale e, a parte, le carte create, dette non verificate nel gioco (decisione di Pierluigi del 25/09/2026: il
  *   sito dice che cosa è verificato nel gioco e non nomina la fonte dell'import). "Pulito" vuol dire: niente ancore
  *   `{#…}`, titoli abbassati sotto quelli del documento, link interni assoluti. Le anteprime delle carte non ci sono
@@ -85,7 +85,7 @@ export function cardLine(card: Card): string {
 
 const byName = (a: Card, b: Card) => a.name.localeCompare(b.name, "en");
 
-/** Le Leggendarie in gioco nella Demo 2.0, in ordine alfabetico. */
+/** Le Leggendarie in gioco, in ordine alfabetico. */
 export function activeLegendaries(list: readonly Card[] = cards): Card[] {
   return list.filter((c) => c.status === "active" && c.legendary && c.type !== "token").sort(byName);
 }
@@ -172,8 +172,14 @@ function newsBlock(n: NewsItem): string {
 
 export type LlmsFullData = { guides: Guide[]; news: NewsItem[]; cards: readonly Card[] };
 
-/** Titolo della sezione delle carte create in llms-full.txt: fuori dalle carte della Demo 2.0, dette non verificate. */
+/** Titolo della sezione delle carte create in llms-full.txt: fuori dalle carte della collezione, dette non verificate. */
 export const CREATED_TITLE = "Created cards, not checked in the game";
+
+/**
+ * Nota sui dati delle carte dopo la fine della demo (28/10/2026): la 0.8 del 27/10/2026, prima versione dell'Accesso
+ * anticipato, non cita modifiche alle carte, quindi i dati restano quelli verificati nel gioco a settembre.
+ */
+const EARLY_ACCESS_NOTE = "the 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes";
 
 /** Il testo completo di llms-full.txt. Funzione pura sui dati passati: la rotta le dà quelli veri. */
 export function llmsFullText(data: LlmsFullData): string {
@@ -187,11 +193,11 @@ export function llmsFullText(data: LlmsFullData): string {
   const lines = [
     "# OriginsMeta: full text",
     "",
-    "> Every guide and news article of OriginsMeta in English, as plain Markdown, followed by every card of the Origins TCG Demo 2.0 collection with its official English text, plus the created cards (not checked in the game). OriginsMeta is an unofficial fan site about Origins TCG, the digital trading card game by Koin Games, and is not affiliated with Koin Games.",
+    "> Every guide and news article of OriginsMeta in English, as plain Markdown, followed by every card in the Origins TCG collection with its official English text, plus the created cards (not checked in the game). OriginsMeta is an unofficial fan site about Origins TCG, the digital trading card game by Koin Games, free to play on Steam in Early Access since 27 October 2026, and is not affiliated with Koin Games.",
     "",
     `- Short index: ${siteUrl}/llms.txt`,
-    `- Generated from the site's data at every deploy: ${data.guides.length} guides, ${data.news.length} news articles, ${inPlay.length} cards of the Demo 2.0 collection and ${created.length} created cards.`,
-    `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} cards of the Demo 2.0 collection were checked one by one in the game on ${longDate(cardsVerified.date)}. Created cards are not in the game's collection, so they have not been checked in the game.`,
+    `- Generated from the site's data at every deploy: ${data.guides.length} guides, ${data.news.length} news articles, ${inPlay.length} cards of the game's collection and ${created.length} created cards.`,
+    `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} cards of the game's collection were checked one by one in the game on ${longDate(cardsVerified.date)}, and ${EARLY_ACCESS_NOTE}. Created cards are not in the game's collection, so they have not been checked in the game.`,
     "- Every guide and article is also on the site in Italian (/it/), Spanish (/es/), French (/fr/), Brazilian Portuguese (/pt/), German (/de/) and Russian (/ru/), with the same slug.",
     "- For rules, dates and announcements the official sources win: the Steam pages of Origins TCG, Koin Games' posts and the official Discord.",
     "- Card art and card text © Koin Games.",
@@ -204,15 +210,16 @@ export function llmsFullText(data: LlmsFullData): string {
     ...data.news.flatMap((n) => [newsBlock(n), ""]),
     "## Cards",
     "",
-    `The ${inPlay.length} cards of the Demo 2.0 collection, checked in the game on ${longDate(cardsVerified.date)}, then the created cards. One Legendary plus twelve different base cards, each played in two copies, make a 25-card deck. Power is the damage a unit deals, Health the damage it can take.`,
+    `The ${inPlay.length} cards of the game's collection, checked in the game on ${longDate(cardsVerified.date)}, then the created cards. One Legendary plus twelve different base cards, each played in two copies, make a 25-card deck. Power is the damage a unit deals, Health the damage it can take.`,
     "",
-    ...cardSection("Demo 2.0 Legendaries", legendaries),
-    ...cardSection("Demo 2.0 units", units),
-    ...cardSection("Demo 2.0 spells", spells),
+    // Fino al 27/10/2026 i tre titoli dicevano "Demo 2.0 …": dall'Accesso anticipato sono le carte giocabili.
+    ...cardSection("Playable Legendaries", legendaries),
+    ...cardSection("Playable units", units),
+    ...cardSection("Playable spells", spells),
     ...cardSection(
       CREATED_TITLE,
       created,
-      "Cards that other cards create during a match (Van Helsing's Tools, Zombie…). They are not in the game's collection, so their stats and texts have not been checked in the game, and they are not counted among the Demo 2.0 cards above.",
+      "Cards that other cards create during a match (Van Helsing's Tools, Zombie…). They are not in the game's collection, so their stats and texts have not been checked in the game, and they are not counted among the cards of the collection above.",
     ),
   ];
   // statistiche in parole anche in riassunti, estratti e risposte, non solo nel Markdown dei testi
@@ -230,7 +237,7 @@ export function llmsFull(): string {
 export function legendariesSection(list: readonly Card[] = cards): string {
   const legendaries = activeLegendaries(list);
   return [
-    `The ${legendaries.length} Legendaries of the Demo 2.0: every deck is led by one of them. Data of the latest patch (${patchLine()}). Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…) and Russian (/ru/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.`,
+    `The ${legendaries.length} Legendaries in the game: every deck is led by one of them. Data of the latest patch (${patchLine()}); ${EARLY_ACCESS_NOTE}. Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…) and Russian (/ru/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.`,
     "",
     ...legendaries.map(cardLine),
   ].join("\n");

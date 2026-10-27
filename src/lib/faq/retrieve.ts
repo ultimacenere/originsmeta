@@ -49,7 +49,7 @@ function punteggio(card: Card, domanda: string, parole: string[], locale: Locale
   // termini del testo dell'abilità
   const testo = normalizza(`${card.ability?.[locale] ?? ""} ${card.ability?.en ?? ""}`);
   for (const w of parole) if (w.length > 4 && testo.includes(w)) p += 3;
-  if (p > 0 && card.status === "removed") p -= 10; // le rimosse contano meno: non sono nella Demo 2.0
+  if (p > 0 && card.status === "removed") p -= 10; // le rimosse contano meno: non sono più nel gioco
   if (p > 0 && card.legendary) p += 2;
   return p;
 }
@@ -164,7 +164,7 @@ function schedaCarta(card: Card, locale: Locale): string {
     card.type === "spell" ? "magia" : card.type === "token" ? "carta generata" : "unità",
     card.alignment,
     `saga: ${sagas[card.saga][locale]}`,
-    card.status === "removed" ? "NON nella Demo 2.0" : undefined,
+    card.status === "removed" ? "rimossa: NON più nel gioco" : undefined,
     card.keywords?.length ? `parole chiave: ${card.keywords.map((k) => keywordLabel(k, locale)).join(", ")}` : undefined,
     card.ability?.[locale] ? `testo: ${card.ability[locale].replace(/\s*\n\s*/g, " ")}` : undefined,
   ].filter(Boolean);

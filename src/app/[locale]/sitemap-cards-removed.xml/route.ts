@@ -2,7 +2,7 @@ import { locales } from "@/lib/i18n";
 import { sectionSitemapResponse } from "@/lib/sitemapData";
 
 /**
- * /<lingua>/sitemap-cards-removed.xml: le schede delle carte non più nella demo (l'archivio di /cards), con l'immagine della carta ufficiale.
+ * /<lingua>/sitemap-cards-removed.xml: le schede delle carte non più nel gioco (l'archivio di /cards), con l'immagine della carta ufficiale.
  * Regole comuni (sezioni, date, hreflang, immagini) in src/lib/sitemapEntries.ts.
  */
 export const revalidate = 3600;

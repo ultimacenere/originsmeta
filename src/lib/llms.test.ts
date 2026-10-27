@@ -95,7 +95,7 @@ describe("llms-full.txt", () => {
       ["## Guides", "## News", "## Cards"],
     );
   });
-  test("le carte create stanno a parte, dette non verificate nel gioco, e non fra le carte della Demo 2.0", () => {
+  test("le carte create stanno a parte, dette non verificate nel gioco, e non fra le carte giocabili", () => {
     const created = cards.filter((c) => c.status === "active" && c.type === "token");
     const cardsPart = full.split("\n## Cards\n")[1];
     const [demoPart, createdPart] = cardsPart.split(`\n### ${CREATED_TITLE} (`);
@@ -103,7 +103,7 @@ describe("llms-full.txt", () => {
     for (const c of created) {
       const line = `- [${c.name}](${SITE}/en/cards/${c.slug}): `;
       assert.ok(createdPart.includes(line), `carta creata fuori posto: ${c.slug}`);
-      assert.ok(!demoPart.includes(line), `carta creata fra quelle della Demo 2.0: ${c.slug}`);
+      assert.ok(!demoPart.includes(line), `carta creata fra quelle giocabili: ${c.slug}`);
     }
     assert.match(full.split("\n## Guides\n")[0], /created cards \(not checked in the game\)/);
     assert.match(createdPart, /have not been checked in the game/);
@@ -139,7 +139,7 @@ describe("llms-full.txt", () => {
     assert.ok(full.includes(`${guides.length} guides, ${news.length} news articles`));
   });
   test("i titoli dei testi stanno sotto quelli del documento: nessun ## o ### dentro guide e news", () => {
-    const titles = new Set([...guides.map((g) => g.title), ...news.map((n) => n.title.en), "Demo 2.0 Legendaries", "Demo 2.0 units", "Demo 2.0 spells", CREATED_TITLE]);
+    const titles = new Set([...guides.map((g) => g.title), ...news.map((n) => n.title.en), "Playable Legendaries", "Playable units", "Playable spells", CREATED_TITLE]);
     for (const line of full.split("\n").filter((l) => /^### /.test(l))) {
       const title = line.slice(4).replace(/ \(\d+\)$/, "");
       assert.ok(titles.has(title), `titolo di terzo livello inatteso: ${line}`);
@@ -159,7 +159,7 @@ describe("llms-full.txt", () => {
     }
     const legendaries = activeLegendaries();
     assert.ok(legendaries.length >= 1);
-    assert.ok(full.includes(`### Demo 2.0 Legendaries (${legendaries.length})`));
+    assert.ok(full.includes(`### Playable Legendaries (${legendaries.length})`));
     assert.ok(full.includes("- [Mulan](https://originsmeta.com/en/cards/mulan): Legendary unit, "));
   });
 });

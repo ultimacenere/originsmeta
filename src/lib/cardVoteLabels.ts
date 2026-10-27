@@ -16,7 +16,7 @@ const en = {
     h1: "Card votes tier list",
     h1Preview: "Card votes tier list (preview)",
     intro:
-      "Every member can rate each Demo 2.0 card from 1 (weak) to 10 (excellent), one vote per card, changeable at any time. A card lands in the tier of its average: S from {tierS}, A from {tierA}, B from {tierB}, C from {tierC}, D below. It is not the community tier list, which averages the full lists saved with the maker: here every single card gets its own score.",
+      "Every member can rate each playable card from 1 (weak) to 10 (excellent), one vote per card, changeable at any time. A card lands in the tier of its average: S from {tierS}, A from {tierA}, B from {tierB}, C from {tierC}, D below. It is not the community tier list, which averages the full lists saved with the maker: here every single card gets its own score.",
     sourceText: "votes from 1 to 10 given by members to each card",
     /** {votes} = "12 votes", {cards} = "9 cards" (mai il numero di persone, 12/10/2026) */
     sample: "{votes} on {cards}",
@@ -102,7 +102,7 @@ const it: CardVoteLabels = {
     h1: "Tier list dei voti alle carte",
     h1Preview: "Tier list dei voti alle carte (anteprima)",
     intro:
-      "Ogni iscritto può votare ogni carta della Demo 2.0 da 1 (scarsa) a 10 (ottima), un voto per carta, che si cambia quando si vuole. La carta finisce nella fascia della sua media: S da {tierS}, A da {tierA}, B da {tierB}, C da {tierC}, D sotto. Non è la tier list della community, che fa la media delle liste intere salvate con lo strumento: qui ogni singola carta ha il suo punteggio.",
+      "Ogni iscritto può votare ogni carta giocabile da 1 (scarsa) a 10 (ottima), un voto per carta, che si cambia quando si vuole. La carta finisce nella fascia della sua media: S da {tierS}, A da {tierA}, B da {tierB}, C da {tierC}, D sotto. Non è la tier list della community, che fa la media delle liste intere salvate con lo strumento: qui ogni singola carta ha il suo punteggio.",
     sourceText: "voti da 1 a 10 dati dagli iscritti a ogni carta",
     sample: "{votes} su {cards}",
     votesOne: "1 voto",
@@ -181,7 +181,7 @@ const es: CardVoteLabels = {
     h1: "Tier list de votos a las cartas",
     h1Preview: "Tier list de votos a las cartas (vista previa)",
     intro:
-      "Cada miembro puede votar cada carta de la Demo 2.0 del 1 (floja) al 10 (excelente), un voto por carta, que se cambia cuando quieras. La carta queda en el tier de su promedio: S desde {tierS}, A desde {tierA}, B desde {tierB}, C desde {tierC}, D por debajo. No es la tier list de la comunidad, que promedia las listas completas guardadas con la herramienta: aquí cada carta tiene su propia puntuación.",
+      "Cada miembro puede votar cada carta jugable del 1 (floja) al 10 (excelente), un voto por carta, que se cambia cuando quieras. La carta queda en el tier de su promedio: S desde {tierS}, A desde {tierA}, B desde {tierB}, C desde {tierC}, D por debajo. No es la tier list de la comunidad, que promedia las listas completas guardadas con la herramienta: aquí cada carta tiene su propia puntuación.",
     sourceText: "votos del 1 al 10 que los miembros dan a cada carta",
     sample: "{votes} en {cards}",
     votesOne: "1 voto",
@@ -262,7 +262,7 @@ const fr: CardVoteLabels = {
     h1: "Tier list des votes sur les cartes",
     h1Preview: "Tier list des votes sur les cartes (aperçu)",
     intro:
-      "Chaque membre peut noter chaque carte de la Demo 2.0 de 1 (faible) à 10 (excellente), un vote par carte, modifiable à tout moment. Une carte rejoint le tier de sa moyenne : S à partir de {tierS}, A à partir de {tierA}, B à partir de {tierB}, C à partir de {tierC}, D en dessous. Ce n'est pas la tier list de la communauté, qui fait la moyenne des listes complètes enregistrées avec l'outil : ici, chaque carte a sa propre note.",
+      "Chaque membre peut noter chaque carte jouable de 1 (faible) à 10 (excellente), un vote par carte, modifiable à tout moment. Une carte rejoint le tier de sa moyenne : S à partir de {tierS}, A à partir de {tierA}, B à partir de {tierB}, C à partir de {tierC}, D en dessous. Ce n'est pas la tier list de la communauté, qui fait la moyenne des listes complètes enregistrées avec l'outil : ici, chaque carte a sa propre note.",
     sourceText: "votes de 1 à 10 donnés par les membres à chaque carte",
     sample: "{votes} sur {cards}",
     votesOne: "1 vote",
@@ -341,7 +341,7 @@ const pt: CardVoteLabels = {
     h1: "Tier list dos votos nas cartas",
     h1Preview: "Tier list dos votos nas cartas (prévia)",
     intro:
-      "Cada membro pode dar uma nota a cada carta da Demo 2.0 de 1 (fraca) a 10 (excelente), um voto por carta, que pode ser mudado quando quiser. A carta entra no tier da sua média: S a partir de {tierS}, A a partir de {tierA}, B a partir de {tierB}, C a partir de {tierC}, D abaixo disso. Não é a tier list da comunidade, que faz a média das listas completas salvas com a ferramenta: aqui cada carta tem a sua própria nota.",
+      "Cada membro pode dar uma nota a cada carta jogável de 1 (fraca) a 10 (excelente), um voto por carta, que pode ser mudado quando quiser. A carta entra no tier da sua média: S a partir de {tierS}, A a partir de {tierA}, B a partir de {tierB}, C a partir de {tierC}, D abaixo disso. Não é a tier list da comunidade, que faz a média das listas completas salvas com a ferramenta: aqui cada carta tem a sua própria nota.",
     sourceText: "votos de 1 a 10 dados pelos membros a cada carta",
     sample: "{votes} em {cards}",
     votesOne: "1 voto",
@@ -420,7 +420,7 @@ const de: CardVoteLabels = {
     h1: "Tier-List der Kartenbewertungen",
     h1Preview: "Tier-List der Kartenbewertungen (Vorschau)",
     intro:
-      "Jedes Mitglied kann jede Karte der Demo 2.0 von 1 (schwach) bis 10 (exzellent) bewerten, eine Bewertung pro Karte, jederzeit änderbar. Eine Karte landet in der Stufe ihres Durchschnitts: S ab {tierS}, A ab {tierA}, B ab {tierB}, C ab {tierC}, D darunter. Das ist nicht die Community-Tier-List, die den Durchschnitt der kompletten, mit dem Tool gespeicherten Listen bildet: Hier bekommt jede einzelne Karte ihre eigene Note.",
+      "Jedes Mitglied kann jede spielbare Karte von 1 (schwach) bis 10 (exzellent) bewerten, eine Bewertung pro Karte, jederzeit änderbar. Eine Karte landet in der Stufe ihres Durchschnitts: S ab {tierS}, A ab {tierA}, B ab {tierB}, C ab {tierC}, D darunter. Das ist nicht die Community-Tier-List, die den Durchschnitt der kompletten, mit dem Tool gespeicherten Listen bildet: Hier bekommt jede einzelne Karte ihre eigene Note.",
     sourceText: "Bewertungen von 1 bis 10, die Mitglieder jeder Karte geben",
     sample: "{votes} für {cards}",
     votesOne: "1 Bewertung",
@@ -499,7 +499,7 @@ const ru: CardVoteLabels = {
     h1: "Тир-лист по оценкам карт",
     h1Preview: "Тир-лист по оценкам карт (превью)",
     intro:
-      "Каждый участник может оценить любую карту Demo 2.0 от 1 (слабая) до 10 (отличная), одна оценка на карту, её можно изменить в любой момент. Карта попадает в тир своей средней оценки: S от {tierS}, A от {tierA}, B от {tierB}, C от {tierC}, D ниже. Это не тир-лист сообщества, который усредняет целые списки, сохранённые в конструкторе тир-листов: здесь каждая карта получает собственную оценку.",
+      "Каждый участник может оценить любую карту из коллекции игры от 1 (слабая) до 10 (отличная), одна оценка на карту, её можно изменить в любой момент. Карта попадает в тир своей средней оценки: S от {tierS}, A от {tierA}, B от {tierB}, C от {tierC}, D ниже. Это не тир-лист сообщества, который усредняет целые списки, сохранённые в конструкторе тир-листов: здесь каждая карта получает собственную оценку.",
     sourceText: "оценки от 1 до 10, которые участники дают каждой карте",
     sample: "{votes} по {cards}",
     votesOne: "1 оценка",

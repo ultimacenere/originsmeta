@@ -33,7 +33,7 @@ import {
 import { CardPeek, hasPeek } from "./CardPeek";
 
 /**
- * Tier list personalizzabile (/tier-list/create, richiesta del 22/09/2026): le carte attive della Demo 2.0 si
+ * Tier list personalizzabile (/tier-list/create, richiesta del 22/09/2026): le carte attive del gioco si
  * trascinano nelle fasce S/A/B/C/D, Leggendarie e carte base in due schede separate. Nessun account, come il deck
  * builder: la lista si salva nel browser (una chiave per scheda) e si condivide con un link (#TL1…, vedi tiercode.ts).
  *

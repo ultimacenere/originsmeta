@@ -5,8 +5,9 @@ import type { PatchId } from "./cards";
  * I LUOGHI di Origins TCG (23/09/2026).
  *
  * Ogni partita si gioca su tre luoghi, estratti da un mazzo di luoghi che cambia il tabellone: la pagina Steam
- * ufficiale parla di "100+ rotating locations that reshape the board and demand a unique strategy". Nella Demo 2.0
- * quelli in rotazione sono i 44 qui sotto.
+ * ufficiale parla di "100+ rotating locations that reshape the board and demand a unique strategy". Quelli registrati
+ * finora sono i 44 qui sotto (quelli in rotazione nella demo dopo la patch del 21/09/2026; la demo è finita il
+ * 27/10/2026 con l'Accesso anticipato).
  *
  * DA DOVE VENGONO I DATI. Nome ed effetto sono trascritti dal database della community World of Origins
  * (worldoforigins.fun/locations, sezione "Demo v2 2026"), l'eccezione autorizzata da Pierluigi il 15/09/2026 per i

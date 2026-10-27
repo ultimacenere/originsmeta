@@ -51,14 +51,14 @@ type Params = Promise<{ locale: string; slug: string }>;
 
 /**
  * Scheda carta, modello dell'Ondata 2 del piano SEO/GEO (schede carta, Leggendarie e mazzi), uno per tipo di carta:
- * - Leggendarie e carte base della Demo 2.0: frase d'attacco dai dati, "Mazzi guidati da {Leggendaria}" / "Mazzi con
+ * - Leggendarie e carte base della collezione del gioco: frase d'attacco dai dati, "Mazzi guidati da {Leggendaria}" / "Mazzi con
  *   {carta}", "Spesso nello stesso mazzo", carte che genera, storico, "In breve", tier list della community (dietro la
  *   soglia), invito al deck builder, guide, stessa saga;
  * - carte create: prima riga con chi le genera (catena dai testi), "Come si ottiene", il conto dei mazzi con la carta
  *   che le genera (con il link alla sua sezione dei mazzi, non la stessa lista ripetuta), e al posto del deck builder,
  *   che non le accetta, l'invito a costruire un mazzo con quella carta;
- * - carte rimosse: prima riga "non è nella Demo 2.0, quindi non si può aggiungere nel deck builder", niente mazzi né
- *   tier list, rimando all'archivio delle carte non nella demo.
+ * - carte rimosse: prima riga "non è più nel gioco, quindi non si può aggiungere nel deck builder", niente mazzi né
+ *   tier list, rimando all'archivio delle carte non più nel gioco.
  * Mazzi e tier list della community vengono da Supabase: la pagina resta generata in build per tutte le 690 URL
  * (generateStaticParams) e diventa ISR. La lettura è una sola per tutte le schede (`src/lib/community/decksByCard.ts`,
  * cache condivisa con etichetta) e le Server Action dei mazzi rigenerano le schede quando un mazzo viene pubblicato,
@@ -103,18 +103,18 @@ export default async function CardPage({ params }: { params: Params }) {
 
   const token = card.type === "token";
   const removed = card.status === "removed";
-  /** carta della collezione della Demo 2.0: la sola che il deck builder accetta (stesso filtro del pool in builderLabels.ts) */
+  /** carta della collezione del gioco: la sola che il deck builder accetta (stesso filtro del pool in builderLabels.ts) */
   const playable = !removed && !token;
 
   // Legami con le altre carte, solo dai testi (cardSynergy.ts): chi la genera e che cosa genera.
   const rel = cardRelations(card, cards);
-  // Una carta creata non si aggiunge nel deck builder: si contano i mazzi con la carta della demo che la genera
+  // Una carta creata non si aggiunge nel deck builder: si contano i mazzi con la carta della collezione che la genera
   // (`cardDeckSlugs`). Le rimosse non ne mostrano.
   const roots = token ? deckRoots(rel.createdBy) : [];
   const deckSlugs = cardDeckSlugs(card, cards);
 
   // Mazzi pubblicati e tier list della community, dalla cache condivisa fra tutte le schede. Le rimosse (e le create
-  // che nessun testo della demo genera) non ne mostrano: non leggono niente.
+  // che nessun testo della collezione genera) non ne mostrano: non leggono niente.
   // I voti alle carte da 1 a 10 (06/10/2026, `loadCardRatings`): stessa cache condivisa fra le schede, un'ora; solo sulle
   // carte votabili (attive e non create, come il tool /tier-list/create).
   const [allDecks, scores, cardVotes] = await Promise.all([
@@ -246,7 +246,7 @@ export default async function CardPage({ params }: { params: Params }) {
             </p>
           ) : null}
           {/* Frase d'attacco dai dati (CARDS-05, GEO-07): che cos'è la carta, stato e mazzi, senza giudizi. Sulle carte
-              create la prima cosa è chi le genera, sulle rimosse che non sono nella Demo 2.0. */}
+              create la prima cosa è chi le genera, sulle rimosse che non sono più nel gioco. */}
           <p className="mt-4 max-w-2xl text-pale">
             <CardParts parts={lead} locale={locale} self={card.slug} />
           </p>
@@ -321,7 +321,7 @@ export default async function CardPage({ params }: { params: Params }) {
             </dl>
           )}
           {card.key ? <p className="mt-3 font-mono text-[11px] text-chalk-muted/80">ID {card.key}</p> : null}
-          {/* Le carte create e rimosse non stanno nella collezione della demo: la riga non dice più che sono state
+          {/* Le carte create e rimosse non stanno nella collezione del gioco: la riga non dice più che sono state
               verificate nel gioco (CARDS-09). */}
           <p className="mt-4 text-[11px] leading-snug text-chalk-muted/80">{asOf}</p>
         </aside>
@@ -391,7 +391,7 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {/* Invito al deck builder solo sulle carte che il builder accetta (attive e non create: stesso filtro del pool in
           builderLabels.ts). Sulle carte create l'invito è a costruire un mazzo con la carta che le genera; le rimosse
-          rimandano all'archivio delle carte non nella demo in fondo a /cards (SCHEDE-04). */}
+          rimandano all'archivio delle carte non più nel gioco in fondo a /cards (SCHEDE-04). */}
       {playable ? (
         <section className="card-night mt-10 p-6 sm:p-8">
           <h2 className="t-section">{d.cards.buildTitle}</h2>

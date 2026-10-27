@@ -68,7 +68,7 @@ export default async function TournamentDecksPage({ params }: { params: LocalePa
       }),
     };
   });
-  // Leggendarie del filtro: quelle della demo, nell'ordine del database
+  // Leggendarie del filtro: quelle giocabili, nell'ordine del database
   const legendaries = activeCards
     .filter((c) => c.legendary)
     .map((c): [string, string] => [c.slug, c.name]);

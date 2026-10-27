@@ -6,7 +6,7 @@ import type { CardRating } from "./cardVotes";
  * li ricevono i componenti, anche quelli client (`TierExplorer`), quindi questo file non importa niente del server.
  */
 
-/** Una carta attiva della Demo 2.0 con tutto quello che le tre viste mostrano, già nella lingua della pagina. */
+/** Una carta attiva del gioco con tutto quello che le tre viste mostrano, già nella lingua della pagina. */
 export type TierCardEntry = {
   slug: string;
   name: string;

@@ -17,7 +17,7 @@ import { crimsonCardDay } from "./crimsonCup";
 
 /**
  * Giorno in cui sono cambiati tutti i testi italiani e spagnoli delle carte (`card-lore.ts`, campi `it` ed `es`):
- * letti nel gioco per le 122 carte della collezione della Demo 2.0, riscritti con il glossario ufficiale per le carte
+ * letti nel gioco per le 122 carte della collezione, riscritti con il glossario ufficiale per le carte
  * create e rimosse. Tocca solo le schede in quelle lingue: il testo inglese viene da World of Origins o dal campo `en`.
  * Va spostato alla prossima rilettura nel gioco (dopo ogni patch, docs/testi-di-gioco.md).
  */

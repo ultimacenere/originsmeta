@@ -6,7 +6,7 @@ import { cardLabels } from "@/lib/cardPage";
  * Testo della carta con l'etichetta di che cosa è (SCHEDE-07, CARDS-14, 25/09/2026). Prima, sulle pagine italiane e
  * spagnole, il testo inglese compariva sotto la traduzione senza etichetta e senza `lang`, e né un lettore né un
  * assistente potevano sapere quale fosse il testo del gioco.
- * - Le 122 carte della collezione della Demo 2.0: il testo nella lingua della pagina è quello ufficiale del gioco
+ * - Le 122 carte della collezione del gioco: il testo nella lingua della pagina è quello ufficiale del gioco
  *   (letto nel gioco il 25/09/2026 in italiano e spagnolo, `card-lore.ts`, e l'08/10/2026 in francese, `card-lore-fr.ts`)
  *   nelle lingue di `officialTextLocales`.
  * - Carte create e rimosse: la collezione non le mostra, quindi in italiano e spagnolo il testo è una traduzione di

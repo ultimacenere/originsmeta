@@ -29,8 +29,8 @@ const cardTiers = empty();
 
 /**
  * Tier list di OriginsMeta. Aggiornare `updated` a ogni modifica e spiegare ogni spostamento nelle news.
- * Finché le fasce sono vuote, fra le voci "non ancora classificate" stanno tutte le Leggendarie attive della
- * Demo 2.0, lette dal database carte (le schede carta mostrano "non ancora classificata"). La pagina
+ * Finché le fasce sono vuote, fra le voci "non ancora classificate" stanno tutte le Leggendarie attive del
+ * gioco, lette dal database carte (le schede carta mostrano "non ancora classificata"). La pagina
  * /tier-list, intanto, mostra le anteprime vere: mazzi più votati e carte più presenti nei mazzi pubblicati.
  */
 export const tierList: { updated: string; sections: TierSection[] } = {

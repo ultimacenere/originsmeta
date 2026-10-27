@@ -22,7 +22,7 @@ export const KICKSTARTER_URL = `${KICKSTARTER_PROJECT_URL}?ref=${KICKSTARTER_REF
 /** La pagina ufficiale della preregistrazione VIP (1 dollaro rimborsabile, 15% di sconto con il link VIP). */
 export const KICKSTARTER_VIP_URL = "https://founder.origins-tcg.com";
 
-/** Giorno di apertura della campagna: lo ha scritto il CEO di Koin Games il 17/09/2026 e lo mostra il menu della demo. */
+/** Giorno di apertura della campagna: lo aveva scritto il CEO di Koin Games il 17/09/2026; aperta davvero il 27/10/2026 (post Steam delle 17:02 UTC). */
 export const KICKSTARTER_LAUNCH_DAY = "2026-10-27";
 
 /**
@@ -86,5 +86,8 @@ export const ANY_ALT_ART_ONE_IN = 6;
 /** Giorno in cui sono state lette la pagina VIP e la pagina Steam della demo. */
 export const KICKSTARTER_FACTS_READ = "2026-10-26";
 
-/** Recensioni della demo su Steam lette il 26/10/2026: "Molto positive", 92% di 263. */
+/**
+ * Recensioni della demo su Steam lette il 26/10/2026: "Molto positive", 92% di 263. La demo è finita il 27/10/2026 e le recensioni
+ * dell'Accesso anticipato ripartono da zero: le etichette le presentano al passato, come dato della demo.
+ */
 export const DEMO_REVIEWS = { percent: 92, total: 263 } as const;

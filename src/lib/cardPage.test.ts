@@ -73,31 +73,31 @@ const mate = (slug: string, together: number): BriefCompanion => ({ card: card(s
 const lead = (slug: string, locale: Locale, decks?: DeckCount) => partsText(cardLead(card(slug), facts(slug, decks), locale));
 
 describe("frase d'attacco: esempi", () => {
-  test("una Leggendaria della demo, con il conto dei mazzi", () => {
+  test("una Leggendaria del gioco, con il conto dei mazzi", () => {
     const decks = { n: 1, total: 16 };
     assert.equal(
       lead("merlin", "en", decks),
-      "Merlin is a Legendary unit in Origins TCG, the digital card game by Koin Games. It costs 5 mana, has 5 Power and 5 Health, and is Neutral. It is in Demo 2.0 (checked in the game on September 22, 2026). It leads 1 of the 16 decks published on OriginsMeta.",
+      "Merlin is a Legendary unit in Origins TCG, the digital card game by Koin Games. It costs 5 mana, has 5 Power and 5 Health, and is Neutral. It is a playable card (checked in the game on September 22, 2026). It leads 1 of the 16 decks published on OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "it", decks),
-      "Merlin è un'unità Leggendaria di Origins TCG, il gioco di carte digitale di Koin Games. Costa 5 mana, ha 5 di Potenza e 5 di Salute ed è Neutral. È nella Demo 2.0 (verificata nel gioco il 22 settembre 2026). Guida 1 dei 16 mazzi pubblicati su OriginsMeta.",
+      "Merlin è un'unità Leggendaria di Origins TCG, il gioco di carte digitale di Koin Games. Costa 5 mana, ha 5 di Potenza e 5 di Salute ed è Neutral. È nella collezione del gioco (verificata il 22 settembre 2026). Guida 1 dei 16 mazzi pubblicati su OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "es", decks),
-      "Merlin es una unidad Legendaria de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 5 de maná, tiene 5 de Poder y 5 de Salud y es Neutral. Está en la Demo 2.0 (verificada en el juego el 22 de septiembre de 2026). Lidera 1 de los 16 mazos publicados en OriginsMeta.",
+      "Merlin es una unidad Legendaria de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 5 de maná, tiene 5 de Poder y 5 de Salud y es Neutral. Está en la colección del juego (verificada el 22 de septiembre de 2026). Lidera 1 de los 16 mazos publicados en OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "pt", decks),
-      "Merlin é um personagem Lendário de Origins TCG, o jogo de cartas digital da Koin Games. Custa 5 de mana, tem 5 de Poder e 5 de Vida e é Neutral. Está na Demo 2.0 (verificado no jogo em 22 de setembro de 2026). Lidera 1 dos 16 decks publicados no OriginsMeta.",
+      "Merlin é um personagem Lendário de Origins TCG, o jogo de cartas digital da Koin Games. Custa 5 de mana, tem 5 de Poder e 5 de Vida e é Neutral. Está na coleção do jogo (verificado em 22 de setembro de 2026). Lidera 1 dos 16 decks publicados no OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "de", decks),
-      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Kraft und 5 Leben und ist Neutral. Die Karte ist in der Demo 2.0 (am 22. September 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
+      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Kraft und 5 Leben und ist Neutral. Die Karte ist in der Sammlung (am 22. September 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
     );
     assert.equal(
       lead("merlin", "ru", decks),
-      "Merlin — Легендарный персонаж из Origins TCG, цифровой карточной игры от Koin Games. Стоит 5 ед. маны, имеет Силу 5 и Здоровье 5, мировоззрение — Neutral. Карта есть в Demo 2.0 (проверено в игре 22 сентября 2026 г.). Возглавляет 1 из 16 опубликованных на OriginsMeta колод.",
+      "Merlin — Легендарный персонаж из Origins TCG, цифровой карточной игры от Koin Games. Стоит 5 ед. маны, имеет Силу 5 и Здоровье 5, мировоззрение — Neutral. Карта есть в коллекции (проверено в игре 22 сентября 2026 г.). Возглавляет 1 из 16 опубликованных на OriginsMeta колод.",
     );
   });
 
@@ -109,13 +109,13 @@ describe("frase d'attacco: esempi", () => {
     const decks = { n: 0, total: 16 };
     assert.equal(
       lead("spellbook", "es", decks),
-      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la Demo 2.0 (verificado en el juego el 22 de septiembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
+      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la colección del juego (verificado el 22 de septiembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
     );
     assert.match(lead("spellbook", "it", decks), /^Spellbook è una magia di Origins TCG.*Costa 4 mana ed è Neutral\..*Nessuno dei 16 mazzi pubblicati su OriginsMeta la usa ancora\.$/);
-    assert.match(lead("spellbook", "pt", decks), /^Spellbook é um feitiço de Origins TCG.*Custa 4 de mana e é Neutral\. Está na Demo 2\.0 \(verificado no jogo .*Nenhum dos 16 decks publicados no OriginsMeta usa esta carta ainda\.$/);
-    assert.match(lead("spellbook", "de", decks), /^Spellbook ist ein Zauber aus Origins TCG.*Er kostet 4 Mana und ist Neutral\. Die Karte ist in der Demo 2\.0 \(am .* im Spiel überprüft\)\. Keines der 16 auf OriginsMeta veröffentlichten Decks nutzt diese Karte bisher\.$/);
+    assert.match(lead("spellbook", "pt", decks), /^Spellbook é um feitiço de Origins TCG.*Custa 4 de mana e é Neutral\. Está na coleção do jogo \(verificado em .*Nenhum dos 16 decks publicados no OriginsMeta usa esta carta ainda\.$/);
+    assert.match(lead("spellbook", "de", decks), /^Spellbook ist ein Zauber aus Origins TCG.*Er kostet 4 Mana und ist Neutral\. Die Karte ist in der Sammlung \(am .* im Spiel überprüft\)\. Keines der 16 auf OriginsMeta veröffentlichten Decks nutzt diese Karte bisher\.$/);
     // russo: il numero regge il caso ("из 16 … колод", "из 21 … колоды")
-    assert.match(lead("spellbook", "ru", decks), /^Spellbook — заклинание из Origins TCG.*Стоит 4 ед\. маны, мировоззрение — Neutral\. Карта есть в Demo 2\.0 \(проверено в игре .*Ни одна из 16 опубликованных на OriginsMeta колод пока не использует эту карту\.$/);
+    assert.match(lead("spellbook", "ru", decks), /^Spellbook — заклинание из Origins TCG.*Стоит 4 ед\. маны, мировоззрение — Neutral\. Карта есть в коллекции \(проверено в игре .*Ни одна из 16 опубликованных на OriginsMeta колод пока не использует эту карту\.$/);
     assert.match(lead("spellbook", "ru", { n: 0, total: 21 }), /Ни одна из 21 опубликованной на OriginsMeta колоды пока не использует эту карту\.$/);
   });
 
@@ -182,30 +182,30 @@ describe("frase d'attacco: esempi", () => {
     assert.match(lead("broomstick", "ru"), /в матче её создают Animate Object и Sorcerer's Apprentice\./);
   });
 
-  test("una carta rimossa: la prima cosa è che non è nella Demo 2.0 e non entra nel deck builder", () => {
+  test("una carta rimossa: la prima cosa è che non è più nel gioco e non entra nel deck builder", () => {
     assert.equal(
       lead("baker", "en"),
-      "Baker is not in Demo 2.0, so it cannot be added in the deck builder. It was a unit in earlier builds of Origins TCG, the digital card game by Koin Games. Last known stats: it cost 3 mana, had 2 Power and 1 Health, and was Evil.",
+      "Baker is no longer in the game, so it cannot be added in the deck builder. It was a unit in earlier builds of Origins TCG, the digital card game by Koin Games. Last known stats: it cost 3 mana, had 2 Power and 1 Health, and was Evil.",
     );
     assert.equal(
       lead("baker", "it"),
-      "Baker non è nella Demo 2.0, quindi non si può aggiungere nel deck builder. Era un'unità delle build precedenti di Origins TCG, il gioco di carte digitale di Koin Games. Ultime statistiche note: costava 3 mana, aveva 2 di Potenza e 1 di Salute ed era Evil.",
+      "Baker non è più nel gioco, quindi non si può aggiungere nel deck builder. Era un'unità delle build precedenti di Origins TCG, il gioco di carte digitale di Koin Games. Ultime statistiche note: costava 3 mana, aveva 2 di Potenza e 1 di Salute ed era Evil.",
     );
     assert.equal(
       lead("baker", "es"),
-      "Baker no está en la Demo 2.0, así que no se puede añadir en el deck builder. Era una unidad de las builds anteriores de Origins TCG, el juego de cartas digital de Koin Games. Últimas estadísticas conocidas: costaba 3 de maná, tenía 2 de Poder y 1 de Salud y era Evil.",
+      "Baker ya no está en el juego, así que no se puede añadir en el deck builder. Era una unidad de las builds anteriores de Origins TCG, el juego de cartas digital de Koin Games. Últimas estadísticas conocidas: costaba 3 de maná, tenía 2 de Poder y 1 de Salud y era Evil.",
     );
     assert.equal(
       lead("baker", "pt"),
-      "Baker não está na Demo 2.0, então não pode entrar em um deck no deck builder. Era um personagem das builds anteriores de Origins TCG, o jogo de cartas digital da Koin Games. Últimas estatísticas conhecidas: custava 3 de mana, tinha 2 de Poder e 1 de Vida e era Evil.",
+      "Baker não está mais no jogo, então não pode entrar em um deck no deck builder. Era um personagem das builds anteriores de Origins TCG, o jogo de cartas digital da Koin Games. Últimas estatísticas conhecidas: custava 3 de mana, tinha 2 de Poder e 1 de Vida e era Evil.",
     );
     assert.equal(
       lead("baker", "de"),
-      "Baker ist nicht in der Demo 2.0 und lässt sich daher im Deckbuilder nicht hinzufügen. Er war ein Charakter aus früheren Builds von Origins TCG, dem digitalen Kartenspiel von Koin Games. Zuletzt bekannte Werte: Er kostete 3 Mana, hatte 2 Kraft und 1 Leben und war Evil.",
+      "Baker ist nicht mehr im Spiel und lässt sich daher im Deckbuilder nicht hinzufügen. Er war ein Charakter aus früheren Builds von Origins TCG, dem digitalen Kartenspiel von Koin Games. Zuletzt bekannte Werte: Er kostete 3 Mana, hatte 2 Kraft und 1 Leben und war Evil.",
     );
     assert.equal(
       lead("baker", "ru"),
-      "Baker нет в Demo 2.0, поэтому эту карту нельзя добавить в конструкторе колод. Это персонаж из прежних сборок Origins TCG, цифровой карточной игры от Koin Games. Последние известные характеристики: стоила 3 ед. маны, имела Силу 2 и Здоровье 1, мировоззрение — Evil.",
+      "Baker больше нет в игре, поэтому эту карту нельзя добавить в конструкторе колод. Это персонаж из прежних сборок Origins TCG, цифровой карточной игры от Koin Games. Последние известные характеристики: стоила 3 ед. маны, имела Силу 2 и Здоровье 1, мировоззрение — Evil.",
     );
   });
 
@@ -231,10 +231,10 @@ describe("frase d'attacco: tutte le carte", () => {
           !text.includes("Origins TCG") && "Origins TCG",
           !text.includes("Koin Games") && "Koin Games",
           /undefined|NaN|\?|\{|\}| {2}|\s[.,;]/.test(text) && "buchi",
-          // "verificata nel gioco" solo sulle carte della collezione della demo (CARDS-09)
+          // "verificata nel gioco" solo sulle carte della collezione del gioco (CARDS-09)
           !playable && /checked in the game|verificat|verificad|vérifié|überprüft|проверен/.test(text) && "verificata",
           playable && !/checked in the game|verificat|verificad|vérifié|im Spiel überprüft|проверено в игре/.test(text) && "stato",
-          c.status === "removed" && !/is not in Demo 2\.0|non è nella Demo 2\.0|no está en la Demo 2\.0|n'est pas dans la Demo 2\.0|não está na Demo 2\.0|ist nicht in der Demo 2\.0| нет в Demo 2\.0/.test(text.slice(c.name.length, c.name.length + 36)) && "prima riga",
+          c.status === "removed" && !/is no longer in the game|non è più nel gioco|ya no está en el juego|n'est plus dans le jeu|não está mais no jogo|ist nicht mehr im Spiel| больше нет в игре/.test(text.slice(c.name.length, c.name.length + 36)) && "prima riga",
           c.type === "token" &&
             c.status === "active" &&
             !/cannot be added to a deck in the deck builder|non si può mettere nel mazzo con il deck builder|no se puede añadir a un mazo en el deck builder|impossible de l'ajouter à un deck dans le deck builder|não pode ser adicionada a um deck no deck builder|Im Deckbuilder lässt sie sich nicht in ein Deck aufnehmen|её нельзя добавить в колоду в конструкторе колод/.test(text) &&
@@ -280,22 +280,22 @@ describe("deckSentence", () => {
 });
 
 describe("In breve", () => {
-  test("Merlin: demo e patch con il link alla news; senza carte in comune fra due mazzi, niente terza domanda", () => {
+  test("Merlin: gioco e patch con il link alla news; senza carte in comune fra due mazzi, niente terza domanda", () => {
     const items = cardBrief(card("merlin"), facts("merlin", { n: 1, total: 16 }), "en");
     assert.deepEqual(
       items.map((i) => i.q),
-      ["Is Merlin in the Origins TCG demo?", "Has a patch changed Merlin?"],
+      ["Is Merlin playable in Origins TCG?", "Has a patch changed Merlin?"],
     );
     // una patch sola: la si dice direttamente, senza "in 1 patch. The latest is…"
     assert.equal(partsText(items[1].a), "Yes: patch 0.6.3 (August 27, 2026) changed its Power from 3 to 5.");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "it")[1].a), "Sì: la patch 0.6.3 del 27 agosto 2026 ha cambiato la Potenza da 3 a 5.");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "es")[1].a), "Sí: el parche 0.6.3 del 27 de agosto de 2026 cambió su Poder de 3 a 5.");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "pt")[1].a), "Sim: o patch 0.6.3 de 27 de agosto de 2026 mudou o Poder de 3 para 5.");
-    assert.equal(cardBrief(card("merlin"), facts("merlin"), "pt")[0].q, "Merlin está na demo de Origins TCG?");
+    assert.equal(cardBrief(card("merlin"), facts("merlin"), "pt")[0].q, "Dá para jogar com Merlin em Origins TCG?");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "de")[1].a), "Ja: Patch 0.6.3 vom 27. August 2026 änderte die Kraft von 3 auf 5.");
-    assert.equal(cardBrief(card("merlin"), facts("merlin"), "de")[0].q, "Ist Merlin in der Demo von Origins TCG?");
+    assert.equal(cardBrief(card("merlin"), facts("merlin"), "de")[0].q, "Ist Merlin in Origins TCG spielbar?");
     assert.equal(partsText(cardBrief(card("merlin"), facts("merlin"), "ru")[1].a), "Да: патч 0.6.3 от 27 августа 2026 г. изменил Силу с 3 до 5.");
-    assert.equal(cardBrief(card("merlin"), facts("merlin"), "ru")[0].q, "Есть ли Merlin в демо Origins TCG?");
+    assert.equal(cardBrief(card("merlin"), facts("merlin"), "ru")[0].q, "Можно ли играть картой Merlin в Origins TCG?");
     assert.ok(items[1].a.some((p) => typeof p !== "string" && "path" in p && p.path === "/news/patch-0-6-3"));
   });
 
@@ -322,19 +322,19 @@ describe("In breve", () => {
     assert.equal(itNei(16), "nei");
   });
 
-  test("carte create: la prima risposta dice lo stato senza ripetere chi la genera; senza una carta della demo che la generi, non si può dire", () => {
+  test("carte create: la prima risposta dice lo stato senza ripetere chi la genera; senza una carta del gioco che la generi, non si può dire", () => {
     const garlic = cardBrief(card("garlic"), facts("garlic"), "en");
-    assert.equal(partsText(garlic[0].a), "Yes, as a created card: it cannot be added to a deck in the deck builder, but it comes into a match from a card in Demo 2.0.");
-    assert.equal(partsText(cardBrief(card("garlic"), facts("garlic"), "it")[0].a), "Sì, come carta generata: non si può mettere nel mazzo con il deck builder, ma in partita arriva da una carta della Demo 2.0.");
+    assert.equal(partsText(garlic[0].a), "Yes, as a created card: it cannot be added to a deck in the deck builder, but it comes into a match from a card in the game's collection.");
+    assert.equal(partsText(cardBrief(card("garlic"), facts("garlic"), "it")[0].a), "Sì, come carta generata: non si può mettere nel mazzo con il deck builder, ma in partita arriva da una carta della collezione del gioco.");
     for (const slug of ["reflection", "little-pig", "off-with-your-head"]) {
       assert.equal(createdFromDemo(facts(slug)), false, slug);
       // mai un "sì" senza una base verificabile, e nessuna fonte nominata (dal 25/09/2026)
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "en")[0].a), /^We cannot say for sure: no card text in Demo 2\.0 creates it, and created cards are not in the game's collection\. /, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "it")[0].a), /^Non si può dire con certezza: nessun testo delle carte della Demo 2\.0 la genera, /, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "es")[0].a), /^No se puede decir con certeza: ningún texto de las cartas de la Demo 2\.0 la crea, /, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "pt")[0].a), /^Não dá para afirmar com certeza: nenhum texto das cartas da Demo 2\.0 a cria, /, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "de")[0].a), /^Das lässt sich nicht sicher sagen: Kein Kartentext der Demo 2\.0 erschafft sie, /, slug);
-      assert.match(partsText(cardBrief(card(slug), facts(slug), "ru")[0].a), /^Точно сказать нельзя: ни один текст карт Demo 2\.0 её не создаёт, /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "en")[0].a), /^We cannot say for sure: no card text in the game creates it, and created cards are not in the game's collection\. /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "it")[0].a), /^Non si può dire con certezza: nessun testo delle carte del gioco la genera, /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "es")[0].a), /^No se puede decir con certeza: ningún texto de las cartas del juego la crea, /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "pt")[0].a), /^Não dá para afirmar com certeza: nenhum texto das cartas do jogo a cria, /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "de")[0].a), /^Das lässt sich nicht sicher sagen: Kein Kartentext des Spiels erschafft sie, /, slug);
+      assert.match(partsText(cardBrief(card(slug), facts(slug), "ru")[0].a), /^Точно сказать нельзя: ни один текст карт игры её не создаёт, /, slug);
       assert.equal(partsText(cardBrief(card(slug), facts(slug), "en")[2].a), "No card text says so.", slug);
     }
     for (const c of cards.filter((x) => x.type === "token"))
@@ -469,11 +469,11 @@ describe("etichette e fonti", () => {
     assert.deepEqual(cardLdTexts(card("merlin"), true), []);
   });
 
-  test("stato nei dati strutturati: uguale in ogni lingua; le carte create senza catena dalla demo non si dicono nella demo", () => {
-    assert.equal(cardStatusLd(card("merlin"), facts("merlin")), "In Demo 2.0");
-    assert.equal(cardStatusLd(card("garlic"), facts("garlic")), "Created card in Demo 2.0");
-    assert.equal(cardStatusLd(card("reflection"), facts("reflection")), "Created card, not verified in Demo 2.0");
-    assert.equal(cardStatusLd(card("baker"), facts("baker")), "Not in Demo 2.0 (earlier builds)");
+  test("stato nei dati strutturati: uguale in ogni lingua; le carte create senza catena da una carta giocabile non si dicono nel gioco", () => {
+    assert.equal(cardStatusLd(card("merlin"), facts("merlin")), "In the game");
+    assert.equal(cardStatusLd(card("garlic"), facts("garlic")), "Created card in the game");
+    assert.equal(cardStatusLd(card("reflection"), facts("reflection")), "Created card, not verified in the game");
+    assert.equal(cardStatusLd(card("baker"), facts("baker")), "No longer in the game (earlier builds)");
   });
 
   test("alt della carta ufficiale: nome, tipo, gioco, illustratore e © Koin Games", () => {
@@ -509,7 +509,7 @@ describe("etichette e fonti", () => {
       // le carte rimosse: gli ultimi dati noti, con la patch dei dati importati
       assert.match(asOfLine(card("baker"), l, cardSource) ?? "", /0\.6\.3/, l);
     }
-    assert.match(asOfLine(card("baker"), "en", cardSource) ?? "", /^Not in Demo 2\.0/);
+    assert.match(asOfLine(card("baker"), "en", cardSource) ?? "", /^No longer in the game/);
   });
 
   test("le patch si nominano con patchLabel, mai con l'id (anche quando l'import arriverà alla demo-0921)", () => {

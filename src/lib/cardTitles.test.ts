@@ -106,29 +106,29 @@ describe("cardTitle", () => {
     assert.equal(cardTitle(card("garlic"), "it"), "Garlic: carta generata di Origins TCG");
     assert.equal(cardTitle(card("garlic"), "es"), "Garlic: carta creada de Origins TCG");
     assert.equal(cardTitle(card("garlic"), "fr"), "Garlic\u00a0: carte créée d'Origins TCG");
-    assert.equal(cardTitle(card("baker"), "en"), "Baker: Origins TCG card, not in the demo");
-    assert.equal(cardTitle(card("baker"), "it"), "Baker: carta di Origins TCG non nella demo");
-    assert.equal(cardTitle(card("baker"), "es"), "Baker: carta de Origins TCG fuera de la demo");
-    assert.equal(cardTitle(card("baker"), "fr"), "Baker\u00a0: carte d'Origins TCG hors de la démo");
-    assert.equal(cardTitle(card("alice"), "en"), "Alice: Origins TCG Legendary, not in the demo");
-    assert.equal(cardTitle(card("alice"), "it"), "Alice: Leggendaria di Origins TCG non nella demo");
-    assert.equal(cardTitle(card("alice"), "es"), "Alice: Legendaria de Origins TCG fuera de la demo");
-    assert.equal(cardTitle(card("alice"), "fr"), "Alice\u00a0: Légendaire d'Origins TCG hors de la démo");
+    assert.equal(cardTitle(card("baker"), "en"), "Baker: removed Origins TCG card");
+    assert.equal(cardTitle(card("baker"), "it"), "Baker: carta rimossa di Origins TCG");
+    assert.equal(cardTitle(card("baker"), "es"), "Baker: carta retirada de Origins TCG");
+    assert.equal(cardTitle(card("baker"), "fr"), "Baker\u00a0: carte retirée d'Origins TCG");
+    assert.equal(cardTitle(card("alice"), "en"), "Alice: removed Origins TCG Legendary");
+    assert.equal(cardTitle(card("alice"), "it"), "Alice: Leggendaria rimossa di Origins TCG");
+    assert.equal(cardTitle(card("alice"), "es"), "Alice: Legendaria retirada de Origins TCG");
+    assert.equal(cardTitle(card("alice"), "fr"), "Alice\u00a0: Légendaire retirée d'Origins TCG");
     assert.equal(cardTitle(card("merlin"), "pt"), "Merlin: carta Lendária de Origins TCG");
     assert.equal(cardTitle(card("aladdin"), "pt"), "Aladdin: carta do jogo Origins TCG");
     assert.equal(cardTitle(card("garlic"), "pt"), "Garlic: carta criada de Origins TCG");
-    assert.equal(cardTitle(card("baker"), "pt"), "Baker: carta de Origins TCG fora da demo");
-    assert.equal(cardTitle(card("alice"), "pt"), "Alice: Lendária de Origins TCG fora da demo");
+    assert.equal(cardTitle(card("baker"), "pt"), "Baker: carta removida de Origins TCG");
+    assert.equal(cardTitle(card("alice"), "pt"), "Alice: Lendária removida de Origins TCG");
     assert.equal(cardTitle(card("merlin"), "de"), "Merlin: Legendäre Karte aus Origins TCG");
     assert.equal(cardTitle(card("aladdin"), "de"), "Aladdin: Karte aus Origins TCG");
     assert.equal(cardTitle(card("garlic"), "de"), "Garlic: erschaffene Karte aus Origins TCG");
-    assert.equal(cardTitle(card("baker"), "de"), "Baker: Karte aus Origins TCG, nicht in der Demo");
-    assert.equal(cardTitle(card("alice"), "de"), "Alice: Legendäre aus Origins TCG, nicht in der Demo");
+    assert.equal(cardTitle(card("baker"), "de"), "Baker: entfernte Karte aus Origins TCG");
+    assert.equal(cardTitle(card("alice"), "de"), "Alice: entfernte Legendäre aus Origins TCG");
     assert.equal(cardTitle(card("merlin"), "ru"), "Merlin: Легендарная карта Origins TCG");
     assert.equal(cardTitle(card("aladdin"), "ru"), "Aladdin: карта Origins TCG");
     assert.equal(cardTitle(card("garlic"), "ru"), "Garlic: созданная карта Origins TCG");
-    assert.equal(cardTitle(card("baker"), "ru"), "Baker: карта Origins TCG, нет в демо");
-    assert.equal(cardTitle(card("alice"), "ru"), "Alice: Легендарная карта Origins TCG, нет в демо");
+    assert.equal(cardTitle(card("baker"), "ru"), "Baker: удалённая карта Origins TCG");
+    assert.equal(cardTitle(card("alice"), "ru"), "Alice: удалённая Легендарная карта Origins TCG");
   });
 
   test("ogni carta, in ogni lingua: nome in testa, Origins TCG dentro, title finale entro 60 caratteri", () => {
@@ -225,7 +225,7 @@ describe("cardDescription", () => {
     assert.match(cardDescription(card("legion-of-the-dead"), "ru", cards, src), /^Legion of the Dead, Легендарное заклинание /);
   });
 
-  test("le carte create dicono chi le crea solo se un testo lo dice; le rimosse che non sono nella demo", () => {
+  test("le carte create dicono chi le crea solo se un testo lo dice; le rimosse che non sono più nel gioco", () => {
     assert.match(cardDescription(card("garlic"), "en", cards, src), /card created by Van Helsing's Tools in Origins TCG/);
     assert.match(cardDescription(card("garlic"), "it", cards, src), /generata da Van Helsing's Tools/);
     assert.match(cardDescription(card("silver-bullet"), "es", cards, src), /creada por Van Helsing's Tools/);
@@ -238,13 +238,13 @@ describe("cardDescription", () => {
       const d = cardDescription(card("reflection"), locale, cards, src);
       assert.doesNotMatch(d, /created by|generata da|creada por|créée par|criada por|erschaffen von|создаёт карта|создают карты/, d);
     }
-    assert.match(cardDescription(card("alice"), "en", cards, src), /not in the demo/);
-    assert.match(cardDescription(card("alice"), "it", cards, src), /non nella demo/);
-    assert.match(cardDescription(card("alice"), "es", cards, src), /fuera de la demo/);
-    assert.match(cardDescription(card("alice"), "fr", cards, src), /hors de la démo/);
-    assert.match(cardDescription(card("alice"), "pt", cards, src), /fora da demo/);
-    assert.match(cardDescription(card("alice"), "de", cards, src), /nicht in der Demo/);
-    assert.match(cardDescription(card("alice"), "ru", cards, src), /нет в демо/);
+    assert.match(cardDescription(card("alice"), "en", cards, src), /no longer in the game/);
+    assert.match(cardDescription(card("alice"), "it", cards, src), /non più nel gioco/);
+    assert.match(cardDescription(card("alice"), "es", cards, src), /que ya no está en el juego/);
+    assert.match(cardDescription(card("alice"), "fr", cards, src), /qui n.est plus dans le jeu/);
+    assert.match(cardDescription(card("alice"), "pt", cards, src), /não está mais no jogo/);
+    assert.match(cardDescription(card("alice"), "de", cards, src), /nicht mehr im Spiel/);
+    assert.match(cardDescription(card("alice"), "ru", cards, src), /больше нет в игре/);
   });
 
   test("il nome precedente resta nella description", () => {

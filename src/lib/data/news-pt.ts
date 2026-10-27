@@ -10,6 +10,78 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "origins-tcg-early-access-0-8": {
+    title: "Adeus, demo: Origins TCG está em Acesso Antecipado no Steam com o patch 0.8",
+    metaTitle: "Origins TCG em Acesso Antecipado: o patch 0.8",
+    description:
+      "A demo de Origins TCG acabou: desde 27 de outubro de 2026 o jogo é grátis no Steam em Acesso Antecipado, com Grandmaster, gradação e Mercado do Steam.",
+    summary:
+      "Em 27 de outubro de 2026 a Koin Games encerrou a demo de Origins TCG e lançou o jogo em Acesso Antecipado no Steam com a versão 0.8. Ele continua grátis, e a sua conta e a sua coleção vieram junto; abre-se a divisão Grandmaster com um ranking mundial, a gradação das cartas chega ao jogo e as cartas de coleção podem ser negociadas no Mercado da Comunidade Steam. As notas do patch não citam mudanças nas cartas.",
+    highlights: [
+      { label: "Adeus, demo", text: "Origins TCG é grátis no Steam em Acesso Antecipado desde 27 de outubro", anchor: "acesso-antecipado" },
+      { label: "Você não perde nada", text: "conta, coleção e progresso passaram para o Acesso Antecipado", anchor: "progresso" },
+      { label: "O Grandmaster está aberto", text: "ranking mundial, primeira temporada prevista até o início de dezembro", anchor: "grandmaster" },
+      { label: "Cartas gradadas", text: "graus de 1 a 10 visíveis nas cartas de coleção", anchor: "gradacao" },
+      { label: "Negociação no Mercado do Steam", text: "as cartas de coleção podem ser compradas, vendidas e anunciadas", anchor: "mercado" },
+      { label: "Nenhuma mudança nas cartas", text: "as estatísticas continuam as do patch 0.7", anchor: "cartas" },
+      { label: "Rumo à 1.0", text: "a Koin quer sair do Acesso Antecipado por volta de 17 de março de 2027", anchor: "rumo-a-1-0" },
+    ],
+    body: `## Adeus, demo; olá, Acesso Antecipado {#acesso-antecipado}
+
+Na terça-feira, 27 de outubro de 2026, a Koin Games encerrou a demo de Origins TCG e lançou o jogo em Acesso Antecipado no Steam, com a versão 0.8. As notas do patch saíram no Discord oficial às 18:06 UTC (15:06 no horário de Brasília) e no Steam dois minutos depois, com o título "Goodbye Demo, Welcome Early Access": "Esta atualização marca o fim oficial da demo de Origins TCG e o começo da nossa reta final rumo à 1.0!"
+
+Origins TCG continua grátis: a [página do Steam](https://store.steampowered.com/app/4429430/Origins_TCG/) o lista como Free To Play, e a Koin escreve que o jogo "vai continuar free-to-play e free-to-compete para sempre", durante o Acesso Antecipado e depois do lançamento completo, acrescentando que "o Acesso Antecipado terá alguns recursos premium pagos". A antiga página da demo no Steam não existe mais: o nosso [guia para jogar no Steam](/pt/guides/play-the-demo) explica o download e as primeiras partidas.
+
+## A sua conta e a sua coleção vieram junto {#progresso}
+
+"A sua conta, a sua coleção, o seu progresso e todo o resto agora estão na versão em Acesso Antecipado de Origins." No Discord, Mawr, Studio Head da Koin, acrescentou que todo o progresso foi transferido e que a demo pode ser desinstalada. Uma coisa não veio junto: a nota das avaliações da demo, zerada para o Acesso Antecipado. Em 28 de outubro a página do jogo mostrava 100% de avaliações positivas em 22.
+
+## O Grandmaster está aberto {#grandmaster}
+
+O topo da ranqueada se abre com a versão 0.8: agora dá para subir para a divisão Grandmaster, e o ranking Grandmaster está ativo, uma classificação mundial contra todos os outros jogadores Grandmaster. A primeira temporada ranqueada do Acesso Antecipado tem recompensas de edição limitada para quem terminar nas posições mais altas, incluindo recompensas que celebram a colocação. A Koin pretende encerrar a temporada 1 "no início de dezembro" e vai confirmar a data. Como funciona a escalada está no nosso [guia da ranqueada](/pt/guides/origins-tcg-ranked).
+
+## A gradação das cartas chega ao jogo {#gradacao}
+
+As cartas de coleção podem ter um grau de 1 a 10, e agora a aparência delas mostra isso "com várias imperfeições e efeitos". A Koin chama isso de "claramente um primeiro passo" e pede que os jogadores digam no Discord o que funciona e o que não funciona.
+
+## As cartas de coleção no Mercado do Steam {#mercado}
+
+"As cartas de coleção agora podem ser compradas, vendidas e anunciadas no Mercado da Comunidade Steam." As cartas iniciais de jogo continuam suas para sempre; as versões de coleção são as que você pode possuir, gradar, colecionar e agora negociar. Os cosméticos de coleção que não são cartas ainda não podem ser negociados: isso vai chegar numa atualização futura, sem data. Como coleção e jogo se encaixam está explicado no nosso [guia da economia de coleção](/pt/guides/collector-economy).
+
+## Nenhuma mudança nas cartas na 0.8 {#cartas}
+
+As notas do patch 0.8 não citam mudanças de balanceamento, cartas novas nem textos novos. As estatísticas das cartas no OriginsMeta continuam as do [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026, então o [banco de dados de cartas](/pt/cards), o [Deck builder](/pt/deck-builder) e as [tier lists](/pt/tier-list) estão atualizados.
+
+## Rumo à 1.0 {#rumo-a-1-0}
+
+"A 0.8 não é a linha de chegada": a Koin prevê que Origins "mude bastante" antes da 1.0, com sistemas ampliados, interfaces refeitas e experimentos que "não vão sobreviver". A página do Steam dá uma data aproximada para a saída do Acesso Antecipado, "por volta de 17 de março de 2027", que "pode mudar". No mesmo dia, 27 de outubro, a Koin também abriu o [Kickstarter da Alpha Edition](/pt/news/kickstarter-alpha-edition-reward-tiers).
+
+## O que ainda não sabemos {#o-que-nao-sabemos}
+
+- A data exata do fim da temporada ranqueada 1 e a lista completa das suas recompensas.
+- Quando os cosméticos de coleção que não são cartas vão poder ser negociados.
+- Quais serão os "recursos premium pagos" do Acesso Antecipado.
+
+Fontes: as "0.8 patch notes" em #game-announcements no Discord oficial de Origins TCG (27 de outubro de 2026, 18:06 UTC), o mesmo texto no post do Steam "Goodbye Demo, Welcome Early Access" (18:08 UTC) e a página de Origins TCG no Steam, consultada em 28 de outubro de 2026. As citações foram traduzidas por nós.`,
+    faq: [
+      {
+        q: "Origins TCG continua grátis?",
+        a: "Sim. Desde 27 de outubro de 2026 ele é grátis no Steam em Acesso Antecipado; a Koin diz que vai continuar free-to-play e free-to-compete, com alguns recursos premium pagos durante o Acesso Antecipado.",
+      },
+      {
+        q: "Eu perco o progresso da demo?",
+        a: "Não. Segundo as notas do patch 0.8, conta, coleção e progresso passaram para o Acesso Antecipado, e a demo pode ser desinstalada.",
+      },
+      {
+        q: "O patch 0.8 mudou alguma carta?",
+        a: "As notas do patch não citam mudanças nas cartas: as estatísticas continuam as do patch 0.7 de 29 de setembro de 2026.",
+      },
+      {
+        q: "Quando Origins TCG sai do Acesso Antecipado?",
+        a: "A Koin quer sair por volta de 17 de março de 2027, uma data que a página do Steam chama de aproximada.",
+      },
+    ],
+  },
   "kickstarter-alpha-edition-reward-tiers": {
     title: "Kickstarter de Origins TCG: os oito níveis da Alpha Edition, de 24 a 9.999 dólares",
     metaTitle: "Kickstarter de Origins TCG: todos os oito níveis",

@@ -2,7 +2,7 @@ import { llmsFull } from "@/lib/llms";
 
 /**
  * /llms-full.txt: il testo completo del sito per i modelli linguistici (Ondata 3 del piano SEO/GEO, 25/09/2026,
- * GEO-04): guide e news in inglese in Markdown pulito, più le carte della Demo 2.0 con il testo ufficiale. Il
+ * GEO-04): guide e news in inglese in Markdown pulito, più le carte del gioco con il testo ufficiale. Il
  * contenuto lo scrive `src/lib/llms.ts`; l'indice breve resta public/llms.txt, che ci rimanda.
  *
  * Statico, generato alla build: guide, news e carte cambiano solo con un deploy (niente dati della community).

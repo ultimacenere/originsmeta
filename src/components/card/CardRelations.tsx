@@ -11,7 +11,7 @@ import { CardParts } from "./CardParts";
  * prima, "Carte collegate" e "Richiamata da", che leggevano il campo `related` dei dati importati e davano dati
  * sbagliati sulle carte create (su Garlic "Richiamata da Van Helsing", il cui testo non nomina Garlic).
  * - Carte create: "Come si ottiene", con chi la genera passaggio per passaggio (Garlic ← Van Helsing's Tools ← Van
- *   Helsing) e le carte fuori dalla demo che la generavano; se nessun testo lo dice, lo si dice e basta.
+ *   Helsing) e le carte non più nel gioco che la generavano; se nessun testo lo dice, lo si dice e basta.
  * - Altre carte: "Carte che genera", dal testo, con il passaggio successivo (Van Helsing → Van Helsing's Tools →
  *   Holy Water, Silver Bullet, Garlic, Wooden Stake).
  * Fino al 25/09/2026 c'era anche il riquadro "Carte collegate (World of Origins)", con i collegamenti del database che
@@ -81,7 +81,7 @@ export function CardRelations({ card, locale, rel }: { card: Pick<Card, "slug" |
 
 /**
  * Carte create: al posto dell'invito al deck builder, che non le accetta (SCHEDE-04, CARDS-09), l'invito a costruire
- * un mazzo con la carta della demo che le genera, con il link alla sua scheda e al deck builder.
+ * un mazzo con la carta della collezione che le genera, con il link alla sua scheda e al deck builder.
  */
 export function CardRootCta({ card, locale, roots, builderLabel }: { card: Pick<Card, "slug" | "name">; locale: Locale; roots: readonly Card[]; builderLabel: string }) {
   if (!roots.length) return null;
