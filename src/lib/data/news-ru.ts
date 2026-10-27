@@ -20,7 +20,7 @@ export const ruText: Record<string, NewsCopy> = {
       { label: "Эксклюзивы Kickstarter", text: "Big Bob Commander начиная с Aspirant, Golden Big Bob — начиная с Apprentice", anchor: "eksklyuzivy" },
       { label: "Промо и слэбы", text: "Alpha Alt Art Promo Box, Golden Slab с Van Helsing и Rapunzel, Winnie-the-Pooh на самом верху", anchor: "promo" },
       { label: "Всё цифровое", text: "Koin пишет это на каждом уровне: награды — цифровые товары", anchor: "tsifrovye" },
-      { label: "Ещё нужно проверить", text: "кейсы в Myth и дату окончания кампании", anchor: "chego-my-poka-ne-znaem" },
+      { label: "Что пока неизвестно", text: "дата окончания кампании и возможные ограничения на уровни", anchor: "chego-my-poka-ne-znaem" },
     ],
     body: `## Восемь уровней, от 24 до 9 999 $ {#urovni}
 
@@ -34,7 +34,7 @@ export const ruText: Record<string, NewsCopy> = {
 | Hero | 499 $ | 1 Alpha Booster Box Case | 144 |
 | Champion | 999 $ | 2 Alpha Booster Box Case | 288 |
 | Icon | 2 499 $ | 6 Alpha Booster Box Case | 864 |
-| Myth: Winnie-the-Pooh | 4 999 $ | запечатанные кейсы, см. ниже | см. ниже |
+| Myth: Winnie-the-Pooh | 4 999 $ | 30 Alpha Booster Box Case | 4 320 |
 | Legend: Winnie-the-Pooh | 9 999 $ | 30 Alpha Booster Box Case | 4 320 |
 
 Цены в долларах США. Изображения ниже — официальная графика Koin Games для каждого уровня. Названия уровней и наград остаются на английском, как их пишет Koin.
@@ -79,7 +79,7 @@ export const ruText: Record<string, NewsCopy> = {
 
 ![Графика Koin Games для уровня Myth: Winnie-the-Pooh, 4 999 $: запечатанные кейсы бустер-боксов, набор промо Alternate Art и промо-слэб Winnie-the-Pooh с его золотой эмоцией](/media/kickstarter/myth.webp)
 
-Первый уровень, названный в честь персонажа. Помимо всего, что есть в Icon, он добавляет **Golden Commander Skin**, **Golden Emote** и **Serialized Character Profile Promo**. Количество кейсов на графике и в её списке не совпадает: на изображении — ×13, в списке — «30 sealed Alpha Booster Box Case (4,320 Packs)», как в Legend.
+Первый уровень, названный в честь персонажа. Помимо всего, что есть в Icon, он добавляет **Golden Commander Skin**, **Golden Emote** и **Serialized Character Profile Promo**. По списку наград на его графике в нём 30 запечатанных кейсов, 4 320 бустеров.
 
 ### Legend: Winnie-the-Pooh, 9 999 $ {#legend}
 
@@ -112,7 +112,6 @@ Koin помечает две награды как **Kickstarter Exclusive**: **
 
 ## Чего мы пока не знаем {#chego-my-poka-ne-znaem}
 
-- Сколько кейсов в Myth: Winnie-the-Pooh: на графике — ×13, в её списке — 30.
 - Когда заканчивается кампания и есть ли у каких-либо уровней ограниченное число мест.
 - Когда награды появятся в вашем инвентаре Steam.`,
     faq: [

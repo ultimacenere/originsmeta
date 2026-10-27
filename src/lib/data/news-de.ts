@@ -22,7 +22,7 @@ export const deText: Record<string, NewsCopy> = {
       { label: "Exklusiv auf Kickstarter", text: "Big Bob Commander ab Aspirant, Golden Big Bob ab Apprentice", anchor: "exklusiv" },
       { label: "Promos und Slabs", text: "Alt Art Promo Box, Golden Slabs von Van Helsing und Rapunzel, Winnie-the-Pooh an der Spitze", anchor: "promos" },
       { label: "Alles digital", text: "Koin schreibt es auf jede Stufe: Die Belohnungen sind digitale Produkte", anchor: "digital" },
-      { label: "Noch zu prüfen", text: "die Cases in Myth und das Ende der Kampagne", anchor: "noch-offen" },
+      { label: "Noch offen", text: "das Ende der Kampagne und mögliche Limits bei den Stufen", anchor: "noch-offen" },
     ],
     body: `## Acht Stufen, von 24 $ bis 9.999 $ {#stufen}
 
@@ -36,7 +36,7 @@ Der Kickstarter von Koin Games zur **Alpha Edition von Myths and Legends** hat a
 | Hero | 499 $ | 1 Alpha Booster Box Case | 144 |
 | Champion | 999 $ | 2 Alpha Booster Box Cases | 288 |
 | Icon | 2.499 $ | 6 Alpha Booster Box Cases | 864 |
-| Myth: Winnie-the-Pooh | 4.999 $ | versiegelte Cases, siehe unten | siehe unten |
+| Myth: Winnie-the-Pooh | 4.999 $ | 30 Alpha Booster Box Case | 4.320 |
 | Legend: Winnie-the-Pooh | 9.999 $ | 30 Alpha Booster Box Cases | 4.320 |
 
 Die Preise sind in US-Dollar. Die Grafiken unten sind die offiziellen Übersichten von Koin Games zu jeder Stufe. Die Namen der Stufen und der Belohnungen bleiben auf Englisch, so wie Koin sie schreibt.
@@ -81,7 +81,7 @@ Sechs versiegelte Cases, 864 Packs. Dazu kommt das **Guaranteed Premium Alternat
 
 ![Grafik von Koin Games zur Stufe Myth: Winnie-the-Pooh, 4.999 $: versiegelte Cases, das Alternate-Art-Promo-Set und ein Promo-Slab von Winnie-the-Pooh mit seinem goldenen Emote](/media/kickstarter/myth.webp)
 
-Die erste Stufe, die nach einem Charakter benannt ist. Zusätzlich zu allem aus Icon kommen die **Golden Commander Skin**, ein **Golden Emote** und die **Serialized Character Profile Promo** dazu. Bei der Zahl der Cases passen die Grafik und ihre Liste nicht zusammen: Das Bild zeigt ×13, die Liste sagt „30 sealed Alpha Booster Box Case (4,320 Packs)“, genau wie bei Legend.
+Die erste Stufe, die nach einem Charakter benannt ist. Zusätzlich zu allem aus Icon kommen die **Golden Commander Skin**, ein **Golden Emote** und die **Serialized Character Profile Promo** dazu. Laut der Belohnungsliste auf ihrer Grafik enthält sie 30 versiegelte Cases, 4.320 Packs.
 
 ### Legend: Winnie-the-Pooh, 9.999 $ {#legend}
 
@@ -114,7 +114,6 @@ Unsere [Kickstarter-Seite](/de/kickstarter) fasst die Alpha Edition zusammen, un
 
 ## Was wir noch nicht wissen {#noch-offen}
 
-- Wie viele Cases in Myth: Winnie-the-Pooh stecken: Die Grafik zeigt ×13, ihre Liste sagt 30.
 - Wann die Kampagne endet und ob eine Stufe nur eine begrenzte Zahl an Unterstützern hat.
 - Wann die Belohnungen in deinem Steam-Inventar ankommen.`,
     faq: [

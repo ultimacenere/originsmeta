@@ -3,21 +3,24 @@
  * 26/10/2026 notte ("questi sono i pacchetti che saranno disponibili domani su kickstarter"). Nomi dei livelli e dei
  * contenuti in inglese, come li scrive Koin (sono nomi di prodotto); prezzi in dollari.
  *
- * NON ANCORA PUBBLICI: finché la campagna non apre, la landing non li mostra (`KICKSTARTER_TIERS_PUBLIC`). Questo modulo
- * lo importa solo la pagina /kickstarter (componente server): non deve finire in un componente client, altrimenti i
- * livelli finirebbero nel JavaScript del sito prima che Koin li pubblichi.
+ * La landing li mostra solo con `KICKSTARTER_TIERS_PUBLIC` acceso (dal 27/10/2026, vedi sotto). Questo modulo lo importa
+ * solo la pagina /kickstarter (componente server): materiale di Koin non ancora pubblico non deve finire in un componente
+ * client, altrimenti arriverebbe nel JavaScript del sito anche con il flag spento.
  *
  * Non si mostrano né l'"MSRP" barrato né il "Bonus value" delle schede: sono prezzi di riferimento di prodotti mai venduti
  * a quel prezzo, e ripeterli da affiliati sarebbe un prezzo di confronto non verificabile (direttiva UE sulle pratiche
  * commerciali sleali, Codice del consumo). Si mostrano prezzo, prodotti sigillati e contenuti.
  *
- * Da verificare all'apertura (`verify`): la scheda di Myth mostra ×13 casse nell'immagine, ma il suo elenco dice
- * "30 sealed Alpha Booster Box Case (4,320 Packs)", lo stesso di Legend. Il test non lascia accendere i livelli finché
- * un livello ha `verify`.
+ * `verify` segna un dato delle schede da controllare: il test non lascia accendere i livelli finché un livello lo ha. Per
+ * Myth (immagine ×13, elenco 30 case) Pierluigi ha scelto l'elenco il 27/10/2026.
  */
 
-/** Si accende quando la campagna è aperta e i livelli sono sulla pagina di Kickstarter (Pierluigi lo dice, o si legge). */
-export const KICKSTARTER_TIERS_PUBLIC = false;
+/**
+ * Acceso il 27/10/2026 notte, con la campagna ancora in pre-lancio sulla pagina pubblica di Kickstarter, per decisione di
+ * Pierluigi ("pubblica lo stesso adesso ... me ne prendo io la responsabilità con Koin"). Myth come l'elenco della scheda:
+ * 30 case, 4.320 pacchetti (l'immagine mostra ×13).
+ */
+export const KICKSTARTER_TIERS_PUBLIC = true;
 
 export type KickstarterTier = {
   /** nome del livello come lo scrive Koin */
@@ -67,7 +70,6 @@ export const KICKSTARTER_TIERS: readonly KickstarterTier[] = [
       "Golden Emote",
       "Serialized Character Profile Promo",
     ],
-    verify: "l'immagine della scheda mostra ×13 casse, l'elenco dice 30 (4,320 Packs) come Legend",
   },
   {
     name: "Legend: Winnie-the-Pooh",

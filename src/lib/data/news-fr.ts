@@ -33,7 +33,7 @@ export const frText: Record<string, NewsCopy> = {
       { label: "Exclusivités du Kickstarter", text: "Big Bob Commander à partir d'Aspirant, Golden Big Bob à partir d'Apprentice", anchor: "exclusivites" },
       { label: "Promos et slabs", text: "Alt Art Promo Box, Golden Slabs de Van Helsing et Rapunzel, Winnie-the-Pooh tout en haut", anchor: "promos" },
       { label: "Tout numérique", text: "Koin l'écrit sur chaque palier : les récompenses sont des produits numériques", anchor: "numeriques" },
-      { label: "À vérifier", text: "les cases de Myth et la date de fin de la campagne", anchor: "inconnues" },
+      { label: "Encore à savoir", text: "la date de fin de la campagne et d'éventuelles limites sur les paliers", anchor: "inconnues" },
     ],
     body: `## Huit paliers, de 24 $ à 9 999 $ {#paliers}
 
@@ -47,7 +47,7 @@ Le Kickstarter de Koin Games pour l'**Alpha Edition de Myths and Legends** compt
 | Hero | 499 $ | 1 Alpha Booster Box Case | 144 |
 | Champion | 999 $ | 2 Alpha Booster Box Case | 288 |
 | Icon | 2 499 $ | 6 Alpha Booster Box Case | 864 |
-| Myth: Winnie-the-Pooh | 4 999 $ | cases scellées, voir plus bas | voir plus bas |
+| Myth: Winnie-the-Pooh | 4 999 $ | 30 Alpha Booster Box Case | 4 320 |
 | Legend: Winnie-the-Pooh | 9 999 $ | 30 Alpha Booster Box Case | 4 320 |
 
 Prix en dollars américains. Les visuels ci-dessous sont les fiches officielles de Koin Games pour chaque palier. Les noms des paliers et des récompenses restent en anglais, comme les écrit Koin.
@@ -92,7 +92,7 @@ Six cases scellées, 864 boosters. Il ajoute le **Guaranteed Premium Alternate A
 
 ![Fiche de Koin Games du palier Myth: Winnie-the-Pooh, 4 999 $ : des cases scellées, le set promo Alternate Art et un slab promo de Winnie-the-Pooh avec son emote dorée](/media/kickstarter/myth.webp)
 
-Le premier palier qui porte le nom d'un personnage. En plus de tout le contenu d'Icon, il ajoute le **Golden Commander Skin**, une **Golden Emote** et la **Serialized Character Profile Promo**. Sur le nombre de cases, le visuel et sa liste ne concordent pas : l'image montre ×13, la liste indique « 30 sealed Alpha Booster Box Case (4,320 Packs) », comme Legend.
+Le premier palier qui porte le nom d'un personnage. En plus de tout le contenu d'Icon, il ajoute le **Golden Commander Skin**, une **Golden Emote** et la **Serialized Character Profile Promo**. Selon la liste des récompenses de sa fiche, il contient 30 cases scellées, 4 320 boosters.
 
 ### Legend: Winnie-the-Pooh, 9 999 $ {#legend}
 
@@ -125,7 +125,6 @@ Notre [page du Kickstarter](/fr/kickstarter) résume l'Alpha Edition et son bout
 
 ## Ce que nous ne savons pas encore {#inconnues}
 
-- Combien de cases contient Myth: Winnie-the-Pooh : le visuel montre ×13, sa liste en indique 30.
 - Quand la campagne se termine, et si certains paliers ont un nombre limité de contributeurs.
 - Quand les récompenses arrivent dans votre inventaire Steam.`,
     faq: [

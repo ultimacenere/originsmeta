@@ -135,11 +135,12 @@ const raw: RawNews[] = [
   {
     // I livelli del Kickstarter della Alpha Edition (27/10/2026). Pierluigi: "mi fai un articolo con le foto dei vari
     // pacchetti che ti ho inserito?", con le schede ufficiali di Koin Games dei livelli ("questi sono i pacchetti che saranno
-    // disponibili domani su kickstarter"). Si pubblica solo quando la campagna è aperta: prima resta in un commit locale (il
-    // repository è pubblico). Immagini: le schede di Koin intere, in /media/kickstarter/ (mai ritagliate). Il testo non
-    // ripete l'"MSRP" barrato né il "Bonus value" delle schede (prezzi di riferimento non verificabili). Da verificare
-    // all'apertura sulla pagina della campagna: le casse di Myth (la scheda mostra ×13, l'elenco dice 30, come Legend), la
-    // data di chiusura e se i livelli hanno quantità limitate. Stessi dati di src/lib/kickstarterTiers.ts.
+    // disponibili domani su kickstarter"). Pubblicata il 27/10/2026 notte con la campagna ancora in pre-lancio sulla pagina
+    // pubblica di Kickstarter, per decisione di Pierluigi ("pubblica lo stesso adesso ... me ne prendo io la responsabilità
+    // con Koin"). Immagini: le schede di Koin intere, in /media/kickstarter/ (mai ritagliate). Il testo non ripete l'"MSRP"
+    // barrato né il "Bonus value" delle schede (prezzi di riferimento non verificabili). Myth: Winnie-the-Pooh come dice
+    // l'elenco della sua scheda, 30 case e 4.320 pacchetti (l'immagine mostra ×13: scelta di Pierluigi). Da verificare
+    // all'apertura: data di chiusura e quantità limitate dei livelli. Stessi dati di src/lib/kickstarterTiers.ts.
     slug: "kickstarter-alpha-edition-reward-tiers",
     // copertina: la scheda di Worthy intera in 16:9 (scripts/kickstarter-images.mjs)
     image: "/media/news-kickstarter-tiers.webp",
@@ -168,7 +169,7 @@ const raw: RawNews[] = [
         { label: "Kickstarter exclusives", text: "Big Bob Commander from Aspirant, Golden Big Bob from Apprentice", anchor: "exclusives" },
         { label: "Promos and slabs", text: "Alt Art Promo Box, Van Helsing and Rapunzel Golden Slabs, Winnie-the-Pooh at the top", anchor: "promos" },
         { label: "All digital", text: "Koin writes it on every tier: the rewards are digital products", anchor: "digital" },
-        { label: "Still to check", text: "the cases in Myth and the end date of the campaign", anchor: "unknown" },
+        { label: "Still to know", text: "the end date of the campaign and any limits on the tiers", anchor: "unknown" },
       ],
       it: [
         { label: "Otto livelli, da 24 a 9.999 $", text: "dal bundle da 6 pacchetti a 30 case sigillati", anchor: "livelli" },
@@ -176,7 +177,7 @@ const raw: RawNews[] = [
         { label: "Esclusive del Kickstarter", text: "Big Bob Commander da Aspirant, Golden Big Bob da Apprentice", anchor: "esclusive" },
         { label: "Promo e slab", text: "Alt Art Promo Box, Golden Slab di Van Helsing e Rapunzel, Winnie-the-Pooh in cima", anchor: "promo" },
         { label: "Tutto digitale", text: "Koin lo scrive su ogni livello: le ricompense sono prodotti digitali", anchor: "digitali" },
-        { label: "Da verificare", text: "i case di Myth e la data di chiusura della campagna", anchor: "da-sapere" },
+        { label: "Da sapere ancora", text: "la data di chiusura della campagna ed eventuali limiti sui livelli", anchor: "da-sapere" },
       ],
       es: [
         { label: "Ocho niveles, de 24 a 9.999 $", text: "del bundle de 6 sobres a 30 cases sellados", anchor: "niveles" },
@@ -184,7 +185,7 @@ const raw: RawNews[] = [
         { label: "Exclusivas del Kickstarter", text: "Big Bob Commander desde Aspirant, Golden Big Bob desde Apprentice", anchor: "exclusivas" },
         { label: "Promos y slabs", text: "Alt Art Promo Box, Golden Slabs de Van Helsing y Rapunzel, Winnie-the-Pooh arriba del todo", anchor: "promos" },
         { label: "Todo digital", text: "Koin lo escribe en cada nivel: las recompensas son productos digitales", anchor: "digitales" },
-        { label: "Por comprobar", text: "los cases de Myth y la fecha de cierre de la campaña", anchor: "pendiente" },
+        { label: "Lo que falta saber", text: "la fecha de cierre de la campaña y si hay límites en los niveles", anchor: "pendiente" },
       ],
     },
     body: n(
@@ -200,7 +201,7 @@ Koin Games' Kickstarter for the **Myths and Legends Alpha Edition** has eight re
 | Hero | $499 | 1 Alpha Booster Box Case | 144 |
 | Champion | $999 | 2 Alpha Booster Box Cases | 288 |
 | Icon | $2,499 | 6 Alpha Booster Box Cases | 864 |
-| Myth: Winnie-the-Pooh | $4,999 | sealed cases, see below | see below |
+| Myth: Winnie-the-Pooh | $4,999 | 30 Alpha Booster Box Cases | 4,320 |
 | Legend: Winnie-the-Pooh | $9,999 | 30 Alpha Booster Box Cases | 4,320 |
 
 Prices are in US dollars. The graphics below are Koin Games' own reward cards for each tier. Names of tiers and rewards stay in English, as Koin writes them.
@@ -245,7 +246,7 @@ Six sealed cases, 864 packs. It adds the **Guaranteed Premium Alternate Art Prom
 
 ![Koin Games graphic of the Myth: Winnie-the-Pooh tier, $4,999: sealed booster box cases, the Alternate Art promo set and a Winnie-the-Pooh promo slab with his golden emote](/media/kickstarter/myth.webp)
 
-The first tier named after a character. Besides everything in Icon, it adds the **Golden Commander Skin**, a **Golden Emote** and the **Serialized Character Profile Promo**. On the number of cases the graphic and its list don't match: the image shows ×13, the list says "30 sealed Alpha Booster Box Case (4,320 Packs)", the same as Legend.
+The first tier named after a character. Besides everything in Icon, it adds the **Golden Commander Skin**, a **Golden Emote** and the **Serialized Character Profile Promo**. According to the reward list on its graphic, it has 30 sealed cases, 4,320 packs.
 
 ### Legend: Winnie-the-Pooh, $9,999 {#legend}
 
@@ -278,7 +279,6 @@ Our [Kickstarter page](/en/kickstarter) sums up the Alpha Edition and its button
 
 ## What we don't know yet {#unknown}
 
-- How many cases are in Myth: Winnie-the-Pooh: the graphic shows ×13, its list says 30.
 - When the campaign ends, and whether any tier has a limited number of backers.
 - When the rewards arrive in your Steam inventory.`,
       `## Otto livelli, da 24 a 9.999 $ {#livelli}
@@ -293,7 +293,7 @@ Il Kickstarter di Koin Games per la **Alpha Edition di Myths and Legends** ha ot
 | Hero | 499 $ | 1 Alpha Booster Box Case | 144 |
 | Champion | 999 $ | 2 Alpha Booster Box Case | 288 |
 | Icon | 2.499 $ | 6 Alpha Booster Box Case | 864 |
-| Myth: Winnie-the-Pooh | 4.999 $ | case sigillati, vedi sotto | vedi sotto |
+| Myth: Winnie-the-Pooh | 4.999 $ | 30 Alpha Booster Box Case | 4.320 |
 | Legend: Winnie-the-Pooh | 9.999 $ | 30 Alpha Booster Box Case | 4.320 |
 
 Prezzi in dollari. Le grafiche qui sotto sono le schede ufficiali di Koin Games per ogni livello. I nomi dei livelli e delle ricompense restano in inglese, come li scrive Koin.
@@ -338,7 +338,7 @@ Sei case sigillati, 864 pacchetti. Aggiunge il **Guaranteed Premium Alternate Ar
 
 ![Scheda di Koin Games del livello Myth: Winnie-the-Pooh, 4.999 $: case sigillati, il set promo Alternate Art e uno slab promo di Winnie-the-Pooh con la sua emote dorata](/media/kickstarter/myth.webp)
 
-Il primo livello con il nome di un personaggio. Oltre a tutto quello di Icon aggiunge la **Golden Commander Skin**, una **Golden Emote** e la **Serialized Character Profile Promo**. Sul numero di case la grafica e il suo elenco non coincidono: l'immagine mostra ×13, l'elenco dice "30 sealed Alpha Booster Box Case (4,320 Packs)", come Legend.
+Il primo livello con il nome di un personaggio. Oltre a tutto quello di Icon aggiunge la **Golden Commander Skin**, una **Golden Emote** e la **Serialized Character Profile Promo**. Secondo l'elenco delle ricompense della sua scheda ha 30 case sigillati, 4.320 pacchetti.
 
 ### Legend: Winnie-the-Pooh, 9.999 $ {#legend}
 
@@ -371,7 +371,6 @@ La nostra [pagina del Kickstarter](/it/kickstarter) riassume la Alpha Edition e 
 
 ## Cosa non sappiamo ancora {#da-sapere}
 
-- Quanti case ci sono in Myth: Winnie-the-Pooh: la grafica mostra ×13, il suo elenco dice 30.
 - Quando chiude la campagna, e se qualche livello ha un numero limitato di posti.
 - Quando le ricompense arrivano nell'inventario di Steam.`,
       `## Ocho niveles, de 24 a 9.999 $ {#niveles}
@@ -386,7 +385,7 @@ El Kickstarter de Koin Games para la **Alpha Edition de Myths and Legends** tien
 | Hero | 499 $ | 1 Alpha Booster Box Case | 144 |
 | Champion | 999 $ | 2 Alpha Booster Box Case | 288 |
 | Icon | 2.499 $ | 6 Alpha Booster Box Case | 864 |
-| Myth: Winnie-the-Pooh | 4.999 $ | cases sellados, mira abajo | mira abajo |
+| Myth: Winnie-the-Pooh | 4.999 $ | 30 Alpha Booster Box Case | 4.320 |
 | Legend: Winnie-the-Pooh | 9.999 $ | 30 Alpha Booster Box Case | 4.320 |
 
 Precios en dólares. Las imágenes de abajo son las fichas oficiales de Koin Games de cada nivel. Los nombres de los niveles y de las recompensas quedan en inglés, como los escribe Koin.
@@ -431,7 +430,7 @@ Seis cases sellados, 864 sobres. Añade el **Guaranteed Premium Alternate Art Pr
 
 ![Ficha de Koin Games del nivel Myth: Winnie-the-Pooh, 4.999 $: cases sellados, el set promo Alternate Art y un slab promo de Winnie-the-Pooh con su emote dorado](/media/kickstarter/myth.webp)
 
-El primer nivel con el nombre de un personaje. Además de todo lo de Icon, añade la **Golden Commander Skin**, un **Golden Emote** y la **Serialized Character Profile Promo**. En el número de cases la imagen y su lista no coinciden: la imagen muestra ×13 y la lista dice "30 sealed Alpha Booster Box Case (4,320 Packs)", lo mismo que Legend.
+El primer nivel con el nombre de un personaje. Además de todo lo de Icon, añade la **Golden Commander Skin**, un **Golden Emote** y la **Serialized Character Profile Promo**. Según la lista de recompensas de su ficha, tiene 30 cases sellados, 4.320 sobres.
 
 ### Legend: Winnie-the-Pooh, 9.999 $ {#legend}
 
@@ -464,7 +463,6 @@ Nuestra [página del Kickstarter](/es/kickstarter) resume la Alpha Edition y su 
 
 ## Lo que aún no sabemos {#pendiente}
 
-- Cuántos cases hay en Myth: Winnie-the-Pooh: la imagen muestra ×13 y su lista dice 30.
 - Cuándo cierra la campaña y si algún nivel tiene plazas limitadas.
 - Cuándo llegan las recompensas al inventario de Steam.`,
     ),
