@@ -94,10 +94,9 @@ export const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
 
 /**
  * Il disegnatore di un pannello. `view`: il mio mazzo o l'avversario; `inWindow`: la finestra dell'app accanto al
- * gioco (con la × e la maniglia; senza, la sorgente per OBS o l'estensione Twitch, con la dicitura in fondo); `logo`:
- * l'indirizzo del logo piccolo.
+ * gioco (con la × e la maniglia; senza, la sorgente per OBS o l'estensione Twitch, con la dicitura in fondo).
  */
-export function createDeckRenderer(opts: { view: PanelSide; lang: Lang; inWindow: boolean; logo?: string }) {
+export function createDeckRenderer(opts: { view: PanelSide; lang: Lang; inWindow: boolean }) {
   const { view, inWindow } = opts;
   const L = LABELS[opts.lang];
   const keyAttr = (c: DeckCard | null) => (c && /^C\d{5}_[A-Z]{2}$/.test(c.key) ? ` data-key="${c.key}"` : "");
@@ -156,8 +155,12 @@ export function createDeckRenderer(opts: { view: PanelSide; lang: Lang; inWindow
   /** Una carta rivelata dall'avversario, con le copie viste se più di una. */
   const seenCard = (c: DeckCard) => `<li class="gc" title="${esc(c.name)}"${keyAttr(c)}>${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`;
 
-  /** Il logo di OriginsMeta, piccolo, nei template nuovi (il marchio sul tracker è "indispensabile": note del 12/10). */
-  const miniLogo = `<img class="mini-logo" src="${esc(opts.logo ?? "logo-originsmeta-sm.webp")}" alt="OriginsMeta" width="48" height="15" draggable="false" />`;
+  /**
+   * Il marchio di OriginsMeta nei template (indispensabile sul tracker: note del 12/10). Dal 28/10/2026 una scritta, il
+   * rombo menta e "OriginsMeta", come la linguetta dell'estensione Twitch: il logo in immagine, alto 11–14 px, non si
+   * leggeva (Pierluigi: "fanno oggettivamente schifo così piccoli").
+   */
+  const miniLogo = `<span class="om-word"><i class="om-mark" aria-hidden="true"></i>OriginsMeta</span>`;
 
   /** Le carte del mio mazzo nei template nuovi: la Leggendaria per prima, poi le 12 per costo. */
   function myCards(v: DeckTrackerView, zoom: string) {

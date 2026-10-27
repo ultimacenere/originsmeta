@@ -142,7 +142,12 @@ body.is-opp { background: transparent; }
  */
 .dt.has-tab { position: relative; margin-top: 30px; border-top-left-radius: 0; }
 .tab { position: absolute; left: -2px; bottom: 100%; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 5px 0 10px; background: var(--panel); border: 2px solid var(--sky); border-bottom: 0; border-radius: 10px 10px 0 0; -webkit-app-region: drag; }
-.tab img { display: block; width: auto; height: 16px; }
+/*
+ * il marchio (28/10/2026): una scritta come la linguetta dell'estensione Twitch, il rombo menta e "OriginsMeta" in
+ * Unbounded; il logo in immagine, alto 11–14 px, non si leggeva
+ */
+.om-word { display: inline-flex; align-items: center; gap: 5px; font-family: var(--display); font-weight: 700; font-size: 0.62rem; letter-spacing: 0.04em; line-height: 1; color: var(--mint); white-space: nowrap; }
+.om-mark { flex: none; width: 7px; height: 7px; background: var(--mint); transform: rotate(45deg); }
 .tab-x { display: grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--chalk); font-size: 16px; line-height: 1; cursor: pointer; -webkit-app-region: no-drag; }
 .tab-x:hover, .tab-x:focus-visible { background: var(--crimson); color: var(--ink); outline: none; }
 /* maniglia per allargare il Deck tracker, nell'angolo in basso a destra (12/10/2026) */
@@ -172,7 +177,8 @@ body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
 .layout-strips .dt.has-tab { margin-top: 26px; border-top-left-radius: 0; }
 .layout-strips .dt.tab-below { margin-bottom: 26px; border-bottom-right-radius: 0; }
 .layout-strips .tab, .layout-columns .tab { height: 26px; background: rgba(46, 30, 140, 0.92); }
-.layout-strips .tab .mini-logo, .layout-columns .tab .mini-logo { height: 14px; opacity: 1; }
+.layout-strips .tab .om-word, .layout-columns .tab .om-word { gap: 6px; font-size: 0.7rem; }
+.layout-strips .tab .om-mark, .layout-columns .tab .om-mark { width: 8px; height: 8px; }
 .layout-strips .has-tab .tab, .layout-columns .has-tab .tab { padding: 0 10px 0 5px; }
 /* Colonne (12/10/2026 sera): linguetta in alto, a sinistra sul mio mazzo e a destra sull'avversario */
 .layout-columns .dt.has-tab { margin-top: 26px; border-top-left-radius: 0; }
@@ -188,8 +194,8 @@ body.spot.is-opp #deck::after { left: 70%; bottom: auto; top: 50%; }
 .swait { grid-column: 2 / -1; align-self: center; padding: 0 8px; font-size: 0.7rem; line-height: 1.35; color: var(--muted); }
 .cwait { font-size: 0.7rem; line-height: 1.35; }
 .chead { display: flex; align-items: center; justify-content: space-between; height: 18px; padding-right: 24px; }
-.mini-logo { display: block; width: auto; height: 11px; opacity: 0.85; }
-.chead .mini-logo { height: 14px; }
+.chead .om-word { gap: 6px; font-size: 0.7rem; }
+.chead .om-mark { width: 8px; height: 8px; }
 .layout-strips .grip, .layout-columns .grip { right: 1px; bottom: 1px; }
 .in-obs.layout-strips .dt { width: 760px; }
 .in-obs.layout-columns .dt { width: 280px; }

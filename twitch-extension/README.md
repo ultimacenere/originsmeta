@@ -21,7 +21,7 @@ Solo questi file vanno nello zip, alla radice (niente cartelle):
 | `overlay.js` | linguetta, pannello del mazzo, anteprima della carta, dati (carte, stato, PubSub) |
 | `config.js` | modulo del codice e chiamata a `/api/twitch/link` |
 | `style.css` | grafica "ink & mint" del sito e del Deck tracker dell'app |
-| `panels.js`, `panels.css`, `fonts/`, `logo-originsmeta-sm.webp` | modalità "come l'app" (14/10/2026): i pannelli di OriginsMeta Tracker, generati con `npm run twitch-panels` nella cartella `tracker/` dallo stesso codice dell'app (deckRender.ts, deck.css); non si modificano a mano |
+| `panels.js`, `panels.css`, `fonts/` | modalità "come l'app" (14/10/2026): i pannelli di OriginsMeta Tracker, generati con `npm run twitch-panels` nella cartella `tracker/` dallo stesso codice dell'app (deckRender.ts, deck.css); non si modificano a mano |
 | `config.css` | grafica della pagina di configurazione |
 
 `dev/` (prove in locale), `README.md` e `.gitignore` restano fuori dallo zip.

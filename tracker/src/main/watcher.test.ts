@@ -71,6 +71,36 @@ function listen(w: MatchWatcher) {
 }
 
 describe("MatchWatcher", () => {
+  test("gioco completo (0.8.0, 27/10/2026): statistiche senza partite, il mazzo è quello della release e non della demo", async () => {
+    const g = setup();
+    try {
+      // la cache vecchia della demo, ancora sul PC: un'ultima partita e il mazzo 1 (On Death)
+      const old = T0 - 5 * 86_400_000;
+      g.stats({ lastMatchPlayedDateTime: iso(old), onboardingResults: "W", onboardingLastMatchId: "offline_demo" }, old);
+      // il gioco completo scrive solo mazzo scelto e modalità (niente lastMatchPlayedDateTime né onboardingResults)
+      const relDir = path.join(g.root, "release-cache", "1618175429308424", "DE_1618175429308427", "0.8.0");
+      fs.mkdirSync(relDir, { recursive: true });
+      const relStats = path.join(relDir, "25eae4cf35e59eabc46b0a683cfcce4e.json");
+      fs.writeFileSync(relStats, statsJson({ FTUE_TaskStatus_Match6: "1", ActiveUserDeckIndex: "0", BattleMode: "0", ActiveAvatarKey: "AV00007" }));
+      fs.utimesSync(relStats, new Date(T0), new Date(T0));
+      const relInv = path.join(relDir, "9d292de13088e1cbe43c317b9eb168cd.json");
+      fs.writeFileSync(relInv, inventoryJson([{ name: "Snipe", cards: BOT_DECK }, { name: "Remedy", cards: MY_DECK }]));
+      fs.utimesSync(relInv, new Date(T0), new Date(T0));
+      g.dirs.cacheRoots.push(path.join(g.root, "release-cache"));
+      const w = new MatchWatcher(g.dirs, { lastFingerprint: null, results: "" }, { firstRun: true, now: g.now });
+      const out = listen(w);
+      await w.tick();
+      g.advance(REPLAY_WAIT_MS);
+      await w.tick();
+      assert.equal(out.decks.at(-1)?.name, "Snipe", "il mazzo scelto nella release");
+      assert.equal(out.matches.length, 0, "l'esito arriva dallo schermo, i file non registrano partite");
+      assert.equal(w.status.cache, true);
+      assert.equal(w.status.problem, null);
+    } finally {
+      g.cleanup();
+    }
+  });
+
   test("cambio di build (demo → playtest): l'ultima partita dell'altra build non diventa una partita nuova", async () => {
     const g = setup();
     try {

@@ -46,8 +46,11 @@ describe("avvio automatico", () => {
   test("gioco aperto secondo tasklist", () => {
     const base = '"System Idle Process","0","Services","0","8 K"\r\n"UnityCrashHandler64.exe","9","Console","1","5.000 K"\r\n';
     assert.equal(gameRunning(base), false);
-    assert.equal(gameRunning(base + '"OriginsTCGDemo.exe","16848","Console","1","1.200.000 K"\r\n'), true);
-    assert.equal(gameRunning('"OriginsTCG.exe","1","Console","1","1 K"'), true);
+    // il gioco completo, uscito il 27/10/2026 (cartella di Steam "Origins TCG")
+    assert.equal(gameRunning(base + '"OriginsTCG.exe","16848","Console","1","1.200.000 K"\r\n'), true);
+    assert.equal(gameRunning('"OriginsTCGPlaytest.exe","1","Console","1","1 K"'), true);
+    // la demo non c'è più: non fa partire l'app
+    assert.equal(gameRunning(base + '"OriginsTCGDemo.exe","16848","Console","1","1.200.000 K"\r\n'), false);
     assert.equal(gameRunning('"OriginsMeta Tracker.exe","2","Console","1","1 K"'), false);
     assert.equal(gameRunning(""), false);
   });

@@ -1,14 +1,16 @@
 /**
  * Cache del profilo di Origins TCG (tracker/overlay, Fase 1, 29/09/2026): lettura pura dei JSON che il backend
- * Beamable salva in `%USERPROFILE%\AppData\LocalLow\Koin Games\Origins TCG Demo\beamable\cache\<cid>\<realm>\<versione>\`.
- * I nomi dei file sono impronte e cambiano da un account all'altro: i file si riconoscono dal contenuto
- * (`readStatsFile`, `readInventoryFile` restituiscono null per tutto il resto). Dettagli in docs/tracker.md.
+ * Beamable salva in `%USERPROFILE%\AppData\LocalLow\Koin Games\Origins TCG\beamable\cache\<cid>\<realm>\<versione>\`
+ * (fino al 27/10/2026 `Origins TCG Demo`). I nomi dei file sono impronte e cambiano da un account all'altro: i file si
+ * riconoscono dal contenuto (`readStatsFile`, `readInventoryFile` restituiscono null per tutto il resto). Dettagli in
+ * docs/tracker.md.
  *
- * - Statistiche (`results[0].stats`, coppie k/v): pochi secondi dopo la fine di ogni partita cambiano
+ * - Statistiche (`results[0].stats`, coppie k/v): nella demo pochi secondi dopo la fine di ogni partita cambiavano
  *   `lastMatchPlayedDateTime` (UTC), `onboardingResults` (W e L, la più recente a sinistra; cresce, il 29/09/2026 era a
  *   24 esiti) e `onboardingLastMatchId`; `ActiveUserDeckIndex` cambia appena il giocatore sceglie il mazzo, prima
- *   della partita. `results[0].id` è l'id dell'account: serve solo a riconoscere il giocatore nel replay e non esce
- *   da qui se non per quello.
+ *   della partita. **Il gioco completo (0.8.0, 27/10/2026) non scrive più le chiavi delle partite**: restano
+ *   `ActiveUserDeckIndex` e `BattleMode`, e l'esito arriva solo dallo schermo. `results[0].id` è l'id dell'account:
+ *   serve solo a riconoscere il giocatore nel replay e non esce da qui se non per quello.
  * - Inventario (`items`, gruppo `items.Deck.Web2Deck`): i mazzi, con `Config` = JSON {DisplayName, Cards[{CardKey}]}.
  *   `ActiveUserDeckIndex` è la posizione nell'ordine del file (confermato su tre mazzi il 29/09/2026).
  *
@@ -42,6 +44,12 @@ export type GameDeck = {
 };
 
 const MATCH_KEYS = ["lastMatchPlayedDateTime", "onboardingResults"];
+/**
+ * Il file delle statistiche del gioco completo, senza le chiavi delle partite: mazzo scelto e modalità insieme. Uno solo
+ * dei due non basta (altri file del profilo hanno `ActiveUserDeckIndex`). Fino al 28/10/2026 il file della release si
+ * scartava e il tracker leggeva il mazzo dalla cache vecchia della demo.
+ */
+const DECK_KEYS = ["ActiveUserDeckIndex", "BattleMode"];
 
 function parseJson(text: string): unknown {
   try {
@@ -53,7 +61,7 @@ function parseJson(text: string): unknown {
 
 const asRecord = (v: unknown): Record<string, unknown> | null => (v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : null);
 
-/** Statistiche del profilo, oppure null se il testo non è il file delle statistiche con le partite. */
+/** Statistiche del profilo, oppure null se il testo non è il file delle statistiche (con le partite o con il mazzo scelto). */
 export function readStatsFile(text: string): ProfileStats | null {
   const root = asRecord(parseJson(text));
   const first = asRecord(Array.isArray(root?.results) ? root.results[0] : null);
@@ -63,7 +71,7 @@ export function readStatsFile(text: string): ProfileStats | null {
     const entry = asRecord(s);
     if (entry && typeof entry.k === "string") stats.set(entry.k, String(entry.v ?? ""));
   }
-  if (!MATCH_KEYS.some((k) => stats.has(k))) return null;
+  if (!MATCH_KEYS.some((k) => stats.has(k)) && !DECK_KEYS.every((k) => stats.has(k))) return null;
   const at = stats.get("lastMatchPlayedDateTime");
   const index = Number(stats.get("ActiveUserDeckIndex"));
   const results = (stats.get("onboardingResults") ?? "").toUpperCase();

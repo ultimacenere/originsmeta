@@ -92,7 +92,7 @@ const en = {
     title: "From download to your first match in 7 steps",
     intro: "About five minutes. Most people who get stuck stop at steps 3 and 4: the box under each step tells you what to do.",
     /** requisiti, in una riga sopra i passi */
-    needs: "You need: a Windows 10 or 11 PC (64-bit), the Origins TCG demo from Steam and a free OriginsMeta account.",
+    needs: "You need: a Windows 10 or 11 PC (64-bit), Origins TCG from Steam and a free OriginsMeta account.",
     /** testo del link del passo 5, verso /account/tracker */
     linkText: "the Tracker page of your account",
     /** il percorso in breve, sopra i passi: un'etichetta per passo, link ai passi */
@@ -218,7 +218,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       title: "Dal download alla prima partita in 7 passi",
       intro: "Circa cinque minuti. Chi si blocca, di solito si ferma ai passi 3 e 4: il riquadro sotto ogni passo ti dice che cosa fare.",
       /** requisiti, in una riga sopra i passi */
-      needs: "Ti servono: un PC con Windows 10 o 11 a 64 bit, la demo di Origins TCG da Steam e un account OriginsMeta gratuito.",
+      needs: "Ti servono: un PC con Windows 10 o 11 a 64 bit, Origins TCG da Steam e un account OriginsMeta gratuito.",
       /** testo del link del passo 5, verso /account/tracker */
       linkText: "la pagina Tracker del tuo account",
       path: ["Accedi", "Scarica", "Estrai", "Apri", "Collega", "Scanner", "Gioca"],
@@ -332,7 +332,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       title: "De la descarga a tu primera partida en 7 pasos",
       intro: "Unos cinco minutos. Quien se atasca suele quedarse en los pasos 3 y 4: el recuadro bajo cada paso te dice qué hacer.",
       /** requisiti, in una riga sopra i passi */
-      needs: "Necesitas: un PC con Windows 10 u 11 de 64 bits, la demo de Origins TCG de Steam y una cuenta gratuita de OriginsMeta.",
+      needs: "Necesitas: un PC con Windows 10 u 11 de 64 bits, Origins TCG de Steam y una cuenta gratuita de OriginsMeta.",
       /** testo del link del passo 5, verso /account/tracker */
       linkText: "la página Tracker de tu cuenta",
       path: ["Inicia sesión", "Descarga", "Extrae", "Abre", "Vincula", "Escáner", "Juega"],
@@ -449,7 +449,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       title: "Du téléchargement à votre première partie en 7 étapes",
       intro: "Environ cinq minutes. Quand ça bloque, c'est en général aux étapes 3 et 4 : l'encadré sous chaque étape vous dit quoi faire.",
       /** requisiti, in una riga sopra i passi */
-      needs: "Il vous faut : un PC sous Windows 10 ou 11 (64 bits), la démo d'Origins TCG depuis Steam et un compte OriginsMeta gratuit.",
+      needs: "Il vous faut : un PC sous Windows 10 ou 11 (64 bits), Origins TCG depuis Steam et un compte OriginsMeta gratuit.",
       /** testo del link del passo 5, verso /account/tracker */
       linkText: "la page Tracker de votre compte",
       path: ["Connexion", "Téléchargement", "Extraction", "Ouverture", "Association", "Scanner", "Partie"],
@@ -562,7 +562,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       anchor: "instalacao",
       title: "Do download à sua primeira partida em 7 passos",
       intro: "Cerca de cinco minutos. Quem trava costuma parar nos passos 3 e 4: o quadro embaixo de cada passo diz o que fazer.",
-      needs: "Você precisa de: um PC com Windows 10 ou 11 (64 bits), a demo de Origins TCG na Steam e uma conta gratuita do OriginsMeta.",
+      needs: "Você precisa de: um PC com Windows 10 ou 11 (64 bits), Origins TCG na Steam e uma conta gratuita do OriginsMeta.",
       linkText: "a página Tracker da sua conta",
       path: ["Entrar", "Baixar", "Extrair", "Abrir", "Vincular", "Scanner", "Jogar"],
       signInCta: "Entre ou crie a sua conta",
@@ -674,7 +674,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       anchor: "installation",
       title: "Vom Download zum ersten Match in 7 Schritten",
       intro: "Etwa fünf Minuten. Wer hängen bleibt, bleibt meist bei den Schritten 3 und 4 stehen: Der Kasten unter jedem Schritt sagt dir, was zu tun ist.",
-      needs: "Du brauchst: einen PC mit Windows 10 oder 11 (64 Bit), die Demo von Origins TCG auf Steam und ein kostenloses OriginsMeta-Konto.",
+      needs: "Du brauchst: einen PC mit Windows 10 oder 11 (64 Bit), Origins TCG auf Steam und ein kostenloses OriginsMeta-Konto.",
       linkText: "die Tracker-Seite deines Kontos",
       path: ["Anmelden", "Herunterladen", "Entpacken", "Öffnen", "Verknüpfen", "Scanner", "Spielen"],
       signInCta: "Anmelden oder Konto erstellen",
@@ -786,7 +786,7 @@ export const analyticsLabels: Record<Locale, AnalyticsLabels> = {
       anchor: "ustanovka",
       title: "От скачивания до первой партии за 7 шагов",
       intro: "Около пяти минут. Чаще всего застревают на шагах 3 и 4: в блоке под каждым шагом написано, что делать.",
-      needs: "Вам нужны: ПК с Windows 10 или 11 (64 бит), демо Origins TCG в Steam и бесплатный аккаунт OriginsMeta.",
+      needs: "Вам нужны: ПК с Windows 10 или 11 (64 бит), Origins TCG в Steam и бесплатный аккаунт OriginsMeta.",
       linkText: "страницу Tracker в вашем аккаунте",
       path: ["Вход", "Скачивание", "Распаковка", "Запуск", "Привязка", "Сканер", "Игра"],
       signInCta: "Войдите или создайте аккаунт",

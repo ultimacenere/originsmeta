@@ -34,6 +34,10 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 - **Deck tracker** (10/10/2026): pannello accanto al gioco con il mazzo scelto (Leggendaria e 12 carte per costo) che,
   con lo scanner acceso, si aggiorna dal vivo (carte giocate, round, Leggendaria e carte rivelate dall'avversario);
   posizione in `deck.json`, e per OBS su `http://127.0.0.1:47015/overlay/deck`.
+- **0.5.0** (28/10/2026; dettagli in docs/tracker.md, "Gioco completo e marchio in scritta"): parte e legge il gioco
+  completo (`OriginsTCG.exe`, cartella "Origins TCG"), non più la demo; riconosce il file delle statistiche della
+  release, che non ha più l'esito delle partite (prima prendeva il mazzo dalla cache vecchia della demo); nei pannelli e
+  nell'overlay per OBS il marchio è una scritta, "◆ OriginsMeta", come nell'estensione Twitch.
 - **0.4.1** (13/10/2026, pubblicata; dettagli in docs/tracker.md, "Setup e correzioni"): opzioni nella pagina Setup e
   pagina principale solo con il gioco; template dei pannelli (Classico, Minimal, Strutturato, Personalizzato), pannelli solo in partita, avviso dell'aggiornamento; niente carta fantasma (voce `CardId: 0` dell'inventario) e mazzo modificato nel
   gioco riletto subito.

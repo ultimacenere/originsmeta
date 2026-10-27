@@ -2,13 +2,15 @@
  * Dove Origins TCG salva i file che il tracker legge (docs/tracker.md): la cache del profilo sotto
  * `AppData\LocalLow\Koin Games\<prodotto>\beamable\cache` e i replay sotto `Documenti\My Games\<prodotto>\Replays`.
  * La cartella Documenti arriva da Electron (`app.getPath("documents")`), che segue anche lo spostamento di OneDrive.
- * Oggi c'è solo la demo; il nome del gioco completo e quello del playtest sono già in lista.
+ * Dal 28/10/2026 il gioco completo e il playtest, non più la demo (Pierluigi: "con l'uscita della release la demo non
+ * esiste più"): la sua cache resta sui PC e il watcher, che segue la cartella scritta più di recente, la prendeva per
+ * buona quando non riconosceva le statistiche della release.
  *
  * Per i test e le prove: ORIGINSMETA_TRACKER_CACHE e ORIGINSMETA_TRACKER_REPLAYS (cartelle separate da `;`).
  */
 import path from "node:path";
 
-export const PRODUCTS = ["Origins TCG Demo", "Origins TCG", "Origins TCG Playtest"] as const;
+export const PRODUCTS = ["Origins TCG", "Origins TCG Playtest"] as const;
 
 export type GameDirs = { cacheRoots: string[]; replayDirs: string[] };
 

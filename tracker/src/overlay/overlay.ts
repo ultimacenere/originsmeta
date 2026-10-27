@@ -8,7 +8,8 @@
  * "non affiliato a Koin Games", come l'overlay per OBS del sito.
  *
  * Dal 01/10/2026 la Leggendaria del mazzo è una carta intera (immagine da originsmeta.com, la stessa del sito), con una
- * miniatura della Leggendaria avversaria nell'ultima partita, e in fondo il logo del sito.
+ * miniatura della Leggendaria avversaria nell'ultima partita, e in fondo il marchio del sito (dal 28/10/2026 una scritta,
+ * come nell'estensione Twitch, non più il logo in immagine).
  */
 import type { OverlayApi, OverlayView } from "../shared/types";
 
@@ -76,7 +77,7 @@ function render(v: OverlayView, clickThrough: boolean) {
       </div>
       ${last ? `<div class="row last">${last}</div>` : ""}
     </div>
-    <div class="brand"><img src="logo-originsmeta-sm.webp" alt="OriginsMeta" draggable="false" /><span>${esc(L.brand)}</span></div>`;
+    <div class="brand"><span class="om-word"><i class="om-mark" aria-hidden="true"></i>OriginsMeta</span><span>${esc(L.brand)}</span></div>`;
 }
 
 if (window.overlayApi) {

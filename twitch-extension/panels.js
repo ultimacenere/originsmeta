@@ -212,7 +212,7 @@
       </div>`;
     }
     const seenCard = (c) => `<li class="gc" title="${esc(c.name)}"${keyAttr(c)}>${cardImg(c)}${c.copies > 1 ? `<span class="left">\xD7${c.copies}</span>` : ""}</li>`;
-    const miniLogo = `<img class="mini-logo" src="${esc(opts.logo ?? "logo-originsmeta-sm.webp")}" alt="OriginsMeta" width="48" height="15" draggable="false" />`;
+    const miniLogo = `<span class="om-word"><i class="om-mark" aria-hidden="true"></i>OriginsMeta</span>`;
     function myCards(v, zoom) {
       const leg = v.deck?.legendary ?? null;
       const live = Boolean(v.live);
@@ -453,8 +453,8 @@
       updatedAt: (/* @__PURE__ */ new Date()).toISOString()
     };
   }
-  function create(host, view, lang, logo) {
-    const { L, paint } = createDeckRenderer({ view, lang, inWindow: false, logo });
+  function create(host, view, lang) {
+    const { L, paint } = createDeckRenderer({ view, lang, inWindow: false });
     const root = document.createElement("div");
     root.className = "dt";
     root.setAttribute("aria-label", L.spot(view === "opp"));
