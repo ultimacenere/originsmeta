@@ -133,6 +133,162 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Decima news "Upgrade Meta" (27/10/2026, Pierluigi: "scrivi la news Upgrade Meta sull'estensione Twitch in tutte le
+    // lingue del sito"): Twitch ha approvato la versione 0.1.0 di OriginsMeta Deck tracker e lo stesso giorno l'abbiamo
+    // pubblicata dalla console (docs/twitch.md). Fatti dal pacchetto dell'estensione (twitch-extension/: carte in en/it/es/fr,
+    // le altre lingue in inglese; tasti e modalità con i loro nomi) e dal riquadro di /account/tracker#twitch; mai nomi né
+    // rank (regole del tracker). Copertina: uno degli screenshot della scheda dell'estensione su Twitch (diretta vera, nessun
+    // nome di giocatore), senza le fasce del 4:3 (news-twitch-extension.webp, mai usata da una news).
+    slug: "upgrade-meta-1027",
+    image: "/media/news-twitch-extension.webp",
+    guides: ["streaming-tools"],
+    date: "2026-10-27",
+    title: n(
+      "Upgrade Meta: OriginsMeta Deck tracker is live on Twitch, viewers read the streamer's cards on the video",
+      "Upgrade Meta: OriginsMeta Deck tracker è su Twitch, chi guarda legge le carte dello streamer sul video",
+      "Upgrade Meta: OriginsMeta Deck tracker llega a Twitch, el público lee las cartas del streamer en el vídeo",
+    ),
+    metaTitle: n("Origins TCG Twitch extension: OriginsMeta Deck tracker", "Estensione Twitch per Origins TCG: Deck tracker", "Extensión de Twitch para Origins TCG: Deck tracker"),
+    description: n(
+      "OriginsMeta Deck tracker is live on Twitch: viewers of an Origins TCG stream hover the cards to read them and follow the streamer's deck during the match.",
+      "OriginsMeta Deck tracker è su Twitch: chi guarda una diretta di Origins TCG passa sulle carte per leggerle e segue il mazzo dello streamer in partita.",
+      "OriginsMeta Deck tracker ya está en Twitch: quien mira un directo de Origins TCG pasa el ratón por las cartas para leerlas y sigue el mazo del streamer.",
+    ),
+    summary: n(
+      "Our Twitch extension is out: Twitch approved OriginsMeta Deck tracker and, from 27 October, any Origins TCG streamer can add it to their channel for free. Viewers hover the cards on the board or in the streamer's hand to read them, and open the deck with the copies left, updated during the match. Streamers need OriginsMeta Tracker and a free OriginsMeta account.",
+      "La nostra estensione Twitch è uscita: Twitch ha approvato OriginsMeta Deck tracker e dal 27 ottobre ogni streamer di Origins TCG può aggiungerla gratis al suo canale. Chi guarda passa sulle carte del tabellone o della mano dello streamer per leggerle e apre il mazzo con le copie rimaste, aggiornato durante la partita. Allo streamer servono OriginsMeta Tracker e un account OriginsMeta gratuito.",
+      "Ya salió nuestra extensión de Twitch: Twitch aprobó OriginsMeta Deck tracker y desde el 27 de octubre cualquier streamer de Origins TCG puede añadirla gratis a su canal. Quien mira pasa el ratón por las cartas del tablero o de la mano del streamer para leerlas y abre el mazo con las copias que quedan, actualizado durante la partida. El streamer necesita OriginsMeta Tracker y una cuenta gratuita de OriginsMeta.",
+    ),
+    highlights: {
+      en: [
+        { label: "Live on Twitch", text: "approved by Twitch, free for every Origins TCG streamer", anchor: "live" },
+        { label: "For viewers", text: "hover a card in the video to read it, open the deck with the copies left", anchor: "viewers" },
+        { label: "For streamers", text: "install it, link it with a code from your account, choose how it looks", anchor: "streamers" },
+        { label: "Only what's on stream", text: "never names, ranks or match identifiers", anchor: "privacy" },
+      ],
+      it: [
+        { label: "Su Twitch", text: "approvata da Twitch, gratis per ogni streamer di Origins TCG", anchor: "su-twitch" },
+        { label: "Per chi guarda", text: "passi su una carta nel video per leggerla, apri il mazzo con le copie rimaste", anchor: "chi-guarda" },
+        { label: "Per gli streamer", text: "la installi, la colleghi con un codice del tuo account, scegli come si vede", anchor: "streamer" },
+        { label: "Solo quello che è già in diretta", text: "mai nomi, rank o identificativi delle partite", anchor: "privacy" },
+      ],
+      es: [
+        { label: "En Twitch", text: "aprobada por Twitch, gratis para cualquier streamer de Origins TCG", anchor: "en-twitch" },
+        { label: "Para el público", text: "pasas el ratón por una carta del vídeo para leerla, abres el mazo con las copias que quedan", anchor: "publico" },
+        { label: "Para streamers", text: "la instalas, la vinculas con un código de tu cuenta, eliges cómo se ve", anchor: "streamers" },
+        { label: "Solo lo que ya sale en directo", text: "nunca nombres, rangos ni identificadores de partidas", anchor: "privacidad" },
+      ],
+    },
+    body: n(
+      `## Live on Twitch {#live}
+
+Twitch approved our extension, and since 27 October **OriginsMeta Deck tracker** is released: any Origins TCG streamer can add it to their channel, for free. It's a video overlay, so viewers use it on top of the stream with no login, Bits or chat permissions. It comes from a request streamers made in October: let viewers read the cards live, without asking in chat.
+
+## What viewers see {#viewers}
+
+- **Cards on the board and in hand**: hover a card in the video and the full card opens at the side, with cost, power, health and text, plus a link to its page on OriginsMeta.
+- **The streamer's deck**: the list with the copies still in the deck and the round, updated during the match.
+- **The opponent**: their Legendary and the cards they reveal, spells included.
+- **Your view**: drag a panel by its logo tab to move it (double-click the tab to put it back), or hide everything with **Hide the panels**.
+
+The cards on the board and in hand line up when the game fills the stream. The extension shows the cards in English, Italian, Spanish and French, following the language of your Twitch; the site's other languages get them in English for now.
+
+## For streamers: how to set it up {#streamers}
+
+1. Install [OriginsMeta Tracker](/en/tracker) (free, Windows) and link it to your OriginsMeta account.
+2. On Twitch, in your Creator Dashboard under Extensions, look for **OriginsMeta Deck tracker** ([its page on Twitch](https://dashboard.twitch.tv/extensions/rbcpe2tje2atl5l4ymesp209sothzz-0.1.0)), install it and activate it as an overlay.
+3. On the [Tracker page of your account](/en/account/tracker#twitch), in the "Twitch extension" box, press **Create a code for Twitch**: the code is valid for 10 minutes and works once.
+4. In the extension's configuration page on Twitch, type the code and press **Link**.
+5. Play with OriginsMeta Tracker on: during the match the extension updates by itself.
+
+In the same configuration page you choose how viewers see your deck: **Like the app**, the same panels as OriginsMeta Tracker in the same places and with the style you picked, or **Tab**, a small "Deck" tab on the left of the video that viewers open when they want. With "Like the app", turn on **Hide the panels from the stream** in the app's Setup, so viewers don't see the panels twice.
+
+## Only what's already on stream {#privacy}
+
+The extension shows only what the Deck tracker of OriginsMeta Tracker already shows on stream: your deck with the copies left, the round, the opponent's Legendary and the cards they reveal. Never names, ranks or match identifiers. The details are in the [privacy policy](/en/privacy#tracker).
+
+For the rest of your stream, the [streaming guide](/en/guides/streaming-tools) has the OBS overlay with your deck and the !deck chat command. If something doesn't work, tell us on [our Discord](https://discord.gg/RAG7nnrNGP).
+
+OriginsMeta is an unofficial fan site, not affiliated with Koin Games.`,
+      `## Su Twitch {#su-twitch}
+
+Twitch ha approvato la nostra estensione e dal 27 ottobre **OriginsMeta Deck tracker** è pubblicata: ogni streamer di Origins TCG può aggiungerla al suo canale, gratis. È un overlay del video, quindi chi guarda la usa sopra la diretta senza accesso, Bits né permessi della chat. Nasce da una richiesta degli streamer di ottobre: far leggere le carte dal vivo a chi guarda, senza doverle chiedere in chat.
+
+## Cosa vede chi guarda {#chi-guarda}
+
+- **Carte sul tabellone e in mano**: passi su una carta nel video e accanto si apre la carta intera, con costo, potenza, salute e testo, più il link alla sua scheda su OriginsMeta.
+- **Il mazzo dello streamer**: la lista con le copie ancora nel mazzo e il round, aggiornata durante la partita.
+- **L'avversario**: la sua Leggendaria e le carte che rivela, magie comprese.
+- **Come vuoi tu**: trascini un pannello dalla linguetta del logo per spostarlo (doppio clic sulla linguetta per rimetterlo al suo posto), oppure nascondi tutto con **Nascondi i pannelli**.
+
+Le carte del tabellone e della mano si leggono quando il gioco riempie la diretta. L'estensione mostra le carte in italiano, inglese, spagnolo e francese, nella lingua del tuo Twitch; le altre lingue del sito per ora le vedono in inglese.
+
+## Per gli streamer: come si attiva {#streamer}
+
+1. Installa [OriginsMeta Tracker](/it/tracker) (gratis, Windows) e collegalo al tuo account OriginsMeta.
+2. Su Twitch, nella Dashboard autore alla voce Estensioni, cerca **OriginsMeta Deck tracker** ([la sua pagina su Twitch](https://dashboard.twitch.tv/extensions/rbcpe2tje2atl5l4ymesp209sothzz-0.1.0)), installala e attivala come overlay.
+3. Nella [pagina Tracker del tuo account](/it/account/tracker#twitch), nel riquadro "Estensione Twitch", premi **Crea un codice per Twitch**: il codice vale 10 minuti e funziona una volta.
+4. Nella pagina di configurazione dell'estensione su Twitch scrivi il codice e premi **Collega**.
+5. Gioca con OriginsMeta Tracker acceso: durante la partita l'estensione si aggiorna da sola.
+
+Nella stessa pagina di configurazione scegli come chi guarda vede il tuo mazzo: **Come l'app**, gli stessi pannelli di OriginsMeta Tracker negli stessi punti e con lo stile che hai scelto, oppure **Linguetta**, una piccola linguetta "Mazzo" a sinistra del video che chi guarda apre quando vuole. Con "Come l'app" accendi **Nascondi i pannelli dalla diretta** nel Setup dell'app, così chi guarda non vede i pannelli due volte.
+
+## Solo quello che è già in diretta {#privacy}
+
+L'estensione mostra solo quello che il Deck tracker di OriginsMeta Tracker mostra già in diretta: il tuo mazzo con le copie rimaste, il round, la Leggendaria dell'avversario e le carte che rivela. Mai nomi, rank o identificativi delle partite. I dettagli sono nell'[informativa sulla privacy](/it/privacy#tracker).
+
+Per il resto della diretta, la [guida per le dirette](/it/guides/streaming-tools) ha l'overlay per OBS con il tuo mazzo e il comando !deck in chat. Se qualcosa non va, scrivici sul [nostro Discord](https://discord.gg/RAG7nnrNGP).
+
+OriginsMeta è un sito fan non ufficiale, non affiliato a Koin Games.`,
+      `## En Twitch {#en-twitch}
+
+Twitch aprobó nuestra extensión y desde el 27 de octubre **OriginsMeta Deck tracker** está publicada: cualquier streamer de Origins TCG puede añadirla a su canal, gratis. Es un overlay de vídeo, así que el público la usa sobre el directo sin iniciar sesión, sin Bits y sin permisos del chat. Nace de una petición de los streamers en octubre: que el público lea las cartas en vivo, sin tener que pedirlas en el chat.
+
+## Qué ve el público {#publico}
+
+- **Cartas en el tablero y en la mano**: pasas el ratón por una carta del vídeo y al lado se abre la carta entera, con coste, poder, salud y texto, más el enlace a su ficha en OriginsMeta.
+- **El mazo del streamer**: la lista con las copias que siguen en el mazo y la ronda, actualizada durante la partida.
+- **El rival**: su Legendaria y las cartas que revela, hechizos incluidos.
+- **A tu manera**: arrastras un panel por la pestaña del logo para moverlo (doble clic en la pestaña para devolverlo a su sitio) u ocultas todo con **Ocultar los paneles**.
+
+Las cartas del tablero y de la mano se leen cuando el juego ocupa todo el directo. La extensión muestra las cartas en español, inglés, italiano y francés, según el idioma de tu Twitch; los demás idiomas del sitio, por ahora, las ven en inglés.
+
+## Para streamers: cómo se activa {#streamers}
+
+1. Instala [OriginsMeta Tracker](/es/tracker) (gratis, Windows) y vincúlalo a tu cuenta de OriginsMeta.
+2. En Twitch, en el panel de creador, en Extensiones, busca **OriginsMeta Deck tracker** ([su página en Twitch](https://dashboard.twitch.tv/extensions/rbcpe2tje2atl5l4ymesp209sothzz-0.1.0)), instálala y actívala como overlay.
+3. En la [página Tracker de tu cuenta](/es/account/tracker#twitch), en el recuadro "Extensión de Twitch", pulsa **Crear un código para Twitch**: el código vale 10 minutos y funciona una vez.
+4. En la página de configuración de la extensión en Twitch, escribe el código y pulsa **Vincular**.
+5. Juega con OriginsMeta Tracker abierto: durante la partida la extensión se actualiza sola.
+
+En la misma página de configuración eliges cómo ve tu mazo el público: **Como la app**, los mismos paneles de OriginsMeta Tracker en los mismos sitios y con el estilo que elegiste, o **Pestaña**, una pequeña pestaña "Mazo" a la izquierda del vídeo que el público abre cuando quiere. Con "Como la app", activa **Ocultar los paneles del directo** en el Setup de la app, para que el público no vea los paneles dos veces.
+
+## Solo lo que ya sale en directo {#privacidad}
+
+La extensión muestra solo lo que el Deck tracker de OriginsMeta Tracker ya muestra en directo: tu mazo con las copias que quedan, la ronda, la Legendaria del rival y las cartas que revela. Nunca nombres, rangos ni identificadores de partidas. Los detalles están en la [política de privacidad](/es/privacy#tracker).
+
+Para el resto de tu directo, la [guía para directos](/es/guides/streaming-tools) tiene el overlay para OBS con tu mazo y el comando !deck en el chat. Si algo no funciona, cuéntanoslo en [nuestro Discord](https://discord.gg/RAG7nnrNGP).
+
+OriginsMeta es un sitio fan no oficial, sin afiliación con Koin Games.`,
+    ),
+    faq: {
+      en: [
+        { q: "Do viewers need to install anything to use OriginsMeta Deck tracker?", a: "No. Once the streamer has activated the extension, viewers see it on top of the video, with no login, Bits or chat permissions: they hover the cards to read them and can hide the panels." },
+        { q: "What does a streamer need for the OriginsMeta Twitch extension?", a: "OriginsMeta Tracker on Windows, linked to a free OriginsMeta account, and the extension installed as an overlay and linked with a code from the Tracker page of the account." },
+      ],
+      it: [
+        { q: "Chi guarda deve installare qualcosa per usare OriginsMeta Deck tracker?", a: "No. Quando lo streamer ha attivato l'estensione, chi guarda la vede sopra il video, senza accesso, Bits né permessi della chat: passa sulle carte per leggerle e può nascondere i pannelli." },
+        { q: "Che cosa serve a uno streamer per l'estensione Twitch di OriginsMeta?", a: "OriginsMeta Tracker su Windows, collegato a un account OriginsMeta gratuito, e l'estensione installata come overlay e collegata con un codice della pagina Tracker dell'account." },
+      ],
+      es: [
+        { q: "¿El público tiene que instalar algo para usar OriginsMeta Deck tracker?", a: "No. Cuando el streamer ha activado la extensión, el público la ve sobre el vídeo, sin iniciar sesión, sin Bits y sin permisos del chat: pasa el ratón por las cartas para leerlas y puede ocultar los paneles." },
+        { q: "¿Qué necesita un streamer para la extensión de Twitch de OriginsMeta?", a: "OriginsMeta Tracker en Windows, vinculado a una cuenta gratuita de OriginsMeta, y la extensión instalada como overlay y vinculada con un código de la página Tracker de la cuenta." },
+      ],
+    },
+    url: "/tracker",
+    source: "site",
+  },
+  {
     // I livelli del Kickstarter della Alpha Edition (27/10/2026). Pierluigi: "mi fai un articolo con le foto dei vari
     // pacchetti che ti ho inserito?", con le schede ufficiali di Koin Games dei livelli ("questi sono i pacchetti che saranno
     // disponibili domani su kickstarter"). Pubblicata il 27/10/2026 notte con la campagna ancora in pre-lancio sulla pagina

@@ -91,6 +91,10 @@ tracker scelto dall'utente?", poi "sì procedi, con la scelta nella configurazio
 
 ## Da fare per andare online
 
+**Fatto**: versione 0.1.0 inviata in revisione il 14/10/2026, approvata da Twitch e pubblicata ("Rilasciata") il
+27/10/2026; lo stesso giorno la news `upgrade-meta-1027`. Finché una versione è in revisione l'elenco degli account di
+prova (scheda Accesso) non si salva: bisognerebbe riportarla in test locale, e la revisione ripartirebbe da capo.
+
 1. **Migrazione**: prova a secco `node scripts/twitch-dry-run.mjs` (serve `CRON_SECRET` in `.env.local`), poi
    `node scripts/db-migrate.mjs` da un checkout aggiornato (README, "Migrazione del database"). Provato su PGlite il
    13/10/2026 (24 controlli).

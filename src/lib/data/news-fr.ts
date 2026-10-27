@@ -20,6 +20,54 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "upgrade-meta-1027": {
+    title: "Upgrade Meta : OriginsMeta Deck tracker est sur Twitch, les spectateurs lisent les cartes du streamer",
+    metaTitle: "Extension Twitch pour Origins TCG : Deck tracker",
+    description:
+      "OriginsMeta Deck tracker est sur Twitch : les spectateurs d'un stream d'Origins TCG survolent les cartes pour les lire et suivent le deck du streamer.",
+    summary:
+      "Notre extension Twitch est sortie : Twitch a approuvé OriginsMeta Deck tracker et, depuis le 27 octobre, tout streamer d'Origins TCG peut l'ajouter gratuitement à sa chaîne. Les spectateurs survolent les cartes du plateau ou de la main du streamer pour les lire et ouvrent le deck avec les copies restantes, mis à jour pendant la partie. Le streamer a besoin d'OriginsMeta Tracker et d'un compte OriginsMeta gratuit.",
+    highlights: [
+      { label: "Sur Twitch", text: "approuvée par Twitch, gratuite pour tous les streamers d'Origins TCG", anchor: "sur-twitch" },
+      { label: "Pour les spectateurs", text: "survolez une carte dans la vidéo pour la lire, ouvrez le deck avec les copies restantes", anchor: "spectateurs" },
+      { label: "Pour les streamers", text: "installez-la, associez-la avec un code de votre compte, choisissez son affichage", anchor: "streamers" },
+      { label: "Seulement ce qui est déjà en direct", text: "jamais de noms, de rangs ni d'identifiants de parties", anchor: "confidentialite" },
+    ],
+    body: `## Sur Twitch {#sur-twitch}
+
+Twitch a approuvé notre extension et, depuis le 27 octobre, **OriginsMeta Deck tracker** est publiée : tout streamer d'Origins TCG peut l'ajouter à sa chaîne, gratuitement. C'est un overlay vidéo : les spectateurs l'utilisent par-dessus le stream, sans connexion, sans Bits et sans autorisations du chat. Elle est née d'une demande des streamers en octobre : laisser les spectateurs lire les cartes en direct, sans avoir à les demander dans le chat.
+
+## Ce que voient les spectateurs {#spectateurs}
+
+- **Les cartes du plateau et de la main** : survolez une carte dans la vidéo et la carte entière s'ouvre sur le côté, avec coût, puissance, santé et texte, plus un lien vers sa fiche sur OriginsMeta.
+- **Le deck du streamer** : la liste avec les copies encore dans le deck et la manche, mise à jour pendant la partie.
+- **L'adversaire** : sa Légendaire et les cartes qu'il révèle, sorts compris.
+- **Votre affichage** : faites glisser un panneau par l'onglet du logo pour le déplacer (double-clic sur l'onglet pour le remettre en place), ou masquez tout avec **Masquer les panneaux**.
+
+Les cartes du plateau et de la main se lisent quand le jeu occupe tout le stream. L'extension affiche les cartes en français, anglais, italien et espagnol, selon la langue de votre Twitch ; les autres langues du site les voient en anglais pour l'instant.
+
+## Pour les streamers : l'installer {#streamers}
+
+1. Installez [OriginsMeta Tracker](/fr/tracker) (gratuit, Windows) et associez-le à votre compte OriginsMeta.
+2. Sur Twitch, dans le tableau de bord du créateur, rubrique Extensions, cherchez **OriginsMeta Deck tracker** ([sa page sur Twitch](https://dashboard.twitch.tv/extensions/rbcpe2tje2atl5l4ymesp209sothzz-0.1.0)), installez-la et activez-la comme overlay.
+3. Sur la [page Tracker de votre compte](/fr/account/tracker#twitch), dans l'encadré « Extension Twitch », appuyez sur **Créer un code pour Twitch** : le code est valable 10 minutes et ne sert qu'une fois.
+4. Dans la page de configuration de l'extension sur Twitch, saisissez le code et appuyez sur **Associer**.
+5. Jouez avec OriginsMeta Tracker ouvert : pendant la partie, l'extension se met à jour toute seule.
+
+Dans la même page de configuration, vous choisissez comment les spectateurs voient votre deck : **Comme l'application**, les mêmes panneaux qu'OriginsMeta Tracker aux mêmes endroits et avec le style choisi, ou **Onglet**, un petit onglet « Deck » à gauche de la vidéo que les spectateurs ouvrent quand ils veulent. Avec « Comme l'application », activez **Hide the panels from the stream** dans le Setup de l'application (l'application est en anglais), pour que les spectateurs ne voient pas les panneaux deux fois.
+
+## Seulement ce qui est déjà en direct {#confidentialite}
+
+L'extension n'affiche que ce que le Deck tracker d'OriginsMeta Tracker montre déjà en direct : votre deck avec les copies restantes, la manche, la Légendaire de l'adversaire et les cartes qu'il révèle. Jamais de noms, de rangs ni d'identifiants de parties. Les détails sont dans la [politique de confidentialité](/fr/privacy#tracker).
+
+Pour le reste de votre stream, le [guide du streaming](/fr/guides/streaming-tools) présente l'overlay OBS avec votre deck et la commande !deck dans le chat. Si quelque chose ne fonctionne pas, dites-le-nous sur [notre Discord](https://discord.gg/RAG7nnrNGP).
+
+OriginsMeta est un site de fans non officiel, non affilié à Koin Games.`,
+    faq: [
+      { q: "Les spectateurs doivent-ils installer quelque chose pour utiliser OriginsMeta Deck tracker ?", a: "Non. Une fois l'extension activée par le streamer, les spectateurs la voient par-dessus la vidéo, sans connexion, sans Bits et sans autorisations du chat : ils survolent les cartes pour les lire et peuvent masquer les panneaux." },
+      { q: "De quoi un streamer a-t-il besoin pour l'extension Twitch d'OriginsMeta ?", a: "D'OriginsMeta Tracker sous Windows, associé à un compte OriginsMeta gratuit, et de l'extension installée comme overlay et associée avec un code de la page Tracker du compte." },
+    ],
+  },
   "kickstarter-alpha-edition-reward-tiers": {
     title: "Kickstarter d'Origins TCG : les huit paliers de l'Alpha Edition, de 24 $ à 9 999 $",
     metaTitle: "Kickstarter d'Origins TCG : les huit paliers",
