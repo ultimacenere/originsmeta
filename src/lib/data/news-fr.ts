@@ -20,6 +20,129 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "kickstarter-alpha-edition-reward-tiers": {
+    title: "Kickstarter d'Origins TCG : les huit paliers de l'Alpha Edition, de 24 $ à 9 999 $",
+    metaTitle: "Kickstarter d'Origins TCG : les huit paliers",
+    description:
+      "Les huit paliers du Kickstarter de l'Alpha Edition d'Origins TCG, de 24 $ à 9 999 $ : boosters, boîtes et cases scellés, Big Bob Commander et Golden Slabs.",
+    summary:
+      "Le Kickstarter de l'Alpha Edition compte huit paliers, de Worthy à 24 $ à Legend: Winnie-the-Pooh à 9 999 $. Tous comprennent l'Alpha Supporter Title et le Collector Pass permanent ; à partir d'Aspirant (99 $) arrivent les boîtes et les cases de boosters scellées, le Big Bob Commander exclusif au Kickstarter et, plus haut, les promos Golden Slab. Toutes les récompenses sont numériques.",
+    highlights: [
+      { label: "Huit paliers, de 24 $ à 9 999 $", text: "d'un bundle de 6 boosters à 30 cases scellées", anchor: "paliers" },
+      { label: "Dans tous les paliers", text: "l'Alpha Supporter Title et le Collector Pass permanent", anchor: "tous-les-paliers" },
+      { label: "Exclusivités du Kickstarter", text: "Big Bob Commander à partir d'Aspirant, Golden Big Bob à partir d'Apprentice", anchor: "exclusivites" },
+      { label: "Promos et slabs", text: "Alt Art Promo Box, Golden Slabs de Van Helsing et Rapunzel, Winnie-the-Pooh tout en haut", anchor: "promos" },
+      { label: "Tout numérique", text: "Koin l'écrit sur chaque palier : les récompenses sont des produits numériques", anchor: "numeriques" },
+      { label: "À vérifier", text: "les cases de Myth et la date de fin de la campagne", anchor: "inconnues" },
+    ],
+    body: `## Huit paliers, de 24 $ à 9 999 $ {#paliers}
+
+Le Kickstarter de Koin Games pour l'**Alpha Edition de Myths and Legends** compte huit paliers. Du moins cher au plus cher :
+
+| Palier | Prix | Produit scellé | Boosters |
+| --- | --- | --- | --- |
+| Worthy | 24 $ | 1 Alpha Booster Bundle | 6 |
+| Aspirant | 99 $ | 1 Alpha Booster Box | 24 |
+| Apprentice | 199 $ | 2 Alpha Booster Box | 48 |
+| Hero | 499 $ | 1 Alpha Booster Box Case | 144 |
+| Champion | 999 $ | 2 Alpha Booster Box Case | 288 |
+| Icon | 2 499 $ | 6 Alpha Booster Box Case | 864 |
+| Myth: Winnie-the-Pooh | 4 999 $ | cases scellées, voir plus bas | voir plus bas |
+| Legend: Winnie-the-Pooh | 9 999 $ | 30 Alpha Booster Box Case | 4 320 |
+
+Prix en dollars américains. Les visuels ci-dessous sont les fiches officielles de Koin Games pour chaque palier. Les noms des paliers et des récompenses restent en anglais, comme les écrit Koin.
+
+### Worthy, 24 $ {#worthy}
+
+![Fiche de Koin Games du palier Worthy, 24 $ : un Alpha Booster Bundle scellé de 6 boosters et le Collector Pass](/media/kickstarter/worthy.webp)
+
+La porte d'entrée : un **Alpha Booster Bundle** scellé de 6 boosters, l'**Alpha Supporter Title** et le **Collector Pass permanent** d'Origins TCG.
+
+### Aspirant, 99 $ {#aspirant}
+
+![Fiche de Koin Games du palier Aspirant, 99 $ : une boîte de boosters Alpha scellée, les emotes de Big Bob, le Collector Pass, la capsule Founder et Big Bob Commander](/media/kickstarter/aspirant.webp)
+
+Une **Alpha Booster Box** scellée de 24 boosters. Par rapport à Worthy, ce palier ajoute la **Founder Collector Capsule** (avatar, dos de carte, une emote Founder et un slab Founder), le **Big Bob Commander** exclusif au Kickstarter et le **Big Bob Emote Pack** avec 3 emotes.
+
+### Apprentice, 199 $ {#apprentice}
+
+![Fiche de Koin Games du palier Apprentice, 199 $ : deux boîtes de boosters Alpha scellées, Big Bob Commander, l'Alpha Alt Art Promo Box, le Collector Pass et Golden Big Bob Commander](/media/kickstarter/apprentice.webp)
+
+Deux boîtes scellées, 48 boosters. Il ajoute le **Golden Big Bob Commander** exclusif au Kickstarter, le **Golden Big Bob Emote Pack** et l'**Alpha Alt Art Promo Box**.
+
+### Hero, 499 $ {#hero}
+
+![Fiche de Koin Games du palier Hero, 499 $ : une case de boîtes de boosters scellée, l'Alpha Alt Art Promo Box, l'Alpha Gameboard, les deux Big Bob Commander et la promo Golden Slab de Van Helsing](/media/kickstarter/hero.webp)
+
+Une **Alpha Booster Box Case** scellée, 144 boosters. Il ajoute l'**Alpha Gameboard** et la **Van Helsing Golden Slab Promo**.
+
+### Champion, 999 $ {#champion}
+
+![Fiche de Koin Games du palier Champion, 999 $ : deux cases scellées et les promos Golden Slab de Van Helsing et Rapunzel](/media/kickstarter/champion.webp)
+
+Deux cases scellées, 288 boosters, avec les **Golden Slab Promos de Van Helsing et Rapunzel**.
+
+### Icon, 2 499 $ {#icon}
+
+![Fiche de Koin Games du palier Icon, 2 499 $ : six cases scellées, les slabs de Van Helsing et Rapunzel et un set de slabs promo Alternate Art](/media/kickstarter/icon.webp)
+
+Six cases scellées, 864 boosters. Il ajoute le **Guaranteed Premium Alternate Art Promo Set**.
+
+### Myth: Winnie-the-Pooh, 4 999 $ {#myth}
+
+![Fiche de Koin Games du palier Myth: Winnie-the-Pooh, 4 999 $ : des cases scellées, le set promo Alternate Art et un slab promo de Winnie-the-Pooh avec son emote dorée](/media/kickstarter/myth.webp)
+
+Le premier palier qui porte le nom d'un personnage. En plus de tout le contenu d'Icon, il ajoute le **Golden Commander Skin**, une **Golden Emote** et la **Serialized Character Profile Promo**. Sur le nombre de cases, le visuel et sa liste ne concordent pas : l'image montre ×13, la liste indique « 30 sealed Alpha Booster Box Case (4,320 Packs) », comme Legend.
+
+### Legend: Winnie-the-Pooh, 9 999 $ {#legend}
+
+![Fiche de Koin Games du palier Legend: Winnie-the-Pooh, 9 999 $ : trente cases scellées et deux slabs promo de Winnie-the-Pooh, dont un doré](/media/kickstarter/legend.webp)
+
+Le palier le plus élevé : 30 cases scellées, 4 320 boosters, tout le contenu de Myth et la **Serialized Signature Character Profile Promo**.
+
+## Ce que comprennent tous les paliers {#tous-les-paliers}
+
+- **Tous les paliers**, Worthy compris : l'**Alpha Supporter Title** et le **Collector Pass permanent** d'Origins TCG.
+- **À partir d'Aspirant** : la **Founder Collector Capsule** (avatar, dos de carte, une emote Founder, un slab Founder), le **Big Bob Commander** et son pack d'emotes.
+- **À partir d'Apprentice** : le **Golden Big Bob Commander**, son pack d'emotes et l'**Alpha Alt Art Promo Box**.
+- **À partir de Hero** : l'**Alpha Gameboard**.
+
+## Les exclusivités du Kickstarter {#exclusivites}
+
+Koin marque deux récompenses comme **Kickstarter Exclusive** : le **Big Bob Commander**, dans tous les paliers à partir d'Aspirant, et le **Golden Big Bob Commander**, à partir d'Apprentice. Chacun est accompagné de son pack de 3 emotes.
+
+## Promos et slabs {#promos}
+
+Les paliers les plus élevés ajoutent des promos que vous ne pouvez pas obtenir dans les boosters : l'**Alpha Alt Art Promo Box** à partir d'Apprentice, le **Golden Slab de Van Helsing** à partir de Hero, **Van Helsing et Rapunzel** à partir de Champion, le **Guaranteed Premium Alternate Art Promo Set** à partir d'Icon et les promos numérotées de **Winnie-the-Pooh** dans Myth et Legend.
+
+## Toutes les récompenses sont numériques {#numeriques}
+
+Chaque fiche porte la même phrase de Koin : « All Kickstarter rewards are a digital product », toutes les récompenses du Kickstarter sont des produits numériques. Boosters, boîtes et cases sont des objets de l'inventaire Steam que vous pouvez ouvrir, garder scellés ou échanger, selon la page officielle de Koin, et l'Alpha Edition ne sera jamais réimprimée. Les probabilités officielles de chaque rareté sont sur notre [page du Kickstarter](/fr/kickstarter), et tout sur la campagne, avec les dates et les sources, dans notre [guide du Kickstarter](/fr/guides/origins-tcg-kickstarter).
+
+## Comment la soutenir {#soutenir}
+
+Notre [page du Kickstarter](/fr/kickstarter) résume l'Alpha Edition et son bouton vous emmène sur la campagne avec notre lien de parrainage : si vous la soutenez depuis ce lien, Koin Games verse une commission à OriginsMeta et votre prix ne change pas. Si vous vous êtes préinscrit comme VIP, utilisez le lien VIP que Koin vous a envoyé : votre remise de 15 % y est liée.
+
+## Ce que nous ne savons pas encore {#inconnues}
+
+- Combien de cases contient Myth: Winnie-the-Pooh : le visuel montre ×13, sa liste en indique 30.
+- Quand la campagne se termine, et si certains paliers ont un nombre limité de contributeurs.
+- Quand les récompenses arrivent dans votre inventaire Steam.`,
+    faq: [
+      {
+        q: "Combien coûte le palier le moins cher du Kickstarter d'Origins TCG ?",
+        a: "Worthy, à 24 $ : un Alpha Booster Bundle scellé de 6 boosters, l'Alpha Supporter Title et le Collector Pass permanent d'Origins TCG.",
+      },
+      {
+        q: "Quels paliers comprennent une boîte ou une case de boosters scellée ?",
+        a: "Aspirant (99 $) a une boîte de 24 boosters et Apprentice (199 $) deux. À partir de Hero (499 $), il y a des cases scellées : une dans Hero, deux dans Champion, six dans Icon et trente dans Legend.",
+      },
+      {
+        q: "Les récompenses du Kickstarter sont-elles physiques ?",
+        a: "Non. Sur chaque fiche des paliers, Koin Games écrit que toutes les récompenses du Kickstarter sont des produits numériques.",
+      },
+    ],
+  },
   "crimson-cup-coachcrono-wins": {
     title: "CoachCrono remporte la Crimson Cup d'Origins TCG : trois Italiens parmi les quatre finalistes",
     metaTitle: "CoachCrono gagne la Crimson Cup d'Origins TCG",
