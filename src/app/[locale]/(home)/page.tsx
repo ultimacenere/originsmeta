@@ -34,8 +34,9 @@ import { loadCreatorVideos } from "@/lib/community/creatorVideoQueries";
 import { creatorVideoLabels } from "@/lib/creatorVideoLabels";
 import { videoLabels } from "@/lib/videoLabels";
 import { CreatorVideoRail, type RailVideo } from "@/components/CreatorVideoRail";
-import { kickstarterPromoActive } from "@/lib/kickstarter";
+import { kickstarterPromoActive, kickstarterSliderPinned } from "@/lib/kickstarter";
 import { kickstarterLabels } from "@/lib/kickstarterLabels";
+import { KickstarterBar } from "@/components/KickstarterBar";
 
 /**
  * Dal 29/09/2026 (pacchetto FUMETTI, Pierluigi: i fumetti di Vega "come news") le news in evidenza e la bacheca mostrano
@@ -165,11 +166,16 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const mv = d.home.moves;
   // Testo alternativo delle slide: sta nel dizionario (campo `alt`), così segue la lingua della pagina.
   const ks = kickstarterLabels[locale].slide;
+  const ksBar = kickstarterLabels[locale].bar;
+  const now = new Date();
+  const kickstarterPromo = kickstarterPromoActive(now);
+  // Dal 27/10/2026 lo slider resta fermo sulla prima slide, quella del Kickstarter (KICKSTARTER_SLIDER_PINNED_UNTIL)
+  const sliderPinned = kickstarterSliderPinned(now);
   const slides: Slide[] = [
     // Prima slide dal 26/10/2026, finché dura la promozione (KICKSTARTER_PROMO_UNTIL): il Kickstarter della Alpha Edition,
     // verso la landing /kickstarter (Tim Jooste di Koin, 26/10/2026: "make it the front page of Origins Meta"). Immagine:
     // la key art di Goldi del media kit, l'eroina della copertina dei pacchetti di Myths & Legends.
-    ...(kickstarterPromoActive(new Date())
+    ...(kickstarterPromo
       ? [{ src: "/media/keyart-goldi.webp", alt: ks.alt, kicker: ks.kicker, title: ks.title, text: ks.text, cta: ks.cta, href: href(locale, "/kickstarter"), event: "kickstarter_landing_open" }]
       : []),
     // Prima slide dal 12/10/2026 al 26/10/2026: OriginsMeta Tracker 0.4.0 per tutti, verso la pagina dell'app. Immagine: uno screenshot
@@ -204,8 +210,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
       {/* Quando il canale ufficiale di Origins TCG è in diretta su Twitch, al posto dello slider c'è la diretta (18/10/2026,
           OfficialLiveHero: lo decide il browser con /api/live, la home resta ISR e nell'HTML c'è sempre lo slider) */}
       <OfficialLiveHero locale={locale} labels={officialLiveLabels[locale]} playerLabels={creatorLabels[locale].liveNow.page} privacyHref={`${href(locale, "/privacy")}#video`}>
-        <HeroSlider slides={slides} labels={d.home.slider} interval={4500} />
+        <HeroSlider slides={slides} labels={d.home.slider} interval={4500} autoplay={!sliderPinned} />
       </OfficialLiveHero>
+      {/* La barra del Kickstarter della Alpha Edition: in home sotto lo slider, non sopra il menu (Pierluigi, 27/10/2026) */}
+      {kickstarterPromo ? (
+        <KickstarterBar placement="home" landingHref={href(locale, "/kickstarter")} text={ksBar.text} cta={ksBar.cta} closeLabel={ksBar.close} />
+      ) : null}
       <EventTicker locale={locale} dict={d} />
       <main id="main" className="flex-1">
         {/* Unico H1 della pagina: invisibile, ma letto dai motori e dagli screen reader (il blocco titolo visibile è stato tolto il 22/09/2026) */}

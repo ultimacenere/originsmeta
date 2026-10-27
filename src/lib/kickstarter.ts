@@ -3,7 +3,7 @@
  * OriginsMeta. Dalla call con Tim Jooste del 26/10/2026: OriginsMeta entra nel programma "digital LGS" di Koin e i pledge
  * che arrivano dal nostro link `?ref=` gli vengono riconosciuti (Pierluigi: "questo è il nostro referral code"). Tim ha
  * suggerito una pagina dedicata e la home per il giorno del lancio: la landing è /kickstarter, la home ha la prima slide
- * e il sito una barra in cima (`KickstarterBar`).
+ * (ferma, `kickstarterSliderPinned`) con la barra subito sotto, e le altre pagine la barra in cima (`KickstarterBar`).
  *
  * Regole: il link referral si dichiara sempre accanto al tasto (`disclosure` delle etichette: OriginsMeta riceve una
  * commissione, il prezzo per chi sostiene non cambia), la dicitura "non affiliato a Koin Games" resta, niente urgenza né
@@ -48,6 +48,18 @@ export function kickstarterPromoActive(now: Date, until: string | null = KICKSTA
   if (!until) return true;
   const end = Date.parse(until);
   return Number.isNaN(end) || now.getTime() < end;
+}
+
+/**
+ * Fino a quando lo slider della home resta fermo sulla slide del Kickstarter, senza rotazione automatica (Pierluigi,
+ * 27/10/2026: "per questi giorni lo slider deve restare fisso sulla slide dell'alfa"); frecce, puntini e il tasto play
+ * restano a chi guarda. `null` = finché non si toglie a mano, e comunque mai oltre la promozione.
+ */
+export const KICKSTARTER_SLIDER_PINNED_UNTIL: string | null = null;
+
+/** Lo slider della home sta fermo sulla slide del Kickstarter (funzione pura, come `kickstarterPromoActive`). */
+export function kickstarterSliderPinned(now: Date, until: string | null = KICKSTARTER_SLIDER_PINNED_UNTIL, promoUntil: string | null = KICKSTARTER_PROMO_UNTIL): boolean {
+  return kickstarterPromoActive(now, promoUntil) && kickstarterPromoActive(now, until);
 }
 
 /**

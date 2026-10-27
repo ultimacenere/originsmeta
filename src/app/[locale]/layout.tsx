@@ -100,9 +100,16 @@ export default async function LocaleLayout({ children, params }: Props) {
         >
           {d.nav.skipToContent}
         </a>
-        {/* Il Kickstarter della Alpha Edition (26/10/2026): una riga verso la landing, finché dura la promozione */}
+        {/* Il Kickstarter della Alpha Edition (26/10/2026): una riga verso la landing, finché dura la promozione; sulla home
+            non qui ma sotto lo slider (27/10/2026), dove la monta la pagina */}
         {kickstarterPromoActive(new Date()) ? (
-          <KickstarterBar landingHref={href(l, "/kickstarter")} text={kickstarterLabels[l].bar.text} cta={kickstarterLabels[l].bar.cta} closeLabel={kickstarterLabels[l].bar.close} />
+          <KickstarterBar
+            landingHref={href(l, "/kickstarter")}
+            homeHref={href(l, "/")}
+            text={kickstarterLabels[l].bar.text}
+            cta={kickstarterLabels[l].bar.cta}
+            closeLabel={kickstarterLabels[l].bar.close}
+          />
         ) : null}
         <Header locale={l} dict={d} />
         {children}

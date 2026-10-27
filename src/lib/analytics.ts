@@ -129,8 +129,9 @@
  *   ★ kickstarter_click   clic su un tasto verso la campagna Kickstarter con il    placement (landing_hero | landing_tiers | landing_how |
  *                         nostro link referral (26/10/2026, KickstarterButton;     landing_final | landing_sticky | guide; la
  *                         attributi sul link)                                      slide e la barra portano alla landing)
- *     kickstarter_landing_open clic verso la landing /kickstarter dalla slide     placement (slider | site_bar | guide)
- *                         della home, dalla barra in cima al sito o dalla guida
+ *     kickstarter_landing_open clic verso la landing /kickstarter dalla slide     placement (slider | site_bar | home_bar |
+ *                         della home, dalla barra in cima al sito, da quella       guide)
+ *                         sotto lo slider della home o dalla guida
  *                         (27/10/2026; le visite alla landing sono le pagine viste
  *                         di /xx/kickstarter)
  *
@@ -261,7 +262,7 @@ export type EventParams = {
   donate_click: { placement: string };
   analytics_download: { placement: "top" | "install" };
   kickstarter_click: { placement: string };
-  kickstarter_landing_open: { placement: "slider" | "site_bar" | "guide" };
+  kickstarter_landing_open: { placement: "slider" | "site_bar" | "home_bar" | "guide" };
 };
 export type EventName = keyof EventParams;
 

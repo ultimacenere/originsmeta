@@ -57,8 +57,11 @@ const getServerReducedMotion = () => false;
  * `display: none`; i loro tasti non si precaricano (`prefetch={false}`) finché la slide non entra. Le immagini
  * restano montate a richiesta come prima. L'annuncio della slide non può più stare sul riquadro dei testi (ci sono
  * tutte e cinque e al cambio non cambia il testo, solo `inert`): sta in una riga `sr-only` a parte.
+ *
+ * `autoplay={false}` (27/10/2026, la slide del Kickstarter ferma "per questi giorni"): lo slider parte fermo sulla prima
+ * slide, come con "riduci il movimento"; frecce, puntini, swipe e il tasto play restano a chi guarda.
  */
-export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[]; labels: SliderLabels; interval?: number }) {
+export function HeroSlider({ slides, labels, interval = 4500, autoplay = true }: { slides: Slide[]; labels: SliderLabels; interval?: number; autoplay?: boolean }) {
   const n = slides.length;
   const [index, setIndex] = useState(0);
   /* hover e focus fermano la rotazione solo finché durano; `choice` è la scelta esplicita dell'utente (tasto) */
@@ -92,8 +95,8 @@ export function HeroSlider({ slides, labels, interval = 4500 }: { slides: Slide[
     refocus.current = false;
     texts.current[index]?.querySelector<HTMLElement>("a[href]")?.focus();
   }, [index]);
-  /* con "riduci il movimento" la rotazione non parte da sola, ma l'utente può avviarla con il tasto */
-  const wantsRotation = choice === "play" || (choice === "auto" && !reducedMotion);
+  /* con "riduci il movimento" o senza `autoplay` la rotazione non parte da sola, ma l'utente può avviarla con il tasto */
+  const wantsRotation = choice === "play" || (choice === "auto" && autoplay && !reducedMotion);
   const rotating = wantsRotation && !hovered && !focused && n > 1;
 
   useEffect(() => {

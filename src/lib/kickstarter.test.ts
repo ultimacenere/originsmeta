@@ -14,6 +14,7 @@ import {
   PULL_RATES,
   kickstarterLive,
   kickstarterPromoActive,
+  kickstarterSliderPinned,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./kickstarter.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
@@ -84,6 +85,12 @@ describe("link e date", () => {
     assert.equal(kickstarterPromoActive(new Date("2027-06-01T00:00:00Z"), null), true);
     assert.equal(kickstarterPromoActive(new Date("2026-11-20T10:00:00Z"), "2026-11-20T12:00:00Z"), true);
     assert.equal(kickstarterPromoActive(new Date("2026-11-20T12:00:00Z"), "2026-11-20T12:00:00Z"), false);
+  });
+  test("lo slider della home resta fermo sulla slide del Kickstarter fino alla sua data, mai oltre la promozione", () => {
+    assert.equal(kickstarterSliderPinned(new Date("2027-06-01T00:00:00Z"), null, null), true);
+    assert.equal(kickstarterSliderPinned(new Date("2026-11-01T10:00:00Z"), "2026-11-01T12:00:00Z", null), true);
+    assert.equal(kickstarterSliderPinned(new Date("2026-11-01T12:00:00Z"), "2026-11-01T12:00:00Z", null), false);
+    assert.equal(kickstarterSliderPinned(new Date("2026-11-20T12:00:00Z"), null, "2026-11-20T12:00:00Z"), false);
   });
   test("il tasto dice Scegli la tua ricompensa Alpha dalla mezzanotte del 27 ottobre sulla costa est", () => {
     assert.equal(kickstarterLive(new Date("2026-10-27T03:59:59Z")), false);
