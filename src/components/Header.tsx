@@ -20,8 +20,17 @@ import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
  */
 type NavItem = { label: string; path: string; locked?: boolean; sub?: { label: string; path: string; mobile?: boolean; locked?: boolean }[] };
 
-export function navItems(dict: Dictionary): NavItem[] {
+/**
+ * Lingue in cui il Deck builder, con il Draft, sta nel sottomenu Mazzi invece che fra le voci principali (28/10/2026,
+ * Pierluigi: "in russo le icone menu si sovrappongono, se le voci son troppe accorpa con dei sotto menu", poi "accorpa
+ * solo in russo"): in russo le voci erano larghe 860 px (italiano 702) e da 1536 px, con il tasto PayPal intero, la riga
+ * sforava di 118 px; con l'accesso fatto busta e avatar finivano sopra il selettore lingua. Accorpate sono 693 px.
+ */
+const BUILDER_IN_DECKS: readonly Locale[] = ["ru"];
+
+export function navItems(dict: Dictionary, locale: Locale): NavItem[] {
   const t = dict.tier;
+  const builderInDecks = BUILDER_IN_DECKS.includes(locale);
   return [
     {
       label: dict.nav.news,
@@ -84,19 +93,32 @@ export function navItems(dict: Dictionary): NavItem[] {
       label: dict.nav.decks,
       path: "/decks",
       // sottomenu (04/10/2026, Pierluigi: "avremo mazzi singoli e mazzi tornei sotto il menu mazzi"): i mazzi singoli della
-      // community e i Mazzi torneo, tre mazzi Conquest pubblicati insieme con una guida. Dal 28/10/2026 anche il Deck
-      // builder e il Draft, che erano una voce principale con il suo sottomenu (Pierluigi: "in russo le icone menu si
-      // sovrappongono, se le voci son troppe accorpa con dei sotto menu"): in russo le voci erano larghe 860 px e da 1536
-      // px, con il tasto PayPal intero, la riga sforava di 118 px (francese 19, spagnolo 1); busta e avatar finivano
-      // sopra il selettore lingua. Nella tendina del telefono e nel footer restano tutte e due.
+      // community e i Mazzi torneo, tre mazzi Conquest pubblicati insieme con una guida; in russo anche Deck builder e
+      // Draft (BUILDER_IN_DECKS), che nella tendina del telefono e nel footer restano tutte e due
       sub: [
         { label: dict.nav.decksSingle, path: "/decks" },
         { label: dict.nav.decksTournament, path: "/decks/tournament", mobile: true },
-        { label: dict.nav.builder, path: "/deck-builder", mobile: true },
-        // il draft contro il Cervello sta accanto al deck builder (02/10/2026)
-        { label: dict.nav.draft, path: "/draft", mobile: true },
+        ...(builderInDecks
+          ? [
+              { label: dict.nav.builder, path: "/deck-builder", mobile: true },
+              { label: dict.nav.draft, path: "/draft", mobile: true },
+            ]
+          : []),
       ],
     },
+    ...(builderInDecks
+      ? []
+      : [
+          {
+            label: dict.nav.builder,
+            path: "/deck-builder",
+            // sottomenu del menu desktop (02/10/2026): il draft contro il Cervello sta accanto al deck builder
+            sub: [
+              { label: dict.nav.builder, path: "/deck-builder" },
+              { label: dict.nav.draft, path: "/draft", mobile: true },
+            ],
+          },
+        ]),
     { label: dict.nav.events, path: "/tournaments" },
     // il tracker dei prezzi del Mercato di Steam fra le voci principali, al posto delle FAQ (18/10/2026, Pierluigi: "sposta
     // mercato e il suo lucchetto nel main menu, voglio che gli utenti vedano"; il 18/10 era stato per poche ore nel
@@ -114,7 +136,7 @@ export function navItems(dict: Dictionary): NavItem[] {
  * leggono il percorso nel browser, per segnare la pagina corrente e portare "Accedi" con il ritorno.
  */
 export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
-  const items = navItems(dict);
+  const items = navItems(dict, locale);
   return (
     // Fondo dello stesso colore della pagina (23/09/2026): con `felt-deep` la barra fissa era una fascia più scura
     // in cima, che non combaciava con lo sfondo sotto (riunione: "sfondo header e sfondo sotto non sincronizzati").
