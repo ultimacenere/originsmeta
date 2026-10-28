@@ -86,10 +86,6 @@ function wrapTables(html: string): string {
 }
 
 /**
- * `linkCards` = lingua della pagina: attiva i link ai nomi di carta con l'anteprima (news e guide). Se il testo cita
- * almeno una carta, il blocco porta con sé `CardMentionEdges`, che crea i pannelli e li tiene dentro la finestra.
- */
-/**
  * Interviste (28/10/2026, Pierluigi: "i nomi di chi intervista e l'intervistato devono essere di due colori differenti"):
  * le etichette in grassetto "**Nome:**" dei `speakers` prendono la classe speaker-1, speaker-2… (colori in globals.css).
  */
@@ -101,10 +97,22 @@ function markSpeakers(html: string, speakers?: string[]): string {
   });
 }
 
+/**
+ * Un'immagine con un link (`[![alt](src)](/pagina)`) apre la pagina in un'altra scheda, così chi legge non perde
+ * l'articolo (28/10/2026, intervista a SouL: le grafiche portano alle pagine di cui parlano).
+ */
+function imageLinksNewTab(html: string): string {
+  return html.replace(/<a href="([^"]+)">(\s*<img )/g, '<a href="$1" target="_blank" rel="noopener">$2');
+}
+
+/**
+ * `linkCards` = lingua della pagina: attiva i link ai nomi di carta con l'anteprima (news e guide). Se il testo cita
+ * almeno una carta, il blocco porta con sé `CardMentionEdges`, che crea i pannelli e li tiene dentro la finestra.
+ */
 export function Markdown({ source, className = "", linkCards, speakers }: { source: string; className?: string; linkCards?: string; speakers?: string[] }) {
   const locale = linkCards && isLocale(linkCards) ? linkCards : undefined;
   const src = linkCards ? linkCardsInMarkdown(source, linkCards) : source;
-  const plain = markSpeakers(wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string)), speakers);
+  const plain = imageLinksNewTab(markSpeakers(wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string)), speakers));
   const { html, cards } = locale ? cardPreviews(plain, locale) : { html: plain, cards: 0 };
   return (
     <>

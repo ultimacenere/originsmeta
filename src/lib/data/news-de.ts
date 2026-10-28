@@ -38,7 +38,7 @@ Abgesehen von ein paar kleinen technischen Problemen, die alle Teilnehmer kennen
 
 Und das können wir gleich sagen: **Wir Italiener haben drei der vier Plätze in der Top 4 belegt**. Das war extrem schön. Da waren Leute, die ich kannte, Leute, die ich für stark hielt, und mit meinem Ergebnis würde ich sagen, dass es sehr gut gelaufen ist.
 
-![Die offizielle Grafik des Crimson Cup von Koin Games: Qualifikationen, Playoffs, Finals und Preise im Wert von 10.000 Dollar](/media/news-crimson-cup.webp)
+[![Die offizielle Grafik des Crimson Cup von Koin Games: Qualifikationen, Playoffs, Finals und Preise im Wert von 10.000 Dollar](/media/news-crimson-cup.webp)](/de/analytics/crimson-cup)
 
 ## Die Italiener und Origins TCG {#italiener}
 
@@ -64,7 +64,7 @@ Wir haben diese Decks gewählt, weil sie, wie du gesagt hast, von ihrer Identit�
 
 Ich hatte eine Aufstellung nur aus Control und Heilung mitgebracht, mit Van Helsing und dann Decks, die so taten, als wären sie etwas anderes, aber eigentlich Van-Helsing-Healing-Decks ohne Van Helsing waren. Also habe ich mir gesagt: Die Leute werden sich an dem orientieren, was ich gemacht habe, und ich war nicht der Einzige mit dieser Theorie, also wird das Turnier voller Van Helsing sein. Und wir lagen mit dem Call richtig.
 
-![Van Helsing, das Deck, das es beim Crimson Cup zu schlagen galt: Die Aufstellung von SouL wurde gebaut, um darüber hinwegzurollen](/cards/cover/van-helsing.webp)
+[![Van Helsing, das Deck, das es beim Crimson Cup zu schlagen galt: Die Aufstellung von SouL wurde gebaut, um darüber hinwegzurollen](/cards/cover/van-helsing.webp)](/de/cards/van-helsing)
 
 ### Merlin: mehr Schaden und weniger Verlass auf Obliterate {#merlin}
 
@@ -100,7 +100,7 @@ Keines der drei Decks ist hinter den Erwartungen geblieben. Das einzige, das ich
 
 **Das beste Deck ist zwangsläufig Merlin**: Abgesehen davon, dass es mein Lieblingsdeck im Spiel ist, war es sicher das solideste von allen. Dieser Merlin kann nicht verlieren, der braucht für mich unbedingt einen Nerf: Der ist völlig durchgeknallt.
 
-![Merlin, das Lieblingsdeck von SouL und seiner Meinung nach das solideste der Aufstellung](/cards/cover/merlin.webp)
+[![Merlin, das Lieblingsdeck von SouL und seiner Meinung nach das solideste der Aufstellung](/cards/cover/merlin.webp)](/de/cards/merlin)
 
 ## Das Finale gegen CoachCrono {#finale}
 
@@ -122,7 +122,7 @@ Diese Partie hat die Chancen komplett umgedreht, denn in dem Moment, in dem mein
 
 In der entscheidenden Partie hat er mit seinem Aggro-Deck eine spektakuläre Kurve gefunden und mich zerlegt: Die war einfach nicht zu gewinnen, und so hat er den berühmten goldenen Dracula mit nach Hause genommen.
 
-![Die offizielle Grafik von Koin Games für CoachCrono, den Sieger des Crimson Cup: die 1/1-Promokarte Dracula, zwei Cases mit Booster-Displays und 1.500 Dollar](/media/news-crimson-cup-winner.webp)
+[![Die offizielle Grafik von Koin Games für CoachCrono, den Sieger des Crimson Cup: die 1/1-Promokarte Dracula, zwei Cases mit Booster-Displays und 1.500 Dollar](/media/news-crimson-cup-winner.webp)](/de/news/crimson-cup-coachcrono-wins)
 
 ## Warum Origins es schaffen kann {#warum-origins}
 
@@ -142,7 +142,7 @@ Du kannst auf höchstem Niveau antreten, von zu Hause aus ein Turnier wie den Cr
 
 Wenn diese Karte auch nur ein Zehntel der wertvollsten Karten überhaupt wert wird und Crono sie an einen Sammler verkauft, oder sie behält, ich weiß nicht, was er vorhat, aber wenn ihr Wert 10.000 Dollar erreicht, dann **hat er diesen Preis gewonnen, während er bei sich zu Hause saß**. Das ist unbezahlbar, und eine Menge Leute, vor allem junge, werden Zugang dazu haben wollen.
 
-![Die Grafik „Zero pay to win“ von Koin Games: Jeder Spieler bekommt alle Karten, indem er Partien gewinnt, ohne Geld auszugeben](/media/ls-zero-pay-to-win.webp)
+[![Die Grafik „Zero pay to win“ von Koin Games: Jeder Spieler bekommt alle Karten, indem er Partien gewinnt, ohne Geld auszugeben](/media/ls-zero-pay-to-win.webp)](/de/kickstarter)
 
 ### Der positive Kreislauf des Sammelns {#sammeln}
 
@@ -154,7 +154,7 @@ Es ist kostenlos, es ist ein Videospiel und dahinter stehen Leute mit dem Know-h
 
 Aber wenn ich einzigartige Karten mit Seriennummer vergeben, unglaubliche Illustrationen machen, einen großartigen Künstler für eine einzigartige Illustration von Winnie-the-Pooh oder Merlin bezahlen kann, in dem Wissen, dass sie eines Tages in einem Turnier von Leuten gespielt wird, die sich für den Wettbewerb interessieren, und von Sammlern gekauft wird, die sich für diese Art von Produkt interessieren, dann **schaffen wir den positiven Kreislauf, von dem auch die physischen Kartenspiele seit Jahren leben**.
 
-![Die Grafik von Koin Games zu den Collector Packs: alternative Illustrationen, Frame Broken und Storybook mit ihren Wahrscheinlichkeiten](/media/ls-collector-pack.webp)
+[![Die Grafik von Koin Games zu den Collector Packs: alternative Illustrationen, Frame Broken und Storybook mit ihren Wahrscheinlichkeiten](/media/ls-collector-pack.webp)](/de/kickstarter)
 
 Ich glaube, es sind alle Voraussetzungen da, damit dieses Spiel entsteht, wächst und ein langes kompetitives Leben hat, und genau das wollen ihm seine Macher geben. Was mir an Origins am meisten gefällt, ist genau das: Es ist ein Spiel, das geboren wurde, um kompetitiv zu sein.
 
@@ -190,7 +190,7 @@ Meine Aufstellung ist genau daraus entstanden, dass Van Helsing offensichtlich d
 
 Ein kompetitives Spiel braucht Statistiken und Leute, die sie lesen können, und eine Unterstützung, die ihr den Spielern geben könnt, ist nicht nur, die Statistiken zu präsentieren, sondern auch **eine Lesart davon, mit Artikeln wie diesem**, indem ihr Leute einladet, die ihre Lesart des Metas geben. Für mich ist das der unglaubliche Mehrwert, der in einem Spiel, an dem ich teilnehme, nicht fehlen darf.
 
-![Die Bannrate der Legendären in den vier Qualifikationen des Crimson Cup, von der Seite von OriginsMeta: Van Helsing ist in jeder am häufigsten gebannt](/media/news-soul-ban-rate-de.webp)
+[![Die Bannrate der Legendären in den vier Qualifikationen des Crimson Cup, von der Seite von OriginsMeta: Van Helsing ist in jeder am häufigsten gebannt](/media/news-soul-ban-rate-de.webp)](/de/analytics/crimson-cup#across)
 
 Die Zahlen, von denen SouL spricht, stehen auf unserer [Seite zum Crimson Cup](/de/analytics/crimson-cup#across): In den vier Qualifikationen mit offiziellen Tabellen von Koin **war Van Helsing immer die am häufigsten gebannte Legendäre**, Merlin insgesamt die zweite, Mulan weit dahinter. Die Statistiken der Ladder, aus den mit OriginsMeta Tracker aufgezeichneten Partien, findest du in [Analytics](/de/analytics).
 

@@ -32,8 +32,10 @@ export type NewsChecks = {
 
 /** Percorsi dei link interni di un testo Markdown (`](/…)`), per controllare prefisso della lingua e destinazione. */
 export function internalLinks(markdown: string): string[] {
-  // le immagini (`![testo](/media/…)`, dall'11/10/2026) non sono link a pagine: niente prefisso della lingua
-  return [...markdown.matchAll(/(!?)\[[^\]\n]*\]\((\/[^)\s]*)\)/g)].filter((m) => !m[1]).map((m) => m[2]);
+  // le immagini (`![testo](/media/…)`, dall'11/10/2026) non sono link a pagine: niente prefisso della lingua. Si
+  // tolgono prima di cercare i link, così conta anche il link che le contiene (`[![testo](/media/…)](/it/…)`, 28/10/2026)
+  const text = markdown.replace(/!\[([^\]\n]*)\]\([^)\s]*\)/g, "$1");
+  return [...text.matchAll(/\[[^\]\n]*\]\((\/[^)\s]*)\)/g)].map((m) => m[1]);
 }
 
 /** Le immagini del Markdown con un percorso del sito (`![testo](/media/…)`): devono esistere in /public. */
