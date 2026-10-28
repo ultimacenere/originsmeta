@@ -224,6 +224,8 @@ We have known each other for years, from other competitive games, and this is le
 
 SouL's three lists, the ones Koin Games published on finals day, are now a [tournament deck](/en/decks/tournament/soul-crimson-cup-lineup): **you will find them further down, with the game codes ready to copy**.
 
+![SouL, Crimson Cup finalist and Pro on OriginsMeta](/media/news-soul-photo.webp)
+
 ## The tournament, still fresh {#tournament}
 
 **Davdas:** Hi SouL, I'm really happy to meet you again after all the times our paths crossed in gaming, and to have you here after a great result: you made it to the final of the first tournament of a brand-new game. How was it?
@@ -405,6 +407,8 @@ Ci conosciamo da anni, da altri giochi competitivi, e più che un'intervista que
 
 Le tre liste di SouL, quelle pubblicate da Koin Games il giorno delle finali, sono diventate un [mazzo torneo](/it/decks/tournament/soul-crimson-cup-lineup): **le trovi più sotto, con i codici del gioco da copiare**.
 
+![SouL, finalista della Crimson Cup e Pro su OriginsMeta](/media/news-soul-photo.webp)
+
 ## Il torneo, a caldo {#torneo}
 
 **Davdas:** Ciao SouL, sono felicissimo di ritrovarti dopo le tante volte in cui ci siamo incrociati nel mondo del gaming, e di averti qui dopo un grande risultato: sei arrivato a giocarti la finale del primo torneo di un gioco nuovo. Com'è stato?
@@ -585,6 +589,8 @@ I numeri di cui parla SouL sono nella nostra [pagina della Crimson Cup](/it/anal
 Nos conocemos desde hace años, de otros juegos competitivos, y más que una entrevista esta es una charla entre aficionados, grabada en los días justo después de la final, el día en que arrancaba el [Kickstarter de la Alpha Edition](/es/kickstarter). Las preguntas son de Luigi "[Davdas](/es/authors/davdas)" Ragoni.
 
 Las tres listas de SouL, las que publicó Koin Games el día de las finales, son ahora un [mazo de torneo](/es/decks/tournament/soul-crimson-cup-lineup): **las encontrarás más abajo, con los códigos del juego para copiar**.
+
+![SouL, finalista de la Crimson Cup y Pro en OriginsMeta](/media/news-soul-photo.webp)
 
 ## El torneo, en caliente {#torneo}
 

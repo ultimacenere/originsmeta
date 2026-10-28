@@ -22,6 +22,8 @@ Wir kennen uns seit Jahren, aus anderen kompetitiven Spielen, und das hier ist w
 
 Die drei Listen von SouL, die Koin Games am Tag der Finals veröffentlicht hat, sind jetzt ein [Turnierdeck](/de/decks/tournament/soul-crimson-cup-lineup): **Du findest sie weiter unten, mit den Spielcodes zum Kopieren**.
 
+![SouL, Finalist des Crimson Cup und Pro auf OriginsMeta](/media/news-soul-photo.webp)
+
 ## Das Turnier, noch ganz frisch {#turnier}
 
 **Davdas:** Hallo SouL, ich freue mich riesig, dich wiederzusehen, nach all den Malen, die sich unsere Wege in der Gaming-Welt gekreuzt haben, und dich nach so einem großen Ergebnis hier zu haben: Du hast das Finale des ersten Turniers eines neuen Spiels erreicht. Wie war's?
