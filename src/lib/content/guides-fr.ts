@@ -12,11 +12,11 @@ export const frText: Record<GuideSlug, GuideCopy> = {
   "origins-tcg-legendaries": {
     title: "Les 11 Légendaires d'Origins TCG : cartes, statistiques, patchs et decks",
     metaTitle: "Légendaires d'Origins TCG : les 11 et leurs decks",
-    excerpt: "Les 11 cartes Légendaires de la Demo 2.0 d'Origins TCG : coût, statistiques, texte officiel, cartes créées, changements de patch et decks qui les utilisent.",
+    excerpt: "Les 11 cartes Légendaires jouables d'Origins TCG : coût, statistiques, texte officiel, cartes créées, changements de patch et decks qui les utilisent.",
     faq: [
       {
         q: "Combien de Légendaires y a-t-il dans Origins TCG ?",
-        a: "Onze dans la Demo 2.0 au 25 septembre 2026 : Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs et Robin Hood. La base de données d'OriginsMeta en conserve neuf autres qui ne sont pas dans la démo.",
+        a: "Onze dans le jeu, d'après notre base de données des cartes (statistiques du patch 0.7) : Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs et Robin Hood. La base de données d'OriginsMeta en conserve neuf autres qui ne sont plus dans le jeu.",
       },
       {
         q: "Combien de Légendaires un deck peut-il avoir ?",
@@ -28,19 +28,19 @@ export const frText: Record<GuideSlug, GuideCopy> = {
       },
       {
         q: "Existe-t-il une Légendaire qui soit un sort ?",
-        a: "Oui, une seule dans la Demo 2.0 : Legion of the Dead, un sort à 7 mana qui remplit votre plateau de Zombies 2/2.",
+        a: "Oui, une seule dans le jeu : Legion of the Dead, un sort à 7 mana qui remplit votre plateau de Zombies 2/2.",
       },
     ],
     body: `
 ## En bref {#en-bref}
 
-- **Onze Légendaires** sont dans la Demo 2.0, la version d'Origins TCG à laquelle vous pouvez jouer aujourd'hui : six coûtent 4 mana, une 5, trois 7 et une 8.
+- **Onze Légendaires** sont jouables dans Origins TCG, gratuit sur Steam en Accès anticipé depuis le 27 octobre 2026 : six coûtent 4 mana, une 5, trois 7 et une 8.
 - Dix sont des unités et une est un sort, Legion of the Dead. Cinq sont Good, trois Evil et trois Neutral.
 - Quatre d'entre elles créent d'autres cartes par leur texte : Dracula, Van Helsing, Legion of the Dead et Three Not So Little Pigs.
-- Sept ont changé dans les patchs d'équilibrage entre août et le 21 septembre 2026 ; Dracula, Van Helsing, Legion of the Dead et Robin Hood non. Le [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026 n'en a rééquilibré aucune.
+- Sept ont changé dans les patchs d'équilibrage entre août et le 21 septembre 2026 ; Dracula, Van Helsing, Legion of the Dead et Robin Hood non. Le [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026 n'en a rééquilibré aucune, et les patch notes de la 0.8 (27 octobre 2026, Accès anticipé) ne citent aucun changement de carte.
 - Les 20 decks publiés sur OriginsMeta à 20:00 CEST le 25 septembre 2026 en utilisent dix sur onze : Three Not So Little Pigs en mène quatre, Van Helsing trois, Wicked Stepmother aucun. Six Légendaires ont un guide OriginsMeta consacré à l'un de leurs decks.
 
-Les Légendaires ci-dessous sont classées par coût et, à coût égal, par ordre alphabétique. Le guide décrit ce que fait chaque carte, pas sa force : notre [tier list d'Origins TCG](/fr/tier-list) les classera d'après les résultats des tournois et le sommet du [mode classé](/fr/guides/origins-tcg-ranked), après la Crimson Cup.
+Les Légendaires ci-dessous sont classées par coût et, à coût égal, par ordre alphabétique. Le guide décrit ce que fait chaque carte, pas sa force : notre [tier list d'Origins TCG](/fr/tier-list) les classera d'après les résultats des tournois et le sommet du [mode classé](/fr/guides/origins-tcg-ranked) ; le premier classement est en préparation.
 
 ## Les 11 Légendaires en un tableau {#tableau}
 
@@ -160,7 +160,7 @@ Les textes de cartes cités ci-dessous sont les textes officiels du jeu, lus dan
 
 - **La légende.** Le magicien derrière la naissance d'Arthur et son accession au trône, de Geoffroy de Monmouth à Malory.
 - **Patchs.** Patch 0.6.3 : de 3/5 à 5/5, +2 Puissance ([notes de patch](/fr/news/patch-0-6-3)).
-- **Decks sur OriginsMeta au 25 septembre 2026.** Un : [Spellcast](/fr/decks/community/spellcast-250f).
+- **Decks sur OriginsMeta au 25 septembre 2026.** Un : Spellcast.
 - **Guide.** Pas encore : [envoyez-nous le vôtre](/fr/guides/submit).
 - **Fiche.** [Merlin, carte Légendaire : statistiques et texte](/fr/cards/merlin).
 
@@ -184,7 +184,7 @@ Les textes de cartes cités ci-dessous sont les textes officiels du jeu, lus dan
 
 > Remplissez votre plateau de Zombies [2⚔️/2❤️].
 
-- **Le seul sort Légendaire** de la Demo 2.0.
+- **Le seul sort Légendaire** du jeu.
 - **La légende.** Une armée de morts relevés, le dernier argument du nécromancien.
 - **Cartes créées.** [Zombie](/fr/cards/zombie), des cartes créées 2/2, autant qu'il en faut pour remplir votre plateau.
 - **Patchs.** Aucun changement.
@@ -215,67 +215,68 @@ Les textes de cartes cités ci-dessous sont les textes officiels du jeu, lus dan
 >
 > À la révélation : Inflige 2 dégâts à tous les ennemis.
 
-- **La seule Légendaire à 8 mana** de la Demo 2.0.
+- **La seule Légendaire à 8 mana** du jeu.
 - **La légende.** L'archer hors-la-loi de la forêt de Sherwood qui vole aux riches pour nourrir les pauvres, chanté dans les ballades depuis le XIVe siècle.
 - **Patchs.** Aucun changement.
 - **Decks sur OriginsMeta au 25 septembre 2026.** Un : [Buff](/fr/decks/community/buff-6f60).
 - **Guide.** Pas encore : [envoyez-nous le vôtre](/fr/guides/submit).
 - **Fiche.** [Robin Hood, carte Légendaire : statistiques et texte](/fr/cards/robin-hood).
 
-## Les Légendaires qui ne sont pas dans la Demo 2.0 {#hors-de-la-demo}
+## Les Légendaires qui ne sont plus dans le jeu {#hors-de-la-demo}
 
-Notre base de données conserve aussi neuf Légendaires qui ne sont pas dans la Demo 2.0 : [Alice](/fr/cards/alice), [Beowulf](/fr/cards/beowulf), [Cinderella](/fr/cards/cinderella), [Death](/fr/cards/death), [Dr. Frank](/fr/cards/dr-frank), [Mirror Mirror](/fr/cards/mirror-mirror), [Red](/fr/cards/red), [Winnie-the-Pooh](/fr/cards/winnie-the-pooh) et [Wizard of Oz](/fr/cards/wizard-of-oz). Leurs fiches gardent les dernières données connues, non vérifiées dans le jeu. Dans ses AMA, l'équipe a décrit un lancement complet avec la liste entière des cartes Légendaires : les dates que nous connaissons sont dans la [roadmap](/fr/guides/roadmap-and-dates).
+Notre base de données conserve aussi neuf Légendaires qui ne sont plus dans le jeu : [Alice](/fr/cards/alice), [Beowulf](/fr/cards/beowulf), [Cinderella](/fr/cards/cinderella), [Death](/fr/cards/death), [Dr. Frank](/fr/cards/dr-frank), [Mirror Mirror](/fr/cards/mirror-mirror), [Red](/fr/cards/red), [Winnie-the-Pooh](/fr/cards/winnie-the-pooh) et [Wizard of Oz](/fr/cards/wizard-of-oz). Leurs fiches gardent les dernières données connues, non vérifiées dans le jeu. Dans ses AMA, l'équipe a décrit un lancement complet avec la liste entière des cartes Légendaires : les dates que nous connaissons sont dans la [roadmap](/fr/guides/roadmap-and-dates).
 
 ## D'où viennent les chiffres {#sources}
 
-- **Cartes :** la [base de données des cartes](/fr/cards) d'OriginsMeta : coûts, statistiques et textes anglais des cartes de la démo vérifiés un par un dans le jeu le 22 septembre 2026, textes italiens et espagnols lus dans le jeu le 25 septembre 2026 ; les textes français sont une traduction d'OriginsMeta, pas encore vérifiée dans le jeu.
+- **Cartes :** la [base de données des cartes](/fr/cards) d'OriginsMeta : coûts, statistiques et textes anglais des cartes jouables vérifiés un par un dans le jeu le 22 septembre 2026, textes italiens et espagnols lus dans le jeu le 25 septembre 2026, textes français le 8 octobre 2026 ; les patch notes de la 0.8 (27 octobre 2026, Accès anticipé) ne citent aucun changement de carte.
 - **Patchs :** les notes de patch officielles sur Steam, carte par carte dans [MetaShifting](/fr/metashifting).
 - **Decks :** les 20 decks publiés sur OriginsMeta du 15 septembre à 20:00 CEST le 25 septembre 2026 ([tous les decks d'Origins TCG](/fr/decks)) ; le décompte suivant est sur [Les plus jouées](/fr/tier-list/most-played).
 
-Nous mettrons ce guide à jour chaque fois qu'un patch changera une Légendaire ou que la démo en ajoutera une nouvelle.
+Nous mettrons ce guide à jour chaque fois qu'un patch changera une Légendaire ou que le jeu en ajoutera une nouvelle.
 `,
   },
   "origins-tcg-ranked": {
-    title: "Le mode classé d'Origins TCG : ce que nous savons de la ladder avant le Steam Next Fest",
-    metaTitle: "Mode classé d'Origins TCG : date, Grandmaster, VP",
-    excerpt: "Le mode classé arrive dans la démo d'Origins TCG avec le Steam Next Fest, le 19 octobre 2026. Confirmé par Koin : divisions, Grandmaster, VP et récompenses.",
+    title: "Le mode classé d'Origins TCG : divisions, Grandmaster et première saison",
+    metaTitle: "Mode classé d'Origins TCG : Grandmaster, saison, VP",
+    excerpt: "Le mode classé d'Origins TCG en Accès anticipé : depuis la 0.8, la division Grandmaster est ouverte avec son classement mondial. Saison 1, VP et récompenses.",
     faq: [
       {
-        q: "À quelle heure le mode classé ouvre-t-il le 19 octobre ?",
-        a: "Le post Steam de Koin Games du 21 septembre 2026 dit seulement « avec le début du Steam Next Fest », sans heure. Le festival ouvre le lundi 19 octobre 2026 à 10:00, heure du Pacifique : 13:00 heure de l'Est, 18:00 au Royaume-Uni, 19:00 en Europe centrale.",
+        q: "Depuis quand le mode classé est-il ouvert ?",
+        a: "Depuis la mise à jour 0.7.1 du 15 octobre 2026 (post Steam « Ranked is here! »), quatre jours avant le Steam Next Fest. Depuis le 27 octobre 2026, il fait partie de l'Accès anticipé d'Origins TCG, version 0.8.",
       },
       {
         q: "Quel est le rang le plus élevé d'Origins TCG ?",
-        a: "Grandmaster, la division la plus haute de la ladder du playtest fermé, qui a un classement mondial (notes de patch officielles 0.6.1 et 0.6.3, août 2026).",
+        a: "Grandmaster, la division la plus haute. Fermée pendant la démo, elle est ouverte depuis la 0.8 du 27 octobre 2026, avec un classement Grandmaster mondial (patch notes de la 0.8 sur Steam et sur le Discord officiel).",
       },
       {
         q: "Quelles sont les récompenses du mode classé ?",
-        a: "Koin Games a seulement dit que le mode classé de la démo arrive avec des récompenses classées exclusives ; au 25 septembre 2026, les détails n'avaient pas été annoncés.",
+        a: "D'après les patch notes de la 0.8, les joueurs qui terminent la première saison classée de l'Accès anticipé aux rangs les plus élevés recevront des récompenses en édition limitée. Koin n'a pas encore détaillé lesquelles ni à partir de quel rang.",
       },
       {
-        q: "Peut-on jouer en classé avant le Steam Next Fest ?",
-        a: "Seulement dans le playtest fermé, où le mode classé est actif depuis le patch 0.6.1 du 14 août 2026 ; les instructions pour accéder au playtest sont sur le Discord officiel.",
+        q: "Quand se termine la première saison classée ?",
+        a: "« Sometime in early December », d'après les patch notes de la 0.8 du 27 octobre 2026 : c'est un plan, qui peut changer, et Koin n'a pas donné de date précise.",
       },
     ],
     body: `
 ## En bref {#en-bref}
 
-- Le mode classé s'active dans la démo gratuite **avec le début du Steam Next Fest**, le lundi 19 octobre 2026, « avec des récompenses classées exclusives » (post Steam de Koin Games du 21 septembre 2026).
-- Ce n'est pas une nouveauté : le playtest fermé a une ladder classée depuis le patch 0.6.1 du 14 août 2026, et le 24 septembre elle y était encore active.
-- Ce que confirment les notes de patch officielles : des divisions, une division supérieure appelée **Grandmaster** avec un classement mondial, et des **Points de Victoire** (VP) gagnés et perdus dans les parties classées : les notes parlent d'une variation de +10 et −10, et depuis le patch 0.6.2 les parties en salon ne rapportent plus de VP.
-- Ce que Koin n'a pas encore dit : la liste complète des divisions, si les +10/−10 VP du playtest restent les mêmes dans chaque division et dans la démo, les saisons et les remises à zéro, en quoi consistent les récompenses.
+- Le mode classé est ouvert depuis la mise à jour 0.7.1 du **15 octobre 2026** (post Steam « Ranked is here! »), quatre jours avant le Steam Next Fest. Depuis le **27 octobre 2026**, il fait partie de l'**Accès anticipé** d'Origins TCG, version 0.8, gratuit sur Steam.
+- Avec la 0.8, la **division Grandmaster** est ouverte, avec le **classement Grandmaster** mondial : pendant la démo, l'échelle s'arrêtait à ses portes.
+- La **première saison classée** de l'Accès anticipé devrait se terminer « sometime in early December », un plan qui peut changer ; les joueurs qui la terminent aux rangs les plus élevés recevront des **récompenses en édition limitée**.
+- Ce que décrivaient déjà les notes de patch du playtest fermé (août 2026) : des divisions, Grandmaster comme division supérieure, et des **Points de Victoire** (VP) gagnés et perdus dans les parties classées, avec une variation de +10 et −10 ; depuis le patch 0.6.2, les parties en salon ne rapportent plus de VP.
+- Ce que Koin n'a pas encore dit : la liste complète des divisions, si les +10/−10 VP du playtest valent encore dans chaque division, la date exacte de la fin de la saison et en quoi consistent les récompenses.
 
-Nous mettrons ce guide à jour quand le mode classé ouvrira dans la démo.
+Nous mettrons ce guide à jour quand Koin précisera les récompenses et la fin de la saison.
 
-## Quand le mode classé ouvre {#quand}
+## Quand le mode classé a ouvert {#quand}
 
-Le 21 septembre 2026, dans le post sur la [première grande mise à jour de la démo](https://store.steampowered.com/news/app/4429430/view/1844115010502611), Koin Games a écrit qu'il allait « activer le mode classé avec le début du Steam Next Fest, qui arrivera avec des récompenses classées exclusives ». Le [Steam Next Fest](https://store.steampowered.com/sale/nextfest) va du lundi 19 octobre 2026 à 10:00, heure du Pacifique (13:00 heure de l'Est, 18:00 au Royaume-Uni, 19:00 en Europe centrale), au lundi 26 octobre. Le post ne donne pas d'heure exacte pour le mode classé : « avec le début » du festival, c'est tout ce qu'il dit.
+Le 21 septembre 2026, dans le post sur la [première grande mise à jour de la démo](https://store.steampowered.com/news/app/4429430/view/1844115010502611), Koin Games avait écrit qu'il allait « activer le mode classé avec le début du Steam Next Fest, qui arrivera avec des récompenses classées exclusives ». L'annonce de la Crimson Cup du 24 septembre l'avait répété ([notre article](/fr/news/crimson-cup-format-check-in#demo-playtest)). Le mode classé est finalement arrivé quatre jours avant le festival, avec la [mise à jour 0.7.1 du 15 octobre 2026](/fr/news/demo-patch-notes-0-7-1) (post Steam « Ranked is here! ») : l'échelle s'arrêtait alors au Grandmaster, que Koin promettait d'ouvrir bientôt. Le [Steam Next Fest](https://store.steampowered.com/sale/nextfest) s'est tenu du 19 au 26 octobre 2026 : tout ce qui s'y est passé est dans notre [guide du Steam Next Fest](/fr/guides/steam-next-fest-2026).
 
-Le 24 septembre, l'annonce de la Crimson Cup sur le Discord officiel l'a répété : la démo, qui a la liste de cartes du tournoi, active le mode classé pour le Steam Next Fest, avec de nouvelles récompenses classées ([notre article](/fr/news/crimson-cup-format-check-in#demo-playtest)). Tout le reste sur le festival est dans notre [guide du Steam Next Fest](/fr/guides/steam-next-fest-2026).
+Le 27 octobre 2026, Koin a mis fin à la démo et lancé l'Accès anticipé avec la version 0.8 ([post Steam « Goodbye Demo, Welcome Early Access »](https://store.steampowered.com/news/app/4429430/view/1847286114049982) et patch notes de la 0.8 sur le Discord officiel) : « Your account, collection, progression, and everything else now live in the Early Access version of Origins. » La même mise à jour ouvre la **division Grandmaster**, avec le **classement Grandmaster** mondial, et annonce des récompenses en édition limitée pour les joueurs qui termineront la première saison classée de l'Accès anticipé aux rangs les plus élevés.
 
 ## Ce que nous apprend la ladder du playtest {#ladder-du-playtest}
 
-Le mode classé est actif dans le playtest fermé depuis la mi-août, et trois notes de patch officielles le décrivent :
+Le mode classé a été actif dans le playtest fermé dès la mi-août, et trois notes de patch officielles le décrivaient :
 
 - **Patch 0.6.1, 14 août 2026.** La ladder classée est la grande nouveauté de la mise à jour, et « la division Grandmaster a un classement mondial » ([notes de patch](https://store.steampowered.com/news/app/4429430/view/1840944183780414)). Un bug connu de cette build : l'affichage des VP (Points de Victoire) se dérèglait dès qu'un joueur atteignait Grandmaster.
 - **Patch 0.6.2, 21 août 2026.** La Grandmaster League affiche désormais le rang, les VP et la division corrects de chaque joueur, et les parties en salon ne rapportent plus de VP. Deux bugs connus de cette build : les VP étaient bien gagnés et perdus, mais le +10 et le −10 affichés pendant que le total change avaient temporairement disparu, et à la fin d'une partie en Grandmaster la variation des VP ne s'affichait pas, alors que les points changeaient ([notes de patch](https://store.steampowered.com/news/app/4429430/view/1841579228669961)).
@@ -285,30 +286,30 @@ Mis bout à bout : la ladder est faite de divisions, **Grandmaster est la plus 
 
 ## Mode classé et déblocage des decks {#deblocages}
 
-Dans le playtest fermé, d'après des joueurs sur le forum Steam le 14 septembre 2026, un deck se débloquait après trois victoires en classé plus une victoire contre un boss IA ; un développeur a répondu que l'équipe envisageait de rendre ces parties de déblocage uniquement PvE ([notre article](/fr/news/playtest-feedback-deck-unlock)). Avec la mise à jour de la démo du 21 septembre, Koin a confirmé que chacun conserve la progression de la démo ou du playtest, la plus avancée des deux ([notre article](/fr/news/demo-first-big-update#progression)).
+Dans le playtest fermé, d'après des joueurs sur le forum Steam le 14 septembre 2026, un deck se débloquait après trois victoires en classé plus une victoire contre un boss IA ; un développeur a répondu que l'équipe envisageait de rendre ces parties de déblocage uniquement PvE ([notre article](/fr/news/playtest-feedback-deck-unlock)). Avec la mise à jour de la démo du 21 septembre, Koin a confirmé que chacun conservait la progression de la démo ou du playtest, la plus avancée des deux ([notre article](/fr/news/demo-first-big-update#progression)). Le 27 octobre 2026, avec l'Accès anticipé, le compte, la collection et la progression des joueurs de la démo sont passés dans le jeu.
 
-## Où jouer avant le festival {#avant-le-festival}
+## Où jouer en classé aujourd'hui {#avant-le-festival}
 
-- **La démo** est gratuite sur [Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) et a la liste de cartes de la Crimson Cup ; le mode classé y arrive avec le festival.
-- **Le playtest fermé** a déjà le mode classé. Le post Steam de Koin du 25 août 2026 renvoie au [Discord officiel](https://discord.gg/originstcg) pour les instructions d'accès, et le 24 septembre l'équipe a dit que le playtest recevra des mises à jour que la build du tournoi n'aura pas.
+- **Origins TCG** est gratuit (free-to-play) sur [Steam](https://store.steampowered.com/app/4429430/Origins_TCG/), en Accès anticipé depuis le 27 octobre 2026 : le mode classé y est, avec la division Grandmaster. La démo n'existe plus et peut être désinstallée.
+- Les annonces de Koin, les tournois et les questions à l'équipe passent par le [Discord officiel](https://discord.gg/originstcg).
 - Pour préparer des decks : le [deck builder](/fr/deck-builder) et [tous les decks d'Origins TCG](/fr/decks) publiés par la communauté, chacun avec le code du jeu (KGBLDC…) à coller dans Origins. Les [11 Légendaires](/fr/guides/origins-tcg-legendaries) qui les mènent sont décrites une par une dans notre guide.
-- Si vous préparez la Crimson Cup, qui se joue avec trois decks en Conquest : [comment construire les trois decks](/fr/guides/origins-tcg-conquest).
+- Pour les tournois en Conquest, à trois decks comme la Crimson Cup : [comment construire les trois decks](/fr/guides/origins-tcg-conquest).
 
 ## Ce qu'OriginsMeta fera du mode classé {#originsmeta}
 
-Notre plan au 25 septembre 2026 : la première [tier list](/fr/tier-list) d'OriginsMeta après les finales de la Crimson Cup du 25 octobre, construite sur les résultats du tournoi et sur le sommet de la ladder classée. Jusque-là, la page de la tier list montre les decks de la communauté les mieux notés et les cartes les plus jouées, présentés comme des aperçus.
+Les finales de la Crimson Cup se sont jouées le 25 octobre 2026, et la première [tier list](/fr/tier-list) d'OriginsMeta, construite sur les résultats des tournois et sur le sommet de la ladder classée, est en préparation. Jusque-là, la page de la tier list montre les decks de la communauté les mieux notés et les cartes les plus jouées, présentés comme des aperçus.
 
 ## Ce que nous ne savons pas encore {#inconnues}
 
-- En quoi consistent les « récompenses classées exclusives » et comment on les obtient.
+- En quoi consistent les récompenses en édition limitée de la première saison, et à partir de quel rang on les obtient.
 - Combien il y a de divisions, et leurs noms sous Grandmaster.
-- Si une victoire et une défaite valent toujours +10 et −10 VP, comme dans les notes du playtest, dans chaque division et dans la démo.
-- Si le mode classé a des saisons ou des remises à zéro, et s'il reste actif dans la démo après la fin du festival, le 26 octobre.
-- Si la progression en classé est reportée dans le jeu complet.
+- Si une victoire et une défaite valent toujours +10 et −10 VP, comme dans les notes du playtest, dans chaque division.
+- La date exacte de la fin de la saison 1, prévue « sometime in early December », et ce qui se passe au changement de saison.
+- Si le mode classé changera d'ici la version 1.0, que Koin vise vers le 17 mars 2027 (date indicative de la page Steam).
 
 ## Sources {#sources}
 
-Les posts officiels de Koin Games sur Steam : [patch 0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414) (14 août 2026), [patch 0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) (21 août), [patch 0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184) (27 août), [Big Bob's Playtest Battle](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (25 août) et la [première grande mise à jour de la démo](https://store.steampowered.com/news/app/4429430/view/1844115010502611) (21 septembre) ; l'annonce de la Crimson Cup sur le Discord officiel (24 septembre). Tous lus le 25 septembre 2026.
+Les posts officiels de Koin Games sur Steam : [patch 0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414) (14 août 2026), [patch 0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) (21 août), [patch 0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184) (27 août), [Big Bob's Playtest Battle](https://store.steampowered.com/news/app/4429430/view/1841579228677617) (25 août), la [première grande mise à jour de la démo](https://store.steampowered.com/news/app/4429430/view/1844115010502611) (21 septembre), « Ranked is here! » (15 octobre) et [« Goodbye Demo, Welcome Early Access »](https://store.steampowered.com/news/app/4429430/view/1847286114049982) (27 octobre 2026) ; sur le Discord officiel, l'annonce de la Crimson Cup (24 septembre) et les patch notes de la 0.8 (27 octobre 2026). La page Steam d'Origins TCG a été lue le 28 octobre 2026.
 `,
   },
   "origins-tcg-conquest": {
@@ -353,7 +354,7 @@ Pour la Crimson Cup, les annonces du 9 et du 24 septembre 2026 fixent ces règle
 - listes cachées jusqu'au top 4 : quand vous bannissez un deck de votre adversaire, vous n'en voyez que la Légendaire ;
 - matchs au meilleur des trois manches et grande finale au meilleur des cinq ; au meilleur des cinq, pas de ban, et il faut gagner avec les trois decks.
 
-Le tournoi se joue sur la démo principale, avec sa liste de cartes. Le 29 septembre 2026 est arrivé le [patch 0.7](/fr/news/patch-0-7), que l'équipe appelle le dernier patch d'équilibrage avant le tournoi : Bagheera, Mind Palace et Spellbook coûtent désormais un de plus et Twister Toss a eu un rework, donc une formation construite avant mérite d'être revérifiée.
+La Crimson Cup s'est jouée sur la démo principale, avec sa liste de cartes. Le 29 septembre 2026 était arrivé le [patch 0.7](/fr/news/patch-0-7), que l'équipe appelait le dernier patch d'équilibrage avant le tournoi : Bagheera, Mind Palace et Spellbook coûtent désormais un de plus et Twister Toss a eu un rework, donc une formation construite avant la 0.7 mérite d'être revérifiée. Depuis le 27 octobre 2026, Origins TCG est en Accès anticipé (version 0.8), et ses patch notes ne citent aucun changement de carte.
 
 ## Comment on compte les cartes uniques {#comptage}
 
@@ -381,7 +382,7 @@ Si Koin compte autrement, par exemple exemplaire par exemplaire, les chiffres ch
 
 Le deck builder enregistre les trois decks dans votre navigateur au fil du travail. Les [tournois](/fr/tournaments) créés sur OriginsMeta peuvent aussi utiliser le Conquest, avec 2 à 4 decks par joueur et un minimum choisi par l'organisateur, et le deck builder de chaque tournoi applique ces règles. Les Légendaires parmi lesquelles choisir sont toutes dans [notre guide des 11 Légendaires](/fr/guides/origins-tcg-legendaries).
 
-La Crimson Cup est le tournoi du Steam Next Fest, et le mode classé ouvre dans la démo avec le même festival : tout sur le festival est dans notre [guide du Steam Next Fest](/fr/guides/steam-next-fest-2026), et [ce qui est confirmé sur le mode classé](/fr/guides/origins-tcg-ranked) dans son propre guide.
+La Crimson Cup a été le tournoi du Steam Next Fest (19–26 octobre 2026) : tout sur le festival est dans notre [guide du Steam Next Fest](/fr/guides/steam-next-fest-2026), et [ce qu'il faut savoir sur le mode classé](/fr/guides/origins-tcg-ranked), aujourd'hui dans l'Accès anticipé, dans son propre guide.
 
 ## Des decks de la communauté qui respectent la règle, et deux qui ne la respectent pas {#paires-de-la-communaute}
 
@@ -398,7 +399,7 @@ Quelques paires avec leurs chiffres réels :
 | [Dracula SUPER FUN](/fr/decks/community/dracula-super-fun-d936) + [Qoh](/fr/decks/community/qoh-f876) | Dracula, Queen of Hearts | aucune | 13 | oui |
 | [3 Pigs Mid Range](/fr/decks/community/3-pigs-mid-range-6311) + [Healing Healsing](/fr/decks/community/healing-healsing-9411) | Three Not So Little Pigs, Van Helsing | 1 : Ali Baba | 12 | oui |
 | [Dorothy Combo](/fr/decks/community/dorothy-combo-7503) + [On Reveal Mid Range](/fr/decks/community/on-reveal-mid-range-772e) | Dorothy, Mulan | 1 : En Passant | 12 | oui |
-| [Spellcast](/fr/decks/community/spellcast-250f) + [The Trick-or-Treat Legion](/fr/decks/community/the-trick-or-treat-legion-72c4) | Merlin, Legion of the Dead | 2 : Golden Egg, Impundulu | 11 | oui |
+| Spellcast + [The Trick-or-Treat Legion](/fr/decks/community/the-trick-or-treat-legion-72c4) | Merlin, Legion of the Dead | 2 : Golden Egg, Impundulu | 11 | oui |
 | [King of Value Trade](/fr/decks/community/king-of-value-trade-fd14) + [Healing Healsing](/fr/decks/community/healing-healsing-9411) | King Arthur, Van Helsing | 4 : Shahrazad, Ali Baba, Boitata, Spellbook | 9 | oui |
 | [Qoh](/fr/decks/community/qoh-f876) + [Value Board](/fr/decks/community/value-board-c44a) | Queen of Hearts, Three Not So Little Pigs | 5 : Bagheera, Baby Bear, Mind Palace, Ellen Trechend, Cockatrice | 8 | oui, à la limite |
 | [Buff](/fr/decks/community/buff-6f60) + [FACE IS THE PLACE](/fr/decks/community/face-is-the-place-b049) | Robin Hood, Legion of the Dead | 6 | 7 | non |
@@ -407,11 +408,11 @@ Neuf paires sont exactement à 8 :
 
 - [3 Pigs Mid Range](/fr/decks/community/3-pigs-mid-range-6311) + [On Reveal Mid Range](/fr/decks/community/on-reveal-mid-range-772e)
 - [AGGRO /MIDRANGE PIGS GM](/fr/decks/community/aggro-midrange-pigs-gm-6931) + [FACE IS THE PLACE](/fr/decks/community/face-is-the-place-b049)
-- [CONTROL](/fr/decks/community/control-2c2b) + [Spellcast](/fr/decks/community/spellcast-250f)
+- [CONTROL](/fr/decks/community/control-2c2b) + Spellcast
 - [Cure Control](/fr/decks/community/cure-control-b630) + [Glinda Reborn](/fr/decks/community/glinda-reborn-2d6d)
-- [Cure Control](/fr/decks/community/cure-control-b630) + [Spellcast](/fr/decks/community/spellcast-250f)
+- [Cure Control](/fr/decks/community/cure-control-b630) + Spellcast
 - [FACE IS THE PLACE](/fr/decks/community/face-is-the-place-b049) + [Glinda Reborn](/fr/decks/community/glinda-reborn-2d6d)
-- [Healing Healsing](/fr/decks/community/healing-healsing-9411) + [Spellcast](/fr/decks/community/spellcast-250f)
+- [Healing Healsing](/fr/decks/community/healing-healsing-9411) + Spellcast
 - [Qoh](/fr/decks/community/qoh-f876) + [Value Board](/fr/decks/community/value-board-c44a)
 - [Qoh](/fr/decks/community/qoh-f876) + [VALUE MAXXING](/fr/decks/community/value-maxxing-739d)
 
@@ -437,7 +438,7 @@ Les posts de Koin Games sur Steam du [25 août](https://store.steampowered.com/n
     faq: [
       {
         q: "Combien y a-t-il de lieux dans Origins TCG ?",
-        a: "La Demo 2.0 en fait tourner 44. La page Steam officielle dit que le jeu complet puise dans une réserve de plus de cent lieux.",
+        a: "Nous en avons enregistré 44 jusqu'ici, pas encore vérifiés un par un dans le jeu. La page Steam officielle dit que le jeu puise dans une réserve de plus de cent lieux.",
       },
       {
         q: "Quand voit-on les lieux d'une partie ?",
@@ -457,7 +458,7 @@ Les posts de Koin Games sur Steam du [25 août](https://store.steampowered.com/n
 
 Origins TCG se joue sur **trois lieux**, et chacun porte une règle qui s'applique à cette ligne pendant toute la partie. C'est la partie du jeu qu'une liste de deck ne peut pas contrôler : deux joueurs peuvent s'asseoir avec les mêmes vingt-cinq cartes et vivre deux parties complètement différentes, parce qu'un plateau double les dégâts et que l'autre fait tout coûter un de moins.
 
-La Demo 2.0 fait tourner **44 lieux**. La [page Steam officielle](https://store.steampowered.com/app/4429430/Origins_TCG/) dit que le jeu complet puisera « from a pool of 100+ rotating locations that reshape the board and demand a unique strategy ». La liste complète avec chaque effet est sur la [page des lieux](/fr/locations), avec recherche et filtres ; ce guide explique quoi en faire.
+Nous avons enregistré **44 lieux** jusqu'ici. La [page Steam officielle](https://store.steampowered.com/app/4429430/Origins_TCG/) dit que le jeu puise « from a pool of 100+ rotating locations that reshape the board and demand a unique strategy ». La liste complète avec chaque effet est sur la [page des lieux](/fr/locations), avec recherche et filtres ; ce guide explique quoi en faire.
 
 ## Comment ils arrivent
 
@@ -504,12 +505,12 @@ Vous ne pouvez pas choisir le plateau, mais vous pouvez construire un deck qui y
 
 ## Ce qu'il nous reste à vérifier
 
-Cette liste correspond à la rotation de la Demo 2.0. Nous n'avons pas encore passé les lieux un par un dans le jeu, comme nous l'avons fait avec les 122 cartes le 22 septembre 2026 : quand ce sera fait, la [page des lieux](/fr/locations) le dira, avec la date et le décompte.
+Cette liste rassemble les 44 lieux enregistrés jusqu'ici. Nous n'avons pas encore passé les lieux un par un dans le jeu, comme nous l'avons fait avec les 122 cartes le 22 septembre 2026 : quand ce sera fait, la [page des lieux](/fr/locations) le dira, avec la date et le décompte.
 `,
   },
   "origins-tcg-explained": {
     title: "Origins TCG expliqué en cinq minutes",
-    excerpt: "Ce qu'est Origins TCG, comment se joue une partie sur trois lignes à tours simultanés, ce que signifie free-to-compete et comment tester la démo aujourd'hui.",
+    excerpt: "Ce qu'est Origins TCG, comment se joue une partie sur trois lignes à tours simultanés, ce que signifie free-to-compete et comment y jouer sur Steam.",
     faq: [
       {
         q: "Qu'est-ce qu'Origins TCG ?",
@@ -521,11 +522,11 @@ Cette liste correspond à la rotation de la Demo 2.0. Nous n'avons pas encore pa
       },
       {
         q: "Combien de cartes y a-t-il dans un deck ?",
-        a: "Vingt-cinq dans la démo actuelle, construites autour d'une Légendaire dotée d'une capacité signature. Mulan répète les capacités À la révélation de vos alliés, la Queen of Hearts répète leurs capacités À la mort.",
+        a: "Vingt-cinq, construites autour d'une Légendaire dotée d'une capacité signature. Mulan répète les capacités À la révélation de vos alliés, la Queen of Hearts répète leurs capacités À la mort.",
       },
       {
         q: "Peut-on jouer gratuitement à Origins TCG ?",
-        a: "Oui. La démo sur Steam est gratuite et comprend le tutoriel, des missions contre des boss dotés de leur propre IA et le jeu en ligne. Chaque carte nécessaire pour jouer en compétition se gagne en jouant ; l'argent n'achète que des versions de collection des cartes.",
+        a: "Oui. Origins TCG est gratuit (free-to-play) sur Steam, en Accès anticipé depuis le 27 octobre 2026, avec le tutoriel et le jeu en ligne. Chaque carte nécessaire pour jouer en compétition se gagne en jouant ; l'argent n'achète que des versions de collection des cartes.",
       },
     ],
     body: `
@@ -540,22 +541,22 @@ La promesse, c'est le **free-to-compete** : chaque carte nécessaire pour jouer
 - **Trois lignes.** Vous et votre adversaire combattez sur trois plateaux à la fois. Chaque ligne a son propre lieu, tiré d'une réserve de plus d'une centaine qui tournent et changent les règles de ce plateau.
 - **Tours simultanés.** Les deux joueurs agissent en même temps, donc pas d'attente. Une partie dure environ sept minutes.
 - **Les cartes attaquent.** Contrairement aux jeux de pur « comptage de lignes », les unités se battent entre elles : la Puissance est ce que vous infligez, la Santé ce que vous encaissez.
-- **Mots-clés.** La démo utilise, entre autres, À la révélation (On Reveal), qui se produit quand la carte est jouée, À la mort (On Death), Première frappe (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch).
-- **Une Légendaire mène le deck.** Dans la démo actuelle, les decks font 25 cartes et chacun est construit autour d'une carte Légendaire dotée d'une capacité signature : Mulan répète les capacités À la révélation de vos alliés, la Queen of Hearts répète leurs capacités À la mort. La Demo 2.0 en compte onze : [les 11 Légendaires, carte par carte](/fr/guides/origins-tcg-legendaries).
+- **Mots-clés.** Le jeu utilise, entre autres, À la révélation (On Reveal), qui se produit quand la carte est jouée, À la mort (On Death), Première frappe (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch).
+- **Une Légendaire mène le deck.** Les decks font 25 cartes et chacun est construit autour d'une carte Légendaire dotée d'une capacité signature : Mulan répète les capacités À la révélation de vos alliés, la Queen of Hearts répète leurs capacités À la mort. Le jeu en compte onze : [les 11 Légendaires, carte par carte](/fr/guides/origins-tcg-legendaries).
 
 ## Modes
 
-La démo a un tutoriel, des missions contre des boss dotés de leur propre IA et le jeu en ligne. Le patch 0.6.1 a ajouté une **ladder classée** avec des divisions jusqu'à Grandmaster, un classement mondial et des Points de Victoire. Elle s'active dans la démo avec le Steam Next Fest : ce qui est confirmé jusqu'ici est dans notre [guide du mode classé d'Origins TCG](/fr/guides/origins-tcg-ranked).
+Pendant la démo, le jeu avait un tutoriel, des missions contre des boss dotés de leur propre IA et le jeu en ligne. Le patch 0.6.1 du playtest a ajouté une **ladder classée** avec des divisions jusqu'à Grandmaster, un classement mondial et des Points de Victoire ; elle a ouvert dans la démo le 15 octobre 2026, et depuis la 0.8 du 27 octobre, en Accès anticipé, la division Grandmaster est ouverte avec son classement mondial. Tout est dans notre [guide du mode classé d'Origins TCG](/fr/guides/origins-tcg-ranked).
 
 ## Comment jouer aujourd'hui
 
-1. Installez la démo gratuite depuis la [page Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/). Les joueurs de la démo gagnent des objets de collection exclusifs qui seront échangeables au lancement du jeu complet.
-2. Rejoignez le [Discord officiel](https://discord.gg/originstcg) pour les tournois, les AMA avec l'équipe et les playtests des prochaines builds.
+1. Installez Origins TCG gratuitement depuis la [page Steam](https://store.steampowered.com/app/4429430/Origins_TCG/) : le jeu est free-to-play, en Accès anticipé depuis le 27 octobre 2026. Si vous avez joué à la démo, votre compte, votre collection et votre progression sont passés dans l'Accès anticipé, et la démo peut être désinstallée.
+2. Rejoignez le [Discord officiel](https://discord.gg/originstcg) pour les annonces, les tournois et les AMA avec l'équipe.
 3. Depuis le [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026, le jeu prend en charge 13 langues : anglais, français, italien, allemand, espagnol (Espagne), japonais, coréen, polonais, portugais (Brésil), portugais (Portugal), russe, chinois simplifié et espagnol (Amérique latine). La page Steam, lue le 30 septembre 2026, liste les mêmes 13 pour l'interface, avec l'audio complet en anglais seulement. Le mobile est prévu pour 2027.
 
 ## Où va le jeu
 
-La page Steam indique la sortie pour le quatrième trimestre 2026, sans date plus précise. La démo a reçu sa première grande mise à jour le 21 septembre 2026 et le patch 0.7, le dernier patch d'équilibrage avant le tournoi, le 29 septembre ; le mode classé s'active avec le Steam Next Fest (19–26 octobre 2026) et le plus grand tournoi du studio à ce jour, la Crimson Cup, se joue du 20 au 25 octobre. Le 25 septembre, le menu principal de la démo affichait le Kickstarter comme « Coming soon – Oct 27 ». Voir la [roadmap](/fr/guides/roadmap-and-dates) et notre [guide du Kickstarter](/fr/guides/origins-tcg-kickstarter).
+Origins TCG est en Accès anticipé sur Steam depuis le 27 octobre 2026, avec la version 0.8, et Koin vise la version 1.0 vers le 17 mars 2027, d'après la page Steam : une date indicative, qui peut changer. Avant, la démo avait reçu sa première grande mise à jour le 21 septembre 2026 et le patch 0.7 le 29 septembre ; le mode classé y a ouvert le 15 octobre, et la Crimson Cup, le plus grand tournoi du studio à ce jour, s'est jouée pendant le Steam Next Fest (19–26 octobre). Le Kickstarter de l'Alpha Edition est ouvert depuis le 27 octobre 2026. Voir la [roadmap](/fr/guides/roadmap-and-dates) et notre [guide du Kickstarter](/fr/guides/origins-tcg-kickstarter).
 `,
   },
   "on-reveal-midrange-guide": {
@@ -589,7 +590,7 @@ La page Steam indique la sortie pour le quatrième trimestre 2026, sans date plu
 
 ## La liste
 
-Vingt-cinq cartes : la Légendaire plus douze cartes jouées en deux exemplaires chacune. Les statistiques sont celles de la Demo 2.0, [vérifiées carte par carte dans le jeu](/fr/deck-builder) le 22 septembre 2026, avec le nouveau coût de Bagheera du [patch 0.7](/fr/news/patch-0-7) du 29 septembre.
+Vingt-cinq cartes : la Légendaire plus douze cartes jouées en deux exemplaires chacune. Les statistiques ont été [vérifiées carte par carte dans le jeu](/fr/deck-builder) le 22 septembre 2026, avec le nouveau coût de Bagheera du [patch 0.7](/fr/news/patch-0-7) du 29 septembre ; les patch notes de la 0.8 (27 octobre 2026) ne citent aucun changement de carte.
 
 | Carte | Coût | Ce qu'elle fait |
 | --- | --- | --- |
@@ -649,7 +650,7 @@ La page du deck en liste deux : **une bonne courbe est souvent essentielle** et
 ## Pour aller plus loin
 
 - La [page du deck](/fr/decks/community/on-reveal-mid-range-772e) a la liste avec les graphiques de courbe de mana et de sagas, les notes de l'auteur, « Ouvrir dans le Deck builder » et le code du jeu à coller dans Origins.
-- Les statistiques des cartes sont celles de la Demo 2.0 avec le [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Bagheera d'un à deux mana ; chaque page de carte a son propre historique d'équilibrage.
+- Les statistiques des cartes sont celles du [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Bagheera d'un à deux mana ; chaque page de carte a son propre historique d'équilibrage.
 `,
   },
   "king-of-value-trade-guide": {
@@ -744,7 +745,7 @@ La page du deck en liste trois : **aucune élimination de zone**, **Dark Omen d
 ## Pour aller plus loin
 
 - La [page du deck](/fr/decks/community/king-of-value-trade-fd14) a la liste complète avec les graphiques, les notes de l'auteur, « Ouvrir dans le Deck builder » et le code du jeu (KGBLDC…).
-- Les statistiques des cartes sont celles de la Demo 2.0 avec le [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Bagheera à deux mana et Spellbook à quatre ; les sorts que Spellbook ajoute ne peuvent plus être Spellbook.
+- Les statistiques des cartes sont celles du [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Bagheera à deux mana et Spellbook à quatre ; les sorts que Spellbook ajoute ne peuvent plus être Spellbook.
 `,
   },
   "dorothy-combo-guide": {
@@ -835,7 +836,7 @@ Les données du mode classé ne sont pas publiques : ceci est une lecture des l
 
 - La [page du deck](/fr/decks/community/dorothy-combo-7503) a la liste complète, les graphiques, les notes de l'auteur, « Ouvrir dans le Deck builder » et le code du jeu.
 - Les buffs derrière cette liste sont dans les [notes de patch du 21 septembre](/fr/news/demo-patch-notes-0921) ; MetaShifting suit chaque changement sur [sa propre page](/fr/metashifting).
-- Les statistiques des cartes sont celles de la Demo 2.0 avec le [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Spellbook de trois à quatre mana et a retravaillé Twister Toss. Le tableau décrit Twister Toss d'après les notes de patch : nous n'avons pas encore lu son nouveau texte dans le jeu.
+- Les statistiques des cartes sont celles du [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Spellbook de trois à quatre mana et a retravaillé Twister Toss. Le tableau décrit Twister Toss d'après les notes de patch : nous n'avons pas encore lu son nouveau texte dans le jeu.
 `,
   },
   "trick-or-treat-legion-guide": {
@@ -936,7 +937,7 @@ Deux, d'après la page du deck : **Mind Palace est très important, pour ne pas
 ## Pour aller plus loin
 
 - La [page du deck](/fr/decks/community/the-trick-or-treat-legion-72c4) a la liste avec les graphiques, les notes de l'auteur, « Ouvrir dans le Deck builder » et le code du jeu (KGBLDC…).
-- Les statistiques des cartes sont celles de la Demo 2.0 avec le [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Bagheera d'un à deux mana et Mind Palace de deux à trois.
+- Les statistiques des cartes sont celles du [patch 0.7 du 29 septembre 2026](/fr/news/patch-0-7), qui a fait passer Bagheera d'un à deux mana et Mind Palace de deux à trois.
 `,
   },
   "three-pigs-midrange-guide": {
@@ -1018,7 +1019,7 @@ La page du deck est claire sur la principale faiblesse : « sortir de la courb
 
 - La [page du deck](/fr/decks/community/3-pigs-mid-range-6311) a la liste avec les graphiques de courbe de mana, de sagas et de mots-clés, les notes de l'auteur, le bouton « Ouvrir dans le Deck builder » vers le [Deck builder](/fr/deck-builder) et le code du jeu (KGBLDC…) à coller dans Origins.
 - [Matchups, interactions clés et Conquest](/fr/guides/three-pigs-midrange-matchups) est la seconde partie de ce guide.
-- Les statistiques des cartes sont celles du patch de la démo du 21 septembre 2026, vérifiées dans le jeu le 22 septembre, avec les changements du [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026 : Bagheera coûte désormais deux mana et Mind Palace trois. Plusieurs cartes de cette liste ont été retouchées dans les patchs 0.6.2 et 0.6.3, et le 21 septembre Frog Prince a cessé d'effacer les buffs déjà présents : consultez l'historique d'équilibrage sur la page de chaque carte.
+- Les statistiques des cartes ont été vérifiées dans le jeu le 22 septembre 2026, avec par-dessus les changements du [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026 : Bagheera coûte désormais deux mana et Mind Palace trois. Plusieurs cartes de cette liste ont été retouchées dans les patchs 0.6.2 et 0.6.3, et le 21 septembre Frog Prince a cessé d'effacer les buffs déjà présents : consultez l'historique d'équilibrage sur la page de chaque carte.
 `,
   },
   "three-pigs-midrange-matchups": {
@@ -1164,7 +1165,7 @@ Gardez **Ali Baba, Baby Bear, Scarecrow, Van Helsing et Spellbook**. Contre les 
 
 - La [page du deck](/fr/decks/community/healing-healsing-9411) a la liste avec les graphiques de courbe de mana et de mots-clés, les notes de l'auteur, le bouton « Ouvrir dans le Deck builder » vers le [Deck builder](/fr/deck-builder) et le code du jeu (KGBLDC…) à coller dans Origins.
 - [Matchups, interactions clés et erreurs à éviter](/fr/guides/healing-healsing-matchups) est la seconde partie de ce guide.
-- Les statistiques des cartes sont celles du patch de la démo du 21 septembre 2026, vérifiées dans le jeu le 22 septembre, avec les changements du [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026 : Spellbook coûte désormais quatre mana, et les sorts qu'il ajoute ne peuvent plus être Spellbook. Scarecrow, Van Helsing's Tools et d'autres cartes de cette liste ont changé dans les patchs 0.6.2 et 0.6.3, et depuis le 21 septembre Wooden Stake peut aussi cibler des personnages à pleine Santé : voir l'historique d'équilibrage sur la page de chaque carte.
+- Les statistiques des cartes ont été vérifiées dans le jeu le 22 septembre 2026, avec par-dessus les changements du [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026 : Spellbook coûte désormais quatre mana, et les sorts qu'il ajoute ne peuvent plus être Spellbook. Scarecrow, Van Helsing's Tools et d'autres cartes de cette liste ont changé dans les patchs 0.6.2 et 0.6.3, et depuis le 21 septembre Wooden Stake peut aussi cibler des personnages à pleine Santé : voir l'historique d'équilibrage sur la page de chaque carte.
 `,
   },
   "healing-healsing-matchups": {
@@ -1223,25 +1224,25 @@ Le deck n'est étiqueté que pour le ladder, mais il s'intègre dans une sélect
 `,
   },
   "roadmap-and-dates": {
-    title: "Roadmap et dates : de la démo au lancement",
+    title: "Roadmap et dates : de Project O à la version 1.0",
     metaTitle: "Origins TCG : roadmap et dates de sortie",
-    excerpt: "Toutes les dates confirmées d'Origins TCG, du premier post Steam à la mise à jour Demo 2.0 et à la Crimson Cup du Next Fest, plus ce qui est prévu pour 2027.",
+    excerpt: "Toutes les dates confirmées d'Origins TCG, du premier post Steam à l'Accès anticipé du 27 octobre 2026, avec la version 1.0 prévue vers mars 2027.",
     faq: [
       {
-        q: "Quand Origins TCG sort-il sur Steam ?",
-        a: "La page de la boutique Steam indique la sortie pour le quatrième trimestre 2026, sans date plus précise. La démo a reçu sa première grosse mise à jour le 21 septembre 2026, et le mode classé s'active avec le Steam Next Fest, du 19 au 26 octobre 2026.",
+        q: "Quand Origins TCG est-il sorti sur Steam ?",
+        a: "Le 27 octobre 2026, en Accès anticipé, avec la version 0.8 : le jeu est gratuit (free-to-play). Koin vise la sortie de l'Accès anticipé et la version 1.0 vers le 17 mars 2027, d'après la page Steam : une date indicative, qui peut changer.",
       },
       {
-        q: "Quand a lieu la Crimson Cup ?",
-        a: "Du 19 au 25 octobre 2026, pendant le Steam Next Fest : cinq qualifications régionales du 19 au 22, puis playoffs le 24 et finales le 25. Les prix valent 10 000 dollars et comprennent une carte promo 1/1 exclusive.",
+        q: "Quand a eu lieu la Crimson Cup ?",
+        a: "Du 19 au 25 octobre 2026, pendant le Steam Next Fest : cinq qualifications régionales du 19 au 22, puis playoffs le 24 et finales le 25, remportées par CoachCrono. Les prix valaient 10 000 dollars et comprenaient une carte promo 1/1 exclusive.",
       },
       {
         q: "Existe-t-il une version mobile d'Origins TCG ?",
         a: "Pas encore. La version mobile et l'ouverture de boosters sur téléphone sont annoncées pour 2027. Le jeu a connu un soft launch sur l'App Store dans certaines régions en novembre 2025, avant que le studio ne déplace l'échange de cartes sur Steam.",
       },
       {
-        q: "Quand la démo gratuite est-elle sortie ?",
-        a: "Les 15 et 16 juillet 2026, sur Steam, avec des objets de collection exclusifs pour les joueurs de la démo. Le ladder classé est arrivé plus tard, avec le patch 0.6.1 du 14 août 2026.",
+        q: "Combien de temps la démo gratuite a-t-elle duré ?",
+        a: "Du 15 juillet au 27 octobre 2026 : sortie sur Steam les 15 et 16 juillet, elle a pris fin avec l'arrivée de l'Accès anticipé. Le compte, la collection et la progression de ses joueurs sont passés dans l'Accès anticipé, et la démo peut être désinstallée.",
       },
     ],
     body: `
@@ -1275,16 +1276,20 @@ Le deck n'est étiqueté que pour le ladder, mais il s'intègre dans une sélect
 | 21 septembre | [Première grosse mise à jour de la démo](https://store.steampowered.com/news/app/4429430/view/1844115010502611) : nouvelle interface et nouveau plateau, tutoriel pour collectionneurs, boosters d'essai, changements d'équilibrage, liste provisoire des cartes de la Crimson Cup |
 | 24 septembre | [Règles de la Crimson Cup](/fr/news/crimson-cup-format-check-in) : Conquest à trois decks, check-in |
 | 29 septembre | [Patch 0.7](/fr/news/patch-0-7), le dernier patch d'équilibrage avant la Crimson Cup : rework de Twister Toss, Bagheera, Mind Palace et Spellbook coûtent un de plus, les lieux ont une rareté, 13 langues |
+| 15 octobre | [Mise à jour 0.7.1 de la démo](/fr/news/demo-patch-notes-0-7-1) : le mode classé ouvre (post Steam « Ranked is here! ») |
+| 19–26 octobre | Steam Next Fest : plus de 20 000 listes de souhaits, 30 000 téléchargements de la démo, plus de 300 personnes qui ont streamé le jeu (post Steam du 27 octobre) |
+| 19–25 octobre | [Crimson Cup](/fr/news/crimson-cup-coachcrono-wins) : cinq qualifications régionales, playoffs le 24, finales le 25 gagnées par CoachCrono ; pic de plus de 5 000 spectateurs |
+| 27 octobre | [Le Kickstarter de l'Alpha Edition ouvre](/fr/guides/origins-tcg-kickstarter) : Alpha Set « Myths & Legends », 218 cartes |
+| 27 octobre | [Fin de la démo, Origins TCG en Accès anticipé](https://store.steampowered.com/news/app/4429430/view/1847286114049982), version 0.8 : division Grandmaster ouverte avec son classement mondial, grade des cartes de 1 à 10 visible, cartes de collection sur le Marché de la communauté Steam |
 
 ## Ce qui vient ensuite
 
-- **19–26 octobre 2026.** Steam Next Fest : le mode classé s'active dans la démo, avec des récompenses classées exclusives.
-- **19–25 octobre 2026.** La Crimson Cup, le tournoi du Steam Next Fest : cinq qualifications régionales du 19 au 22, puis playoffs et finales. Des prix d'une valeur de 10 000 dollars, dont une carte promo 1/1 exclusive.
-- **27 octobre 2026.** Le Kickstarter de l'Alpha Edition, annoncé par le CEO de Koin Games le 17 septembre ; le menu principal de la démo l'affiche aussi comme « Coming soon – Oct 27 ». Tout ce qu'il faut savoir dans notre [guide du Kickstarter](/fr/guides/origins-tcg-kickstarter).
-- **Quatrième trimestre 2026.** Sortie sur Steam, selon la page de la boutique, qui ne donne pas de date plus précise.
+- **Début décembre 2026.** Fin prévue de la première saison classée de l'Accès anticipé (« sometime in early December », un plan qui peut changer), avec des récompenses en édition limitée pour les rangs les plus élevés : voir notre [guide du mode classé](/fr/guides/origins-tcg-ranked).
+- **Pendant l'Accès anticipé.** Koin publiera progressivement les 218 cartes de l'Alpha Set « Myths & Legends », l'exclusivité du Kickstarter, d'après le post Steam du 27 octobre 2026.
+- **Vers le 17 mars 2027.** Sortie de l'Accès anticipé et version 1.0, d'après la page Steam : une date indicative, qui peut changer. Le jeu restera free-to-play et free-to-compete, pendant l'Accès anticipé et après.
 - **2027.** Version mobile et ouverture de boosters sur téléphone. Dans les AMA, l'équipe a décrit un lancement complet avec l'ensemble des Légendaires, dont King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein et Sherlock Holmes.
 
-Les dates viennent des posts officiels sur Steam, du Discord du studio et, pour le Kickstarter, du post du CEO de Koin Games et du menu de la démo. Nous mettons cette page à jour quand elles changent.
+Les dates viennent des posts officiels sur Steam, de la page Steam du jeu (lue le 28 octobre 2026), du Discord du studio et, pour la date du Kickstarter, du post du CEO de Koin Games. Nous mettons cette page à jour quand elles changent.
 `,
   },
   "collector-economy": {
@@ -1302,7 +1307,7 @@ Les dates viennent des posts officiels sur Steam, du Discord du studio et, pour 
       },
       {
         q: "Où peut-on échanger les cartes d'Origins ?",
-        a: "Sur le Marché de la communauté Steam et les places de marché connectées, une fois le jeu complet sorti. Les objets de collection que vous gagnez aujourd'hui dans la démo deviendront échangeables à ce moment-là.",
+        a: "Sur le Marché de la communauté Steam : depuis la 0.8 du 27 octobre 2026, en Accès anticipé, les cartes de collection s'y achètent, s'y vendent et s'y mettent en vente. Les cartes de jeu de départ restent à vous pour toujours, et les cosmétiques de collection qui ne sont pas des cartes ne sont pas encore échangeables : ils le seront avec une mise à jour future.",
       },
       {
         q: "Qu'est-ce qu'un God pack ?",
@@ -1321,10 +1326,10 @@ Les écrans de chargement du studio parlent eux-mêmes de « real collecting in
 
 ## Ce qui est confirmé
 
-- **Cartes gradées.** Les versions de collection portent un grade ; à la Card Party de juillet, l'équipe a remis un Slab à quiconque tirait une **Alternate Art 10/10**. Des grades plus bas et des séries différentes existent et valent des montants différents.
+- **Cartes gradées.** Les versions de collection portent un grade ; à la Card Party de juillet, l'équipe a remis un Slab à quiconque tirait une **Alternate Art 10/10**. Depuis la 0.8 du 27 octobre 2026, le grade, de 1 à 10, s'affiche sur la carte : un premier jet, « very much a first pass » d'après Koin. Des grades plus bas et des séries différentes existent et valent des montants différents.
 - **God packs.** Des boosters rares dans lesquels chaque carte est Légendaire ou mieux.
 - **Alpha Edition.** La première édition de collection, « Myths & Legends: Alpha Edition », est vendue uniquement en précommande : boosters de cinq cartes, boîtes de 24 boosters et cases de six boîtes, avec sept niveaux de rareté, de la Collectible Card (dans chaque booster) à la Storybook (1 booster sur 1 200), selon la [page officielle de préinscription](https://founder.origins-tcg.com). Une fois le tirage terminé, plus aucune boîte Alpha n'est produite. Le set Alpha a été l'un des sujets de l'AMA sur le Kickstarter du 10 septembre 2026 sur le Discord officiel.
-- **Échanges sur Steam.** Les cartes et les produits scellés s'échangeront sur le Marché de la communauté Steam et les places de marché connectées une fois le jeu complet sorti. Les objets de collection de la démo gagnés aujourd'hui deviendront échangeables à ce moment-là.
+- **Échanges sur Steam.** Depuis la 0.8 du 27 octobre 2026, en Accès anticipé, les cartes de collection s'achètent, se vendent et se mettent en vente sur le Marché de la communauté Steam. Les cartes de jeu de départ restent à vous pour toujours ; les cosmétiques de collection qui ne sont pas des cartes ne sont pas encore échangeables, ils le seront avec une mise à jour future. La collection gagnée pendant la démo est passée dans l'Accès anticipé avec le reste du compte.
 - **Mobile plus tard.** L'ouverture de boosters sur téléphone est prévue pour 2027.
 
 ## Ce qui n'est pas encore confirmé
@@ -1335,73 +1340,75 @@ Les écrans de chargement du studio parlent eux-mêmes de « real collecting in
 
 ## Pourquoi c'est important pour la meta
 
-Comme les cartes de collection sont cosmétiques, une tier list n'a à se soucier que de la carte elle-même, jamais de la version. OriginsMeta suivra les prix du Marché Steam dès le premier jour où des objets seront mis en vente, pour que la collection ait les mêmes données que le jeu.
+Comme les cartes de collection sont cosmétiques, une tier list n'a à se soucier que de la carte elle-même, jamais de la version. OriginsMeta prépare un suivi des prix du Marché Steam, pour que la collection ait les mêmes données que le jeu.
 `,
   },
   "steam-next-fest-2026": {
-    title: "Origins TCG au Steam Next Fest 2026 : Demo 2.0, dates et tournoi",
-    metaTitle: "Origins TCG au Steam Next Fest 2026 : dates",
-    excerpt: "Origins TCG au Steam Next Fest, du 19 au 26 octobre 2026 : le mode classé dans la démo, la Crimson Cup du 19 au 25 octobre, les prix et comment s'inscrire.",
+    title: "Origins TCG au Steam Next Fest 2026 : dates, tournoi et chiffres",
+    metaTitle: "Origins TCG au Steam Next Fest 2026 : dates et bilan",
+    excerpt: "Origins TCG au Steam Next Fest, du 19 au 26 octobre 2026 : le mode classé, la Crimson Cup gagnée par CoachCrono, les chiffres officiels et l'Accès anticipé.",
     faq: [
       {
-        q: "Quand a lieu le Steam Next Fest d'octobre 2026 ?",
-        a: "Du lundi 19 octobre à 10:00, heure du Pacifique (13:00 heure de l'Est, 18:00 au Royaume-Uni, 19:00 en Europe centrale), au lundi 26 octobre 2026. Origins TCG y participe avec sa démo gratuite, mise à jour les 21 et 29 septembre, et le mode classé s'active avec le festival.",
+        q: "Quand a eu lieu le Steam Next Fest d'octobre 2026 ?",
+        a: "Du lundi 19 octobre à 10:00, heure du Pacifique (13:00 heure de l'Est, 18:00 au Royaume-Uni, 19:00 en Europe centrale), au lundi 26 octobre 2026. Origins TCG y a participé avec sa démo gratuite, où le mode classé avait ouvert le 15 octobre. Le lendemain, 27 octobre, la démo a pris fin et le jeu est passé en Accès anticipé sur Steam.",
       },
       {
-        q: "Quand a lieu le tournoi d'Origins TCG ?",
-        a: "Du 19 au 25 octobre 2026 : cinq qualifications de 512 places entre le 19 et le 22 (deux AMER, deux EMEA, une APAC), puis playoffs le 24 et finales le 25.",
+        q: "Quand a eu lieu le tournoi d'Origins TCG ?",
+        a: "Du 19 au 25 octobre 2026 : cinq qualifications de 512 places entre le 19 et le 22 (deux AMER, deux EMEA, une APAC), puis playoffs le 24 et finales le 25, remportées par CoachCrono.",
       },
       {
-        q: "Puis-je participer à une qualification depuis l'Europe ?",
-        a: "Oui. Koin Games dit que vous pouvez rejoindre n'importe laquelle des qualifications, où que vous habitiez, mais demande de ne vous inscrire qu'à celles auxquelles vous pouvez vraiment participer.",
+        q: "Pouvait-on participer à une qualification depuis l'Europe ?",
+        a: "Oui. Koin Games disait que vous pouviez rejoindre n'importe laquelle des qualifications, où que vous habitiez, mais demandait de ne vous inscrire qu'à celles auxquelles vous pouviez vraiment participer.",
       },
       {
-        q: "Est-ce payant ?",
-        a: "Non. La démo est gratuite sur Steam et l'inscription au tournoi se fait sur le Discord officiel. Origins TCG est free-to-compete : chaque carte compétitive se gagne en jouant.",
+        q: "Fallait-il payer ?",
+        a: "Non. La démo était gratuite sur Steam et l'inscription au tournoi se faisait sur le Discord officiel. Aujourd'hui, Origins TCG est free-to-play sur Steam en Accès anticipé, et il reste free-to-compete : chaque carte compétitive se gagne en jouant.",
       },
       {
         q: "Qu'est-ce que le format Conquest ?",
-        a: "À la Crimson Cup, chaque joueur soumet trois decks, avec au moins 8 cartes uniques entre deux d'entre eux. Les listes restent cachées jusqu'au top 4 : quand vous bannissez un des decks de votre adversaire, vous n'en voyez que la Légendaire. Dans les matchs au meilleur des cinq manches, il n'y a pas de ban et vous devez gagner avec les trois decks. Koin Games a testé le format pour la première fois à Big Bob's Playtest Battle, le 28 août.",
+        a: "À la Crimson Cup, chaque joueur soumettait trois decks, avec au moins 8 cartes uniques entre deux d'entre eux. Les listes restaient cachées jusqu'au top 4 : quand vous bannissiez un des decks de votre adversaire, vous n'en voyiez que la Légendaire. Dans les matchs au meilleur des cinq manches, il n'y avait pas de ban et il fallait gagner avec les trois decks. Koin Games avait testé le format pour la première fois à Big Bob's Playtest Battle, le 28 août.",
       },
     ],
     body: `
-## Les deux dates à retenir
+## Les dates et les chiffres
 
-- **Steam Next Fest, édition d'octobre 2026 : 19–26 octobre.** Le [festival de démos jouables de Valve](https://store.steampowered.com/sale/nextfest) va du lundi 19 octobre à 10:00, heure du Pacifique (13:00 heure de l'Est, 18:00 au Royaume-Uni, 19:00 en Europe centrale), au lundi 26 octobre. [Origins TCG](https://store.steampowered.com/app/4429430/Origins_TCG/) y participe avec sa démo gratuite, qui a reçu sa première grosse mise à jour le 21 septembre : avec le festival, Koin active le **mode classé**, avec des récompenses classées exclusives.
-- **Tournoi d'Origins TCG : 19–25 octobre.** Koin Games l'appelle « notre plus grand tournoi à ce jour » : un événement sur plusieurs jours qui enchaîne Qualification → Playoffs → Finales, entièrement en ligne et dans le jeu.
+- **Steam Next Fest, édition d'octobre 2026 : 19–26 octobre.** Le [festival de démos jouables de Valve](https://store.steampowered.com/sale/nextfest) est allé du lundi 19 octobre à 10:00, heure du Pacifique (13:00 heure de l'Est, 18:00 au Royaume-Uni, 19:00 en Europe centrale), au lundi 26 octobre. Origins TCG y a participé avec sa démo gratuite, qui avait reçu sa première grosse mise à jour le 21 septembre et le **mode classé** le 15 octobre.
+- **Tournoi d'Origins TCG : 19–25 octobre.** Koin Games l'appelait « notre plus grand tournoi à ce jour » : la **Crimson Cup**, un événement sur plusieurs jours, Qualification → Playoffs → Finales, entièrement en ligne et dans le jeu. CoachCrono l'a gagnée le dimanche 25 octobre ([notre article](/fr/news/crimson-cup-coachcrono-wins)).
+- **Les chiffres officiels.** Dans son post Steam du 27 octobre 2026, « Thank you for an amazing Steam Next Fest! », Koin compte plus de 20 000 ajouts en liste de souhaits, 30 000 téléchargements de la démo et plus de 300 personnes qui ont streamé le jeu ; pendant la Crimson Cup, le pic a dépassé 5 000 spectateurs, et Origins était le deuxième TCG sur Twitch.
+- **Le lendemain, l'Accès anticipé.** Le 27 octobre 2026, la démo a pris fin et [Origins TCG](https://store.steampowered.com/app/4429430/Origins_TCG/) est passé en Accès anticipé sur Steam, version 0.8, gratuit : le compte, la collection et la progression des joueurs de la démo y sont passés.
 
-## Ce que la démo apporte au festival
+## Ce que la démo a apporté au festival
 
-La grosse mise à jour de la démo testée dans trois playtests fermés en août (patchs [0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414), [0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) et [0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184), tous suivis dans notre [MetaShifting](/fr/metashifting)) est arrivée en avance, le [21 septembre 2026](https://store.steampowered.com/news/app/4429430/view/1844115010502611) : nouvelle interface et nouveau plateau, un tutoriel pour collectionneurs, des boosters d'essai à ouvrir, de nouvelles répliques vocales, des changements d'équilibrage et la liste provisoire des cartes de la Crimson Cup, pour que vous puissiez déjà construire des decks pour le tournoi. La progression est reprise de la démo ou du playtest, selon celle qui est la plus avancée.
+La grosse mise à jour de la démo testée dans trois playtests fermés en août (patchs [0.6.1](https://store.steampowered.com/news/app/4429430/view/1840944183780414), [0.6.2](https://store.steampowered.com/news/app/4429430/view/1841579228669961) et [0.6.3](https://store.steampowered.com/news/app/4429430/view/1842212951301184), tous suivis dans notre [MetaShifting](/fr/metashifting)) est arrivée en avance, le [21 septembre 2026](https://store.steampowered.com/news/app/4429430/view/1844115010502611) : nouvelle interface et nouveau plateau, un tutoriel pour collectionneurs, des boosters d'essai à ouvrir, de nouvelles répliques vocales, des changements d'équilibrage et la liste provisoire des cartes de la Crimson Cup, pour construire des decks pour le tournoi. La progression était reprise de la démo ou du playtest, selon celle qui était la plus avancée.
 
-Les decks, les cartes et les boss des playtests sont maintenant dans la démo gratuite, et la construction de decks aussi : chacun construit son propre deck de 25 cartes (une Légendaire plus douze cartes, chacune jouée en deux exemplaires). Notre [base de données des cartes](/fr/cards) a les 122 cartes vérifiées dans le jeu le 22 septembre.
+Les decks, les cartes et les boss des playtests sont passés dans la démo gratuite, avec la construction de decks : chacun construisait son propre deck de 25 cartes (une Légendaire plus douze cartes, chacune jouée en deux exemplaires). Notre [base de données des cartes](/fr/cards) a les 122 cartes vérifiées dans le jeu le 22 septembre 2026.
 
-Avec le début du Steam Next Fest, Koin active le **mode classé**, « qui viendra avec des récompenses classées exclusives » (post Steam du 21 septembre). Les playtests avaient des divisions jusqu'à Grandmaster et un classement mondial : ce qui est confirmé à ce jour est dans notre [guide du mode classé d'Origins TCG](/fr/guides/origins-tcg-ranked). Nous publierons chaque changement le jour où il arrive.
+Le **mode classé**, promis le 21 septembre pour le début du Steam Next Fest « avec des récompenses classées exclusives », est arrivé quatre jours plus tôt, avec la [mise à jour 0.7.1 du 15 octobre](/fr/news/demo-patch-notes-0-7-1). Depuis la 0.8 du 27 octobre, en Accès anticipé, la division Grandmaster est ouverte avec son classement mondial : tout est dans notre [guide du mode classé d'Origins TCG](/fr/guides/origins-tcg-ranked).
 
 ## Le tournoi, étape par étape
 
-1. **Qualifications, 19–22 octobre.** Cinq, de 512 places chacune et avec 32 qualifiés dans chacune : AMER le 19 à 19:00 EST, EMEA le 20 à 19:00 CEST, AMER le 21 à 21:00 EST, APAC le 22 à 19:00 SGT et EMEA le 22 à 19:00 CEST, plus 96 wild cards. La qualification AMER du 19 et l'EMEA du 22 ont été ajoutées le 5 octobre, quand le calendrier officiel a aussi déplacé l'AMER du 21 à 21:00 EST avec 32 qualifiés au lieu de 64, et les wild cards de 128 à 96 ([notre article](/fr/news/crimson-cup-prizepool-qualifiers)). Dans les mots de Koin, « vous pouvez rejoindre N'IMPORTE LAQUELLE des qualifications, où que vous habitiez » : choisissez celle dont l'horaire vous convient, et ne vous inscrivez qu'à celles que vous jouerez vraiment ; vous pouvez en jouer plus d'une.
-2. **Playoffs et finales, 24–25 octobre.** La phase de playoffs a 256 places le 24 (10:00 EST / 16:00 CEST / 22:00 SGT) et quatre joueurs en sortent pour les finales du 25 à 10:00 EST (15:00 CET / 22:00 SGT). Attention aux horloges : l'Europe quitte l'heure d'été dans la nuit du 24 tandis que les États-Unis la gardent jusqu'au 1er novembre, donc le même horaire de départ de la côte Est tombe une heure plus tôt sur les horloges européennes le dimanche. Les créateurs de contenu reçoivent des invitations wildcard directement pour les playoffs (demandez sur Discord).
-3. **Format.** Officiel, d'après les annonces des 9 et 24 septembre : **Conquest à trois decks**, avec au moins 8 cartes uniques entre chaque paire de decks ; les listes restent cachées jusqu'au top 4, donc quand vous bannissez un des decks de votre adversaire, vous n'en voyez que la Légendaire. **Matchs au meilleur des trois manches, grande finale au meilleur des cinq** : au meilleur des cinq, il n'y a pas de ban et vous devez gagner avec les trois decks. Les détails dans [notre article sur les règles](/fr/news/crimson-cup-format-check-in).
-4. **Check-in.** Il ouvre deux heures avant chaque qualification et ferme cinq minutes avant le début, en même temps que la soumission des decks ; puis une courte fenêtre « premier arrivé, premier servi » donne les places libres aux joueurs en liste d'attente. Sans check-in, vous ne jouez pas : pour la qualification EMEA de 19:00 CEST, faites le check-in entre 17:00 et 18:55.
-5. **Quelle version.** Le tournoi se joue sur la démo principale, avec les seules cartes disponibles là : entraînez-vous dessus. Le playtest recevra d'autres mises à jour et sera différent de la version du tournoi. Le dernier patch d'équilibrage avant le tournoi, le [patch 0.7](/fr/news/patch-0-7), est arrivé le 29 septembre 2026, trois semaines avant la première qualification.
-6. **Prix.** **Des prix d'une valeur de 10 000 dollars**, dans les mots de Koin, répartis entre argent, objets de collection et cartes promo exclusives. La répartition est arrivée le 5 octobre : le vainqueur reçoit une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars en espèces ; le 2e une carte promo Dracula 1/8, une case et 750 dollars ; les 3e et 4e une carte promo 1/8, deux boîtes de boosters et 350 dollars ; le top 8 une boîte de boosters, une carte promo 1/8 et 125 dollars ; le top 16 une boîte de boosters et une carte Finalist Plus ; le top 32 dix boosters et une carte Finalist ; puis 8, 4 et 2 boosters jusqu'au top 256 ([le tableau complet](/fr/news/crimson-cup-prizepool-qualifiers#prix)). Le tournoi s'appelle la **Crimson Cup** : le nom figure sur l'illustration officielle de Koin, ce n'est pas un surnom de la communauté.
-7. **Pool de lieux.** Sept lieux sont exclus du tournoi, « très dépendants du hasard » dans les mots de Koin : Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum et Nostradamus' Call. Les parties en salon de la démo utilisent déjà ce pool : entraînez-vous là. Ce que fait chaque lieu est sur notre page des [Lieux](/fr/locations).
-8. **Tournois d'entraînement.** Koin organise des tournois d'entraînement hebdomadaires sans enjeu, annoncés sur Discord, pour jouer contre de vraies personnes plutôt que contre des bots avant la Cup.
+1. **Qualifications, 19–22 octobre.** Cinq, de 512 places chacune et avec 32 qualifiés dans chacune : AMER le 19 à 19:00 EST, EMEA le 20 à 19:00 CEST, AMER le 21 à 21:00 EST, APAC le 22 à 19:00 SGT et EMEA le 22 à 19:00 CEST, plus 96 wild cards. La qualification AMER du 19 et l'EMEA du 22 avaient été ajoutées le 5 octobre, quand le calendrier officiel avait aussi déplacé l'AMER du 21 à 21:00 EST avec 32 qualifiés au lieu de 64, et les wild cards de 128 à 96 ([notre article](/fr/news/crimson-cup-prizepool-qualifiers)). Dans les mots de Koin, « vous pouvez rejoindre N'IMPORTE LAQUELLE des qualifications, où que vous habitiez » ; on pouvait en jouer plus d'une.
+2. **Playoffs et finales, 24–25 octobre.** La phase de playoffs avait 256 places le 24 (10:00 EST / 16:00 CEST / 22:00 SGT) et quatre joueurs en sont sortis pour les finales du 25 à 10:00 EST (15:00 CET / 22:00 SGT). Les créateurs de contenu recevaient des invitations wildcard directement pour les playoffs.
+3. **Format.** D'après les annonces des 9 et 24 septembre : **Conquest à trois decks**, avec au moins 8 cartes uniques entre chaque paire de decks ; les listes restaient cachées jusqu'au top 4, donc quand vous bannissiez un des decks de votre adversaire, vous n'en voyiez que la Légendaire. **Matchs au meilleur des trois manches, grande finale au meilleur des cinq** : au meilleur des cinq, il n'y avait pas de ban et il fallait gagner avec les trois decks. Les détails dans [notre article sur les règles](/fr/news/crimson-cup-format-check-in).
+4. **Check-in.** Il ouvrait deux heures avant chaque qualification et fermait cinq minutes avant le début, en même temps que la soumission des decks ; puis une courte fenêtre « premier arrivé, premier servi » donnait les places libres aux joueurs en liste d'attente.
+5. **Quelle version.** Le tournoi s'est joué sur la démo principale, avec les seules cartes disponibles là. Le dernier patch d'équilibrage avant le tournoi, le [patch 0.7](/fr/news/patch-0-7), était arrivé le 29 septembre 2026, trois semaines avant la première qualification.
+6. **Prix.** **Des prix d'une valeur de 10 000 dollars**, dans les mots de Koin, répartis entre argent, objets de collection et cartes promo exclusives. La répartition annoncée le 5 octobre : le vainqueur recevait une carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars en espèces ; le 2e une carte promo Dracula 1/8, une case et 750 dollars ; les 3e et 4e une carte promo 1/8, deux boîtes de boosters et 350 dollars ; le top 8 une boîte de boosters, une carte promo 1/8 et 125 dollars ; le top 16 une boîte de boosters et une carte Finalist Plus ; le top 32 dix boosters et une carte Finalist ; puis 8, 4 et 2 boosters jusqu'au top 256 ([le tableau complet](/fr/news/crimson-cup-prizepool-qualifiers#prix)). Le nom **Crimson Cup** figure sur l'illustration officielle de Koin : ce n'est pas un surnom de la communauté.
+7. **Pool de lieux.** Sept lieux étaient exclus du tournoi, « très dépendants du hasard » dans les mots de Koin : Junkyard, Cloning Lab, Reflecting Pool, Amplifying Amphitheatre, Giant's Beacon, The Colosseum et Nostradamus' Call. Ce que fait chaque lieu est sur notre page des [Lieux](/fr/locations).
+8. **Tournois d'entraînement.** Avant la Cup, Koin organisait des tournois d'entraînement hebdomadaires sans enjeu, annoncés sur Discord, pour jouer contre de vraies personnes plutôt que contre des bots.
 
-Les inscriptions se font sur le [Discord officiel](https://discord.gg/originstcg).
+Les inscriptions se faisaient sur le [Discord officiel](https://discord.gg/originstcg).
 
-## Comment se préparer en cinq coups
+## Jouer et se préparer aujourd'hui
 
-1. [Installez la démo gratuite sur Steam](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/) et jouez les missions : elles enseignent les trois lignes et les tours simultanés.
-2. Lisez [Origins TCG expliqué en cinq minutes](/fr/guides/origins-tcg-explained) et la [base de données des cartes](/fr/cards) : les statistiques sont celles du patch de la démo du 21 septembre, vérifiées carte par carte dans le jeu, avec par-dessus les changements du patch 0.7 du 29 septembre.
-3. Construisez vos trois decks Conquest dans notre [Deck builder](/fr/deck-builder) : il signale deux decks avec la même Légendaire et compte les cartes qui diffèrent entre les decks. Étape par étape, avec de vrais decks de la communauté : [comment construire une sélection Conquest](/fr/guides/origins-tcg-conquest).
+1. [Installez Origins TCG gratuitement sur Steam](https://store.steampowered.com/app/4429430/Origins_TCG/), en Accès anticipé depuis le 27 octobre 2026, et jouez le tutoriel : il enseigne les trois lignes et les tours simultanés.
+2. Lisez [Origins TCG expliqué en cinq minutes](/fr/guides/origins-tcg-explained) et la [base de données des cartes](/fr/cards) : les statistiques ont été vérifiées carte par carte dans le jeu le 22 septembre 2026, avec par-dessus les changements du patch 0.7 du 29 septembre ; les patch notes de la 0.8 ne citent aucun changement de carte.
+3. Pour les tournois en Conquest, construisez vos trois decks dans notre [Deck builder](/fr/deck-builder) : il signale deux decks avec la même Légendaire et compte les cartes qui diffèrent entre les decks. Étape par étape, avec de vrais decks de la communauté : [comment construire une sélection Conquest](/fr/guides/origins-tcg-conquest).
 4. Étudiez les [decks publiés par la communauté](/fr/decks) : chaque liste vient avec ses graphiques de composition, les notes de l'auteur, un bouton qui l'ouvre dans le Deck builder et le code du jeu à coller dans Origins. Publiez le vôtre avec un guide pour que les autres joueurs puissent le noter.
 5. Suivez les [actus](/fr/news) : chaque annonce est résumée dans la journée, avec un lien vers la source.
 
-## Comment OriginsMeta couvrira la semaine
+## Le plan d'OriginsMeta pour la semaine
 
-Notre plan, au 25 septembre 2026 : nous publierons une actu par jour pendant le festival, les decks du tournoi avec leurs graphiques de composition dès que les listes seront publiques (à partir du top 4), et la première tier list d'OriginsMeta après les finales de la Crimson Cup du 25 octobre, construite sur les résultats du tournoi et le haut du ladder classé. Sources : les posts officiels sur Steam des 4 août, 25 août, [9 septembre](https://store.steampowered.com/news/app/4429430/view/1843481262690278), [21 septembre](https://store.steampowered.com/news/app/4429430/view/1844115010502611), [29 septembre](https://store.steampowered.com/news/app/4429430/view/1844751498235283) et [5 octobre 2026](https://store.steampowered.com/news/app/4429430/view/1845383656394214), et le [calendrier du Steam Next Fest](https://store.steampowered.com/sale/nextfest).
+Notre plan, au 25 septembre 2026, prévoyait une actu par jour pendant le festival, les decks du tournoi avec leurs graphiques de composition dès que les listes seraient publiques (à partir du top 4), et la première tier list d'OriginsMeta après les finales de la Crimson Cup du 25 octobre, construite sur les résultats du tournoi et le haut du ladder classé. Sources : les posts officiels sur Steam des 4 août, 25 août, [9 septembre](https://store.steampowered.com/news/app/4429430/view/1843481262690278), [21 septembre](https://store.steampowered.com/news/app/4429430/view/1844115010502611), [29 septembre](https://store.steampowered.com/news/app/4429430/view/1844751498235283) et [5 octobre 2026](https://store.steampowered.com/news/app/4429430/view/1845383656394214), le [calendrier du Steam Next Fest](https://store.steampowered.com/sale/nextfest) et les deux posts du 27 octobre 2026, « Thank you for an amazing Steam Next Fest! » et [« Goodbye Demo, Welcome Early Access »](https://store.steampowered.com/news/app/4429430/view/1847286114049982).
 `,
   },
   "is-origins-tcg-pay-to-win": {
@@ -1411,7 +1418,7 @@ Notre plan, au 25 septembre 2026 : nous publierons une actu par jour pendant le
     faq: [
       {
         q: "Origins TCG est-il gratuit ?",
-        a: "Oui. La démo est gratuite sur Steam depuis le 15 juillet 2026 et le jeu complet est présenté comme free-to-compete : chaque carte dont vous avez besoin pour rivaliser se gagne en jouant.",
+        a: "Oui. Origins TCG est free-to-play sur Steam, en Accès anticipé depuis le 27 octobre 2026, et la page Steam le promet : « Origins Trading Card Game will remain free-to-play and free-to-compete forever. Both during Early Access and after its full release. » Elle précise que l'Accès anticipé aura « some premium paid features ».",
       },
       {
         q: "Dois-je acheter des boosters pour gagner ?",
@@ -1423,17 +1430,17 @@ Notre plan, au 25 septembre 2026 : nous publierons une actu par jour pendant le
       },
       {
         q: "Puis-je vendre mes cartes ?",
-        a: "Koin Games dit que les cartes et les produits scellés seront échangeables sur le Marché de la communauté Steam et les places de marché connectées une fois le jeu complet sorti. Sur Steam, le produit des ventes va dans votre porte-monnaie Steam.",
+        a: "Oui, les cartes de collection : depuis la 0.8 du 27 octobre 2026, elles s'achètent, se vendent et se mettent en vente sur le Marché de la communauté Steam, et le produit des ventes va dans votre porte-monnaie Steam. Les cosmétiques de collection qui ne sont pas des cartes ne sont pas encore échangeables.",
       },
       {
         q: "Y a-t-il un battle pass ou un boost de progression payant ?",
-        a: "Rien de ce genre n'a été annoncé en septembre 2026. Nous mettrons cette page à jour si cela change.",
+        a: "Rien de ce genre n'a été annoncé au 28 octobre 2026. La page Steam dit seulement que l'Accès anticipé aura « some premium paid features », sans les détailler. Nous mettrons cette page à jour si cela change.",
       },
     ],
     body: `
 ## La réponse courte
 
-Non, par conception. Sur sa page Steam, Koin Games décrit Origins TCG comme « le premier TCG free-to-compete » où vous « rivalisez par le seul talent (zéro pay-to-win) pour des cartes limitées gradées numériquement que vous pouvez acheter, vendre et échanger ». L'un des écrans de chargement officiels le dit en deux mots : **zero pay-to-win**.
+Non, par conception. Sur sa page Steam, Koin Games décrit Origins TCG comme « le premier TCG free-to-compete » où vous « rivalisez par le seul talent (zéro pay-to-win) pour des cartes limitées gradées numériquement que vous pouvez acheter, vendre et échanger ». L'un des écrans de chargement officiels le dit en deux mots : **zero pay-to-win**. Depuis l'Accès anticipé, la page Steam l'écrit aussi : « Spending money will never unlock stronger cards or give you an advantage in gameplay ».
 
 C'est la promesse. Cette page explique ce qu'elle veut dire en pratique et où les doutes honnêtes subsistent.
 
@@ -1452,8 +1459,8 @@ Dans Hearthstone ou MTG Arena, les boosters que vous achetez contiennent les car
 
 ## Les réserves honnêtes
 
-- **Le temps reste un coût.** Les cartes gratuites se gagnent en jouant ; combien de parties il faut pour compléter un deck compétitif n'est pas encore publié. La construction de decks est dans la démo depuis la mise à jour du 21 septembre : nous le mesurerons pendant le Steam Next Fest (19–26 octobre), quand le mode classé ouvrira, et publierons les chiffres.
-- **Des détails encore à venir.** Les prix hors de la précommande Alpha, les frais de place de marché au-delà de ceux, standard, de Steam et d'éventuels boosts de progression ne sont pas annoncés. Rien ne laisse penser à un battle pass, mais rien ne l'exclut non plus.
+- **Le temps reste un coût.** Les cartes gratuites se gagnent en jouant ; combien de parties il faut pour compléter un deck compétitif n'est pas encore publié. Nous publierons les chiffres quand nous les aurons mesurés.
+- **Des détails encore à venir.** La page Steam annonce « some premium paid features » pendant l'Accès anticipé, sans dire lesquelles. Les prix hors de la précommande Alpha, les frais de place de marché au-delà de ceux, standard, de Steam et d'éventuels boosts de progression ne sont pas annoncés. Rien ne laisse penser à un battle pass, mais rien ne l'exclut non plus.
 - **La valeur sur le marché n'est pas de l'argent.** Vendre sur le Marché de la communauté Steam alimente votre porte-monnaie Steam. Que les places de marché connectées permettent un vrai retrait en espèces n'est pas confirmé.
 - **Les boosters sont aléatoires.** Parmi ses descripteurs de contenu, la page Steam liste « In-game purchases » et « Chance based in-game purchases » : ce que contient un booster de collection est laissé au hasard, même si cela ne change jamais la force d'un deck.
 
@@ -1463,37 +1470,37 @@ Comme les versions de collection sont cosmétiques, une tier list n'a à juger q
 `,
   },
   "play-the-demo": {
-    title: "Comment télécharger et jouer à la démo d'Origins TCG sur Steam",
-    metaTitle: "Jouer à la démo d'Origins TCG sur Steam",
-    excerpt: "La démo gratuite en cinq étapes : configuration, téléchargement, langue, premières parties, ce que débloquent les joueurs et la mise à jour du 21 septembre.",
+    title: "Comment télécharger et jouer à Origins TCG gratuitement sur Steam",
+    metaTitle: "Jouer à Origins TCG gratuitement sur Steam",
+    excerpt: "Origins TCG est gratuit sur Steam en Accès anticipé : configuration requise, installation, langue, premières parties et ce qu'apporte la version 0.8.",
     faq: [
       {
-        q: "La démo d'Origins TCG est-elle gratuite ?",
-        a: "Oui. Elle est gratuite sur Steam depuis le 15 juillet 2026, pour Windows et macOS.",
+        q: "Faut-il payer pour jouer à Origins TCG ?",
+        a: "Non. Origins TCG est free-to-play sur Steam, pour Windows et macOS, en Accès anticipé depuis le 27 octobre 2026. D'après la page Steam, il restera free-to-play et free-to-compete pour toujours, pendant l'Accès anticipé et après ; l'Accès anticipé aura aussi « some premium paid features ».",
       },
       {
-        q: "Dans quelles langues la démo est-elle disponible ?",
-        a: "Treize depuis le patch 0.7, la mise à jour de la démo du 29 septembre 2026 : anglais, français, italien, allemand, espagnol (Espagne), japonais, coréen, polonais, portugais (Brésil), portugais (Portugal), russe, chinois simplifié et espagnol (Amérique latine). La page Steam, lue le 30 septembre 2026, liste les mêmes 13 pour l'interface, avec l'audio complet en anglais seulement.",
+        q: "Dans quelles langues Origins TCG est-il disponible ?",
+        a: "Treize depuis le patch 0.7 du 29 septembre 2026 : anglais, français, italien, allemand, espagnol (Espagne), japonais, coréen, polonais, portugais (Brésil), portugais (Portugal), russe, chinois simplifié et espagnol (Amérique latine). La page Steam, lue le 28 octobre 2026, liste les mêmes 13 pour l'interface, avec l'audio complet en anglais seulement.",
       },
       {
-        q: "De quoi ai-je besoin pour la faire tourner ?",
+        q: "De quoi ai-je besoin pour le faire tourner ?",
         a: "Au minimum Windows 10 64 bits avec un Intel i3-6100 ou un AMD FX-6300, 8 Go de RAM, une GTX 750 Ti ou une R9 270X et 2 Go d'espace ; sur Mac, macOS 10.14 ou plus récent avec un Apple M1 ou un Intel i5 double cœur et un GPU compatible Metal.",
       },
       {
-        q: "La démo donne-t-elle quelque chose pour le jeu complet ?",
-        a: "Koin Games a annoncé que les joueurs de la démo gagnent des objets de collection exclusifs qui deviennent échangeables au lancement du jeu complet.",
+        q: "Ma progression de la démo est-elle conservée ?",
+        a: "Oui. Le 27 octobre 2026, Koin Games a écrit que « Your account, collection, progression, and everything else now live in the Early Access version of Origins » : tout est passé dans l'Accès anticipé, et la démo peut être désinstallée.",
       },
       {
-        q: "Qu'a apporté la mise à jour du 21 septembre ?",
-        a: "La première grosse mise à jour de la démo : nouvelle interface et nouveau plateau, un tutoriel pour collectionneurs, des boosters d'essai, de nouvelles répliques vocales, des changements d'équilibrage et la liste provisoire des cartes de la Crimson Cup, avec les decks, les cartes et la construction de decks testés dans les playtests d'août. Le mode classé s'active avec le Steam Next Fest, du 19 au 26 octobre 2026.",
+        q: "Qu'apporte la version 0.8 ?",
+        a: "C'est la première version de l'Accès anticipé, sortie le 27 octobre 2026 : la division Grandmaster ouvre avec son classement mondial, le grade des cartes de collection, de 1 à 10, s'affiche sur la carte, et les cartes de collection s'achètent et se vendent sur le Marché de la communauté Steam. Ses patch notes ne citent aucun changement de carte.",
       },
     ],
     body: `
 ## Ce que vous obtenez
 
-La démo d'Origins TCG est sur Steam depuis le **15 juillet 2026**, gratuite, pour Windows et macOS. Le 25 septembre 2026, elle affichait « Très positives » : 96 % de 184 évaluations. Les parties durent environ sept minutes : les deux joueurs agissent en même temps sur trois lieux, tirés d'un ensemble de plus de cent qui tournent et changent les règles du plateau. La démo comprend le tutoriel, des missions contre des boss dotés de leur propre IA et le jeu en ligne.
+Origins TCG est sur Steam en **Accès anticipé** depuis le **27 octobre 2026**, gratuit (free-to-play), pour Windows et macOS. D'après la page Steam, le jeu « will remain free-to-play and free-to-compete forever », pendant l'Accès anticipé et après, et l'Accès anticipé aura « some premium paid features » ; Koin vise la sortie de l'Accès anticipé et la version 1.0 vers le 17 mars 2027, une date indicative qui peut changer. Le 28 octobre 2026, la page affichait des évaluations « Positives » : 100 % de 22, un compteur reparti de zéro avec l'Accès anticipé. Les parties durent environ sept minutes : les deux joueurs agissent en même temps sur trois lieux, tirés d'une réserve de plus de cent qui tournent et changent les règles du plateau. Le jeu comprend un tutoriel, le jeu en ligne et le mode classé.
 
-Langues : depuis le [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026, le jeu prend en charge **13 langues** : anglais, français, italien, allemand, espagnol (Espagne), japonais, coréen, polonais, portugais (Brésil), portugais (Portugal), russe, chinois simplifié et espagnol (Amérique latine). La page Steam, lue le 30 septembre 2026, liste les mêmes 13 pour l'interface, avec l'audio complet **en anglais seulement**.
+Langues : depuis le [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026, le jeu prend en charge **13 langues** : anglais, français, italien, allemand, espagnol (Espagne), japonais, coréen, polonais, portugais (Brésil), portugais (Portugal), russe, chinois simplifié et espagnol (Amérique latine). La page Steam, lue le 28 octobre 2026, liste les mêmes 13 pour l'interface, avec l'audio complet **en anglais seulement**.
 
 ## Configuration requise
 
@@ -1506,20 +1513,28 @@ Langues : depuis le [patch 0.7](/fr/news/patch-0-7) du 29 septembre 2026, le je
 ## Cinq étapes
 
 1. **Installez Steam** et connectez-vous (un compte gratuit suffit).
-2. **Ouvrez la [page d'Origins TCG Demo](https://store.steampowered.com/app/4756630/Origins_TCG_Demo/)** et cliquez sur « Download Origins TCG Demo » ; ou cherchez « Origins TCG » dans Steam et choisissez la Demo. L'installation prend deux ou trois minutes.
+2. **Ouvrez la [page d'Origins TCG](https://store.steampowered.com/app/4429430/Origins_TCG/)**, ou cherchez « Origins TCG » dans la boutique Steam, et cliquez sur le bouton pour jouer gratuitement : le jeu est Free To Play, il s'ajoute à votre bibliothèque et s'installe. Si vous aviez la démo, vous pouvez la désinstaller : votre progression est passée dans l'Accès anticipé.
 3. **Choisissez votre langue** si Steam ne l'a pas fait : clic droit sur le jeu dans votre bibliothèque, Propriétés, Langue. Les voix sont en anglais ; les autres langues traduisent l'interface et les textes.
-4. **Jouez le tutoriel**, puis les missions : ils enseignent les trois lignes, les tours simultanés et les mots-clés À la révélation (On Reveal), À la mort (On Death), Première frappe (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch). Notre [guide en cinq minutes](/fr/guides/origins-tcg-explained) couvre le même terrain par écrit.
-5. **Passez en ligne** et essayez les decks préconstruits. Quand vous en voulez plus, lisez les [decks publiés par la communauté](/fr/decks), reconstruisez-les dans le [Deck builder](/fr/deck-builder) et vérifiez les statistiques actuelles des cartes dans la [base de données des cartes](/fr/cards) (Demo 2.0 avec le patch 0.7 du 29 septembre 2026).
+4. **Jouez le tutoriel** : il enseigne les trois lignes, les tours simultanés et les mots-clés À la révélation (On Reveal), À la mort (On Death), Première frappe (First Strike), Double attaque (Double Attack) et Contact mortel (Deathtouch). Notre [guide en cinq minutes](/fr/guides/origins-tcg-explained) couvre le même terrain par écrit.
+5. **Passez en ligne**, puis en [mode classé](/fr/guides/origins-tcg-ranked) quand vous êtes prêt. Pour de nouvelles listes, lisez les [decks publiés par la communauté](/fr/decks), reconstruisez-les dans le [Deck builder](/fr/deck-builder) et vérifiez les statistiques des cartes dans la [base de données des cartes](/fr/cards) (patch 0.7 du 29 septembre 2026 ; les patch notes de la 0.8 ne citent aucun changement de carte).
 
-## Ce que les joueurs de la démo débloquent
+## Ce qu'apporte l'Accès anticipé
 
-Dans le post de lancement de juillet, Koin Games a dit que les joueurs de la démo gagnent des **objets de collection exclusifs** qui deviendront échangeables au lancement du jeu complet. Ajoutez le [jeu principal](https://store.steampowered.com/app/4429430/Origins_TCG/) à votre liste de souhaits sur Steam : la page de la boutique indique la sortie pour le quatrième trimestre 2026.
+Le 27 octobre 2026, Koin Games a mis fin à la démo avec le post « [Goodbye Demo, Welcome Early Access](https://store.steampowered.com/news/app/4429430/view/1847286114049982) » et les patch notes de la 0.8, publiées aussi sur le Discord officiel : « This update marks the official end of the Origins TCG demo and the beginning of our final stretch toward 1.0! » Ce qui change :
 
-## Ce que la mise à jour du 21 septembre a changé
+- **Votre progression vous suit.** « Your account, collection, progression, and everything else now live in the Early Access version of Origins. » Sur le Discord officiel, Mawr, Studio Head de Koin Games, a ajouté que la démo peut être désinstallée.
+- **La division Grandmaster ouvre**, avec le classement Grandmaster mondial. La première saison classée de l'Accès anticipé devrait se terminer « sometime in early December », un plan qui peut changer, et les joueurs qui la terminent aux rangs les plus élevés recevront des récompenses en édition limitée : voir notre [guide du mode classé](/fr/guides/origins-tcg-ranked).
+- **Gradation des cartes.** Les cartes de collection ont un grade de 1 à 10, qui s'affiche désormais sur la carte : un premier jet, « very much a first pass » d'après Koin.
+- **Marché de la communauté Steam.** Les cartes de collection s'achètent, se vendent et se mettent en vente sur le marché Steam ; les cartes de jeu de départ restent à vous pour toujours. Les cosmétiques de collection qui ne sont pas des cartes ne sont pas encore échangeables : ils le seront avec une mise à jour future. Tout sur la collection : [comment fonctionne l'économie d'Origins](/fr/guides/collector-economy).
+- **Aucun changement de cartes.** Les patch notes de la 0.8 ne citent aucune modification des cartes : les statistiques restent celles du patch 0.7.
 
-La démo a reçu sa première grosse mise à jour le [21 septembre 2026](https://store.steampowered.com/news/app/4429430/view/1844115010502611) : nouvelle interface et nouveau plateau, un tutoriel pour collectionneurs, des boosters d'essai, de nouvelles répliques vocales, des changements d'équilibrage et la liste provisoire des cartes de la Crimson Cup, avec les decks, les cartes et la construction de decks testés dans les playtests fermés d'août. Votre progression de la démo ou du playtest est conservée, selon celle qui est la plus avancée. Le mode classé s'active avec le Steam Next Fest (19–26 octobre 2026) : tout sur les dates, le tournoi et la préparation est dans notre [page sur le Steam Next Fest 2026](/fr/guides/steam-next-fest-2026). Les playtests des versions plus grandes sont annoncés sur le [Discord officiel](https://discord.gg/originstcg), et jusqu'ici tous ceux qui voulaient participer ont pu le faire.
+« 0.8 isn't the finish line », précise l'équipe.
 
-Sources : les pages Origins TCG et Origins TCG Demo sur Steam (lues les 25 et 30 septembre 2026) et les posts officiels sur Steam des 16 juillet, 4 août, 21 septembre et 29 septembre 2026.
+## De la démo à l'Accès anticipé
+
+La démo gratuite est sortie sur Steam le 15 juillet 2026. Elle a reçu sa [première grosse mise à jour](https://store.steampowered.com/news/app/4429430/view/1844115010502611) le 21 septembre 2026 (nouvelle interface, construction de decks, boosters d'essai), le [patch 0.7](/fr/news/patch-0-7) le 29 septembre, dernier patch d'équilibrage avant la Crimson Cup, et le mode classé le 15 octobre. Le Steam Next Fest (19–26 octobre 2026) et la Crimson Cup ont été ses dernières grandes semaines : tout est dans notre [page sur le Steam Next Fest 2026](/fr/guides/steam-next-fest-2026). Le 27 octobre 2026, la démo a pris fin et Origins TCG est passé en Accès anticipé, version 0.8. Les annonces de l'équipe passent par le [Discord officiel](https://discord.gg/originstcg).
+
+Sources : la page Origins TCG sur Steam (lue le 28 octobre 2026), le post « Goodbye Demo, Welcome Early Access » et les patch notes de la 0.8 sur Steam et sur le Discord officiel (27 octobre 2026), et les posts officiels sur Steam des 16 juillet, 21 septembre et 29 septembre 2026.
 `,
   },
   "origins-tcg-kickstarter": {
@@ -1528,8 +1543,8 @@ Sources : les pages Origins TCG et Origins TCG Demo sur Steam (lues les 25 et 3
     excerpt: "Kickstarter le 27 octobre 2026, confirmé par Koin Games. Préinscription ouverte : 15 % de remise pour 1 dollar remboursable, boîtes Alpha en précommande.",
     faq: [
       {
-        q: "Quand commence le Kickstarter d'Origins TCG ?",
-        a: "Le 27 octobre 2026. Le CEO de Koin Games, Tim Jooste, a donné la date sur X le 17 septembre 2026 (« back the Alpha Edition Kickstarter (Oct 27th) »), et le menu principal de la démo affiche le Kickstarter comme « Coming soon – Oct 27 », à côté de « Preregister for 15% off ». Ni l'un ni l'autre ne dit à quelle heure la campagne ouvre : nous l'ajouterons ici dès que Koin le fera.",
+        q: "Quand a commencé le Kickstarter d'Origins TCG ?",
+        a: "Le 27 octobre 2026 : Koin Games l'a annoncé sur Steam le jour même, dans le post « The Origins Kickstarter is LIVE ». Le CEO de Koin Games, Tim Jooste, avait donné la date sur X le 17 septembre 2026 (« back the Alpha Edition Kickstarter (Oct 27th) »).",
       },
       {
         q: "Que donne le dépôt de 1 dollar ?",
@@ -1541,7 +1556,7 @@ Sources : les pages Origins TCG et Origins TCG Demo sur Steam (lues les 25 et 3
       },
       {
         q: "Dois-je soutenir le Kickstarter pour rivaliser ?",
-        a: "Non. Origins est free-to-compete : le mode classé ne demande aucun achat, et la démo Steam est gratuite. Le Kickstarter concerne la collection, pas la puissance.",
+        a: "Non. Origins est free-to-compete : le mode classé ne demande aucun achat, et le jeu est free-to-play sur Steam. Le Kickstarter concerne la collection, pas la puissance.",
       },
       {
         q: "Où les cartes s'échangent-elles ?",
@@ -1550,9 +1565,9 @@ Sources : les pages Origins TCG et Origins TCG Demo sur Steam (lues les 25 et 3
     ],
     body: `## La date : 27 octobre, confirmée par Koin Games {#date}
 
-Le Kickstarter de la **Myths & Legends Alpha Edition** ouvre le **27 octobre 2026**. Le CEO de Koin Games, **Tim Jooste**, a écrit « back the Alpha Edition Kickstarter (Oct 27th) » dans un [post sur X du 17 septembre 2026](https://x.com/TimothyJooste/status/2100700207285445011), que le compte du studio a partagé. La démo dit la même chose : le **25 septembre 2026**, son menu principal affichait l'encart du Kickstarter avec **« Coming soon – Oct 27 »** et **« Preregister for 15% off »**, tandis que l'écran de chargement fait la publicité de l'Alpha Edition. Ni l'un ni l'autre ne dit à quelle heure la campagne ouvre, et le 28 septembre 2026 la [page de préinscription](https://founder.origins-tcg.com) ne mentionnait pas encore la date : nous ajouterons l'heure et le lien vers la campagne dès que Koin les publiera.
+Le Kickstarter de la **Myths & Legends Alpha Edition** est ouvert depuis le **27 octobre 2026** : Koin Games l'a annoncé sur Steam le jour même, dans le post « The Origins Kickstarter is LIVE ». L'Alpha Set « Myths & Legends », exclusivité Kickstarter, compte 218 cartes, que Koin publiera progressivement pendant l'Accès anticipé du jeu, d'après le même post. La date avait été donnée par le CEO de Koin Games, **Tim Jooste**, qui avait écrit « back the Alpha Edition Kickstarter (Oct 27th) » dans un [post sur X du 17 septembre 2026](https://x.com/TimothyJooste/status/2100700207285445011), que le compte du studio a partagé.
 
-*Mise à jour du 28 septembre 2026 : la date est confirmée par le CEO de Koin Games. La mise à jour du 25 septembre avait ajouté la date affichée dans la démo, les sujets de l'AMA d'après l'annonce officielle et la chronologie corrigée.*
+*Mise à jour du 28 octobre 2026 : la campagne est ouverte depuis le 27 octobre, le jour où Origins TCG est passé en Accès anticipé sur Steam. Le 28 septembre 2026, nous avions ajouté la confirmation de la date par le CEO de Koin Games.*
 
 ## Ce qui a été annoncé
 
@@ -1582,24 +1597,24 @@ Les cartes peuvent être achetées, vendues et échangées sur le **Marché de l
 
 ## Le free-to-compete reste gratuit
 
-Soutenir le Kickstarter achète des objets de collection, pas de la force : le mode classé d'Origins ne demande aucun achat et la démo sur Steam est gratuite. Voir [Origins TCG est-il pay-to-win ?](/fr/guides/is-origins-tcg-pay-to-win) pour la façon dont le côté compétitif et le côté collection restent séparés.
+Soutenir le Kickstarter achète des objets de collection, pas de la force : le mode classé d'Origins ne demande aucun achat et le jeu est free-to-play sur Steam. Voir [Origins TCG est-il pay-to-win ?](/fr/guides/is-origins-tcg-pay-to-win) pour la façon dont le côté compétitif et le côté collection restent séparés.
 
 ## Chronologie
 
 - 15 juillet 2026 : démo gratuite sur Steam.
 - 21 septembre 2026 : première grosse mise à jour de la démo.
 - 19–26 octobre 2026 : Steam Next Fest, avec le mode classé dans la démo et la Crimson Cup (19–25 octobre).
-- 27 octobre 2026 : Kickstarter de l'Alpha Edition (date donnée par le CEO de Koin Games le 17 septembre et affichée dans le menu de la démo).
-- Quatrième trimestre 2026 : sortie sur Steam, selon la page de la boutique.
+- 27 octobre 2026 : ouverture du Kickstarter de l'Alpha Edition (date donnée par le CEO de Koin Games le 17 septembre) et fin de la démo : Origins TCG passe en Accès anticipé sur Steam.
+- Vers le 17 mars 2027 : version 1.0, d'après la page Steam (date indicative).
 - 2027 : mobile.
 
 ## Que faire maintenant
 
-1. Ajoutez le jeu à votre liste de souhaits sur Steam et jouez à la démo.
+1. Installez Origins TCG gratuitement sur Steam.
 2. Si vous voulez la remise de lancement, [préinscrivez-vous sur founder.origins-tcg.com](https://founder.origins-tcg.com) avec le dépôt remboursable.
 3. Suivez le Discord officiel pour l'heure du lancement et le lien vers la campagne : nous les ajouterons ici le jour même.
 
-Sources : [page officielle de préinscription](https://founder.origins-tcg.com), [page Steam](https://store.steampowered.com/app/4429430/Origins_TCG/), l'annonce de l'AMA sur le Discord officiel (11 septembre 2026), le [post du CEO de Koin Games sur X](https://x.com/TimothyJooste/status/2100700207285445011) (17 septembre 2026) et le menu principal de la démo (lu le 25 septembre 2026).`,
+Sources : [page officielle de préinscription](https://founder.origins-tcg.com), [page Steam](https://store.steampowered.com/app/4429430/Origins_TCG/), l'annonce de l'AMA sur le Discord officiel (11 septembre 2026), le [post du CEO de Koin Games sur X](https://x.com/TimothyJooste/status/2100700207285445011) (17 septembre 2026) et le post Steam « The Origins Kickstarter is LIVE » (27 octobre 2026).`,
   },
   "streaming-tools": {
     title: "Streamer Origins TCG : overlay OBS et commande !deck pour le chat",

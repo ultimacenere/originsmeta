@@ -66,7 +66,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
   const created = cards.filter((c) => c.type === "token").length;
   const removed = cards.filter((c) => c.status === "removed").length;
 
-  // Lista per i dati strutturati: le carte giocabili nella demo, già in memoria, così la pagina resta statica.
+  // Lista per i dati strutturati: le carte giocabili, già in memoria, così la pagina resta statica.
   const listed = activeCards.map((c) => ({ name: c.name, path: href(locale, `/cards/${c.slug}`) }));
 
   return (

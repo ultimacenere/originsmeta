@@ -2,7 +2,7 @@ import { activeCards } from "@/lib/data/cards";
 import type { BotCard } from "./bot";
 
 /**
- * Il pool del draft: le carte giocabili della demo (attive, non create da altre carte), come per il deck builder.
+ * Il pool del draft: le carte giocabili del gioco (attive, non create da altre carte), come per il deck builder.
  * Solo lato server: legge il database carte. La pagina lo passa al tavolo del draft già ridotto a quello che serve.
  */
 export function draftPool(): BotCard[] {

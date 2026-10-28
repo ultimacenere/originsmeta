@@ -60,7 +60,7 @@ export default async function AboutPage({ params }: { params: LocaleParams }) {
   // Etichette dal dizionario: sulla pagina inglese non devono comparire scritte italiane.
   const sources: [string, string][] = [
     [d.about.sources.steam, officialLinks.steam],
-    [d.about.sources.demo, officialLinks.demo],
+    [d.about.sources.demo, officialLinks.earlyAccess],
     [d.about.sources.news, officialLinks.news],
     [d.about.sources.discord, officialLinks.discord],
     [d.about.sources.site, officialLinks.site],

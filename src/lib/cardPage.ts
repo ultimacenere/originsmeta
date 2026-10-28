@@ -10,7 +10,7 @@ import type { RelCard } from "./cardSynergy";
  *
  * - `cardLead`: la frase d'attacco sotto l'H1, che dice che cos'è la carta (tipo, costo, statistiche, allineamento,
  *   stato, mazzi pubblicati) senza nessun giudizio; per le carte create la prima cosa è chi le genera, per quelle
- *   rimosse che non sono nella Demo 2.0 e quindi non entrano nel deck builder.
+ *   rimosse che non sono più nel gioco e quindi non entrano nel deck builder.
  * - `cardBrief`: il riquadro "In breve", 2–3 domande e risposte ricavate dai dati. Solo testo visibile: niente
  *   FAQPage, perché Google non mostra più i rich result FAQ dal 7 maggio 2026 (SCHEDE-10). Ogni risposta dice una cosa
  *   che la frase d'attacco non dice già (revisione del 25/09/2026, TECH-04: niente blocchi ripetuti a modello).
@@ -55,11 +55,11 @@ export type BriefCompanion = { card: Pick<Card, "slug" | "name" | "legendary">; 
 export type CardFacts = {
   /** assente se la lettura dei mazzi non è riuscita: allora le frasi non dicono niente sui mazzi, invece di dire zero */
   decks?: DeckCount;
-  /** carte presenti in almeno 2 dei mazzi della carta (solo carte della demo): la terza domanda di "In breve" */
+  /** carte presenti in almeno 2 dei mazzi della carta (solo carte della collezione): la terza domanda di "In breve" */
   companions?: readonly BriefCompanion[];
   /** chi genera la carta, a ritroso (`creationChain`), solo per le carte create */
   createdBy: readonly RelCard[][];
-  /** carte fuori dalla demo che la generavano (`earlierCreators`) */
+  /** carte non più nel gioco che la generavano (`earlierCreators`) */
   createdByEarlier: readonly RelCard[];
   /** che cosa genera (`createdChain`) */
   creates: readonly RelCard[][];
@@ -213,9 +213,9 @@ const en = {
   textOurs: "OriginsMeta translation (game glossary)",
   textWoo: "Card text (not checked in the game)",
   textOutdated: "A later patch changed this text: see the balance history below.",
-  /** riga sotto le statistiche, per le carte che la collezione della demo non mostra (CARDS-09) */
+  /** riga sotto le statistiche, per le carte che la collezione del gioco non mostra (CARDS-09) */
   asOfToken: "Created card: it is not in the game's collection, so its text and stats have not been checked in the game. Balance notes come from the official patch notes.",
-  asOfRemoved: "Not in Demo 2.0: last known data, as of patch {patch}; it cannot be checked in the game.",
+  asOfRemoved: "No longer in the game: last known data, as of patch {patch}; it cannot be checked in the game.",
   /** tier list della community sulla scheda (SCHEDE-11) */
   community: "Community tier list",
   communityScoreOne: "Tier {tier}: average {avg} out of 5 from 1 vote.",
@@ -226,7 +226,7 @@ const en = {
   communityCta: "Make your tier list",
   communityOpen: "Open the community tier list",
   deckGuide: "Deck guide",
-  sameSagaDemo: "Same saga in Demo 2.0",
+  sameSagaDemo: "Same saga in the game",
   /** carte create: al posto dell'invito al deck builder, che non le accetta (SCHEDE-04) */
   buildRoot: "Build a deck with {roots}",
   buildRootText: "{name} is a created card and cannot be added to a deck in the deck builder: to see it in a match, put {roots} in your deck.",
@@ -277,7 +277,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOutdated: "Una patch successiva ha cambiato questo testo: vedi lo storico dei bilanciamenti qui sotto.",
     asOfToken:
       "Carta generata: non è nella collezione del gioco, quindi testo e statistiche non sono stati verificati nel gioco. Le note di bilanciamento vengono dalle patch notes ufficiali.",
-    asOfRemoved: "Non nella Demo 2.0: ultimi dati noti, alla patch {patch}; non si può verificare nel gioco.",
+    asOfRemoved: "Non più nel gioco: ultimi dati noti, alla patch {patch}; non si può verificare nel gioco.",
     community: "Tier list della community",
     communityScoreOne: "Fascia {tier}: media {avg} su 5 con 1 voto.",
     communityScore: "Fascia {tier}: media {avg} su 5 con {votes} voti.",
@@ -287,7 +287,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     communityCta: "Crea la tua tier list",
     communityOpen: "Apri la tier list della community",
     deckGuide: "Guida al mazzo",
-    sameSagaDemo: "Stessa saga nella Demo 2.0",
+    sameSagaDemo: "Stessa saga nel gioco",
     buildRoot: "Costruisci un mazzo con {roots}",
     buildRootText: "{name} è una carta generata e non si può mettere nel mazzo con il deck builder: per vederla in partita, metti {roots} nel tuo mazzo.",
     legendaryPower: "Potere leggendario",
@@ -330,7 +330,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOutdated: "Un parche posterior cambió este texto: mira el historial de cambios de equilibrio más abajo.",
     asOfToken:
       "Carta creada: no está en la colección del juego, así que su texto y sus estadísticas no se han verificado en el juego. Los cambios de equilibrio vienen de las notas oficiales de los parches.",
-    asOfRemoved: "Fuera de la Demo 2.0: últimos datos conocidos, del parche {patch}; no se puede verificar en el juego.",
+    asOfRemoved: "Ya no está en el juego: últimos datos conocidos, del parche {patch}; no se puede verificar en el juego.",
     community: "Tier list de la comunidad",
     communityScoreOne: "Tier {tier}: promedio de {avg} sobre 5 con 1 voto.",
     communityScore: "Tier {tier}: promedio de {avg} sobre 5 con {votes} votos.",
@@ -340,7 +340,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     communityCta: "Crea tu tier list",
     communityOpen: "Abre la tier list de la comunidad",
     deckGuide: "Guía del mazo",
-    sameSagaDemo: "Misma saga en la Demo 2.0",
+    sameSagaDemo: "Misma saga en el juego",
     buildRoot: "Construye un mazo con {roots}",
     buildRootText: "{name} es una carta creada y no se puede añadir a un mazo en el deck builder: para verla en la partida, pon {roots} en tu mazo.",
     legendaryPower: "Poder legendario",
@@ -384,7 +384,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOutdated: "Un patch ultérieur a modifié ce texte\u00a0: voir l'historique des équilibrages ci-dessous.",
     asOfToken:
       "Carte créée\u00a0: elle n'est pas dans la collection du jeu, donc son texte et ses statistiques n'ont pas été vérifiés dans le jeu. Les notes d'équilibrage viennent des notes de patch officielles.",
-    asOfRemoved: "Hors de la Demo 2.0\u00a0: dernières données connues, au patch {patch}\u00a0; impossible à vérifier dans le jeu.",
+    asOfRemoved: "Retirée du jeu\u00a0: dernières données connues, au patch {patch}\u00a0; impossible à vérifier dans le jeu.",
     community: "Tier list de la communauté",
     communityScoreOne: "Tier {tier}\u00a0: moyenne de {avg} sur 5 avec 1 vote.",
     communityScore: "Tier {tier}\u00a0: moyenne de {avg} sur 5 avec {votes} votes.",
@@ -394,7 +394,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     communityCta: "Créez votre tier list",
     communityOpen: "Ouvrir la tier list de la communauté",
     deckGuide: "Guide du deck",
-    sameSagaDemo: "Même saga dans la Demo 2.0",
+    sameSagaDemo: "Même saga dans le jeu",
     buildRoot: "Construisez un deck avec {roots}",
     buildRootText: "{name} est une carte créée et ne peut pas être ajoutée à un deck dans le deck builder\u00a0: pour la voir en jeu, mettez {roots} dans votre deck.",
     legendaryPower: "Pouvoir légendaire",
@@ -437,7 +437,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOutdated: "Um patch posterior mudou este texto: veja o histórico de balanceamento abaixo.",
     asOfToken:
       "Carta criada: não está na coleção do jogo, então o texto e as estatísticas dela não foram verificados no jogo. As notas de balanceamento vêm das notas de patch oficiais.",
-    asOfRemoved: "Fora da Demo 2.0: últimos dados conhecidos, do patch {patch}; não é possível verificar no jogo.",
+    asOfRemoved: "Não está mais no jogo: últimos dados conhecidos, do patch {patch}; não é possível verificar no jogo.",
     community: "Tier list da comunidade",
     communityScoreOne: "Tier {tier}: média de {avg} de 5 com 1 voto.",
     communityScore: "Tier {tier}: média de {avg} de 5 com {votes} votos.",
@@ -447,7 +447,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     communityCta: "Crie a sua tier list",
     communityOpen: "Abrir a tier list da comunidade",
     deckGuide: "Guia do deck",
-    sameSagaDemo: "Mesma saga na Demo 2.0",
+    sameSagaDemo: "Mesma saga no jogo",
     buildRoot: "Monte um deck com {roots}",
     buildRootText: "{name} é uma carta criada e não pode ser adicionada a um deck no deck builder: para vê-la em uma partida, coloque {roots} no seu deck.",
     legendaryPower: "Poder lendário",
@@ -494,7 +494,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOutdated: "Ein späterer Patch hat diesen Text geändert: siehe den Balance-Verlauf weiter unten.",
     asOfToken:
       "Erschaffene Karte: Sie ist nicht in der Sammlung des Spiels, deshalb wurden ihr Text und ihre Werte nicht im Spiel überprüft. Die Balance-Hinweise stammen aus den offiziellen Patchnotes.",
-    asOfRemoved: "Nicht in der Demo 2.0: zuletzt bekannte Daten, Stand Patch {patch}; im Spiel nicht überprüfbar.",
+    asOfRemoved: "Nicht mehr im Spiel: zuletzt bekannte Daten, Stand Patch {patch}; im Spiel nicht überprüfbar.",
     community: "Tier-List der Community",
     communityScoreOne: "Tier {tier}: Durchschnitt {avg} von 5 aus 1 Stimme.",
     communityScore: "Tier {tier}: Durchschnitt {avg} von 5 aus {votes} Stimmen.",
@@ -504,7 +504,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     communityCta: "Erstelle deine Tier-List",
     communityOpen: "Tier-List der Community öffnen",
     deckGuide: "Deck-Guide",
-    sameSagaDemo: "Gleiche Saga in der Demo 2.0",
+    sameSagaDemo: "Gleiche Saga im Spiel",
     buildRoot: "Baue ein Deck mit {roots}",
     buildRootText: "{name} ist eine erschaffene Karte und lässt sich im Deckbuilder nicht in ein Deck aufnehmen: Um sie im Match zu sehen, nimm {roots} in dein Deck.",
     legendaryPower: "Legendäre Kraft",
@@ -552,7 +552,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOutdated: "Более поздний патч изменил этот текст: см. историю баланса ниже.",
     asOfToken:
       "Созданная карта: её нет в коллекции игры, поэтому её текст и характеристики не проверены в игре. Изменения баланса взяты из официальных патчноутов.",
-    asOfRemoved: "Нет в Demo 2.0: последние известные данные, по патчу {patch}; проверить в игре нельзя.",
+    asOfRemoved: "Больше нет в игре: последние известные данные, по патчу {patch}; проверить в игре нельзя.",
     community: "Тир-лист сообщества",
     communityScoreOne: "Тир {tier}: в среднем {avg} из 5, 1 голос.",
     communityScore: "Тир {tier}: в среднем {avg} из 5, голосов: {votes}.",
@@ -562,7 +562,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     communityCta: "Создайте свой тир-лист",
     communityOpen: "Открыть тир-лист сообщества",
     deckGuide: "Гайд по колоде",
-    sameSagaDemo: "Та же сага в Demo 2.0",
+    sameSagaDemo: "Та же сага в игре",
     buildRoot: "Соберите колоду с {roots}",
     buildRootText: "{name} — созданная карта, её нельзя добавить в колоду в конструкторе колод: чтобы увидеть её в матче, положите в колоду {roots}.",
     legendaryPower: "Легендарная сила",
@@ -861,11 +861,11 @@ function tokenOrigin(facts: CardFacts, locale: Locale): Part[] {
 }
 
 /**
- * Una carta creata arriva in partita da una carta della Demo 2.0? Vero quando nella catena di chi la genera (dai
- * testi) c'è una carta della collezione della demo (Garlic ← Van Helsing's Tools ← Van Helsing). Falso per le carte
- * create che nessun testo della demo nomina (Reflection, Little Pig, Off With Your Head!): che siano nella demo lo
- * dicono solo i dati importati, che nel gioco non si possono verificare, quindi le frasi dicono che non si può sapere
- * con certezza.
+ * Una carta creata arriva in partita da una carta della collezione del gioco? Vero quando nella catena di chi la genera
+ * (dai testi) c'è una carta della collezione (Garlic ← Van Helsing's Tools ← Van Helsing). Falso per le carte create
+ * che nessun testo delle carte della collezione nomina (Reflection, Little Pig, Off With Your Head!): che siano nel
+ * gioco lo dicono solo i dati importati, che nel gioco non si possono verificare, quindi le frasi dicono che non si può
+ * sapere con certezza. Il nome della funzione viene dai tempi della demo (fino al 27/10/2026) e resta.
  */
 export function createdFromDemo(facts: Pick<CardFacts, "createdBy">): boolean {
   return facts.createdBy.some((level) => level.some((c) => c.type !== "token" && c.status === "active"));
@@ -879,11 +879,12 @@ function verifiedOn(locale: Locale): string {
 /**
  * La frase d'attacco della scheda (CARDS-05, GEO-07): quello che un assistente copia per rispondere a "che cos'è
  * Merlin in Origins TCG". Tre modelli:
- * - carte della Demo 2.0 (122): tipo, gioco, statistiche, "è nella Demo 2.0 (verificata nel gioco il …)" e il conto
- *   dei mazzi pubblicati, se la lettura è riuscita;
+ * - carte della collezione del gioco (122): tipo, gioco, statistiche, "è nella collezione del gioco (verificata il …)"
+ *   e il conto dei mazzi pubblicati, se la lettura è riuscita (dal 28/10/2026 non si dice più "Demo 2.0": la demo è
+ *   finita il 27/10/2026 con l'Accesso anticipato, e la verifica del 22/09/2026 resta al passato);
  * - carte create: che non si aggiungono nel deck builder e chi le genera, con la catena (Garlic ← Van Helsing's Tools
  *   ← Van Helsing), oppure che nessun testo lo dice; poi costo e statistiche;
- * - carte rimosse: prima di tutto che non sono nella Demo 2.0 e quindi non entrano nel deck builder (CARDS-09), poi
+ * - carte rimosse: prima di tutto che non sono più nel gioco e quindi non entrano nel deck builder (CARDS-09), poi
  *   che cos'erano e le ultime statistiche note, al passato.
  * Il vecchio nome, quando c'è, chiude la frase.
  */
@@ -894,14 +895,14 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
 
   if (card.status === "removed") {
     const head = {
-      en: " is not in Demo 2.0, so it cannot be added in the deck builder.",
-      it: " non è nella Demo 2.0, quindi non si può aggiungere nel deck builder.",
-      es: " no está en la Demo 2.0, así que no se puede añadir en el deck builder.",
-      fr: " n'est pas dans la Demo 2.0\u00a0: impossible de l'ajouter dans le deck builder.",
+      en: " is no longer in the game, so it cannot be added in the deck builder.",
+      it: " non è più nel gioco, quindi non si può aggiungere nel deck builder.",
+      es: " ya no está en el juego, así que no se puede añadir en el deck builder.",
+      fr: " n'est plus dans le jeu\u00a0: impossible de l'ajouter dans le deck builder.",
       // "entrar em um deck": non cambia con il genere della carta
-      pt: " não está na Demo 2.0, então não pode entrar em um deck no deck builder.",
-      de: " ist nicht in der Demo 2.0 und lässt sich daher im Deckbuilder nicht hinzufügen.",
-      ru: " нет в Demo 2.0, поэтому эту карту нельзя добавить в конструкторе колод.",
+      pt: " não está mais no jogo, então não pode entrar em um deck no deck builder.",
+      de: " ist nicht mehr im Spiel und lässt sich daher im Deckbuilder nicht hinzufügen.",
+      ru: " больше нет в игре, поэтому эту карту нельзя добавить в конструкторе колод.",
     }[locale];
     const was = {
       en: `It was ${withArticle(card, locale)} in earlier builds of ${gameName.en}.`,
@@ -951,16 +952,17 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
     de: ` ist ${withArticle(card, locale)} aus ${gameName.de}.`,
     ru: ` — ${withArticle(card, locale)} из ${gameName.ru}.`,
   }[locale];
-  const demo = {
-    en: `It is in Demo 2.0 (checked in the game on ${verifiedOn(locale)}).`,
-    it: `È nella Demo 2.0 (verificata nel gioco il ${verifiedOn(locale)}).`,
-    es: `Está en la Demo 2.0 (${esMasculine(card) ? "verificado" : "verificada"} en el juego el ${verifiedOn(locale)}).`,
-    fr: `${cap(frIl(card))} est dans la Demo 2.0 (${frMasculine(card) ? "vérifié" : "vérifiée"} dans le jeu le ${verifiedOn(locale)}).`,
-    pt: `Está na Demo 2.0 (${ptMasculine(card) ? "verificado" : "verificada"} no jogo em ${verifiedOn(locale)}).`,
-    de: `Die Karte ist in der Demo 2.0 (am ${verifiedOn(locale)} im Spiel überprüft).`,
-    ru: `Карта есть в Demo 2.0 (проверено в игре ${verifiedOn(locale)}).`,
+  // Nella collezione del gioco, con il giorno della verifica (fatta nella demo, il 22/09/2026: resta al passato)
+  const inGame = {
+    en: `It is a playable card (checked in the game on ${verifiedOn(locale)}).`,
+    it: `È nella collezione del gioco (verificata il ${verifiedOn(locale)}).`,
+    es: `Está en la colección del juego (${esMasculine(card) ? "verificado" : "verificada"} el ${verifiedOn(locale)}).`,
+    fr: `${cap(frIl(card))} est dans la collection du jeu (${frMasculine(card) ? "vérifié" : "vérifiée"} le ${verifiedOn(locale)}).`,
+    pt: `Está na coleção do jogo (${ptMasculine(card) ? "verificado" : "verificada"} em ${verifiedOn(locale)}).`,
+    de: `Die Karte ist in der Sammlung (am ${verifiedOn(locale)} im Spiel überprüft).`,
+    ru: `Карта есть в коллекции (проверено в игре ${verifiedOn(locale)}).`,
   }[locale];
-  out.push(name, is, sp(statsSentence(card, locale)), sp(demo));
+  out.push(name, is, sp(statsSentence(card, locale)), sp(inGame));
   if (facts.decks) out.push(sp(deckSentence(card, facts.decks, locale)));
   out.push(sp(formerSentence(card, locale)));
   return out.filter((p) => p !== "");
@@ -1126,8 +1128,8 @@ function companionParts(list: readonly BriefCompanion[], decks: number, locale: 
 
 /**
  * Il riquadro "In breve" (SCHEDE-10): 2–3 domande con le risposte dai dati, pensate per chi cerca e per gli
- * assistenti. Sempre: è nella demo? le patch l'hanno cambiata? Poi, in quest'ordine, la prima che vale: chi la genera
- * (carte create), che carte genera, quali carte stanno spesso nel suo stesso mazzo (carte della demo in almeno due
+ * assistenti. Sempre: si può giocare? le patch l'hanno cambiata? Poi, in quest'ordine, la prima che vale: chi la genera
+ * (carte create), che carte genera, quali carte stanno spesso nel suo stesso mazzo (carte della collezione in almeno due
  * mazzi). Il conto dei mazzi non si ripete: lo dice già la frase d'attacco (revisione del 25/09/2026).
  */
 export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): BriefItem[] {
@@ -1136,75 +1138,76 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
   const legendaries = activeCards.filter((c) => c.legendary).length;
   const date = verifiedOn(locale);
 
-  // 1. È nella demo? In francese la domanda dice "La carte …", così "elle" vale per unità, sort e carte create.
+  // 1. Si può giocare? (Fino al 27/10/2026: "È nella demo?") In francese la domanda dice "La carte …", così "elle"
+  // vale per unità, sort e carte create.
   const q1 = {
-    en: `Is ${n} in the Origins TCG demo?`,
-    it: `${n} è nella demo di Origins TCG?`,
-    es: `¿Está ${n} en la demo de Origins TCG?`,
-    fr: `La carte ${n} est-elle dans la démo d'Origins TCG\u00a0?`,
-    pt: `${n} está na demo de Origins TCG?`,
-    de: `Ist ${n} in der Demo von Origins TCG?`,
-    ru: `Есть ли ${n} в демо Origins TCG?`,
+    en: `Is ${n} playable in Origins TCG?`,
+    it: `${n} si può giocare in Origins TCG?`,
+    es: `¿Se puede jugar ${n} en Origins TCG?`,
+    fr: `La carte ${n} est-elle jouable dans Origins TCG\u00a0?`,
+    pt: `Dá para jogar com ${n} em Origins TCG?`,
+    de: `Ist ${n} in Origins TCG spielbar?`,
+    ru: `Можно ли играть картой ${n} в Origins TCG?`,
   }[locale];
   if (card.status === "removed") {
     items.push({
       q: q1,
       a: [
         {
-          en: "No: it was in earlier builds of Origins TCG and is not in Demo 2.0, so it cannot be added in the deck builder.",
-          it: "No: era nelle build precedenti di Origins TCG e non è nella Demo 2.0, quindi non si può aggiungere nel deck builder.",
-          es: "No: estaba en builds anteriores de Origins TCG y no está en la Demo 2.0, así que no se puede añadir en el deck builder.",
-          fr: "Non\u00a0: elle était dans les builds précédentes d'Origins TCG et n'est pas dans la Demo 2.0, donc impossible de l'ajouter dans le deck builder.",
-          pt: "Não: estava em builds anteriores de Origins TCG e não está na Demo 2.0, então não pode entrar em um deck no deck builder.",
-          de: "Nein: Die Karte war in früheren Builds von Origins TCG und ist nicht in der Demo 2.0, daher lässt sie sich im Deckbuilder nicht hinzufügen.",
-          ru: "Нет: карта была в прежних сборках Origins TCG, но её нет в Demo 2.0, поэтому её нельзя добавить в конструкторе колод.",
+          en: "No: it was in earlier builds of Origins TCG and is no longer in the game, so it cannot be added in the deck builder.",
+          it: "No: era nelle build precedenti di Origins TCG e non è più nel gioco, quindi non si può aggiungere nel deck builder.",
+          es: "No: estaba en builds anteriores de Origins TCG y ya no está en el juego, así que no se puede añadir en el deck builder.",
+          fr: "Non\u00a0: elle était dans les builds précédentes d'Origins TCG et n'est plus dans le jeu, donc impossible de l'ajouter dans le deck builder.",
+          pt: "Não: estava em builds anteriores de Origins TCG e não está mais no jogo, então não pode entrar em um deck no deck builder.",
+          de: "Nein: Die Karte war in früheren Builds von Origins TCG und ist nicht mehr im Spiel, daher lässt sie sich im Deckbuilder nicht hinzufügen.",
+          ru: "Нет: карта была в прежних сборках Origins TCG, но её больше нет в игре, поэтому её нельзя добавить в конструкторе колод.",
         }[locale],
       ],
     });
   } else if (card.type === "token") {
-    // Chi la genera lo dice la terza domanda: qui solo lo stato. Se nessun testo della demo la genera, non lo si può
+    // Chi la genera lo dice la terza domanda: qui solo lo stato. Se nessun testo della collezione la genera, non lo si può
     // dire con certezza: le carte generate non sono nella collezione del gioco, e i dati importati che la danno per
     // attuale nel gioco non si possono verificare (dal 25/09/2026 il sito non nomina la loro fonte).
     const a = createdFromDemo(facts)
       ? {
-          en: `Yes, as a created card: ${notInBuilder.en}, but it comes into a match from a card in Demo 2.0.`,
-          it: `Sì, come carta generata: ${notInBuilder.it}, ma in partita arriva da una carta della Demo 2.0.`,
-          es: `Sí, como carta creada: ${notInBuilder.es}, pero llega a la partida desde una carta de la Demo 2.0.`,
-          fr: `Oui, comme carte créée\u00a0: ${notInBuilder.fr}, mais elle entre en jeu grâce à une carte de la Demo 2.0.`,
-          pt: `Sim, como carta criada: ${notInBuilder.pt}, mas chega à partida por meio de uma carta da Demo 2.0.`,
-          de: `Ja, als erschaffene Karte: ${notInBuilder.de}, aber sie kommt über eine Karte der Demo 2.0 ins Match.`,
-          ru: `Да, как созданная карта: ${notInBuilder.ru}, но в матче она появляется благодаря карте из Demo 2.0.`,
+          en: `Yes, as a created card: ${notInBuilder.en}, but it comes into a match from a card in the game's collection.`,
+          it: `Sì, come carta generata: ${notInBuilder.it}, ma in partita arriva da una carta della collezione del gioco.`,
+          es: `Sí, como carta creada: ${notInBuilder.es}, pero llega a la partida desde una carta de la colección del juego.`,
+          fr: `Oui, comme carte créée\u00a0: ${notInBuilder.fr}, mais elle entre en jeu grâce à une carte de la collection du jeu.`,
+          pt: `Sim, como carta criada: ${notInBuilder.pt}, mas chega à partida por meio de uma carta da coleção do jogo.`,
+          de: `Ja, als erschaffene Karte: ${notInBuilder.de}, aber sie kommt über eine Karte aus der Sammlung des Spiels ins Match.`,
+          ru: `Да, как созданная карта: ${notInBuilder.ru}, но в матче она появляется благодаря карте из коллекции игры.`,
         }[locale]
       : {
-          en: `We cannot say for sure: no card text in Demo 2.0 creates it, and created cards are not in the game's collection. ${cap(notInBuilder.en)}.`,
-          it: `Non si può dire con certezza: nessun testo delle carte della Demo 2.0 la genera, e le carte generate non sono nella collezione del gioco. ${cap(notInBuilder.it)}.`,
-          es: `No se puede decir con certeza: ningún texto de las cartas de la Demo 2.0 la crea, y las cartas creadas no están en la colección del juego. ${cap(notInBuilder.es)}.`,
-          fr: `Impossible de l'affirmer\u00a0: aucun texte de carte de la Demo 2.0 ne la crée, et les cartes créées ne sont pas dans la collection du jeu. ${cap(notInBuilder.fr)}.`,
-          pt: `Não dá para afirmar com certeza: nenhum texto das cartas da Demo 2.0 a cria, e as cartas criadas não estão na coleção do jogo. ${cap(notInBuilder.pt)}.`,
-          de: `Das lässt sich nicht sicher sagen: Kein Kartentext der Demo 2.0 erschafft sie, und erschaffene Karten sind nicht in der Sammlung des Spiels. ${cap(notInBuilder.de)}.`,
-          ru: `Точно сказать нельзя: ни один текст карт Demo 2.0 её не создаёт, а созданных карт нет в коллекции игры. ${cap(notInBuilder.ru)}.`,
+          en: `We cannot say for sure: no card text in the game creates it, and created cards are not in the game's collection. ${cap(notInBuilder.en)}.`,
+          it: `Non si può dire con certezza: nessun testo delle carte del gioco la genera, e le carte generate non sono nella collezione del gioco. ${cap(notInBuilder.it)}.`,
+          es: `No se puede decir con certeza: ningún texto de las cartas del juego la crea, y las cartas creadas no están en la colección del juego. ${cap(notInBuilder.es)}.`,
+          fr: `Impossible de l'affirmer\u00a0: aucun texte de carte du jeu ne la crée, et les cartes créées ne sont pas dans la collection du jeu. ${cap(notInBuilder.fr)}.`,
+          pt: `Não dá para afirmar com certeza: nenhum texto das cartas do jogo a cria, e as cartas criadas não estão na coleção do jogo. ${cap(notInBuilder.pt)}.`,
+          de: `Das lässt sich nicht sicher sagen: Kein Kartentext des Spiels erschafft sie, und erschaffene Karten sind nicht in der Sammlung des Spiels. ${cap(notInBuilder.de)}.`,
+          ru: `Точно сказать нельзя: ни один текст карт игры её не создаёт, а созданных карт нет в коллекции игры. ${cap(notInBuilder.ru)}.`,
         }[locale];
     items.push({ q: q1, a: [a] });
   } else {
     const total = activeCards.length;
     const a = card.legendary
       ? {
-          en: `Yes: it is one of the ${legendaries} Legendaries in Demo 2.0, checked in the game on ${date}, so it can lead a deck in the deck builder.`,
-          it: `Sì: è una delle ${legendaries} Leggendarie della Demo 2.0, verificate nel gioco il ${date}, quindi può guidare un mazzo nel deck builder.`,
-          es: `Sí: es una de las ${legendaries} Legendarias de la Demo 2.0, verificadas en el juego el ${date}, así que puede liderar un mazo en el deck builder.`,
-          fr: `Oui\u00a0: c'est l'une des ${legendaries} Légendaires de la Demo 2.0, vérifiées dans le jeu le ${date}, donc elle peut mener un deck dans le deck builder.`,
-          pt: `Sim: é uma das ${legendaries} Lendárias da Demo 2.0, verificadas no jogo em ${date}, então pode liderar um deck no deck builder.`,
-          de: `Ja: Die Karte ist eine der ${legendaries} Legendären der Demo 2.0, am ${date} im Spiel überprüft, und kann daher im Deckbuilder ein Deck anführen.`,
-          ru: `Да: это одна из ${legendaries} Легендарных карт Demo 2.0, проверенных в игре ${date}, поэтому она может возглавить колоду в конструкторе колод.`,
+          en: `Yes: it is one of the ${legendaries} Legendaries in the game's collection, checked on ${date}, so it can lead a deck in the deck builder.`,
+          it: `Sì: è una delle ${legendaries} Leggendarie della collezione del gioco, verificate il ${date}, quindi può guidare un mazzo nel deck builder.`,
+          es: `Sí: es una de las ${legendaries} Legendarias de la colección del juego, verificadas el ${date}, así que puede liderar un mazo en el deck builder.`,
+          fr: `Oui\u00a0: c'est l'une des ${legendaries} Légendaires de la collection du jeu, vérifiées le ${date}, donc elle peut mener un deck dans le deck builder.`,
+          pt: `Sim: é uma das ${legendaries} Lendárias da coleção do jogo, verificadas em ${date}, então pode liderar um deck no deck builder.`,
+          de: `Ja: Die Karte ist eine der ${legendaries} Legendären aus der Sammlung des Spiels, am ${date} überprüft, und kann daher im Deckbuilder ein Deck anführen.`,
+          ru: `Да: это одна из ${legendaries} Легендарных карт коллекции игры, проверенных ${date}, поэтому она может возглавить колоду в конструкторе колод.`,
         }[locale]
       : {
-          en: `Yes: it is one of the ${total} cards in Demo 2.0, checked in the game on ${date}, so you can put it in a deck in the deck builder.`,
-          it: `Sì: è una delle ${total} carte della Demo 2.0, verificate nel gioco il ${date}, quindi puoi metterla in un mazzo nel deck builder.`,
-          es: `Sí: es una de las ${total} cartas de la Demo 2.0, verificadas en el juego el ${date}, así que puedes ponerla en un mazo en el deck builder.`,
-          fr: `Oui\u00a0: c'est l'une des ${total} cartes de la Demo 2.0, vérifiées dans le jeu le ${date}, donc vous pouvez la mettre dans un deck dans le deck builder.`,
-          pt: `Sim: é uma das ${total} cartas da Demo 2.0, verificadas no jogo em ${date}, então você pode colocá-la em um deck no deck builder.`,
-          de: `Ja: Die Karte ist eine der ${total} Karten der Demo 2.0, am ${date} im Spiel überprüft, du kannst sie also im Deckbuilder in ein Deck aufnehmen.`,
-          ru: `Да: это одна из ${total} карт Demo 2.0, проверенных в игре ${date}, поэтому её можно положить в колоду в конструкторе колод.`,
+          en: `Yes: it is one of the ${total} cards in the game's collection, checked on ${date}, so you can put it in a deck in the deck builder.`,
+          it: `Sì: è una delle ${total} carte della collezione del gioco, verificate il ${date}, quindi puoi metterla in un mazzo nel deck builder.`,
+          es: `Sí: es una de las ${total} cartas de la colección del juego, verificadas el ${date}, así que puedes ponerla en un mazo en el deck builder.`,
+          fr: `Oui\u00a0: c'est l'une des ${total} cartes de la collection du jeu, vérifiées le ${date}, donc vous pouvez la mettre dans un deck dans le deck builder.`,
+          pt: `Sim: é uma das ${total} cartas da coleção do jogo, verificadas em ${date}, então você pode colocá-la em um deck no deck builder.`,
+          de: `Ja: Die Karte ist eine der ${total} Karten aus der Sammlung des Spiels, am ${date} überprüft, du kannst sie also im Deckbuilder in ein Deck aufnehmen.`,
+          ru: `Да: это одна из ${total} карт коллекции игры, проверенных ${date}, поэтому её можно положить в колоду в конструкторе колод.`,
         }[locale];
     items.push({ q: q1, a: [a] });
   }
@@ -1288,18 +1291,19 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
 /**
  * Stato della carta per `creativeWorkStatus` nel JSON-LD: uguale in tutte le lingue, perché la carta è una sola entità
  * per le tre pagine (`@id` comune, jsonld/card.ts); le frasi nella lingua della pagina stanno sulla pagina. Le carte
- * create che nessun testo della demo genera non si dicono nella demo: come in "In breve", non lo si può verificare.
+ * create che nessun testo della collezione genera non si dicono nel gioco: come in "In breve", non lo si può verificare.
+ * Fino al 27/10/2026 gli stati dicevano "Demo 2.0"; dall'Accesso anticipato dicono "the game".
  */
 export function cardStatusLd(card: Pick<Card, "type" | "status">, facts: Pick<CardFacts, "createdBy">): string {
-  if (card.status === "removed") return "Not in Demo 2.0 (earlier builds)";
-  if (card.type !== "token") return "In Demo 2.0";
-  return createdFromDemo(facts) ? "Created card in Demo 2.0" : "Created card, not verified in Demo 2.0";
+  if (card.status === "removed") return "No longer in the game (earlier builds)";
+  if (card.type !== "token") return "In the game";
+  return createdFromDemo(facts) ? "Created card in the game" : "Created card, not verified in the game";
 }
 
 /**
  * I testi della carta da dichiarare nel JSON-LD, ciascuno con la sua lingua e su una riga: gli stessi su tutte e tre
  * le pagine, perché stanno sull'entità comune della carta. Solo testi del gioco (SCHEDE-07): per le carte della
- * collezione della demo l'inglese, l'italiano e lo spagnolo letti nel gioco; per le carte create e rimosse il solo
+ * collezione del gioco i testi letti nel gioco; per le carte create e rimosse il solo
  * inglese (quello dei dati importati), mai le nostre traduzioni. Nessun testo se una patch successiva lo ha superato
  * (`outdated`, `textOutdated` di cardTitles.ts), né una "traduzione" uguale all'inglese (testo locale mancante).
  */
@@ -1320,8 +1324,8 @@ export function cardLdTexts(card: Pick<Card, "type" | "status" | "ability">, out
 // ---------- Righe delle fonti ----------
 
 /**
- * Riga sotto le statistiche per le carte che la collezione della demo non mostra (CARDS-09): carte create e rimosse
- * non sono state verificate nel gioco, e dirlo "verificata" sarebbe un dato falso. Per le 122 carte della demo resta
+ * Riga sotto le statistiche per le carte che la collezione del gioco non mostra (CARDS-09): carte create e rimosse
+ * non sono state verificate nel gioco, e dirlo "verificata" sarebbe un dato falso. Per le 122 carte della collezione resta
  * la riga del dizionario (`common.asOf`): `undefined` qui. Dal 25/09/2026 (decisione di Pierluigi) le righe dicono
  * solo che cosa non è verificato nel gioco e che i bilanciamenti vengono dalle patch notes ufficiali: niente nome né
  * data dell'import da cui arrivano i dati. `source.patch` è la patch dei dati importati (`cardSource.patch`), che per
@@ -1339,7 +1343,7 @@ export function asOfLine(card: Pick<Card, "type" | "status">, locale: Locale, so
 // ---------- Potere leggendario ----------
 
 /**
- * Potere leggendario delle 11 Leggendarie (SCHEDE-13), da leggere nella Demo 2.0 ("Game Start: …") e trascrivere qui
+ * Potere leggendario delle 11 Leggendarie (SCHEDE-13), da leggere nel gioco ("Game Start: …") e trascrivere qui
  * nelle sei lingue, con il testo ufficiale del gioco: la scheda lo mostra in una sezione sua appena c'è. Resta vuoto
  * finché nessuno lo ha letto nel gioco: mai copiarlo da altri siti (CLAUDE.md, "niente dati inventati").
  */

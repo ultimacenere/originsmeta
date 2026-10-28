@@ -14,7 +14,9 @@ import { HideOnPath } from "./HideOnPath";
 
 export const officialLinks = {
   steam: "https://store.steampowered.com/app/4429430/Origins_TCG/",
-  demo: "https://store.steampowered.com/app/4756630/Origins_TCG_Demo/",
+  // La demo (app 4756630) è finita il 27/10/2026 con l'Accesso anticipato (0.8): la sua pagina Steam rimanda alla home di Steam.
+  // Al suo posto, fra le fonti di /about, il post ufficiale del passaggio all'Accesso anticipato.
+  earlyAccess: "https://store.steampowered.com/news/app/4429430/view/1847286114049982",
   discord: "https://discord.gg/originstcg",
   site: "https://origins-tcg.com/",
   x: "https://x.com/origins_tcg",
@@ -133,12 +135,6 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               <OfficialLink url={officialLinks.steam} newTab={dict.footer.newTab}>
                 <SteamLogo className="h-3.5 w-3.5" />
                 Steam
-              </OfficialLink>
-            </li>
-            <li>
-              <OfficialLink url={officialLinks.demo} newTab={dict.footer.newTab}>
-                <SteamLogo className="h-3.5 w-3.5" />
-                Demo
               </OfficialLink>
             </li>
             <li>

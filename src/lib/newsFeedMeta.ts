@@ -20,30 +20,30 @@ export function newsFeedPath(locale: Locale): string {
 export const newsFeedLabels: Record<Locale, { title: string; description: string }> = {
   en: {
     title: "Origins TCG news · OriginsMeta",
-    description: "Origins TCG news from OriginsMeta: patch notes, events, demo updates and new features on the site. Unofficial fan site, not affiliated with Koin Games.",
+    description: "Origins TCG news from OriginsMeta: patch notes, events, game updates and new features on the site. Unofficial fan site, not affiliated with Koin Games.",
   },
   it: {
     title: "News su Origins TCG · OriginsMeta",
-    description: "Le news di OriginsMeta su Origins TCG: patch notes, eventi, novità della demo e del sito. Sito di fan non ufficiale, non affiliato a Koin Games.",
+    description: "Le news di OriginsMeta su Origins TCG: patch notes, eventi, novità del gioco e del sito. Sito di fan non ufficiale, non affiliato a Koin Games.",
   },
   es: {
     title: "Noticias de Origins TCG · OriginsMeta",
-    description: "Noticias de Origins TCG en OriginsMeta: notas del parche, eventos, novedades de la demo y del sitio. Sitio de fans no oficial, no afiliado a Koin Games.",
+    description: "Noticias de Origins TCG en OriginsMeta: notas del parche, eventos, novedades del juego y del sitio. Sitio de fans no oficial, no afiliado a Koin Games.",
   },
   fr: {
     title: "Actus Origins TCG · OriginsMeta",
-    description: "Les actus d'OriginsMeta sur Origins TCG : notes de patch, événements, nouveautés de la démo et du site. Site de fans non officiel, non affilié à Koin Games.",
+    description: "Les actus d'OriginsMeta sur Origins TCG : notes de patch, événements, nouveautés du jeu et du site. Site de fans non officiel, non affilié à Koin Games.",
   },
   pt: {
     title: "Notícias de Origins TCG · OriginsMeta",
-    description: "As notícias de Origins TCG no OriginsMeta: notas do patch, eventos, novidades da demo e do site. Site de fãs não oficial, não afiliado à Koin Games.",
+    description: "As notícias de Origins TCG no OriginsMeta: notas do patch, eventos, novidades do jogo e do site. Site de fãs não oficial, não afiliado à Koin Games.",
   },
   de: {
     title: "Origins TCG News · OriginsMeta",
-    description: "Die News von OriginsMeta zu Origins TCG: Patchnotes, Events, Neuigkeiten zur Demo und zur Website. Inoffizielle Fanseite, nicht mit Koin Games verbunden.",
+    description: "Die News von OriginsMeta zu Origins TCG: Patchnotes, Events, Neuigkeiten zum Spiel und zur Website. Inoffizielle Fanseite, nicht mit Koin Games verbunden.",
   },
   ru: {
     title: "Новости Origins TCG · OriginsMeta",
-    description: "Новости OriginsMeta об Origins TCG: патчноуты, события, новинки демоверсии и сайта. Неофициальный фан-сайт, не связан с Koin Games.",
+    description: "Новости OriginsMeta об Origins TCG: патчноуты, события, новинки игры и сайта. Неофициальный фан-сайт, не связан с Koin Games.",
   },
 };

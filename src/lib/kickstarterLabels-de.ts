@@ -20,8 +20,8 @@ export const de: KickstarterLabels = {
   ctaNote: "Führt zur offiziellen Kampagne von Koin Games auf Kickstarter.",
   disclosure: "Empfehlungslink: OriginsMeta ist eine inoffizielle Fanseite und erhält von Koin Games eine Provision auf Unterstützungen, die von hier aus starten. Dein Preis bleibt gleich.",
   launchNote: "Die Kampagne startet am 27. Oktober 2026. Wenn sie noch nicht begonnen hat, kannst du dich auf Kickstarter zum Start benachrichtigen lassen.",
-  heroAlt: "Ein Collector Booster von Origins TCG Myths & Legends mit 5 Karten beim Öffnen der Packs in der Demo; auf dem Cover eine blonde Heldin mit Fliegerbrille.",
-  heroCaption: "Ein Collector Booster von Myths & Legends beim Öffnen der Packs in der Demo. Offizieller Screenshot, Entwicklungsversion.",
+  heroAlt: "Ein Collector Booster von Origins TCG Myths & Legends mit 5 Karten beim Öffnen der Packs; auf dem Cover eine blonde Heldin mit Fliegerbrille.",
+  heroCaption: "Ein Collector Booster von Myths & Legends beim Öffnen der Packs. Offizieller Screenshot, Entwicklungsversion.",
   more: "Was enthalten ist",
   why: {
     title: "Warum die Alpha Edition",
@@ -61,7 +61,7 @@ export const de: KickstarterLabels = {
   game: {
     title: "Das Spiel in Kürze",
     text: "Origins TCG ist ein kostenloses kompetitives Kartenspiel von Koin Games auf Steam. Es ist free-to-compete: Jede Spielkarte ist für alle Spieler kostenlos, in jeder Saison, und nichts, was du kaufst, macht ein Deck stärker. Beim Kickstarter geht es ums Sammeln.",
-    reviews: "Die kostenlose Demo auf Steam steht auf „Sehr positiv“: {n} % von {total} Rezensionen (gelesen am {date}).",
+    reviews: "Vor dem Early Access stand die kostenlose Demo auf Steam auf „Sehr positiv“: {n} % von {total} Rezensionen (gelesen am {date}).",
   },
   how: {
     title: "So funktioniert eine Unterstützung auf Kickstarter",
@@ -76,8 +76,8 @@ export const de: KickstarterLabels = {
     title: "Fragen, bevor du unterstützt",
     items: [
       {
-        q: "Wann startet der Kickstarter?",
-        a: "Am 27. Oktober 2026, dem Datum, das der CEO von Koin Games genannt hat und das im Menü der Demo steht. Die genaue Uhrzeit hat Koin nicht genannt: Wenn du früher kommst, kannst du dich auf Kickstarter zum Start benachrichtigen lassen.",
+        q: "Wann ist der Kickstarter gestartet?",
+        a: "Am 27. Oktober 2026: Koin Games hat den Start am selben Tag auf Steam angekündigt („The Origins Kickstarter is LIVE“).",
       },
       {
         q: "Was kosten die Belohnungsstufen?",
@@ -85,7 +85,7 @@ export const de: KickstarterLabels = {
       },
       {
         q: "Brauche ich den Kickstarter zum Spielen?",
-        a: "Nein. Die Spielkarten sind kostenlos, der Ranglisten-Modus erfordert keinen Kauf, und die Demo auf Steam ist kostenlos.",
+        a: "Nein. Die Spielkarten sind kostenlos, der Ranglisten-Modus erfordert keinen Kauf, und das Spiel auf Steam ist Free-to-Play.",
       },
       {
         q: "Wohin kommen meine Packs und Karten?",

@@ -148,8 +148,10 @@ for (const [locale, d] of dicts) {
       }
     });
 
-    test("l'H1 dei Luoghi dice che sono quelli della Demo 2.0", () => {
-      assert.match(d.locations.headline, /Demo 2\.0/);
+    // fino al 27/10/2026 diceva "Demo 2.0"; dall'Accesso anticipato dice quanti luoghi abbiamo registrato, senza la demo
+    test("l'H1 dei Luoghi dice quanti sono, senza la demo", () => {
+      assert.match(d.locations.headline, /\{n\}/);
+      assert.doesNotMatch(d.locations.headline, /demo|démo|демо/i);
     });
 
     test("la FAQ non promette l'assistente nel titolo", () => {

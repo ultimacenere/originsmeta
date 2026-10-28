@@ -10,8 +10,9 @@
  * database tiene una riga per oggetto, una per ora (30 giorni) e una per giorno (per sempre): blocco MERCATO di
  * supabase/schema.sql. Gli euro si calcolano con il cambio BCE del giorno, e le pagine lo dicono.
  *
- * Fonti (`MARKET_SOURCES`): `origins`, il mercato di Origins TCG (chiuso il 17/10/2026: le pagine dicono "in arrivo"
- * finché non c'è un oggetto), e `standin`, la controfigura con cui si prova il motore prima del giorno 1, mostrata solo
+ * Fonti (`MARKET_SOURCES`): `origins`, il mercato di Origins TCG (chiuso il 17/10/2026; dalla 0.8 del 27/10/2026 le carte
+ * collezionabili si possono scambiare, ma il 28/10 la ricerca di Steam per l'appid 4429430 non trova nessuna offerta e il
+ * gioco non è ancora nell'elenco dei giochi del mercato: le pagine dicono "in arrivo" finché non c'è un oggetto), e `standin`, la controfigura con cui si prova il motore prima del giorno 1, mostrata solo
  * su /market/demo: dal 18/10/2026 la collezione Dreams & Nightmares di Counter-Strike 2 (Pierluigi: "il gioco che hai
  * scelto è un po' morto, prova con Counter-Strike, che dovrebbe essere il punto di riferimento per il CEO di Koin Games";
  * prima gli oggetti di Steam di Hades). 182 oggetti, un giro in circa 50 secondi, e le stesse dimensioni che avranno le
@@ -181,7 +182,8 @@ const PACK_RE =/\b(pack|booster|box|case|capsule|bundle|crate|chest|bustina|bust
  * Classifica un oggetto. Controfigura (CS2): le casse ("Container") sono buste; le skin sono "carte" con la variante
  * scritta nel nome di Steam, StatTrak™ o Souvenir più l'usura ("StatTrak™ AK-47 | Nightwish (Field-Tested)" →
  * variante "StatTrak™ · Field-Tested"). Origins: il formato dei nomi lo
- * vedremo il giorno 1; fino ad allora un oggetto il cui nome contiene il nome di una carta del database è quella carta
+ * vedremo con la prima offerta (il 28/10/2026, il giorno dopo la 0.8, ancora nessuna; sul Discord ufficiale il team ha
+ * scritto che le prime carte arrivano "in the next couple days"); fino ad allora un oggetto il cui nome contiene il nome di una carta del database è quella carta
  * (il nome più lungo vince: "Baby Bear" prima di "Bear"), e la variante è il resto del nome; buste e confezioni sono
  * "pack" (dal tipo di Steam, o dal nome se non c'è una carta). Da rivedere con i nomi veri (fase 2).
  */

@@ -27,7 +27,7 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
   const path = href(locale, "/tier-list/create");
   const url = `${siteUrl}${path}`;
 
-  // Carte attive della Demo 2.0, niente carte create (lo stesso elenco del deck builder). Solo i campi che servono a
+  // Carte attive del gioco, niente carte create (lo stesso elenco del deck builder). Solo i campi che servono a
   // miniatura e anteprima: il resto del database non passa al browser.
   const toTier = (c: ReturnType<typeof builderPool>[number]): TierCard => ({
     slug: c.slug,

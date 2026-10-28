@@ -17,12 +17,13 @@ const en = {
      * né la description nominano la fonte dei dati importati delle carte: dicono solo che cosa è verificato nel gioco.
      */
     description:
-      "Who runs OriginsMeta, the independent Origins TCG fan site: official sources, demo cards checked one by one in the game, and how to reach us.",
+      "Who runs OriginsMeta, the independent Origins TCG fan site: official sources, cards checked one by one in the game, and how to reach us.",
     /**
      * Al posto di `about.p2` del dizionario, che citava solo Steam e Discord come fonti dei numeri: le carte della
-     * Demo 2.0 sono verificate nel gioco (22/09/2026, testi italiani e spagnoli il 25/09/2026).
+     * collezione del gioco sono verificate nel gioco (22/09/2026, testi italiani e spagnoli il 25/09/2026, ancora nella
+     * demo; dal 28/10/2026 i testi non nominano più la demo come presente: le patch notes della 0.8 non toccano le carte).
      */
-    p2: "We are players, not the publisher. Dates, rules and events come only from official sources; the Demo 2.0 cards are checked one by one in the game; and every page says when it was last updated.",
+    p2: "We are players, not the publisher. Dates, rules and events come only from official sources; the cards in the game's collection were checked one by one in the game; and every page says when it was last updated.",
     /** riga con il link alla guida "che cos'è Origins TCG" (mappa delle query, C01): {link} è il testo del link */
     newToGame: "New to the game? Start with {link}.",
     newToGameLink: "what Origins TCG is",
@@ -36,7 +37,7 @@ const en = {
     check: [
       "Dates, rules, events and balance changes come only from official sources: the Steam page, the patch notes on Steam, the official Discord and Koin Games' announcements. When a detail is only on Discord, the article says so.",
       "The balance changes of each new patch are copied from the official patch notes onto the card pages, with the date and the link to the post.",
-      "On {date} we compared all {count} cards of the demo with the game's collection, one by one: costs, stats and alignments matched, and the English texts that had fallen behind are now the game's. The Italian and Spanish card texts are the official ones too, read in the game on {textsDate}. We repeat the check after every patch, in all three languages.",
+      "On {date} we compared all {count} cards with the game's collection, one by one: costs, stats and alignments matched, and the English texts that had fallen behind are now the game's. The Italian and Spanish card texts are the official ones too, read in the game on {textsDate}. The 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes. We repeat the check after every patch, in all three languages.",
       "Created cards and removed cards are not in the game's collection, so they have not been checked in the game, and their pages say so; their Italian and Spanish texts are ours, written with the game's official glossary. The locations have not been checked one by one in the game yet either: the locations page will say when they are, and their Italian and Spanish effects are ours, with the same glossary. The sagas and the notes on each legend are ours too.",
     ],
     /** chiusura della sezione: {email} diventa il link mailto */
@@ -88,15 +89,15 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   it: {
     about: {
       description:
-        "Chi c'è dietro OriginsMeta, il sito fan indipendente su Origins TCG: fonti ufficiali, carte della demo verificate una per una nel gioco e contatti.",
-      p2: "Siamo giocatori, non l'editore. Date, regole ed eventi arrivano solo da fonti ufficiali; le carte della Demo 2.0 sono verificate una per una nel gioco; e ogni pagina dice quando è stata aggiornata.",
+        "Chi c'è dietro OriginsMeta, il sito fan indipendente su Origins TCG: fonti ufficiali, carte verificate una per una nel gioco e contatti.",
+      p2: "Siamo giocatori, non l'editore. Date, regole ed eventi arrivano solo da fonti ufficiali; le carte della collezione del gioco sono state verificate una per una nel gioco; e ogni pagina dice quando è stata aggiornata.",
       newToGame: "Non conosci il gioco? Parti da {link}.",
       newToGameLink: "che cos'è Origins TCG",
       checkTitle: "Come verifichiamo i dati",
       check: [
         "Date, regole, eventi e bilanciamenti arrivano solo da fonti ufficiali: la pagina Steam, le patch notes su Steam, il Discord ufficiale e i comunicati di Koin Games. Quando un dettaglio c'è solo sul Discord, l'articolo lo dice.",
         "Le modifiche di bilanciamento di ogni patch nuova si trascrivono dalle patch notes ufficiali sulle schede delle carte, con la data e il link al post.",
-        "Il {date} abbiamo confrontato una per una tutte le {count} carte della demo con la collezione del gioco: costi, statistiche e allineamenti coincidevano, e i testi inglesi rimasti indietro ora sono quelli del gioco. Anche i testi italiani e spagnoli delle carte sono quelli ufficiali, letti nel gioco il {textsDate}. Rifacciamo la verifica dopo ogni patch, nelle tre lingue.",
+        "Il {date} abbiamo confrontato una per una tutte le {count} carte con la collezione del gioco: costi, statistiche e allineamenti coincidevano, e i testi inglesi rimasti indietro ora sono quelli del gioco. Anche i testi italiani e spagnoli delle carte sono quelli ufficiali, letti nel gioco il {textsDate}. Le patch notes della 0.8 del 27 ottobre 2026, la prima versione dell'Accesso anticipato, non citano modifiche alle carte. Rifacciamo la verifica dopo ogni patch, nelle tre lingue.",
         "Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco, e le loro schede lo dicono; il loro testo italiano e spagnolo è nostro, scritto con il glossario ufficiale del gioco. Anche i luoghi non sono ancora stati verificati uno per uno nel gioco: la pagina dei luoghi dirà quando lo saranno, e i loro effetti in italiano e spagnolo sono nostri, con lo stesso glossario. Sono nostre anche le saghe e le note su ogni leggenda.",
       ],
       checkErrors: "Hai trovato un errore? Scrivi a {email}: lo correggiamo, e la pagina mostra la nuova data.",
@@ -126,15 +127,15 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   es: {
     about: {
       description:
-        "Quién hace OriginsMeta, el sitio fan independiente de Origins TCG: fuentes oficiales, cartas de la demo comprobadas una por una en el juego y contacto.",
-      p2: "Somos jugadores, no la editora del juego. Las fechas, las reglas y los eventos vienen solo de fuentes oficiales; las cartas de la Demo 2.0 se comprueban una por una en el juego; y cada página indica cuándo se actualizó por última vez.",
+        "Quién hace OriginsMeta, el sitio fan independiente de Origins TCG: fuentes oficiales, cartas comprobadas una por una en el juego y contacto.",
+      p2: "Somos jugadores, no la editora del juego. Las fechas, las reglas y los eventos vienen solo de fuentes oficiales; las cartas de la colección del juego se comprobaron una por una en el juego; y cada página indica cuándo se actualizó por última vez.",
       newToGame: "¿No conoces el juego? Empieza por {link}.",
       newToGameLink: "qué es Origins TCG",
       checkTitle: "Cómo comprobamos los datos",
       check: [
         "Las fechas, las reglas, los eventos y los cambios de equilibrio vienen solo de fuentes oficiales: la página de Steam, las notas del parche en Steam, el Discord oficial y los comunicados de Koin Games. Cuando un detalle solo está en Discord, el artículo lo dice.",
         "Los cambios de equilibrio de cada parche nuevo se copian de las notas oficiales del parche en las fichas de las cartas, con la fecha y el enlace a la publicación.",
-        "El {date} comparamos una por una las {count} cartas de la demo con la colección del juego: costes, estadísticas y alineamientos coincidían, y los textos en inglés que se habían quedado atrás ahora son los del juego. Los textos de las cartas en italiano y en español también son los oficiales, leídos en el juego el {textsDate}. Repetimos la comprobación después de cada parche, en los tres idiomas.",
+        "El {date} comparamos una por una las {count} cartas con la colección del juego: costes, estadísticas y alineamientos coincidían, y los textos en inglés que se habían quedado atrás ahora son los del juego. Los textos de las cartas en italiano y en español también son los oficiales, leídos en el juego el {textsDate}. Las notas del parche 0.8 del 27 de octubre de 2026, la primera versión del Acceso anticipado, no mencionan cambios en las cartas. Repetimos la comprobación después de cada parche, en los tres idiomas.",
         "Las cartas creadas y las cartas retiradas no están en la colección del juego, así que no se han verificado en el juego, y sus fichas lo dicen; su texto en italiano y en español es nuestro, escrito con el glosario oficial del juego. Las ubicaciones tampoco se han verificado todavía una por una en el juego: la página de ubicaciones lo indicará cuando lo estén, y sus efectos en italiano y en español son nuestros, con el mismo glosario. También son nuestras las sagas y las notas sobre cada leyenda.",
       ],
       checkErrors: "¿Has encontrado un error? Escribe a {email}: lo corregimos, y la página muestra la nueva fecha.",
@@ -164,15 +165,15 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   fr: {
     about: {
       description:
-        "Qui fait OriginsMeta, le site de fans indépendant sur Origins TCG : sources officielles, cartes de la démo vérifiées une par une dans le jeu et contact.",
-      p2: "Nous sommes des joueurs, pas l'éditeur. Les dates, les règles et les événements viennent uniquement de sources officielles ; les cartes de la Demo 2.0 sont vérifiées une par une dans le jeu ; et chaque page indique la date de sa dernière mise à jour.",
+        "Qui fait OriginsMeta, le site de fans indépendant sur Origins TCG : sources officielles, cartes vérifiées une par une dans le jeu et contact.",
+      p2: "Nous sommes des joueurs, pas l'éditeur. Les dates, les règles et les événements viennent uniquement de sources officielles ; les cartes de la collection du jeu ont été vérifiées une par une dans le jeu ; et chaque page indique la date de sa dernière mise à jour.",
       newToGame: "Vous découvrez le jeu ? Commencez par {link}.",
       newToGameLink: "ce qu'est Origins TCG",
       checkTitle: "Comment nous vérifions nos données",
       check: [
         "Les dates, les règles, les événements et les changements d'équilibrage viennent uniquement de sources officielles : la page Steam, les notes de patch sur Steam, le Discord officiel et les communiqués de Koin Games. Quand un détail n'existe que sur Discord, l'article le précise.",
         "Les changements d'équilibrage de chaque nouveau patch sont recopiés des notes de patch officielles sur les pages des cartes, avec la date et le lien vers la publication.",
-        "Le {date}, nous avons comparé une par une les {count} cartes de la démo avec la collection du jeu : coûts, statistiques et alignements concordaient, et les textes anglais restés en retard sont désormais ceux du jeu. Les textes italiens et espagnols des cartes sont eux aussi les textes officiels, lus dans le jeu le {textsDate}. Nous refaisons la vérification après chaque patch, dans ces trois langues. Les textes français des cartes sont pour l'instant une traduction d'OriginsMeta, non vérifiée dans le jeu.",
+        "Le {date}, nous avons comparé une par une les {count} cartes avec la collection du jeu : coûts, statistiques et alignements concordaient, et les textes anglais restés en retard sont désormais ceux du jeu. Les textes italiens et espagnols des cartes sont eux aussi les textes officiels, lus dans le jeu le {textsDate}, et les textes français sont ceux du jeu, lus le 8 octobre 2026. Les notes du patch 0.8 du 27 octobre 2026, la première version de l'Accès anticipé, ne citent aucun changement de cartes. Nous refaisons la vérification après chaque patch.",
         "Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu : elles n'ont donc pas été vérifiées dans le jeu, et leurs pages le disent ; leurs textes italiens et espagnols sont les nôtres, écrits avec le glossaire officiel du jeu. Les lieux n'ont pas encore été vérifiés un par un dans le jeu non plus : la page des lieux le dira quand ce sera fait, et leurs effets en italien et en espagnol sont les nôtres, avec le même glossaire. Les sagas et les notes sur chaque légende sont également les nôtres.",
       ],
       checkErrors: "Vous avez trouvé une erreur ? Écrivez à {email} : nous la corrigeons, et la page affiche la nouvelle date.",
@@ -202,15 +203,15 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   pt: {
     about: {
       description:
-        "Quem faz o OriginsMeta, o site de fãs independente de Origins TCG: fontes oficiais, cartas da demo verificadas uma a uma no jogo e contato.",
-      p2: "Somos jogadores, não a editora do jogo. Datas, regras e eventos vêm só de fontes oficiais; as cartas da Demo 2.0 são verificadas uma a uma no jogo; e cada página informa quando foi atualizada pela última vez.",
+        "Quem faz o OriginsMeta, o site de fãs independente de Origins TCG: fontes oficiais, cartas verificadas uma a uma no jogo e contato.",
+      p2: "Somos jogadores, não a editora do jogo. Datas, regras e eventos vêm só de fontes oficiais; as cartas da coleção do jogo foram verificadas uma a uma no jogo; e cada página informa quando foi atualizada pela última vez.",
       newToGame: "Não conhece o jogo? Comece por {link}.",
       newToGameLink: "o que é Origins TCG",
       checkTitle: "Como verificamos os dados",
       check: [
         "Datas, regras, eventos e mudanças de balanceamento vêm só de fontes oficiais: a página da Steam, as notas do patch na Steam, o Discord oficial e os comunicados da Koin Games. Quando um detalhe está só no Discord, o artigo diz isso.",
         "As mudanças de balanceamento de cada novo patch são copiadas das notas oficiais do patch para as páginas das cartas, com a data e o link para a publicação.",
-        "Em {date} comparamos uma a uma todas as {count} cartas da demo com a coleção do jogo: custos, estatísticas e alinhamentos coincidiam, e os textos em inglês que tinham ficado para trás agora são os do jogo. Os textos das cartas em italiano e em espanhol também são os oficiais, lidos no jogo em {textsDate}, e os textos em português são os oficiais lidos no jogo em 20 de outubro de 2026. Repetimos a verificação depois de cada patch.",
+        "Em {date} comparamos uma a uma todas as {count} cartas com a coleção do jogo: custos, estatísticas e alinhamentos coincidiam, e os textos em inglês que tinham ficado para trás agora são os do jogo. Os textos das cartas em italiano e em espanhol também são os oficiais, lidos no jogo em {textsDate}, e os textos em português são os oficiais lidos no jogo em 20 de outubro de 2026. As notas do patch 0.8 de 27 de outubro de 2026, a primeira versão do Acesso Antecipado, não citam mudanças nas cartas. Repetimos a verificação depois de cada patch.",
         "As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo, e as páginas delas dizem isso; os textos delas nas outras línguas são nossos, escritos com o glossário oficial do jogo. Os locais também ainda não foram verificados um a um no jogo: a página dos locais vai dizer quando forem, e os efeitos deles nas outras línguas são nossos, com o mesmo glossário. As sagas e as notas sobre cada lenda também são nossas.",
       ],
       checkErrors: "Encontrou um erro? Escreva para {email}: nós corrigimos, e a página mostra a nova data.",
@@ -242,15 +243,15 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   de: {
     about: {
       description:
-        "Wer OriginsMeta macht, die unabhängige Fanseite zu Origins TCG: offizielle Quellen, Demo-Karten einzeln im Spiel geprüft und Kontakt.",
-      p2: "Wir sind Spieler, nicht der Publisher. Daten, Regeln und Events kommen nur aus offiziellen Quellen; die Karten der Demo 2.0 werden einzeln im Spiel geprüft; und jede Seite sagt, wann sie zuletzt aktualisiert wurde.",
+        "Wer OriginsMeta macht, die unabhängige Fanseite zu Origins TCG: offizielle Quellen, Karten einzeln im Spiel geprüft und Kontakt.",
+      p2: "Wir sind Spieler, nicht der Publisher. Daten, Regeln und Events kommen nur aus offiziellen Quellen; die Karten der Sammlung des Spiels wurden einzeln im Spiel geprüft; und jede Seite sagt, wann sie zuletzt aktualisiert wurde.",
       newToGame: "Neu im Spiel? Hier erfährst du, {link}.",
       newToGameLink: "was Origins TCG ist",
       checkTitle: "So prüfen wir unsere Daten",
       check: [
         "Daten, Regeln, Events und Balance-Änderungen stammen nur aus offiziellen Quellen: der Steam-Seite, den Patchnotes auf Steam, dem offiziellen Discord und den Mitteilungen von Koin Games. Steht ein Detail nur im Discord, sagt der Artikel das.",
         "Die Balance-Änderungen jedes neuen Patches übertragen wir aus den offiziellen Patchnotes auf die Kartenseiten, mit Datum und Link zum Beitrag.",
-        "Am {date} haben wir alle {count} Karten der Demo einzeln mit der Sammlung im Spiel verglichen: Kosten, Werte und Gesinnungen stimmten überein, und die englischen Texte, die zurückgeblieben waren, sind jetzt die des Spiels. Auch die italienischen und spanischen Kartentexte sind die offiziellen, am {textsDate} im Spiel gelesen. Die deutschen Kartentexte sind ebenfalls die offiziellen, am 20. Oktober 2026 im Spiel gelesen. Wir wiederholen die Prüfung nach jedem Patch.",
+        "Am {date} haben wir alle {count} Karten einzeln mit der Sammlung im Spiel verglichen: Kosten, Werte und Gesinnungen stimmten überein, und die englischen Texte, die zurückgeblieben waren, sind jetzt die des Spiels. Auch die italienischen und spanischen Kartentexte sind die offiziellen, am {textsDate} im Spiel gelesen. Die deutschen Kartentexte sind ebenfalls die offiziellen, am 20. Oktober 2026 im Spiel gelesen. Die Patchnotes zu 0.8 vom 27. Oktober 2026, der ersten Version des Early Access, nennen keine Kartenänderungen. Wir wiederholen die Prüfung nach jedem Patch.",
         "Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft, und ihre Seiten sagen das; ihre Texte in den anderen Sprachen stammen von uns, mit dem Glossar des Spiels. Auch die Orte wurden noch nicht einzeln im Spiel geprüft: Die Seite der Orte sagt es, sobald das passiert ist, und ihre Effekte in den anderen Sprachen stammen ebenfalls von uns. Auch die Sagen und die Notizen zu jeder Legende sind von uns.",
       ],
       checkErrors: "Einen Fehler gefunden? Schreib an {email}: Wir korrigieren ihn, und die Seite zeigt das neue Datum.",
@@ -282,15 +283,15 @@ export const entityLabels: Record<Locale, EntityLabels> = {
   ru: {
     about: {
       description:
-        "Кто делает OriginsMeta, независимый фан-сайт об Origins TCG: официальные источники, карты демо, проверенные в игре по одной, и контакты.",
-      p2: "Мы игроки, а не издатель. Даты, правила и события берутся только из официальных источников; карты Demo 2.0 проверены в игре по одной; на каждой странице указано, когда она обновлялась в последний раз.",
+        "Кто делает OriginsMeta, независимый фан-сайт об Origins TCG: официальные источники, карты, проверенные в игре по одной, и контакты.",
+      p2: "Мы игроки, а не издатель. Даты, правила и события берутся только из официальных источников; карты коллекции игры проверены в игре по одной; на каждой странице указано, когда она обновлялась в последний раз.",
       newToGame: "Впервые в игре? Начните с {link}.",
       newToGameLink: "рассказа о том, что такое Origins TCG",
       checkTitle: "Как мы проверяем данные",
       check: [
         "Даты, правила, события и балансные изменения берутся только из официальных источников: страницы Steam, патчноутов в Steam, официального Discord и объявлений Koin Games. Если какая-то деталь есть только в Discord, статья так и говорит.",
         "Балансные изменения каждого нового патча мы переносим из официальных патчноутов на страницы карт — с датой и ссылкой на пост.",
-        "{date} мы сравнили с коллекцией в игре, одну за другой, каждую из {count} карт демоверсии: стоимость, характеристики и мировоззрения совпали, а английские тексты, которые отстали, теперь такие же, как в игре. Итальянские и испанские тексты карт тоже официальные, прочитаны в игре {textsDate}; французские, португальские и немецкие тексты тоже взяты из игры. Русские тексты карт тоже официальные, прочитаны в игре 20 октября 2026. Мы повторяем проверку после каждого патча.",
+        "{date} мы сравнили с коллекцией в игре, одну за другой, каждую из {count} карт: стоимость, характеристики и мировоззрения совпали, а английские тексты, которые отстали, теперь такие же, как в игре. Итальянские и испанские тексты карт тоже официальные, прочитаны в игре {textsDate}; французские, португальские и немецкие тексты тоже взяты из игры. Русские тексты карт тоже официальные, прочитаны в игре 20 октября 2026. В патчноутах 0.8 от 27 октября 2026, первой версии раннего доступа, изменений карт нет. Мы повторяем проверку после каждого патча.",
         "Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре, и их страницы об этом говорят; их тексты на других языках написаны нами по глоссарию игры. Локации тоже ещё не проверены в игре по одной: страница локаций скажет, когда это произойдёт, а их эффекты на других языках тоже наши. Саги и заметки о каждой легенде — тоже наши.",
       ],
       checkErrors: "Нашли ошибку? Напишите на {email}: мы её исправим, и на странице появится новая дата.",

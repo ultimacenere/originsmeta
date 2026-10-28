@@ -10,7 +10,7 @@ import { CARD_VOTES_TAG, cardVotesMissing } from "./cardVotes";
 /** Esito del voto: media e numero di voti aggiornati della carta, oppure un codice d'errore per il widget. */
 export type CardVoteResult = { avg?: number; votes?: number; error?: "disabled" | "notLoggedIn" | "invalid" | "unavailable" | "limit" | "db" };
 
-/** Le carte votabili: attive nella Demo 2.0 e non create, le stesse del tool /tier-list/create e del deck builder. */
+/** Le carte votabili: attive nel gioco e non create, le stesse del tool /tier-list/create e del deck builder. */
 function votable(): ReadonlySet<string> {
   return new Set(activeCards.filter((c) => c.type !== "token").map((c) => c.slug));
 }

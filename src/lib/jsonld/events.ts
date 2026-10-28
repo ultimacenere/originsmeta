@@ -75,8 +75,8 @@ export function eventNode(e: Event, locale: Locale): Json {
     node.isAccessibleForFree = true;
     if (e.signup) node.offers = { "@type": "Offer", price: "0", priceCurrency: FREE_OFFER_CURRENCY, url: e.signup.url };
   }
-  // Una regola sola per gli eventi di Koin che si tengono dentro lo Steam Next Fest (la classificata nella demo e la
-  // Crimson Cup): il festival è il `superEvent`, l'organizzatore resta Koin Games.
+  // Una regola sola per gli eventi di Koin tenuti dentro lo Steam Next Fest di ottobre 2026 (la classificata della demo
+  // e la Crimson Cup): il festival è il `superEvent`, l'organizzatore resta Koin Games.
   if (ld.festival) node.superEvent = festivalNode();
   return node;
 }

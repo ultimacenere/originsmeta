@@ -4,7 +4,7 @@ import { cards, sagas, statLine, type Card, type SagaId } from "@/lib/data/cards
 import { CardName, legendaryFirst } from "./CardChip";
 
 /**
- * Archivio delle carte non nella demo, in fondo a /cards (piano dell'Ondata 1 SEO/GEO del 25/09/2026: le schede
+ * Archivio delle carte non più nel gioco, in fondo a /cards (piano dell'Ondata 1 SEO/GEO del 25/09/2026: le schede
  * delle rimosse restano indicizzabili nelle tre lingue e /cards le linka tutte da qui).
  *
  * Perché: il database di /cards (CardExplorer) toglie le rimosse dall'HTML finché non si spunta la casella, quindi 80
@@ -20,45 +20,45 @@ import { CardName, legendaryFirst } from "./CardChip";
 
 const labels: Record<Locale, { title: string; text: string; link: string }> = {
   en: {
-    title: "Cards not in the demo",
-    text: "These cards were removed in earlier builds and are not in Demo 2.0, so the deck builder does not accept them. Each one keeps its page, with the last known text and stats and the legend it comes from.",
-    link: "All the cards not in the demo",
+    title: "Cards no longer in the game",
+    text: "These cards were removed in earlier builds and are no longer in the game, so the deck builder does not accept them. Each one keeps its page, with the last known text and stats and the legend it comes from.",
+    link: "All the cards no longer in the game",
   },
   it: {
-    title: "Carte non nella demo",
-    text: "Queste carte sono state rimosse nelle build precedenti e non sono nella Demo 2.0, quindi il deck builder non le accetta. Ognuna conserva la sua scheda, con l'ultimo testo e le ultime statistiche note e la leggenda da cui viene.",
-    link: "Tutte le carte non nella demo",
+    title: "Carte non più nel gioco",
+    text: "Queste carte sono state rimosse nelle build precedenti e non sono più nel gioco, quindi il deck builder non le accetta. Ognuna conserva la sua scheda, con l'ultimo testo e le ultime statistiche note e la leggenda da cui viene.",
+    link: "Tutte le carte non più nel gioco",
   },
   es: {
-    title: "Cartas fuera de la demo",
-    text: "Estas cartas se retiraron en builds anteriores y no están en la Demo 2.0, así que el deck builder no las acepta. Cada una conserva su ficha, con el último texto y las últimas estadísticas conocidas y la leyenda de la que viene.",
-    link: "Todas las cartas fuera de la demo",
+    title: "Cartas que ya no están en el juego",
+    text: "Estas cartas se retiraron en builds anteriores y ya no están en el juego, así que el deck builder no las acepta. Cada una conserva su ficha, con el último texto y las últimas estadísticas conocidas y la leyenda de la que viene.",
+    link: "Todas las cartas que ya no están en el juego",
   },
   fr: {
-    title: "Cartes absentes de la démo",
-    text: "Ces cartes ont été retirées dans des versions précédentes et ne sont pas dans la Demo 2.0 : le deck builder ne les accepte donc pas. Chacune garde sa page, avec son dernier texte et ses dernières statistiques connus et la légende dont elle est issue.",
-    link: "Toutes les cartes absentes de la démo",
+    title: "Cartes retirées du jeu",
+    text: "Ces cartes ont été retirées dans des versions précédentes et ne sont plus dans le jeu : le deck builder ne les accepte donc pas. Chacune garde sa page, avec son dernier texte et ses dernières statistiques connus et la légende dont elle est issue.",
+    link: "Toutes les cartes retirées du jeu",
   },
   pt: {
-    title: "Cartas fora da demo",
-    text: "Estas cartas foram removidas em versões anteriores e não estão na Demo 2.0, por isso o Deck builder não as aceita. Cada uma mantém a sua página, com o último texto e as últimas estatísticas conhecidas e a lenda de onde vem.",
-    link: "Todas as cartas fora da demo",
+    title: "Cartas que não estão mais no jogo",
+    text: "Estas cartas foram removidas em versões anteriores e não estão mais no jogo, por isso o Deck builder não as aceita. Cada uma mantém a sua página, com o último texto e as últimas estatísticas conhecidas e a lenda de onde vem.",
+    link: "Todas as cartas que não estão mais no jogo",
   },
   de: {
-    title: "Karten, die nicht in der Demo sind",
-    text: "Diese Karten wurden in früheren Builds entfernt und sind nicht in der Demo 2.0, deshalb nimmt der Deckbuilder sie nicht an. Jede behält ihre Seite, mit dem letzten bekannten Text, den letzten bekannten Werten und der Legende, aus der sie stammt.",
-    link: "Alle Karten, die nicht in der Demo sind",
+    title: "Karten, die nicht mehr im Spiel sind",
+    text: "Diese Karten wurden in früheren Builds entfernt und sind nicht mehr im Spiel, deshalb nimmt der Deckbuilder sie nicht an. Jede behält ihre Seite, mit dem letzten bekannten Text, den letzten bekannten Werten und der Legende, aus der sie stammt.",
+    link: "Alle Karten, die nicht mehr im Spiel sind",
   },
   ru: {
-    title: "Карты вне демоверсии",
-    text: "Эти карты были удалены в прошлых сборках и отсутствуют в Demo 2.0, поэтому конструктор колод их не принимает. У каждой осталась своя страница с последним известным текстом и характеристиками и легендой, из которой она пришла.",
-    link: "Все карты вне демоверсии",
+    title: "Карты, которых больше нет в игре",
+    text: "Эти карты были удалены в прошлых сборках, и их больше нет в игре, поэтому конструктор колод их не принимает. У каждой осталась своя страница с последним известным текстом и характеристиками и легендой, из которой она пришла.",
+    link: "Все карты, которых больше нет в игре",
   },
 };
 
 /**
- * Ancora dell'archivio su /cards: ci puntano il contatore delle carte fuori dalla demo in cima a /cards e le schede
- * delle carte rimosse (`RemovedArchiveLink`).
+ * Ancora dell'archivio su /cards: ci puntano il contatore delle carte non più nel gioco in cima a /cards e le schede
+ * delle carte rimosse (`RemovedArchiveLink`). L'id viene dai tempi della demo e non cambia (link già pubblicati).
  *
  * L'id NON sta sul <details> ma sul contenitore dell'elenco, DENTRO il <details> e fuori dal <summary>: così chi arriva
  * sull'ancora trova l'archivio già aperto, senza JavaScript. Quando il browser naviga verso un frammento esegue
@@ -72,7 +72,7 @@ const labels: Record<Locale, { title: string; text: string; link: string }> = {
 export const removedArchiveId = "not-in-demo";
 
 /**
- * Link all'archivio, per le schede delle carte non nella demo: al posto dell'invito al deck builder, che non le
+ * Link all'archivio, per le schede delle carte non più nel gioco: al posto dell'invito al deck builder, che non le
  * accetta, la scheda rimanda alle altre carte nella stessa situazione (SCHEDE-04).
  * È un <a> semplice e non un `Link` di Next: con `Link` la navigazione resta nel browser e Next scorre da sé fino
  * all'ancora con `scrollIntoView()`, che non apre i <details> (l'apertura la fa solo la navigazione del browser verso il

@@ -119,7 +119,7 @@ export function companions(decks: readonly DeckRef[], slug: string, min = 2): Co
 export const MAX_DECKS = 12;
 
 /**
- * I mazzi che la scheda di una carta della demo elenca nella lingua della pagina (`listed`: indicizzabili, nell'ordine
+ * I mazzi che la scheda di una carta della collezione elenca nella lingua della pagina (`listed`: indicizzabili, nell'ordine
  * della tier list, al massimo `MAX_DECKS`) e quanti ne conta soltanto (`others`: pagina noindex in questa lingua o
  * oltre il tetto). Una sola funzione per l'elenco, il JSON-LD (`relatedLink` e ItemList) e le date, così i tre non
  * possono dire mazzi diversi.
@@ -147,7 +147,7 @@ export function cardDeckDays(decks: readonly DeckRef[], slugs: string | readonly
 /**
  * I giorni dei mazzi che la scheda carta ELENCA in quella lingua: la scheda li conta nel suo `dateModified` e la
  * sitemap nel `lastmod`, con questa stessa funzione, così le due date restano uguali (Ondata 2, 25/09/2026).
- * - Solo le carte della demo elencano mazzi: le carte create mostrano soltanto il conto dei mazzi con la carta che le
+ * - Solo le carte della collezione elencano mazzi: le carte create mostrano soltanto il conto dei mazzi con la carta che le
  *   genera e le rimosse nessun mazzo, quindi per loro nessun giorno (`decks` può anche essere `null`: lettura fallita).
  * - Solo i mazzi elencati (`listedDecks`): un mazzo noindex in quella lingua, o oltre il tetto, cambia solo il conto.
  * - Un mazzo nuovo senza la carta cambia solo il totale "{n} dei {N}" della frase d'attacco: non conta.
@@ -171,8 +171,8 @@ function plain(text: string): string {
 
 /**
  * Le carte create (token) che il testo di `card` nomina, cioè le carte che genera: Van Helsing → Van Helsing's Tools,
- * Old MacDonald → Pumpkin, Headless Horseman (fuori dalla demo) → Pumpkin. Stesso confronto di `creatorsOf`, fatto
- * sulla sola coppia: così non conta la regola "fra più fonti quelle nella demo", che serve a chi guarda dalla carta
+ * Old MacDonald → Pumpkin, Headless Horseman (non più nel gioco) → Pumpkin. Stesso confronto di `creatorsOf`, fatto
+ * sulla sola coppia: così non conta la regola "fra più fonti quelle nella collezione", che serve a chi guarda dalla carta
  * creata e non a chi guarda dalla carta che la nomina. I nomi più lunghi che contengono quello della carta creata
  * ("Not So Little Pig" per Little Pig) restano nell'elenco senza testo, perché `creatorsOf` li veda e non li confonda.
  */
@@ -198,7 +198,7 @@ function uniqueBySlug<C extends { slug: string }>(list: readonly C[]): C[] {
 
 /**
  * Chi genera una carta creata, a ritroso, un livello per passaggio: Garlic → [[Van Helsing's Tools], [Van Helsing]],
- * Mama Bear → [[Papa Bear], [Baby Bear]]. Il primo livello è `creatorsOf` (fra più fonti, quelle nella demo); si
+ * Mama Bear → [[Papa Bear], [Baby Bear]]. Il primo livello è `creatorsOf` (fra più fonti, quelle nella collezione); si
  * risale solo finché la carta trovata è a sua volta una carta creata. Vuoto per le carte non create e per quelle che
  * nessun testo nomina (Reflection, Off With Your Head!, Little Pig).
  */
@@ -236,7 +236,7 @@ export function createdChain<C extends RelCard>(card: C, all: readonly C[]): C[]
 }
 
 /**
- * Le carte fuori dalla demo il cui testo genera una carta creata che nella demo ha già chi la genera: Pumpkin →
+ * Le carte non più nel gioco il cui testo genera una carta creata che nel gioco ha già chi la genera: Pumpkin →
  * Headless Horseman e Pumpkin Patch, Zombie → Necromancer. La scheda le dice a parte ("nelle build precedenti").
  */
 export function earlierCreators<C extends RelCard>(card: C, all: readonly C[], chain: readonly C[][] = creationChain(card, all)): C[] {
@@ -253,7 +253,7 @@ export function earlierCreators<C extends RelCard>(card: C, all: readonly C[], c
 export type CardRelations<C extends RelCard> = {
   /** chi la genera, a ritroso (solo carte create) */
   createdBy: C[][];
-  /** carte fuori dalla demo che la generavano (solo carte create) */
+  /** carte non più nel gioco che la generavano (solo carte create) */
   createdByEarlier: C[];
   /** che cosa genera, in avanti */
   creates: C[][];
@@ -276,7 +276,7 @@ export function deckRoots<C extends RelCard>(chain: readonly C[][]): C[] {
 }
 
 /**
- * Le carte i cui mazzi conta la scheda: la carta stessa; per una carta creata, le carte della demo che la generano
+ * Le carte i cui mazzi conta la scheda: la carta stessa; per una carta creata, le carte della collezione che la generano
  * (`deckRoots`: la scheda dice in quanti mazzi sono e rimanda alla loro sezione dei mazzi); nessuna per le carte
  * rimosse, che non mostrano mazzi.
  */

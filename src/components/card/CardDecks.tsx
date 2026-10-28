@@ -92,7 +92,7 @@ export function CardDecks({
 }
 
 /**
- * Carte create: "Mazzi che generano Garlic". Solo il conto dei mazzi pubblicati con la carta della demo che la genera
+ * Carte create: "Mazzi che generano Garlic". Solo il conto dei mazzi pubblicati con la carta della collezione che la genera
  * (Van Helsing) e il link alla sezione dei mazzi della sua scheda, non l'elenco: la stessa lista su cinque schede
  * (Van Helsing's Tools, Garlic, Holy Water, Silver Bullet, Wooden Stake) sarebbe un blocco ripetuto, e la scheda di
  * Van Helsing's Tools finirebbe per contendere alla Leggendaria la ricerca "van helsing origins tcg" (SCHEDE-06).

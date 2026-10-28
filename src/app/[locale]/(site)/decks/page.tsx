@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
 
 export default async function DecksPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  // Solo le Leggendarie giocabili nella demo (le rimosse del playtest restano nel database carte)
+  // Solo le Leggendarie giocabili (le rimosse del playtest restano nel database carte)
   const legendaries = activeCards.filter((c) => c.legendary);
   const community = await listPublishedDecks();
   // "Di tendenza" e "Più salvati" (blocco PREFERITI E TENDENZA, 30/09/2026): null senza la migrazione, e gli ordini non ci sono
@@ -181,7 +181,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
 
   // In breve (piano SEO/GEO del 25/09/2026, DECKS-05): quanti mazzi, le Leggendarie più giocate e i mazzi più votati,
   // calcolati qui a ogni rigenerazione (ISR), mai scritti a mano. Voci, regola dei pari merito e frasi sono quelle di
-  // /tier-list (`deckBrief` in tierstats.ts, revisione dell'Ondata 1): le Leggendarie della demo contate come in
+  // /tier-list (`deckBrief` in tierstats.ts, revisione dell'Ondata 1): le Leggendarie del gioco contate come in
   // "Le più giocate" (`usageCounts`), i mazzi col voto pesato sul numero di voti. /tier-list aggiunge le carte base.
   // I mazzi votati sono gli stessi della classifica dei migliori mazzi qui sotto (Ondata 3): solo quelli con la scheda
   // indicizzabile nella lingua della pagina, così "In breve" e classifica non danno due risposte diverse.

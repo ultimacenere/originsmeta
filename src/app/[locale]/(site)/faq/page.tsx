@@ -42,7 +42,7 @@ export default async function FaqPage({ params }: { params: LocaleParams }) {
   const lista = faqs[locale];
   const stat = copertura();
   const attiva = aiAttiva();
-  // Le carte che l'assistente legge, dette come le dice il resto del sito: le 122 della Demo 2.0 più le carte create
+  // Le carte che l'assistente legge, dette come le dice il resto del sito: le 122 della collezione più le carte create
   // (prima un solo numero, 144, che le sommava e contraddiceva il "122" delle risposte)
   const create = cards.filter((c) => c.status === "active" && c.type === "token").length;
 

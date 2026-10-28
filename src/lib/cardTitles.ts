@@ -8,7 +8,7 @@ import type { Card } from "./data/cards";
  * Perché: prima il title di una scheda era il solo nome ("Merlin · Origins TCG · OriginsMeta"), uguale in tre lingue
  * e senza la parola "carta"; la description era un elenco di campi senza "Origins TCG" né "Koin Games", e sui nomi
  * condivisi con altri giochi (Merlin in Grand Archive e Sorcery, Riftbound Origins) lo snippet non diceva di che gioco
- * si parla. Qui c'è un modello per tipo di carta (Leggendaria, carta base, carta creata, carta non nella demo) nelle
+ * si parla. Qui c'è un modello per tipo di carta (Leggendaria, carta base, carta creata, carta non più nel gioco) nelle
  * sette lingue (francese dal 07/10/2026, portoghese del Brasile, tedesco e russo dal 20/10/2026), e la description è una frase vera fatta solo con i dati della scheda: tipo,
  * allineamento, costo, statistiche, stato, chi crea la carta, testo e origine della leggenda.
  *
@@ -32,7 +32,7 @@ export type TitleCard = Pick<Card, "slug" | "name" | "type" | "status" | "legend
 export type TextSource = {
   /** giorno di uscita di ogni patch */
   dates: Readonly<Record<string, string>>;
-  /** giorno della verifica sul gioco (`cardsVerified.date`): vale per le carte della collezione della demo */
+  /** giorno della verifica sul gioco (`cardsVerified.date`): vale per le carte della collezione del gioco */
   verified: string;
 };
 
@@ -40,7 +40,7 @@ export type TextSource = {
  * Il testo della carta nei nostri dati è superato da una modifica dello storico? Contano le sole modifiche del testo
  * (senza statistiche prima/dopo, senza allineamento, senza modifiche ai mazzi e senza le correzioni `fix`, che cambiano
  * come funziona la carta ma non il testo: per esempio il danno di una magia, che sta nel testo):
- * - carte della collezione della demo (attive e non create): il testo è stato letto nel gioco (`verified`), quindi
+ * - carte della collezione del gioco (attive e non create): il testo è stato letto nel gioco (`verified`), quindi
  *   conta solo una patch uscita dopo quel giorno;
  * - carte create e rimosse: non stanno nella collezione, quindi nessuno le ha rilette nel gioco, e il testo importato
  *   da World of Origins non segue sempre le patch, nemmeno quelle uscite prima dell'import: conta qualunque modifica
@@ -69,30 +69,30 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     legendary: "Origins TCG Legendary card",
     card: "Origins TCG card",
     created: "Origins TCG created card",
-    removed: "Origins TCG card, not in the demo",
-    removedLegendary: "Origins TCG Legendary, not in the demo",
+    removed: "removed Origins TCG card",
+    removedLegendary: "removed Origins TCG Legendary",
   },
   it: {
     legendary: "carta Leggendaria di Origins TCG",
     card: "carta di Origins TCG",
     created: "carta generata di Origins TCG",
-    removed: "carta di Origins TCG non nella demo",
-    removedLegendary: "Leggendaria di Origins TCG non nella demo",
+    removed: "carta rimossa di Origins TCG",
+    removedLegendary: "Leggendaria rimossa di Origins TCG",
   },
   es: {
     legendary: "carta Legendaria de Origins TCG",
     card: "carta de Origins TCG",
     created: "carta creada de Origins TCG",
-    removed: "carta de Origins TCG fuera de la demo",
-    removedLegendary: "Legendaria de Origins TCG fuera de la demo",
+    removed: "carta retirada de Origins TCG",
+    removedLegendary: "Legendaria retirada de Origins TCG",
   },
-  // "Demo 2.0" resta il nome del prodotto, qui "démo" è il nome comune (docs/francese.md)
+  // Fino al 27/10/2026 le carte rimosse erano "hors de la démo"; dall'Accesso anticipato sono "retirée" (title corti, entro 60 caratteri)
   fr: {
     legendary: "carte Légendaire d'Origins TCG",
     card: "carte d'Origins TCG",
     created: "carte créée d'Origins TCG",
-    removed: "carte d'Origins TCG hors de la démo",
-    removedLegendary: "Légendaire d'Origins TCG hors de la démo",
+    removed: "carte retirée d'Origins TCG",
+    removedLegendary: "Légendaire retirée d'Origins TCG",
   },
   // portoghese del Brasile (docs/portoghese.md): "Lendária" come la rarità del gioco, "carta criada" per i token;
   // la carta base dice "do jogo", perché "carta de Origins TCG" è già il title spagnolo
@@ -100,17 +100,17 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     legendary: "carta Lendária de Origins TCG",
     card: "carta do jogo Origins TCG",
     created: "carta criada de Origins TCG",
-    removed: "carta de Origins TCG fora da demo",
-    removedLegendary: "Lendária de Origins TCG fora da demo",
+    removed: "carta removida de Origins TCG",
+    removedLegendary: "Lendária removida de Origins TCG",
   },
   // tedesco (docs/tedesco.md): "aus Origins TCG", "Legendäre" come aggettivo del gioco (glossario del gioco),
-  // "erschaffene Karte" per i token; "Demo" è il nome comune, "Demo 2.0" il prodotto
+  // "erschaffene Karte" per i token; le carte rimosse sono "entfernte" (fino al 27/10/2026 "nicht in der Demo")
   de: {
     legendary: "Legendäre Karte aus Origins TCG",
     card: "Karte aus Origins TCG",
     created: "erschaffene Karte aus Origins TCG",
-    removed: "Karte aus Origins TCG, nicht in der Demo",
-    removedLegendary: "Legendäre aus Origins TCG, nicht in der Demo",
+    removed: "entfernte Karte aus Origins TCG",
+    removedLegendary: "entfernte Legendäre aus Origins TCG",
   },
   // russo (docs/russo.md, glossario del gioco): "Легендарная" con la maiuscola come la rarità, "созданная карта" per
   // i token; il nome del gioco non si declina, quindi sta dopo "карта" come apposizione ("карта Origins TCG")
@@ -118,15 +118,15 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     legendary: "Легендарная карта Origins TCG",
     card: "карта Origins TCG",
     created: "созданная карта Origins TCG",
-    removed: "карта Origins TCG, нет в демо",
-    removedLegendary: "Легендарная карта Origins TCG, нет в демо",
+    removed: "удалённая карта Origins TCG",
+    removedLegendary: "удалённая Легендарная карта Origins TCG",
   },
 };
 
 /**
  * Title della scheda carta, senza marchio: "Merlin: Origins TCG Legendary card", "Baker: carta di Origins TCG",
- * "Garlic: carta creada de Origins TCG", "Alice: Origins TCG Legendary, not in the demo". Le carte create non sono mai
- * rimosse, ma se lo diventassero conta lo stato: la prima cosa da dire è che la carta non è nella demo.
+ * "Garlic: carta creada de Origins TCG", "Alice: removed Origins TCG Legendary". Le carte create non sono
+ * mai rimosse, ma se lo diventassero conta lo stato: la prima cosa da dire è che la carta non è più nel gioco.
  * Se il nome fosse troppo lungo (oggi il più lungo, 24 caratteri, sta in tutti i modelli) si ripiega sulla coda corta.
  */
 export function cardTitle(card: TitleCard, locale: Locale): string {
@@ -186,7 +186,7 @@ const descWords: Record<Locale, DescWords> = {
       h.creators
         ? `${h.name}, ${h.align} card created by ${h.creators} in Origins TCG (Koin Games): ${h.stats}.`
         : `${h.name}, ${h.align} created card in Origins TCG by Koin Games: ${h.stats}.`,
-    removed: (h) => `${h.name}, ${h.align} ${h.legendary ? "Legendary " : ""}${h.spell ? "spell" : "unit"} from Origins TCG by Koin Games, not in the demo: ${h.stats}.`,
+    removed: (h) => `${h.name}, ${h.align} ${h.legendary ? "Legendary " : ""}${h.spell ? "spell" : "unit"} from Origins TCG by Koin Games, no longer in the game: ${h.stats}.`,
     tail: "Stats and origin of the legend on OriginsMeta.",
     shortTail: "Stats and legend on OriginsMeta.",
   },
@@ -199,7 +199,7 @@ const descWords: Record<Locale, DescWords> = {
       h.creators
         ? `${h.name}, carta ${h.align} generata da ${h.creators} in Origins TCG (Koin Games): ${h.stats}.`
         : `${h.name}, carta generata ${h.align} di Origins TCG (Koin Games): ${h.stats}.`,
-    removed: (h) => `${h.name}, ${h.spell ? "magia" : "unità"}${h.legendary ? " Leggendaria" : ""} ${h.align} di Origins TCG (Koin Games) non nella demo: ${h.stats}.`,
+    removed: (h) => `${h.name}, ${h.spell ? "magia" : "unità"}${h.legendary ? " Leggendaria" : ""} ${h.align} di Origins TCG (Koin Games) non più nel gioco: ${h.stats}.`,
     tail: "Statistiche e origine della leggenda su OriginsMeta.",
     shortTail: "Statistiche e leggenda su OriginsMeta.",
   },
@@ -214,7 +214,7 @@ const descWords: Record<Locale, DescWords> = {
         ? `${h.name}, carta ${h.align} creada por ${h.creators} en Origins TCG (Koin Games): ${h.stats}.`
         : `${h.name}, carta creada ${h.align} de Origins TCG (Koin Games): ${h.stats}.`,
     removed: (h) =>
-      `${h.name}, ${h.spell ? "hechizo" : "unidad"}${h.legendary ? (h.spell ? " Legendario" : " Legendaria") : ""} ${h.align} de Origins TCG (Koin Games) fuera de la demo: ${h.stats}.`,
+      `${h.name}, ${h.spell ? "hechizo" : "unidad"}${h.legendary ? (h.spell ? " Legendario" : " Legendaria") : ""} ${h.align} de Origins TCG (Koin Games) que ya no está en el juego: ${h.stats}.`,
     tail: "Estadísticas y origen de la leyenda en OriginsMeta.",
     shortTail: "Estadísticas y leyenda en OriginsMeta.",
   },
@@ -229,7 +229,7 @@ const descWords: Record<Locale, DescWords> = {
       h.creators
         ? `${h.name}, carte ${h.align} créée par ${h.creators} dans Origins TCG (Koin Games)\u00a0: ${h.stats}.`
         : `${h.name}, carte créée ${h.align} d'Origins TCG (Koin Games)\u00a0: ${h.stats}.`,
-    removed: (h) => `${h.name}, ${h.spell ? "sort" : "unité"}${h.legendary ? " Légendaire" : ""} ${h.align} d'Origins TCG (Koin Games) hors de la démo\u00a0: ${h.stats}.`,
+    removed: (h) => `${h.name}, ${h.spell ? "sort" : "unité"}${h.legendary ? " Légendaire" : ""} ${h.align} d'Origins TCG (Koin Games) qui n'est plus dans le jeu\u00a0: ${h.stats}.`,
     // Più lunga delle altre lingue: con un attacco corto (57–87 caratteri) e senza testo né origine francese
     // (card-lore-fr.ts) arriva da sola a 120; la corta entra nei caratteri che restano dopo un attacco con il testo.
     tail: "Statistiques, decks publiés et origine de la légende sur OriginsMeta.",
@@ -245,7 +245,7 @@ const descWords: Record<Locale, DescWords> = {
       h.creators
         ? `${h.name}, carta ${h.align} criada por ${h.creators} em Origins TCG (Koin Games): ${h.stats}.`
         : `${h.name}, carta criada ${h.align} de Origins TCG (Koin Games): ${h.stats}.`,
-    removed: (h) => `${h.name}, ${h.spell ? "feitiço" : "personagem"}${h.legendary ? " Lendário" : ""} ${h.align} de Origins TCG (Koin Games) fora da demo: ${h.stats}.`,
+    removed: (h) => `${h.name}, ${h.spell ? "feitiço" : "personagem"}${h.legendary ? " Lendário" : ""} ${h.align} de Origins TCG (Koin Games) que não está mais no jogo: ${h.stats}.`,
     // Lunga come quella francese: regge anche una carta senza testo né origine portoghese
     tail: "Estatísticas, decks publicados e origem da lenda no OriginsMeta.",
     shortTail: "Ficha completa no OriginsMeta.",
@@ -261,7 +261,7 @@ const descWords: Record<Locale, DescWords> = {
       h.creators
         ? `${h.name}, Karte ${h.align}, erschaffen von ${h.creators} in Origins TCG (Koin Games): ${h.stats}.`
         : `${h.name}, erschaffene Karte ${h.align} aus Origins TCG (Koin Games): ${h.stats}.`,
-    removed: (h) => `${h.name}, ${h.legendary ? "Legendärer " : ""}${h.spell ? "Zauber" : "Charakter"} ${h.align} aus Origins TCG (Koin Games), nicht in der Demo: ${h.stats}.`,
+    removed: (h) => `${h.name}, ${h.legendary ? "Legendärer " : ""}${h.spell ? "Zauber" : "Charakter"} ${h.align} aus Origins TCG (Koin Games), nicht mehr im Spiel: ${h.stats}.`,
     // Lunga come quella francese e portoghese: regge anche una carta senza testo né origine tedesca
     tail: "Werte, veröffentlichte Decks und Herkunft der Legende auf OriginsMeta.",
     shortTail: "Alle Details auf OriginsMeta.",
@@ -278,7 +278,7 @@ const descWords: Record<Locale, DescWords> = {
       h.creators
         ? `${h.name}, карта ${h.align}, которую ${h.creators.includes(" и ") ? "создают карты" : "создаёт карта"} ${h.creators} в Origins TCG (Koin Games): ${h.stats}.`
         : `${h.name}, созданная карта ${h.align} из Origins TCG (Koin Games): ${h.stats}.`,
-    removed: (h) => `${h.name}, ${ruKind(h)} ${h.align} из Origins TCG (Koin Games), нет в демо: ${h.stats}.`,
+    removed: (h) => `${h.name}, ${ruKind(h)} ${h.align} из Origins TCG (Koin Games), больше нет в игре: ${h.stats}.`,
     // Lunga come quella tedesca: regge anche una carta senza testo né origine russa
     tail: "Характеристики, опубликованные колоды и происхождение легенды на OriginsMeta.",
     shortTail: "Все подробности на OriginsMeta.",
@@ -304,7 +304,7 @@ function escapeRe(text: string): string {
  * Chi crea una carta creata: le carte il cui testo la nomina (anche al plurale, "three Pumpkins"), in una qualsiasi
  * delle quattro lingue, perché i nomi delle carte restano in inglese anche nei testi ufficiali italiani e spagnoli e a
  * volte solo lì il nome è giusto (Van Helsing's Tools in inglese dice "Silver Bolt", in italiano e spagnolo "Silver
- * Bullet"). Fra più fonti restano quelle nella demo, quando ce ne sono. Un nome contenuto in uno più lungo ("Little
+ * Bullet"). Fra più fonti restano quelle nella collezione del gioco, quando ce ne sono. Un nome contenuto in uno più lungo ("Little
  * Pig" in "Not So Little Pig") non conta dentro il nome più lungo.
  * Il campo `related` di World of Origins non basta (e dal 25/09/2026 il sito non lo legge più): vuol dire "citata da",
  * a volte salta un passaggio (Garlic risulta da Van Helsing, ma la gioca Van Helsing's Tools) e su Reflection, Off With

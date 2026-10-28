@@ -90,8 +90,11 @@ const FEATURED_POSTITS = [
   { tilt: -3, place: "postit-corner -top-1.5 left-7 [--delay:-2.1s] [--flap-dur:2.3s] [--sway-dur:6.4s]" },
 ] as const;
 
-/** Guide per chi arriva adesso: che cos'è il gioco, come si prova la demo, che cosa succede al Next Fest. */
-const START_GUIDES = ["origins-tcg-explained", "play-the-demo", "steam-next-fest-2026"] as const;
+/**
+ * Guide per chi arriva adesso: che cos'è il gioco, come si comincia a giocare, come funziona la classificata. Fino al
+ * 27/10/2026 la terza era la guida allo Steam Next Fest (finito il 26/10); lo slug di play-the-demo resta per i link.
+ */
+const START_GUIDES = ["origins-tcg-explained", "play-the-demo", "origins-tcg-ranked"] as const;
 
 /* Icone del blocco "Fai la tua mossa": tratti semplici in menta, decorative (il testo accanto dice tutto) */
 const moveIcon = "h-7 w-7 shrink-0 fill-none stroke-mint stroke-[1.8]";
@@ -185,7 +188,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
     // Prima slide dal 30/09/2026 (richiesta di Pierluigi): la copertina ufficiale della patch 0.7 con il tasto verso l'articolo.
     // Quando esce la patch successiva si sostituisce o si toglie.
     { src: "/media/news-patch-07.webp", ...sl.patch07, href: href(locale, "/news/patch-0-7") },
-    { src: "/media/hero-1920.webp", ...sl.keyArt, href: officialLinks.demo, external: true },
+    { src: "/media/hero-1920.webp", ...sl.keyArt, href: officialLinks.steam, external: true },
     { src: "/media/banner-rapunzel.webp", ...sl.rapunzel, href: href(locale, "/cards") },
     { src: "/media/ls-zero-pay-to-win.webp", ...sl.zeroPay, href: href(locale, "/guides/is-origins-tcg-pay-to-win") },
     { src: "/media/ls-real-collecting.webp", ...sl.realCollecting, href: href(locale, "/guides/collector-economy") },

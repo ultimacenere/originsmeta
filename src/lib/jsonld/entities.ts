@@ -115,7 +115,7 @@ export const organization: Json = {
   logo: `${siteUrl}/media/logo-originsmeta.webp`,
   email: "staff@originsmeta.com",
   description:
-    "Unofficial, independent fan site about Origins TCG, the digital card game by Koin Games: news, tier list, guides, card database, decks and tournament calendar, in English, Italian, Spanish and French. Not affiliated with Koin Games.",
+    "Unofficial, independent fan site about Origins TCG, the digital card game by Koin Games: news, tier list, guides, card database, decks and tournament calendar, in English, Italian, Spanish, French, Portuguese, German and Russian. Not affiliated with Koin Games.",
   // Mese in cui è nato il sito.
   foundingDate: "2026-09",
   founder: founders.map((a) => ({ "@type": "Person", "@id": personId(a.slug), name: a.name })),
@@ -132,8 +132,8 @@ export const organization: Json = {
 
 /**
  * Gli indirizzi ufficiali del gioco, gli stessi di `officialLinks` nel footer (Footer.tsx è un componente, qui non si
- * importa: il test controlla che i due elenchi restino uguali). La demo e il Discord ufficiale non ci sono: la prima è
- * un'altra app di Steam, il secondo è un invito, non un profilo.
+ * importa: il test controlla che i due elenchi restino uguali). La demo e il Discord ufficiale non ci sono: la prima era
+ * un'altra app di Steam (finita il 27/10/2026, con l'Accesso anticipato), il secondo è un invito, non un profilo.
  */
 export const gameLinks = {
   steam: "https://store.steampowered.com/app/4429430/Origins_TCG/",
@@ -159,7 +159,7 @@ export const videoGame: Json = {
   description:
     "Digital trading card game by Koin Games: public-domain legends reimagined in one original world, and a free-to-compete promise — every competitive card is earned by playing.",
   disambiguatingDescription:
-    "The digital trading card game by Koin Games, with a free demo on Steam; not to be confused with Riftbound: Origins, a set of the League of Legends trading card game.",
+    "The digital trading card game by Koin Games, free to play on Steam in Early Access; not to be confused with Riftbound: Origins, a set of the League of Legends trading card game.",
   url: gameLinks.site,
   gamePlatform: ["PC", "Steam"],
   genre: ["Trading card game", "Digital collectible card game"],
