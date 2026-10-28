@@ -242,7 +242,7 @@ And we can say it right away: **we Italians took three of the four spots in the 
 
 [![The official Crimson Cup graphic by Koin Games: qualifiers, playoffs, finals and $10,000 in prizes](/media/news-crimson-cup.webp)](/en/analytics/crimson-cup)
 
-## Italy and Origins TCG {#italians}
+## Origins TCG in Italy {#italians}
 
 **Davdas:** It's a big success for our country: it brings people together and strengthens Origins, which is only now starting to move into markets abroad, towards every country in the world. What do you expect from the Italian market with a game like this? Can Italians make it a leading game?
 
@@ -252,7 +252,7 @@ Still today we have one of the biggest communities on Magic: The Gathering Onlin
 
 In my opinion Origins has every chance: **it has nothing to envy a golden-age Hearthstone**, if you like. Times have changed, sure, but I'm sure lots of people can enjoy this game. In fact it's obvious: lots of people already do. No point pretending otherwise.
 
-## The line-up: Pigs, Mulan and Merlin against Van Helsing {#lineup}
+## The line-up: Pigs, Mulan and Merlin {#lineup}
 
 > “In 6 rounds out of 7 I faced players who had brought Van Helsing: simply by not banning it, I always ran over them.”
 
@@ -268,7 +268,7 @@ I had brought a full control and healing line-up, with Van Helsing and then deck
 
 [![Van Helsing, the deck to beat at the Crimson Cup: SouL's line-up was built to run over it](/cards/cover/van-helsing.webp)](/en/cards/van-helsing)
 
-### Merlin: more damage, less reliance on Obliterate {#merlin}
+### Merlin: more sustained damage, less reliance on Obliterate {#merlin}
 
 The original idea was Nimer's. When I found out about it I told him: I think you're totally right, show me what you've got. I looked at his decks and made a few changes.
 
@@ -362,7 +362,7 @@ I think all the factors are there for this game to be born, grow and live a long
 
 As Timothy, the creator, always says: we want to make the best competitive online card game, because there isn't one. I give it six months before it blows up.
 
-## His advice to Koin Games: never change {#advice}
+## His advice to Koin Games {#advice}
 
 **Davdas:** What would you advise Origins today? By nature the game draws on games we already know, but it does it very well: it weaves together playability, replayability, continuity and fun, taking the best, or at least the best ideas, from other titles. My first thought was Hearthstone, which you mentioned, Artifact, Snap, games that had their big moment in the market, some for longer, some with more players, each with its own story.
 
@@ -423,7 +423,7 @@ E possiamo dirlo subito: **noi italiani abbiamo occupato tre posti su quattro de
 
 [![La grafica ufficiale della Crimson Cup di Koin Games: qualificazioni, playoff, finali e premi per 10.000 $](/media/news-crimson-cup.webp)](/it/analytics/crimson-cup)
 
-## Gli italiani e Origins TCG {#italiani}
+## Origins TCG nel Bel Paese {#italiani}
 
 **Davdas:** È un grande successo per il nostro territorio: fa gruppo e rafforza l'idea di Origins, che proprio adesso inizia a muoversi sui mercati esteri, verso le varie nazioni del mondo. Cosa ti aspetti dal mercato italiano davanti a un gioco del genere? Gli italiani possono farlo diventare un gioco di punta?
 
@@ -433,7 +433,7 @@ Ancora oggi abbiamo una delle community più grandi su Magic: The Gathering Onli
 
 Origins secondo me ha tutte le possibilità: **non ha niente da invidiare a un Hearthstone dei tempi d'oro**, se vogliamo. I tempi sono cambiati, certo, ma sono sicuro che può piacere a un sacco di gente. Anzi, è evidente: sta già piacendo a un sacco di gente. Inutile nascondersi dietro un dito.
 
-## La lineup: Pigs, Mulan e Merlin contro Van Helsing {#lineup}
+## La lineup: Pigs, Mulan e Merlin {#lineup}
 
 > «In 6 turni su 7 ho incontrato giocatori che portavano Van Helsing: semplicemente non bannandoglielo, gli sono sempre passato sopra.»
 
@@ -449,7 +449,7 @@ Avevo portato una lineup tutta control e cure, con Van Helsing e poi mazzi che f
 
 [![Van Helsing, il mazzo da battere della Crimson Cup: la lineup di SouL è nata per passargli sopra](/cards/cover/van-helsing.webp)](/it/cards/van-helsing)
 
-### Merlin: più danno e meno affidamento sugli Obliterate {#merlin}
+### Merlin: più danno sostenuto e meno affidamento sugli Obliterate {#merlin}
 
 L'idea iniziale era di Nimer. Quando l'ho scoperta gli ho detto: secondo me hai totalmente ragione, fammi vedere le idee che hai. Ho visto i suoi mazzi e ho fatto qualche modifica.
 
@@ -457,7 +457,7 @@ Il Merlin, per esempio, come l'aveva costruito lui era un po' "brickoso", diciam
 
 Quindi **ho inserito Puck, Jekyll e First Aid**, per avere quelle cure che ti aiutano a controllare ma che, in combo con Puck, vanno a colpire l'avversario e ti aiutano a chiudere le partite.
 
-### Pigs: Glinda e Sandman per la board mostruosa {#pigs}
+### Pigs: Glinda e Sandman per una board mostruosa {#pigs}
 
 Three Not So Little Pigs è il meno combo dei tre, perché gioca in modo abbastanza aggro, ma lo scopo del mazzo, soprattutto contro Van Helsing, è **tenersi le risorse in mano per piazzare Glinda e Sandman sul reveal dell'avversario**.
 
@@ -543,7 +543,7 @@ Secondo me ci sono tutti i fattori perché questo gioco nasca, cresca e viva una
 
 Come dice sempre Timothy, il creatore: vogliamo fare il miglior gioco di carte competitivo online, perché non c'è. Io gli do sei mesi prima di esplodere.
 
-## Il consiglio a Koin Games: non cambiare mai {#consigli}
+## Il consiglio a Koin Games {#consigli}
 
 **Davdas:** Cosa consigli oggi a Origins? Per sua natura il gioco attinge da giochi che abbiamo già conosciuto, ma lo fa molto bene: costruisce una matassa di giocabilità, rigiocabilità, continuità e divertimento prendendo il meglio, o comunque gli spunti migliori, da altri titoli. A primo impatto ho pensato a Hearthstone, che hai citato, ad Artifact, a Snap, a giochi che hanno avuto il loro grande momento sul mercato, chi per più tempo, chi con più giocatori, ognuno con la sua storia.
 
@@ -604,7 +604,7 @@ Y podemos decirlo ya: **los italianos ocupamos tres de los cuatro puestos del to
 
 [![La imagen oficial de la Crimson Cup de Koin Games: clasificatorios, playoffs, finales y premios por 10.000 dólares](/media/news-crimson-cup.webp)](/es/analytics/crimson-cup)
 
-## Los italianos y Origins TCG {#italianos}
+## Origins TCG en Italia {#italianos}
 
 **Davdas:** Es un gran éxito para nuestro país: crea grupo y refuerza la idea de Origins, que justo ahora empieza a moverse en los mercados extranjeros, hacia los distintos países del mundo. ¿Qué esperas del mercado italiano ante un juego así? ¿Pueden los italianos convertirlo en un juego de referencia?
 
@@ -614,7 +614,7 @@ Todavía hoy tenemos una de las comunidades más grandes de Magic: The Gathering
 
 Origins, para mí, tiene todas las posibilidades: **no tiene nada que envidiarle a un Hearthstone de los tiempos dorados**, si quieres. Los tiempos han cambiado, claro, pero estoy seguro de que puede gustar a muchísima gente. Es más, es evidente: ya le está gustando a muchísima gente. Para qué negarlo.
 
-## El lineup: Pigs, Mulan y Merlin contra Van Helsing {#lineup}
+## El lineup: Pigs, Mulan y Merlin {#lineup}
 
 > «En 6 rondas de 7 me encontré con jugadores que llevaban Van Helsing: simplemente con no banearlo, siempre les pasé por encima.»
 
@@ -630,7 +630,7 @@ Había llevado un lineup todo de control y curas, con Van Helsing y luego mazos 
 
 [![Van Helsing, el mazo a batir de la Crimson Cup: el lineup de SouL nació para pasarle por encima](/cards/cover/van-helsing.webp)](/es/cards/van-helsing)
 
-### Merlin: más daño y menos dependencia de los Obliterate {#merlin}
+### Merlin: más daño sostenido y menos dependencia de los Obliterate {#merlin}
 
 La idea inicial era de Nimer. Cuando la descubrí le dije: creo que tienes toda la razón, enséñame las ideas que tienes. Vi sus mazos e hice algunos cambios.
 
@@ -724,7 +724,7 @@ Para mí están todos los factores para que este juego nazca, crezca y viva una 
 
 Como dice siempre Timothy, el creador: queremos hacer el mejor juego de cartas competitivo online, porque no lo hay. Yo le doy seis meses antes de que explote.
 
-## El consejo a Koin Games: no cambiar nunca {#consejos}
+## El consejo a Koin Games {#consejos}
 
 **Davdas:** ¿Qué le aconsejas hoy a Origins? Por su naturaleza, el juego bebe de juegos que ya conocemos, pero lo hace muy bien: construye una madeja de jugabilidad, rejugabilidad, continuidad y diversión tomando lo mejor, o al menos las mejores ideas, de otros títulos. A primera vista pensé en Hearthstone, que has citado, en Artifact, en Snap, en juegos que tuvieron su gran momento en el mercado, unos durante más tiempo, otros con más jugadores, cada uno con su historia.
 

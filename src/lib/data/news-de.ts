@@ -40,7 +40,7 @@ Und das können wir gleich sagen: **Wir Italiener haben drei der vier Plätze in
 
 [![Die offizielle Grafik des Crimson Cup von Koin Games: Qualifikationen, Playoffs, Finals und Preise im Wert von 10.000 Dollar](/media/news-crimson-cup.webp)](/de/analytics/crimson-cup)
 
-## Die Italiener und Origins TCG {#italiener}
+## Origins TCG in Italien {#italiener}
 
 **Davdas:** Das ist ein großer Erfolg für unser Land: Es schweißt zusammen und stärkt die Idee von Origins, das sich gerade jetzt auf die Märkte im Ausland zubewegt, in die verschiedenen Länder der Welt. Was erwartest du vom italienischen Markt bei so einem Spiel? Können die Italiener daraus ein Spitzenspiel machen?
 
@@ -50,7 +50,7 @@ Bis heute haben wir eine der größten Communitys auf Magic: The Gathering Onlin
 
 Origins hat meiner Meinung nach alle Chancen: **Es muss sich vor einem Hearthstone aus der goldenen Zeit nicht verstecken**, wenn man so will. Die Zeiten haben sich geändert, klar, aber ich bin sicher, dass es einer Menge Leute gefallen kann. Im Gegenteil, es ist offensichtlich: Es gefällt schon einer Menge Leute. Da braucht man nicht drum herumzureden.
 
-## Die Aufstellung: Pigs, Mulan und Merlin gegen Van Helsing {#aufstellung}
+## Die Aufstellung: Pigs, Mulan und Merlin {#aufstellung}
 
 > „In 6 von 7 Runden habe ich Spieler getroffen, die Van Helsing dabeihatten: Indem ich es einfach nicht gebannt habe, bin ich jedes Mal über sie hinweggerollt.“
 
@@ -66,7 +66,7 @@ Ich hatte eine Aufstellung nur aus Control und Heilung mitgebracht, mit Van Hels
 
 [![Van Helsing, das Deck, das es beim Crimson Cup zu schlagen galt: Die Aufstellung von SouL wurde gebaut, um darüber hinwegzurollen](/cards/cover/van-helsing.webp)](/de/cards/van-helsing)
 
-### Merlin: mehr Schaden und weniger Verlass auf Obliterate {#merlin}
+### Merlin: mehr anhaltender Schaden und weniger Verlass auf Obliterate {#merlin}
 
 Die ursprüngliche Idee war von Nimer. Als ich davon erfahren habe, habe ich ihm gesagt: Ich glaube, du hast völlig recht, zeig mir deine Ideen. Ich habe mir seine Decks angeschaut und ein paar Änderungen gemacht.
 
@@ -160,7 +160,7 @@ Ich glaube, es sind alle Voraussetzungen da, damit dieses Spiel entsteht, wächs
 
 Wie Timothy, der Schöpfer, immer sagt: Wir wollen das beste kompetitive Online-Kartenspiel machen, weil es keins gibt. Ich gebe ihm sechs Monate, bis es explodiert.
 
-## Der Rat an Koin Games: niemals ändern {#ratschlag}
+## Der Rat an Koin Games {#ratschlag}
 
 **Davdas:** Was rätst du Origins heute? Von seiner Natur her schöpft das Spiel aus Spielen, die wir schon kennen, aber es macht das sehr gut: Es verwebt Spielbarkeit, Wiederspielwert, Kontinuität und Spaß und nimmt das Beste, oder zumindest die besten Ideen, aus anderen Titeln. Auf den ersten Blick habe ich an Hearthstone gedacht, das du erwähnt hast, an Artifact, an Snap, an Spiele, die ihren großen Moment auf dem Markt hatten, manche länger, manche mit mehr Spielern, jedes mit seiner eigenen Geschichte.
 

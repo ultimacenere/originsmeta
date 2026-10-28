@@ -2407,11 +2407,21 @@
     font-weight: 700;
   }
   /* interviste: chi fa le domande in menta, l'ospite in rosa (Markdown.tsx, markSpeakers) */
+  /* pastiglie piene (28/10/2026, Pierluigi: "il rosa chiaro si perde"): chi intervista menta, l'ospite magenta */
+  .prose-night strong.speaker {
+    display: inline-block;
+    padding: 0.05em 0.55em;
+    border-radius: 6px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
   .prose-night strong.speaker-1 {
-    color: var(--color-mint);
+    background: var(--color-mint);
+    color: var(--color-ink);
   }
   .prose-night strong.speaker-2 {
-    color: var(--color-crimson-soft);
+    background: var(--color-crimson);
+    color: var(--color-chalk);
   }
   .prose-night blockquote {
     border-left: 3px solid var(--color-mint);
