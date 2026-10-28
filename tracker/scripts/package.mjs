@@ -72,8 +72,8 @@ const readme = `${name} ${version} (versione di prova, non firmata)
 6. Scanner dello schermo (acceso): dalla patch 0.7 il gioco non salva più i replay, quindi l'app legge le carte giocate
    dalla finestra di Origins TCG. Guarda solo quella finestra, le immagini restano sul PC e al sito arrivano solo gli id
    delle carte, mai i nomi dei giocatori. Si spegne dal riquadro "Scanner dello schermo" o dal menu dell'icona.
-7. Funziona con la demo e con il playtest di Steam: sul playtest l'esito delle partite online e classificate lo legge
-   dallo schermo di fine partita, quindi lascia lo scanner acceso.
+7. Funziona con Origins TCG da Steam (dalla 0.5.0 il gioco completo, non più la demo): il gioco non salva l'esito
+   delle partite sul PC, l'app lo legge dallo schermo di fine partita, quindi lascia lo scanner acceso.
 
 Guida passo per passo: https://originsmeta.com/it/tracker#installazione
 L'app legge i file che il gioco salva sul PC e, con lo scanner acceso, la finestra del gioco: non tocca mai il gioco.
