@@ -84,18 +84,16 @@ export function navItems(dict: Dictionary): NavItem[] {
       label: dict.nav.decks,
       path: "/decks",
       // sottomenu (04/10/2026, Pierluigi: "avremo mazzi singoli e mazzi tornei sotto il menu mazzi"): i mazzi singoli della
-      // community e i Mazzi torneo, tre mazzi Conquest pubblicati insieme con una guida
+      // community e i Mazzi torneo, tre mazzi Conquest pubblicati insieme con una guida. Dal 28/10/2026 anche il Deck
+      // builder e il Draft, che erano una voce principale con il suo sottomenu (Pierluigi: "in russo le icone menu si
+      // sovrappongono, se le voci son troppe accorpa con dei sotto menu"): in russo le voci erano larghe 860 px e da 1536
+      // px, con il tasto PayPal intero, la riga sforava di 118 px (francese 19, spagnolo 1); busta e avatar finivano
+      // sopra il selettore lingua. Nella tendina del telefono e nel footer restano tutte e due.
       sub: [
         { label: dict.nav.decksSingle, path: "/decks" },
         { label: dict.nav.decksTournament, path: "/decks/tournament", mobile: true },
-      ],
-    },
-    {
-      label: dict.nav.builder,
-      path: "/deck-builder",
-      // sottomenu del menu desktop (02/10/2026): il draft contro il Cervello sta accanto al deck builder
-      sub: [
-        { label: dict.nav.builder, path: "/deck-builder" },
+        { label: dict.nav.builder, path: "/deck-builder", mobile: true },
+        // il draft contro il Cervello sta accanto al deck builder (02/10/2026)
         { label: dict.nav.draft, path: "/draft", mobile: true },
       ],
     },
