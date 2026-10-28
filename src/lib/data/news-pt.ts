@@ -94,10 +94,6 @@ A escolha foi ótima: em 6 rodadas de 7 encontrei jogadores que levavam Van Hels
 
 ## As três listas de SouL {#listas}
 
-São as listas que a Koin Games publicou no dia das finais: a partir do top 4 as listas ficam públicas, como dizem as regras. Na lista de Merlin levada às finais não há Jekyll.
-
-Nós as reunimos em um [deck de torneio](/pt/decks/tournament/soul-crimson-cup-lineup) no perfil de SouL, com o guia escrito a partir das palavras dele: **copie o código do jogo de cada deck e cole no Origins TCG**, ou abra no nosso deck builder.
-
 {{decklists}}
 
 ## O melhor deck e o que mudar {#decks}

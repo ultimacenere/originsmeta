@@ -93,10 +93,6 @@ Die Entscheidung war hervorragend: In 6 von 7 Runden habe ich Spieler getroffen,
 
 ## Die drei Listen von SouL {#listen}
 
-Das sind die Listen, die Koin Games am Tag der Finals veröffentlicht hat: Ab der Top 4 werden die Decklists öffentlich, so steht es in den Regeln. In der Merlin-Liste, die er zu den Finals mitgebracht hat, ist Jekyll nicht dabei.
-
-Wir haben sie in einem [Turnierdeck](/de/decks/tournament/soul-crimson-cup-lineup) auf dem Profil von SouL gesammelt, mit einem Guide aus seinen eigenen Worten: **Kopiere den Spielcode jedes Decks und füge ihn in Origins TCG ein**, oder öffne das Deck in unserem Deckbuilder.
-
 {{decklists}}
 
 ## Das beste Deck und das, was er ändern würde {#decks}

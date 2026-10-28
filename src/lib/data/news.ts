@@ -173,7 +173,7 @@ const raw: RawNews[] = [
     // la lettura, con i nomi delle carte in inglese. Le liste sono quelle di Koin delle finali (crimsonFinals di
     // crimsonCup.ts), mostrate nel riquadro `decklists` e pubblicate come mazzo torneo "soul-crimson-cup-lineup" sul profilo di SouL
     // (scripts/data/soul-crimson-cup.json con scripts/publish-deck-set-as.mjs). Nel Merlin di Koin non c'è Jekyll, che SouL
-    // dice di aver aggiunto: il testo lo dice accanto alle liste. Immagini: copertina con le tre carte intere di SouL
+    // dice di aver aggiunto (la nota accanto alle liste l'ha tolta Pierluigi con tutto il paragrafo, stesso giorno). Immagini: copertina con le tre carte intere di SouL
     // (crediti compresi) su un fondo della palette del sito; nel testo grafiche di Koin, due copertine di carte e la tabella
     // del ban rate della nostra pagina della Crimson Cup (/media/news-soul-ban-rate-<lingua>.webp, una per lingua).
     slug: "soul-crimson-cup-interview",
@@ -304,10 +304,6 @@ Then you fill the board in a single turn, maybe with two Reinforcements plus oth
 The choice was excellent: in 6 rounds out of 7 I faced players who had brought Van Helsing, so simply by not banning it I always ran over them. I won every round 2-0 except one, which I won 2-1 because my opponent had no Van Helsing: it was the only close best-of-three I played. I blew out all the others.
 
 ## SouL's three lists {#lists}
-
-These are the lists Koin Games published on finals day: from the top 4 the decklists become public, as the rules say. Jekyll is not in the Merlin list he brought to the finals.
-
-We collected them in a [tournament deck](/en/decks/tournament/soul-crimson-cup-lineup) on SouL's profile, with a guide written from his own words: **copy each deck's game code and paste it into Origins TCG**, or open it in our deck builder.
 
 {{decklists}}
 
@@ -490,10 +486,6 @@ La scelta è stata ottima: in 6 turni su 7 ho incontrato giocatori che portavano
 
 ## Le tre liste di SouL {#liste}
 
-Sono le liste che Koin Games ha pubblicato il giorno delle finali: dalla top 4 le liste diventano pubbliche, come dice il regolamento. Nel Merlin portato alle finali Jekyll non c'è.
-
-Le abbiamo raccolte in un [mazzo torneo](/it/decks/tournament/soul-crimson-cup-lineup) sul profilo di SouL, con la guida scritta dalle sue parole: **copia il codice del gioco di ogni mazzo e incollalo in Origins TCG**, oppure aprilo nel nostro deck builder.
-
 {{decklists}}
 
 ## Il mazzo migliore e quello da cambiare {#mazzi}
@@ -674,10 +666,6 @@ Luego llenas el campo en un solo turno, quizá con dos Reinforcements más otros
 La elección fue excelente: en 6 rondas de 7 me encontré con jugadores que llevaban Van Helsing, así que, simplemente con no banearlo, siempre les pasé por encima. Gané todas las rondas 2-0 menos una, que gané 2-1 porque el rival no tenía Van Helsing: fue la única serie al mejor de tres igualada que jugué. Todas las demás las arrasé.
 
 ## Las tres listas de SouL {#listas}
-
-Son las listas que Koin Games publicó el día de las finales: desde el top 4 las listas son públicas, como dice el reglamento. En el Merlin que llevó a las finales no está Jekyll.
-
-Las hemos reunido en un [mazo de torneo](/es/decks/tournament/soul-crimson-cup-lineup) en el perfil de SouL, con la guía escrita a partir de sus palabras: **copia el código del juego de cada mazo y pégalo en Origins TCG**, o ábrelo en nuestro deck builder.
 
 {{decklists}}
 
