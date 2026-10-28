@@ -1,0 +1,139 @@
+{
+  "_nota": "Mazzo torneo di SouL (soulontwitch, Pro), secondo alla Crimson Cup: le tre liste pubblicate da Koin Games il giorno delle finali (25/10/2026, crimsonFinals in src/lib/data/crimsonCup.ts), guida scritta dalle sue parole nell'intervista del 28/10/2026 (news soul-crimson-cup-interview, che linka questo slug). Lo pubblica scripts/publish-deck-set-as.mjs, richiesta di Pierluigi del 28/10/2026. newsDecklists.test.ts controlla che liste, nomi e archetipi coincidano con quelli della news.",
+  "slug": "soul-crimson-cup-lineup",
+  "name": "Crimson Cup: Anti-Van Helsing Combo",
+  "decks": [
+    {
+      "name": "Merlin Control Combo",
+      "archetype": "control",
+      "legendary": "merlin",
+      "cards": [
+        "baby-bear",
+        "bridge-troll",
+        "dark-omen",
+        "first-aid",
+        "forbidden-knowledge",
+        "mind-palace",
+        "obliterate",
+        "piggy-bank",
+        "puck",
+        "roo",
+        "scarecrow",
+        "tin-woodman"
+      ]
+    },
+    {
+      "name": "Mulan Midrange Combo",
+      "archetype": "midrange",
+      "legendary": "mulan",
+      "cards": [
+        "bagheera",
+        "boitata",
+        "bullseye",
+        "ellen-trechend",
+        "frog-prince",
+        "jack",
+        "mind-palace",
+        "puck",
+        "scarecrow",
+        "stroke-of-midnight",
+        "tin-woodman",
+        "white-queen"
+      ]
+    },
+    {
+      "name": "Pigs Aggro",
+      "archetype": "aggro",
+      "legendary": "three-not-so-little-pigs",
+      "cards": [
+        "ali-baba",
+        "bullseye",
+        "glinda",
+        "golden-egg",
+        "mind-palace",
+        "obliterate",
+        "paul-bunyan",
+        "reinforcements",
+        "roo",
+        "sandman",
+        "stroke-of-midnight",
+        "trash-for-treasure"
+      ]
+    }
+  ],
+  "guide": {
+    "lang": "it",
+    "summary": "La lineup con cui SouL è arrivato secondo alla Crimson Cup, nata da un'idea di Nimer, testata con Lord Von e rifinita da lui: un control (Merlin), un midrange (Mulan) e un aggro (Three Not So Little Pigs), tutti e tre modificati per giocare da combo. Il bersaglio è Van Helsing healing, secondo loro il mazzo top tier del meta: non lo si banna e gli si passa sopra. Sono le liste pubblicate da Koin Games il giorno delle finali, il 25 ottobre 2026.",
+    "deck_1": "Il mazzo migliore dei tre e il preferito di SouL: «il più solido di tutti», «da nerfare assolutamente». Nella prima versione si basava solo sul fare due Obliterate uno dopo l'altro, e se i due Obliterate restano in fondo al mazzo perdi la partita. Con Puck e First Aid le cure aiutano a controllare e, in combo con Puck, colpiscono l'avversario e aiutano a chiudere le partite. Nel torneo gliel'hanno bannato spesso.",
+    "deck_2": "Il mazzo meno forte dei tre secondo SouL, ma quello che chiude il cerchio della lineup combo. Nel torneo non gliel'hanno mai bannato. In finale ha perso contro il Van Helsing di CoachCrono, la sconfitta che non doveva succedere.",
+    "deck_3": "Il meno combo dei tre: gioca in modo abbastanza aggro, ma soprattutto contro Van Helsing tiene le risorse in mano per piazzare Glinda e Sandman sul reveal dell'avversario. Poi riempie il campo in un solo turno, con due Reinforcements e le altre magie da 1 mana di cui il mazzo è pieno, per attivare Glinda cinque, sei, sette volte in un paio di turni e costruire una board mostruosa. Il momento giusto è quando l'avversario ha solo 7 di mana, così non può rispondere con Forbidden Knowledge.",
+    "strengths": "Contro Van Helsing. Nel torneo SouL ha trovato giocatori con Van Helsing in 6 turni su 7 e, semplicemente non bannandolo, gli è sempre passato sopra: tutti i turni vinti 2-0 tranne uno, vinto 2-1 contro un avversario senza Van Helsing.",
+    "weaknesses": "La lineup è costruita contro Van Helsing: se l'avversario riesce a farlo passare, magari con una combinazione di luoghi sfortunata come nella prima partita della finale, di colpo lo svantaggio è tuo. Contro le lineup senza Van Helsing le partite sono più equilibrate.",
+    "matchups": "Contro CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead): 2-0 prima delle finali, passando sopra al suo Van Helsing. In finale, al meglio delle cinque, la prima partita persa contro Van Helsing con i luoghi sfavorevoli, poi il 2-2 e la partita decisiva persa contro il suo aggro.",
+    "notes": "Ban: a SouL hanno bannato spesso i Pigs e Merlin, mai Mulan. Il racconto completo della lineup e della finale è nell'intervista a SouL su OriginsMeta."
+  },
+  "translations": {
+    "en": {
+      "summary": "The line-up SouL took to second place at the Crimson Cup, born from an idea by Nimer, tested with Lord Von and refined by him: a control (Merlin), a midrange (Mulan) and an aggro (Three Not So Little Pigs), all three tuned to play as combo decks. The target is Van Helsing healing, in their view the top tier deck of the meta: you don't ban it and you run over it. These are the lists Koin Games published on finals day, 25 October 2026.",
+      "deck_1": "The best deck of the three and SouL's favourite: \"the most solid of all\", one that \"absolutely needs a nerf\". The first version relied only on casting two Obliterates one after the other, and if both Obliterates sit at the bottom of the deck you lose the game. With Puck and First Aid the healing helps you control the board and, combined with Puck, hits the opponent and helps you close out games. It was often banned against him in the tournament.",
+      "deck_2": "The weakest of the three according to SouL, but the one that closes the circle of the combo line-up. It was never banned against him in the tournament. In the final it lost to CoachCrono's Van Helsing, the loss that shouldn't have happened.",
+      "deck_3": "The least combo of the three: it plays fairly aggro, but especially against Van Helsing it keeps resources in hand to drop Glinda and Sandman on the opponent's reveal. Then it fills the board in a single turn, with two Reinforcements and the other 1-mana spells the deck is full of, to trigger Glinda five, six, seven times over a couple of turns and build a monster board. The right moment is when the opponent has only 7 mana, so they can't answer with Forbidden Knowledge.",
+      "strengths": "Against Van Helsing. In the tournament SouL faced players with Van Helsing in 6 rounds out of 7 and, simply by not banning it, always ran over them: every round won 2-0 except one, won 2-1 against an opponent without Van Helsing.",
+      "weaknesses": "The line-up is built against Van Helsing: if the opponent manages to get it through, maybe with an unlucky combination of locations as in the first game of the final, suddenly you are the one behind. Against line-ups without Van Helsing the games are closer.",
+      "matchups": "Against CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead): 2-0 before the finals, running over his Van Helsing. In the best-of-five final, the first game lost to Van Helsing with bad locations, then 2-2 and the deciding game lost to his aggro deck.",
+      "notes": "Bans: SouL's opponents often banned the Pigs and Merlin, never Mulan. The full story of the line-up and the final is in the interview with SouL on OriginsMeta."
+    },
+    "es": {
+      "summary": "El lineup con el que SouL quedó segundo en la Crimson Cup, nacido de una idea de Nimer, probado con Lord Von y pulido por él: un control (Merlin), un midrange (Mulan) y un aggro (Three Not So Little Pigs), los tres modificados para jugar como combo. El objetivo es Van Helsing healing, para ellos el mazo top tier del meta: no se banea y se le pasa por encima. Son las listas que publicó Koin Games el día de las finales, el 25 de octubre de 2026.",
+      "deck_1": "El mejor mazo de los tres y el favorito de SouL: \"el más sólido de todos\", uno al que \"hay que nerfear sí o sí\". En su primera versión se basaba solo en jugar dos Obliterate uno detrás de otro, y si los dos Obliterate se quedan al fondo del mazo, pierdes la partida. Con Puck y First Aid, las curas ayudan a controlar y, en combo con Puck, golpean al rival y ayudan a cerrar las partidas. En el torneo se lo banearon a menudo.",
+      "deck_2": "El mazo menos fuerte de los tres según SouL, pero el que cierra el círculo del lineup combo. En el torneo nunca se lo banearon. En la final perdió contra el Van Helsing de CoachCrono, la derrota que no tenía que pasar.",
+      "deck_3": "El menos combo de los tres: juega de forma bastante aggro, pero sobre todo contra Van Helsing guarda los recursos en la mano para colocar a Glinda y Sandman cuando el rival revela sus cartas. Luego llena el campo en un solo turno, con dos Reinforcements y los otros hechizos de 1 maná de los que el mazo está lleno, para activar a Glinda cinco, seis, siete veces en un par de turnos y construir un board monstruoso. El momento justo es cuando el rival solo tiene 7 de maná, así no puede responder con Forbidden Knowledge.",
+      "strengths": "Contra Van Helsing. En el torneo SouL se encontró con jugadores con Van Helsing en 6 rondas de 7 y, simplemente con no banearlo, siempre les pasó por encima: todas las rondas ganadas 2-0 menos una, ganada 2-1 contra un rival sin Van Helsing.",
+      "weaknesses": "El lineup está construido contra Van Helsing: si el rival consigue hacerlo pasar, quizá con una combinación de ubicaciones desafortunada como en la primera partida de la final, de golpe la desventaja es tuya. Contra los lineups sin Van Helsing las partidas están más igualadas.",
+      "matchups": "Contra CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead): 2-0 antes de las finales, pasándole por encima a su Van Helsing. En la final, al mejor de cinco, la primera partida perdida contra Van Helsing con las ubicaciones en contra, luego el 2-2 y la partida decisiva perdida contra su aggro.",
+      "notes": "Bans: a SouL le banearon a menudo los Pigs y Merlin, nunca Mulan. El relato completo del lineup y de la final está en la entrevista a SouL en OriginsMeta."
+    },
+    "fr": {
+      "summary": "La line-up avec laquelle SouL a terminé deuxième de la Crimson Cup, née d'une idée de Nimer, testée avec Lord Von et peaufinée par SouL : un control (Merlin), un midrange (Mulan) et un aggro (Three Not So Little Pigs), tous les trois modifiés pour jouer combo. La cible est Van Helsing healing, selon eux le deck top tier du meta : on ne le bannit pas et on lui passe dessus. Ce sont les listes publiées par Koin Games le jour des finales, le 25 octobre 2026.",
+      "deck_1": "Le meilleur deck des trois et le préféré de SouL : « le plus solide de tous », « à nerfer absolument ». Dans sa première version, il reposait uniquement sur deux Obliterate joués l'un après l'autre, et si les deux Obliterate restent au fond du deck, vous perdez la partie. Avec Puck et First Aid, les soins aident à contrôler et, en combo avec Puck, frappent l'adversaire et aident à conclure les parties. Pendant le tournoi, ses adversaires l'ont souvent banni.",
+      "deck_2": "Le deck le moins fort des trois selon SouL, mais celui qui boucle la boucle de la line-up combo. Pendant le tournoi, ses adversaires ne l'ont jamais banni. En finale, il a perdu contre le Van Helsing de CoachCrono, la défaite qui n'aurait pas dû arriver.",
+      "deck_3": "Le moins combo des trois : il joue de façon assez aggro, mais surtout contre Van Helsing il garde ses ressources en main pour poser Glinda et Sandman à la révélation des cartes adverses. Ensuite, il remplit le plateau en un seul tour, avec deux Reinforcements et les autres sorts à 1 mana dont le deck est plein, pour activer Glinda cinq, six, sept fois en deux tours et construire un board monstrueux. Le bon moment, c'est quand l'adversaire n'a que 7 mana : il ne peut pas répondre avec Forbidden Knowledge.",
+      "strengths": "Contre Van Helsing. Pendant le tournoi, SouL a affronté des joueurs avec Van Helsing dans 6 rondes sur 7 et, rien qu'en ne le bannissant pas, il leur est toujours passé dessus : toutes les rondes gagnées 2-0 sauf une, gagnée 2-1 contre un adversaire sans Van Helsing.",
+      "weaknesses": "La line-up est construite contre Van Helsing : si l'adversaire réussit à le faire passer, par exemple avec une combinaison de lieux défavorable comme dans la première partie de la finale, c'est vous qui êtes d'un coup en difficulté. Contre les line-ups sans Van Helsing, les parties sont plus équilibrées.",
+      "matchups": "Contre CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead) : 2-0 avant les finales, en passant sur son Van Helsing. En finale, au meilleur des cinq manches, la première partie perdue contre Van Helsing avec des lieux défavorables, puis le 2-2 et la partie décisive perdue contre son aggro.",
+      "notes": "Bans : les adversaires de SouL ont souvent banni les Pigs et Merlin, jamais Mulan. Le récit complet de la line-up et de la finale est dans l'interview de SouL sur OriginsMeta."
+    },
+    "pt": {
+      "summary": "A lineup com que SouL ficou em segundo na Crimson Cup, nascida de uma ideia de Nimer, testada com Lord Von e refinada por ele: um control (Merlin), um midrange (Mulan) e um aggro (Three Not So Little Pigs), os três modificados para jogar como combo. O alvo é Van Helsing healing, para eles o deck top tier do meta: você não o bane e passa por cima dele. São as listas publicadas pela Koin Games no dia das finais, 25 de outubro de 2026.",
+      "deck_1": "O melhor deck dos três e o favorito de SouL: \"o mais sólido de todos\", \"precisa de um nerf, sem dúvida\". Na primeira versão ele dependia só de jogar dois Obliterate um depois do outro, e se os dois Obliterate ficam no fundo do deck você perde a partida. Com Puck e First Aid as curas ajudam a controlar e, em combo com Puck, acertam o oponente e ajudam a fechar as partidas. No torneio ele foi banido muitas vezes.",
+      "deck_2": "O deck menos forte dos três segundo SouL, mas o que fecha o círculo da lineup combo. No torneio ele nunca foi banido. Na final perdeu contra o Van Helsing de CoachCrono, a derrota que não devia acontecer.",
+      "deck_3": "O menos combo dos três: joga de um jeito bem aggro, mas, sobretudo contra Van Helsing, segura os recursos na mão para colocar Glinda e Sandman quando o oponente revela as cartas dele. Depois enche o tabuleiro em um só turno, com dois Reinforcements e os outros feitiços de custo 1 de que o deck está cheio, para ativar Glinda cinco, seis, sete vezes ao longo de dois turnos e construir um board monstruoso. O momento certo é quando o oponente tem só 7 de mana, assim ele não pode responder com Forbidden Knowledge.",
+      "strengths": "Contra Van Helsing. No torneio SouL encontrou jogadores com Van Helsing em 6 rodadas de 7 e, simplesmente sem bani-lo, sempre passou por cima deles: todas as rodadas vencidas por 2-0 menos uma, vencida por 2-1 contra um oponente sem Van Helsing.",
+      "weaknesses": "A lineup é construída contra Van Helsing: se o oponente consegue fazê-lo passar, talvez com uma combinação de locais azarada como na primeira partida da final, de repente a desvantagem é sua. Contra as lineups sem Van Helsing as partidas são mais equilibradas.",
+      "matchups": "Contra CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead): 2-0 antes das finais, passando por cima do Van Helsing dele. Na final, em melhor de cinco, a primeira partida perdida contra Van Helsing com os locais desfavoráveis, depois o 2-2 e a partida decisiva perdida contra o aggro dele.",
+      "notes": "Bans: baniram muitas vezes os Pigs e o Merlin de SouL, nunca a Mulan. O relato completo da lineup e da final está na entrevista com SouL no OriginsMeta."
+    },
+    "de": {
+      "summary": "Die Aufstellung, mit der SouL beim Crimson Cup Zweiter wurde, entstanden aus einer Idee von Nimer, getestet mit Lord Von und von ihm verfeinert: ein Control (Merlin), ein Midrange (Mulan) und ein Aggro (Three Not So Little Pigs), alle drei umgebaut, um als Combo zu spielen. Das Ziel ist Van Helsing Healing, für sie das Top-Tier-Deck des Metas: Man bannt es nicht und rollt darüber hinweg. Es sind die Listen, die Koin Games am Tag der Finals veröffentlicht hat, am 25. Oktober 2026.",
+      "deck_1": "Das beste Deck der drei und das Lieblingsdeck von SouL: „das solideste von allen“, eines, das „unbedingt einen Nerf braucht“. In der ersten Version verließ es sich nur darauf, zwei Obliterate nacheinander zu spielen, und wenn die zwei Obliterate ganz unten im Deck bleiben, verlierst du die Partie. Mit Puck und First Aid helfen die Heilungen beim Kontrollieren und treffen in Kombination mit Puck den Gegner, damit du die Partien beenden kannst. Im Turnier wurde es ihm oft gebannt.",
+      "deck_2": "Laut SouL das schwächste Deck der drei, aber das, das den Kreis der Combo-Aufstellung schließt. Im Turnier wurde es ihm nie gebannt. Im Finale hat es gegen den Van Helsing von CoachCrono verloren, die Niederlage, die nicht hätte passieren dürfen.",
+      "deck_3": "Das Deck mit dem wenigsten Combo-Anteil: Es spielt ziemlich aggro, hält aber vor allem gegen Van Helsing die Ressourcen auf der Hand, um Glinda und Sandman beim Aufdecken des Gegners zu legen. Dann füllt es das Spielfeld in einer einzigen Runde, mit zwei Reinforcements und den anderen Zaubern für 1 Mana, von denen das Deck voll ist, um Glinda innerhalb von ein paar Runden fünf-, sechs-, siebenmal auszulösen und ein monströses Board aufzubauen. Der richtige Moment ist, wenn der Gegner nur 7 Mana hat, damit er nicht mit Forbidden Knowledge antworten kann.",
+      "strengths": "Gegen Van Helsing. Im Turnier hat SouL in 6 von 7 Runden Spieler mit Van Helsing getroffen und ist, einfach indem er es nicht gebannt hat, jedes Mal über sie hinweggerollt: alle Runden 2-0 gewonnen außer einer, die er 2-1 gegen einen Gegner ohne Van Helsing gewonnen hat.",
+      "weaknesses": "Die Aufstellung ist gegen Van Helsing gebaut: Wenn der Gegner es durchbekommt, vielleicht mit einer unglücklichen Kombination von Orten wie in der ersten Partie des Finales, liegst plötzlich du im Nachteil. Gegen Aufstellungen ohne Van Helsing sind die Partien ausgeglichener.",
+      "matchups": "Gegen CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead): 2-0 vor den Finals, über seinen Van Helsing hinweg. Im Finale, im Best-of-Five, die erste Partie gegen Van Helsing mit ungünstigen Orten verloren, dann das 2-2 und die entscheidende Partie gegen sein Aggro-Deck verloren.",
+      "notes": "Bans: SouL wurden oft die Pigs und Merlin gebannt, nie Mulan. Die ganze Geschichte der Aufstellung und des Finales steht im Interview mit SouL auf OriginsMeta."
+    },
+    "ru": {
+      "summary": "Лайнап, с которым SouL занял второе место на Crimson Cup: идея Nimer, протестированная вместе с Lord Von и доработанная самим SouL. Контроль (Merlin), мидрейндж (Mulan) и агро (Three Not So Little Pigs), все три переделаны, чтобы играть как комбо. Мишень — Van Helsing на лечении, по их мнению колода топ-тира в мете: его не банят и проходят по нему катком. Это списки, опубликованные Koin Games в день финалов, 25 октября 2026 года.",
+      "deck_1": "Лучшая колода из трёх и любимая колода SouL: «самая надёжная из всех», «обязательно нужно нерфить». В первой версии всё держалось только на том, чтобы сыграть два Obliterate один за другим, а если оба Obliterate остаются на дне колоды, партия проиграна. С Puck и First Aid лечение помогает контролировать стол и в комбо с Puck бьёт по сопернику, помогая закрывать партии. На турнире эту колоду ему часто банили.",
+      "deck_2": "По мнению SouL, самая слабая колода из трёх, но именно она замыкает круг комбо-лайнапа. На турнире её ему ни разу не забанили. В финале она проиграла колоде Van Helsing у CoachCrono — то самое поражение, которого не должно было случиться.",
+      "deck_3": "Наименее комбовая из трёх: играет довольно агрессивно, но, особенно против Van Helsing, держит ресурсы в руке, чтобы выставить Glinda и Sandman в момент раскрытия карт соперника. Потом за один ход заполняет стол двумя Reinforcements и другими заклинаниями за 1 ману, которых в колоде полно, чтобы карта Glinda сработала пять, шесть, семь раз за пару ходов, и собирает чудовищный стол. Подходящий момент — когда у соперника всего 7 маны: тогда он не может ответить Forbidden Knowledge.",
+      "strengths": "Против Van Helsing. На турнире SouL встречал игроков с Van Helsing в 6 раундах из 7 и, просто оставляя его без бана, каждый раз проходил по ним катком: все раунды выиграны 2:0, кроме одного, выигранного 2:1 у соперника без Van Helsing.",
+      "weaknesses": "Лайнап построен против Van Helsing: если сопернику удаётся его протащить, например при неудачной комбинации локаций, как в первой партии финала, отстающим вдруг оказываетесь вы. Против лайнапов без Van Helsing партии проходят более равно.",
+      "matchups": "Против CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead): 2:0 до финалов, катком по его Van Helsing. В финале, в серии best-of-five, первая партия проиграна Van Helsing из-за неудачных локаций, затем 2:2 и решающая партия, проигранная его агро.",
+      "notes": "Баны: SouL часто банили Pigs и Merlin, Mulan — ни разу. Полный рассказ о лайнапе и финале — в интервью с SouL на OriginsMeta."
+    }
+  },
+  "videos": [],
+  "links": []
+}

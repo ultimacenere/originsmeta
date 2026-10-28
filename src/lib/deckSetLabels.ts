@@ -42,6 +42,8 @@ export type DeckSetLabels = {
     sections: Record<Exclude<DeckSetSection, "deck_1" | "deck_2" | "deck_3">, string>;
     openSetInBuilder: string;
     openDeckInBuilder: string;
+    /** tasto verso la scheda del trio dal riquadro delle liste di un articolo (NewsDecklists, 28/10/2026) */
+    openSet: string;
     conquestTitle: string;
     conquestOk: string;
     pairDiff: string;
@@ -139,6 +141,7 @@ const en: DeckSetLabels = {
     sections: { strengths: "Strengths", weaknesses: "Weaknesses", matchups: "Matchups", notes: "Notes" },
     openSetInBuilder: "Open the three decks in the deck builder",
     openDeckInBuilder: "Open in the deck builder",
+    openSet: "Open the tournament deck page",
     conquestTitle: "Conquest rules",
     conquestOk: "Three different Legendaries and at least {min} different unique cards between any two decks, as in the Crimson Cup.",
     pairDiff: "{a} and {b}: {n} different cards",
@@ -272,6 +275,7 @@ const it: DeckSetLabels = {
     sections: { strengths: "Punti di forza", weaknesses: "Punti deboli", matchups: "Scontri", notes: "Note" },
     openSetInBuilder: "Apri i tre mazzi nel deck builder",
     openDeckInBuilder: "Apri nel deck builder",
+    openSet: "Apri la scheda del mazzo torneo",
     conquestTitle: "Regole Conquest",
     conquestOk: "Tre Leggendarie diverse e almeno {min} carte uniche diverse fra ogni coppia di mazzi, come nella Crimson Cup.",
     pairDiff: "{a} e {b}: {n} carte diverse",
@@ -405,6 +409,7 @@ const es: DeckSetLabels = {
     sections: { strengths: "Puntos fuertes", weaknesses: "Puntos débiles", matchups: "Enfrentamientos", notes: "Notas" },
     openSetInBuilder: "Abrir los tres mazos en el deck builder",
     openDeckInBuilder: "Abrir en el deck builder",
+    openSet: "Abrir la ficha del mazo de torneo",
     conquestTitle: "Reglas Conquest",
     conquestOk: "Tres Legendarias distintas y al menos {min} cartas únicas distintas entre cada par de mazos, como en la Crimson Cup.",
     pairDiff: "{a} y {b}: {n} cartas distintas",
@@ -542,6 +547,7 @@ const fr: DeckSetLabels = {
     sections: { strengths: "Points forts", weaknesses: "Points faibles", matchups: "Matchups", notes: "Notes" },
     openSetInBuilder: "Ouvrir les trois decks dans le Deck builder",
     openDeckInBuilder: "Ouvrir dans le Deck builder",
+    openSet: "Ouvrir la fiche du deck de tournoi",
     conquestTitle: "Règles Conquest",
     conquestOk: "Trois Légendaires différentes et au moins {min} cartes uniques différentes entre deux decks, comme à la Crimson Cup.",
     pairDiff: "{a} et {b} : {n} cartes différentes",
@@ -675,6 +681,7 @@ const pt: DeckSetLabels = {
     sections: { strengths: "Pontos fortes", weaknesses: "Pontos fracos", matchups: "Matchups", notes: "Notas" },
     openSetInBuilder: "Abrir os três decks no Deck builder",
     openDeckInBuilder: "Abrir no Deck builder",
+    openSet: "Abrir a página do deck de torneio",
     conquestTitle: "Regras do Conquest",
     conquestOk: "Três Lendárias diferentes e pelo menos {min} cartas únicas diferentes entre quaisquer dois decks, como na Crimson Cup.",
     pairDiff: "{a} e {b}: {n} cartas diferentes",
@@ -808,6 +815,7 @@ const de: DeckSetLabels = {
     sections: { strengths: "Stärken", weaknesses: "Schwächen", matchups: "Matchups", notes: "Notizen" },
     openSetInBuilder: "Die drei Decks im Deck builder öffnen",
     openDeckInBuilder: "Im Deck builder öffnen",
+    openSet: "Seite des Turnierdecks öffnen",
     conquestTitle: "Conquest-Regeln",
     conquestOk: "Drei verschiedene Legendäre und mindestens {min} verschiedene einzigartige Karten zwischen je zwei Decks, wie beim Crimson Cup.",
     pairDiff: "{a} und {b}: {n} verschiedene Karten",
@@ -941,6 +949,7 @@ const ru: DeckSetLabels = {
     sections: { strengths: "Сильные стороны", weaknesses: "Слабые стороны", matchups: "Матчапы", notes: "Заметки" },
     openSetInBuilder: "Открыть три колоды в конструкторе колод",
     openDeckInBuilder: "Открыть в конструкторе колод",
+    openSet: "Открыть страницу турнирной колоды",
     conquestTitle: "Правила Conquest",
     conquestOk: "Три разные Легендарные карты и не меньше {min} разных уникальных карт между любыми двумя колодами, как в Crimson Cup.",
     pairDiff: "{a} и {b}: разных карт — {n}",

@@ -20,6 +20,129 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "soul-crimson-cup-interview": {
+    title: "Discussion avec SouL, finaliste de la Crimson Cup : la line-up anti-Van Helsing et l'avenir d'Origins TCG",
+    metaTitle: "Interview de SouL, finaliste de la Crimson Cup d'Origins TCG",
+    description:
+      "SouL, deuxième de la Crimson Cup d'Origins TCG, raconte sa line-up Pigs, Mulan et Merlin construite contre Van Helsing, avec ses trois listes à copier.",
+    summary:
+      "SouL a terminé deuxième de la Crimson Cup, arrêté seulement en grande finale par CoachCrono. Dans cette discussion, il raconte la line-up construite avec Nimer et Lord Von pour battre Van Helsing, pourquoi Merlin mérite selon lui un nerf et pourquoi Origins TCG a tout pour grandir. Ses trois listes sont devenues un deck de tournoi, avec les codes du jeu à copier.",
+    highlights: [
+      { label: "La line-up", text: "Three Not So Little Pigs, Mulan et Merlin, modifiés pour jouer combo contre Van Helsing", anchor: "line-up" },
+      { label: "Les trois listes à copier", text: "le deck de tournoi avec les codes du jeu et le Deck builder", anchor: "listes" },
+      { label: "Merlin « à nerfer »", text: "le deck le plus solide des trois ; Mulan le moins fort, jamais banni", anchor: "decks" },
+      { label: "La finale contre CoachCrono", text: "une première partie décidée par les lieux, le 2-2 et la courbe de son aggro", anchor: "finale" },
+      { label: "Free to compete", text: "toutes les cartes gratuites et un prix de collection gagné depuis chez soi", anchor: "pourquoi-origins" },
+      { label: "Le conseil à Koin Games", text: "ne jamais changer : un public de compétiteurs et de collectionneurs", anchor: "conseil" },
+      { label: "Les statistiques", text: "la line-up est née des données des qualifications sur OriginsMeta", anchor: "originsmeta" },
+    ],
+    body: `SouL est l'un des trois Italiens arrivés aux finales de la [Crimson Cup](/fr/analytics/crimson-cup), le plus grand tournoi d'Origins TCG à ce jour : il a traversé le tableau des gagnants sans défaite et ne s'est arrêté qu'en grande finale, contre [CoachCrono](/fr/news/crimson-cup-coachcrono-wins). Sur OriginsMeta, il a le rôle Pro : ses chaînes et ses decks sont sur [son profil](/fr/u/soulontwitch).
+
+Nous nous connaissons depuis des années, depuis d'autres jeux compétitifs, et plus qu'une interview, c'est une discussion entre passionnés, enregistrée dans les jours qui ont suivi la finale, le jour où démarrait le [Kickstarter de l'Alpha Edition](/fr/kickstarter). Les questions sont de Pierluigi Cella. Les trois listes de SouL, celles que Koin Games a publiées le jour des finales, sont devenues un [deck de tournoi](/fr/decks/tournament/soul-crimson-cup-lineup) : vous les trouverez plus bas, avec les codes du jeu à copier.
+
+## Le tournoi, à chaud {#tournoi}
+
+**Pierluigi :** Salut SouL, je suis vraiment ravi de te retrouver après toutes les fois où nos chemins se sont croisés dans le monde du gaming, et de t'avoir ici après un grand résultat : tu es arrivé jusqu'à la finale du premier tournoi d'un jeu tout neuf. Comment c'était ?
+
+**SouL :** Salut Luigi ! C'était un peu un retour à ces vieux jeux où on s'est souvent croisés, parce que c'étaient aussi des jeux compétitifs numériques. Aujourd'hui, je me suis un peu plus tourné vers les cartes physiques, mais Origins m'a ramené à l'époque où on faisait de la compétition sur des titres en ligne.
+
+**Pierluigi :** On analysera tes listes et tes choix, et on parlera aussi un peu du jeu, parce qu'on est devant un rideau encore entrouvert : j'aimerais essayer de jeter un œil derrière et imaginer ce qu'il pourrait devenir, selon nous et selon toi. Mais d'abord, à chaud, quelques heures après la fin : comment était le tournoi ? L'événement, sa durée, les parties ?
+
+**SouL :** Très bien, à mon avis, pour un premier tournoi organisé par une entreprise nouvelle dans le secteur, qui justement aujourd'hui, le jour où on enregistre, lance son vrai Kickstarter : on est aux débuts d'un jeu qui a beaucoup de succès avant même de sortir. À part quelques petits problèmes techniques que tous les participants connaissent, un ralentissement du bot parce qu'il y avait énormément de monde et énormément de parties, c'était vraiment bien. Il y avait des noms très intéressants, des joueurs internationaux connus, des streamers Hearthstone du calibre de Thijs, et un bon noyau dur de joueurs de cartes italiens. Et on peut le dire tout de suite : nous, les Italiens, on a pris trois places sur quatre dans le top 4. Ça, c'était extrêmement beau. Il y avait des gens que je connaissais, des gens que je trouvais forts, et avec le résultat que j'ai fait, je dirais que ça s'est très bien passé.
+
+![Le visuel officiel de la Crimson Cup par Koin Games : qualifications, playoffs, finales et une cagnotte de 10 000 dollars](/media/news-crimson-cup.webp)
+
+## Les Italiens et Origins TCG {#italiens}
+
+**Pierluigi :** C'est un grand succès pour notre pays : ça soude le groupe et ça renforce l'idée d'Origins, qui commence justement maintenant à s'ouvrir aux marchés étrangers, vers les différents pays du monde. Qu'attends-tu du marché italien face à un jeu comme celui-ci ? Les Italiens peuvent-ils en faire un jeu de premier plan ?
+
+**SouL :** À mon avis, oui. Paradoxalement, on a toujours été l'une des communautés les plus actives d'Europe, du moins sur les jeux de cartes en ligne. Aujourd'hui encore, on a l'une des plus grandes communautés sur Magic: The Gathering Online, et sur Hearthstone aussi la communauté italienne a toujours été parmi les plus grandes, avec de grands talents, de grands joueurs qu'on a sortis au fil des années, je ne vais pas tous les citer, mais aussi des créateurs de contenu importants. Il n'y a pas un seul jeu de cartes numérique qui n'ait pas cartonné chez nous. Origins, à mon avis, a toutes ses chances : il n'a rien à envier à un Hearthstone de l'âge d'or, si on veut. Les temps ont changé, bien sûr, mais je suis sûr qu'il peut plaire à plein de gens. D'ailleurs, c'est évident : il plaît déjà à plein de gens. Inutile de se cacher derrière son petit doigt.
+
+## La line-up : Pigs, Mulan et Merlin contre Van Helsing {#line-up}
+
+**Pierluigi :** Espérons-le. Comme tu le sais, j'ai un parcours particulier avec Blizzard, justement sur Hearthstone, et je retrouve certaines ressemblances. Disons-le à ceux qui nous lisent : c'est plus une discussion entre amis qu'une interview. Mais je ne voudrais pas zapper la partie tournoi : restons sur les listes, puis on reviendra sur ce que sera Origins et sur ce qu'on en attend. Tu as fait un choix fort, parce que tu as apporté Three Not So Little Pigs, Mulan et Merlin, trois decks très différents : un aggro, un midrange et un control. D'après ce que tu as imaginé et testé ces dernières semaines, pourquoi précisément ces trois listes ?
+
+**SouL :** Exactement. Je dis tout de suite la vérité : je ne m'attribue pas beaucoup de mérite pour l'idée de la line-up, parce qu'en réalité ce sont deux amis à moi qui l'ont testée. Ils se sont entraînés ensemble, ce sont deux joueurs italiens qui ont fait un bon résultat tous les deux : Nimer et Lord Von. On a choisi ces decks parce que, comme tu l'as dit, par identité ce sont un aggro, un midrange et un control, mais on les a modifiés avec l'idée précise d'en faire des decks combo. Notre cible, c'était Van Helsing healing, qui selon nous était le deck top tier du meta, et c'est d'ailleurs le deck avec lequel je me suis qualifié dans la qualification qui m'a ensuite permis de jouer l'Invitational du samedi. J'avais apporté une line-up tout control et soins, avec Van Helsing, puis des decks qui faisaient semblant d'être autre chose et qui étaient en fait pratiquement des Van Helsing healing sans Van Helsing. Alors je me suis dit : à mon avis, les gens vont s'inspirer de ce que j'ai fait, et je n'étais pas le seul à l'avoir théorisé, donc le tournoi sera plein de Van Helsing. Et on a vu juste.
+
+![Van Helsing, le deck à battre de la Crimson Cup : la line-up de SouL est née pour lui passer dessus](/cards/cover/van-helsing.webp)
+
+L'idée de départ était de Nimer. Quand je l'ai découverte, je lui ai dit : à mon avis, tu as complètement raison, montre-moi tes idées. J'ai regardé ses decks et j'ai fait quelques modifications. Le Merlin, par exemple, tel qu'il l'avait construit, était un peu « brickeux », disons : il lui manquait de quoi pousser un peu plus de dégâts et il reposait uniquement sur la possibilité de faire deux Obliterate l'un après l'autre. Je n'aime pas ce genre de chose, parce que si tu as tes deux Obliterate au fond du deck… tu perds la partie ! Alors j'ai ajouté Puck, Jekyll et First Aid, pour avoir ces soins qui t'aident à contrôler mais qui, en combo avec Puck, vont frapper l'adversaire et t'aident à conclure les parties.
+
+Three Not So Little Pigs est le moins combo des trois, parce qu'il joue de façon assez aggro, mais le but du deck, surtout contre Van Helsing, c'est de garder ses ressources en main pour poser Glinda et Sandman à la révélation des cartes adverses. Ensuite, tu remplis le plateau en un seul tour, par exemple avec deux Reinforcements plus d'autres sorts à 1 mana, et le deck en est plein, pour activer Glinda cinq, six, sept fois en l'espace de deux tours et créer un board monstrueux. En général, tu le fais quand l'adversaire n'a que 7 mana, comme ça il ne peut pas te répondre avec Forbidden Knowledge, évidemment.
+
+Le choix a été excellent : dans 6 rondes sur 7, j'ai affronté des joueurs qui avaient apporté Van Helsing, donc rien qu'en ne le bannissant pas, je leur suis toujours passé dessus. J'ai gagné toutes les rondes 2-0 sauf une, gagnée 2-1 parce que l'adversaire n'avait pas Van Helsing : c'est le seul BO3 serré que j'ai joué. Tous les autres, je les ai explosés.
+
+## Les trois listes de SouL {#listes}
+
+Ce sont les listes que Koin Games a publiées le jour des finales : à partir du top 4, les listes deviennent publiques, comme le prévoit le règlement. Jekyll ne figure pas dans le Merlin apporté aux finales. Nous les avons réunies dans un [deck de tournoi](/fr/decks/tournament/soul-crimson-cup-lineup) sur le profil de SouL, avec un guide tiré de ses propres mots : copiez le code du jeu de chaque deck et collez-le dans Origins TCG, ou ouvrez-le dans notre Deck builder.
+
+{{decklists}}
+
+## Le meilleur deck et celui à changer {#decks}
+
+**Pierluigi :** Au-delà des statistiques, qui ne comptent jamais que jusqu'à un certain point, et de ce qu'on ressent les cartes en main, passe-moi l'expression : quel deck a le mieux rendu et lequel des trois aurais-tu voulu changer ?
+
+**SouL :** La vérité, c'est que les trois ont très bien rendu. Aucun des trois ne s'est enrayé, même pas dans la finale que j'ai ensuite perdue contre Crono. La défaite qui fait mal, c'est celle de Mulan, qui a perdu contre le Van Helsing de Crono, et ça n'aurait pas dû arriver : nous, on voulait battre Van Helsing, et d'ailleurs, à la dernière ronde de la phase suisse, j'étais contre Crono et je l'ai battu 2-0, en passant sur son Van Helsing. En finale, je perds la première partie du match au meilleur des cinq manches justement contre Van Helsing, parce qu'il est sorti une combinaison de lieux très défavorable pour ma line-up. Aucun des trois decks n'a été en dessous des attentes. Le seul dont je me serais peut-être passé, c'est Mulan : on m'a souvent banni les Pigs, on m'a souvent banni Merlin, Mulan, on ne me l'a jamais banni. Donc c'était probablement le deck le moins fort des trois, mais il bouclait la boucle de la line-up combo. Le meilleur deck, c'est forcément Merlin : en plus d'être mon deck préféré du jeu, il a été sans aucun doute le plus solide de tous. Ce Merlin ne peut pas perdre, il faut absolument le nerfer, en ce qui me concerne : il est complètement craqué.
+
+![Merlin, le deck préféré de SouL et, selon lui, le plus solide de la line-up](/cards/cover/merlin.webp)
+
+## La finale contre CoachCrono {#finale}
+
+**Pierluigi :** Comment s'est passée la finale contre le Coach ? Une finale presque amicale par certains côtés, malgré l'enjeu et l'envie de la jouer jusqu'au bout : on sentait la compétition, mais vous avez été super corrects l'un envers l'autre. Vous vous connaissez, vous vous soutenez, il y a aussi le sens de la communauté qui vient du fait d'être tous les deux streamers, et en plus une finale entièrement italienne. Qu'est-ce qui n'a pas marché ?
+
+**SouL :** D'abord, deux mots sur Crono, parce qu'il m'a beaucoup fait rire. Crono et moi, on se connaît depuis toujours : on avait commencé à streamer ensemble à l'époque de Teamfight Tactics. On n'est pas des amis qui s'appellent pour autre chose, mais pour le jeu, les collaborations et les raids sur Twitch, on a toujours été en contact, et en finale on était très détendus. Avant la finale, je suis allé sur son Discord discuter avec lui et avec son tchat, parce que Crono refusait de mettre du delay sur son live. Il a joué tout le tournoi « snipable », et c'est terrible, parce qu'Origins fait partie de ces jeux où, si tu te fais sniper et que l'adversaire anticipe tous tes coups, c'est une catastrophe. Mais lui, ça ne l'intéressait pas. Quand on s'est retrouvés tous les deux en finale, je lui ai dit : « Crono, s'il te plaît, tu peux mettre du delay ? Tu peux au moins mettre une bande noire pour cacher ta main ? Moi, je ne vais pas te sniper, mais tout le monde nous connaît : tu sais combien de gens pourraient me passer des infos ? Je m'enferme, je me mets hors ligne, mais les pigeons voyageurs vont quand même arriver par la fenêtre ! » Et lui : « Non, je m'en fiche complètement, je te fais confiance. » C'était très drôle.
+
+En réalité, il n'y a pas grand-chose à dire : Crono a très bien joué. Les lieux de la première partie lui ont clairement été très favorables, il l'a reconnu aussi en direct, mais c'était évident, parce que ma line-up était faite pour détruire la sienne. J'étais objectivement favori, et il a pu l'emporter parce qu'il a bien joué, surtout la première partie : il a joué toutes ses chances sur ces lieux, défavorables pour moi et favorables pour lui. Il partait désavantagé, il a été très concentré, il savait qu'il montait le moins bon cheval de la course finale, mais il s'y est accroché et il a réussi à voler la victoire dès la toute première partie. Cette partie a complètement renversé les pronostics, parce qu'au moment où mon adversaire a réussi à faire passer son Van Helsing, d'un coup c'était moi qui étais derrière. À ce moment-là, je me suis bien défendu, j'ai réussi à remporter deux parties et on a prolongé le spectacle jusqu'à 2-2. Dans la partie décisive, il a trouvé une courbe spectaculaire avec son deck aggro et il m'a dévasté : il n'y avait vraiment aucun moyen de la gagner, et c'est comme ça qu'il est reparti avec le fameux Dracula en or.
+
+![Le visuel officiel de Koin Games pour CoachCrono, vainqueur de la Crimson Cup : la carte promo Dracula 1/1, deux cases de boîtes de boosters et 1 500 dollars](/media/news-crimson-cup-winner.webp)
+
+## Pourquoi Origins peut réussir {#pourquoi-origins}
+
+**Pierluigi :** Encore bravo pour le match, pour le fair-play et pour le résultat, à toi et à Crono, qui sera bientôt notre invité. Quelles sont aujourd'hui les valeurs d'Origins ? Qu'est-ce qui en fait un concurrent possible sur le marché et quelque chose de spécial entre les mains des joueurs ?
+
+**SouL :** Des jeux de cartes en ligne, il y en a et il n'y en a pas, parce que des jeux qui misent vraiment sur le compétitif, de mon point de vue, il ne reste peut-être que Hearthstone. Et c'est un jeu très ancien, que beaucoup de gens ont essayé : beaucoup se sont lassés de son compétitif, beaucoup y sont revenus. Mais dans un paysage où il n'existe pratiquement que Hearthstone, il y a absolument de la place pour un deuxième jeu, et l'idée sur laquelle repose Origins est complètement différente. Donc, à mon avis, le terrain pour que ça marche, avec ses idées, est là.
+
+Question de goût personnel : le jeu est totalement « free to compete », comme ils le définissent. Ils te donnent toutes les cartes et tu peux jouer tous les decks : après littéralement deux heures de tutoriel, tu as tout débloqué, tu n'as même pas le temps de toutes les lire que tu les as déjà en main. Tu peux te mesurer au plus haut niveau, jouer depuis chez toi un tournoi comme la Crimson Cup qui ne coûte rien et gagner un prix comme celui de Crono, une carte numérotée 1 sur 1. D'accord, elle est numérique, mais les mêmes cartes numérotées en physique valent 30, 40, 50, voire 100 000 dollars. Si cette carte finit par valoir ne serait-ce qu'un dixième des cartes qui valent le plus, et que Crono réussit à la vendre à un collectionneur, ou s'il la garde, je ne sais pas ce qu'il veut en faire, mais si sa valeur atteint 10 000 dollars, il a gagné ce prix assis chez lui. C'est quelque chose d'inestimable, auquel plein de gens, surtout les jeunes, voudront avoir accès.
+
+![Le visuel « Zero pay to win » de Koin Games : chaque joueur reçoit toutes les cartes en gagnant des parties, sans dépenser](/media/ls-zero-pay-to-win.webp)
+
+Je joue beaucoup aux jeux de cartes physiques, je fais de la compétition sur ces titres et je voyage beaucoup, mais les voyages coûtent cher et les cartes physiques coûtent cher : tout le monde ne peut pas se permettre ce luxe. Les jeux vidéo en ligne sont une bouffée d'air frais : je peux y jouer à n'importe quel moment, sur mon téléphone, avec mes amis sur Discord, sans devoir retrouver quelqu'un en personne, même avec des amis qui habitent loin, parce qu'Origins ne me pose aucune limite. Il est gratuit, c'est un jeu vidéo et il y a derrière des gens qui ont le savoir-faire pour le faire avancer, avec une partie collection qui, on le sait, est ce qui fait tenir le compétitif aujourd'hui, parce que donner des prix en argent est toujours un problème pour tout le monde, pour les entreprises physiques comme pour les numériques. Mais si je peux donner des cartes numérotées uniques, faire des illustrations incroyables, payer un artiste excellent pour une illustration unique de Winnie-the-Pooh ou de Merlin, en sachant qu'un jour elle sera jouée en tournoi par des gens intéressés par la compétition et achetée par des collectionneurs intéressés par ce type de produit, on crée le cercle vertueux dont vivent depuis des années les jeux de cartes physiques aussi.
+
+![Le visuel de Koin Games sur les Collector Packs : illustrations alternatives, cartes Frame Broken et Storybook avec leurs probabilités](/media/ls-collector-pack.webp)
+
+À mon avis, tous les facteurs sont réunis pour que ce jeu naisse, grandisse et vive une longue vie compétitive, celle que ses créateurs veulent lui donner. Ce qui me plaît le plus dans Origins, c'est justement ça : c'est un jeu né pour être compétitif. Comme le dit toujours Timothy, le créateur : on veut faire le meilleur jeu de cartes compétitif en ligne, parce qu'il n'existe pas. Moi, je lui donne six mois avant d'exploser.
+
+## Le conseil à Koin Games : ne jamais changer {#conseil}
+
+**Pierluigi :** Que conseillerais-tu aujourd'hui à Origins ? Par nature, le jeu puise dans des jeux que nous avons déjà connus, mais il le fait très bien : il tisse un écheveau de jouabilité, de rejouabilité, de continuité et de plaisir en prenant le meilleur, ou en tout cas les meilleures idées, d'autres titres. Au premier abord, j'ai pensé à Hearthstone, que tu as cité, à Artifact, à Snap, à des jeux qui ont eu leur grand moment sur le marché, certains plus longtemps, d'autres avec plus de joueurs, chacun avec son histoire. Origins nous plaît énormément et ses idées nous font tomber amoureux, mais il n'est pas encore sorti : là-dehors, énormément de joueurs ne savent même pas qu'il existe, nous avons un set qui n'est pas un vrai premier set et nous jouons des tournois avec quelque chose que nous sentons encore incomplet dans certaines cartes et certaines mécaniques. Pourtant, il a déjà une identité très forte. Si tu pouvais conseiller à Origins ses prochaines étapes, quelles seraient-elles ?
+
+**SouL :** Je repars sur du goût très personnel, parce que tout ce que tu as dit est très juste. À mon avis, ils sont dans une phase de transition, et la transition se fait justement aujourd'hui, avec le lancement du Kickstarter. Mon conseil à un jeu comme celui-ci, c'est de ne jamais changer, parce que l'une des grandes erreurs qu'ont faites beaucoup de jeux, à mon avis, a justement été de changer. Ils doivent se construire leur public, et leur public est différent : c'est un public de compétiteurs et de collectionneurs. Si, à partir de maintenant, ils ne changent jamais leur vision, à mon avis ils ont un bel avenir. Ils n'auront peut-être pas une croissance explosive, comme s'ils se pliaient un peu plus à ce que le marché demande à court terme, mais s'ils restent fidèles à leur identité, ils peuvent se créer un noyau dur qui, potentiellement, n'arrêtera jamais de jouer. Au fond, on parle d'un jeu qui veut de la compétition et de la collection, donc il faut du temps, beaucoup de temps : pour produire les illustrations, pour construire la communauté compétitive, pour organiser des tournois, pour attirer les joueurs compétitifs qui existent dans le monde, même ceux qui aujourd'hui ne jouent pas à Origins mais qui, avec leur avis, peuvent entraîner les autres en disant : « Ce jeu est cool, venez essayer un tournoi, vous y jouez depuis chez vous, c'est complètement gratuit. » C'est ça qu'ils doivent diffuser comme identité de leur produit, et à mon avis ils peuvent y arriver, s'ils ne changent jamais.
+
+Le Kickstarter dont parle SouL est celui de l'Alpha Edition : récompenses, probabilités et dates sont sur notre [page du Kickstarter](/fr/kickstarter).
+
+## Ce qu'un joueur cherche sur un site comme OriginsMeta {#originsmeta}
+
+**Pierluigi :** Merci d'avoir été avec nous sur les pages d'OriginsMeta. Pour moi, c'est un plaisir et un honneur de te retrouver et de discuter à nouveau avec toi après un moment, et j'espère que ça pourra arriver plus souvent.
+
+**SouL :** Dès que je refais deuxième dans un tournoi, je repasse ! *(rires)*
+
+**Pierluigi :** On t'invitera pour bien plus que ça, crois-moi. OriginsMeta, le site sur lequel nous sommes en ce moment, est un hub qui veut apporter à ce jeu un soutien total. Nous sommes en contact direct avec l'équipe de Koin Games, qui le distribue et le fait connaître au monde, et nous faisons tout pour soutenir le jeu avec des outils et une communauté. De ton point de vue, qu'espères-tu trouver quand tu arrives sur un site qui raconte aussi en profondeur un jeu que tu aimes ? Que voudrais-tu, au-delà d'une zone de confort où consulter la liste des cartes ?
+
+**SouL :** Je vais paraître partial, mais je veux te dire la vérité : vous l'avez déjà. J'ai utilisé votre site pour le tournoi, pour les statistiques. J'ai une formation d'ingénieur, mais à part ça, j'ai toujours adoré les statistiques : pour moi, les statistiques, c'est tout. Ma line-up est née justement du fait que Van Helsing était clairement le deck le plus fort de tous, donc je voulais une line-up qui le batte. Et je l'ai découvert en regardant les statistiques des autres tournois et du classement, avec les données recueillies par votre site. Donc ce qui, pour moi, ne doit jamais manquer, c'est ça. Un jeu compétitif a besoin de statistiques et de gens qui savent les lire, et un soutien que vous pouvez apporter aux joueurs, c'est non seulement de présenter les statistiques, mais aussi d'en proposer une lecture à travers des articles comme celui-ci, en invitant des gens qui donnent leur lecture du meta. À mon avis, c'est l'incroyable valeur ajoutée qui ne peut pas manquer dans un jeu auquel je participe.
+
+![Le ban rate des Légendaires dans les quatre qualifications de la Crimson Cup, sur la page d'OriginsMeta : Van Helsing est la plus bannie dans chacune](/media/news-soul-ban-rate-fr.webp)
+
+Les chiffres dont parle SouL sont sur notre [page de la Crimson Cup](/fr/analytics/crimson-cup#across) : dans les quatre qualifications qui ont des tableaux officiels de Koin, Van Helsing a toujours été la Légendaire la plus bannie, Merlin la deuxième au total, Mulan beaucoup plus bas. Les statistiques du ladder, tirées des parties enregistrées avec OriginsMeta Tracker, sont dans [Analytics](/fr/analytics).
+
+**Pierluigi :** Merci, SouL, merci vraiment pour tes mots et tes conseils, et surtout encore bravo pour ce magnifique résultat.
+
+**SouL :** Merci à toi et merci à OriginsMeta.`,
+    faq: [
+      { q: "Avec quels decks SouL a-t-il joué la Crimson Cup ?", a: "Three Not So Little Pigs, Mulan et Merlin, au format Conquest. Les trois listes, publiées par Koin Games le jour des finales, sont sur OriginsMeta sous forme de deck de tournoi, avec les codes du jeu à copier." },
+      { q: "Pourquoi SouL a-t-il choisi Pigs, Mulan et Merlin ?", a: "Pour battre Van Helsing, selon lui le deck top tier du meta : un aggro, un midrange et un control modifiés pour jouer combo. L'idée vient de Nimer, testée avec Lord Von et peaufinée par SouL." },
+      { q: "Quel deck de sa line-up SouL considère-t-il comme le plus fort ?", a: "Merlin : le plus solide des trois et son préféré, « à nerfer absolument ». Selon lui, le moins fort était Mulan, que ses adversaires ne lui ont jamais banni pendant le tournoi." },
+    ],
+  },
   "kickstarter-alpha-edition-reward-tiers": {
     title: "Kickstarter d'Origins TCG : les huit paliers de l'Alpha Edition, de 24 $ à 9 999 $",
     metaTitle: "Kickstarter d'Origins TCG : les huit paliers",

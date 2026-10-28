@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Locale } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
-import { getNews, news, newsDates, newsPath, newsReadTime, sortedNews } from "@/lib/data/news";
+import { getNews, news, newsDates, newsPath, newsReadTime, sortedNews, splitDecklists } from "@/lib/data/news";
 import { authorOfNews } from "@/lib/data/authors";
 import { patchOrder, patches } from "@/lib/data/cards";
 import { relatedNews } from "@/lib/relatedNews";
@@ -14,6 +14,7 @@ import { Markdown } from "@/components/Markdown";
 import { CardChipList } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { NewsCover } from "@/components/NewsCover";
+import { NewsDecklists } from "@/components/NewsDecklists";
 import { SteamButton } from "@/components/SteamButton";
 import { DiscordButton } from "@/components/DiscordButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
@@ -80,6 +81,8 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   const dates = newsDates(item, locale);
   const updated = dates.modified;
   const body = item.body?.[locale];
+  // Le liste di un mazzo torneo (`decklists`, dal 28/10/2026) vanno al posto della riga `{{decklists}}` del testo
+  const bodyParts = body && item.decklists ? splitDecklists(body) : null;
   const faq = item.faq?.[locale] ?? [];
   const highlights = item.highlights?.[locale] ?? [];
   const ll = linkLabels[locale];
@@ -207,7 +210,15 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
 
       <article className="card-night mt-8 p-6 sm:p-10">
         {/* I nomi delle carte nel testo diventano link alla scheda con l'anteprima della carta al passaggio del mouse */}
-        {body ? <Markdown source={body} linkCards={locale} /> : null}
+        {bodyParts && item.decklists ? (
+          <>
+            <Markdown source={bodyParts[0]} linkCards={locale} />
+            <NewsDecklists lists={item.decklists} locale={locale} dict={d} />
+            <Markdown source={bodyParts[1]} linkCards={locale} />
+          </>
+        ) : body ? (
+          <Markdown source={body} linkCards={locale} />
+        ) : null}
 
         {/* Sulle patch notes del playtest, senza testo, il blocco porta anche la nota di ogni modifica */}
         {withPatch ? <NewsPatchChanges patch={patch} locale={locale} dict={d} notes={!body} className={body ? "mt-8 border-t border-sky pt-6" : ""} /> : null}
