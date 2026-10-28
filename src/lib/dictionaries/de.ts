@@ -211,7 +211,7 @@ export const de: Dictionary = {
     newsBoardSub: "Ankündigungen, Events und Community-News, die neuesten zuerst.",
     featured: "Im Fokus",
     latestNews: "Neueste News",
-    postit: { deck: "Neues Deck", news: "News", patch: "Patch", comic: "Comic" },
+    postit: { deck: "Neues Deck", news: "News", patch: "Patch", comic: "Comic", interview: "Interview" },
     decksCta: "Deck builder öffnen",
     moves: {
       kicker: "Bauen · Veröffentlichen · Ausrichten",

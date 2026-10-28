@@ -76,6 +76,7 @@
     --postit-tournament: #3fc4e8; /* Torneo, celeste (9,0:1) */
     --postit-event: #ffb454; /* Evento, arancio (10,4:1) */
     --postit-comic: #b6e36a; /* Fumetto, lime (12,4:1; pacchetto FUMETTI, 29/09/2026) */
+    --postit-interview: #ff9e7a; /* Intervista, corallo (9,3:1; intervista a SouL, 28/10/2026) */
     --postit-label: #ffe98a; /* Etichetta di sezione a penna, giallo canarino dei foglietti veri (15,1:1) */
   }
   html {
@@ -677,6 +678,12 @@
     --postit-bg: var(--postit-comic);
     --tilt: -2.2deg;
     --delay: -5s;
+  }
+  /* Interviste fra le news (28/10/2026): le news con `speakers` */
+  .postit-interview {
+    --postit-bg: var(--postit-interview);
+    --tilt: 2.4deg;
+    --delay: -3.2s;
   }
   /* la stessa tinta per la pastiglia "Fumetto" accanto alla data, con il testo scuro dei fondi pieni */
   .pill-comic {

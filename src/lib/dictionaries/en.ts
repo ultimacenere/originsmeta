@@ -225,7 +225,7 @@ export const en = {
     newsBoardSub: "Announcements, events and community news, newest first.",
     featured: "Featured",
     latestNews: "Latest news",
-    postit: { deck: "New deck", news: "News", patch: "Patch", comic: "Comic" },
+    postit: { deck: "New deck", news: "News", patch: "Patch", comic: "Comic", interview: "Interview" },
     decksCta: "Open the deck builder",
     moves: {
       kicker: "Build · Publish · Host",

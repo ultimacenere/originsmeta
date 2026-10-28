@@ -63,14 +63,16 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
  * - mazzo pubblicato sul sito (source "staff" o "community") → "Nuovo mazzo" (giallo);
  * - patch notes → "Patch" (rosa): slug che inizia per "patch" (le patch del playtest) oppure news collegata a una
  *   patch in `patches` di cards.ts (campo `news`: le patch senza numero, come `demo-patch-notes-0921`);
+ * - intervista (news con `speakers`, dal 28/10/2026) → "Intervista" (corallo);
  * - tutto il resto → "News" (viola).
  * Colori, forma e animazioni stanno nelle classi .postit di globals.css (testo ink su carta piena, contrasti
  * misurati); il componente `Postit` sceglie misura, rotazione e, dalla data, se la news è fresca (72 ore).
  */
-type NewsPostit = Extract<PostitKind, "deck" | "patch" | "news">;
+type NewsPostit = Extract<PostitKind, "deck" | "patch" | "news" | "interview">;
 const PATCH_NEWS = new Set(Object.values(patches).flatMap((p) => (p.news ? [p.news] : [])));
 function postitOf(item: NewsItem): NewsPostit {
   if (isDeckNews(item)) return "deck";
+  if (item.speakers?.length) return "interview";
   return item.slug.startsWith("patch") || PATCH_NEWS.has(item.slug) ? "patch" : "news";
 }
 

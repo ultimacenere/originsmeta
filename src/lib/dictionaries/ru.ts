@@ -212,7 +212,7 @@ export const ru: Dictionary = {
     newsBoardSub: "Анонсы, события и новости сообщества, сначала свежие.",
     featured: "Главное",
     latestNews: "Последние новости",
-    postit: { deck: "Новая колода", news: "Новости", patch: "Патч", comic: "Комикс" },
+    postit: { deck: "Новая колода", news: "Новости", patch: "Патч", comic: "Комикс", interview: "Интервью" },
     decksCta: "Открыть конструктор колод",
     moves: {
       kicker: "Собирайте · Публикуйте · Проводите",

@@ -230,7 +230,7 @@ export const fr: Dictionary = {
     newsBoardSub: "Annonces, événements et nouvelles de la communauté, les plus récentes en premier.",
     featured: "À la une",
     latestNews: "Dernière actu",
-    postit: { deck: "Nouveau deck", news: "Actu", patch: "Patch", comic: "BD" },
+    postit: { deck: "Nouveau deck", news: "Actu", patch: "Patch", comic: "BD", interview: "Interview" },
     decksCta: "Ouvrir le deck builder",
     moves: {
       kicker: "Construire · Publier · Organiser",
