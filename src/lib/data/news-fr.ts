@@ -27,15 +27,6 @@ export const frText: Record<string, NewsCopy> = {
       "SouL, deuxième de la Crimson Cup d'Origins TCG, raconte sa line-up Pigs, Mulan et Merlin construite contre Van Helsing, avec ses trois listes à copier.",
     summary:
       "SouL a terminé deuxième de la Crimson Cup, arrêté seulement en grande finale par CoachCrono. Dans cette discussion, il raconte la line-up construite avec Nimer et Lord Von pour battre Van Helsing, pourquoi Merlin mérite selon lui un nerf et pourquoi Origins TCG a tout pour grandir. Ses trois listes sont devenues un deck de tournoi, avec les codes du jeu à copier.",
-    highlights: [
-      { label: "La line-up", text: "Three Not So Little Pigs, Mulan et Merlin, modifiés pour jouer combo contre Van Helsing", anchor: "line-up" },
-      { label: "Les trois listes à copier", text: "le deck de tournoi avec les codes du jeu et le Deck builder", anchor: "listes" },
-      { label: "Merlin « à nerfer »", text: "le deck le plus solide des trois ; Mulan le moins fort, jamais banni", anchor: "decks" },
-      { label: "La finale contre CoachCrono", text: "une première partie décidée par les lieux, le 2-2 et la courbe de son aggro", anchor: "finale" },
-      { label: "Free to compete", text: "toutes les cartes gratuites et un prix de collection gagné depuis chez soi", anchor: "pourquoi-origins" },
-      { label: "Le conseil à Koin Games", text: "ne jamais changer : un public de compétiteurs et de collectionneurs", anchor: "conseil" },
-      { label: "Les statistiques", text: "la line-up est née des données des qualifications sur OriginsMeta", anchor: "originsmeta" },
-    ],
     body: `SouL est l'un des **trois Italiens arrivés aux finales** de la [Crimson Cup](/fr/analytics/crimson-cup), le plus grand tournoi d'Origins TCG à ce jour : il a traversé le tableau des gagnants sans défaite et ne s'est arrêté qu'en grande finale, contre [CoachCrono](/fr/news/crimson-cup-coachcrono-wins). Sur OriginsMeta, il a le rôle Pro : ses chaînes et ses decks sont sur [son profil](/fr/u/soulontwitch).
 
 Nous nous connaissons depuis des années, depuis d'autres jeux compétitifs, et plus qu'une interview, c'est une discussion entre passionnés, enregistrée dans les jours qui ont suivi la finale, le jour où démarrait le [Kickstarter de l'Alpha Edition](/fr/kickstarter). Les questions sont de Luigi « [Davdas](/fr/authors/davdas) » Ragoni.

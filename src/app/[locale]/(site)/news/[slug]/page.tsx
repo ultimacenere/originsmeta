@@ -164,7 +164,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
           </span>
         </p>
         <h1 className="t-page mt-3 leading-tight">{title}</h1>
-        <p className="mt-5 text-lg leading-relaxed text-chalk">{item.summary[locale]}</p>
+        {item.hideSummary ? null : <p className="mt-5 text-lg leading-relaxed text-chalk">{item.summary[locale]}</p>}
         {/* Firma editoriale sotto il titolo, con le date: chi scrive e quando, prima ancora di leggere */}
         <p className="mt-5 text-sm text-pale-muted">
           {d.authors.writtenBy}{" "}

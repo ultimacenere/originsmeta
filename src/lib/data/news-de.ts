@@ -16,15 +16,6 @@ export const deText: Record<string, NewsCopy> = {
       "SouL, Zweiter beim Crimson Cup von Origins TCG, über seine Aufstellung aus Pigs, Mulan und Merlin gegen Van Helsing und seine drei Listen zum Kopieren.",
     summary:
       "SouL ist beim Crimson Cup Zweiter geworden, gestoppt erst im großen Finale von CoachCrono. In diesem Gespräch erzählt er von der Aufstellung, die er mit Nimer und Lord Von gebaut hat, um Van Helsing zu schlagen, warum Merlin seiner Meinung nach einen Nerf braucht und warum Origins TCG alles hat, um zu wachsen. Seine drei Listen sind jetzt ein Turnierdeck, mit den Spielcodes zum Kopieren.",
-    highlights: [
-      { label: "Die Aufstellung", text: "Three Not So Little Pigs, Mulan und Merlin, umgebaut, um gegen Van Helsing als Combo zu spielen", anchor: "aufstellung" },
-      { label: "Die drei Listen zum Kopieren", text: "das Turnierdeck mit den Spielcodes und dem Deckbuilder", anchor: "listen" },
-      { label: "Merlin „braucht einen Nerf“", text: "das solideste Deck der drei; Mulan das schwächste, nie gebannt", anchor: "decks" },
-      { label: "Das Finale gegen CoachCrono", text: "eine erste Partie, die die Orte entschieden haben, das 2-2 und die Kurve seines Aggro-Decks", anchor: "finale" },
-      { label: "Free to compete", text: "alle Karten gratis und ein Sammlerpreis, gewonnen von zu Hause", anchor: "warum-origins" },
-      { label: "Der Rat an Koin Games", text: "sich niemals ändern: ein Publikum aus Competitive-Spielern und Sammlern", anchor: "ratschlag" },
-      { label: "Die Statistiken", text: "die Aufstellung ist aus den Daten der Qualifikationen auf OriginsMeta entstanden", anchor: "originsmeta" },
-    ],
     body: `SouL ist einer der **drei Italiener, die die Finals des [Crimson Cup](/de/analytics/crimson-cup) erreicht haben**, des bisher größten Turniers von Origins TCG: Er ist ungeschlagen durch das Winner-Bracket gegangen und wurde erst im großen Finale gestoppt, von [CoachCrono](/de/news/crimson-cup-coachcrono-wins). Auf OriginsMeta hat er die Rolle Pro: Seine Kanäle und Decks findest du auf [seinem Profil](/de/u/soulontwitch).
 
 Wir kennen uns seit Jahren, aus anderen kompetitiven Spielen, und das hier ist weniger ein Interview als ein Gespräch unter Fans, aufgenommen in den Tagen direkt nach dem Finale, an dem Tag, an dem der [Kickstarter der Alpha Edition](/de/kickstarter) startete. Die Fragen stellt Luigi „[Davdas](/de/authors/davdas)“ Ragoni.

@@ -17,15 +17,6 @@ export const ptText: Record<string, NewsCopy> = {
       "SouL, vice-campeão da Crimson Cup de Origins TCG, fala da lineup Pigs, Mulan e Merlin montada contra Van Helsing, com as três listas para copiar.",
     summary:
       "SouL ficou em segundo na Crimson Cup, parado só na grande final por CoachCrono. Nesta conversa ele conta a lineup montada com Nimer e Lord Von para vencer Van Helsing, por que para ele Merlin precisa de um nerf e por que Origins TCG tem tudo para crescer. As três listas dele viraram um deck de torneio, com os códigos do jogo para copiar.",
-    highlights: [
-      { label: "A lineup", text: "Three Not So Little Pigs, Mulan e Merlin, modificados para jogar como combo contra Van Helsing", anchor: "lineup" },
-      { label: "As três listas para copiar", text: "o deck de torneio com os códigos do jogo e o deck builder", anchor: "listas" },
-      { label: "Merlin \"precisa de um nerf\"", text: "o deck mais sólido dos três; Mulan o mais fraco, nunca banido", anchor: "decks" },
-      { label: "A final contra CoachCrono", text: "uma primeira partida decidida pelos locais, o 2-2 e a curva do aggro dele", anchor: "final" },
-      { label: "Free to compete", text: "todas as cartas de graça e um prêmio de colecionador ganho de casa", anchor: "por-que-origins" },
-      { label: "O conselho para a Koin Games", text: "nunca mudar: um público de competidores e colecionadores", anchor: "conselhos" },
-      { label: "As estatísticas", text: "a lineup nasceu dos dados das classificatórias no OriginsMeta", anchor: "originsmeta" },
-    ],
     body: `SouL é um dos **três italianos que chegaram às finais** da [Crimson Cup](/pt/analytics/crimson-cup), o maior torneio de Origins TCG até agora: ele fechou a chave dos vencedores sem derrotas e só parou na grande final, contra [CoachCrono](/pt/news/crimson-cup-coachcrono-wins). No OriginsMeta ele tem a função Pro: os canais e os decks dele estão no [seu perfil](/pt/u/soulontwitch).
 
 Nós nos conhecemos há anos, de outros jogos competitivos, e mais do que uma entrevista esta é uma conversa entre apaixonados, gravada nos dias logo depois da final, no dia em que começava o [Kickstarter da Alpha Edition](/pt/kickstarter). As perguntas são de Luigi "[Davdas](/pt/authors/davdas)" Ragoni.

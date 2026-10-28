@@ -38,6 +38,11 @@ export type NewsItem = {
   metaTitle: L10n;
   /** riassunto di 2-3 frasi: scheda in /news e in home, attacco della pagina dell'articolo */
   summary: L10n;
+  /**
+   * true: la pagina dell'articolo non ripete il riassunto sotto il titolo, che resta nelle schede di home e /news
+   * (28/10/2026, intervista a SouL: Pierluigi l'ha fatto togliere, il testo comincia già con l'introduzione).
+   */
+  hideSummary?: boolean;
   /** meta description scritta apposta, obbligatoria in ogni lingua: 120-158 caratteri (controllo in `newsMeta.test.ts`) */
   description: L10n;
   /**
@@ -183,6 +188,8 @@ const raw: RawNews[] = [
     date: "2026-10-28",
     // l'intervista è di Davdas (Luigi Ragoni, che SouL chiama "Luigi"): la firma è sua, non quella di default
     author: "davdas",
+    // niente riassunto sotto il titolo né "In breve" (Pierluigi, 28/10/2026): l'articolo comincia con l'introduzione
+    hideSummary: true,
     decklists: {
       set: "soul-crimson-cup-lineup",
       decks: finalistDecks("soulontwitch", [
@@ -207,35 +214,6 @@ const raw: RawNews[] = [
       "SouL è arrivato secondo alla Crimson Cup, fermato solo nella gran finale da CoachCrono. In questa chiacchierata racconta la lineup costruita con Nimer e Lord Von per battere Van Helsing, perché secondo lui Merlin è da nerfare e perché Origins TCG ha tutto per crescere. Le sue tre liste sono diventate un mazzo torneo, con i codici del gioco da copiare.",
       "SouL quedó segundo en la Crimson Cup y solo CoachCrono lo frenó, en la gran final. En esta charla cuenta el lineup que construyó con Nimer y Lord Von para vencer a Van Helsing, por qué cree que a Merlin hay que nerfearlo y por qué Origins TCG tiene todo para crecer. Sus tres listas son ahora un mazo de torneo, con los códigos del juego para copiar.",
     ),
-    highlights: {
-      en: [
-        { label: "The line-up", text: "Three Not So Little Pigs, Mulan and Merlin, tuned to play as combo decks against Van Helsing", anchor: "lineup" },
-        { label: "The three lists to copy", text: "the tournament deck with the game codes and the deck builder", anchor: "lists" },
-        { label: "Merlin \"needs a nerf\"", text: "the most solid of the three; Mulan the weakest, never banned", anchor: "decks" },
-        { label: "The final against CoachCrono", text: "a first game decided by the locations, the 2-2 and his aggro curve", anchor: "final" },
-        { label: "Free to compete", text: "every card for free and a collector's prize won from home", anchor: "why-origins" },
-        { label: "His advice to Koin Games", text: "never change: an audience of competitors and collectors", anchor: "advice" },
-        { label: "The stats", text: "the line-up came out of the qualifier data on OriginsMeta", anchor: "originsmeta" },
-      ],
-      it: [
-        { label: "La lineup", text: "Three Not So Little Pigs, Mulan e Merlin, modificati per giocare da combo contro Van Helsing", anchor: "lineup" },
-        { label: "Le tre liste da copiare", text: "il mazzo torneo con i codici del gioco e il deck builder", anchor: "liste" },
-        { label: "Merlin «è da nerfare»", text: "il mazzo più solido dei tre; Mulan il meno forte, mai bannato", anchor: "mazzi" },
-        { label: "La finale con CoachCrono", text: "una prima partita decisa dai luoghi, il 2-2 e la curva del suo aggro", anchor: "finale" },
-        { label: "Free to compete", text: "tutte le carte gratis e un premio da collezione vinto da casa", anchor: "perche-origins" },
-        { label: "Il consiglio a Koin Games", text: "non cambiare mai: un pubblico di competitor e collezionisti", anchor: "consigli" },
-        { label: "Le statistiche", text: "la lineup è nata dai dati delle qualificazioni su OriginsMeta", anchor: "originsmeta" },
-      ],
-      es: [
-        { label: "El lineup", text: "Three Not So Little Pigs, Mulan y Merlin, modificados para jugar como combo contra Van Helsing", anchor: "lineup" },
-        { label: "Las tres listas para copiar", text: "el mazo de torneo con los códigos del juego y el deck builder", anchor: "listas" },
-        { label: "Merlin, \"hay que nerfearlo\"", text: "el más sólido de los tres; Mulan, el menos fuerte, nunca baneado", anchor: "mazos" },
-        { label: "La final contra CoachCrono", text: "una primera partida decidida por las ubicaciones, el 2-2 y la curva de su aggro", anchor: "final" },
-        { label: "Free to compete", text: "todas las cartas gratis y un premio de colección ganado desde casa", anchor: "por-que-origins" },
-        { label: "El consejo a Koin Games", text: "no cambiar nunca: un público de competidores y coleccionistas", anchor: "consejos" },
-        { label: "Las estadísticas", text: "el lineup nació de los datos de los clasificatorios en OriginsMeta", anchor: "originsmeta" },
-      ],
-    },
     body: n(
       `SouL is one of the **three Italians who reached the finals** of the [Crimson Cup](/en/analytics/crimson-cup), the biggest Origins TCG tournament so far: he went through the winners bracket unbeaten and only stopped in the grand final, against [CoachCrono](/en/news/crimson-cup-coachcrono-wins). On OriginsMeta he has the Pro role: his channels and decks are on [his profile](/en/u/soulontwitch).
 

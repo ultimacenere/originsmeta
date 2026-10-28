@@ -14,15 +14,6 @@ export const ruText: Record<string, NewsCopy> = {
       "SouL, второй на Crimson Cup по Origins TCG, — о лайнапе Pigs, Mulan и Merlin против Van Helsing и о трёх своих списках, готовых к копированию.",
     summary:
       "SouL занял второе место на Crimson Cup: остановить его смог только CoachCrono в гранд-финале. В этом разговоре он рассказывает о лайнапе, который собрал вместе с Nimer и Lord Von, чтобы обыграть Van Helsing, о том, почему Merlin, по его мнению, пора нерфить, и почему у Origins TCG есть всё, чтобы расти. Три его списка теперь собраны в турнирную колоду с кодами игры, которые можно скопировать.",
-    highlights: [
-      { label: "Лайнап", text: "Three Not So Little Pigs, Mulan и Merlin, переделанные, чтобы играть как комбо против Van Helsing", anchor: "laynap" },
-      { label: "Три списка для копирования", text: "турнирная колода с кодами игры и конструктором колод", anchor: "spiski" },
-      { label: "Merlin «пора нерфить»", text: "самая надёжная колода из трёх; Mulan — самая слабая, её ни разу не забанили", anchor: "kolody" },
-      { label: "Финал с CoachCrono", text: "первая партия, решённая локациями, счёт 2:2 и кривая его агро", anchor: "final" },
-      { label: "Free to compete", text: "все карты бесплатно и коллекционный приз, выигранный не выходя из дома", anchor: "pochemu-origins" },
-      { label: "Совет Koin Games", text: "никогда не меняться: аудитория соревновательных игроков и коллекционеров", anchor: "sovet" },
-      { label: "Статистика", text: "лайнап родился из данных квалификаций на OriginsMeta", anchor: "originsmeta" },
-    ],
     body: `SouL — один из **трёх итальянцев, дошедших до финалов** [Crimson Cup](/ru/analytics/crimson-cup), самого большого турнира Origins TCG на сегодняшний день: он прошёл верхнюю сетку без поражений и остановился только в гранд-финале, против [CoachCrono](/ru/news/crimson-cup-coachcrono-wins). На OriginsMeta у него роль Pro: каналы и колоды — в [его профиле](/ru/u/soulontwitch).
 
 Мы знакомы много лет, ещё по другим соревновательным играм, так что это скорее разговор двух увлечённых людей, чем интервью. Мы записали его в первые дни после финала, в тот день, когда стартовал [Kickstarter Alpha Edition](/ru/kickstarter). Вопросы задавал Luigi «[Davdas](/ru/authors/davdas)» Ragoni.
