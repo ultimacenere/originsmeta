@@ -2406,6 +2406,13 @@
   .prose-night strong {
     font-weight: 700;
   }
+  /* interviste: chi fa le domande in menta, l'ospite in rosa (Markdown.tsx, markSpeakers) */
+  .prose-night strong.speaker-1 {
+    color: var(--color-mint);
+  }
+  .prose-night strong.speaker-2 {
+    color: var(--color-crimson-soft);
+  }
   .prose-night blockquote {
     border-left: 3px solid var(--color-mint);
     margin: 1em 0;

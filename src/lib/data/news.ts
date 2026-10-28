@@ -43,6 +43,8 @@ export type NewsItem = {
    * (28/10/2026, intervista a SouL: Pierluigi l'ha fatto togliere, il testo comincia già con l'introduzione).
    */
   hideSummary?: boolean;
+  /** interviste: i nomi delle etichette "**Nome:**", nell'ordine (chi intervista, poi l'ospite), ognuno con il suo colore */
+  speakers?: string[];
   /** meta description scritta apposta, obbligatoria in ogni lingua: 120-158 caratteri (controllo in `newsMeta.test.ts`) */
   description: L10n;
   /**
@@ -190,6 +192,7 @@ const raw: RawNews[] = [
     author: "davdas",
     // niente riassunto sotto il titolo né "In breve" (Pierluigi, 28/10/2026): l'articolo comincia con l'introduzione
     hideSummary: true,
+    speakers: ["Davdas", "SouL"],
     decklists: {
       set: "soul-crimson-cup-lineup",
       decks: finalistDecks("soulontwitch", [

@@ -89,10 +89,22 @@ function wrapTables(html: string): string {
  * `linkCards` = lingua della pagina: attiva i link ai nomi di carta con l'anteprima (news e guide). Se il testo cita
  * almeno una carta, il blocco porta con sé `CardMentionEdges`, che crea i pannelli e li tiene dentro la finestra.
  */
-export function Markdown({ source, className = "", linkCards }: { source: string; className?: string; linkCards?: string }) {
+/**
+ * Interviste (28/10/2026, Pierluigi: "i nomi di chi intervista e l'intervistato devono essere di due colori differenti"):
+ * le etichette in grassetto "**Nome:**" dei `speakers` prendono la classe speaker-1, speaker-2… (colori in globals.css).
+ */
+function markSpeakers(html: string, speakers?: string[]): string {
+  if (!speakers?.length) return html;
+  return html.replace(/<strong>([^<]+?)[\s\u00a0]*:<\/strong>/g, (tag, name: string) => {
+    const i = speakers.indexOf(name.trim());
+    return i < 0 ? tag : tag.replace("<strong>", `<strong class="speaker speaker-${i + 1}">`);
+  });
+}
+
+export function Markdown({ source, className = "", linkCards, speakers }: { source: string; className?: string; linkCards?: string; speakers?: string[] }) {
   const locale = linkCards && isLocale(linkCards) ? linkCards : undefined;
   const src = linkCards ? linkCardsInMarkdown(source, linkCards) : source;
-  const plain = wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string));
+  const plain = markSpeakers(wrapTables(addHeadingIds(marked.parse(src, { async: false }) as string)), speakers);
   const { html, cards } = locale ? cardPreviews(plain, locale) : { html: plain, cards: 0 };
   return (
     <>

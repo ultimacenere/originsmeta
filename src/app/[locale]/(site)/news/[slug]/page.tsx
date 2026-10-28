@@ -212,12 +212,12 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
         {/* I nomi delle carte nel testo diventano link alla scheda con l'anteprima della carta al passaggio del mouse */}
         {bodyParts && item.decklists ? (
           <>
-            <Markdown source={bodyParts[0]} linkCards={locale} />
+            <Markdown source={bodyParts[0]} linkCards={locale} speakers={item.speakers} />
             <NewsDecklists lists={item.decklists} locale={locale} dict={d} />
-            <Markdown source={bodyParts[1]} linkCards={locale} />
+            <Markdown source={bodyParts[1]} linkCards={locale} speakers={item.speakers} />
           </>
         ) : body ? (
-          <Markdown source={body} linkCards={locale} />
+          <Markdown source={body} linkCards={locale} speakers={item.speakers} />
         ) : null}
 
         {/* Sulle patch notes del playtest, senza testo, il blocco porta anche la nota di ogni modifica */}
