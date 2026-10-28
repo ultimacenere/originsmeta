@@ -5,10 +5,10 @@ export const en = {
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "decks" e "cards" sono delle loro pagine */
     homeTitle: "Origins TCG, Koin Games' digital card game · OriginsMeta",
     description:
-      "Origins TCG is Koin Games' free-to-compete card game. Unofficial fan site in English, Italian, Spanish and French: cards, decks, deck builder, guides, news.",
+      "Origins TCG is Koin Games' free-to-compete card game. Unofficial fan site in seven languages: cards, decks, deck builder, guides, news.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
-      "Unofficial fan site for Origins TCG, the Koin Games card game, in English, Italian, Spanish and French: cards, decks, deck builder, tier list, guides and news.",
+      "Unofficial fan site for Origins TCG, the Koin Games card game, in English, Italian, Spanish, French, Portuguese, German and Russian: cards, decks, deck builder, tier list, guides and news.",
   },
   nav: {
     news: "News",
@@ -213,7 +213,7 @@ export const en = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Legendaries, base cards",
-    tierStatus: "OriginsMeta ranking after the Crimson Cup (19–25 Oct). Meanwhile: the most played cards.",
+    tierStatus: "OriginsMeta ranking in preparation. Meanwhile: the most played cards.",
     tierSoon: "Most played",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -276,7 +276,7 @@ export const en = {
     /* title = H1 (e briciole); metaTitle = titolo in SERP, costruito sulla ricerca "origins tcg cards / card list" (piano SEO del 25/09/2026) */
     title: "Origins TCG card list",
     metaTitle: "Origins TCG cards: the full card list",
-    intro: "Every card in the game, plus the cards they create and the ones removed in earlier builds: current stats, official text in English, Italian, Spanish and French as it reads in the game, balance history and the legend each card comes from.",
+    intro: "Every card in the game, plus the cards they create and the ones removed in earlier builds: current stats, official text in English, Italian, Spanish, French, Portuguese, German and Russian as it reads in the game, balance history and the legend each card comes from.",
     description: "Every card of Origins TCG, the Koin Games card game: official text, stats and balance history, with filters by type, saga and rarity.",
     /* search placeholder: the search also reads the card text (24/09/2026) */
     searchHint: "Name or text: Merlin, On Reveal…",
@@ -288,7 +288,7 @@ export const en = {
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Costs, stats, alignments and texts of the playable cards were checked in the game, in English, Italian, Spanish and French; balance changes come from the official patch notes, and the 0.8 patch notes of 27 October 2026 (Early Access) list no card changes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian, Spanish and French text of created and removed cards are by OriginsMeta.",
+      "Costs, stats, alignments and texts of the playable cards were checked in the game, in English, Italian, Spanish, French, Portuguese, German and Russian; balance changes come from the official patch notes, and the 0.8 patch notes of 27 October 2026 (Early Access) list no card changes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian, Spanish, French, Portuguese, German and Russian text of created and removed cards are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",
@@ -369,11 +369,11 @@ export const en = {
        del 25/09/2026), senza "decks" e "cards", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Origins TCG tier list",
     metaTitle: "Origins TCG tier list and meta",
-    intro: "Decks, Legendaries and base cards. Our ranking is built on tournament results, never on gut feeling, and starts after the Crimson Cup. Until then: the most played cards and the community tier list.",
-    description: "Origins TCG (Koin Games) tier list and meta: our ranking starts after the Crimson Cup. Meanwhile, the top-rated community decks and the most played cards.",
+    intro: "Decks, Legendaries and base cards. Our ranking is built on tournament results, never on gut feeling, and the first one is in preparation. Until then: the most played cards and the community tier list.",
+    description: "Origins TCG (Koin Games) tier list and meta: our tournament-based ranking is in preparation. Meanwhile, top-rated community decks and most played cards.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "Our ranking from tournament results, starting after the Crimson Cup:",
+    mainText: "Our ranking from tournament results, in preparation:",
     mainAnchor: "Origins TCG tier list",
     decksText: "For the full decklists:",
     decksAnchor: "all the Origins TCG decks",
@@ -404,7 +404,7 @@ export const en = {
     /* Section header (redesign of 24/09/2026): the three sources always in view, no dropdown */
     sourcesLabel: "Tier list sources",
     sourceOfficial: "OriginsMeta",
-    sourceOfficialSoon: "after the Crimson Cup",
+    sourceOfficialSoon: "in preparation",
     sourceOfficialUpdated: "updated {date}",
     sourceCommunity: "Community",
     sourceCommunityNone: "no lists yet",
@@ -432,8 +432,8 @@ export const en = {
     lineStatus: "Status",
     lineMeasure: "Measure",
     officialSourceText: "official tournament results and top-ranked lists",
-    officialStatusText: "first ranking after the Crimson Cup (19–25 October 2026)",
-    officialEmpty: "The OriginsMeta ranking comes out after the Crimson Cup (19–25 October): no tiers on gut feeling.",
+    officialStatusText: "first ranking in preparation",
+    officialEmpty: "The OriginsMeta ranking from tournament results is in preparation: no tiers on gut feeling.",
     meanwhileDecks: "Meanwhile: the community's best-rated decks",
     meanwhileLegendaries: "Meanwhile: the Legendaries in the most published decks",
     meanwhileCards: "Meanwhile: the base cards in the most published decks",
@@ -736,7 +736,7 @@ export const en = {
       votesMany: "{n} votes",
       distribution: "Votes by tier",
       notRanked: "Nobody has ranked it yet.",
-      officialPending: "Not ranked yet: the first OriginsMeta ranking comes out after the Crimson Cup.",
+      officialPending: "Not ranked yet: the first OriginsMeta ranking is in preparation.",
       inDecks: "In {n} of {total} published decks ({pct}%)",
       decksTitle: "In the published decks",
       noDecks: "In no published deck.",
@@ -876,14 +876,14 @@ export const en = {
     deckListNote: "1 Legendary + 12 base cards × 2 = 25 cards",
     /* "Send us your guide" box on /guides (Twitch live of 23/09/2026) */
     submitTitle: "Wrote a guide?",
-    submitText: "Send it in: the staff reads it and, if it fits the site, we publish it under your name, in English, Italian, Spanish and French.",
+    submitText: "Send it in: the staff reads it and, if it fits the site, we publish it under your name, in the seven languages of the site.",
     submitCta: "Send us your guide",
   },
   /* "Send us your guide" form (/guides/submit): the guide reaches the staff's private Discord channel */
   guideSubmit: {
     title: "Send us your guide",
     description: "Wrote a guide to an Origins TCG deck or mechanic? Send it to OriginsMeta: the staff reads every one and publishes the best under your name.",
-    intro: "A guide to a deck, a Legendary, a mechanic or climbing ranked: if you wrote it, send it in. The staff reads it and, if it fits the site, we edit it, translate it and publish it in English, Italian, Spanish and French under your name.",
+    intro: "A guide to a deck, a Legendary, a mechanic or climbing ranked: if you wrote it, send it in. The staff reads it and, if it fits the site, we edit it, translate it and publish it in the seven languages of the site under your name.",
     form: {
       titleLabel: "Guide title",
       titlePlaceholder: "E.g. Dorothy Combo: how to play it and against whom",
@@ -976,7 +976,7 @@ export const en = {
   },
   about: {
     title: "About OriginsMeta, the unofficial Origins TCG site",
-    p1: "OriginsMeta is an independent companion site for Origins TCG, the free-to-compete trading card game by Koin Games. We track news, patches, cards, decks and tournaments, in English, Italian, Spanish and French.",
+    p1: "OriginsMeta is an independent companion site for Origins TCG, the free-to-compete trading card game by Koin Games. We track news, patches, cards, decks and tournaments, in English, Italian, Spanish, French, Portuguese, German and Russian.",
     p3: "The site launched in September 2026, during the Steam demo, so that the archive would be complete from day one; since 27 October 2026 the game is in Early Access.",
     contactTitle: "Contact",
     contactText: "Corrections, decklists, tournaments, partnerships:",
@@ -1068,7 +1068,7 @@ export const en = {
   footer: {
     /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
     disclaimer: "OriginsMeta is an independent, unofficial fan site about Origins TCG, the digital card game by Koin Games, and is not affiliated with Koin Games. Origins TCG and all related names and artwork belong to their owners.",
-    built: "Built at the table, in six languages.",
+    built: "Built at the table, in seven languages.",
     links: "Links",
     official: "Official",
     legal: "Legal",

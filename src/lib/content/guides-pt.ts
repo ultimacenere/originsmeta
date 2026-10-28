@@ -40,7 +40,7 @@ export const ptText: Record<GuideSlug, GuideCopy> = {
 - Sete mudaram nos patches de balanceamento entre agosto e 21 de setembro de 2026; Dracula, Van Helsing, Legion of the Dead e Robin Hood não. O [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026 não rebalanceou nenhuma das onze.
 - Os 20 decks publicados no OriginsMeta até as 20:00 CEST de 25 de setembro de 2026 usam dez das onze: Three Not So Little Pigs lidera quatro, Van Helsing três, Wicked Stepmother nenhum. Seis Lendárias têm um guia do OriginsMeta dedicado a um dos seus decks.
 
-As Lendárias abaixo estão em ordem de custo e, com o mesmo custo, em ordem alfabética. O guia descreve o que cada carta faz, não o quanto ela é forte: a nossa [tier list de Origins TCG](/pt/tier-list) vai classificá-las pelos resultados dos torneios e pelo topo da [ranqueada](/pt/guides/origins-tcg-ranked), a partir do fim da Crimson Cup.
+As Lendárias abaixo estão em ordem de custo e, com o mesmo custo, em ordem alfabética. O guia descreve o que cada carta faz, não o quanto ela é forte: a nossa [tier list de Origins TCG](/pt/tier-list) vai classificá-las pelos resultados dos torneios e pelo topo da [ranqueada](/pt/guides/origins-tcg-ranked); o primeiro ranking está em preparação.
 
 ## As 11 Lendárias em uma tabela {#visao-geral}
 
@@ -160,7 +160,7 @@ Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em p
 
 - **A lenda.** O mago por trás do nascimento de Arthur e da sua subida ao trono, de Geoffrey de Monmouth a Malory.
 - **Patches.** Patch 0.6.3: de 3/5 para 5/5, +2 de Poder ([notas do patch](/pt/news/patch-0-6-3)).
-- **Decks no OriginsMeta em 25 de setembro de 2026.** Um: [Spellcast](/pt/decks/community/spellcast-250f).
+- **Decks no OriginsMeta em 25 de setembro de 2026.** Um: Spellcast.
 - **Guia.** Ainda nenhum: [mande o seu](/pt/guides/submit).
 - **Página da carta.** [Merlin, carta Lendária: estatísticas e texto](/pt/cards/merlin).
 
@@ -297,7 +297,7 @@ No playtest fechado, segundo jogadores no fórum do Steam em 14 de setembro de 2
 
 ## O que o OriginsMeta vai fazer com a ranqueada {#originsmeta}
 
-O nosso plano em 25 de setembro de 2026: a primeira [tier list](/pt/tier-list) do OriginsMeta depois das finais da Crimson Cup de 25 de outubro, construída com os resultados do torneio e com o topo da ladder ranqueada. Até lá, a página da tier list mostra os decks da comunidade mais bem avaliados e as cartas mais jogadas, apresentados como prévias.
+As finais da Crimson Cup foram disputadas em 25 de outubro de 2026, e a primeira [tier list](/pt/tier-list) do OriginsMeta, construída com os resultados dos torneios e com o topo da ladder ranqueada, está em preparação. Até lá, a página da tier list mostra os decks da comunidade mais bem avaliados e as cartas mais jogadas, apresentados como prévias.
 
 ## O que ainda não sabemos {#o-que-nao-sabemos}
 
@@ -399,7 +399,7 @@ Alguns pares com os números reais:
 | [Dracula SUPER FUN](/pt/decks/community/dracula-super-fun-d936) + [Qoh](/pt/decks/community/qoh-f876) | Dracula, Queen of Hearts | nenhuma | 13 | sim |
 | [3 Pigs Mid Range](/pt/decks/community/3-pigs-mid-range-6311) + [Healing Healsing](/pt/decks/community/healing-healsing-9411) | Three Not So Little Pigs, Van Helsing | 1: Ali Baba | 12 | sim |
 | [Dorothy Combo](/pt/decks/community/dorothy-combo-7503) + [On Reveal Mid Range](/pt/decks/community/on-reveal-mid-range-772e) | Dorothy, Mulan | 1: En Passant | 12 | sim |
-| [Spellcast](/pt/decks/community/spellcast-250f) + [The Trick-or-Treat Legion](/pt/decks/community/the-trick-or-treat-legion-72c4) | Merlin, Legion of the Dead | 2: Golden Egg, Impundulu | 11 | sim |
+| Spellcast + [The Trick-or-Treat Legion](/pt/decks/community/the-trick-or-treat-legion-72c4) | Merlin, Legion of the Dead | 2: Golden Egg, Impundulu | 11 | sim |
 | [King of Value Trade](/pt/decks/community/king-of-value-trade-fd14) + [Healing Healsing](/pt/decks/community/healing-healsing-9411) | King Arthur, Van Helsing | 4: Shahrazad, Ali Baba, Boitata, Spellbook | 9 | sim |
 | [Qoh](/pt/decks/community/qoh-f876) + [Value Board](/pt/decks/community/value-board-c44a) | Queen of Hearts, Three Not So Little Pigs | 5: Bagheera, Baby Bear, Mind Palace, Ellen Trechend, Cockatrice | 8 | sim, no limite |
 | [Buff](/pt/decks/community/buff-6f60) + [FACE IS THE PLACE](/pt/decks/community/face-is-the-place-b049) | Robin Hood, Legion of the Dead | 6 | 7 | não |
@@ -408,11 +408,11 @@ Nove pares ficam exatamente em 8:
 
 - [3 Pigs Mid Range](/pt/decks/community/3-pigs-mid-range-6311) + [On Reveal Mid Range](/pt/decks/community/on-reveal-mid-range-772e)
 - [AGGRO /MIDRANGE PIGS GM](/pt/decks/community/aggro-midrange-pigs-gm-6931) + [FACE IS THE PLACE](/pt/decks/community/face-is-the-place-b049)
-- [CONTROL](/pt/decks/community/control-2c2b) + [Spellcast](/pt/decks/community/spellcast-250f)
+- [CONTROL](/pt/decks/community/control-2c2b) + Spellcast
 - [Cure Control](/pt/decks/community/cure-control-b630) + [Glinda Reborn](/pt/decks/community/glinda-reborn-2d6d)
-- [Cure Control](/pt/decks/community/cure-control-b630) + [Spellcast](/pt/decks/community/spellcast-250f)
+- [Cure Control](/pt/decks/community/cure-control-b630) + Spellcast
 - [FACE IS THE PLACE](/pt/decks/community/face-is-the-place-b049) + [Glinda Reborn](/pt/decks/community/glinda-reborn-2d6d)
-- [Healing Healsing](/pt/decks/community/healing-healsing-9411) + [Spellcast](/pt/decks/community/spellcast-250f)
+- [Healing Healsing](/pt/decks/community/healing-healsing-9411) + Spellcast
 - [Qoh](/pt/decks/community/qoh-f876) + [Value Board](/pt/decks/community/value-board-c44a)
 - [Qoh](/pt/decks/community/qoh-f876) + [VALUE MAXXING](/pt/decks/community/value-maxxing-739d)
 

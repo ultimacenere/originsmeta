@@ -18,7 +18,7 @@ export const de: Dictionary = {
       "Origins TCG ist das Free-to-Compete-Kartenspiel von Koin Games. Inoffizielle Fanseite auf Deutsch: Karten, Decks, Deckbuilder, Guides und News.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
-      "Inoffizielle Fanseite zu Origins TCG, dem Kartenspiel von Koin Games, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch: Karten, Decks, Deckbuilder, Tier-List, Guides und News.",
+      "Inoffizielle Fanseite zu Origins TCG, dem Kartenspiel von Koin Games, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch: Karten, Decks, Deckbuilder, Tier-List, Guides und News.",
   },
   nav: {
     news: "News",
@@ -201,7 +201,7 @@ export const de: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Legendäre, Basiskarten",
-    tierStatus: "OriginsMeta-Ranking nach der Crimson Cup (19.–25. Okt.). Bis dahin: die meistgespielten Karten.",
+    tierStatus: "OriginsMeta-Ranking in Vorbereitung. Bis dahin: die meistgespielten Karten.",
     tierSoon: "Meistgespielt",
     tierInvite: {
       intro: "Community-Tier-List: der Durchschnitt der Listen, die Mitglieder speichern (sie braucht mindestens {min} Personen).",
@@ -256,7 +256,7 @@ export const de: Dictionary = {
   cards: {
     title: "Origins TCG Kartenliste",
     metaTitle: "Origins TCG Karten: die komplette Kartenliste",
-    intro: "Jede Karte des Spiels, dazu die Karten, die sie erschaffen, und die in früheren Builds entfernten: aktuelle Werte, der offizielle Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch, wie er im Spiel steht, Balance-Historie und die Legende, aus der jede Karte stammt.",
+    intro: "Jede Karte des Spiels, dazu die Karten, die sie erschaffen, und die in früheren Builds entfernten: aktuelle Werte, der offizielle Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch, wie er im Spiel steht, Balance-Historie und die Legende, aus der jede Karte stammt.",
     description: "Alle spielbaren Karten von Origins TCG, dem Kartenspiel von Koin Games: Kartentext, Werte und Balance-Historie, mit Filtern nach Typ, Saga und Seltenheit.",
     searchHint: "Name oder Text: Merlin, Beim Aufdecken…",
     exploreLocations: "Orte entdecken",
@@ -265,7 +265,7 @@ export const de: Dictionary = {
     countRemoved: "in früheren Builds entfernt",
     legendNote: "Legendäre Karten führen ein Deck an: eine pro Deck, markiert mit dem Stern. Die Sagas sind eine eigene Einteilung von OriginsMeta nach der Ursprungslegende; das Spiel zeigt sie nicht.",
     sourceNote:
-      "Kosten, Werte, Gesinnungen und Texte der spielbaren Karten wurden im Spiel geprüft, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch; die Balance-Änderungen stammen aus den offiziellen Patchnotes, und die Patchnotes zu 0.8 vom 27. Oktober 2026 (Early Access) nennen keine Kartenänderungen. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft. Kartentext © Koin Games. Die Sagas, die Hinweise zum Ursprung und der italienische, spanische, französische, portugiesische und deutsche Text der erschaffenen und entfernten Karten stammen von OriginsMeta.",
+      "Kosten, Werte, Gesinnungen und Texte der spielbaren Karten wurden im Spiel geprüft, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch; die Balance-Änderungen stammen aus den offiziellen Patchnotes, und die Patchnotes zu 0.8 vom 27. Oktober 2026 (Early Access) nennen keine Kartenänderungen. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft. Kartentext © Koin Games. Die Sagas, die Hinweise zum Ursprung und der italienische, spanische, französische, portugiesische, deutsche und russische Text der erschaffenen und entfernten Karten stammen von OriginsMeta.",
     detailKicker: "Karte",
     collectible: "Sammelkarte",
     changesTitle: "Balance-Historie",
@@ -332,9 +332,9 @@ export const de: Dictionary = {
   tier: {
     title: "Origins TCG Tier-List",
     metaTitle: "Origins TCG Tier-List und Meta",
-    intro: "Decks, Legendäre und Basiskarten. Unser Ranking stützt sich auf Turnierergebnisse, nie aufs Bauchgefühl, und startet nach der Crimson Cup. Bis dahin: die meistgespielten Karten und die Tier-List der Community.",
-    description: "Tier-List und Meta von Origins TCG (Koin Games): Unser Ranking startet nach der Crimson Cup, bis dahin die besten Community-Decks und meistgespielten Karten.",
-    mainText: "Unser Ranking aus Turnierergebnissen, ab der Crimson Cup:",
+    intro: "Decks, Legendäre und Basiskarten. Unser Ranking stützt sich auf Turnierergebnisse, nie aufs Bauchgefühl, und das erste ist in Vorbereitung. Bis dahin: die meistgespielten Karten und die Tier-List der Community.",
+    description: "Tier-List und Meta von Origins TCG (Koin Games): Unser Turnier-Ranking ist in Vorbereitung, bis dahin die besten Community-Decks und meistgespielten Karten.",
+    mainText: "Unser Ranking aus Turnierergebnissen, in Vorbereitung:",
     mainAnchor: "Origins TCG Tier-List",
     decksText: "Für die vollständigen Decklists:",
     decksAnchor: "alle Origins TCG Decks",
@@ -364,7 +364,7 @@ export const de: Dictionary = {
     makerCta: "Erstelle deine Tier-List",
     sourcesLabel: "Quellen der Tier-List",
     sourceOfficial: "OriginsMeta",
-    sourceOfficialSoon: "nach der Crimson Cup",
+    sourceOfficialSoon: "in Vorbereitung",
     sourceOfficialUpdated: "aktualisiert am {date}",
     sourceCommunity: "Community",
     sourceCommunityNone: "noch keine Listen",
@@ -387,8 +387,8 @@ export const de: Dictionary = {
     lineStatus: "Status",
     lineMeasure: "Messgröße",
     officialSourceText: "offizielle Turnierergebnisse und Listen von der Spitze des Rankings",
-    officialStatusText: "erstes Ranking nach der Crimson Cup (19.–25. Oktober 2026)",
-    officialEmpty: "Das OriginsMeta-Ranking erscheint nach der Crimson Cup (19.–25. Oktober): keine Tiers aus dem Bauch heraus.",
+    officialStatusText: "erstes Ranking in Vorbereitung",
+    officialEmpty: "Das OriginsMeta-Ranking aus Turnierergebnissen ist in Vorbereitung: keine Tiers aus dem Bauch heraus.",
     meanwhileDecks: "Bis dahin: die am besten bewerteten Decks der Community",
     meanwhileLegendaries: "Bis dahin: die Legendären in den meisten veröffentlichten Decks",
     meanwhileCards: "Bis dahin: die Basiskarten in den meisten veröffentlichten Decks",
@@ -676,7 +676,7 @@ export const de: Dictionary = {
       votesMany: "{n} Stimmen",
       distribution: "Stimmen nach Tier",
       notRanked: "Noch hat sie niemand eingestuft.",
-      officialPending: "Noch nicht eingestuft: Das erste OriginsMeta-Ranking erscheint nach der Crimson Cup.",
+      officialPending: "Noch nicht eingestuft: Das erste OriginsMeta-Ranking ist in Vorbereitung.",
       inDecks: "In {n} von {total} veröffentlichten Decks ({pct} %)",
       decksTitle: "In den veröffentlichten Decks",
       noDecks: "In keinem veröffentlichten Deck.",
@@ -807,13 +807,13 @@ export const de: Dictionary = {
     deckListTitle: "Das Deck auf einen Blick",
     deckListNote: "1 Legendäre + 12 Basiskarten × 2 = 25 Karten",
     submitTitle: "Einen Guide geschrieben?",
-    submitText: "Schick ihn uns: Das Staff liest ihn und, wenn er zur Website passt, veröffentlichen wir ihn unter deinem Namen, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch.",
+    submitText: "Schick ihn uns: Das Staff liest ihn und, wenn er zur Website passt, veröffentlichen wir ihn unter deinem Namen, in den sieben Sprachen der Website.",
     submitCta: "Schick uns deinen Guide",
   },
   guideSubmit: {
     title: "Schick uns deinen Guide",
     description: "Einen Guide zu einem Deck oder einer Mechanik von Origins TCG geschrieben? Schick ihn an OriginsMeta: Das Staff liest alle und veröffentlicht die besten.",
-    intro: "Ein Guide zu einem Deck, einer Legendären, einer Mechanik oder zum Aufstieg im Ranked: Wenn du ihn geschrieben hast, schick ihn uns. Das Staff liest ihn und, wenn er zur Website passt, bearbeiten, übersetzen und veröffentlichen wir ihn auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch unter deinem Namen.",
+    intro: "Ein Guide zu einem Deck, einer Legendären, einer Mechanik oder zum Aufstieg im Ranked: Wenn du ihn geschrieben hast, schick ihn uns. Das Staff liest ihn und, wenn er zur Website passt, bearbeiten, übersetzen und veröffentlichen wir ihn in den sieben Sprachen der Website unter deinem Namen.",
     form: {
       titleLabel: "Titel des Guides",
       titlePlaceholder: "Z. B. Dorothy Combo: wie man es spielt und gegen wen",
@@ -901,7 +901,7 @@ export const de: Dictionary = {
   },
   about: {
     title: "Über OriginsMeta, die inoffizielle Website zu Origins TCG",
-    p1: "OriginsMeta ist eine unabhängige Begleit-Website zu Origins TCG, dem Free-to-Compete-Sammelkartenspiel von Koin Games. Wir verfolgen News, Patches, Karten, Decks und Turniere, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch und Deutsch.",
+    p1: "OriginsMeta ist eine unabhängige Begleit-Website zu Origins TCG, dem Free-to-Compete-Sammelkartenspiel von Koin Games. Wir verfolgen News, Patches, Karten, Decks und Turniere, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch.",
     p3: "Die Website ist im September 2026 gestartet, während der Steam-Demo, damit das Archiv vom ersten Tag an vollständig ist; seit dem 27. Oktober 2026 ist das Spiel im Early Access.",
     contactTitle: "Kontakt",
     contactText: "Korrekturen, Decklists, Turniere, Partnerschaften:",
@@ -989,7 +989,7 @@ export const de: Dictionary = {
   },
   footer: {
     disclaimer: "OriginsMeta ist eine unabhängige, inoffizielle Fanseite zu Origins TCG, dem digitalen Kartenspiel von Koin Games, und nicht mit Koin Games verbunden. Origins TCG und alle zugehörigen Namen und Artworks gehören ihren Inhabern.",
-    built: "Am Tisch gebaut, in sechs Sprachen.",
+    built: "Am Tisch gebaut, in sieben Sprachen.",
     links: "Links",
     official: "Offiziell",
     legal: "Rechtliches",

@@ -115,7 +115,7 @@ export const organization: Json = {
   logo: `${siteUrl}/media/logo-originsmeta.webp`,
   email: "staff@originsmeta.com",
   description:
-    "Unofficial, independent fan site about Origins TCG, the digital card game by Koin Games: news, tier list, guides, card database, decks and tournament calendar, in English, Italian, Spanish and French. Not affiliated with Koin Games.",
+    "Unofficial, independent fan site about Origins TCG, the digital card game by Koin Games: news, tier list, guides, card database, decks and tournament calendar, in English, Italian, Spanish, French, Portuguese, German and Russian. Not affiliated with Koin Games.",
   // Mese in cui è nato il sito.
   foundingDate: "2026-09",
   founder: founders.map((a) => ({ "@type": "Person", "@id": personId(a.slug), name: a.name })),

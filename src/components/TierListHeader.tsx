@@ -4,7 +4,7 @@ import { href, type Dictionary, type Locale } from "@/lib/i18n";
 /**
  * Testata unica della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB), al posto della
  * tendina `TierListNav`: le tre fonti stanno sempre in vista come schede (OriginsMeta · Community · Le più giocate),
- * ognuna con il suo stato sotto il nome ("dopo la Crimson Cup", "1 lista", "14 mazzi"), più l'azione "Crea la tua".
+ * ognuna con il suo stato sotto il nome ("in preparazione", "1 lista", "14 mazzi"), più l'azione "Crea la tua".
  * Una tendina chiusa nascondeva le alternative (chi non la apriva non sapeva che esistesse la community).
  * Le schede sono link fra pagine vere (ognuna col suo URL, per la SEO), quindi `nav` + `aria-current="page"`, non
  * un `tablist`. L'H1 cambia con la pagina: la testata è la stessa, il titolo dice dove si è.
@@ -33,7 +33,7 @@ export function TierListHeader({
   dict: Dictionary;
   current: TierSource;
   title: string;
-  /** stato di ogni fonte, già scritto: "dopo la Crimson Cup", "1 lista", "12 voti", "14 mazzi", "12 partite" */
+  /** stato di ogni fonte, già scritto: "in preparazione", "1 lista", "12 voti", "14 mazzi", "12 partite" */
   state: { official: string; community: string; votes: string; played: string };
   /** indice della pagina: ancore e conteggi delle sezioni */
   sections?: { id: string; label: string; count?: number }[];

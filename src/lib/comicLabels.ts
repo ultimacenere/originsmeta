@@ -39,7 +39,7 @@ const en = {
   hub: {
     title: "Origins TCG comics",
     metaTitle: "Origins TCG comics by the community creators",
-    description: "Comics about Origins TCG drawn by the creators of the OriginsMeta community: news, stories and life in the game, with the texts in English, Italian, Spanish and French.",
+    description: "Comics about Origins TCG drawn by the creators of the OriginsMeta community: news, stories and life in the game, with the texts in the languages of the site.",
     intro: "Comics about Origins TCG drawn by the creators of the community: news, stories and life in the game. They also come out among the news.",
     empty: "No comics yet: the first one is on its way.",
   },
@@ -198,7 +198,7 @@ const it: ComicLabels = {
   hub: {
     title: "Fumetti di Origins TCG",
     metaTitle: "Fumetti di Origins TCG dei creator della community",
-    description: "Fumetti su Origins TCG disegnati dai creator della community di OriginsMeta: notizie, storie e vita di gioco, con i testi in italiano, inglese e spagnolo.",
+    description: "Fumetti su Origins TCG disegnati dai creator della community di OriginsMeta: notizie, storie e vita di gioco, con i testi nelle lingue del sito.",
     intro: "Fumetti su Origins TCG disegnati dai creator della community: notizie, storie e vita di gioco. Escono anche fra le news.",
     empty: "Ancora nessun fumetto: il primo sta arrivando.",
   },
@@ -351,7 +351,7 @@ const es: ComicLabels = {
   hub: {
     title: "Cómics de Origins TCG",
     metaTitle: "Cómics de Origins TCG de los creadores de la comunidad",
-    description: "Cómics sobre Origins TCG dibujados por los creadores de la comunidad de OriginsMeta: noticias, historias y vida de juego, con los textos en español, inglés e italiano.",
+    description: "Cómics sobre Origins TCG dibujados por los creadores de la comunidad de OriginsMeta: noticias, historias y vida de juego, con los textos en los idiomas del sitio.",
     intro: "Cómics sobre Origins TCG dibujados por los creadores de la comunidad: noticias, historias y vida de juego. También salen entre las noticias.",
     empty: "Aún no hay cómics: el primero está en camino.",
   },

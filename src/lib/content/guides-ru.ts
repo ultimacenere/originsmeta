@@ -38,7 +38,7 @@ export const ruText: Record<GuideSlug, GuideCopy> = {
 - Семь изменились в патчах баланса с августа по 21 сентября 2026; Dracula, Van Helsing, Legion of the Dead и Robin Hood — нет. [Патч 0.7](/ru/news/patch-0-7) от 29 сентября 2026 не менял баланс ни одной из одиннадцати, а в [патч-ноутах версии 0.8](https://store.steampowered.com/news/app/4429430/view/1847286114049982) (27 октября 2026), с которой начался ранний доступ, изменений карт нет.
 - 20 колод, опубликованных на OriginsMeta до 20:00 CEST 25 сентября 2026, используют десять из одиннадцати: Three Not So Little Pigs возглавляет четыре, Van Helsing — три, Wicked Stepmother — ни одной. У шести Легендарных карт есть гайд OriginsMeta по одной из их колод.
 
-Легендарные карты ниже идут по стоимости, а при одинаковой стоимости — по алфавиту. Гайд описывает, что делает каждая карта, а не насколько она сильна: наш [тир-лист Origins TCG](/ru/tier-list) распределит их по результатам турниров и вершине [рейтинговой лестницы](/ru/guides/origins-tcg-ranked) — начиная после Crimson Cup.
+Легендарные карты ниже идут по стоимости, а при одинаковой стоимости — по алфавиту. Гайд описывает, что делает каждая карта, а не насколько она сильна: наш [тир-лист Origins TCG](/ru/tier-list) распределит их по результатам турниров и вершине [рейтинговой лестницы](/ru/guides/origins-tcg-ranked); первый рейтинг уже готовится.
 
 ## 11 Легендарных карт с первого взгляда {#obzor}
 
@@ -158,7 +158,7 @@ export const ruText: Record<GuideSlug, GuideCopy> = {
 
 - **Легенда.** Волшебник, стоящий за рождением Артура и его восхождением на трон, — от Гальфрида Монмутского до Мэлори.
 - **Патчи.** Патч 0.6.3: с 3/5 до 5/5, +2 Силы ([патчноуты](/ru/news/patch-0-6-3)).
-- **Колоды на OriginsMeta, 25 сентября 2026.** Одна: [Spellcast](/ru/decks/community/spellcast-250f).
+- **Колоды на OriginsMeta, 25 сентября 2026.** Одна: Spellcast.
 - **Гайд.** Пока нет: [пришлите нам свой](/ru/guides/submit).
 - **Страница карты.** [Merlin, Легендарная карта: характеристики и текст](/ru/cards/merlin).
 
@@ -295,7 +295,7 @@ export const ruText: Record<GuideSlug, GuideCopy> = {
 
 ## Что OriginsMeta сделает с рейтинговым режимом {#originsmeta}
 
-Наш план на 25 сентября 2026: первый [тир-лист](/ru/tier-list) OriginsMeta после финалов Crimson Cup 25 октября, построенный на результатах турнира и на вершине рейтинговой лестницы. До тех пор страница тир-листа показывает лучшие по оценкам колоды сообщества и чаще всего играемые карты — как заявленный предварительный просмотр.
+Финалы Crimson Cup прошли 25 октября 2026 года, и первый [тир-лист](/ru/tier-list) OriginsMeta, построенный на результатах турниров и на вершине рейтинговой лестницы, уже готовится. До тех пор страница тир-листа показывает лучшие по оценкам колоды сообщества и чаще всего играемые карты — как заявленный предварительный просмотр.
 
 ## Чего мы ещё не знаем {#chego-my-ne-znaem}
 
@@ -397,7 +397,7 @@ Crimson Cup был турниром Steam Next Fest, а рейтинговый �
 | [Dracula SUPER FUN](/ru/decks/community/dracula-super-fun-d936) + [Qoh](/ru/decks/community/qoh-f876) | Dracula, Queen of Hearts | нет | 13 | да |
 | [3 Pigs Mid Range](/ru/decks/community/3-pigs-mid-range-6311) + [Healing Healsing](/ru/decks/community/healing-healsing-9411) | Three Not So Little Pigs, Van Helsing | 1: Ali Baba | 12 | да |
 | [Dorothy Combo](/ru/decks/community/dorothy-combo-7503) + [On Reveal Mid Range](/ru/decks/community/on-reveal-mid-range-772e) | Dorothy, Mulan | 1: En Passant | 12 | да |
-| [Spellcast](/ru/decks/community/spellcast-250f) + [The Trick-or-Treat Legion](/ru/decks/community/the-trick-or-treat-legion-72c4) | Merlin, Legion of the Dead | 2: Golden Egg, Impundulu | 11 | да |
+| Spellcast + [The Trick-or-Treat Legion](/ru/decks/community/the-trick-or-treat-legion-72c4) | Merlin, Legion of the Dead | 2: Golden Egg, Impundulu | 11 | да |
 | [King of Value Trade](/ru/decks/community/king-of-value-trade-fd14) + [Healing Healsing](/ru/decks/community/healing-healsing-9411) | King Arthur, Van Helsing | 4: Shahrazad, Ali Baba, Boitata, Spellbook | 9 | да |
 | [Qoh](/ru/decks/community/qoh-f876) + [Value Board](/ru/decks/community/value-board-c44a) | Queen of Hearts, Three Not So Little Pigs | 5: Bagheera, Baby Bear, Mind Palace, Ellen Trechend, Cockatrice | 8 | да, на границе |
 | [Buff](/ru/decks/community/buff-6f60) + [FACE IS THE PLACE](/ru/decks/community/face-is-the-place-b049) | Robin Hood, Legion of the Dead | 6 | 7 | нет |
@@ -406,11 +406,11 @@ Crimson Cup был турниром Steam Next Fest, а рейтинговый �
 
 - [3 Pigs Mid Range](/ru/decks/community/3-pigs-mid-range-6311) + [On Reveal Mid Range](/ru/decks/community/on-reveal-mid-range-772e)
 - [AGGRO /MIDRANGE PIGS GM](/ru/decks/community/aggro-midrange-pigs-gm-6931) + [FACE IS THE PLACE](/ru/decks/community/face-is-the-place-b049)
-- [CONTROL](/ru/decks/community/control-2c2b) + [Spellcast](/ru/decks/community/spellcast-250f)
+- [CONTROL](/ru/decks/community/control-2c2b) + Spellcast
 - [Cure Control](/ru/decks/community/cure-control-b630) + [Glinda Reborn](/ru/decks/community/glinda-reborn-2d6d)
-- [Cure Control](/ru/decks/community/cure-control-b630) + [Spellcast](/ru/decks/community/spellcast-250f)
+- [Cure Control](/ru/decks/community/cure-control-b630) + Spellcast
 - [FACE IS THE PLACE](/ru/decks/community/face-is-the-place-b049) + [Glinda Reborn](/ru/decks/community/glinda-reborn-2d6d)
-- [Healing Healsing](/ru/decks/community/healing-healsing-9411) + [Spellcast](/ru/decks/community/spellcast-250f)
+- [Healing Healsing](/ru/decks/community/healing-healsing-9411) + Spellcast
 - [Qoh](/ru/decks/community/qoh-f876) + [Value Board](/ru/decks/community/value-board-c44a)
 - [Qoh](/ru/decks/community/qoh-f876) + [VALUE MAXXING](/ru/decks/community/value-maxxing-739d)
 
