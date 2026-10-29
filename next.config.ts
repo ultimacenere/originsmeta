@@ -77,6 +77,8 @@ const sections = [
   "style",
   // termini d'uso (14/10/2026, per la scheda dell'estensione Twitch)
   "terms",
+  // il Theory craft (29/10/2026): deck builder con le carte non ancora nel gioco ed elenco dei suoi mazzi
+  "theory-craft",
   "tier-list",
   "tournaments",
   // la pagina dell'app OriginsMeta Tracker (12/10/2026; prima stava in /analytics, che ora sono le statistiche)

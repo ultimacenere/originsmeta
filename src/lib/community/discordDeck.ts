@@ -7,6 +7,7 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { siteUrl } from "@/lib/i18n";
 import { discordWebhookUrl, escapeDiscord, sendDiscordWebhook, type DiscordWebhookPayload } from "@/lib/discordWebhook";
 import { discordUtm } from "@/lib/analytics";
+import { isTheoryDeck } from "@/lib/theoryCraft";
 
 /**
  * Ogni mazzo pubblicato sul sito va in diretta nel canale `#community-decks` del nostro Discord (Pierluigi,
@@ -29,7 +30,8 @@ const TIMEOUT_MS = 3000;
  */
 const UTM = discordUtm("deck", "community-decks");
 
-export type AnnouncedDeck = { slug: string; name: string; legendary: string; archetype: string; author: string };
+/** `cards` dal 29/10/2026: un mazzo con carte non ancora nel gioco si annuncia come theory craft. */
+export type AnnouncedDeck = { slug: string; name: string; legendary: string; archetype: string; author: string; cards?: string[] };
 
 /**
  * Messaggio del canale: italiano per primo, con i link alle pagine inglese e spagnola (lo spagnolo dal 25/09/2026:
@@ -44,7 +46,10 @@ export function deckPayload(d: AnnouncedDeck): DiscordWebhookPayload {
   // il nome del mazzo non si traduce: è lo stesso titolo nelle tre lingue
   const name = d.name.replace(/[[\]]/g, "").slice(0, 200);
   return {
-    content: "🃏 **Nuovo mazzo · New deck · Nuevo mazo**",
+    // mazzo theory craft (29/10/2026): usa carte che oggi non sono nel gioco, e il canale lo deve sapere prima di aprirlo
+    content: isTheoryDeck({ legendary: d.legendary, cards: d.cards ?? [] })
+      ? "🧪 **Nuovo mazzo theory craft · New theory craft deck · Nuevo mazo de theory craft**"
+      : "🃏 **Nuovo mazzo · New deck · Nuevo mazo**",
     embeds: [
       {
         // il titolo di un embed non interpreta il Markdown: il nome resta com'è, solo accorciato
@@ -79,13 +84,13 @@ async function readPublished(slug: string): Promise<AnnouncedDeck | null> {
   });
   const { data } = await sb
     .from("community_decks")
-    .select("slug, name, legendary, archetype, status, owner:profiles!community_decks_owner_fkey(username, display_name)")
+    .select("slug, name, legendary, cards, archetype, status, owner:profiles!community_decks_owner_fkey(username, display_name)")
     .eq("slug", slug)
     .maybeSingle();
-  const row = data as unknown as { slug: string; name: string; legendary: string; archetype: string; status: string; owner: { username: string | null; display_name: string | null } | null } | null;
+  const row = data as unknown as { slug: string; name: string; legendary: string; cards: string[] | null; archetype: string; status: string; owner: { username: string | null; display_name: string | null } | null } | null;
   if (!row || row.status !== "published") return null;
   const author = (row.owner?.display_name || row.owner?.username || "?").replace(/[\r\n]+/g, " ").trim().slice(0, 60);
-  return { slug: row.slug, name: row.name, legendary: row.legendary, archetype: row.archetype, author };
+  return { slug: row.slug, name: row.name, legendary: row.legendary, archetype: row.archetype, author, cards: Array.isArray(row.cards) ? row.cards : [] };
 }
 
 /** Da chiamare dopo la pubblicazione di un mazzo: annuncia nel canale dopo la risposta al browser. */

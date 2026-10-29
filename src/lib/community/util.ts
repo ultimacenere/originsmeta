@@ -34,8 +34,11 @@ export type CheckedDeck = { legendary: string; cards: string[]; customCards: Bui
 /**
  * Verifica sul server che il mazzo rispetti le regole e che ogni carta esista nel database
  * (o sia una carta personalizzata dichiarata nel mazzo). Le carte personalizzate vengono ripulite.
+ * `theory` (Theory craft, 29/10/2026): ammette anche le carte che oggi non sono nel gioco (`status: "removed"`), solo per
+ * i mazzi singoli (pubblicazione, modifica, salvataggio privato); un mazzo che ne contiene una è theory craft
+ * (src/lib/theoryCraft.ts). Mazzi torneo e tornei restano alle carte del gioco.
  */
-export function checkDeck(deck: DeckState): { ok: true; deck: CheckedDeck } | { ok: false; code: "invalidDeck" } {
+export function checkDeck(deck: DeckState, { theory = false }: { theory?: boolean } = {}): { ok: true; deck: CheckedDeck } | { ok: false; code: "invalidDeck" } {
   const bad = { ok: false, code: "invalidDeck" } as const;
   const customs = new Map<string, BuilderCard>();
   for (const c of deck.customCards ?? []) {
@@ -53,7 +56,8 @@ export function checkDeck(deck: DeckState): { ok: true; deck: CheckedDeck } | { 
   const leg = deck.legendary;
   if (!leg) return bad;
   const legCard = getCard(leg);
-  const legOk = legCard ? Boolean(legCard.legendary) && legCard.status === "active" : customs.get(leg)?.legendary === true;
+  const playable = (status: "active" | "removed") => status === "active" || (theory && status === "removed");
+  const legOk = legCard ? Boolean(legCard.legendary) && legCard.type !== "token" && playable(legCard.status) : customs.get(leg)?.legendary === true;
   if (!legOk) return bad;
   const base = Array.isArray(deck.cards) ? deck.cards.filter((s): s is string => typeof s === "string") : [];
   if (base.length !== RULES.distinctCards || new Set(base).size !== base.length || base.includes(leg)) return bad;
@@ -61,7 +65,7 @@ export function checkDeck(deck: DeckState): { ok: true; deck: CheckedDeck } | { 
   for (const s of base) {
     const card = getCard(s);
     if (card) {
-      if (card.legendary || card.type === "token" || card.status !== "active") return bad;
+      if (card.legendary || card.type === "token" || !playable(card.status)) return bad;
       continue;
     }
     const cu = customs.get(s);

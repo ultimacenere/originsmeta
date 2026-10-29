@@ -7,6 +7,7 @@ import { sitemapDecks, type SitemapDeck } from "./deckQuality";
 import { guideTableMissing } from "./guides";
 import { versionRatings, type DeckVersion } from "./deckVersions";
 import { popularityMap, popularityMissing, type DeckPopularity } from "./favorites";
+import { splitTheory } from "@/lib/theoryCraft";
 
 /*
  * Mazzi privati ('draft', "Salva privato" del deck builder, 21/09/2026): ogni lettura pubblica filtra su
@@ -274,16 +275,22 @@ export async function listPublicProfiles(): Promise<{ username: string; updated_
  * I mazzi per la sitemap (`sitemapDecks` in deckQuality.ts, con test): `decks` sono i mazzi da elencare, ognuno con le
  * lingue in cui la scheda si indicizza (quella dell'autore più le traduzioni aggiornate, 25/09/2026, e solo se la guida
  * supera la soglia di parole); `latest` è la data dell'ultimo mazzo pubblicato o modificato, anche sotto soglia, per il
- * lastmod di /decks e delle tier list, che mostrano tutti i mazzi. Con un errore lancia.
+ * lastmod di /decks e delle tier list, che mostrano tutti i mazzi del gioco; `latestTheory` la stessa data per i mazzi
+ * theory craft (29/10/2026), che stanno solo in /theory-craft/decks. Con un errore lancia.
  */
-export async function listPublishedDeckIndex(): Promise<{ decks: SitemapDeck[]; latest?: string }> {
+export async function listPublishedDeckIndex(): Promise<{ decks: SitemapDeck[]; latest?: string; latestTheory?: string }> {
   const client = supabasePublic();
   if (!client) return { decks: [] };
-  const res = await readWithTranslations("slug, updated_at, guide", (sel) =>
+  const res = await readWithTranslations("slug, updated_at, guide, legendary, cards", (sel) =>
     client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(1000),
   );
-  const rows = rowsOrThrow<{ slug: string; updated_at: string; guide: Guide; translations?: DeckTranslations | null }>("listPublishedDeckIndex", res);
-  return sitemapDecks(rows, locales);
+  type Row = { slug: string; updated_at: string; guide: Guide; legendary: string | null; cards: string[]; translations?: DeckTranslations | null };
+  const rows = rowsOrThrow<Row>("listPublishedDeckIndex", res);
+  const { official, theory } = splitTheory(rows);
+  const latest = (list: Row[]) => list.reduce<string | undefined>((max, r) => (!max || r.updated_at > max ? r.updated_at : max), undefined);
+  const { decks } = sitemapDecks(rows, locales);
+  const [latestOfficial, latestTheory] = [latest(official), latest(theory)];
+  return { decks, ...(latestOfficial ? { latest: latestOfficial } : {}), ...(latestTheory ? { latestTheory } : {}) };
 }
 
 /**

@@ -54,6 +54,8 @@ import { supabaseUrl } from "@/lib/supabase/env";
 import { readDeckWinrate } from "@/lib/community/trackerStatsQueries";
 import { ANALYTICS_PUBLIC, DECK_WINRATE_PUBLIC } from "@/lib/community/badges";
 import { deckListKey, percent } from "@/lib/tracker/stats";
+import { THEORY_DECKS_PATH, builderPathFor, isTheoryDeck, splitTheory, theorySlugsOf } from "@/lib/theoryCraft";
+import { theoryCraftLabels } from "@/lib/theoryCraftLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -167,14 +169,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // errore (il riquadro è facoltativo). Dall'11/10/2026 per tutti anche con Analytics in prova (`DECK_WINRATE_PUBLIC`, Pierluigi:
   // "voglio che i deck del sito acquisiscano il win rate"), dalla prima partita e solo con la lista identica; i link verso
   // le pagine ancora in prova solo con ANALYTICS_PUBLIC.
+  // Mazzo theory craft (29/10/2026): usa carte che oggi non sono nel gioco, quindi niente win rate e niente codice del gioco,
+  // briciole verso /theory-craft/decks e "altri mazzi" fra i theory craft.
+  const theory = isTheoryDeck(deck);
+  const TL = theoryCraftLabels[locale];
   const [published, winrate] = await Promise.all([
     listPublishedDecks(),
-    DECK_WINRATE_PUBLIC ? readDeckWinrate(deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key)) : null,
+    DECK_WINRATE_PUBLIC && !theory ? readDeckWinrate(deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key)) : null,
   ]);
   // Altri mazzi con la stessa Leggendaria, poi altri mazzi (DECKS-11, 25/09/2026): prima erano gli 8 più recenti, e i
   // link seguivano la data invece dell'argomento. Scelta deterministica in `relatedDecks` (deckQuality.ts): i vicini in
   // ordine di pubblicazione, così ogni mazzo riceve link, e prima i mazzi che si indicizzano.
-  const related = relatedDecks(deck, published);
+  const related = relatedDecks(deck, theory ? splitTheory(published).theory : splitTheory(published).official);
   // L'autore editoriale dietro l'account, se authors.ts lo dichiara (nome utente o mazzi: Davdas è luigidavdasragoni).
   const editorial = editorialAuthor(
     authors,
@@ -183,7 +189,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   );
   // Il builder si apre già caricato dal link (`#OM1.…`, formato interno che l'utente non vede più): se il codice
   // salvato manca lo si ricava dal mazzo, così il tasto c'è sempre.
-  const builderHref = `${href(locale, "/deck-builder")}#${deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards })}`;
+  const builderHref = `${href(locale, builderPathFor(deck))}#${deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards })}`;
   // Codice del gioco (KGBLDC…), l'unico da copiare (note del 22/09/2026): null se una carta non ha l'ID ufficiale.
   const gameCode = await deckGameCode(deck);
   // Versioni delle carte (pacchetto VERSIONI, 30/09/2026): quella in vigore più le precedenti, dalla più recente.
@@ -236,11 +242,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       <JsonLd
-        data={[article, breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.decks.title, path: href(locale, "/decks") }, { name: deck.name, path }])]}
+        data={[
+          article,
+          breadcrumbs([
+            { name: "OriginsMeta", path: href(locale) },
+            { name: theory ? TL.decks.title : d.decks.title, path: href(locale, theory ? THEORY_DECKS_PATH : "/decks") },
+            { name: deck.name, path },
+          ]),
+        ]}
       />
       <p className="text-sm">
-        <Link href={href(locale, "/decks")} className="text-chalk-muted hover:text-chalk">
-          ← {d.common.backTo} {d.decks.title}
+        <Link href={href(locale, theory ? THEORY_DECKS_PATH : "/decks")} className="text-chalk-muted hover:text-chalk">
+          ← {d.common.backTo} {theory ? TL.decks.title : d.decks.title}
         </Link>
       </p>
 
@@ -327,6 +340,11 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           {/* il ruolo sta accanto al nome, in AuthorChannels (pacchetto CREATOR) */}
           {/* pastiglie a fondo pieno con testo ink scuro (prima menta scuro con testo chiaro, 2,3:1) */}
           {deck.profile?.badge === "staff" ? null : <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{d.common.community}</span>}
+          {theory ? (
+            <Link href={href(locale, THEORY_DECKS_PATH)} className="theory-pill self-center !text-[11px] hover:underline">
+              {TL.deck.pill}
+            </Link>
+          ) : null}
           <span className="stat-pill inline-flex items-center gap-1 bg-sky text-ink">
             <ArchetypeIcon id={deck.archetype} size="xs" />
             {d.common.archetype}: {archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype}
@@ -349,6 +367,32 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
             {view.translated ? `${deck.guide.lang.toUpperCase()} → ${locale.toUpperCase()}` : deck.guide.lang.toUpperCase()}
           </span>
         </div>
+
+        {theory ? (
+          <div className="mt-6 rounded-lg border-2 border-crimson-soft/70 bg-night-3 p-3 text-sm text-pale" role="note">
+            <p className="kicker text-crimson-soft">{TL.deck.noticeTitle}</p>
+            <p className="mt-1">
+              {(() => {
+                const [before, after = ""] = TL.deck.noticeText.split("{cards}");
+                const slugs = theorySlugsOf(deck);
+                return (
+                  <>
+                    {before}
+                    {slugs.map((slug, i) => (
+                      <span key={slug}>
+                        {i ? ", " : ""}
+                        <Link href={href(locale, `/cards/${slug}`)} className="link-mint font-bold">
+                          {getCard(slug)?.name ?? slug}
+                        </Link>
+                      </span>
+                    ))}
+                    {after}
+                  </>
+                );
+              })()}
+            </p>
+          </div>
+        ) : null}
 
         {/* La guida di OriginsMeta a questo mazzo, in alto e ben visibile (MQ-13 e DECKS-11, 25/09/2026): la guida porta
             già alla scheda con il tasto principale, e la scheda prima la citava solo in fondo, dopo l'articolo. Le due
@@ -534,7 +578,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
               event={{ name: "game_code_copy", params: { placement: "deck_page" } }}
             />
           ) : (
-            <p className="text-xs text-pale-muted">{c.gameCodeMissing}</p>
+            <p className="text-xs text-pale-muted">{theory ? TL.deck.gameCode : c.gameCodeMissing}</p>
           )}
         </div>
         {/* Per le dirette (pacchetto STREAM): link breve, comando di chat, overlay per OBS e immagine del mazzo */}

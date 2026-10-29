@@ -409,6 +409,23 @@
     border-radius: 6px;
     padding: 0.15rem 0.45rem;
   }
+  /* Theory craft (29/10/2026): pastiglia delle carte non ancora nel gioco e dei mazzi theory craft. Crimson degli avvisi
+     in versione chiara: crimson-deep su crimson-soft fa 5,6:1. */
+  .theory-pill {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 0.05rem 0.35rem;
+    background: var(--color-crimson-soft);
+    color: var(--color-crimson-deep);
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    text-transform: uppercase;
+    text-shadow: none;
+    white-space: nowrap;
+  }
   /*
     Ruoli Pro, Creator e Autore (mappa di Pierluigi del 23/09/2026, ruoli nuovi del 27/09/2026, vedi `badgeStyle` in
     src/lib/cardArt.ts). Stanno qui e non in utility Tailwind perché uno è un gradiente e un altro usa due tinte fuori

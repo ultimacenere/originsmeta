@@ -38,6 +38,8 @@ export const de: Dictionary = {
     about: "Über uns",
     builder: "Deck builder",
     draft: "Draft",
+    theoryCraft: "Theory Craft",
+    theoryDecks: "Theory-Craft-Decks",
     decksSingle: "Einzeldecks",
     decksTournament: "Turnierdecks",
     comics: "Comics",

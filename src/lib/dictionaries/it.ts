@@ -34,6 +34,8 @@ export const it: Dictionary = {
     about: "Chi siamo",
     builder: "Deck builder",
     draft: "Draft",
+    theoryCraft: "Theory craft",
+    theoryDecks: "Mazzi theory craft",
     /** sottomenu "Mazzi" (04/10/2026): mazzi singoli e Mazzi torneo; uguali a deckSetLabels.nav */
     decksSingle: "Mazzi singoli",
     decksTournament: "Mazzi torneo",

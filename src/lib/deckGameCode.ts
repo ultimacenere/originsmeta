@@ -11,13 +11,18 @@ import type { BuilderCard } from "./deckrules";
  * manca anche una il codice non si genera: meglio dire "non disponibile" che copiare un codice sbagliato.
  * Ogni carta compare una volta sola, come nei codici reali verificati (vedi `deckcode.ts` e il README).
  * Solo lato server: legge il database carte. Il checksum usa Web Crypto, globale in Node come nel browser.
+ * Le carte che oggi non sono nel gioco (mazzi theory craft, 29/10/2026) contano come senza chiave: il gioco non le ha, e
+ * un codice con le loro chiavi non si potrebbe usare.
  */
 export type DeckGameCode = { code: string | null; missing: number };
 
 export async function deckGameCode(deck: { legendary: string | null; cards: string[]; custom_cards?: BuilderCard[] }): Promise<DeckGameCode> {
   const slugs = [deck.legendary, ...deck.cards].filter((s): s is string => Boolean(s));
   if (!slugs.length) return { code: null, missing: 0 };
-  const keys = slugs.map((s) => getCard(s)?.key ?? deck.custom_cards?.find((x) => x.slug === s)?.key);
+  const keys = slugs.map((s) => {
+    const card = getCard(s);
+    return card ? (card.status === "active" ? card.key : undefined) : deck.custom_cards?.find((x) => x.slug === s)?.key;
+  });
   const missing = keys.filter((k) => !k).length;
   if (missing) return { code: null, missing };
   try {

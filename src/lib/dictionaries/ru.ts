@@ -39,6 +39,8 @@ export const ru: Dictionary = {
     about: "О нас",
     builder: "Конструктор колод",
     draft: "Драфт",
+    theoryCraft: "Теорикрафт",
+    theoryDecks: "Колоды теорикрафта",
     decksSingle: "Одиночные колоды",
     decksTournament: "Турнирные колоды",
     comics: "Комиксы",

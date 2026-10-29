@@ -11,6 +11,7 @@ import { DiscordButton, DiscordIconLink } from "./DiscordButton";
 import { PayPalButton } from "./PayPalButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
+import { THEORY_DECKS_PATH, THEORY_PATH } from "@/lib/theoryCraftPaths";
 
 /**
  * `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale).
@@ -31,6 +32,13 @@ const BUILDER_IN_DECKS: readonly Locale[] = ["ru"];
 export function navItems(dict: Dictionary, locale: Locale): NavItem[] {
   const t = dict.tier;
   const builderInDecks = BUILDER_IN_DECKS.includes(locale);
+  // le voci accanto al Deck builder, anche nella tendina del telefono e nel footer: il Draft (02/10/2026) e il Theory craft
+  // con l'elenco dei suoi mazzi (29/10/2026, Pierluigi: "sotto deck builder la nuova sezione Theory craft")
+  const builderTools = [
+    { label: dict.nav.draft, path: "/draft", mobile: true },
+    { label: dict.nav.theoryCraft, path: THEORY_PATH, mobile: true },
+    { label: dict.nav.theoryDecks, path: THEORY_DECKS_PATH, mobile: true },
+  ];
   return [
     {
       label: dict.nav.news,
@@ -98,12 +106,7 @@ export function navItems(dict: Dictionary, locale: Locale): NavItem[] {
       sub: [
         { label: dict.nav.decksSingle, path: "/decks" },
         { label: dict.nav.decksTournament, path: "/decks/tournament", mobile: true },
-        ...(builderInDecks
-          ? [
-              { label: dict.nav.builder, path: "/deck-builder", mobile: true },
-              { label: dict.nav.draft, path: "/draft", mobile: true },
-            ]
-          : []),
+        ...(builderInDecks ? [{ label: dict.nav.builder, path: "/deck-builder", mobile: true }, ...builderTools] : []),
       ],
     },
     ...(builderInDecks
@@ -112,11 +115,9 @@ export function navItems(dict: Dictionary, locale: Locale): NavItem[] {
           {
             label: dict.nav.builder,
             path: "/deck-builder",
-            // sottomenu del menu desktop (02/10/2026): il draft contro il Cervello sta accanto al deck builder
-            sub: [
-              { label: dict.nav.builder, path: "/deck-builder" },
-              { label: dict.nav.draft, path: "/draft", mobile: true },
-            ],
+            // sottomenu del menu desktop (02/10/2026): il draft contro il Cervello sta accanto al deck builder, poi il
+            // Theory craft con i suoi mazzi (29/10/2026)
+            sub: [{ label: dict.nav.builder, path: "/deck-builder" }, ...builderTools],
           },
         ]),
     { label: dict.nav.events, path: "/tournaments" },

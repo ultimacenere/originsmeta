@@ -9,6 +9,7 @@ import { indexableLocales } from "./deckQuality";
 import { authorName } from "./util";
 import type { Guide, Profile } from "./types";
 import { deckCardsDate } from "./deckVersions";
+import { officialDecks } from "@/lib/theoryCraft";
 
 /**
  * Mazzi pubblicati e tier list della community per le schede carta (Ondata 2 del piano SEO/GEO: SCHEDE-02, DECKS-04,
@@ -116,7 +117,8 @@ async function fetchDeckRefs(): Promise<DeckRef[] | null> {
   if (res.error && (res.error.code === "42703" || res.error.message.includes("cards_updated_at"))) res = await read(`${DECK_COLUMNS}, translations`);
   if (res.error && (res.error.code === "42703" || res.error.message.includes("translations"))) res = await read(DECK_COLUMNS);
   if (res.error) throw new Error(`[community] decksByCard: ${res.error.message}`);
-  const rows = (res.data ?? []) as unknown as Row[];
+  // i mazzi theory craft (29/10/2026) non entrano nelle schede carta: usano carte che oggi non sono nel gioco
+  const rows = officialDecks((res.data ?? []) as unknown as Row[]);
   return rows.map((r) => ({
     slug: r.slug,
     name: r.name,

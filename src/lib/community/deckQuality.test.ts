@@ -14,7 +14,7 @@ import * as nodeModule from "node:module";
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 
-type Resolved = { url: string; format?: string | null; shortCircuit?: boolean };
+type Resolved = { url: string; format?: string | null; importAttributes?: Record<string, string>; shortCircuit?: boolean };
 type ResolveHook = (specifier: string, context: object, next: (specifier: string, context?: object) => Resolved) => Resolved;
 // I tipi di @types/node del progetto (20.x) non conoscono ancora `registerHooks`: la funzione c'è in Node 24.
 const { registerHooks } = nodeModule as unknown as { registerHooks: (hooks: { resolve: ResolveHook }) => void };
@@ -29,7 +29,9 @@ registerHooks({
         // non è un modulo .ts: si risolve com'è scritto
       }
     }
-    return next(spec, context);
+    // i JSON con l'attributo di tipo: queries.ts legge il database carte (mazzi theory craft, 29/10/2026), che importa woo-cards.json
+    const resolved = next(spec, context);
+    return resolved.url.endsWith(".json") ? { ...resolved, importAttributes: { type: "json" } } : resolved;
   },
 });
 
