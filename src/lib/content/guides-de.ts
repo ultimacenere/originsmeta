@@ -1567,10 +1567,16 @@ Quellen: die Steam-Seite von Origins TCG (gelesen am 28. Oktober 2026), der Stea
         q: "Wo werden die Karten gehandelt?",
         a: "Auf dem Steam-Community-Markt und den daran angebundenen Marktplätzen, laut der offiziellen Seite. Das Öffnen von Packs auf dem Smartphone ist für 2027 geplant.",
       },
+      {
+        q: "Was ist die Alpha Alt-Art Promo Box?",
+        a: "Eine Box mit Kickstarter-exklusiven Karten mit alternativer Illustration, für jede Unterstützung ab der Stufe Apprentice. Sie beginnt mit Van Helsing und wächst mit den Stretch Goals, bis zu 20 Karten bei 4,75 Millionen Dollar; Koin schreibt, dass diese Karten nach der Kampagne nicht mehr verteilt werden. Die Kampagne endet am 2. Dezember 2026.",
+      },
     ],
     body: `## Der Termin: online seit dem 27. Oktober {#datum}
 
 Der Kickstarter zur **Myths & Legends Alpha Edition** ist seit dem **27. Oktober 2026** online: Koin Games hat den Start am selben Tag auf Steam angekündigt („The Origins Kickstarter is LIVE“). Das Alpha Set „Myths & Legends“ gibt es exklusiv auf Kickstarter; es umfasst 218 Karten, die laut Koin nach und nach im Early Access ins Spiel kommen, und Origins TCG ist seit demselben Tag im Early Access auf Steam. Den Termin hatte der CEO von Koin Games, **Tim Jooste**, schon in einem [Post auf X vom 17. September 2026](https://x.com/TimothyJooste/status/2100700207285445011) genannt („back the Alpha Edition Kickstarter (Oct 27th)“), den der Account des Studios geteilt hat.
+
+*Update vom 30. Oktober 2026: Neu sind [die Alpha-Promos und die Stretch Goals](/de/guides/origins-tcg-kickstarter#alpha-promos), mit den offiziellen Bildern von Koin, und das Ende der Kampagne am 2. Dezember 2026.*
 
 *Update vom 28. Oktober 2026: Die Kampagne ist seit dem 27. Oktober online, und Origins TCG ist seit demselben Tag im Early Access.*
 
@@ -1598,6 +1604,37 @@ Die Produktlinie heißt **Origins Myths & Legends Alpha Edition**:
 
 Für die Alpha Edition gilt: **Displays und Cases gibt es nur im Vorverkauf**. Ist diese Auflage verkauft, werden keine weiteren Alpha-Displays oder -Cases produziert. Das ist dieselbe Logik wie bei der Erstauflage eines physischen Kartenspiels, angewandt auf eine digitale Sammlung.
 
+## Die Alpha-Promos und die Stretch Goals {#alpha-promos}
+
+Die Promokarten der Alpha Edition haben **alternative Illustrationen**, andere als die Karten im Spiel, und Koin zeigt sie in ihrem Grading-Slab. Am 30. Oktober 2026 hat Koin Games die Bilder in sein Media Kit für Creator gestellt, und die Kampagnenseite sagt, in welcher Stufe welche Promo steckt. Die **Alpha Alt-Art Promo Box**, für jede Unterstützung ab der Stufe Apprentice, beginnt mit einem Van Helsing mit alternativer Illustration und bekommt mit den Stretch Goals weitere Karten; Koin schreibt, dass diese Karten „nach dem Ende dieses Kickstarters nie wieder verteilt werden“. Die übrigen Stretch Goals betreffen das Spiel:
+
+| Stretch Goal | Was dazukommt |
+| --- | --- |
+| Ab dem Start | Van Helsing in der Alt-Art Promo Box |
+| 100.000 Dollar | Sherlock |
+| 250.000 Dollar | Watson |
+| 500.000 Dollar | Queen of Hearts |
+| 750.000 Dollar | Mulan |
+| 1.000.000 Dollar | Die Mobile-Version kommt früher |
+| 1.250.000 Dollar | Dracula |
+| 1.500.000 Dollar | Sheriff of Nottingham |
+| 1.750.000 Dollar | Boogeyman |
+| 2.000.000 Dollar | Der Draft-Modus kommt auf die Roadmap |
+| 2.250.000 Dollar | Jekyll & Hyde |
+| 2.500.000 Dollar | Goldi |
+| 2.750.000 Dollar | Sandman |
+| 3.000.000 Dollar | Der Conquest-Modus kommt auf die Roadmap |
+| 3.250.000 Dollar | Moby |
+| 3.500.000 Dollar | Scarecrow |
+| 3.750.000 Dollar | Roo |
+| 4.000.000 Dollar | Origins Radio, eigene Musik in den Partien |
+| 4.250.000 Dollar | Mary und Baby Bear |
+| 4.500.000 Dollar | Three Blind Mice und Bagheera |
+| 4.750.000 Dollar | Shield Maiden und Red Knight |
+| 5.000.000 Dollar | Haustiere als Sammelbegleiter |
+
+Am 30. Oktober 2026 zeigte die Kampagnenseite die Stretch Goals bis 750.000 Dollar als erreicht, Mulan eingeschlossen. Werden alle Promo-Ziele bis 4,75 Millionen Dollar erreicht, enthält die Box 20 Karten mit alternativer Illustration, wie Koin schreibt. Die Stufen bringen weitere Promos: die Golden Slab Promos ab Hero, das Set aus dem Zauberer von Oz ab Icon, nummerierte Porträts in den Myth-Stufen und signierte in den Legend-Stufen. Hier sind sie, mit den Bildern, die Koin veröffentlicht hat.
+
 ## Handel und Besitz
 
 Karten können auf dem **Steam-Community-Markt** und den daran angebundenen Marktplätzen gekauft, verkauft und getauscht werden. Koin ist Anfang dieses Jahres auf den Steam-Marktplatz umgestiegen, statt auf ein unabhängiges On-Chain-System zu setzen. Das Öffnen von Packs auf dem Smartphone ist für **2027** geplant.
@@ -1613,6 +1650,7 @@ Wer den Kickstarter unterstützt, kauft Sammelobjekte, keine Stärke: Ranked in 
 - 15. Oktober 2026: Ranglisten-Modus für alle.
 - 19.–26. Oktober 2026: Steam Next Fest, mit der Crimson Cup (19.–25. Oktober).
 - 27. Oktober 2026: Ende der Demo, Origins TCG im Early Access auf Steam (Version 0.8), und Start des Kickstarters zur Alpha Edition (Termin vom CEO von Koin Games am 17. September genannt).
+- 2. Dezember 2026: Der Kickstarter endet um 08:01 UTC, laut der Kampagnenseite.
 - Etwa 17. März 2027: Version 1.0 laut Steam-Seite (ein Richtwert, der sich ändern kann).
 - 2027: Mobile.
 

@@ -135,4 +135,28 @@ export const ru: KickstarterLabels = {
     text: "Alpha Edition открывается на Kickstarter 27 октября 2026 года. Наша страница коротко рассказывает, что в неё входит, с официальными шансами выпадения.",
     landing: "Alpha Edition коротко",
   },
+  promos: {
+    title: "Промо Alpha",
+    intro: "У промокарт Alpha Edition альтернативные иллюстрации, не такие, как у карт в игре, и Koin показывает их в кейсе грейдинга (слэбе). Здесь те, что уже опубликованы, и уровни, в которые они входят.",
+    box: {
+      title: "Alpha Alt-Art Promo Box",
+      text: "Каждый, кто поддержал кампанию на уровне Apprentice и выше, получает Alpha Alt-Art Promo Box. Она начинается с Van Helsing и растёт с каждой достигнутой целью кампании (stretch goal), до {n} карт при {max}. Koin пишет, что после Kickstarter эти карты больше не будут распространяться.",
+      start: "С запуска",
+      unlocked: "Открыта",
+      goal: "Цель кампании: {usd}",
+      more: "Цели кампании, которые ещё не достигнуты ({n})",
+      status: "Цели кампании по её странице по состоянию на {date}.",
+    },
+    golden: { title: "Golden Slab Promos", text: "Van Helsing с уровня Hero, Van Helsing и Rapunzel с уровня Champion." },
+    oz: { title: "Premium Alternate Art Promo Set", text: "С уровня Icon: пять персонажей «Волшебника страны Оз» — Dorothy, Scarecrow, Tin Woodman, Cowardly Lion и Toto." },
+    profiles: {
+      title: "Нумерованные портреты",
+      text: "Каждый уровень Myth включает нумерованный портрет своего персонажа: Winnie-the-Pooh, Death, Alice, Robin Hood или Queen of Hearts. Уровни Legend добавляют версию с автографом, здесь — Winnie-the-Pooh; по состоянию на {date} они значились распроданными.",
+    },
+    signed: "С автографом",
+    artist: "Худ. {name}",
+    alt: "{name}, промокарта Alpha Edition Origins TCG с альтернативной иллюстрацией, в кейсе грейдинга",
+    credit: "Официальные изображения Koin Games из медиакита для авторов контента; на каждой карте указан её художник.",
+    guideAnchor: "promo-alpha",
+  },
 };

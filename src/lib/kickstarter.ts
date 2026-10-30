@@ -39,9 +39,10 @@ export function kickstarterLive(now: Date, from: string = KICKSTARTER_LIVE_FROM)
 
 /**
  * Fino a quando la home e la barra in cima al sito spingono il Kickstarter (fine esclusa, ISO con fuso). `null` = finché
- * non si toglie a mano: la data di chiusura della campagna Koin non l'ha ancora detta. Quando la dice, va scritta qui.
+ * non si toglie a mano. Dal 30/10/2026 è la chiusura della campagna, letta sulla sua pagina: "entro il mer 2 dicembre
+ * 2026 09:01 CET" (le 3:01 a Tampa, le 08:01 UTC; sul Discord il team aveva detto "fino al 3 dicembre").
  */
-export const KICKSTARTER_PROMO_UNTIL: string | null = null;
+export const KICKSTARTER_PROMO_UNTIL: string | null = "2026-12-02T09:01:00+01:00";
 
 /** La promozione è attiva in quel momento (funzione pura: la home è in ISR, la barra la calcola nel browser). */
 export function kickstarterPromoActive(now: Date, until: string | null = KICKSTARTER_PROMO_UNTIL): boolean {

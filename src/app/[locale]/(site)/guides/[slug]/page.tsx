@@ -24,6 +24,7 @@ import { siteUrl } from "@/lib/i18n";
 import { ctaLabel, kickstarterLabels } from "@/lib/kickstarterLabels";
 import { kickstarterLive } from "@/lib/kickstarter";
 import { KickstarterButton } from "@/components/KickstarterButton";
+import { KickstarterPromos } from "@/components/KickstarterPromos";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -219,7 +220,14 @@ export default async function GuidePage({ params }: { params: Params }) {
       ) : null}
 
       <article className="card-night mt-8 p-6 sm:p-10">
-        <GuideBody segments={media.segments} end={media.end} title={g.title} locale={locale} />
+        <GuideBody
+          segments={media.segments}
+          end={media.end}
+          title={g.title}
+          locale={locale}
+          // guida al Kickstarter: le immagini delle promo Alpha alla fine della loro sezione (30/10/2026)
+          insert={g.slug === "origins-tcg-kickstarter" ? { anchor: kickstarterLabels[locale].promos.guideAnchor, node: <KickstarterPromos locale={locale} variant="guide" /> } : undefined}
+        />
         {g.faq?.length ? (
           <section className="mt-8 border-t border-sky pt-6" aria-labelledby="guide-faq">
             <h2 id="guide-faq" className="t-section">

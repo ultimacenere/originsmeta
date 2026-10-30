@@ -135,4 +135,28 @@ export const fr: KickstarterLabels = {
     text: "La campagne de l'Alpha Edition ouvre sur Kickstarter le 27 octobre 2026. Notre page résume ce qu'elle contient, avec les taux d'obtention officiels.",
     landing: "L'Alpha Edition en bref",
   },
+  promos: {
+    title: "Les promos Alpha",
+    intro: "Les cartes promo de l'Alpha Edition ont des illustrations alternatives, différentes de celles des cartes du jeu, et Koin les montre dans leur boîtier de gradation. Voici celles qui sont déjà publiques et les paliers qui les contiennent.",
+    box: {
+      title: "Alpha Alt-Art Promo Box",
+      text: "Chaque contributeur à partir du palier Apprentice reçoit l'Alpha Alt-Art Promo Box. Elle commence avec Van Helsing et s'agrandit à chaque stretch goal atteint, jusqu'à {n} cartes à {max}. Koin écrit que ces cartes ne seront plus jamais distribuées après le Kickstarter.",
+      start: "Dès le lancement",
+      unlocked: "Débloquée",
+      goal: "Stretch goal : {usd}",
+      more: "Les stretch goals encore à débloquer ({n})",
+      status: "Stretch goals tels que les affichait la page de la campagne le {date}.",
+    },
+    golden: { title: "Golden Slab Promos", text: "Van Helsing à partir du palier Hero ; Van Helsing et Rapunzel à partir de Champion." },
+    oz: { title: "Premium Alternate Art Promo Set", text: "À partir du palier Icon : les cinq personnages du Magicien d'Oz, Dorothy, Scarecrow, Tin Woodman, Cowardly Lion et Toto." },
+    profiles: {
+      title: "Portraits numérotés",
+      text: "Chaque palier Myth comprend le portrait numéroté de son personnage : Winnie-the-Pooh, Death, Alice, Robin Hood ou Queen of Hearts. Les paliers Legend ajoutent une version signée, ici celle de Winnie-the-Pooh ; le {date}, ils étaient affichés comme épuisés.",
+    },
+    signed: "Signée",
+    artist: "Illustr. {name}",
+    alt: "{name}, carte promo de l'Alpha Edition d'Origins TCG avec illustration alternative, dans son boîtier de gradation",
+    credit: "Images officielles de Koin Games issues du kit média pour les créateurs ; chaque carte indique son illustrateur.",
+    guideAnchor: "promos-alpha",
+  },
 };

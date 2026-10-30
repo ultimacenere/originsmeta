@@ -1,6 +1,7 @@
+import { Fragment, type ReactNode } from "react";
 import { href, type Locale } from "@/lib/i18n";
 import { videoLabels } from "@/lib/videoLabels";
-import type { GuideSegment, GuideVideoItem } from "@/lib/videos";
+import { splitAfterSection, type GuideSegment, type GuideVideoItem } from "@/lib/videos";
 import { Markdown } from "./Markdown";
 import { VideoEmbed } from "./VideoEmbed";
 
@@ -38,18 +39,24 @@ export function GuideVideoList({ items, title, locale, className = "" }: Common 
 
 /**
  * Il testo della guida con i video indicati da `before` fra un pezzo e l'altro, poi quelli in fondo (`at: "end"`).
- * Senza video è il solo `<Markdown>` di prima, con il testo intero.
+ * Senza video è il solo `<Markdown>` di prima, con il testo intero. `insert` mette un blocco della pagina alla fine della
+ * sezione con quell'ancora (`splitAfterSection`): le promo Alpha nella guida al Kickstarter.
  */
-export function GuideBody({ segments, end, title, locale }: Common & { segments: GuideSegment[]; end: GuideVideoItem[] }) {
+export function GuideBody({ segments, end, title, locale, insert }: Common & { segments: GuideSegment[]; end: GuideVideoItem[]; insert?: { anchor: string; node: ReactNode } }) {
   return (
     <>
-      {segments.map((s, i) =>
-        s.kind === "md" ? (
-          <Markdown key={i} source={s.source} linkCards={locale} />
-        ) : (
-          <GuideVideoList key={i} items={s.items} title={title} locale={locale} className="my-8" />
-        ),
-      )}
+      {segments.map((s, i) => {
+        if (s.kind !== "md") return <GuideVideoList key={i} items={s.items} title={title} locale={locale} className="my-8" />;
+        const parts = insert ? splitAfterSection(s.source, insert.anchor) : null;
+        if (!parts) return <Markdown key={i} source={s.source} linkCards={locale} />;
+        return (
+          <Fragment key={i}>
+            <Markdown source={parts[0]} linkCards={locale} />
+            {insert?.node}
+            {parts[1].trim() ? <Markdown source={parts[1]} linkCards={locale} /> : null}
+          </Fragment>
+        );
+      })}
       <GuideVideoList items={end} title={title} locale={locale} className="mt-8" />
     </>
   );
