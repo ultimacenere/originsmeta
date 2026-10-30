@@ -3,6 +3,7 @@ import Link from "next/link";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { linkLabels } from "@/lib/linkLabels";
 import { creatorLabels } from "@/lib/creatorLabels";
+import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
 import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
 import { LockMark } from "./LockMark";
@@ -47,6 +48,8 @@ function exploreItems(locale: Locale): { label: string; path: string }[] {
     { label: x.authors, path: "/authors" },
     // directory "Creator e autori" (pacchetto CREATOR, 26/09/2026; nome del 27/09/2026)
     { label: creatorLabels[locale].footer, path: "/creators" },
+    // la pagina per i creator: strumenti con le guide passo passo e media kit (30/10/2026)
+    { label: forCreatorsLabels[locale].entry.footer, path: "/for-creators" },
   ];
 }
 

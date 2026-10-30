@@ -587,7 +587,7 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       steps: [
         "Instale a extensão “OriginsMeta Deck tracker” no seu canal e ative como overlay.",
         "Crie um código abaixo: ele vale 10 minutos e funciona uma vez só.",
-        "Na página de configuração da extensão na Twitch, digite o código e aperte “Vincular”.",
+        "Na página de configuração da extensão na Twitch, digite o código e aperte “Link”.",
         "Jogue com o OriginsMeta Tracker ligado: durante a partida, o app manda para o site o que o Deck tracker mostra, e a extensão mostra isso para o seu público.",
       ],
       privacy: "O seu público recebe só o que você já mostra na live com o Deck tracker: o seu deck, a rodada, a Lendária do oponente e as cartas que ele revela. Nunca nomes, ranks ou identificadores de partidas.",

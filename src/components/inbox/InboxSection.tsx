@@ -45,6 +45,7 @@ export function InboxSectionView({
   unread,
   staffUnread,
   afterIntro,
+  prefill,
 }: {
   locale: Locale;
   list: ListResult;
@@ -52,6 +53,11 @@ export function InboxSectionView({
   staffUnread: number | null;
   /** Sotto l'introduzione (pacchetto SEGUI, 27/09/2026): il salto "N notifiche da leggere ↓" verso #notifications. */
   afterIntro?: ReactNode;
+  /**
+   * Messaggio già scritto nel modulo "Scrivi allo staff", aperto (30/10/2026: la richiesta del ruolo Creator dalla pagina
+   * /for-creators, `?topic=creator`). L'utente lo completa e lo manda lui.
+   */
+  prefill?: { subject: string; body: string };
 }) {
   const L = inboxLabels[locale];
   const rows = list.ok ? list.data.rows : [];
@@ -93,9 +99,17 @@ export function InboxSectionView({
             </p>
           ) : null}
           {/* "Scrivi allo staff": aperto da subito quando la casella è vuota */}
-          <details className="card-night mt-4 p-5" open={rows.length === 0}>
+          <details className="card-night mt-4 p-5" open={rows.length === 0 || Boolean(prefill)}>
             <summary className="cursor-pointer font-display font-bold text-mint">{L.section.write}</summary>
-            <NewConversationForm mode="user" locale={locale} labels={L.form} sending={L.thread.sending} errors={L.errors} />
+            <NewConversationForm
+              mode="user"
+              locale={locale}
+              labels={L.form}
+              sending={L.thread.sending}
+              errors={L.errors}
+              defaultSubject={prefill?.subject}
+              defaultBody={prefill?.body}
+            />
           </details>
         </>
       )}
