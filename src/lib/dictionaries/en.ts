@@ -143,7 +143,6 @@ export const en = {
     common: "Common",
     rare: "Rare",
     epic: "Epic",
-    showRemoved: "Show cards removed from the game",
     formerName: "Former name",
     results: "results",
     noResults: "No card matches this search.",

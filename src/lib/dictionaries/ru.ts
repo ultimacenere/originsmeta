@@ -136,7 +136,6 @@ export const ru: Dictionary = {
     common: "Обычная",
     rare: "Редкая",
     epic: "Эпическая",
-    showRemoved: "Показать карты, удалённые из игры",
     formerName: "Прежнее название",
     results: "результатов",
     noResults: "Ни одна карта не подходит под этот поиск.",

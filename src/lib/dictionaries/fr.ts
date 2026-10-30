@@ -147,7 +147,6 @@ export const fr: Dictionary = {
     common: "Commune",
     rare: "Rare",
     epic: "Épique",
-    showRemoved: "Afficher les cartes retirées du jeu",
     formerName: "Ancien nom",
     results: "résultats",
     noResults: "Aucune carte ne correspond à cette recherche.",

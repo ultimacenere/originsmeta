@@ -146,7 +146,6 @@ export const es: Dictionary = {
     common: "Común",
     rare: "Rara",
     epic: "Épica",
-    showRemoved: "Mostrar las cartas retiradas del juego",
     formerName: "Nombre anterior",
     results: "resultados",
     noResults: "Ninguna carta coincide con esta búsqueda.",
