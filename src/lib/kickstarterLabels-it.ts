@@ -135,4 +135,28 @@ export const it: KickstarterLabels = {
     text: "La Alpha Edition apre su Kickstarter il 27 ottobre 2026. La nostra pagina riassume che cosa contiene, con le probabilità ufficiali.",
     landing: "La Alpha Edition in breve",
   },
+  promos: {
+    title: "Le promo Alpha",
+    intro: "Le carte promo della Alpha Edition hanno illustrazioni alternative, diverse da quelle delle carte del gioco, e Koin le mostra nella loro custodia della gradazione. Ecco quelle già pubbliche e i livelli che le comprendono.",
+    box: {
+      title: "Alpha Alt-Art Promo Box",
+      text: "Ogni livello da Apprentice in su riceve la Alpha Alt-Art Promo Box. Parte con Van Helsing e cresce con ogni stretch goal raggiunto, fino a {n} carte a {max}. Koin scrive che queste carte non saranno più distribuite dopo il Kickstarter.",
+      start: "Dal lancio",
+      unlocked: "Sbloccata",
+      goal: "Stretch goal: {usd}",
+      more: "Gli stretch goal ancora da sbloccare ({n})",
+      status: "Stretch goal come li mostrava la pagina della campagna il {date}.",
+    },
+    golden: { title: "Golden Slab Promo", text: "Van Helsing dal livello Hero; Van Helsing e Rapunzel da Champion in su." },
+    oz: { title: "Premium Alternate Art Promo Set", text: "Dal livello Icon in su: i cinque personaggi del Mago di Oz, Dorothy, Scarecrow, Tin Woodman, Cowardly Lion e Toto." },
+    profiles: {
+      title: "Ritratti numerati",
+      text: "Ogni livello Myth comprende il ritratto numerato del suo personaggio: Winnie-the-Pooh, Death, Alice, Robin Hood o Queen of Hearts. I livelli Legend aggiungono una versione firmata, qui quella di Winnie-the-Pooh; il {date} risultavano esauriti.",
+    },
+    signed: "Firmata",
+    artist: "Illustr. {name}",
+    alt: "{name}, carta promo della Alpha Edition di Origins TCG con illustrazione alternativa, nella sua custodia della gradazione",
+    credit: "Immagini ufficiali di Koin Games dal media kit per i creator; ogni carta riporta il suo illustratore.",
+    guideAnchor: "promo-alpha",
+  },
 };

@@ -135,4 +135,28 @@ export const es: KickstarterLabels = {
     text: "La Alpha Edition abre en Kickstarter el 27 de octubre de 2026. Nuestra página resume lo que incluye, con las probabilidades oficiales.",
     landing: "La Alpha Edition, en resumen",
   },
+  promos: {
+    title: "Las promos Alpha",
+    intro: "Las cartas promo de la Alpha Edition tienen ilustraciones alternativas, distintas de las de las cartas del juego, y Koin las muestra en su estuche de calificación. Aquí tienes las que ya son públicas y los niveles que las incluyen.",
+    box: {
+      title: "Alpha Alt-Art Promo Box",
+      text: "Todos los niveles desde Apprentice reciben la Alpha Alt-Art Promo Box. Empieza con Van Helsing y crece con cada stretch goal alcanzado, hasta {n} cartas con {max}. Koin escribe que estas cartas no volverán a distribuirse después del Kickstarter.",
+      start: "Desde el lanzamiento",
+      unlocked: "Desbloqueada",
+      goal: "Stretch goal: {usd}",
+      more: "Los stretch goals que faltan por desbloquear ({n})",
+      status: "Stretch goals tal como los mostraba la página de la campaña el {date}.",
+    },
+    golden: { title: "Golden Slab Promos", text: "Van Helsing desde el nivel Hero; Van Helsing y Rapunzel desde Champion." },
+    oz: { title: "Premium Alternate Art Promo Set", text: "Desde el nivel Icon: los cinco personajes de El mago de Oz, Dorothy, Scarecrow, Tin Woodman, Cowardly Lion y Toto." },
+    profiles: {
+      title: "Retratos numerados",
+      text: "Cada nivel Myth incluye el retrato numerado de su personaje: Winnie-the-Pooh, Death, Alice, Robin Hood o Queen of Hearts. Los niveles Legend añaden una versión firmada, aquí la de Winnie-the-Pooh; el {date} aparecían agotados.",
+    },
+    signed: "Firmada",
+    artist: "Ilustr. {name}",
+    alt: "{name}, carta promo de la Alpha Edition de Origins TCG con ilustración alternativa, en su estuche de calificación",
+    credit: "Imágenes oficiales de Koin Games del media kit para creadores; cada carta indica su ilustrador.",
+    guideAnchor: "promos-alpha",
+  },
 };

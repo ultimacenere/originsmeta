@@ -46,6 +46,10 @@ const newsModule: typeof import("../data/news") = await import("../data/news.ts"
 const pageModule: typeof import("../page") = await import("../page.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const cardlinksModule: typeof import("../cardlinks") = await import("../cardlinks.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const videosModule: typeof import("../videos") = await import("../videos.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const kickstarterLabelsModule: typeof import("../kickstarterLabels") = await import("../kickstarterLabels.ts");
 
 // il portoghese, il tedesco e il russo dal 20/10/2026 (il francese, nato prima di questi controlli, non è ancora qui)
 type Locale = "en" | "it" | "es" | "pt" | "de" | "ru";
@@ -339,4 +343,30 @@ describe("tutte le guide: le righe di tabella con una carta coincidono con il da
     // le tabelle delle guide dei mazzi e di quella alle Leggendarie: se il numero crolla, l'espressione non le trova più
     assert.ok(rows >= 100, `solo ${rows} righe trovate`);
   });
+});
+
+describe("guida al Kickstarter: le promo Alpha (30/10/2026)", () => {
+  const { splitAfterSection } = videosModule;
+  const { kickstarterLabels } = kickstarterLabelsModule;
+  test("splitAfterSection divide prima del titolo successivo dello stesso livello", () => {
+    const md = "## A {#a}\n\ntesto\n\n### Sotto\n\naltro\n\n## B\n\nfine";
+    assert.deepEqual(splitAfterSection(md, "a"), ["## A {#a}\n\ntesto\n\n### Sotto\n\naltro\n", "## B\n\nfine"]);
+    assert.deepEqual(splitAfterSection(md, "b"), null);
+    assert.deepEqual(splitAfterSection("## Ultima {#u}\n\ntesto", "u"), ["## Ultima {#u}\n\ntesto", ""]);
+  });
+  // anche il francese: qui la sezione c'è in tutte e sette le lingue
+  for (const l of [...locales, "fr"] as const) {
+    test(`${l}: la sezione con l'ancora della galleria, la tabella dei 22 stretch goal e il testo dopo`, () => {
+      const g = getGuide(l as Locale, "origins-tcg-kickstarter");
+      assert.ok(g, l);
+      const anchor = kickstarterLabels[l].promos.guideAnchor;
+      const parts = splitAfterSection(g.body, anchor);
+      assert.ok(parts && parts[1].trim().length > 0, `${l}: sezione {#${anchor}} assente o in fondo alla guida`);
+      const section = parts[0].slice(parts[0].indexOf(`{#${anchor}}`));
+      const rows = section.split("\n").filter((line) => /^\| /.test(line));
+      assert.equal(rows.length, 24, `${l}: intestazione, separatore e 22 stretch goal`);
+      assert.match(g.body, new RegExp(`\\(/${l}/guides/origins-tcg-kickstarter#${anchor}\\)`), `${l}: il link dell'aggiornamento punta alla sezione`);
+      assert.doesNotMatch(section, /Morgan|Tigger|\| Red \|/, `${l}: promo non ancora annunciate`);
+    });
+  }
 });

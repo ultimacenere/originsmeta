@@ -607,6 +607,20 @@ function anchorLine(lines: string[], anchor: string): number {
 }
 
 /**
+ * Il testo diviso alla fine della sezione con quell'ancora, prima del titolo successivo dello stesso livello o più alto
+ * (dove la guida al Kickstarter mette le promo Alpha, 30/10/2026); null se l'ancora non c'è. Sezione in fondo: [testo, ""].
+ */
+export function splitAfterSection(md: string, anchor: string): [string, string] | null {
+  const lines = md.split("\n");
+  const at = anchorLine(lines, anchor);
+  if (at < 0) return null;
+  const level = /^#+/.exec(lines[at])?.[0].length ?? 2;
+  const next = lines.findIndex((l, i) => i > at && new RegExp(`^#{1,${level}} `).test(l));
+  if (next < 0) return [md, ""];
+  return [lines.slice(0, next).join("\n"), lines.slice(next).join("\n")];
+}
+
+/**
  * Dove vanno i video di una guida nella lingua della pagina: `top` e `end` li rende la pagina, `segments` è il testo
  * spezzato davanti ai titoli indicati da `before`, con i video in mezzo. Senza video: un solo pezzo, il testo intero.
  */
