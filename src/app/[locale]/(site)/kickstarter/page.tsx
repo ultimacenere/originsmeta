@@ -10,6 +10,7 @@ import { ctaLabel, fillKs, kickstarterLabels, type KickstarterLabels } from "@/l
 // solo qui: i livelli non devono finire nel JavaScript del browser prima che Koin li pubblichi (kickstarterTiers.ts)
 import { KICKSTARTER_TIERS, KICKSTARTER_TIERS_PUBLIC, formatUsd, tierRange } from "@/lib/kickstarterTiers";
 import { KickstarterButton } from "@/components/KickstarterButton";
+import { KickstarterPromos } from "@/components/KickstarterPromos";
 import { KickstarterSticky } from "@/components/KickstarterSticky";
 import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
@@ -182,6 +183,16 @@ export default async function KickstarterPage({ params }: { params: LocaleParams
           </p>
         </section>
       ) : null}
+
+      {/* Le promo Alpha (30/10/2026): gli stretch goal della Alt-Art Promo Box e le promo dei livelli, con le immagini del
+          media kit per i creator (src/lib/kickstarterPromos.ts); dopo i livelli, perché dicono in quale livello stanno */}
+      <section id="promos" className="mt-16 scroll-mt-24" aria-labelledby="ks-promos">
+        <h2 id="ks-promos" className="t-section">
+          {k.promos.title}
+        </h2>
+        <p className="mt-2 max-w-3xl text-pale">{k.promos.intro}</p>
+        <KickstarterPromos locale={locale} variant="landing" />
+      </section>
 
       {/* Le probabilità ufficiali, accanto al gioco in breve per chi arriva senza conoscerlo */}
       <section className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]" aria-labelledby="ks-rates">

@@ -9,6 +9,7 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
   KICKSTARTER_PROJECT_URL,
+  KICKSTARTER_PROMO_UNTIL,
   KICKSTARTER_REF,
   KICKSTARTER_URL,
   PULL_RATES,
@@ -34,6 +35,16 @@ import { ru } from "./kickstarterLabels-ru.ts";
 
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { KICKSTARTER_TIERS, KICKSTARTER_TIERS_PUBLIC, formatUsd, tierRange } from "./kickstarterTiers.ts";
+import {
+  KICKSTARTER_BOX_TOTAL,
+  KICKSTARTER_GOALS_REACHED_USD,
+  KICKSTARTER_PROMOS,
+  KICKSTARTER_PROMOS_READ,
+  promoUnlocked,
+  promosOf,
+  // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+} from "./kickstarterPromos.ts";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 const all = { en, it, es, fr, pt, de, ru } as Record<string, unknown>;
 
@@ -100,6 +111,47 @@ describe("link e date", () => {
     const n = PULL_RATES.map((r: { every?: boolean; n?: number }) => (r.every ? 1 : (r.n ?? 0)));
     assert.deepEqual(n, [...n].sort((a, b) => a - b));
     assert.equal(PULL_RATES.at(-1)?.tier, "Storybook");
+  });
+});
+
+describe("promo Alpha (30/10/2026)", () => {
+  type Promo = { name: string; card: string; image: string; artist: string; group: "box" | "golden" | "oz" | "profile"; goal?: number; signed?: true };
+  const promos = KICKSTARTER_PROMOS as readonly Promo[];
+  const publicDir = new URL("../../public", import.meta.url);
+  const cardSlugs = new Set((JSON.parse(readFileSync(new URL("./data/woo-cards.json", import.meta.url), "utf8")).cards as { slug: string }[]).map((c) => c.slug));
+
+  test("la promozione in home e la barra finiscono alla chiusura della campagna, il 2 dicembre alle 08:01 UTC", () => {
+    assert.equal(Date.parse(KICKSTARTER_PROMO_UNTIL ?? ""), Date.parse("2026-12-02T08:01:00Z"));
+  });
+  test("ogni promo ha la sua immagine in public/ e una carta del database, e nessuna immagine è in più", () => {
+    for (const p of promos) {
+      assert.ok(existsSync(new URL(`.${p.image}`, `${publicDir.href}/`)), `${p.image} manca`);
+      assert.ok(cardSlugs.has(p.card), `${p.name}: carta ${p.card} che non esiste`);
+      assert.ok(p.artist.length > 2, `${p.name}: illustratore`);
+    }
+    const files = readdirSync(new URL("./media/kickstarter/promos", `${publicDir.href}/`)).sort();
+    assert.deepEqual(files, promos.map((p) => p.image.split("/").at(-1)).sort());
+  });
+  test("niente Morgan le Fay, Red né Tigger: Koin non le ha ancora annunciate", () => {
+    for (const p of promos) {
+      assert.ok(!["morgan-le-fay", "red", "tigger"].includes(p.card), `${p.name}: promo non ancora annunciata`);
+      assert.doesNotMatch(p.image, /morgan|tigger|-red\.webp$/i);
+    }
+  });
+  test("stretch goal della scatola in ordine, dal lancio all'ultima soglia di Koin", () => {
+    const goals = promosOf("box").map((p: Promo) => p.goal ?? -1);
+    assert.equal(goals[0], 0);
+    assert.deepEqual(goals, [...goals].sort((a, b) => a - b));
+    assert.equal(goals.at(-1), KICKSTARTER_BOX_TOTAL.usd);
+    assert.ok(goals.includes(KICKSTARTER_GOALS_REACHED_USD), "la soglia raggiunta è quella di uno stretch goal");
+    assert.deepEqual(promosOf("box").filter((p: Promo) => promoUnlocked(p)).map((p: Promo) => p.name), ["Van Helsing", "Sherlock", "Watson", "Queen of Hearts", "Mulan"]);
+    assert.match(KICKSTARTER_PROMOS_READ, /^\d{4}-\d{2}-\d{2}$/);
+  });
+  test("solo i profili hanno la versione firmata, e una sola", () => {
+    assert.deepEqual(promos.filter((p) => p.signed).map((p) => `${p.group} ${p.card}`), ["profile winnie-the-pooh"]);
+  });
+  test("l'ancora della sezione nella guida è un'ancora valida in ogni lingua", () => {
+    for (const [locale, labels] of Object.entries(all)) assert.match((labels as typeof en).promos.guideAnchor, /^[a-z0-9-]+$/, locale);
   });
 });
 

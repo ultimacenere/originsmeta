@@ -135,4 +135,28 @@ export const pt: KickstarterLabels = {
     text: "A Alpha Edition abre no Kickstarter em 27 de outubro de 2026. A nossa página resume o que ela inclui, com as probabilidades oficiais.",
     landing: "A Alpha Edition em resumo",
   },
+  promos: {
+    title: "As promos Alpha",
+    intro: "As cartas promo da Alpha Edition têm ilustrações alternativas, diferentes das cartas do jogo, e a Koin as mostra no case de graduação. Aqui estão as que já são públicas e os níveis que as incluem.",
+    box: {
+      title: "Alpha Alt-Art Promo Box",
+      text: "Todo apoiador a partir do nível Apprentice recebe a Alpha Alt-Art Promo Box. Ela começa com Van Helsing e cresce a cada stretch goal alcançado, até {n} cartas com {max}. A Koin escreve que essas cartas não serão mais distribuídas depois do Kickstarter.",
+      start: "Desde o lançamento",
+      unlocked: "Desbloqueada",
+      goal: "Stretch goal: {usd}",
+      more: "Os stretch goals que ainda faltam ({n})",
+      status: "Stretch goals como a página da campanha os mostrava em {date}.",
+    },
+    golden: { title: "Golden Slab Promos", text: "Van Helsing a partir do nível Hero; Van Helsing e Rapunzel a partir do Champion." },
+    oz: { title: "Premium Alternate Art Promo Set", text: "A partir do nível Icon: os cinco personagens de O Mágico de Oz, Dorothy, Scarecrow, Tin Woodman, Cowardly Lion e Toto." },
+    profiles: {
+      title: "Retratos numerados",
+      text: "Cada nível Myth inclui o retrato numerado do seu personagem: Winnie-the-Pooh, Death, Alice, Robin Hood ou Queen of Hearts. Os níveis Legend acrescentam uma versão autografada, aqui a do Winnie-the-Pooh; em {date} apareciam esgotados.",
+    },
+    signed: "Autografada",
+    artist: "Ilustr. {name}",
+    alt: "{name}, carta promo da Alpha Edition de Origins TCG com ilustração alternativa, no seu case de graduação",
+    credit: "Imagens oficiais da Koin Games do media kit para criadores; cada carta indica o seu ilustrador.",
+    guideAnchor: "promos-alpha",
+  },
 };

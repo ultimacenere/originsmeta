@@ -1404,10 +1404,16 @@ Fuentes: la [página de Origins TCG en Steam](https://store.steampowered.com/app
         q: "¿Dónde se intercambian las cartas?",
         a: "En el Mercado de la Comunidad de Steam y en sus mercados conectados, según la página oficial. La apertura de sobres en dispositivos móviles está prevista para 2027.",
       },
+      {
+        q: "¿Qué es la Alpha Alt-Art Promo Box?",
+        a: "Una caja de cartas con ilustración alternativa exclusivas del Kickstarter, en todos los niveles desde Apprentice. Empieza con Van Helsing y crece con los stretch goals, hasta 20 cartas con 4,75 millones de dólares; Koin escribe que estas cartas no volverán a distribuirse después de la campaña. La campaña cierra el 2 de diciembre de 2026.",
+      },
     ],
     body: `## La fecha: 27 de octubre, confirmada por Koin Games {#fecha}
 
 El Kickstarter de la **Myths & Legends Alpha Edition** está abierto desde el **27 de octubre de 2026**: ese día Koin Games lo anunció en Steam con la publicación "The Origins Kickstarter is LIVE". El Alpha Set "Myths & Legends", exclusivo del Kickstarter, tiene 218 cartas que Koin irá publicando a lo largo del Acceso anticipado ("that we'll gradually release throughout early access"). La fecha la había dado el CEO de Koin Games, **Tim Jooste**, que escribió "back the Alpha Edition Kickstarter (Oct 27th)" en una [publicación en X del 17 de septiembre de 2026](https://x.com/TimothyJooste/status/2100700207285445011), compartida por la cuenta del estudio; el **25 de septiembre de 2026** el menú principal de la demo mostraba el recuadro del Kickstarter con **"Coming soon – Oct 27"** y **"Preregister for 15% off"**, mientras la pantalla de carga anunciaba la Alpha Edition.
+
+*Actualización del 30 de octubre de 2026: añadimos [las promos Alpha y los stretch goals](/es/guides/origins-tcg-kickstarter#promos-alpha), con las imágenes oficiales de Koin, y la fecha de cierre de la campaña, el 2 de diciembre de 2026.*
 
 *Actualización del 28 de octubre de 2026: la campaña está abierta desde el 27 de octubre, el mismo día en que terminó la demo y Origins TCG entró en Acceso anticipado en Steam. La actualización del 28 de septiembre había añadido la confirmación de la fecha por parte del CEO de Koin Games; la del 25 de septiembre, la fecha que mostraba la demo, los temas del AMA según el anuncio oficial y la cronología corregida.*
 
@@ -1433,6 +1439,37 @@ La línea de productos se llama **Origins Myths & Legends Alpha Edition**:
 
 En la Alpha Edition, **las cajas y los cases solo se venden en preventa**: cuando se termine esa tirada, no se producirán más cajas ni cases Alpha. Es la misma lógica que la de una tirada de primera edición en los juegos de cartas físicos, aplicada a una colección digital.
 
+## Las promos Alpha y los stretch goals {#promos-alpha}
+
+Las cartas promo de la Alpha Edition tienen **ilustraciones alternativas**, distintas de las de las cartas del juego, y Koin las muestra en su estuche de calificación. El 30 de octubre de 2026 Koin Games añadió las imágenes a su media kit para creadores, y la página de la campaña indica qué nivel incluye cada promo. La **Alpha Alt-Art Promo Box**, en todos los niveles desde Apprentice, empieza con un Van Helsing con ilustración alternativa y suma cartas con los stretch goals; Koin escribe que estas cartas "no volverán a distribuirse nunca después de que termine este Kickstarter". Los demás stretch goals tienen que ver con el juego:
+
+| Stretch goal | Qué añade |
+| --- | --- |
+| Desde el lanzamiento | Van Helsing en la Alt-Art Promo Box |
+| 100.000 dólares | Sherlock |
+| 250.000 dólares | Watson |
+| 500.000 dólares | Queen of Hearts |
+| 750.000 dólares | Mulan |
+| 1.000.000 de dólares | La versión móvil llega antes |
+| 1.250.000 dólares | Dracula |
+| 1.500.000 dólares | Sheriff of Nottingham |
+| 1.750.000 dólares | Boogeyman |
+| 2.000.000 de dólares | El modo Draft entra en el roadmap |
+| 2.250.000 dólares | Jekyll & Hyde |
+| 2.500.000 dólares | Goldi |
+| 2.750.000 dólares | Sandman |
+| 3.000.000 de dólares | El modo Conquest entra en el roadmap |
+| 3.250.000 dólares | Moby |
+| 3.500.000 dólares | Scarecrow |
+| 3.750.000 dólares | Roo |
+| 4.000.000 de dólares | Origins Radio, música personalizada en las partidas |
+| 4.250.000 dólares | Mary y Baby Bear |
+| 4.500.000 dólares | Three Blind Mice y Bagheera |
+| 4.750.000 dólares | Shield Maiden y Red Knight |
+| 5.000.000 de dólares | Mascotas coleccionables |
+
+El 30 de octubre de 2026 la página de la campaña daba por alcanzados los stretch goals hasta 750.000 dólares, Mulan incluida. Si se alcanzan todos los de las promos, hasta 4,75 millones de dólares, la caja tendrá 20 cartas con ilustración alternativa, como escribe Koin. Los niveles añaden más promos: las Golden Slab Promos desde Hero, el set de El mago de Oz desde Icon, los retratos numerados en los niveles Myth y los firmados en los niveles Legend. Aquí están, con las imágenes que ha publicado Koin.
+
 ## Intercambio y propiedad
 
 Las cartas se pueden comprar, vender e intercambiar en el **Mercado de la Comunidad de Steam** y en sus mercados conectados. A principios de este año, Koin se pasó al mercado de Steam en lugar de usar un sistema on-chain independiente. La apertura de sobres en dispositivos móviles está prevista para **2027**.
@@ -1448,6 +1485,7 @@ Con el Kickstarter se compran coleccionables, no fuerza: en Origins, las partida
 - 15 de octubre de 2026: la clasificatoria llega a la demo.
 - Del 19 al 26 de octubre de 2026: Steam Next Fest, con la Crimson Cup (del 19 al 25 de octubre).
 - 27 de octubre de 2026: fin de la demo y Acceso anticipado en Steam, con la versión 0.8; abre el Kickstarter de la Alpha Edition (fecha anunciada por el CEO de Koin Games el 17 de septiembre).
+- 2 de diciembre de 2026: cierra el Kickstarter, a las 08:01 UTC, según la página de la campaña.
 - Hacia el 17 de marzo de 2027: versión 1.0, según la página de Steam (fecha indicativa).
 - 2027: versión móvil.
 
