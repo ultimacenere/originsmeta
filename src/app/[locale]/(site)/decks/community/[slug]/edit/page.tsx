@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
-import { cards, getCard, latestPatch, patchAt, patchLabel, patchOrder } from "@/lib/data/cards";
+import { getCard, latestPatch, patchAt, patchLabel, patchOrder } from "@/lib/data/cards";
 import { archetypeLabels } from "@/lib/data/decks";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { formatDate } from "@/lib/i18n";
@@ -21,6 +21,8 @@ import { loginLabels } from "@/lib/loginLabels";
 import { withCarriedParams } from "@/lib/analytics";
 import { deckResources, deckVideos } from "@/lib/videos";
 import { videoFormLabels } from "@/lib/videoLabels";
+import { publishPool } from "@/lib/builderLabels";
+import { theoryCraftLabels } from "@/lib/theoryCraftLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -59,9 +61,8 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
   const art: DeckArtEdit | null =
     isOwner && canUseDeckArt(my?.badge, my?.role) ? { path: savedArt, mode: "upload" } : savedArt ? { path: savedArt, mode: "remove", reason: isOwner ? "noRole" : "notOwner" } : null;
 
-  const pool: PoolCard[] = cards
-    .filter((c) => c.status === "active" && c.type !== "token")
-    .map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary), ...(c.legendary && (c.thumb ?? c.image) ? { image: c.thumb ?? c.image } : {}) }));
+  // le carte del gioco più quelle del Theory craft (29/10/2026), come nel modulo di pubblicazione
+  const pool: PoolCard[] = publishPool();
   const archetypes = Object.entries(archetypeLabels).map(([id, l]) => [id, l[locale]] as [string, string]);
   const savedCode = deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards });
 
@@ -76,7 +77,7 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
   let notice: { text: string; bad: boolean } | null = null;
   if (incoming && deck.status !== "draft") {
     const decoded = decodeOmCode(incoming);
-    const checked = decoded ? checkDeck(decoded) : null;
+    const checked = decoded ? checkDeck(decoded, { theory: true }) : null;
     if (!checked?.ok) notice = { text: V.invalid, bad: true };
     else {
       const next = { legendary: checked.deck.legendary, cards: checked.deck.cards, custom_cards: checked.deck.customCards };
@@ -185,6 +186,7 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
           locale={locale}
           mode="edit"
           pool={pool}
+          theoryNotice={theoryCraftLabels[locale].publishNotice}
           archetypes={archetypes}
           initial={{
             id: deck.id,

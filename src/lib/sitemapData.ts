@@ -69,7 +69,7 @@ export const SITEMAP_TAG = "sitemap-community";
  * (anche in queries.ts, per esempio un filtro sui mazzi) o la forma di `CommunityData`, si aumenta questo numero nello
  * stesso commit, così il deploy non serve per `DATA_TTL` i dati letti con la regola vecchia.
  */
-export const SITEMAP_DATA_VERSION = 10; // 10: partite dei win rate, per /tier-list/win-rate (10/10/2026); 9: mazzi torneo (04/10/2026); 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026); 8: fumetti dei creator (pacchetto FUMETTI, 29/09/2026)
+export const SITEMAP_DATA_VERSION = 11; // 11: mazzi theory craft a parte, `latestTheoryDeck` (29/10/2026); 10: partite dei win rate, per /tier-list/win-rate (10/10/2026); 9: mazzi torneo (04/10/2026); 6: guide della community (pacchetto GUIDE, 27/09/2026); 7: profili /u con le sole guide (revisione del 27/09/2026); 8: fumetti dei creator (pacchetto FUMETTI, 29/09/2026)
 
 /**
  * Secondi di validità della cache dei dati: cinque minuti (un giro costa quattro letture leggere più quella dei mazzi
@@ -197,7 +197,7 @@ async function readCommunity(): Promise<CommunityData> {
     // win rate è facoltativa e fuori dalla sitemap finché non si indicizza)
     ANALYTICS_PUBLIC ? readWinrateGames() : null,
   ]);
-  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics, deckSets, winrateGames, cardVotes: await cardVoteDate() };
+  return { decks: deckIndex.decks, latestDeck: deckIndex.latest, latestTheoryDeck: deckIndex.latestTheory, deckRefs, tournaments, profiles, tierLists, showcase, communityGuides, communityComics, deckSets, winrateGames, cardVotes: await cardVoteDate() };
 }
 
 const cachedCommunity = unstable_cache(readCommunity, [SITEMAP_TAG, `v${SITEMAP_DATA_VERSION}`], { revalidate: DATA_TTL, tags: [SITEMAP_TAG] });

@@ -45,6 +45,8 @@ export type BuilderCard = {
   typeLabel?: string;
   /** carta inserita a mano dall'utente, non presente nel database */
   custom?: boolean;
+  /** carta che oggi non è nel gioco, solo nel pool del Theory craft (29/10/2026) */
+  theory?: boolean;
 };
 
 export type DeckState = {

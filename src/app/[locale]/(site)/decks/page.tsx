@@ -1,86 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
-import { formatDate, href, type Locale } from "@/lib/i18n";
+import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import type { Dictionary } from "@/lib/i18n";
 import { archetypeLabels, decks } from "@/lib/data/decks";
-import type { Card } from "@/lib/data/cards";
-import { activeCards, getCard, patchAt, patchLabel, patchOrder, statLine, type PatchId } from "@/lib/data/cards";
+import { activeCards, getCard, patchLabel, patchOrder, statLine, type PatchId } from "@/lib/data/cards";
 import { DeckExplorer, type ExplorerDeck } from "@/components/DeckExplorer";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { PageNotes } from "@/components/PageNotes";
 import { DeckSectionTabs } from "@/components/DeckSectionTabs";
 import { listDeckPopularity, listPublishedDecks } from "@/lib/community/queries";
 import { favoriteLabels } from "@/lib/favoriteLabels";
-import { creatorExtras, creatorIndex, listCreators } from "@/lib/community/creators";
+import { creatorIndex, listCreators } from "@/lib/community/creators";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { authorName } from "@/lib/community/util";
-import { localizedGuide } from "@/lib/community/deckTranslation";
 import { GUIDE_MIN_WORDS, fillLabel, indexableLocales } from "@/lib/community/deckQuality";
 import { deckGameCode } from "@/lib/deckGameCode";
 import { badgeStyle } from "@/lib/cardArt";
 import { BADGE_ORDER, DECK_WINRATE_PUBLIC, normalizeBadge } from "@/lib/community/badges";
 import { readListWinrates } from "@/lib/community/trackerStatsQueries";
-import { deckListKey } from "@/lib/tracker/stats";
-import { supabaseEnabled, supabaseUrl } from "@/lib/supabase/env";
-import { deckArtUrl } from "@/lib/community/deckArt";
+import { supabaseEnabled } from "@/lib/supabase/env";
 import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCounts, weightedRating, type BriefPart } from "@/lib/tierstats";
 import { CardName } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
-import { deckCardsDate } from "@/lib/community/deckVersions";
-import { stripMarkdown } from "@/lib/userMarkdown";
-
-/**
- * Taglio a `max` caratteri con l'ellissi, per le righe dell'elenco. Per punti di codice e non per unità UTF-16 (04/10/2026):
- * `slice` spezzava a metà un'emoji in fondo al taglio, la pagina mostrava "�" e React segnalava un errore di idratazione.
- */
-const shorten = (s: string, max: number) => {
-  const chars = Array.from(s);
-  return chars.length > max ? `${chars.slice(0, max).join("").trimEnd()}…` : s;
-};
-
-/** Quel poco che serve all'elenco: lo soddisfano sia le carte del database sia quelle inserite a mano. */
-type CardLike = {
-  name: string;
-  type?: Card["type"];
-  thumb?: string;
-  image?: string;
-  art?: string;
-  mana?: number;
-  power?: number;
-  health?: number;
-  legendary?: boolean;
-  alignment?: Card["alignment"];
-  ability?: Card["ability"] | string;
-};
-
-/** Carte del mazzo per l'elenco: nome, miniatura, costo e testo dell'abilità, ordinate per costo come nel gioco. */
-function deckArt(slugs: string[], lookup: (slug: string) => CardLike | undefined, locale: Locale, d: Dictionary) {
-  const typeLabel = { unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const;
-  const alignLabel = { good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const;
-  return slugs
-    .map((s) => {
-      const c = lookup(s);
-      return {
-        name: c?.name ?? s,
-        thumb: c?.thumb,
-        image: c?.image,
-        art: c?.art,
-        mana: c?.mana,
-        power: c?.power,
-        health: c?.health,
-        legendary: Boolean(c?.legendary),
-        typeLabel: c?.type ? typeLabel[c.type] : undefined,
-        alignment: c?.alignment,
-        alignmentLabel: c?.alignment ? alignLabel[c.alignment] : undefined,
-        // le carte del database hanno il testo nelle due lingue, quelle inserite a mano non ce l'hanno affatto
-        ability: typeof c?.ability === "string" ? c.ability : c?.ability?.[locale],
-      };
-    })
-    .sort((a, b) => (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
-}
-
+import { communityExplorerDecks, deckArt } from "@/lib/community/explorerDecks";
+import { officialDecks } from "@/lib/theoryCraft";
 
 /** I mazzi della community arrivano da Supabase: la pagina si rigenera al massimo ogni 5 minuti (e subito dopo ogni pubblicazione). */
 export const revalidate = 300;
@@ -96,7 +40,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   // Solo le Leggendarie giocabili (le rimosse del playtest restano nel database carte)
   const legendaries = activeCards.filter((c) => c.legendary);
-  const community = await listPublishedDecks();
+  // solo i mazzi del gioco di oggi: quelli con carte non ancora nel gioco stanno in /theory-craft/decks (29/10/2026), fuori
+  // anche da In breve, classifica, conteggi e dati strutturati
+  const community = officialDecks(await listPublishedDecks());
   // "Di tendenza" e "Più salvati" (blocco PREFERITI E TENDENZA, 30/09/2026): null senza la migrazione, e gli ordini non ci sono
   const popularity = await listDeckPopularity();
   // canali e badge LIVE accanto a chi ha pubblicato, se ha il ruolo Creator, Autore, Pro o Staff (pacchetto CREATOR)
@@ -109,57 +55,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // L'ordine lo decide l'elenco nel browser (di partenza: dal più recente, Pierluigi 23/09/2026); qui basta
   // una lista stabile, la stessa dei dati strutturati.
   const newestFirst = community.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
-  const communityList: ExplorerDeck[] = newestFirst
-    .map((deck) => {
-      const leg = deck.legendary ? getCard(deck.legendary) : undefined;
-      const legCustom = !leg ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
-      return {
-        slug: `community-${deck.slug}`,
-        // copie del codice dall'elenco nelle statistiche dell'autore (pacchetto STATS)
-        statsSlug: deck.slug,
-        name: deck.name,
-        href: href(locale, `/decks/community/${deck.slug}`),
-        // riassunto nella lingua della pagina quando la traduzione del sito c'è (25/09/2026), altrimenti quello dell'autore;
-        // senza i segni della formattazione (22/10/2026)
-        tagline: shorten(stripMarkdown(localizedGuide(deck, locale).text.summary), 140),
-        legendary: leg
-          ? { slug: leg.slug, name: leg.name, href: href(locale, `/cards/${leg.slug}`), cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana }
-          : legCustom
-            ? { slug: legCustom.slug, name: legCustom.name }
-            : undefined,
-        // artwork della Leggendaria dei Creator e dello Staff (29/09/2026): solo se il ruolo c'è ancora
-        art: deckArtUrl(deck, supabaseUrl) ?? undefined,
-        archetype: deck.archetype,
-        archetypeLabel: archetypeLabels[deck.archetype]?.[locale] ?? deck.archetype,
-        publisher: authorName(deck.profile),
-        source: "community",
-        sourceLabel: d.common.community,
-        cardNames: deck.cards.map((s) => getCard(s)?.name ?? deck.custom_cards.find((x) => x.slug === s)?.name ?? s),
-        cardArt: deckArt(deck.cards, (s) => getCard(s) ?? deck.custom_cards.find((x) => x.slug === s), locale, d),
-        code: gameCodes.get(deck.slug) ?? undefined,
-        updated: deck.updated_at.slice(0, 10),
-        // data di creazione e versione del gioco di quel giorno (richiesta di Pierluigi del 23/09/2026)
-        created: deck.created_at.slice(0, 10),
-        createdLabel: formatDate(locale, deck.created_at.slice(0, 10)),
-        patchId: patchAt(deckCardsDate(deck)),
-        patchLabel: patchAt(deckCardsDate(deck)) ? patchLabel(patchAt(deckCardsDate(deck))!, locale) : undefined,
-        rating: deck.rating,
-        ...(popularity ? { trend: popularity.get(deck.id)?.trend ?? 0, favorites: popularity.get(deck.id)?.favorites ?? 0 } : {}),
-        // voto pesato per l'ordine "Più votati" dell'elenco (`ExplorerDeck.score`), lo stesso della classifica dei migliori
-        // mazzi (Ondata 3): con la media semplice un solo voto da 5 stelle passava davanti al #1 della classifica
-        score: deck.rating?.votes ? weightedRating(deck.rating.avg, deck.rating.votes) : 0,
-        ...(() => {
-          const key = deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key);
-          const wr = key ? winrates?.lists.get(key) : undefined;
-          return wr && wr.games > 0 ? { winrate: { wins: wr.wins, games: wr.games } } : {};
-        })(),
-        deckTypeLabels: deck.deck_types.map((t) => d.community.deckTypes[t as keyof typeof d.community.deckTypes] ?? t),
-        // ruolo di chi l'ha pubblicato (27/09/2026): un tag che il codice non conosce vale community
-        publisherBadge: d.community.badges[normalizeBadge(deck.profile?.badge)],
-        publisherBadgeId: normalizeBadge(deck.profile?.badge),
-        ...creatorExtras(creators, deck.owner),
-      };
-    });
+  const communityList = communityExplorerDecks({ decks: newestFirst, locale, d, gameCodes, popularity, creators, winrates });
   const list: ExplorerDeck[] = decks.map((deck) => {
     const leg = deck.legendary ? getCard(deck.legendary) : undefined;
     return {

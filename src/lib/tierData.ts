@@ -13,6 +13,7 @@ import { aggregateLists, signedTierLists, tierListCounts, usageCounts, weightedR
 import type { TierCardEntry, TierDeckEntry } from "@/lib/tierTypes";
 import { deckCardsDate } from "@/lib/community/deckVersions";
 import { readCardVotes, type CardVotesData } from "@/lib/community/cardVotes";
+import { officialDecks } from "@/lib/theoryCraft";
 
 /**
  * Dati della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB): una sola lettura di Supabase
@@ -48,7 +49,9 @@ export type TierData = {
 export async function loadTierData(locale: Locale): Promise<TierData> {
   const d = getDictionary(locale);
   // mazzi pubblicati, tier list salvate e voti alle carte (06/10/2026: null prima della migrazione), in parallelo
-  const [rawDecks, lists, cardVotes] = await Promise.all([listPublishedDecks(), listPublishedTierLists(), readCardVotes()]);
+  const [allDecks, lists, cardVotes] = await Promise.all([listPublishedDecks(), listPublishedTierLists(), readCardVotes()]);
+  // solo i mazzi del gioco di oggi: i theory craft (29/10/2026) usano carte che non ci sono e stanno nel loro elenco
+  const rawDecks = officialDecks(allDecks);
 
   // Mazzi: dal più votato (voto pesato sul numero di voti), quelli senza voti in fondo dal più recente
   const decks: TierRankedDeck[] = rawDecks

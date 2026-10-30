@@ -32,6 +32,9 @@ export const en = {
     about: "About",
     builder: "Deck builder",
     draft: "Draft",
+    /** Theory craft (29/10/2026): deck builder con le carte non ancora nel gioco ed elenco dei suoi mazzi, nel sottomenu del Deck builder */
+    theoryCraft: "Theory craft",
+    theoryDecks: "Theory craft decks",
     /** sottomenu "Mazzi" (04/10/2026): mazzi singoli e Mazzi torneo; uguali a deckSetLabels.nav */
     decksSingle: "Single decks",
     decksTournament: "Tournament decks",

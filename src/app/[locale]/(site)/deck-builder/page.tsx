@@ -14,6 +14,7 @@ import { JsonLd, breadcrumbs, webApplication } from "@/components/JsonLd";
 import { deckBuilderApp } from "@/lib/entityLabels";
 import { deckVersionLabels } from "@/lib/deckVersionLabels";
 import { deckSetLabels } from "@/lib/deckSetLabels";
+import { THEORY_PATH, theoryCards } from "@/lib/theoryCraft";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -62,6 +63,8 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
           labels={builderLabels(d)}
           updateLabels={deckVersionLabels[locale].builder}
           setPublish={{ href: href(locale, "/decks/tournament/publish"), label: deckSetLabels[locale].builder.publish, hint: deckSetLabels[locale].builder.hint }}
+          // un mazzo con carte non ancora nel gioco (link, ?draft, ?update) si apre nel Theory craft (29/10/2026)
+          theoryRedirect={{ href: href(locale, THEORY_PATH), slugs: theoryCards.map((c) => c.slug) }}
         />
       </div>
 

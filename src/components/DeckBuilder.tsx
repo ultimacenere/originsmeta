@@ -16,6 +16,7 @@ import { CardPeek, hasPeek } from "./CardPeek";
 import { DECK_SLUG_RE, deckSaveCardsHref } from "@/lib/community/deckVersions";
 import { DECK_SET_MIN_DIFFERENT, DECK_SET_PENDING_KEY, joinSetCodes, splitSetCodes } from "@/lib/community/deckSets";
 import type { DeckVersionLabels } from "@/lib/deckVersionLabels";
+import { THEORY_STORAGE_KEY } from "@/lib/theoryCraftPaths";
 
 type Issues = {
   missingLegendary: string;
@@ -173,6 +174,9 @@ export type BuilderPreset = { mode: "single" | "tournament"; deckCount: number; 
 export type SubmitLabels = { submit: string; submitting: string; saved: string; incomplete: string; errors: Record<string, string> };
 /** "Pubblica i 3 mazzi" della modalità Torneo (Mazzi torneo, 04/10/2026): pagina di pubblicazione, testo del tasto e riga che dice che cosa manca. */
 export type SetPublish = { href: string; label: string; hint: string };
+/** Theory craft (29/10/2026): pastiglia delle carte non ancora nel gioco e filtro del pool "Nel gioco / Non nel gioco". */
+export type TheoryBuilderLabels = { pill: string; filter: string; filterAll: string; filterGame: string; filterTheory: string };
+type TheoryFilter = "all" | "game" | "theory";
 
 export function DeckBuilder({
   pool,
@@ -186,6 +190,8 @@ export function DeckBuilder({
   submitLabels,
   updateLabels,
   setPublish,
+  theory,
+  theoryRedirect,
 }: {
   pool: BuilderCard[];
   labels: BuilderLabels;
@@ -203,10 +209,17 @@ export function DeckBuilder({
   updateLabels?: DeckVersionLabels["builder"];
   /** in modalità Torneo il tasto principale pubblica i tre mazzi insieme come mazzo torneo (04/10/2026); senza, resta "Pubblica" */
   setPublish?: SetPublish;
+  /** Theory craft (29/10/2026): il pool ha anche le carte non ancora nel gioco (`theory` delle carte), il browser salva a parte */
+  theory?: TheoryBuilderLabels;
+  /**
+   * Nel deck builder di sempre: un link con carte non ancora nel gioco (`slugs`) si apre nel Theory craft (`href`), con lo
+   * stesso hash e la stessa query (?draft, ?update). Così ogni "Apri nel deck builder" di un mazzo theory craft funziona.
+   */
+  theoryRedirect?: { href: string; slugs: string[] };
 }) {
   const count = preset?.deckCount ?? 3;
   const locked = Boolean(preset);
-  const storageKey = preset?.storageKey ?? BUILDER_STORAGE_KEY;
+  const storageKey = preset?.storageKey ?? (theory ? THEORY_STORAGE_KEY : BUILDER_STORAGE_KEY);
   /** copia dei mazzi del browser quando un link li sostituisce: "Torna al mazzo di prima" */
   const backupKey = `${storageKey}.prev`;
   const locale = localeProp ?? (publishHref.split("/")[1] || "en");
@@ -225,6 +238,8 @@ export function DeckBuilder({
   const [typeFilter, setTypeFilter] = useState<PoolType>("all");
   /** costi scelti, anche più di uno; vuoto = tutti */
   const [costFilter, setCostFilter] = useState<number[]>([]);
+  /** Theory craft: tutte le carte, solo quelle del gioco o solo quelle non ancora nel gioco */
+  const [theoryFilter, setTheoryFilter] = useState<TheoryFilter>("all");
   const [importText, setImportText] = useState("");
   /** messaggio sotto la casella "Importa": `bad` per gli errori (codice illeggibile, nessuna carta riconosciuta) */
   const [notice, setNotice] = useState<{ text: string; bad: boolean } | null>(null);
@@ -328,6 +343,11 @@ export function DeckBuilder({
       const fromHash = hash.startsWith(OM_PREFIX) && !linkedSet;
       const code = fromHash ? hash : (params.get("deck") ?? "");
       linked = code.startsWith(OM_PREFIX) ? decodeOmCode(code) : null;
+      // un mazzo con carte non ancora nel gioco si apre nel Theory craft (29/10/2026), con lo stesso indirizzo dopo il percorso
+      if (theoryRedirect && [linked, ...(linkedSet ?? [])].some((d) => d && [d.legendary, ...d.cards].some((x) => x && theoryRedirect.slugs.includes(x)))) {
+        window.location.replace(`${theoryRedirect.href}${url.search}${url.hash}`);
+        return;
+      }
       if (params.get("intent") === "save") pendingSave.current = true;
       // mazzo privato aperto da /account (?draft=<id>): "Salva privato" aggiorna quello invece di crearne un altro
       const draft = params.get("draft") ?? "";
@@ -416,7 +436,7 @@ export function DeckBuilder({
     // "Pubblica un mazzo torneo" di /decks/tournament apre il builder già in modalità Torneo
     if (wantTournament) setMode("tournament");
     setHydrated(true);
-  }, [labels.restored, storageKey, backupKey, count, locked, applySaved, updateLabels]);
+  }, [labels.restored, storageKey, backupKey, count, locked, applySaved, updateLabels, theoryRedirect]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   /* --- salvataggio automatico nel browser (niente più tasto "Salva nel browser") ---
@@ -474,10 +494,11 @@ export function DeckBuilder({
       // scelta la Leggendaria, le altre spariscono dalla lista
       .filter((c) => !c.legendary || !deck.legendary || c.slug === deck.legendary)
       .filter((c) => matchesPoolFilters(c, typeFilter, costFilter))
+      .filter((c) => theoryFilter === "all" || (theoryFilter === "theory") === Boolean(c.theory))
       .filter((c) => matchesSearch(haystacks.get(c.slug) ?? "", terms))
       .sort((a, b) => Number(b.legendary) - Number(a.legendary) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
-  }, [pool, haystacks, q, typeFilter, costFilter, deck.legendary]);
-  const filtering = q.trim() !== "" || typeFilter !== "all" || costFilter.length > 0;
+  }, [pool, haystacks, q, typeFilter, costFilter, theoryFilter, deck.legendary]);
+  const filtering = q.trim() !== "" || typeFilter !== "all" || costFilter.length > 0 || theoryFilter !== "all";
   /* i pulsanti del costo: solo i costi che le carte del pool hanno davvero (8 = da 8 in su) */
   const poolCosts = useMemo(() => [...new Set(pool.filter((c) => c.type !== "token").map((c) => poolCost(c.mana)).filter((c): c is number => c !== null))].sort((a, b) => a - b), [pool]);
   /* misura della ricerca nel pool (view_search_results): parte quando si smette di scrivere, vedi trackSearch */
@@ -486,6 +507,7 @@ export function DeckBuilder({
     setQ("");
     setTypeFilter("all");
     setCostFilter([]);
+    setTheoryFilter("all");
   };
 
   const addCard = (c: BuilderCard) => {
@@ -639,7 +661,7 @@ export function DeckBuilder({
   const setCodes = setFlow ? joinSetCodes(decks.slice(0, 3).map((d) => encodeOmCode(d))) : "";
 
   /* --- misura (src/lib/analytics.ts): builder del sito o di un torneo --- */
-  const placement = preset ? "tournament_builder" : "builder";
+  const placement = preset ? "tournament_builder" : theory ? "theory_builder" : "builder";
   /* deck_complete: il mazzo attivo arriva a 25 carte per una modifica fatta qui (anche un'importazione), non al
      ripristino dal browser né passando a un'altra casella già completa. Una volta per casella e per scheda: con 12
      carte diverse lo scambio di una carta passa da 24 a 25 ogni volta, e contarlo farebbe di ogni ritocco un mazzo
@@ -1168,7 +1190,7 @@ export function DeckBuilder({
           <h3 className={h3}>{labels.legendarySlot}</h3>
           {deck.legendary && slotCard(deck.legendary) ? (
             <div className="mt-2">
-              <DeckRow card={slotCard(deck.legendary)!} copies={1} onRemove={() => removeCard(deck.legendary!)} labels={labels} />
+              <DeckRow card={slotCard(deck.legendary)!} copies={1} onRemove={() => removeCard(deck.legendary!)} labels={labels} theoryPill={theory?.pill} />
             </div>
           ) : (
             <a href="#builder-pool" className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-dashed border-sky px-3 py-3 text-sm text-pale-muted hover:text-pale">
@@ -1191,7 +1213,7 @@ export function DeckBuilder({
               const c = slotCard(s);
               return c ? (
                 <li key={s}>
-                  <DeckRow card={c} copies={RULES.copiesPerCard} onRemove={() => removeCard(s)} labels={labels} />
+                  <DeckRow card={c} copies={RULES.copiesPerCard} onRemove={() => removeCard(s)} labels={labels} theoryPill={theory?.pill} />
                 </li>
               ) : null;
             })}
@@ -1388,6 +1410,22 @@ export function DeckBuilder({
             ))}
           </div>
           <p className="mt-1 text-xs text-chalk-muted">{labels.typeHint}</p>
+          {theory ? (
+            <div className="mt-2 flex flex-wrap items-center gap-2" role="group" aria-label={theory.filter}>
+              <span className="kicker text-chalk-muted">{theory.filter}</span>
+              {(
+                [
+                  ["all", theory.filterAll],
+                  ["game", theory.filterGame],
+                  ["theory", theory.filterTheory],
+                ] as const
+              ).map(([t, label]) => (
+                <button key={t} type="button" aria-pressed={theoryFilter === t} onClick={() => setTheoryFilter(t)} className={`${chipCls(theoryFilter === t)} px-3`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <div className="mt-2 flex flex-wrap items-center gap-2" role="group" aria-label={labels.filterCost}>
             <span className="kicker text-chalk-muted">{labels.cost}</span>
             {poolCosts.map((c) => {
@@ -1433,7 +1471,7 @@ export function DeckBuilder({
                     <ManaGem mana={c.mana} label={labels.cost} />
                     <BuilderArt card={c} />
                     <span className="builder-row-text">
-                      <RowName card={c} legendaryLabel={labels.legendary} />
+                      <RowName card={c} legendaryLabel={labels.legendary} theoryPill={theory?.pill} />
                       <span className="builder-row-stats">
                         {c.type === "unit" ? `${c.power ?? "?"}/${c.health ?? "?"}` : labels.spell} · {c.sagaLabel}
                       </span>
@@ -1600,7 +1638,7 @@ function ManaGem({ mana, label }: { mana?: number; label: string }) {
 
 /** Nome nella riga: la Leggendaria ha lo stesso colore e la stessa misura delle altre carte, con la stella gialla
  *  davanti (`.legendary-star`, nascosta ai lettori di schermo) e la parola "Leggendaria" solo per loro. */
-function RowName({ card, legendaryLabel }: { card: BuilderCard; legendaryLabel: string }) {
+function RowName({ card, legendaryLabel, theoryPill }: { card: BuilderCard; legendaryLabel: string; theoryPill?: string }) {
   return (
     <span className="builder-row-name">
       {card.legendary ? (
@@ -1611,6 +1649,8 @@ function RowName({ card, legendaryLabel }: { card: BuilderCard; legendaryLabel: 
       {card.name}
       {card.custom ? " *" : ""}
       {card.legendary ? <span className="sr-only">, {legendaryLabel}</span> : null}
+      {/* carta non ancora nel gioco (Theory craft, 29/10/2026): la pastiglia la legge anche il lettore di schermo */}
+      {card.theory && theoryPill ? <span className="theory-pill ml-1.5 align-middle">{theoryPill}</span> : null}
     </span>
   );
 }
@@ -1618,7 +1658,7 @@ function RowName({ card, legendaryLabel }: { card: BuilderCard; legendaryLabel: 
 /** Riga di una carta nel mazzo. L'anteprima al passaggio (`CardPeek`) è in `position: fixed` (vedi `.builder-row > .deck-peek`
  *  in globals.css, coordinate da `CardMentionEdges`): nessun contenitore con overflow la taglia. Costo in mana per primo,
  *  poi le copie: così il costo sta all'estremo sinistro, come nelle righe del pool. */
-function DeckRow({ card, copies, onRemove, labels }: { card: BuilderCard; copies: number; onRemove: () => void; labels: BuilderLabels }) {
+function DeckRow({ card, copies, onRemove, labels, theoryPill }: { card: BuilderCard; copies: number; onRemove: () => void; labels: BuilderLabels; theoryPill?: string }) {
   const peek = hasPeek(card);
   return (
     <div
@@ -1630,7 +1670,7 @@ function DeckRow({ card, copies, onRemove, labels }: { card: BuilderCard; copies
       <span className="builder-row-copies">{copies}×</span>
       <BuilderArt card={card} />
       <span className="builder-row-text">
-        <RowName card={card} legendaryLabel={labels.legendary} />
+        <RowName card={card} legendaryLabel={labels.legendary} theoryPill={theoryPill} />
         <span className="builder-row-stats">{card.type === "unit" ? `${card.power ?? "?"}/${card.health ?? "?"}` : labels.spell}</span>
       </span>
       <button type="button" onClick={onRemove} className="builder-row-x" aria-label={`${labels.remove} ${card.name}`}>

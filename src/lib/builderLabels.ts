@@ -2,6 +2,8 @@ import type { Dictionary, Locale } from "@/lib/i18n";
 import { cards, sagas } from "@/lib/data/cards";
 import type { BuilderCard } from "@/lib/deckrules";
 import type { BuilderLabels } from "@/components/DeckBuilder";
+import type { PoolCard } from "@/components/PublishDeckForm";
+import { isTheoryCard } from "@/lib/theoryCraft";
 
 /** Etichette del deck builder dal dizionario (usate da /deck-builder e dal builder dedicato ai tornei). */
 export function builderLabels(d: Dictionary): BuilderLabels {
@@ -104,12 +106,16 @@ export function builderLabels(d: Dictionary): BuilderLabels {
   };
 }
 
-/** Carte giocabili nel deck builder (attive, non create da altre carte) con l'etichetta della saga nella lingua. */
-export function builderPool(locale: Locale, d?: Dictionary): BuilderCard[] {
+/**
+ * Carte giocabili nel deck builder (attive, non create da altre carte) con l'etichetta della saga nella lingua.
+ * `theory` (Theory craft, 29/10/2026): anche le carte che oggi non sono nel gioco, con `theory: true` e senza la chiave del
+ * gioco, così il codice del gioco non si genera (il gioco non le ha) e un codice KGBLDC incollato non le riconosce.
+ */
+export function builderPool(locale: Locale, d?: Dictionary, { theory = false }: { theory?: boolean } = {}): BuilderCard[] {
   const typeLabel = d ? ({ unit: d.common.unit, spell: d.common.spell, token: d.common.token } as const) : undefined;
   const alignLabel = d ? ({ good: d.common.good, evil: d.common.evil, neutral: d.common.neutral } as const) : undefined;
   return cards
-    .filter((c) => c.status === "active" && c.type !== "token")
+    .filter((c) => c.type !== "token" && (c.status === "active" || (theory && isTheoryCard(c.slug))))
     .map((c) => ({
       slug: c.slug,
       name: c.name,
@@ -119,7 +125,7 @@ export function builderPool(locale: Locale, d?: Dictionary): BuilderCard[] {
       power: c.power,
       health: c.health,
       sagaLabel: sagas[c.saga][locale],
-      key: c.key,
+      ...(c.status === "active" ? { key: c.key } : { theory: true }),
       thumb: c.thumb,
       image: c.image,
       art: c.art,
@@ -130,5 +136,24 @@ export function builderPool(locale: Locale, d?: Dictionary): BuilderCard[] {
       alignment: c.alignment,
       alignmentLabel: c.alignment && alignLabel ? alignLabel[c.alignment] : undefined,
       typeLabel: typeLabel ? typeLabel[c.type] : undefined,
+    }));
+}
+
+/**
+ * Le carte del modulo di pubblicazione e di modifica di un mazzo: quelle del gioco più quelle del Theory craft (29/10/2026),
+ * che si pubblicano come mazzi singoli e vanno fra i mazzi theory craft. `key` = ID ufficiale, solo per le carte del gioco:
+ * serve a riconoscere un codice del gioco (KGBLDC…) incollato; `image` solo per le Leggendarie, per il confronto con
+ * l'artwork del creator (29/09/2026).
+ */
+export function publishPool(): PoolCard[] {
+  return cards
+    .filter((c) => c.type !== "token" && (c.status === "active" || isTheoryCard(c.slug)))
+    .map((c) => ({
+      slug: c.slug,
+      name: c.name,
+      legendary: Boolean(c.legendary),
+      ...(c.key && c.status === "active" ? { key: c.key } : {}),
+      ...(c.status !== "active" ? { theory: true } : {}),
+      ...(c.legendary && (c.thumb ?? c.image) ? { image: c.thumb ?? c.image } : {}),
     }));
 }

@@ -62,6 +62,8 @@ export type CommunityData = {
   decks: { slug: string; updated_at: string; locales: Locale[] }[];
   /** data dell'ultimo mazzo pubblicato o modificato, anche sotto soglia: /decks e le tier list mostrano tutti i mazzi */
   latestDeck?: string;
+  /** la stessa data per i mazzi theory craft (29/10/2026): assente finché non ce n'è uno, e /theory-craft/decks resta fuori */
+  latestTheoryDeck?: string;
   /**
    * I mazzi pubblicati come li legge la scheda carta (`loadDeckRefs`, src/lib/community/decksByCard.ts), per dare alle
    * schede lo stesso lastmod del loro `dateModified` (`cardPageLastmod` + `cardPageDeckDays`). null o assente: nessun
@@ -228,6 +230,10 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/deck-builder", section: "pages", route: "/deck-builder", dates: [patchDay, cardsVerified.date] },
     // Il draft (02/10/2026) pesca dallo stesso pool del deck builder.
     { path: "/draft", section: "pages", route: "/draft", dates: [patchDay, cardsVerified.date] },
+    // Theory craft (29/10/2026): il pool del deck builder più le carte che oggi non sono nel gioco, che cambiano solo con
+    // l'import delle carte (data del modello). L'elenco dei suoi mazzi entra solo quando ce n'è almeno uno (vuoto è noindex).
+    { path: "/theory-craft", section: "pages", route: "/theory-craft", dates: [patchDay, cardsVerified.date] },
+    ...(data.latestTheoryDeck ? [{ path: "/theory-craft/decks", section: "pages", route: "/theory-craft/decks", dates: [data.latestTheoryDeck] } satisfies SitemapPage] : []),
     // Guide editoriali e, dal 29/09/2026, le guide della community indicizzabili nella lingua: la pagina le mostra tutte in
     // un elenco solo, nell'HTML (ISR; Pierluigi: niente divisione fra guide ufficiali e della community).
     { path: "/guides", section: "pages", route: "/guides", dates: (l) => [...guidesBy[l].map((g) => g.updated), data.communityGuides?.hub[l]] },

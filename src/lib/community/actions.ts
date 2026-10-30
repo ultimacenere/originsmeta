@@ -23,6 +23,7 @@ import { mediaErrorField, mediaNeedsColumns, readDeckMedia } from "@/lib/videos"
 import { PROFILE_MEDIA_BUCKET } from "./profileMedia";
 import { deckArtErrorCode, deckArtPathOk, missingArtColumn, readDeckArtField } from "./deckArt";
 import { sameDeckCards, type DeckCards } from "./deckVersions";
+import { THEORY_DECKS_PATH } from "@/lib/theoryCraft";
 
 /**
  * Esito delle azioni dei mazzi. `created` lo mette solo `saveDeckPrivate` quando inserisce un mazzo privato nuovo:
@@ -51,6 +52,8 @@ export type ActionState = {
 function revalidateDeckPaths(slug?: string, gone = false, cardPages = true) {
   for (const l of locales) {
     revalidatePath(`/${l}/decks`);
+    // l'elenco dei mazzi theory craft (29/10/2026): un mazzo è theory craft o no secondo le sue carte, quindi si rifanno tutti e due
+    revalidatePath(`/${l}${THEORY_DECKS_PATH}`);
     revalidatePath(`/${l}/account`);
     if (slug) revalidatePath(`/${l}/decks/community/${slug}`);
   }
@@ -85,7 +88,8 @@ async function parseSubmission(formData: FormData) {
   const locale = localeOf(formData);
   const decoded = decodeOmCode(String(formData.get("code") ?? ""));
   if (!decoded) return { error: "invalidDeck" } as const;
-  const checked = checkDeck(decoded);
+  // anche le carte non ancora nel gioco (Theory craft, 29/10/2026): il mazzo che ne usa una va fra i mazzi theory craft
+  const checked = checkDeck(decoded, { theory: true });
   if (!checked.ok) return { error: checked.code } as const;
   const name = cleanDeckName(String(formData.get("name") ?? decoded.name));
   if (name.length < 3) return { error: "invalidName" } as const;
@@ -231,7 +235,7 @@ export async function saveDeckPrivate(_prev: ActionState, formData: FormData): P
   const locale = localeOf(formData);
   const decoded = decodeOmCode(String(formData.get("code") ?? ""));
   if (!decoded) return { error: "invalidDeck" };
-  const checked = checkDeck(decoded);
+  const checked = checkDeck(decoded, { theory: true });
   if (!checked.ok) return { error: checked.code };
   const typed = cleanDeckName(String(formData.get("name") ?? ""));
   const name = typed.length >= 3 ? typed : cleanDeckName(decoded.name).length >= 3 ? cleanDeckName(decoded.name) : fallbackName(checked.deck);

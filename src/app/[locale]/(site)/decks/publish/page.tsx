@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { cards } from "@/lib/data/cards";
 import { archetypeLabels } from "@/lib/data/decks";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
 import { videoFormLabels } from "@/lib/videoLabels";
 import { deckArtFormLabels } from "@/lib/deckArtLabels";
+import { publishPool } from "@/lib/builderLabels";
+import { theoryCraftLabels } from "@/lib/theoryCraftLabels";
 
 /**
  * Durata massima delle Server Action di questa pagina: dopo la pubblicazione la guida si traduce nelle altre
@@ -28,11 +29,8 @@ export async function generateMetadata({ params }: { params: LocaleParams }): Pr
  */
 export default async function PublishPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
-  // `key` = ID ufficiale della carta: serve a riconoscere le carte di un codice del gioco (KGBLDC…) incollato; `image`
-  // solo per le Leggendarie, per il confronto con l'artwork del creator (29/09/2026)
-  const pool: PoolCard[] = cards
-    .filter((c) => c.status === "active" && c.type !== "token")
-    .map((c) => ({ slug: c.slug, name: c.name, legendary: Boolean(c.legendary), ...(c.key ? { key: c.key } : {}), ...(c.legendary && (c.thumb ?? c.image) ? { image: c.thumb ?? c.image } : {}) }));
+  // le carte del gioco più quelle del Theory craft (29/10/2026): un mazzo che ne usa una va fra i mazzi theory craft
+  const pool: PoolCard[] = publishPool();
   const archetypes = Object.entries(archetypeLabels).map(([id, l]) => [id, l[locale]] as [string, string]);
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
@@ -58,6 +56,7 @@ export default async function PublishPage({ params }: { params: LocaleParams }) 
             builderHref={href(locale, "/deck-builder")}
             publishPath={href(locale, "/decks/publish")}
             loginLabels={loginLabels(d)}
+            theoryNotice={theoryCraftLabels[locale].publishNotice}
           />
         </Suspense>
       </div>

@@ -30,7 +30,7 @@ import { MarkdownToolbar } from "./MarkdownToolbar";
  * Carta del database per l'anteprima e per l'import dei codici del gioco (`key` = ID ufficiale, se noto). `image` solo per
  * le Leggendarie: il confronto con l'artwork del creator (29/09/2026).
  */
-export type PoolCard = { slug: string; name: string; legendary: boolean; key?: string; image?: string };
+export type PoolCard = { slug: string; name: string; legendary: boolean; key?: string; image?: string; theory?: boolean };
 
 /**
  * Artwork della Leggendaria in modifica (29/09/2026), deciso dalla pagina sul server: `path` quello salvato, `mode`
@@ -57,6 +57,11 @@ type Props = {
   /** solo in modifica: l'artwork del mazzo e che cosa può farne chi modifica (in pubblicazione lo decide il browser) */
   art?: DeckArtEdit | null;
   loginLabels: LoginLabels;
+  /**
+   * Avviso del mazzo theory craft (29/10/2026): compare quando il mazzo usa carte che oggi non sono nel gioco (`theory`
+   * delle carte del pool) e dice dove andrà; `{cards}` = i loro nomi.
+   */
+  theoryNotice?: string;
   builderHref: string;
   /** percorso della pagina di pubblicazione, usato come ritorno dopo l'accesso */
   publishPath: string;
@@ -181,7 +186,7 @@ function clearLocalDrafts() {
  * Il modulo è volutamente corto: in vista c'è solo il piano di gioco (obbligatorio); le sezioni facoltative
  * stanno in un <details> chiuso, e il testo scritto resta in una bozza locale finché non si pubblica.
  */
-export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, mediaLabels, artLabels, art, loginLabels, builderHref, publishPath }: Props) {
+export function PublishDeckForm({ locale, mode, pool, archetypes, initial, labels, mediaLabels, artLabels, art, loginLabels, theoryNotice, builderHref, publishPath }: Props) {
   // lingua dell'interfaccia per la barra di formattazione dei campi della guida (22/10/2026)
   const uiLocale: Locale = isLocale(locale) ? locale : "en";
   const router = useRouter();
@@ -349,12 +354,19 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
       </div>
     );
   }
+  /* mazzo theory craft (29/10/2026): le carte che oggi non sono nel gioco, Leggendaria per prima. L'avviso sta
+     nell'anteprima del mazzo, così si legge anche prima dell'accesso. */
+  const theoryNames = [deck.legendary, ...deck.cards].flatMap((s) => {
+    const c = s ? pool.find((x) => x.slug === s) : undefined;
+    return c?.theory ? [c.name] : [];
+  });
+  const theoryText = theoryNotice && theoryNames.length ? theoryNotice.replace("{cards}", theoryNames.join(", ")) : undefined;
   if (!user) {
     /* il ritorno dopo l'accesso porta il mazzo nel link: vale anche se il link via email si apre altrove */
     const loginNext = `${publishPath}?deck=${encodeURIComponent(code ?? "")}${draftId ? `&draft=${draftId}` : ""}`;
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.2fr]">
-        <DeckPreview deck={deck} nameOf={nameOf} hasCustom={hasCustom} labels={labels} />
+        <DeckPreview deck={deck} nameOf={nameOf} hasCustom={hasCustom} labels={labels} theory={theoryText} />
         <div className="min-w-0">
           <p className="mb-4 text-chalk">{labels.loginFirst}</p>
           <LoginPanel next={loginNext} labels={loginLabels} locale={locale} />
@@ -434,7 +446,7 @@ export function PublishDeckForm({ locale, mode, pool, archetypes, initial, label
       {initial ? <input type="hidden" name="id" value={initial.id} /> : null}
       {draftId ? <input type="hidden" name="draft" value={draftId} /> : null}
 
-      <DeckPreview deck={deck} nameOf={nameOf} hasCustom={hasCustom} labels={labels} />
+      <DeckPreview deck={deck} nameOf={nameOf} hasCustom={hasCustom} labels={labels} theory={theoryText} />
 
       <section key={`fields-${draftReset}`} className="card-night min-w-0 p-5 sm:p-6">
         {restored ? (
@@ -667,7 +679,7 @@ function PasteCode({ labels, onImport }: { labels: Labels; onImport: (text: stri
   );
 }
 
-function DeckPreview({ deck, nameOf, hasCustom, labels }: { deck: DeckState; nameOf: (s: string) => string; hasCustom: boolean; labels: Labels }) {
+function DeckPreview({ deck, nameOf, hasCustom, labels, theory }: { deck: DeckState; nameOf: (s: string) => string; hasCustom: boolean; labels: Labels; theory?: string }) {
   const isCustom = (s: string) => s.startsWith("custom:");
   return (
     <aside className="card-night h-fit min-w-0 p-5">
@@ -691,6 +703,11 @@ function DeckPreview({ deck, nameOf, hasCustom, labels }: { deck: DeckState; nam
         ))}
       </ul>
       {hasCustom ? <p className="mt-3 text-xs text-pale-muted">{labels.customMark}</p> : null}
+      {theory ? (
+        <p className="mt-3 rounded-lg border-2 border-crimson-soft/70 bg-night-3 px-3 py-2 text-xs text-pale" role="status">
+          {theory}
+        </p>
+      ) : null}
     </aside>
   );
 }

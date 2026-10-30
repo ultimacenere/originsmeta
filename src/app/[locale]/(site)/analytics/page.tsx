@@ -56,6 +56,7 @@ import { CardStatsTable, type CardStatRow } from "@/components/analytics/CardSta
 import { MatchupExplorer, type MxCell, type MxLeg } from "@/components/analytics/MatchupExplorer";
 import { AnalyticsReveal } from "@/components/analytics/AnalyticsReveal";
 import { CrimsonPromo } from "@/components/crimson/CrimsonPromo";
+import { officialDecks } from "@/lib/theoryCraft";
 
 /*
   Analytics (12/10/2026, Pierluigi: "non si chiama più win rate ma si chiama analytics" e le statistiche "solo sotto
@@ -115,7 +116,9 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
   const t = d.tier;
   const w = t.winrate;
   const c = w.common;
-  const [read, published] = await Promise.all([loadWinrate(), listPublishedDecks()]);
+  const [read, allPublished] = await Promise.all([loadWinrate(), listPublishedDecks()]);
+  // i mazzi theory craft (29/10/2026) non si giocano: fuori dalla classifica e dal conto dei mazzi
+  const published = officialDecks(allPublished);
   const appHref = href(locale, "/tracker");
   const data = read.status === "ok" ? read.data : null;
   const legendaryLabel = d.common.legendary;
