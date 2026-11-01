@@ -120,7 +120,6 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
               noResults: d.common.noResults,
               legendary: d.common.legendary,
               unknownStats: d.common.unknownStats,
-              showRemoved: d.common.showRemoved,
               mana: d.common.mana,
               power: d.common.power,
               health: d.common.health,

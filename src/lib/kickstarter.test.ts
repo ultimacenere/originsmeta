@@ -8,6 +8,7 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  KICKSTARTER_LAUNCH_DAY,
   KICKSTARTER_PROJECT_URL,
   KICKSTARTER_PROMO_UNTIL,
   KICKSTARTER_REF,
@@ -18,6 +19,8 @@ import {
   kickstarterSliderPinned,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./kickstarter.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { events } from "./data/events.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { en } from "./kickstarterLabels-en.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
@@ -182,4 +185,20 @@ describe("testi nelle sette lingue", () => {
       for (const text of leaves(labels).values()) assert.doesNotMatch(text, /world ?of ?origins|worldoforigins/i);
     });
   }
+});
+
+describe("la campagna nel calendario (events.ts, 01/11/2026)", () => {
+  const e = events.find((x) => x.slug === "alpha-edition-kickstarter");
+  test("stesse date e stessa pagina della campagna di kickstarter.ts", () => {
+    assert.ok(e, "evento mancante");
+    assert.equal(e.start, KICKSTARTER_LAUNCH_DAY);
+    assert.equal(e.end, KICKSTARTER_PROMO_UNTIL?.slice(0, 10));
+    assert.equal(e.source, KICKSTARTER_PROJECT_URL);
+    assert.equal(e.page?.path, "/kickstarter");
+    assert.equal(e.campaign, true, "una vendita non diventa un nodo Event");
+  });
+  test("niente link referral nella scheda: lo dichiara la landing, accanto al tasto", () => {
+    assert.equal(e?.signup, undefined);
+    assert.doesNotMatch(JSON.stringify(e), new RegExp(KICKSTARTER_REF));
+  });
 });
