@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useLiveUsers } from "@/lib/liveClient";
 import { liveOrder } from "@/lib/twitchLive";
@@ -23,6 +23,8 @@ export type TickerItem = {
 
 type Props = {
   items: TickerItem[];
+  /** la voce da mostrare quando non c'è niente in calendario, né eventi ufficiali né tornei (01/11/2026) */
+  empty?: TickerItem;
   ariaLabel: string;
   nextLabel: string;
   prevLabel: string;
@@ -97,13 +99,16 @@ const MAX_REPEATS = 8;
  * Tra la fine e l'inizio del ciclo c'è un blocco con il logo del gioco. Con "riduci il movimento" attivo
  * non scorre da sola ma resta navigabile.
  */
-export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 16, extraUrl, locale, live }: Props) {
+export function TickerMarquee({ items: base, empty, ariaLabel, nextLabel, prevLabel, nextBtnLabel, speed = 16, extraUrl, locale, live }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const pausedUntil = useRef(0);
   const [hover, setHover] = useState(false);
   const [extra, setExtra] = useState<TickerItem[]>([]);
-  const items = extra.length ? merge(base, extra) : base;
+  const items = useMemo(() => {
+    const merged = extra.length ? merge(base, extra) : base;
+    return merged.length || !empty ? merged : [empty];
+  }, [base, extra, empty]);
   /** ripetizioni della lista dentro ogni copia: si misurano nel browser (vedi MAX_REPEATS) */
   const [repeats, setRepeats] = useState(1);
 
@@ -247,7 +252,7 @@ export function TickerMarquee({ items: base, ariaLabel, nextLabel, prevLabel, ne
                 >
                   <span className={`date-cube ${it.isNext ? "is-next" : ""}`}>
                     <span className="text-lg">{it.day}</span>
-                    <small>{it.month}</small>
+                    {it.month ? <small>{it.month}</small> : null}
                   </span>
                   <span className="min-w-0">
                     <span className={`block font-display text-sm font-bold ${it.isNext ? "text-gold" : "text-sky"}`}>{it.title}</span>

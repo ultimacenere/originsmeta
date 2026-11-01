@@ -44,6 +44,12 @@ export function EventCard({ event, locale, dict, compact = false }: { event: Eve
         </p>
       ) : null}
       <div className="mt-auto flex flex-wrap gap-2 pt-4">
+        {/* la pagina del sito dedicata all'evento (il Kickstarter, 01/11/2026: la landing dichiara il link referral) */}
+        {event.page ? (
+          <Link href={href(locale, event.page.path)} className="btn btn-primary text-xs">
+            {event.page.label[locale]}
+          </Link>
+        ) : null}
         {event.guide ? (
           <Link href={href(locale, `/guides/${event.guide}`)} className="btn btn-primary text-xs">
             {dict.events.guideCta}
