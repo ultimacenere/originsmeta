@@ -43,14 +43,19 @@ export default async function EventsPage({ params }: { params: LocaleParams }) {
   const steps = [x.howTo.step1, x.howTo.step2, x.howTo.step3, x.howTo.step4];
   // Un Event per ogni evento futuro del calendario (Ondata 2, GEO-09): nome ufficiale, orario con fuso, Koin Games per
   // `@id` come organizzatore degli eventi ufficiali, Valve per lo Steam Next Fest, immagine dal materiale ufficiale.
-  const events = up.map((e) => eventNode(e, locale));
+  // Le campagne di vendita (il Kickstarter, `campaign` in events.ts) restano nel calendario ma non diventano Event.
+  const events = up.filter((e) => !e.campaign).map((e) => eventNode(e, locale));
 
   // Lista per i dati strutturati: gli eventi statici del calendario (futuri e passati), ognuno con la sua
   // ancora sulla pagina. I tornei della community non ci vanno: arrivano da Supabase e cambiano da soli.
   // Gli eventi futuri sono anche nodi Event di questa pagina: la voce ne porta il nome e rimanda al nodo per `@id`
   // (GEO-10), così lista ed Event parlano della stessa cosa; i passati restano con il titolo della scheda.
   const listed = [
-    ...up.map((e) => ({ name: e.ld?.name?.[locale] ?? e.title[locale], path: `${href(locale, "/tournaments")}#${e.slug}`, id: eventId(e.slug, locale) })),
+    ...up.map((e) => ({
+      name: e.ld?.name?.[locale] ?? e.title[locale],
+      path: `${href(locale, "/tournaments")}#${e.slug}`,
+      ...(e.campaign ? {} : { id: eventId(e.slug, locale) }),
+    })),
     ...past.map((e) => ({ name: e.title[locale], path: `${href(locale, "/tournaments")}#${e.slug}` })),
   ];
 
