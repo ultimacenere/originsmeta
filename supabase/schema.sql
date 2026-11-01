@@ -3645,8 +3645,8 @@ comment on function public.profile_media_in_use(text) is 'Un file del bucket pro
 -- Codice: src/lib/community/comics.ts (regole pure, test in comics.test.ts che le confrontano con questo blocco),
 -- comicQueries.ts, comicActions.ts, comicTranslate.ts, comicNotify.ts; documentazione in docs/fumetti.md.
 --
--- Viene dopo IMMAGINI: rifà le due policy del bucket profile-media (cartella nuova `comic`, con un tetto suo di 300 file
--- che non consuma quello della vetrina) e la funzione dei file in uso, e aggiunge il tipo `comic_published` agli avvisi
+-- Viene dopo IMMAGINI: rifà le due policy del bucket profile-media (cartella nuova `comic`, con un tetto suo di 1000 file,
+-- 300 fino al 01/11/2026, che non consuma quello della vetrina) e la funzione dei file in uso, e aggiunge il tipo `comic_published` agli avvisi
 -- del pacchetto SEGUI (vincoli e notify_followers rifatti qui). Nessuna grant né revoke su public.profiles
 -- (scripts/schema-guard.mjs). Idempotente come tutto il file.
 -- =====================================================================================================
@@ -3955,7 +3955,8 @@ grant delete on public.community_comics to authenticated;
 
 -- ---------- bucket profile-media: cartella dei fumetti ----------
 -- Il tetto della vetrina (12 file, 60 per i ruoli con vetrina) non conta più i file dei fumetti: una puntata a settimana
--- con 10 tavole lo riempirebbe in un mese e mezzo. La cartella `comic` ha il suo (COMIC_FILES_MAX = 300 in comics.ts).
+-- con 10 tavole lo riempirebbe in un mese e mezzo. La cartella `comic` ha il suo (COMIC_FILES_MAX in comics.ts): 300
+-- fino al 01/11/2026, quando Vega, con tre versioni disegnate per capitolo, ci è arrivata al decimo; ora 1000.
 create or replace function public.profile_media_count()
 returns integer language sql stable set search_path = public, pg_temp as $$
   select count(*)::integer from storage.objects o
@@ -3994,7 +3995,7 @@ grant execute on function public.profile_media_in_use(text) to authenticated, se
 
 do $$
 begin
-  -- Cartelle e tetti: `comic` per Creator, Staff e admin, fino a 300 file; le altre come nel blocco IMMAGINI (avatar per
+  -- Cartelle e tetti: `comic` per Creator, Staff e admin, fino a 1000 file; le altre come nel blocco IMMAGINI (avatar per
   -- tutti; cover, background e guide per i ruoli con vetrina; deck per Creator e Staff), con il tetto della vetrina.
   drop policy if exists "profile media upload" on storage.objects;
   create policy "profile media upload" on storage.objects for insert to authenticated with check (
@@ -4005,7 +4006,7 @@ begin
     and storage.filename(name) ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(png|jpg|webp)$'
     and (
       ((storage.foldername(name))[2] = 'comic'
-          and public.profile_media_count_in('comic') < 300
+          and public.profile_media_count_in('comic') < 1000
           and exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'staff') or p.role = 'admin')))
       or ((storage.foldername(name))[2] <> 'comic'
           and public.profile_media_count() < (case when exists (select 1 from public.profiles p where p.id = auth.uid() and (p.badge in ('creator', 'author', 'pro', 'staff') or p.role = 'admin')) then 60 else 12 end)

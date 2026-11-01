@@ -39,8 +39,18 @@ firmato da chi l'ha disegnato, con una pagina sua.
 - **Tetti** (trigger `guard_community_comic`, contati su un registro che eliminare un fumetto non azzera,
   `community_comic_events`; lo staff e gli admin non li hanno): 500 fumetti per account, 10 nuovi e 3 prime
   pubblicazioni al giorno, 24 ore senza pubblicare dopo un fumetto nascosto dallo staff, 10 secondi fra due salvataggi
-  dello stesso fumetto. File: la cartella dei fumetti ha un tetto suo, 300 file per utente, fuori da quello della
-  vetrina (60 o 12).
+  dello stesso fumetto. File: la cartella dei fumetti ha un tetto suo, 1000 file per utente, fuori da quello della
+  vetrina (60 o 12). Era 300 fino al 01/11/2026: un capitolo con tre versioni disegnate usa una trentina di file (tavole
+  e copertine di ogni lingua) e Vega, al decimo capitolo, aveva 228 immagini in uso più bozza e file non salvati, quindi
+  il caricamento dell'undicesimo veniva rifiutato ("Hai raggiunto il limite di immagini caricate"). Il tetto sta in tre
+  posti, da cambiare insieme (lo controlla comics.test.ts): `COMIC_FILES_MAX` in comics.ts, la policy "profile media
+  upload" del blocco FUMETTI e `scripts/clear-profile-media.mjs`, che con `--orphans` dice chi arriva al 90%. Al ritmo
+  di un capitolo a settimana sono circa 12 MB a settimana (346 KB in media a immagine): il bucket sta nel piano Free
+  di Supabase (1 GB in tutto).
+- **Pulizia dopo un rifiuto** (01/11/2026): quando lo Storage rifiuta un file, `uploadMedia` toglie i file non in uso
+  di tutte le cartelle dell'utente, leggendo l'elenco intero a pagine (prima si fermava ai primi 100 nomi), e lascia i
+  file caricati nel modulo aperto e non ancora salvati (prima li cancellava: le tavole già caricate sparivano e il
+  salvataggio rispondeva "Una delle immagini non si trova").
 - **File**: le immagini tolte o sostituite si cancellano dopo il salvataggio, quelle di un fumetto eliminato con il
   fumetto. Il bucket non lascia cancellare un file in uso (`profile_media_in_use` conosce anche tavole e copertine dei
   fumetti), e il trigger `community_comics_files` vuole che ogni tavola o copertina nuova esista davvero nel bucket.

@@ -109,9 +109,11 @@ export async function encodeImageSized(file: File, opts: EncodeOptions): Promise
  * Cache di un'ora (il valore predefinito dello Storage, come le copertine dei tornei): una foto sostituita o tolta, che
  * il sito cancella, non resta nelle cache per mesi. Si riprova una volta; se lo Storage ha rifiutato il file (per esempio
  * il tetto dei 12 file, pieno di immagini caricate e mai salvate), prima si tolgono i file non in uso di tutte le
- * cartelle: quelli in uso (profilo, guide, mazzi, fumetti) la policy non li lascia cancellare.
+ * cartelle: quelli in uso (profilo, guide, mazzi, fumetti) la policy non li lascia cancellare. `keep`: i file caricati
+ * nel modulo aperto e non ancora salvati, che per il database non sono in uso ma la pulizia non deve toccare (fino al
+ * 01/11/2026 le tavole già caricate di un fumetto nuovo sparivano al primo rifiuto e il salvataggio dava "comic_file").
  */
-export async function uploadMedia(sb: Db, userId: string, kind: MediaKind, blob: Blob): Promise<string> {
+export async function uploadMedia(sb: Db, userId: string, kind: MediaKind, blob: Blob, keep: readonly string[] = []): Promise<string> {
   const ext = mediaExtension(blob.type);
   if (!ext) throw new MediaError("type");
   const put = async (): Promise<{ path: string } | { denied: boolean }> => {
@@ -127,24 +129,36 @@ export async function uploadMedia(sb: Db, userId: string, kind: MediaKind, blob:
   // rifiutato: si fa spazio (solo allora: dopo un errore di rete si riprova e basta, senza toccare i file). Tutte le
   // cartelle: i file in uso (profilo, copertine delle guide, artwork dei mazzi) la policy non li lascia cancellare
   if (first.denied) {
-    for (const k of MEDIA_KINDS) await cleanupMedia(sb, userId, k, null);
+    for (const k of MEDIA_KINDS) await cleanupMedia(sb, userId, k, keep);
   }
   const second = await put();
   if ("path" in second) return second.path;
   throw new MediaError(second.denied ? "limit" : "upload");
 }
 
+/** File letti per pagina dall'elenco dello Storage, e pagine al massimo (la cartella dei fumetti arriva a 1000 file). */
+const LIST_PAGE = 100;
+const LIST_PAGES_MAX = 20;
+
 /**
- * Cancella i file della cartella tranne `keep` (quello in uso o appena caricato): le immagini sostituite, tolte o
- * caricate e non salvate. La policy del bucket non lascia cancellare il file in uso sul profilo; gli errori si ignorano
- * (si riprova al prossimo giro, e i file mai usati li toglie anche `scripts/clear-profile-media.mjs --orphans`).
+ * Cancella i file della cartella tranne `keep` (quello in uso o appena caricato, o più d'uno): le immagini sostituite,
+ * tolte o caricate e non salvate. La policy del bucket non lascia cancellare un file in uso; gli errori si ignorano (si
+ * riprova al prossimo giro, e i file mai usati li toglie anche `scripts/clear-profile-media.mjs --orphans`). L'elenco si
+ * legge tutto, a pagine: fino al 01/11/2026 si fermava ai primi 100 file in ordine di nome, e in una cartella dei fumetti
+ * con 300 file, quasi tutti in uso, i file da togliere stavano oltre.
  */
-export async function cleanupMedia(sb: Db, userId: string, kind: MediaKind, keep: string | null): Promise<void> {
+export async function cleanupMedia(sb: Db, userId: string, kind: MediaKind, keep: string | null | readonly string[]): Promise<void> {
   try {
     const folder = `${userId}/${kind}`;
-    const { data } = await sb.storage.from(PROFILE_MEDIA_BUCKET).list(folder, { limit: 100 });
-    const stale = (data ?? []).map((f) => `${folder}/${f.name}`).filter((p) => p !== keep);
-    if (stale.length) await sb.storage.from(PROFILE_MEDIA_BUCKET).remove(stale);
+    const kept = new Set(typeof keep === "string" ? [keep] : (keep ?? []));
+    const names: string[] = [];
+    for (let page = 0; page < LIST_PAGES_MAX; page++) {
+      const { data } = await sb.storage.from(PROFILE_MEDIA_BUCKET).list(folder, { limit: LIST_PAGE, offset: page * LIST_PAGE, sortBy: { column: "name", order: "asc" } });
+      for (const f of data ?? []) names.push(`${folder}/${f.name}`);
+      if ((data ?? []).length < LIST_PAGE) break;
+    }
+    const stale = names.filter((p) => !kept.has(p));
+    for (let i = 0; i < stale.length; i += LIST_PAGE) await sb.storage.from(PROFILE_MEDIA_BUCKET).remove(stale.slice(i, i + LIST_PAGE));
   } catch {
     // niente: resta per il prossimo giro
   }
