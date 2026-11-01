@@ -10,6 +10,7 @@ import { twitchLogin } from "@/lib/community/profileLinks";
 import { authorName } from "@/lib/community/util";
 import { dropHreflang, editorialAuthor, profileIndexable } from "@/lib/community/deckQuality";
 import { creatorLabels, fillCreator } from "@/lib/creatorLabels";
+import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
 import { AUTHOR_DECK_LIMIT } from "@/lib/community/badges";
 import { contactEmail } from "@/components/Footer";
 import { CreatorDirectory, type DirectoryEntry } from "@/components/CreatorDirectory";
@@ -115,6 +116,12 @@ export default async function CreatorsPage({ params }: { params: LocaleParams })
       <h1 className="t-page mt-2">{L.h1}</h1>
       <p className="mt-4 max-w-3xl text-chalk-muted">{L.intro}</p>
       <p className="mt-2 max-w-3xl text-xs text-pale-muted">{L.order}</p>
+      {/* la pagina per i creator: strumenti con le guide passo passo e media kit (30/10/2026) */}
+      <p className="mt-4">
+        <Link href={href(locale, "/for-creators")} className="btn btn-ink text-sm">
+          {forCreatorsLabels[locale].entry.creators} →
+        </Link>
+      </p>
 
       <div className="mt-8">
         {entries.length ? (

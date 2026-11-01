@@ -45,11 +45,11 @@ describe("sitemap del profilo pubblico e della directory dei creator", () => {
     assert.ok(!few.some((p) => p.path === "/creators"));
     const none = sitemapPages(base);
     assert.ok(!none.some((p) => p.path === "/creators"), "senza dati del profilo pubblico (migrazione non applicata) niente directory");
-    const many = sitemapPages({ ...base, showcase: { creators: 4, latest: "2026-10-29T08:00:00+00:00", byUser: [] } });
+    const many = sitemapPages({ ...base, showcase: { creators: 4, latest: "2026-11-02T08:00:00+00:00", byUser: [] } });
     for (const locale of ["en", "it", "es", "fr", "pt", "de", "ru"] as const) {
       const entry = sectionEntries(many, "pages", locale, TODAY).find((e) => e.url === `${SITE}/${locale}/creators`);
       assert.ok(entry, `manca /${locale}/creators`);
-      assert.equal(entry.lastmod, "2026-10-29");
+      assert.equal(entry.lastmod, "2026-11-02");
       assert.equal(Object.keys(entry.alternates ?? {}).length, 8, "hreflang delle sette lingue più x-default");
     }
   });

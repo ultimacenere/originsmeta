@@ -250,6 +250,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // in /tracker dal 12/10/2026). Date del modello. Fuori dalla sitemap finché ANALYTICS_PUBLIC è spento.
     ...(ANALYTICS_PUBLIC ? [{ path: "/tracker", section: "pages", route: "/tracker", dates: [] } satisfies SitemapPage] : []),
     { path: "/authors", section: "pages", route: "/authors", dates: [] },
+    // La pagina per i creator (30/10/2026): strumenti, guide passo passo e media kit. Date del modello.
+    { path: "/for-creators", section: "pages", route: "/for-creators", dates: [] },
     // Directory dei creator (pacchetto CREATOR): solo da tre creator in su (sotto è noindex); cambia con i loro profili
     // e con i mazzi pubblicati, che mostra contati per autore.
     ...(directoryIndexable(data.showcase?.creators ?? 0)

@@ -117,17 +117,20 @@ type NewProps = {
   locale: string;
   /** nome utente già scritto (link "Scrivi a questo utente" della pagina /u/<nome>) */
   defaultTo?: string;
+  /** oggetto e testo già scritti (richiesta del ruolo Creator da /for-creators, 30/10/2026) */
+  defaultSubject?: string;
+  defaultBody?: string;
   labels: InboxLabels["form"];
   sending: string;
   errors: ErrorLabels;
 };
 
 /** Conversazione nuova. Dopo l'invio porta alla conversazione appena creata. */
-export function NewConversationForm({ mode, locale, defaultTo = "", labels, sending, errors }: NewProps) {
+export function NewConversationForm({ mode, locale, defaultTo = "", defaultSubject = "", defaultBody = "", labels, sending, errors }: NewProps) {
   const router = useRouter();
   const [to, setTo] = useState(defaultTo);
-  const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
+  const [subject, setSubject] = useState(defaultSubject);
+  const [body, setBody] = useState(defaultBody);
   const [, startSubmit] = useTransition();
   const baseId = useId();
   const [state, action, pending] = useActionState<InboxActionState, FormData>(async (prev, fd) => {
