@@ -15,13 +15,20 @@ firmato da chi l'ha disegnato, con una pagina sua.
   `/news` sono in ISR (`revalidate = 300`, rinnovate subito dalle Server Action dei fumetti) invece che statiche. Il
   feed RSS delle news (`/<lingua>/news/feed.xml`, statico) i fumetti non li ha.
 - **Altrove**: profilo `/u/<nome>` (sezione "Fumetti"), `/account#comics` ("I miei fumetti": bozze, pubblicati e
-  nascosti, con Apri, Modifica ed Elimina), sitemap (sezione news di ogni lingua, solo le versioni indicizzabili),
-  informativa (`/privacy#community-comics`).
+  nascosti, con Apri, Modifica ed Elimina), `/account#comic-stats` ("Statistiche dei fumetti", dal 02/11/2026: visite e
+  letture complete per fumetto e lingua della pagina, 7 e 30 giorni e totale, grafico al giorno; per lo staff la
+  classifica), sitemap (sezione news di ogni lingua, solo le versioni indicizzabili), informativa
+  (`/privacy#community-comics` e `#comic-stats`).
 - **Codice**: regole pure in `src/lib/community/comics.ts` (test in `comics.test.ts`, che le confronta anche con l'SQL),
   letture in `comicQueries.ts`, Server Action in `comicActions.ts`, traduzione in `comicTranslate.ts`, Discord in
   `comicDiscord.ts` e avvisi in `comicNotify.ts`; etichette EN/IT/ES in `src/lib/comicLabels.ts`; componenti in
   `src/components/comics/` (`ComicEditor`, `ComicStrip`, `ComicActions`, `ComicCtaBox`, `AccountComics`, `UserComics`).
 - **Database**: blocco `-- ===== 29/09/2026: FUMETTI =====` in fondo a `supabase/schema.sql` (dopo IMMAGINI).
+- **Statistiche (02/11/2026)**: `comic_stats_daily` e `bump_comic_stat` nel blocco `-- ===== 02/11/2026: STATISTICHE DEI
+  FUMETTI =====` (in fondo al file); regole in `src/lib/community/comicStats.ts` (test `comicStats.test.ts`), letture in
+  `comicStatsQueries.ts`, `bumpComicStat` in `deckStatsClient.ts`, `ComicStatsBeacon` nella pagina (l'ultima tavola di
+  `ComicStrip` porta `data-om-comic-last`), pannello `ComicStatsPanel`, testi in `src/lib/comicStatsLabels.ts`. Prova a
+  secco prima della migrazione: `node scripts/comic-stats-dry-run.mjs`. Dettagli nel README, "Fumetti dei creator".
 
 ## Regole
 

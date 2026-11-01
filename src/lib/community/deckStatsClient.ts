@@ -1,6 +1,8 @@
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { isInternalTraffic } from "@/lib/analytics";
+import type { Locale } from "@/lib/i18n";
 import { SEEN_KEY, addSeen, isLikelyBot, parseSeen, rpcIsMissing, seenKey, type DeckStatKind } from "./deckStats";
+import { comicSeenKey, type ComicStatKind } from "./comicStats";
 
 /*
  * Invio dei contatori dei mazzi dal browser (pacchetto STATS, 26/09/2026): lo usano la scheda del mazzo
@@ -16,6 +18,8 @@ const sentHere = new Set<string>();
 let missing = false;
 /** Lo stesso per i mazzi torneo (04/10/2026), che hanno una funzione loro. */
 let setMissing = false;
+/** E per i fumetti (02/11/2026, funzione bump_comic_stat). */
+let comicMissing = false;
 let bot: boolean | null = null;
 
 function isBot(): boolean {
@@ -86,6 +90,32 @@ export function bumpDeckSetStat(slug: string, kind: DeckStatKind): void {
     void sb.rpc("bump_deck_set_stat", { p_slug: slug, p_kind: kind }).then(
       (res) => {
         if (rpcIsMissing(res)) setMissing = true;
+      },
+      () => undefined,
+    );
+  } catch {
+    /* il contatore non deve mai rompere la pagina */
+  }
+}
+
+/**
+ * +1 al contatore `kind` (visita o lettura completa) del fumetto `slug` nella lingua della pagina `lang`, per oggi
+ * (02/11/2026, funzione bump_comic_stat del blocco STATISTICHE DEI FUMETTI): stesse regole di `bumpDeckStat`, con le
+ * chiavi della scheda separate (`comicSeenKey`). La chiama ComicStatsBeacon nella pagina del fumetto.
+ */
+export function bumpComicStat(slug: string, lang: Locale, kind: ComicStatKind): void {
+  try {
+    if (!slug || comicMissing || isBot()) return;
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    if (isInternalTraffic()) {
+      console.info("[OriginsMeta · traffico interno] contatore del fumetto non inviato:", slug, lang, kind);
+      return;
+    }
+    if (!claim(comicSeenKey(slug, lang, kind))) return;
+    void sb.rpc("bump_comic_stat", { p_slug: slug, p_lang: lang, p_kind: kind }).then(
+      (res) => {
+        if (rpcIsMissing(res)) comicMissing = true;
       },
       () => undefined,
     );

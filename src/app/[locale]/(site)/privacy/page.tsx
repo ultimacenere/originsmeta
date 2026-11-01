@@ -4,6 +4,7 @@ import { followLabels } from "@/lib/followLabels";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { videoPrivacyText } from "@/lib/videoLabels";
 import { deckStatsPrivacy } from "@/lib/deckStatsLabels";
+import { comicStatsPrivacy } from "@/lib/comicStatsLabels";
 import { inboxLabels } from "@/lib/inboxLabels";
 import { showcaseLabels } from "@/lib/showcaseLabels";
 import { achievementLabels } from "@/lib/achievementLabels";
@@ -66,6 +67,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Statistiche dei mazzi per gli autori (pacchetto STATS, 26/09/2026): totali per mazzo, senza dati personali. */}
         <p id="deck-stats" className="mt-6 scroll-mt-24">
           {deckStatsPrivacy[locale]}
+        </p>
+        {/* Statistiche dei fumetti per chi li disegna (02/11/2026): totali per fumetto, giorno e lingua, senza dati personali. */}
+        <p id="comic-stats" className="mt-6 scroll-mt-24">
+          {comicStatsPrivacy[locale]}
         </p>
         {/* Traguardi e numeri pubblici della vetrina (pacchetto TRAGUARDI, 27/09/2026): testo in src/lib/achievementLabels.ts */}
         <p id="profile-stats" className="mt-6 scroll-mt-24">

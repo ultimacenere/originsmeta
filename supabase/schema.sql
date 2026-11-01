@@ -7628,3 +7628,85 @@ $$;
 revoke all on function public.showcase_profiles_by_discord(text[]) from public;
 grant execute on function public.showcase_profiles_by_discord(text[]) to anon, authenticated;
 comment on function public.showcase_profiles_by_discord(text[]) is 'Profili con vetrina (creator, author, pro, staff) per id Discord, al massimo 512 (25/10/2026): i segni OriginsMeta del tabellone dei playoff della Crimson Cup. discord_id non si legge più dalla tabella.';
+
+-- ===== 02/11/2026: STATISTICHE DEI FUMETTI =====
+-- =====================================================================================================
+-- 02/11/2026 — STATISTICHE DEI FUMETTI PER CHI LI DISEGNA (Pierluigi: "aggiungi le statistiche di visita dei fumetti
+--   nel pannello di Vega, come per i mazzi"). Come il blocco STATS dei mazzi: per ogni fumetto pubblicato, ogni giorno
+--   (UTC) e ogni lingua della pagina, visite e letture complete (l'ultima tavola arrivata sullo schermo). Solo totali:
+--   nessun indirizzo IP, nessun id utente, nessun identificativo. Li legge chi ha disegnato il fumetto (pannello
+--   "Statistiche dei fumetti" in /account) e lo staff (admin o tag Staff: deck_stats_is_staff del blocco STATS, con la
+--   classifica dei fumetti per visite). Si scrivono SOLO con bump_comic_stat (security definer), chiamata dal browser
+--   nella pagina del fumetto (src/components/comics/ComicStatsBeacon.tsx): una volta per scheda del browser, per
+--   fumetto, lingua e tipo; la visita dopo qualche secondo di pagina visibile, la lettura quando l'ultima tavola entra
+--   nello schermo; niente bot, niente browser dello staff, niente autore con l'accesso fatto sul proprio fumetto. Sono
+--   stime. La lingua della pagina sta nella chiave perché un fumetto ha versioni disegnate in più lingue (blocco
+--   FUMETTI IN PIÙ LINGUE): dice quale versione si legge. Tutto idempotente; il sito regge senza questo blocco (il
+--   pannello dice "non ancora disponibili" e il browser smette di chiamare la funzione dopo il primo 404).
+--   Regole uguali nel codice: src/lib/community/comicStats.ts (il test comicStats.test.ts le confronta con questo blocco).
+-- =====================================================================================================
+
+create table if not exists public.comic_stats_daily (
+  comic_id uuid not null references public.community_comics(id) on delete cascade,
+  day date not null,
+  -- lingua della pagina letta (COMIC_LANGS di comics.ts): en, it, es, fr, pt, de, ru
+  lang text not null check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru')),
+  views int not null default 0 check (views >= 0),
+  reads int not null default 0 check (reads >= 0),
+  primary key (comic_id, day, lang)
+);
+-- la classifica dello staff legge gli ultimi 30 giorni di tutti i fumetti
+create index if not exists comic_stats_daily_day_idx on public.comic_stats_daily (day);
+alter table public.comic_stats_daily enable row level security;
+
+-- Il fumetto è di chi chiama (anche bozza o nascosto: le statistiche restano all'autore).
+create or replace function public.comic_stats_owns(cid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null and exists (select 1 from public.community_comics c where c.id = cid and c.owner = auth.uid());
+$$;
+revoke all on function public.comic_stats_owns(uuid) from public, anon;
+grant execute on function public.comic_stats_owns(uuid) to authenticated;
+
+-- Lettura: chi ha disegnato il fumetto, gli admin e lo Staff. Scrittura: nessuna policy, di proposito (scrive solo
+-- bump_comic_stat, che gira come proprietario della tabella).
+drop policy if exists "comic stats: owners and staff read" on public.comic_stats_daily;
+create policy "comic stats: owners and staff read" on public.comic_stats_daily for select to authenticated
+  using ((select public.deck_stats_is_staff()) or public.comic_stats_owns(comic_id));
+revoke all on public.comic_stats_daily from anon, authenticated;
+grant select on public.comic_stats_daily to authenticated;
+
+-- +1 al contatore di oggi (UTC) di un fumetto pubblicato, nella lingua della pagina. p_kind: 'view' (visita) o 'read'
+-- (lettura completa). Tipo o lingua sconosciuti, slug lungo o fumetto non pubblicato non fanno nulla (niente errore: il
+-- browser non deve sapere perché). L'autore con l'accesso fatto non conta sul proprio fumetto. Tetto di 2.000 per
+-- contatore, fumetto, lingua e giorno, come bump_deck_stat: arrivati al tetto si esce prima di scrivere, e la clausola
+-- `where` del `do update` tiene il limite anche con due chiamate nello stesso istante.
+create or replace function public.bump_comic_stat(p_slug text, p_lang text, p_kind text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  cid uuid;
+  cowner uuid;
+  today date := (now() at time zone 'utc')::date;
+  cap constant int := 2000;
+begin
+  if p_kind is null or p_kind not in ('view', 'read') then return; end if;
+  if p_lang is null or p_lang not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru') then return; end if;
+  if p_slug is null or char_length(p_slug) not between 1 and 120 then return; end if;
+  select c.id, c.owner into cid, cowner from public.community_comics c where c.slug = p_slug and c.status = 'published';
+  if cid is null then return; end if;
+  -- con auth.uid() nullo (visitatore anonimo) il confronto è nullo e si conta
+  if cowner = auth.uid() then return; end if;
+  if exists (
+    select 1 from public.comic_stats_daily s
+    where s.comic_id = cid and s.day = today and s.lang = p_lang
+      and case p_kind when 'view' then s.views else s.reads end >= cap
+  ) then return; end if;
+  insert into public.comic_stats_daily as s (comic_id, day, lang, views, reads)
+  values (cid, today, p_lang, (p_kind = 'view')::int, (p_kind = 'read')::int)
+  on conflict (comic_id, day, lang) do update set
+    views = s.views + excluded.views,
+    reads = s.reads + excluded.reads
+  where case p_kind when 'view' then s.views else s.reads end < cap;
+end $$;
+revoke all on function public.bump_comic_stat(text, text, text) from public;
+grant execute on function public.bump_comic_stat(text, text, text) to anon, authenticated;
+comment on table public.comic_stats_daily is 'Statistiche giornaliere dei fumetti per chi li disegna, per lingua della pagina (solo totali: visite e letture complete): le scrive solo bump_comic_stat (02/11/2026).';

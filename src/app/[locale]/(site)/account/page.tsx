@@ -31,6 +31,7 @@ import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
 import { AccountGuides } from "@/components/guides/AccountGuides";
 import { AccountComics } from "@/components/comics/AccountComics";
+import { ComicStatsPanel } from "@/components/comics/ComicStatsPanel";
 import { TRACKER_ACCOUNT_LINK_PUBLIC, trackerLabels } from "@/lib/trackerLabels";
 import { trackerInstallHref } from "@/lib/analyticsLabels";
 import { canSeeAnalytics } from "@/lib/community/badges";
@@ -372,6 +373,10 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       {/* I miei fumetti (pacchetto FUMETTI, 29/09/2026): solo per chi pubblica fumetti o ne ha già; ancora #comics */}
       <Suspense fallback={null}>
         <AccountComics locale={locale} supabase={supabase} userId={user.id} />
+      </Suspense>
+      {/* Statistiche dei fumetti (02/11/2026): visite e letture complete per chi li disegna; per lo staff la classifica. Ancora #comic-stats */}
+      <Suspense fallback={null}>
+        <ComicStatsPanel locale={locale} supabase={supabase} userId={user.id} />
       </Suspense>
 
       {/* Strumenti per le dirette (pacchetto STREAM): comando !deck e overlay per OBS sull'ultimo mazzo pubblicato */}

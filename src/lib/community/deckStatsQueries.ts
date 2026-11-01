@@ -22,7 +22,7 @@ type PageResult = { data: unknown; error: { message: string } | null };
  * Tutte le righe di una lettura a pagine (`range`), fino a MAX_PAGES; al primo errore restituisce l'errore.
  * `complete: false` quando si è fermata al tetto con altre righe ancora da leggere (il pannello lo dice).
  */
-async function readPages(page: (from: number, to: number) => PromiseLike<PageResult>): Promise<{ rows: unknown[]; error: string | null; complete: boolean }> {
+export async function readPages(page: (from: number, to: number) => PromiseLike<PageResult>): Promise<{ rows: unknown[]; error: string | null; complete: boolean }> {
   const rows: unknown[] = [];
   for (let i = 0; i < MAX_PAGES; i++) {
     const res = await page(i * PAGE, i * PAGE + PAGE - 1);

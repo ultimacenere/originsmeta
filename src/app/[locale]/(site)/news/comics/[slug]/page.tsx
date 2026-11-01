@@ -21,6 +21,7 @@ import { NewsCover } from "@/components/NewsCover";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { ComicStrip } from "@/components/comics/ComicStrip";
 import { ComicActions } from "@/components/comics/ComicActions";
+import { ComicStatsBeacon } from "@/components/comics/ComicStatsBeacon";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -181,6 +182,8 @@ export default async function ComicPage({ params }: { params: Params }) {
         <div className="mt-8">
           <ComicStrip pages={pages} texts={view.text.pages} base={supabaseUrl} labels={L.page} />
         </div>
+        {/* Visite e letture complete per chi ha disegnato il fumetto (02/11/2026): solo nel browser, la pagina resta ISR */}
+        <ComicStatsBeacon slug={comic.slug} lang={locale} />
 
         {/* Trascrizione: il testo di ogni tavola, per i lettori di schermo, per chi preferisce leggerlo e per i motori */}
         <section className="mt-10" aria-labelledby="comic-transcript">

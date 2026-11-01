@@ -375,6 +375,6 @@ export function splitSchema(sql) {
   if (at < 0) return [{ name: "schema", sql }];
   return [
     { name: "base (schema di sempre + correzione dei profili)", sql: sql.slice(0, at) },
-    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO, profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE, DATE E FOTO), IMMAGINI e FUMETTI del 29–30/09, TRACKER del 30/09, INTERESSE ANALYTICS e DRAFT ONLINE del 02/10, MAZZI TORNEO del 04/10, TORNEO CRIMSON del 05/10, VOTI ALLE CARTE del 06/10, … ID DISCORD PRIVATO del 25/10", sql: sql.slice(at) },
+    { name: "pacchetti creator (CREATOR, VIDEO, STREAM, STATS, INBOX), TAG E BIO, profili del 27/09 (VETRINA, SEGUI, TRAGUARDI, GUIDE, DATE E FOTO), IMMAGINI e FUMETTI del 29–30/09, TRACKER del 30/09, INTERESSE ANALYTICS e DRAFT ONLINE del 02/10, MAZZI TORNEO del 04/10, TORNEO CRIMSON del 05/10, VOTI ALLE CARTE del 06/10, … ID DISCORD PRIVATO del 25/10, STATISTICHE DEI FUMETTI del 02/11", sql: sql.slice(at) },
   ];
 }

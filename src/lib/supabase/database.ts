@@ -177,6 +177,8 @@ export type CommunityDeckVersionRow = {
 };
 /** Statistiche dei mazzi per gli autori (26/09/2026, supabase/schema.sql, blocco STATS): totali per mazzo e giorno UTC. */
 export type DeckStatsDailyRow = { deck_id: string; day: string; views: number; code_copies: number; link_clicks: number; video_plays: number };
+/** statistiche dei fumetti per chi li disegna (02/11/2026): per fumetto, giorno UTC e lingua della pagina */
+export type ComicStatsDailyRow = { comic_id: string; day: string; lang: string; views: number; reads: number };
 export type DeckReportRow = { id: number; deck_id: string; user_id: string | null; reason: string; created_at: string };
 
 /* guide della community (pacchetto GUIDE, 27/09/2026, blocco GUIDE di supabase/schema.sql): regole in src/lib/community/guides.ts */
@@ -677,6 +679,21 @@ export type Database = {
           },
         ];
       };
+      /** statistiche dei fumetti (02/11/2026): le leggono chi li disegna e lo staff; nessuna scrittura diretta: solo la RPC bump_comic_stat */
+      comic_stats_daily: {
+        Row: ComicStatsDailyRow;
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "comic_stats_daily_comic_id_fkey";
+            columns: ["comic_id"];
+            isOneToOne: false;
+            referencedRelation: "community_comics";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       deck_reports: {
         Row: DeckReportRow;
         Insert: { deck_id: string; user_id?: string | null; reason: string };
@@ -1028,6 +1045,9 @@ export type Database = {
       bump_deck_set_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
       deck_set_stats_owns: { Args: { sid: string }; Returns: boolean };
       bump_deck_stat: { Args: { p_slug: string; p_kind: string }; Returns: undefined };
+      /** fumetti (02/11/2026): +1 a visite o letture complete di un fumetto pubblicato nella lingua della pagina; anon e authenticated */
+      bump_comic_stat: { Args: { p_slug: string; p_lang: string; p_kind: string }; Returns: undefined };
+      comic_stats_owns: { Args: { cid: string }; Returns: boolean };
       deck_stats_is_staff: { Args: Record<string, never>; Returns: boolean };
       deck_stats_owns: { Args: { did: string }; Returns: boolean };
       /* "Segui" e avvisi (blocco SEGUI): errori con raise exception '<codice>' (notificationErrorCode, followErrorCode) */
