@@ -135,7 +135,6 @@ export const de: Dictionary = {
     common: "Gewöhnlich",
     rare: "Selten",
     epic: "Episch",
-    showRemoved: "Aus dem Spiel entfernte Karten anzeigen",
     formerName: "Früherer Name",
     results: "Ergebnisse",
     noResults: "Keine Karte passt zu dieser Suche.",
