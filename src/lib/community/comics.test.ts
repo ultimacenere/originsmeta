@@ -558,6 +558,16 @@ describe("database: blocco FUMETTI di supabase/schema.sql", () => {
     for (const t of ["pr.avatar_path = p", "g.cover_path = p", "d.art_path = p"]) assert.ok(inUse.includes(t), t);
   });
 
+  test("tetto dei file (01/11/2026): lo stesso nello script dello staff; il modulo non perde le tavole non salvate", () => {
+    assert.ok(read("../../../scripts/clear-profile-media.mjs").includes(`const COMIC_FILES_MAX = ${C.COMIC_FILES_MAX};`), "clear-profile-media.mjs --orphans");
+    const editor = read("../../components/comics/ComicEditor.tsx");
+    assert.ok(editor.includes('uploadMedia(sb, userId, "comic", blob, [...unsaved.current])'), "i file caricati e non salvati restano alla pulizia");
+    assert.equal((editor.match(/uploadMedia\(/g) ?? []).length, 1, "un solo caricamento, quello che passa i file da tenere");
+    const upload = read("../../components/showcase/mediaUpload.ts");
+    assert.ok(upload.includes("cleanupMedia(sb, userId, k, keep)"), "uploadMedia passa i file da tenere alla pulizia");
+    assert.ok(upload.includes("offset: page * LIST_PAGE"), "la pulizia legge tutta la cartella, non solo i primi 100 file");
+  });
+
   test("avvisi: notify_followers conosce i fumetti (/news/comics/<slug>)", () => {
     const fn = last(/^create or replace function public\.notify_followers\(/);
     // dal 04/10/2026 l'ultima definizione sta nel blocco MAZZI TORNEO, che aggiunge deck_set_published e tiene i fumetti

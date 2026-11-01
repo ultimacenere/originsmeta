@@ -28,6 +28,16 @@ export type Event = {
   /** i numeri dell'evento su una pagina del sito (percorso senza lingua) e il testo del link (dal 20/10/2026, Crimson Cup) */
   stats?: { path: string; label: L10n };
   /**
+   * la pagina del sito dedicata all'evento (percorso senza lingua) e il testo del tasto della scheda: dal 01/11/2026,
+   * Kickstarter della Alpha Edition. La striscia del calendario porta lì invece che alla scheda di /tournaments.
+   */
+  page?: { path: string; label: L10n };
+  /**
+   * Una campagna di vendita (dal 01/11/2026, il Kickstarter della Alpha Edition), non un evento da giocare: resta nel
+   * calendario e su /tournaments, ma senza nodo Event nei dati strutturati, perché Google esclude le vendite dagli eventi.
+   */
+  campaign?: true;
+  /**
    * Dati strutturati dell'evento (schema.org Event, rilievo GEO-09 dell'Ondata 2, 25/09/2026), usati da
    * src/lib/jsonld/events.ts. Tutto facoltativo:
    * - `name`: il nome nei dati strutturati quando non è il titolo della scheda: il nome ufficiale ("Crimson Cup", "Crimson Cup") o il
@@ -59,6 +69,43 @@ export const steamNextFest = {
 } as const;
 
 export const events: Event[] = [
+  {
+    // 01/11/2026: finita la Crimson Cup il calendario era vuoto e la striscia spariva (EventTicker non disegna niente senza
+    // eventi futuri). Date dalle fonti già usate da src/lib/kickstarter.ts: apertura il 27/10/2026 (post Steam di Koin),
+    // chiusura mercoledì 2 dicembre 2026 alle 09:01 CET (pagina della campagna). Niente tasto con il link referral: la
+    // scheda porta alla landing /kickstarter, che lo dichiara accanto al tasto; la fonte è la campagna senza codice.
+    slug: "alpha-edition-kickstarter",
+    official: true,
+    start: "2026-10-27",
+    end: "2026-12-02",
+    title: n(
+      "Origins TCG Alpha Edition on Kickstarter",
+      "La Alpha Edition di Origins TCG su Kickstarter",
+      "La Alpha Edition de Origins TCG en Kickstarter",
+      "L'Alpha Edition d'Origins TCG sur Kickstarter",
+      "A Alpha Edition de Origins TCG no Kickstarter",
+      "Die Alpha Edition von Origins TCG auf Kickstarter",
+      "Alpha Edition Origins TCG на Kickstarter",
+    ),
+    where: n("Kickstarter", "Kickstarter", "Kickstarter", "Kickstarter", "Kickstarter", "Kickstarter", "Kickstarter"),
+    text: n(
+      "Koin Games' campaign for the Alpha Edition of Myths and Legends, the first set of Origins TCG: the first collectible edition, sold only on this Kickstarter, with the Alpha tag on every card. Packs, boxes and cards are Steam inventory items. It opened on 27 October 2026 and, according to the campaign page, closes on Wednesday 2 December 2026 at 09:01 CET. Kickstarter is all or nothing: you are charged when the campaign ends, and only if it reaches its goal. Gameplay cards stay free for everyone: the Alpha Edition is about collecting.",
+      "La campagna di Koin Games per la Alpha Edition di Myths and Legends, il primo set di Origins TCG: la prima edizione da collezione, venduta solo con questo Kickstarter, con l'Alpha tag su ogni carta. Pacchetti, box e carte sono oggetti dell'inventario di Steam. È aperta dal 27 ottobre 2026 e, secondo la pagina della campagna, chiude mercoledì 2 dicembre 2026 alle 09:01 ora italiana. Kickstarter è tutto o niente: l'addebito arriva alla chiusura della campagna, e solo se raggiunge l'obiettivo. Le carte per giocare restano gratis per tutti: la Alpha Edition è collezionismo.",
+      "La campaña de Koin Games para la Alpha Edition de Myths and Legends, el primer set de Origins TCG: la primera edición de colección, que solo se vende en este Kickstarter, con el Alpha tag en cada carta. Los sobres, las cajas y las cartas son objetos del inventario de Steam. Está abierta desde el 27 de octubre de 2026 y, según la página de la campaña, cierra el miércoles 2 de diciembre de 2026 a las 09:01 CET. Kickstarter es todo o nada: el cargo se hace al cerrar la campaña, y solo si alcanza su objetivo. Las cartas para jugar siguen siendo gratis para todos: la Alpha Edition es coleccionismo.",
+      "La campagne de Koin Games pour l'Alpha Edition de Myths and Legends, le premier set d'Origins TCG : la première édition de collection, vendue uniquement sur ce Kickstarter, avec l'Alpha tag sur chaque carte. Boosters, boîtes et cartes sont des objets de l'inventaire Steam. Elle est ouverte depuis le 27 octobre 2026 et, d'après la page de la campagne, se termine le mercredi 2 décembre 2026 à 9 h 01 (heure de Paris). Kickstarter fonctionne en tout ou rien : le débit a lieu à la fin de la campagne, et seulement si elle atteint son objectif. Les cartes de jeu restent gratuites pour tous : l'Alpha Edition concerne la collection.",
+      "A campanha da Koin Games para a Alpha Edition de Myths and Legends, o primeiro set de Origins TCG: a primeira edição de colecionador, vendida só neste Kickstarter, com a marca Alpha em toda carta. Pacotes, caixas e cartas são itens do inventário do Steam. Está aberta desde 27 de outubro de 2026 e, segundo a página da campanha, termina na quarta-feira, 2 de dezembro de 2026, às 09:01 CET (05:01 em Brasília). O Kickstarter é tudo ou nada: a cobrança acontece quando a campanha termina, e só se ela atingir a meta. As cartas de jogo continuam grátis para todos: a Alpha Edition é sobre colecionar.",
+      "Die Kampagne von Koin Games für die Alpha Edition von Myths and Legends, dem ersten Set von Origins TCG: die erste Sammleredition, nur über diesen Kickstarter verkauft, mit dem Alpha-Tag auf jeder Karte. Packs, Displays und Karten sind Gegenstände im Steam-Inventar. Sie läuft seit dem 27. Oktober 2026 und endet laut Kampagnenseite am Mittwoch, 2. Dezember 2026, um 09:01 Uhr MEZ. Kickstarter funktioniert nach dem Alles-oder-nichts-Prinzip: Abgebucht wird am Ende der Kampagne, und nur, wenn sie ihr Ziel erreicht. Die Spielkarten bleiben für alle kostenlos: Bei der Alpha Edition geht es ums Sammeln.",
+      "Кампания Koin Games по Alpha Edition сета Myths and Legends, первого сета Origins TCG: первое коллекционное издание, которое продаётся только в этой кампании на Kickstarter, с меткой Alpha на каждой карте. Бустеры, бустер-боксы и карты — это предметы инвентаря Steam. Кампания открыта с 27 октября 2026 года и, по данным её страницы, закрывается в среду, 2 декабря 2026 года, в 09:01 CET (11:01 по Москве). Kickstarter работает по принципу «всё или ничего»: деньги списываются после окончания кампании и только если она достигла цели. Игровые карты остаются бесплатными для всех: Alpha Edition — про коллекционирование.",
+    ),
+    page: {
+      path: "/kickstarter",
+      label: n("Discover the Alpha Edition", "Scopri la Alpha Edition", "Descubre la Alpha Edition", "Découvrir l'Alpha Edition", "Conheça a Alpha Edition", "Alpha Edition entdecken", "Узнать об Alpha Edition"),
+    },
+    // KICKSTARTER_PROJECT_URL di src/lib/kickstarter.ts (qui scritto per intero: events.ts non ha import a runtime, i test
+    // lo caricano con Node); kickstarter.test.ts controlla che coincidano.
+    source: "https://www.kickstarter.com/projects/koingames/origins-trading-card-game-alpha-edition",
+    campaign: true,
+  },
   {
     slug: "next-fest-tournament",
     official: true,

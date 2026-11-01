@@ -17,6 +17,11 @@ const en = {
   health: "Health",
   min: "min",
   max: "max",
+  /** carte nel gioco, tutte o solo quelle non nel gioco (30/10/2026): le parole del filtro del Theory craft */
+  status: "Cards",
+  statusGame: "In the game",
+  statusAll: "All",
+  statusRemoved: "Not in game",
   clear: "Clear filters",
   /** sul tasto "Altri filtri" chiuso, quanti ne sono attivi */
   active: "{n} active",
@@ -34,6 +39,10 @@ const it: CardFilterLabels = {
   health: "Salute",
   min: "min",
   max: "max",
+  status: "Carte",
+  statusGame: "Nel gioco",
+  statusAll: "Tutte",
+  statusRemoved: "Non nel gioco",
   clear: "Azzera i filtri",
   active: "{n} attivi",
 };
@@ -48,6 +57,10 @@ const es: CardFilterLabels = {
   health: "Salud",
   min: "mín",
   max: "máx",
+  status: "Cartas",
+  statusGame: "En el juego",
+  statusAll: "Todas",
+  statusRemoved: "Fuera del juego",
   clear: "Borrar filtros",
   active: "{n} activos",
 };
@@ -62,6 +75,10 @@ const fr: CardFilterLabels = {
   health: "Santé",
   min: "min",
   max: "max",
+  status: "Cartes",
+  statusGame: "Dans le jeu",
+  statusAll: "Toutes",
+  statusRemoved: "Hors du jeu",
   clear: "Effacer les filtres",
   active: "{n} actifs",
 };
@@ -76,6 +93,10 @@ const pt: CardFilterLabels = {
   health: "Vida",
   min: "mín.",
   max: "máx.",
+  status: "Cartas",
+  statusGame: "No jogo",
+  statusAll: "Todas",
+  statusRemoved: "Fora do jogo",
   clear: "Limpar filtros",
   active: "{n} ativos",
 };
@@ -90,6 +111,10 @@ const de: CardFilterLabels = {
   health: "Leben",
   min: "min.",
   max: "max.",
+  status: "Karten",
+  statusGame: "Im Spiel",
+  statusAll: "Alle",
+  statusRemoved: "Nicht im Spiel",
   clear: "Filter zurücksetzen",
   active: "{n} aktiv",
 };
@@ -105,6 +130,10 @@ const ru: CardFilterLabels = {
   health: "Здоровье",
   min: "мин.",
   max: "макс.",
+  status: "Карты",
+  statusGame: "В игре",
+  statusAll: "Все",
+  statusRemoved: "Не в игре",
   clear: "Сбросить фильтры",
   active: "Активно: {n}",
 };

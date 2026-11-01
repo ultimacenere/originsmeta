@@ -46,8 +46,8 @@ type Row = ComicPage & { key: number };
 type EditionState = { title: string; summary: string; rows: Row[]; cover: string | null };
 type Editions = Partial<Record<Locale, EditionState>>;
 type EditorLabels = ComicLabels["editor"];
-/** Il client del browser e chi ha fatto l'accesso, per caricare i file. */
-type Uploader = () => Promise<{ sb: NonNullable<ReturnType<typeof supabaseBrowser>>; userId: string }>;
+/** Controlla il client del browser e chi ha fatto l'accesso, poi restituisce la funzione che carica un file nella cartella dei fumetti. */
+type Uploader = () => Promise<(blob: Blob) => Promise<string>>;
 
 let nextKey = 1;
 const withKeys = (pages: readonly ComicPage[]): Row[] => pages.map((p) => ({ ...p, key: nextKey++ }));
@@ -117,9 +117,16 @@ export function ComicEditor({ locale, mode, initial, labels, langs, langNames, j
     requestAnimationFrame(() => document.getElementById(`cm-${state.field}`)?.focus());
   }, [state]);
 
+  /**
+   * I file caricati qui e non ancora salvati: per il database non sono in uso, quindi se lo Storage rifiuta un file la
+   * pulizia di `uploadMedia` li cancellerebbe (fino al 01/11/2026 succedeva: le tavole già caricate sparivano).
+   */
+  const unsaved = useRef(new Set<string>());
+
   /** Toglie dallo Storage un file caricato qui e non ancora salvato (quelli salvati li toglie la Server Action). */
   const dropUnsaved = (path: string | null) => {
     if (!path || saved.current.has(path)) return;
+    unsaved.current.delete(path);
     const sb = supabaseBrowser();
     if (sb) void sb.storage.from(PROFILE_MEDIA_BUCKET).remove([path]);
   };
@@ -130,7 +137,12 @@ export function ComicEditor({ locale, mode, initial, labels, langs, langNames, j
     if (!sb) throw new MediaError("upload");
     const { data } = await sb.auth.getUser();
     if (!data.user) throw new MediaError("upload");
-    return { sb, userId: data.user.id };
+    const userId = data.user.id;
+    return async (blob) => {
+      const path = await uploadMedia(sb, userId, "comic", blob, [...unsaved.current]);
+      unsaved.current.add(path);
+      return path;
+    };
   };
 
   /* versioni disegnate: aggiungere, cambiare, togliere (con i file caricati e non ancora salvati) */
@@ -354,9 +366,9 @@ function CoverField({ id, path, onChange, heading, hint, L, uploader, dropUnsave
     setOwnBusy(true);
     setBusy(id, true);
     try {
-      const { sb, userId } = await uploader();
+      const upload = await uploader();
       const blob = await encodeImage(file, { aspect: COMIC_COVER_SIZE.width / COMIC_COVER_SIZE.height, maxSide: COMIC_COVER_SIZE.width, maxBytes: COMIC_FILE_MAX_BYTES });
-      const next = await uploadMedia(sb, userId, "comic", blob);
+      const next = await upload(blob);
       dropUnsaved(path);
       onChange(next);
     } catch (err) {
@@ -423,7 +435,7 @@ function PagesField({
     const todo = list.slice(0, room);
     setBusy(field, true);
     try {
-      const { sb, userId } = await uploader();
+      const upload = await uploader();
       for (let i = 0; i < todo.length; i++) {
         setProgress({ n: i + 1, total: todo.length });
         const file = todo[i];
@@ -432,7 +444,7 @@ function PagesField({
           break;
         }
         const { blob, width, height } = await encodeImageSized(file, { box: COMIC_PAGE_BOX, maxBytes: COMIC_FILE_MAX_BYTES });
-        const path = await uploadMedia(sb, userId, "comic", blob);
+        const path = await upload(blob);
         setRows((rs) => [...rs, { key: nextKey++, path, width, height, text: "" }]);
       }
       if (list.length > room) setError(fillLabel(L.uploadErrors.full, { max: String(CL.pagesMax) }));

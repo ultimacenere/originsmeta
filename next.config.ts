@@ -63,6 +63,8 @@ const sections = [
   "decks",
   "draft",
   "faq",
+  // la pagina per i creator: strumenti con le guide passo passo e media kit (30/10/2026)
+  "for-creators",
   "guides",
   // la landing del Kickstarter della Alpha Edition (26/10/2026): originsmeta.com/kickstarter da condividere
   "kickstarter",

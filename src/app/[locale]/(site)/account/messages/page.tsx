@@ -12,6 +12,8 @@ import { InboxSectionView, UnreadLine, UserConversationList } from "@/components
 import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
 import { NotificationsJump, NotificationsSection } from "@/components/follow/NotificationsSection";
 import { MarkInboxSeen } from "@/components/inbox/MarkRead";
+import { CREATOR_TOPIC, creatorApplyPath } from "@/lib/forCreators";
+import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
 
 /**
  * La casella messaggi dell'utente con lo staff (26/09/2026, pacchetto INBOX). Dal 27/09/2026 vive tutta qui, dove
@@ -35,9 +37,13 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
   const sp = await searchParams;
   const L = inboxLabels[locale];
   const page = pageNumber(sp.page);
+  // ?topic=creator (pagina /for-creators, 30/10/2026): il modulo "Scrivi allo staff" aperto con la richiesta del ruolo
+  // Creator già scritta; passando dall'accesso il ritorno porta con sé il parametro
+  const creatorRequest = page === 1 && sp.topic === CREATOR_TOPIC;
   const { supabase, user } = await currentUser();
   if (!supabase) return <InboxUnavailable text={L.section.unavailable} />;
-  if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(userInboxPath(locale, page))}`);
+  if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(creatorRequest ? href(locale, creatorApplyPath) : userInboxPath(locale, page))}`);
+  const prefill = creatorRequest ? { subject: forCreatorsLabels[locale].join.subject, body: forCreatorsLabels[locale].join.body } : undefined;
 
   const [list, status] = await Promise.all([listUserConversations(supabase, user.id, page), readInboxStatus(supabase)]);
   // quando la pagina è stata disegnata: entrando si segna come letto quello che c'era fino a qui (MarkInboxSeen, 22/10/2026)
@@ -60,6 +66,7 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
             unread={status.ok ? status.data.unread : null}
             staffUnread={status.ok && status.data.staff ? status.data.staffUnread : null}
             afterIntro={<NotificationsJump locale={locale} supabase={supabase} userId={user.id} />}
+            prefill={prefill}
           />
         </div>
       ) : (

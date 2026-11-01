@@ -134,6 +134,13 @@
  *                         sotto lo slider della home o dalla guida
  *                         (27/10/2026; le visite alla landing sono le pagine viste
  *                         di /xx/kickstarter)
+ *     creator_apply_click clic su "Chiedi il ruolo Creator" della pagina      placement (hero | join)
+ *                         /for-creators (30/10/2026; apre la casella dello staff
+ *                         con la richiesta già scritta: il messaggio inviato è message_sent)
+ *   ★ creator_kit_download clic su "Scarica" di un file del media kit o       file (zip | logo | logoDark | symbol |
+ *                         dello zip intero, pagina /for-creators (30/10/2026)    symbolTransparent | badge | panel), placement
+ *                         Le righe copiate dalle guide di /for-creators sono stream_tool_copy con placement=for_creators
+ *                         e tool = <strumento>_<passo> o <strumento>_<bot> (per esempio overlay_2, chat_nightbot).
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -263,6 +270,8 @@ export type EventParams = {
   analytics_download: { placement: "top" | "install" };
   kickstarter_click: { placement: string };
   kickstarter_landing_open: { placement: "slider" | "site_bar" | "home_bar" | "guide" };
+  creator_apply_click: { placement: string };
+  creator_kit_download: { file: string; placement: string };
 };
 export type EventName = keyof EventParams;
 
@@ -321,6 +330,8 @@ export const VERCEL_PROPS = {
   analytics_download: ["placement"],
   kickstarter_click: ["placement"],
   kickstarter_landing_open: ["placement"],
+  creator_apply_click: ["placement"],
+  creator_kit_download: ["file", "placement"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

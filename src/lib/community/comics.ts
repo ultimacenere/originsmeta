@@ -40,8 +40,12 @@ export const COMIC_DAILY_NEW_LIMIT = 10;
 export const COMIC_DAILY_PUBLISH_LIMIT = 3;
 /** Ore senza pubblicare dopo un fumetto nascosto dallo staff. */
 export const COMIC_HIDE_COOLDOWN_HOURS = 24;
-/** File nella cartella dei fumetti di un utente (policy di caricamento: un tetto suo, fuori da quello della vetrina). */
-export const COMIC_FILES_MAX = 300;
+/**
+ * File nella cartella dei fumetti di un utente (policy di caricamento: un tetto suo, fuori da quello della vetrina). Era
+ * 300, pensato per una lingua sola; con le versioni disegnate un capitolo di Vega ne usa una trentina e il 01/11/2026,
+ * al decimo capitolo (228 immagini in uso), non riusciva più a caricare l'undicesimo. 1000 = circa altri 20 capitoli.
+ */
+export const COMIC_FILES_MAX = 1000;
 /** La tavola dopo la riduzione nel browser: larga al massimo 1080 px e alta al massimo 1920 (una striscia 9:16). */
 export const COMIC_PAGE_BOX = { width: 1080, height: 1920 } as const;
 /** Misure minime di una tavola salvata (vincolo del database). */

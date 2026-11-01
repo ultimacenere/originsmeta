@@ -106,11 +106,20 @@ try {
     // il tetto della policy di caricamento: 60 file per i ruoli con vetrina e gli admin, 12 per gli altri
     const roles = await db.query(`select id::text as id, badge, role from public.profiles where id::text = any($1)`, [[...perUser.keys()]]);
     const capOf = new Map(roles.rows.map((p) => [p.id, p.role === "admin" || ["creator", "author", "pro", "staff"].includes(p.badge) ? 60 : 12]));
-    // la cartella dei fumetti ha un tetto suo (300) e non conta in quello della vetrina (blocco FUMETTI)
+    // la cartella dei fumetti ha un tetto suo (COMIC_FILES_MAX di comics.ts: 1000, 300 fino al 01/11/2026) e non conta
+    // in quello della vetrina (blocco FUMETTI)
+    const COMIC_FILES_MAX = 1000;
     const perUserNoComics = new Map();
-    for (const row of r.rows) if (row.name.split("/")[1] !== "comic") perUserNoComics.set(row.folder, (perUserNoComics.get(row.folder) ?? 0) + 1);
+    const perUserComics = new Map();
+    for (const row of r.rows) {
+      const map = row.name.split("/")[1] === "comic" ? perUserComics : perUserNoComics;
+      map.set(row.folder, (map.get(row.folder) ?? 0) + 1);
+    }
     const crowded = [...perUserNoComics].filter(([id, n]) => n > (capOf.get(id) ?? 12));
     if (crowded.length) console.log("Oltre il tetto dei file:", crowded.map(([id, n]) => `${id} (${n} su ${capOf.get(id) ?? 12})`).join(", "));
+    // da 9 file su 10 in su: un capitolo con tre versioni disegnate ne usa una trentina
+    const comicsCrowded = [...perUserComics].filter(([, n]) => n >= COMIC_FILES_MAX * 0.9);
+    if (comicsCrowded.length) console.log("Cartella dei fumetti vicina al tetto:", comicsCrowded.map(([id, n]) => `${id} (${n} su ${COMIC_FILES_MAX})`).join(", "));
     const cutoff = Date.now() - hours * 3600_000;
     const stale = r.rows.filter((row) => !row.used && new Date(row.created_at).getTime() < cutoff).map((row) => row.name);
     console.log(`File nel bucket: ${r.rows.length}; non usati da più di ${hours} ore: ${stale.length}`);

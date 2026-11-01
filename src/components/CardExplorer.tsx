@@ -42,7 +42,6 @@ type Labels = {
   noResults: string;
   legendary: string;
   unknownStats: string;
-  showRemoved: string;
   /** per il nome del link di ogni carta letto dai lettori di schermo */
   mana: string;
   power: string;
@@ -55,6 +54,8 @@ export type KeywordOption = Option & { game: boolean };
 
 /** Costi della fila di pastiglie: l'ultimo vale "7 o più". */
 const COSTS = ["0", "1", "2", "3", "4", "5", "6", "7"] as const;
+/** Carte nel gioco (di partenza), tutte o solo quelle non nel gioco, le rimosse (30/10/2026: prima una casella "Mostra anche") */
+type StatusFilter = "game" | "all" | "removed";
 const inRange = (v: number | undefined, min: string, max: string) => {
   if (!min && !max) return true;
   if (v === undefined) return false;
@@ -92,7 +93,7 @@ export function CardExplorer({
   const [saga, setSaga] = useState("all");
   const [alignment, setAlignment] = useState("all");
   const [rarity, setRarity] = useState("all");
-  const [showRemoved, setShowRemoved] = useState(false);
+  const [status, setStatus] = useState<StatusFilter>("game");
   const [sort, setSort] = useState<"name" | "mana" | "power" | "health">("mana");
   /* filtri del 30/09/2026: costo (pastiglie), parola chiave e intervalli di potenza e salute ("Altri filtri") */
   const [cost, setCost] = useState("all");
@@ -102,8 +103,9 @@ export function CardExplorer({
   const [healthMin, setHealthMin] = useState("");
   const [healthMax, setHealthMax] = useState("");
   const moreActive = [keyword !== "all", Boolean(powerMin || powerMax), Boolean(healthMin || healthMax)].filter(Boolean).length;
-  const anyFilter = moreActive > 0 || cost !== "all" || type !== "all" || saga !== "all" || alignment !== "all" || rarity !== "all";
+  const anyFilter = moreActive > 0 || cost !== "all" || type !== "all" || saga !== "all" || alignment !== "all" || rarity !== "all" || status !== "game";
   const clearFilters = () => {
+    setStatus("game");
     setCost("all");
     setKeyword("all");
     setPowerMin("");
@@ -123,7 +125,7 @@ export function CardExplorer({
   const list = useMemo(() => {
     const terms = searchTerms(q);
     const out = cards.filter((c) => {
-      if (c.removed && !showRemoved) return false;
+      if (status !== "all" && c.removed !== (status === "removed")) return false;
       if (type !== "all" && (type === "legendary" ? !c.legendary : c.type !== type)) return false;
       if (saga !== "all" && c.sagaId !== saga) return false;
       if (alignment !== "all" && c.alignment !== alignment) return false;
@@ -142,7 +144,7 @@ export function CardExplorer({
       return num(b.health === undefined ? -99 : -b.health) - num(a.health === undefined ? -99 : -a.health) || a.name.localeCompare(b.name);
     });
     return out;
-  }, [cards, haystacks, q, type, saga, alignment, rarity, showRemoved, sort, cost, keyword, powerMin, powerMax, healthMin, healthMax]);
+  }, [cards, haystacks, q, type, saga, alignment, rarity, status, sort, cost, keyword, powerMin, powerMax, healthMin, healthMax]);
   /* misura della ricerca interna (MIS-13, src/lib/analytics.ts): un evento quando si smette di scrivere; il termine
      arrivato dall'header con ?q= lo conta già GA4, quindi quello va solo a Vercel */
   useEffect(() => trackSearch("cards", q, list.length), [q, list.length]);
@@ -239,6 +241,32 @@ export function CardExplorer({
             </button>
           ))}
         </div>
+        {/* Carte nel gioco, tutte o solo quelle non nel gioco (30/10/2026, Pierluigi: "un filtro per vedere solo quelle"):
+            prima era una casella "Mostra le carte rimosse dal gioco", che le aggiungeva alle altre. Stesse parole del
+            filtro del Theory craft. */}
+        {removedCount > 0 ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label={filterLabels.status}>
+            <span className="kicker text-chalk-muted">{filterLabels.status}</span>
+            {(
+              [
+                ["game", filterLabels.statusGame],
+                ["all", filterLabels.statusAll],
+                ["removed", filterLabels.statusRemoved],
+              ] as const
+            ).map(([s, label]) => (
+              <button
+                key={s}
+                type="button"
+                aria-pressed={status === s}
+                onClick={() => setStatus(s)}
+                className={`min-h-9 rounded-full border-2 px-3 text-sm font-bold ${status === s ? "border-mint bg-mint text-ink" : "border-felt-line bg-felt-deep text-chalk hover:border-mint"}`}
+              >
+                {label}
+                {s === "removed" ? <> <span className="font-mono text-xs font-normal">({removedCount})</span></> : null}
+              </button>
+            ))}
+          </div>
+        ) : null}
         {/* Altri filtri: chiusi di partenza, così sul telefono le carte restano nella prima schermata */}
         <details className="mt-3" open={moreActive > 0 ? true : undefined}>
           <summary className="cursor-pointer text-sm font-semibold text-chalk">
@@ -311,12 +339,6 @@ export function CardExplorer({
           <button type="button" onClick={clearFilters} className="btn btn-ghost mt-3 text-xs">
             {filterLabels.clear}
           </button>
-        ) : null}
-        {removedCount > 0 ? (
-          <label className="mt-3 flex items-center gap-2 text-sm text-chalk-muted">
-            <input id="card-show-removed" type="checkbox" checked={showRemoved} onChange={(e) => setShowRemoved(e.target.checked)} className="accent-mint" />
-            {labels.showRemoved} <span className="font-mono text-xs">({removedCount})</span>
-          </label>
         ) : null}
       </div>
 
