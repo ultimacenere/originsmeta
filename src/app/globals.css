@@ -4932,6 +4932,21 @@
   .an-lb-sub .an-arch-tag {
     font-size: 0.78rem;
   }
+  /* "Stessa lista anche in…": gli altri mazzi pubblicati con le stesse 13 carte (01/11/2026) */
+  .an-lb-also {
+    margin-top: 4px;
+    font-size: 0.74rem;
+    color: var(--color-pale-muted);
+    overflow-wrap: anywhere;
+  }
+  .an-lb-also a {
+    color: var(--color-pale);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .an-lb-also a:hover {
+    color: var(--color-sky);
+  }
   .an-lb-ci {
     grid-column: 1 / -1;
     display: flex;

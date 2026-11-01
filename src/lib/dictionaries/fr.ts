@@ -516,7 +516,7 @@ export const fr: Dictionary = {
       sections: {
         legendaries: { title: "Légendaires", text: "Win rate de chaque Légendaire, en comptant les deux joueurs des parties où la Légendaire adverse est connue." },
         decks: { title: "Decks de la communauté", text: "Les decks publiés sur OriginsMeta, quand quelqu'un joue exactement leurs 13 cartes." },
-        archetypes: { title: "Archétypes", text: "Win rate par archétype, avec les mêmes règles que le formulaire de publication des decks." },
+        archetypes: { title: "Archétypes", text: "Win rate par archétype : celui que l'auteur a donné au deck publié le plus proche (même Légendaire et au moins 9 cartes sur 12 en commun) ; pour les autres listes, la règle du formulaire de publication des decks." },
         cards: { title: "Cartes", text: "Pour chaque carte : win rate des parties avec la carte dans le deck et de celles où elle a été jouée, et manche moyenne de sa première sortie." },
         matchups: { title: "Matchups", text: "Win rate d'une Légendaire contre une autre, en comptant les deux joueurs." },
       },
@@ -604,6 +604,7 @@ export const fr: Dictionary = {
         metaOne: "1 deck avec des parties enregistrées",
         first: "Le deck en forme",
         by: "par {name}",
+        sameList: "Même liste aussi dans {decks}",
         empty: "Aucun deck publié n'a encore de parties enregistrées avec sa liste exacte. Publiez le vôtre et jouez-le : il apparaîtra ici.",
         publish: "Publier un deck",
       },

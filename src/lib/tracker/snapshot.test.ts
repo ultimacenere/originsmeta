@@ -7,6 +7,7 @@ import {
   THIN_GAMES,
   axisFor,
   band,
+  archetypeStats,
   bothSides,
   byPrudent,
   cardHighlights,
@@ -252,5 +253,46 @@ describe("numeri nelle cinque lingue", () => {
     assert.equal(fmtInt(1240, "ru"), "1\u00a0240");
     assert.equal(pct(4 / 7, "ru"), "57,1%");
     assert.equal(deltaText(4 / 7, "ru"), "+7,1");
+  });
+});
+
+describe("archetipi dalle liste (01/11/2026)", () => {
+  // chiavi finte: L1/L2 Leggendarie, c1…c14 carte base
+  const k = (n: number) => `C${String(n).padStart(5, "0")}_MB`;
+  const L1 = "C90001_LB";
+  const L2 = "C90002_LB";
+  const base = Array.from({ length: 12 }, (_, i) => k(i + 1));
+  const list = (leg: string, cards: string[]) => [leg, ...cards].sort().join(",");
+  const swap = (n: number) => [...base.slice(0, 12 - n), ...Array.from({ length: n }, (_, i) => k(100 + i))];
+  const refs = [
+    { legendary: L1, cards: base, archetype: "swarm", at: "2026-10-14T00:00:00Z" },
+    // stessa lista pubblicata dopo con un altro archetipo: vince il più vecchio
+    { legendary: L1, cards: base, archetype: "aggro", at: "2026-10-22T00:00:00Z" },
+  ];
+  const rule = () => "control";
+
+  test("lista uguale o con almeno 9 carte su 12 in comune: l'archetipo dell'autore, il primo pubblicato", () => {
+    const out = archetypeStats(
+      [
+        { list: list(L1, base), games: 10, wins: 6 },
+        { list: list(L1, swap(3)), games: 5, wins: 2 },
+      ],
+      refs,
+      rule,
+    );
+    assert.deepEqual(out, [{ archetype: "swarm", games: 15, wins: 8 }]);
+  });
+
+  test("sotto le 9 carte in comune o con un'altra Leggendaria decide la regola; null resta fuori", () => {
+    const out = archetypeStats(
+      [
+        { list: list(L1, swap(4)), games: 4, wins: 1 },
+        { list: list(L2, base), games: 3, wins: 3 },
+      ],
+      refs,
+      rule,
+    );
+    assert.deepEqual(out, [{ archetype: "control", games: 7, wins: 4 }]);
+    assert.deepEqual(archetypeStats([{ list: list(L2, base), games: 3, wins: 3 }], refs, () => null), []);
   });
 });

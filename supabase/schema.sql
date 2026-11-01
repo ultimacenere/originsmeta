@@ -7488,8 +7488,12 @@ comment on function public.profile_username_moved(text) is 'Nome utente di oggi 
 -- delle funzioni qui sopra, copiata: chi cambia una delle due cambia anche l'altra (la prova a secco
 -- scripts/tracker-bundle-dry-run.mjs confronta le risposte sul database vero, src/lib/tracker/bundle.test.ts il testo).
 -- Le sette funzioni restano (le usa ancora il sito finché questa non c'è, e tracker-dry-run.mjs).
+-- Timeout (01/11/2026): con 13.962 partite della 0.7 la funzione impiegava 2–4 secondi e una chiamata su due cadeva sul
+-- timeout del ruolo anon (circa 3 s, 57014): pagine e pastiglie dei mazzi restavano ferme o senza win rate. Il SET qui
+-- sotto lo alza solo per questa funzione: PostgREST (dalla 12.2) applica lo statement_timeout dichiarato sulla funzione
+-- alla transazione della chiamata RPC ("hoisted function settings"); il resto delle letture anon resta a 3 s.
 create or replace function public.tracker_stats_bundle(p_patch text)
-returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
+returns jsonb language sql stable security definer set search_path = public, pg_temp set statement_timeout = '20s' as $$
   with r as materialized (
     select distinct on (t.id) t.owner, t.id, t.result = 'W' as win, t.deck_legendary as legendary, t.deck_cards as cards,
            t.deck_list as list, t.archetype, t.opponent_legendary as opponent, t.plays

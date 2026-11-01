@@ -514,7 +514,7 @@ export const es: Dictionary = {
       sections: {
         legendaries: { title: "Legendarias", text: "Win rate de cada Legendaria, contando a los dos jugadores de las partidas en las que se conoce la Legendaria del rival." },
         decks: { title: "Mazos de la comunidad", text: "Los mazos publicados en OriginsMeta, cuando alguien juega sus mismas 13 cartas." },
-        archetypes: { title: "Arquetipos", text: "Win rate por arquetipo, con las mismas reglas del formulario de publicación de mazos." },
+        archetypes: { title: "Arquetipos", text: "Win rate por arquetipo: el que el autor dio al mazo publicado más parecido (misma Legendaria y al menos 9 de 12 cartas iguales); para las demás listas, la regla del formulario de publicación de mazos." },
         cards: { title: "Cartas", text: "Para cada carta: win rate de las partidas con la carta en el mazo y de aquellas en las que se jugó, y la ronda media de su primera jugada." },
         matchups: { title: "Enfrentamientos", text: "Win rate de una Legendaria contra otra, contando a los dos jugadores." },
       },
@@ -601,6 +601,7 @@ export const es: Dictionary = {
         metaOne: "1 mazo con partidas registradas",
         first: "El mazo en forma",
         by: "de {name}",
+        sameList: "La misma lista también en {decks}",
         empty: "Ningún mazo publicado tiene todavía partidas registradas con su lista exacta. Publica el tuyo y juégalo: aparecerá aquí.",
         publish: "Publica un mazo",
       },

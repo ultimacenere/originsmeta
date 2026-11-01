@@ -7,6 +7,7 @@ import { activeCards, getCard, getCardByKey, latestPatch, patchLabel, type Card 
 import { archetypeLabels } from "@/lib/data/decks";
 import { listPublishedDecks } from "@/lib/community/queries";
 import { authorName } from "@/lib/community/util";
+import { deckCardsDate } from "@/lib/community/deckVersions";
 import { dropHreflang } from "@/lib/community/deckQuality";
 import { readWinrate } from "@/lib/community/trackerStatsQueries";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
@@ -41,10 +42,13 @@ import {
   verdictOf,
   vsLists,
   watchLegendary,
+  type ArchetypeRef,
   type Axis,
   type Rated,
+  archetypeStats,
   bothSides,
 } from "@/lib/tracker/snapshot";
+import { archetypeOfKeys } from "@/lib/tracker/enrich";
 import { TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
 import { PageNotes } from "@/components/PageNotes";
 import { CardName } from "@/components/CardChip";
@@ -152,14 +156,32 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
     })
     .sort(byPrudent);
   const legByKey = new Map(legs.map((l) => [l.legendary, l]));
-  const archs = (data?.archetypes ?? []).map((s) => rated({ archetype: s.archetype, games: s.games, wins: s.wins })).sort((a, b) => b.r - a.r || b.games - a.games);
+  /* Archetipi dalle liste esatte (01/11/2026): quello del mazzo pubblicato più vicino (archetypeStats di snapshot.ts),
+     altrimenti la regola del modulo di pubblicazione. La colonna archetype delle partite (la regola all'invio) non si usa più. */
+  const archetypeRefs: ArchetypeRef[] = published.flatMap((deck) => {
+    const legendary = deck.legendary ? getCard(deck.legendary)?.key : undefined;
+    const cards = deck.cards.map((slug) => getCard(slug)?.key);
+    return legendary && cards.length === 12 && cards.every(Boolean) ? [{ legendary, cards: cards as string[], archetype: deck.archetype, at: deckCardsDate(deck) }] : [];
+  });
+  const archs = archetypeStats(data?.lists ?? [], archetypeRefs, archetypeOfKeys)
+    .map((s) => rated(s))
+    .sort((a, b) => b.r - a.r || b.games - a.games);
   const listStats = new Map((data?.lists ?? []).map((l) => [l.list, l]));
-  const decks = published
-    .flatMap((deck) => {
-      const stat = listStats.get(deckListKey({ legendary: deck.legendary, cards: deck.cards }, (slug) => getCard(slug)?.key) ?? "");
-      return stat ? [{ deck, ...rated({ games: stat.games, wins: stat.wins }) }] : [];
-    })
-    .sort(byPrudent);
+  /* Una riga per lista (01/11/2026, Pierluigi ha visto "i mazzi doppi nella classifica"): il win rate è quello della lista
+     esatta, quindi due mazzi pubblicati con le stesse 13 carte hanno le stesse partite. La riga va a chi ha pubblicato la
+     lista per primo (deckCardsDate: con le versioni conta il giorno delle carte), gli altri compaiono sotto come "stessa
+     lista". Prima erano due righe con gli stessi numeri (Glinda Pigs e Glinda & Pigs, SNIPER e Robin Hood). */
+  const byList = new Map<string, { deck: (typeof published)[number]; also: (typeof published)[number][]; games: number; wins: number }>();
+  for (const deck of [...published].sort((a, b) => deckCardsDate(a).localeCompare(deckCardsDate(b)) || a.slug.localeCompare(b.slug))) {
+    const key = deckListKey({ legendary: deck.legendary, cards: deck.cards }, (slug) => getCard(slug)?.key);
+    const stat = key ? listStats.get(key) : undefined;
+    if (!key || !stat) continue;
+    const row = byList.get(key);
+    if (row) row.also.push(deck);
+    else byList.set(key, { deck, also: [], games: stat.games, wins: stat.wins });
+  }
+  const decks = [...byList.values()].map((s) => rated(s)).sort(byPrudent);
+  const decksWithGames = decks.reduce((n, s) => n + 1 + s.also.length, 0);
   const cardRows = (data?.cards ?? []).flatMap((s) => {
     const card = getCardByKey(s.card);
     if (!card) return [];
@@ -428,7 +450,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
   const meter = [
     { label: w.invite.legendaries, n: legs.length, of: legendariesInGame },
     { label: w.invite.cards, n: cardRows.length, of: cardsInGame },
-    ...(published.length ? [{ label: w.invite.decks, n: decks.length, of: published.length }] : []),
+    ...(published.length ? [{ label: w.invite.decks, n: decksWithGames, of: published.length }] : []),
   ];
 
   const countText = (n: number, many: string, one: string) => (n === 1 ? fmt(one, { games: gamesText(total) }) : fmt(many, { n: fmtInt(n, locale), games: gamesText(total) }));
@@ -741,6 +763,21 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
                             ) : null}
                             <span>{fmt(w.decks.by, { name: authorName(s.deck.profile) })}</span>
                           </div>
+                          {s.also.length ? (
+                            <p className="an-lb-also">
+                              {fmtNode(w.decks.sameList, {
+                                decks: s.also.map((o, j) => (
+                                  <Fragment key={o.slug}>
+                                    {j ? ", " : ""}
+                                    <Link href={href(locale, `/decks/community/${o.slug}`)} prefetch={false}>
+                                      {o.name}
+                                    </Link>{" "}
+                                    {fmt(w.decks.by, { name: authorName(o.profile) })}
+                                  </Fragment>
+                                )),
+                              })}
+                            </p>
+                          ) : null}
                         </div>
                         <div className="an-lb-ci">
                           <Interval lo={s.lo} hi={s.hi} r={s.r} axis={FULL} label={ciLabel(s)} />

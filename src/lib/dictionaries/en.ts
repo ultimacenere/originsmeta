@@ -517,7 +517,7 @@ export const en = {
       sections: {
         legendaries: { title: "Legendaries", text: "Win rate of each Legendary, counting both players in the games where the opponent's Legendary is known." },
         decks: { title: "Community decks", text: "Decks published on OriginsMeta, when someone plays their exact 13 cards." },
-        archetypes: { title: "Archetypes", text: "Win rate by archetype, with the same rules as the deck publishing form." },
+        archetypes: { title: "Archetypes", text: "Win rate by archetype: the one the author gave the closest published deck (same Legendary and at least 9 of 12 cards in common); for the other lists, the rule of the deck publishing form." },
         cards: { title: "Cards", text: "For each card: win rate of the games with the card in the deck and of those in which it was played, and the average round of its first play." },
         matchups: { title: "Matchups", text: "Win rate of one Legendary against another, counting both players." },
       },
@@ -607,6 +607,7 @@ export const en = {
         metaOne: "1 deck with recorded games",
         first: "The deck in form",
         by: "by {name}",
+        sameList: "Same list also in {decks}",
         empty: "No published deck has recorded games with its exact list yet. Publish yours and play it: it will show up here.",
         publish: "Publish a deck",
       },

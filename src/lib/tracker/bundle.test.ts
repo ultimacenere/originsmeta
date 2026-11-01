@@ -50,6 +50,12 @@ describe("schema.sql: tracker_stats_bundle come le sette funzioni", () => {
     assert.ok(revoke >= 0 && stmts.indexOf("grant execute on function public.tracker_stats_bundle(text) to anon, authenticated") > revoke);
   });
 
+  test("ha un timeout suo, più lungo dei 3 s di anon (01/11/2026: una chiamata su due cadeva sul timeout)", () => {
+    const m = /set statement_timeout = '(\d+)s' as \$\$/.exec(bundle);
+    assert.ok(m, "manca set statement_timeout");
+    assert.ok(Number(m[1]) >= 10 && Number(m[1]) <= 60, `timeout ${m[1]} s`);
+  });
+
   test("le partite lette come tracker_stat_rows (una per impronta, esito noto, coda, la più vecchia)", () => {
     const rows = last("tracker_stat_rows");
     const from = rows.slice(rows.indexOf("from public.tracked_matches t"), rows.indexOf("order by t.id, t.created_at") + "order by t.id, t.created_at".length);

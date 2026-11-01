@@ -246,6 +246,49 @@ export function legendaryCodes(names: readonly string[]): string[] {
   });
 }
 
+/* ---------- archetipi ---------- */
+
+/** Carte su 12 (la Leggendaria a parte) che una lista deve avere in comune con un mazzo pubblicato per prenderne l'archetipo. */
+export const ARCHETYPE_NEAR = 9;
+
+/** Un mazzo pubblicato come riferimento: chiavi del gioco della Leggendaria e delle 12 carte, archetipo scelto dall'autore. */
+export type ArchetypeRef = { legendary: string; cards: readonly string[]; archetype: string; at: string };
+
+/**
+ * Win rate per archetipo dalle liste esatte giocate (01/11/2026). L'archetipo di una lista è quello che l'autore ha dato al
+ * mazzo pubblicato più vicino: stessa Leggendaria e almeno `ARCHETYPE_NEAR` carte su 12 uguali (a parità, il più vecchio).
+ * Per le altre liste decide `ruleOf` (la regola del modulo di pubblicazione, `archetypeOfKeys` di enrich.ts); null = fuori.
+ * Fino al 31/10/2026 la pagina usava l'archetipo calcolato dalla regola all'invio della partita, che metteva in Controllo
+ * le liste dei Pigs a curva bassa: Controllo al 51% delle partite e Swarm al 2%. Sugli 82 mazzi pubblicati il mazzo più
+ * vicino dà l'archetipo scelto dall'autore 22 volte su 30, la regola 51 su 82.
+ */
+export function archetypeStats(
+  lists: readonly { list: string; games: number; wins: number }[],
+  refs: readonly ArchetypeRef[],
+  ruleOf: (keys: readonly string[]) => string | null,
+  near = ARCHETYPE_NEAR,
+): (Count & { archetype: string })[] {
+  const sorted = [...refs].sort((a, b) => a.at.localeCompare(b.at));
+  const out = new Map<string, Count>();
+  for (const l of lists) {
+    if (l.games <= 0) continue;
+    const keys = l.list.split(",");
+    const inList = new Set(keys);
+    let best: ArchetypeRef | null = null;
+    let bestN = -1;
+    for (const r of sorted) {
+      if (!inList.has(r.legendary)) continue;
+      const n = r.cards.filter((k) => k !== r.legendary && inList.has(k)).length;
+      if (n > bestN) [best, bestN] = [r, n];
+    }
+    const archetype = best && bestN >= near ? best.archetype : ruleOf(keys);
+    if (!archetype) continue;
+    const c = out.get(archetype) ?? { games: 0, wins: 0 };
+    out.set(archetype, { games: c.games + l.games, wins: c.wins + l.wins });
+  }
+  return [...out].map(([archetype, c]) => ({ archetype, ...c }));
+}
+
 /* ---------- carte ---------- */
 
 export type CardRow = { card: string; deck: Rated | null; played: (Rated & { avgTurn: number | null }) | null };

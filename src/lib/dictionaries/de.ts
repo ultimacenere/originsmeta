@@ -462,7 +462,7 @@ export const de: Dictionary = {
       sections: {
         legendaries: { title: "Legendäre", text: "Win-Rate jeder Legendären, mit beiden Spielern in den Spielen, in denen die Legendäre des Gegners bekannt ist." },
         decks: { title: "Community-Decks", text: "Auf OriginsMeta veröffentlichte Decks, wenn jemand genau ihre 13 Karten spielt." },
-        archetypes: { title: "Archetypen", text: "Win-Rate nach Archetyp, mit denselben Regeln wie im Formular zum Veröffentlichen von Decks." },
+        archetypes: { title: "Archetypen", text: "Win-Rate nach Archetyp: der Archetyp, den der Autor dem ähnlichsten veröffentlichten Deck gegeben hat (dieselbe Legendäre und mindestens 9 von 12 gleichen Karten); für die übrigen Listen die Regel des Formulars zum Veröffentlichen von Decks." },
         cards: { title: "Karten", text: "Für jede Karte: Win-Rate der Spiele mit der Karte im Deck und der Spiele, in denen sie gespielt wurde, und die durchschnittliche Runde, in der sie zum ersten Mal gespielt wird." },
         matchups: { title: "Matchups", text: "Win-Rate einer Legendären gegen eine andere, mit beiden Spielern." },
       },
@@ -548,6 +548,7 @@ export const de: Dictionary = {
         metaOne: "1 Deck mit aufgezeichneten Spielen",
         first: "Das Deck in Form",
         by: "von {name}",
+        sameList: "Dieselbe Liste auch in {decks}",
         empty: "Noch hat kein veröffentlichtes Deck aufgezeichnete Spiele mit genau seiner Liste. Veröffentliche deins und spiel es: Es erscheint dann hier.",
         publish: "Deck veröffentlichen",
       },
