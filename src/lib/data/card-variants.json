@@ -1,5 +1,234 @@
 {
  "source": "Materiale ufficiale Koin Games (canale creator, 19/09/2026): varianti ALPHA delle carte. Uso autorizzato per i contenuti, non per il design del sito.",
  "width": 480,
- "variants": {}
+ "variants": {
+  "C00004_MB_V00011": {
+   "slug": "cheshire",
+   "w": 480,
+   "h": 648,
+   "since": "2026-11-03"
+  },
+  "C00012_MC_V00001": {
+   "slug": "king-arthur",
+   "w": 480,
+   "h": 637,
+   "since": "2026-11-03"
+  },
+  "C00021_MB_V00011": {
+   "slug": "big-bad-wolf",
+   "w": 480,
+   "h": 661,
+   "since": "2026-11-03"
+  },
+  "C00051_MB_V00011": {
+   "slug": "white-rabbit",
+   "w": 480,
+   "h": 639,
+   "since": "2026-11-03"
+  },
+  "C00059_MC_V00011": {
+   "slug": "death",
+   "w": 480,
+   "h": 641,
+   "since": "2026-11-03"
+  },
+  "C00059_MC_V00012": {
+   "slug": "death",
+   "w": 480,
+   "h": 623,
+   "since": "2026-11-03"
+  },
+  "C00063_MC_V00011": {
+   "slug": "dorothy",
+   "w": 480,
+   "h": 655,
+   "since": "2026-11-03"
+  },
+  "C00064_MB_V00011": {
+   "slug": "aladdin",
+   "w": 480,
+   "h": 648,
+   "since": "2026-11-03"
+  },
+  "C00065_MC_V00011": {
+   "slug": "robin-hood",
+   "w": 480,
+   "h": 624,
+   "since": "2026-11-03"
+  },
+  "C00065_MC_V00012": {
+   "slug": "robin-hood",
+   "w": 480,
+   "h": 559,
+   "since": "2026-11-03"
+  },
+  "C00069_MC_V00011": {
+   "slug": "red",
+   "w": 480,
+   "h": 653,
+   "since": "2026-11-03"
+  },
+  "C00069_MC_V00013": {
+   "slug": "red",
+   "w": 480,
+   "h": 645,
+   "since": "2026-11-03"
+  },
+  "C00084_MC_V00011": {
+   "slug": "winnie-the-pooh",
+   "w": 480,
+   "h": 641,
+   "since": "2026-11-03"
+  },
+  "C00084_MC_V00012": {
+   "slug": "winnie-the-pooh",
+   "w": 480,
+   "h": 653,
+   "since": "2026-11-03"
+  },
+  "C00115_MC_V00011": {
+   "slug": "mulan",
+   "w": 480,
+   "h": 650,
+   "since": "2026-11-03"
+  },
+  "C00115_MC_V00012": {
+   "slug": "mulan",
+   "w": 480,
+   "h": 647,
+   "since": "2026-11-03"
+  },
+  "C00116_MC_V00011": {
+   "slug": "cinderella",
+   "w": 480,
+   "h": 606,
+   "since": "2026-11-03"
+  },
+  "C00157_MB_V00011": {
+   "slug": "sleeping-beauty",
+   "w": 480,
+   "h": 625,
+   "since": "2026-11-03"
+  },
+  "C00157_MB_V00012": {
+   "slug": "sleeping-beauty",
+   "w": 480,
+   "h": 587,
+   "since": "2026-11-03"
+  },
+  "C00173_MB_V00011": {
+   "slug": "beauty",
+   "w": 480,
+   "h": 647,
+   "since": "2026-11-03"
+  },
+  "C00173_MB_V00012": {
+   "slug": "beauty",
+   "w": 480,
+   "h": 664,
+   "since": "2026-11-03"
+  },
+  "C00174_MB_V00012": {
+   "slug": "rapunzel",
+   "w": 480,
+   "h": 645,
+   "since": "2026-11-03"
+  },
+  "C00174_MB_V00013": {
+   "slug": "rapunzel",
+   "w": 480,
+   "h": 630,
+   "since": "2026-11-03"
+  },
+  "C00176_MC_V00011": {
+   "slug": "queen-of-hearts",
+   "w": 480,
+   "h": 631,
+   "since": "2026-11-03"
+  },
+  "C00176_MC_V00012": {
+   "slug": "queen-of-hearts",
+   "w": 480,
+   "h": 648,
+   "since": "2026-11-03"
+  },
+  "C00176_MC_V00013": {
+   "slug": "queen-of-hearts",
+   "w": 480,
+   "h": 660,
+   "since": "2026-11-03"
+  },
+  "C00212_MB_V00011": {
+   "slug": "gingerbread-man",
+   "w": 480,
+   "h": 643,
+   "since": "2026-11-03"
+  },
+  "C00258_MB_V00011": {
+   "slug": "bigfoot",
+   "w": 480,
+   "h": 639,
+   "since": "2026-11-03"
+  },
+  "C00267_MB_V00011": {
+   "slug": "boogeyman",
+   "w": 480,
+   "h": 643,
+   "since": "2026-11-03"
+  },
+  "C00311_MB_V00011": {
+   "slug": "sherlock",
+   "w": 480,
+   "h": 649,
+   "since": "2026-11-03"
+  },
+  "C00312_MB_V00011": {
+   "slug": "goldi",
+   "w": 480,
+   "h": 698,
+   "since": "2026-11-03"
+  },
+  "C00315_MB_V00011": {
+   "slug": "boots",
+   "w": 480,
+   "h": 654,
+   "since": "2026-11-03"
+  },
+  "C00316_MC_V00011": {
+   "slug": "alice",
+   "w": 480,
+   "h": 637,
+   "since": "2026-11-03"
+  },
+  "C00316_MC_V00012": {
+   "slug": "alice",
+   "w": 480,
+   "h": 653,
+   "since": "2026-11-03"
+  },
+  "C00316_MC_V00014": {
+   "slug": "alice",
+   "w": 480,
+   "h": 655,
+   "since": "2026-11-03"
+  },
+  "C00316_MC_V00015": {
+   "slug": "alice",
+   "w": 480,
+   "h": 625,
+   "since": "2026-11-03"
+  },
+  "C00317_MB_V00011": {
+   "slug": "snow-white",
+   "w": 480,
+   "h": 651,
+   "since": "2026-11-03"
+  },
+  "C00317_MB_V00012": {
+   "slug": "snow-white",
+   "w": 480,
+   "h": 641,
+   "since": "2026-11-03"
+  }
+ }
 }
