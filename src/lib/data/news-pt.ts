@@ -10,6 +10,61 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "balance-patch-dr-frank-roadmap-ama": {
+    title: "Origins TCG: patch de balanceamento e Dr. Frank na quarta, AMA sobre o roadmap na sexta",
+    metaTitle: "Origins TCG: patch na quarta, AMA do roadmap na sexta",
+    description:
+      "Origins TCG: o primeiro patch de balanceamento do Acesso Antecipado e o chefe Dr. Frank chegam na quarta, 4 de novembro; o AMA do roadmap é na sexta, dia 6.",
+    summary:
+      "Origins TCG tem duas datas nesta semana. Na quarta-feira, 4 de novembro, chega o primeiro patch de balanceamento do Acesso Antecipado, junto com Dr. Frank, um chefe novo com um deck cheio de cartas novas; na sexta-feira, 6 de novembro, às 18h de Brasília, a Koin Games faz um AMA sobre o roadmap no Discord oficial. As notas do patch ainda não saíram.",
+    highlights: [
+      { label: "Patch de balanceamento na quarta", text: "4 de novembro, o primeiro do Acesso Antecipado; notas ainda não publicadas", anchor: "patch-balanceamento" },
+      { label: "Chega Dr. Frank", text: "o chefe novo com um deck cheio de cartas novas, uma semana antes", anchor: "dr-frank" },
+      { label: "AMA do roadmap na sexta", text: "6 de novembro às 18h de Brasília no Discord oficial", anchor: "ama-roadmap" },
+      { label: "Temporada ranqueada 1", text: "termina na semana de 7 de dezembro", anchor: "ranqueada" },
+      { label: "Em preparação", text: "animações mais rápidas, mais torneios, o Collector Pass no jogo", anchor: "a-caminho" },
+    ],
+    body: `## Quarta-feira, 4 de novembro: o patch de balanceamento {#patch-balanceamento}
+
+O primeiro patch de balanceamento do Acesso Antecipado de Origins TCG chega na quarta-feira, 4 de novembro de 2026. Na segunda-feira, 2 de novembro, em #the-courtyard no Discord oficial, o moderador Senith repassou uma mensagem de Mawr, Studio Head da Koin Games: "Acho que vocês vão gostar das atualizações de balanceamento que chegam na quarta-feira, 4 de novembro." Na mesma noite, apix, da equipe da Koin, escreveu no X que "o primeiro patch de balanceamento de verdade está logo ali" ([o post dele](https://x.com/apixtwts/status/2117383252478456012)).
+
+É a primeira mudança nas cartas desde o [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026: a [atualização 0.8](/pt/news/origins-tcg-early-access-0-8), que abriu o Acesso Antecipado em 27 de outubro, não mexeu nas cartas. As notas do patch ainda não saíram, então não sabemos quais cartas mudam nem a que horas a atualização chega. Assim que forem publicadas, vamos contar tudo com o antes e o depois de cada carta, e o [banco de dados de cartas](/pt/cards), o [deck builder](/pt/deck-builder) e o [MetaShifting](/pt/metashifting) vão mostrar os valores novos.
+
+## No mesmo dia: Dr. Frank, o chefe novo {#dr-frank}
+
+Na quarta chega também o próximo chefe, Dr. Frank. A Koin anunciou no Steam em 31 de outubro ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): o chefe "vai ter um deck cheio de cartas novas" e chega uma semana antes do previsto. O motivo está na arte do post e no Discord: a comunidade chegou às 500 avaliações no Steam, e naquela noite a Koin escreveu em #announcements que "o chefe vem uma semana antes". Em 2 de novembro, apix confirmou no Discord: "chefe novo na quarta".
+
+Os chefes são os adversários das Missões, jogadas contra a IA. Nosso banco de dados já tem uma Lendária [Dr. Frank](/pt/cards/dr-frank), que não está mais no jogo: a página dela mostra os últimos dados conhecidos, não verificados no jogo, e o chefe pode não ser igual. A Koin não disse se as cartas novas do deck dele também vão entrar na coleção dos jogadores.
+
+## Sexta-feira, 6 de novembro: o AMA sobre o roadmap {#ama-roadmap}
+
+Na sexta-feira, 6 de novembro, às 18h de Brasília (21h UTC), a Koin faz o "Super Secret Early Access Roadmap AMA", uma sessão de perguntas e respostas sobre o roadmap do Acesso Antecipado. É um evento do Discord oficial, no canal #live-events, criado por apix. Tim Jooste, fundador e CEO da Koin Games, tinha colocado o AMA em primeiro lugar entre as próximas novidades na mensagem dele em #announcements de 1º de novembro, sem outros detalhes.
+
+Na mesma mensagem ele anunciou mais duas coisas, ainda sem data: um "Tell Your Local TCG Shop About Origins Day", o dia de apresentar Origins à sua loja de cartas, com detalhes "em breve", e um panorama da cena competitiva, com torneios, recompensas e formatos. O último AMA, em 2 de outubro, deu as datas da ranqueada e os primeiros números sobre cartas novas ([nosso artigo](/pt/news/building-origins-ama-design-balance)); as datas confirmadas até agora estão no nosso [roadmap](/pt/guides/roadmap-and-dates). Vamos contar o AMA depois da transmissão.
+
+## A temporada ranqueada 1 termina na semana de 7 de dezembro {#ranqueada}
+
+Outra data chegou em 31 de outubro em #game-announcements: a primeira temporada ranqueada do Acesso Antecipado termina no começo de dezembro, "na semana de 7 de dezembro". A Koin explica que ainda não consegue encerrar uma temporada: a tecnologia para isso chega com a grande atualização que vai acompanhar o fim da temporada, então o dia exato ainda pode mudar. A data vai aparecer no jogo em breve. Como funcionam a escalada e o Grandmaster está no nosso [guia da ranqueada](/pt/guides/origins-tcg-ranked).
+
+## O que mais a Koin está preparando {#a-caminho}
+
+No post de 2 de novembro, apix listou as atualizações em andamento: animações mais rápidas, mais torneios, o patch de balanceamento, cartas novas ("cartas cartas cartas"), o Collector Pass no jogo, a próxima temporada ranqueada e "muito polimento". Ele também escreveu que hoje está disponível cerca de 60-70% das cartas do primeiro set. Tirando o patch, nenhuma dessas novidades tem data.
+
+## O que ainda não sabemos {#pendente}
+
+- Quais cartas o patch de balanceamento muda, e a que horas ele chega na quarta.
+- Se as cartas novas de Dr. Frank vão entrar na coleção e no deck builder.
+- Do que vai tratar o AMA sobre o roadmap, e se ele vai ficar gravado.
+- O último dia exato da temporada ranqueada 1.
+
+Fontes: as mensagens em #the-courtyard (2 de novembro de 2026, 18h11 UTC), #announcements (31 de outubro, 01h41 UTC, e 1º de novembro, 00h05 UTC) e #game-announcements (31 de outubro, 22h56 UTC) no Discord oficial de Origins TCG, o evento "Super Secret Early Access Roadmap AMA" no mesmo servidor, consultado em 3 de novembro, o post no Steam de 31 de outubro (16h41 UTC) e o post de apix no X de 2 de novembro. As citações foram traduzidas por nós.`,
+    faq: [
+      { q: "Quando sai o próximo patch de balanceamento de Origins TCG?", a: "Na quarta-feira, 4 de novembro de 2026, como anunciou no Discord oficial Mawr, Studio Head da Koin. É o primeiro desde o patch 0.7 de 29 de setembro; as notas ainda não saíram." },
+      { q: "Quando é o AMA sobre o roadmap de Origins TCG?", a: "Na sexta-feira, 6 de novembro de 2026, às 18h de Brasília (21h UTC), no canal #live-events do Discord oficial." },
+      { q: "O que é Dr. Frank em Origins TCG?", a: "O próximo chefe das Missões: chega em 4 de novembro com um deck cheio de cartas novas, uma semana antes porque o jogo chegou às 500 avaliações no Steam." },
+      { q: "Quando termina a temporada ranqueada 1?", a: "Na semana de 7 de dezembro de 2026, segundo a Koin; o dia exato ainda pode mudar." },
+    ],
+  },
   "soul-crimson-cup-interview": {
     title: "Uma conversa com SouL, finalista da Crimson Cup: a lineup anti Van Helsing e o futuro de Origins TCG",
     metaTitle: "Entrevista com SouL, finalista da Crimson Cup de Origins TCG",
