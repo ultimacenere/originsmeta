@@ -1223,6 +1223,90 @@ Les données du mode classé ne sont pas encore publiques : ce qui suit est une
 Le deck n'est étiqueté que pour le ladder, mais il s'intègre dans une sélection Conquest : une Légendaire différente de celle de 3 Pigs Mid Range et une seule carte en commun, Ali Baba, donc les deux listes diffèrent de douze cartes uniques, Légendaire comprise : plus que les 8 que la [Crimson Cup](/fr/news/crimson-cup-format-check-in) exige entre chaque paire de decks. Le [Deck builder](/fr/deck-builder) compte la différence en mode tournoi.
 `,
   },
+  "origins-tcg-vs-marvel-snap": {
+    title: "Origins TCG vs Marvel Snap : ce qui change pour vous",
+    metaTitle: "Origins TCG vs Marvel Snap : les différences",
+    excerpt: "Vous venez de Marvel Snap ? Origins TCG garde tours simultanés et trois lignes, mais avec des decks de 25 cartes, des unités qui se battent et sans cubes.",
+    faq: [
+      { q: "Origins TCG est-il fait par le studio de Marvel Snap ?", a: "Non. Origins TCG est développé par Koin Games, un studio basé à Tampa, en Floride, fondé en 2021 ; Marvel Snap est développé par Second Dinner. Ce sont deux jeux différents de deux studios différents, et OriginsMeta est un site de fans qui n'est affilié à aucun des deux." },
+      { q: "Un deck d'Origins TCG compte-t-il 12 cartes comme dans Snap ?", a: "Non. Un deck d'Origins compte 25 cartes : une Légendaire plus douze cartes de base, chacune en deux exemplaires. Vous choisissez treize noms et le jeu double les douze cartes de base ; le Deck builder d'OriginsMeta fait respecter la règle." },
+      { q: "Y a-t-il des cubes ou un snap dans Origins TCG ?", a: "Non. Rien ne fait monter la mise pendant une partie. En mode classé, vous gagnez et perdez des Points de Victoire et vous montez les divisions jusqu'à Grandmaster, dont le classement mondial a ouvert avec la mise à jour 0.8 le 27 octobre 2026." },
+      { q: "Les cartes s'attaquent-elles dans Origins TCG ?", a: "Oui. Les unités ont une Puissance et une Santé et combattent l'ennemi en face d'elles sur chaque ligne pendant le combat ; les dégâts qui passent atteignent la barrière de ce côté de la ligne. Dans Marvel Snap, les cartes ne font qu'ajouter de la Puissance à un lieu." },
+      { q: "Peut-on jouer à Origins TCG sur téléphone comme à Snap ?", a: "Pas encore. Origins TCG est sur Steam pour Windows et macOS, gratuit en Accès anticipé depuis le 27 octobre 2026 ; sur sa page de préinscription, Koin Games écrit viser 2027 pour une version mobile. Marvel Snap est sur mobile et PC." },
+    ],
+    body: `
+## En bref {#en-bref}
+
+- **Ce qui vous est familier :** les deux joueurs agissent en même temps, la partie se joue sur trois lignes avec un lieu chacune, le mana augmente à chaque manche et À la révélation (On Reveal) veut dire la même chose dans les deux jeux.
+- **Le deck change :** 25 cartes dans Origins TCG, une Légendaire plus douze cartes de base en deux exemplaires, contre les 12 cartes uniques d'un deck de Snap.
+- **Le plateau change :** les unités ont une Puissance et une Santé et combattent l'ennemi en face d'elles ; les dégâts qui passent touchent la barrière de cette ligne. Rien ne se décide en additionnant la Puissance.
+- **La partie change :** pas de cubes, pas de snap, pas de limite à six tours. Une partie dure environ sept minutes et le mode classé avance aux Points de Victoire jusqu'à Grandmaster.
+- **L'argent change :** dans Origins TCG, toutes les cartes de compétition sont gratuites ; ce que l'on achète, ce sont des variantes de collection gradées, échangeables sur le Marché de la communauté Steam depuis la mise à jour 0.8 du 27 octobre 2026.
+- **L'endroit où vous jouez change :** Origins TCG est gratuit sur Steam pour Windows et macOS, en Accès anticipé depuis le 27 octobre 2026 ; le mobile est prévu pour 2027.
+
+Ce guide compare les règles, pas la qualité des deux jeux. Il s'adresse à ceux qui ont joué à Marvel Snap et veulent savoir à quoi s'attendre à la table d'Origins. Origins TCG est développé par Koin Games, Marvel Snap par Second Dinner, et OriginsMeta est un site de fans qui n'est affilié à aucun des deux.
+
+## Ce qui ne change pas {#ce-qui-ne-change-pas}
+
+Si vous avez joué à Marvel Snap, le rythme d'une partie d'Origins vous semblera familier dès la première partie.
+
+- **Tours simultanés.** « Every turn is both players' turn », dit la page Steam d'Origins TCG : les deux joueurs agissent en même temps et personne n'attend, exactement comme dans Snap. Koin Games estime une partie à environ sept minutes.
+- **Trois lignes, trois lieux.** Les deux jeux se jouent sur trois plateaux, chacun avec un lieu qui change les règles de cette ligne. Dans Origins, les trois lieux sont révélés un par manche pendant les trois premières manches, comme les trois lieux de Snap apparaissent pendant les trois premiers tours, et ils viennent d'une réserve de plus d'une centaine de lieux qui tournent. La première manche est le même pari dans les deux jeux : vous posez une carte à côté de deux lignes que vous ne voyez pas encore. Notre [guide des lieux](/fr/guides/origins-tcg-locations) explique comment jouer avec eux.
+- **Le mana augmente à chaque manche.** Dans Snap, vous avez autant d'énergie que le numéro du tour. Dans Origins, le mana augmente aussi à chaque manche, et les coûts suivent la même échelle : une carte à quatre se joue à la quatrième manche, et les Légendaires coûtent de 4 à 8 mana.
+- **À la révélation.** Le mot-clé que les joueurs de Snap connaissent le mieux existe dans Origins avec le même sens : la capacité se produit quand vous jouez la carte. Les autres mots-clés sont nouveaux, vous les trouverez plus bas.
+- **Gratuit à télécharger.** Les deux jeux sont free-to-play. Ce que chacun vend est là où les chemins se séparent, et cela a sa propre section plus loin.
+
+## Ce qui change : le deck {#deck}
+
+- **25 cartes, pas 12.** Un deck d'Origins, c'est une Légendaire plus douze cartes de base, et le jeu ajoute le deuxième exemplaire de chaque carte de base : 25 cartes en jeu, une règle donnée par l'équipe de Koin Games lors d'un AMA. Vous choisissez treize noms ; le [Deck builder](/fr/deck-builder) vérifie le reste et vous dit ce qui manque.
+- **Une Légendaire mène le deck.** Chaque deck est construit autour d'une carte Légendaire dotée d'une capacité signature, et depuis le patch 0.6.1 du playtest, votre adversaire la voit pendant le mulligan. Onze sont jouables aujourd'hui : [les 11 Légendaires, carte par carte](/fr/guides/origins-tcg-legendaries). Un deck de Snap n'a pas d'emplacement de ce genre : ses douze cartes sont douze égales.
+- **Deux exemplaires de tout.** Avec chaque carte de base en deux exemplaires, piocher deux fois la même carte dans Origins est normal et fait partie du plan ; dans Snap, chaque carte du deck est unique. La [base de données des cartes](/fr/cards) contient les 122 cartes du jeu aujourd'hui, avec le texte officiel en sept langues et l'historique d'équilibrage de chacune.
+
+## Ce qui change : le plateau {#plateau}
+
+C'est le plus grand changement, et celui qui coûte le plus de parties aux joueurs de Snap au début.
+
+- **Les cartes ont une Santé, et elles se battent.** Une carte de Snap a un coût et une Puissance, et un lieu se gagne en additionnant la Puissance. Une unité d'Origins a une Puissance et une Santé : une fois que les deux joueurs ont posé leurs cartes, la manche comporte un combat dans lequel les unités attaquent l'ennemi en face d'elles. La Puissance, c'est ce que vous infligez, la Santé ce que vous encaissez, et une unité dont la Santé tombe à zéro meurt.
+- **Des barrières plutôt que des totaux.** Chaque ligne a une barrière de chaque côté, les points de vie de cette ligne. Les dégâts qui dépassent vos unités atteignent votre barrière, et Piétinement (Trample) envoie à la barrière les dégâts qui excèdent la Santé du bloqueur. Une ligne peut se gagner sans jamais y avoir plus de Puissance que l'adversaire.
+- **Les cases sont limitées.** Comme dans Snap, chaque ligne a un nombre fixe de cases par joueur, donc une ligne pleine est une vraie contrainte. Contrairement à Snap, les personnages peuvent changer de case et de ligne pendant la partie : Déplacer (Move) est un mot-clé, et certains lieux déplacent les personnages d'eux-mêmes.
+
+## Ce qui change : les mots-clés {#mots-cles}
+
+Snap fonctionne avec deux mots-clés, On Reveal et Ongoing, et écrit tout le reste en toutes lettres. Origins en utilise davantage, et les noms disent ce qu'ils font :
+
+- **Quand quelque chose se produit :** À la révélation, À la mort (On Death) et À l'élimination (On Kill), qui se produisent quand vous jouez la carte, quand le personnage meurt et quand il élimine.
+- **Au combat :** Première frappe (First Strike), Double attaque (Double Attack), Piétinement, Contact mortel (Deathtouch), Bouclier (Shield) et Défenseur (Defender). Une règle que Koin Games a énoncée : Bouclier arrête complètement Piétinement.
+- **Position et tempo :** Déplacer, Étourdir (Stun), Tir de précision (Snipe) et Renaissance (Rebirth).
+
+Ongoing, l'autre moitié du vocabulaire de Snap, n'est pas un mot-clé des 122 cartes du jeu aujourd'hui : un effet durable est écrit en toutes lettres dans le texte de la carte. Chaque carte de notre [base de données](/fr/cards) porte ses mots-clés comme étiquettes : vous pouvez filtrer par mot-clé et lire le texte officiel des cartes qui l'utilisent.
+
+## Ce qui change : la partie {#partie}
+
+- **Pas de cubes, pas de snap.** Dans Snap, l'enjeu d'une partie, ce sont les cubes, doublés par un snap ou au dernier tour, et se retirer les sauve. Origins n'a rien de tout cela : une partie est une partie. En mode classé, vous gagnez et perdez des Points de Victoire (les notes de patch du playtest parlent de +10 et −10) et vous montez les divisions jusqu'à Grandmaster, dont le classement mondial a ouvert avec la mise à jour 0.8 le 27 octobre 2026. Tout est dans notre [guide du mode classé](/fr/guides/origins-tcg-ranked).
+- **Pas d'horloge à six tours.** Une partie de Snap se termine au sixième tour. Une partie d'Origins n'a pas de plafond à six manches : nos guides de decks planifient des coups pour les septième, huitième et neuvième manches, et les sept minutes viennent des tours simultanés, pas d'une partie courte.
+- **Conquest est un format de tournoi.** Dans Origins, « Conquest » est le format des tournois comme la Crimson Cup : vous apportez trois decks, votre adversaire en bannit un et vous devez gagner avec ceux qui restent. Ce n'est pas le mode de Snap qui porte le même nom. Comment construire les trois decks : notre [guide du Conquest](/fr/guides/origins-tcg-conquest).
+
+## Ce qui change : collection et argent {#collection}
+
+- **Toutes les cartes de compétition sont gratuites.** La page Steam d'Origins TCG dit que chaque joueur peut gagner gratuitement toutes les cartes nécessaires pour construire des decks compétitifs, et que « spending money will never unlock stronger cards or give you an advantage in gameplay » : dépenser de l'argent ne débloque jamais de cartes plus fortes et ne donne aucun avantage en partie. Aucune carte n'est hors de portée parce que vous ne l'avez pas trouvée ou achetée. Notre [guide du free-to-compete](/fr/guides/is-origins-tcg-pay-to-win) donne les détails et les réserves honnêtes.
+- **Ce que vous achetez est de la collection.** L'argent achète des variantes limitées et gradées numériquement des mêmes cartes. Depuis la mise à jour 0.8 du 27 octobre 2026, les cartes de collection s'achètent, se vendent et se mettent en vente sur le Marché de la communauté Steam, tandis que les cartes de jeu de départ restent à vous pour toujours. Une Mulan gradée se joue exactement comme la Mulan que vous avez gagnée.
+- **La collection de Snap est un autre système.** Marvel Snap débloque ses cartes par sa propre progression et sa boutique, qui changent avec le temps et ne sont pas traitées ici. Ce qui compte pour la comparaison, c'est qu'Origins sépare par conception la compétition de la collection : une liste publiée par un joueur qui n'a rien dépensé est aussi forte que celle de n'importe qui.
+
+## Plateformes et sortie {#plateformes}
+
+Origins TCG est gratuit sur Steam pour Windows et macOS, en Accès anticipé depuis le 27 octobre 2026 avec la version 0.8, la mise à jour qui a mis fin à la démo. Koin Games vise la sortie de l'Accès anticipé avec la version 1.0 vers le 17 mars 2027, une date que la page Steam donne comme indicative. Le mobile est prévu : sur sa page de préinscription, Koin écrit viser 2027. Marvel Snap est sur mobile et PC. Le premier changement pratique est donc l'endroit où vous jouez : un PC fixe ou un portable, pas le téléphone, pour l'instant.
+
+## Vous venez de Snap : par où commencer {#par-ou-commencer}
+
+1. **Lisez les règles en cinq minutes.** [Origins TCG expliqué](/fr/guides/origins-tcg-explained) couvre ce que cette page a laissé de côté.
+2. **Installez le jeu.** [Comment jouer à Origins TCG sur Steam](/fr/guides/play-the-demo) : configuration requise, téléchargement, langue, premières parties. Faites le tutoriel et les missions avant de jouer en ligne : ils enseignent le combat.
+3. **Prenez un deck.** Les [decks de la communauté](/fr/decks) ont la liste complète, le guide de l'auteur et le code du jeu à coller dans Origins ; le [Deck builder](/fr/deck-builder) vérifie la règle des 25 cartes pendant que vous les modifiez.
+4. **Regardez ce qui se joue.** Les pages de la [tier list](/fr/tier-list) ont la tier list de la communauté, les votes sur chaque carte et les cartes les plus présentes dans les decks publiés ; le classement d'OriginsMeta d'après les résultats des tournois est en préparation.
+5. **Posez vos questions.** La [FAQ](/fr/faq) répond aux questions les plus fréquentes, date de sortie et mobile compris.
+
+Sources : la page Steam d'Origins TCG (lue le 2 novembre 2026), les notes de patch officielles de la 0.6.1 (14 août 2026) et de la 0.8 (27 octobre 2026), les AMA de Koin Games sur les règles du deck et les règles publiques de Marvel Snap (Second Dinner). Dernière vérification : 2 novembre 2026.
+`,
+  },
   "roadmap-and-dates": {
     title: "Roadmap et dates : de Project O à la version 1.0",
     metaTitle: "Origins TCG : roadmap et dates de sortie",

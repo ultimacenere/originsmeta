@@ -26,6 +26,11 @@ import type { GuideSlug } from "./guides";
  * anticipato: la demo resta solo come fatto passato (date, patch della demo del 21/09, menu letto a settembre).
  * L'ordine è quello della pagina: prima le domande del festival sul gioco, poi demo ed eventi, poi i mazzi.
  *
+ * Dal 02/11/2026 sono 16: la risposta "marvel-snap" (Origins TCG e Marvel Snap), nata dall'analisi SEO/GEO del
+ * 02/11/2026 (nessuna pagina rispondeva a "origins tcg vs marvel snap"; in giro l'errore "Origins uses 12-card
+ * decks"), con la guida origins-tcg-vs-marvel-snap come pagina primaria. Sta dopo "riftbound", l'altra domanda che
+ * distingue il gioco da un altro. Di Marvel Snap solo fatti pubblici e stabili, nessun giudizio su quale sia migliore.
+ *
  * Dati delle carte (decisione di Pierluigi del 25/09/2026, sera): le risposte non nominano la fonte dell'import
  * delle carte e non chiamano "ufficiali" gli ID delle carte; dicono che cosa è verificato nel gioco, che cosa viene
  * dalle patch notes e che le carte create e le rimosse non sono verificate. Lo controlla faq.test.ts.
@@ -96,6 +101,13 @@ const en: Faq[] = [
     a: "No. Origins TCG is the digital trading card game by Koin Games, on Steam, with a cast of public-domain legends such as Robin Hood, Mulan and Dracula. “Riftbound Origins” is a card set of Riftbound, the League of Legends trading card game (official Riftbound site, read on 25 September 2026): another game, not made by Koin Games. Searching for “Origins” decks or cards can bring up both.",
     guides: ["origins-tcg-explained"],
     keywords: ["riftbound", "league of legends", "riot"],
+  },
+  {
+    id: "marvel-snap",
+    q: "Is Origins TCG like Marvel Snap?",
+    a: "In its rhythm, yes: both are digital card games played across three lanes with a location each, both players act at the same time, your resources grow each round and On Reveal means the same thing in both. From there the rules differ. An Origins deck has 25 cards, one Legendary plus twelve base cards in two copies, not 12; units have Power and Health and fight the enemy across from them, and the damage that gets through hits the barrier of that lane; there are no cubes and no snap, and ranked moves with Victory Points up to Grandmaster; every competitive card is free, and what you buy are collectible graded variants, tradable on the Steam Market since update 0.8 of 27 October 2026. Origins TCG is by Koin Games and Marvel Snap by Second Dinner, two different studios. Our guide goes through the differences one by one.",
+    guides: ["origins-tcg-vs-marvel-snap", "origins-tcg-explained"],
+    keywords: ["marvel", "snap", "marvel snap", "second dinner", "similar", "compared", "comparison", "difference", "differences", "versus"],
   },
   {
     id: "free-to-compete",
@@ -226,6 +238,13 @@ const it: Faq[] = [
     keywords: ["riftbound", "league of legends", "riot"],
   },
   {
+    id: "marvel-snap",
+    q: "Origins TCG è come Marvel Snap?",
+    a: "Nel ritmo sì: sono due giochi di carte digitali che si giocano su tre corsie con un luogo ciascuna, i due giocatori agiscono insieme, le risorse crescono a ogni round e Alla rivelazione (On Reveal) vuol dire la stessa cosa in tutti e due. Da lì in poi le regole cambiano. Un mazzo di Origins ha 25 carte, una Leggendaria più dodici carte base in due copie, non 12; le unità hanno Potenza e Salute e combattono il nemico di fronte, e i danni che passano colpiscono la barriera di quella corsia; non ci sono cubi né snap, e la classificata si muove a Punti Vittoria fino a Grandmaster; ogni carta competitiva è gratis, e quello che si compra sono varianti da collezione gradate, scambiabili sul Mercato di Steam dall'aggiornamento 0.8 del 27 ottobre 2026. Origins TCG è di Koin Games e Marvel Snap di Second Dinner, due studi diversi. La nostra guida passa in rassegna le differenze una per una.",
+    guides: ["origins-tcg-vs-marvel-snap", "origins-tcg-explained"],
+    keywords: ["marvel", "snap", "marvel snap", "second dinner", "simile", "somiglia", "assomiglia", "differenze", "differenza", "confronto", "paragone"],
+  },
+  {
     id: "free-to-compete",
     q: "Origins TCG è pay-to-win?",
     a: "Koin Games dice di no: tutte le carte si ottengono gratis, e quello che si compra sono le versioni da collezione — gradate, limitate, scambiabili sul Mercato Steam — quindi i soldi cambiano quello che possiedi, non quello che puoi giocare. Sulla pagina Steam (letta il 28 ottobre 2026) Koin scrive che il gioco resterà free-to-play e free-to-compete per sempre, durante l'Accesso anticipato e dopo, che spendere soldi non sbloccherà mai carte più forti né darà un vantaggio in partita, e che l'Accesso anticipato avrà alcune funzioni premium a pagamento. Che cosa compra il denaro, nel dettaglio, è nella nostra guida.",
@@ -354,6 +373,13 @@ const es: Faq[] = [
     keywords: ["riftbound", "league of legends", "riot"],
   },
   {
+    id: "marvel-snap",
+    q: "¿Origins TCG se parece a Marvel Snap?",
+    a: "En el ritmo, sí: los dos son juegos de cartas digitales que se juegan en tres carriles con una ubicación cada uno, los dos jugadores actúan a la vez, los recursos crecen cada ronda y Al revelar (On Reveal) significa lo mismo en ambos. A partir de ahí las reglas cambian. Un mazo de Origins tiene 25 cartas, una Legendaria más doce cartas base en dos copias, no 12; las unidades tienen Poder y Salud y luchan contra el enemigo que tienen enfrente, y el daño que pasa golpea la barrera de ese carril; no hay cubos ni snap, y la clasificatoria se mueve con Puntos de Victoria hasta Grandmaster; todas las cartas competitivas son gratis, y lo que se compra son variantes de colección con grado, intercambiables en el Mercado de Steam desde la versión 0.8 del 27 de octubre de 2026. Origins TCG es de Koin Games y Marvel Snap de Second Dinner, dos estudios distintos. Nuestra guía repasa las diferencias una por una.",
+    guides: ["origins-tcg-vs-marvel-snap", "origins-tcg-explained"],
+    keywords: ["marvel", "snap", "marvel snap", "second dinner", "parecido", "parece", "similar", "diferencias", "diferencia", "comparación", "comparar"],
+  },
+  {
     id: "free-to-compete",
     q: "¿Origins TCG es pay-to-win?",
     a: "Koin Games dice que no: todos los jugadores consiguen todas las cartas gratis, y lo que compras son versiones de colección —gradeadas, limitadas, intercambiables en el Mercado de Steam—, así que el dinero cambia lo que posees, no lo que puedes jugar. En la página de Steam (consultada el 28 de octubre de 2026) Koin escribe que el juego seguirá siendo free-to-play y free-to-compete para siempre, durante el Acceso anticipado y después, que gastar dinero nunca desbloqueará cartas más fuertes ni dará ventaja en las partidas, y que el Acceso anticipado tendrá algunas funciones premium de pago. Qué compra el dinero, en detalle, está en nuestra guía.",
@@ -480,6 +506,13 @@ const fr: Faq[] = [
     a: "Non. Origins TCG est le jeu de cartes à collectionner numérique de Koin Games, sur Steam, avec un casting de légendes du domaine public comme Robin Hood, Mulan et Dracula. « Riftbound Origins » est un set de cartes de Riftbound, le jeu de cartes à collectionner de League of Legends (site officiel de Riftbound, lu le 25 septembre 2026) : un autre jeu, qui n'est pas de Koin Games. En cherchant des decks ou des cartes « Origins », vous pouvez tomber sur les deux.",
     guides: ["origins-tcg-explained"],
     keywords: ["riftbound", "league of legends", "riot"],
+  },
+  {
+    id: "marvel-snap",
+    q: "Origins TCG ressemble-t-il à Marvel Snap ?",
+    a: "Par son rythme, oui : ce sont deux jeux de cartes numériques joués sur trois lignes avec un lieu chacune, les deux joueurs agissent en même temps, les ressources augmentent à chaque manche et À la révélation (On Reveal) veut dire la même chose dans les deux. À partir de là, les règles divergent. Un deck d'Origins compte 25 cartes, une Légendaire plus douze cartes de base en deux exemplaires, et non 12 ; les unités ont une Puissance et une Santé et combattent l'ennemi en face d'elles, et les dégâts qui passent touchent la barrière de cette ligne ; il n'y a ni cubes ni snap, et le mode classé avance aux Points de Victoire jusqu'à Grandmaster ; toutes les cartes de compétition sont gratuites, et ce que l'on achète, ce sont des variantes de collection gradées, échangeables sur le Marché de la communauté Steam depuis la mise à jour 0.8 du 27 octobre 2026. Origins TCG est développé par Koin Games et Marvel Snap par Second Dinner, deux studios différents. Notre guide passe les différences en revue une par une.",
+    guides: ["origins-tcg-vs-marvel-snap", "origins-tcg-explained"],
+    keywords: ["marvel", "snap", "marvel snap", "second dinner", "ressemble", "similaire", "différences", "différence", "comparaison", "comparer"],
   },
   {
     id: "free-to-compete",
@@ -612,6 +645,13 @@ const pt: Faq[] = [
     keywords: ["riftbound", "league of legends", "riot"],
   },
   {
+    id: "marvel-snap",
+    q: "Origins TCG é parecido com Marvel Snap?",
+    a: "No ritmo, sim: os dois são jogos de cartas digitais disputados em três linhas com um local cada, os dois jogadores agem ao mesmo tempo, os recursos crescem a cada rodada e Ao revelar (On Reveal) significa a mesma coisa nos dois. A partir daí as regras mudam. Um deck de Origins tem 25 cartas, uma Lendária mais doze cartas base em duas cópias, não 12; os personagens têm Poder e Vida e lutam contra o inimigo à sua frente, e o dano que passa atinge a barreira daquela linha; não há cubos nem snap, e a ranqueada se move com Pontos de Vitória até Grandmaster; toda carta competitiva é grátis, e o que se compra são variantes colecionáveis graduadas, negociáveis no Mercado da Comunidade Steam desde a atualização 0.8 de 27 de outubro de 2026. Origins TCG é da Koin Games e Marvel Snap da Second Dinner, dois estúdios diferentes. O nosso guia passa pelas diferenças uma por uma.",
+    guides: ["origins-tcg-vs-marvel-snap", "origins-tcg-explained"],
+    keywords: ["marvel", "snap", "marvel snap", "second dinner", "parecido", "parece", "semelhante", "diferenças", "diferença", "comparação", "comparar"],
+  },
+  {
     id: "free-to-compete",
     q: "Origins TCG é pay-to-win?",
     a: "A Koin Games diz que não: todos os jogadores recebem todas as cartas de graça, e o que se compra são versões colecionáveis — graduadas, limitadas, negociáveis no Mercado da Steam —, então o dinheiro muda o que você tem, não o que você pode jogar. Na página da Steam (lido em 28 de outubro de 2026), a Koin escreve que o jogo vai continuar free-to-play e free-to-compete para sempre, durante o Acesso Antecipado e depois, que gastar dinheiro nunca vai desbloquear cartas mais fortes nem dar vantagem nas partidas, e que o Acesso Antecipado terá alguns recursos premium pagos. O que o dinheiro compra, em detalhe, está no nosso guia.",
@@ -742,6 +782,13 @@ const de: Faq[] = [
     keywords: ["riftbound", "league of legends", "riot"],
   },
   {
+    id: "marvel-snap",
+    q: "Ist Origins TCG wie Marvel Snap?",
+    a: "Im Rhythmus ja: Beide sind digitale Kartenspiele auf drei Lanes mit je einem Ort, beide Spieler handeln gleichzeitig, die Ressourcen wachsen jede Runde, und Beim Aufdecken (On Reveal) bedeutet in beiden dasselbe. Ab da unterscheiden sich die Regeln. Ein Origins-Deck hat 25 Karten, eine Legendäre plus zwölf Basiskarten in zwei Kopien, nicht 12; Einheiten haben Kraft und Leben und kämpfen gegen den Gegner ihnen gegenüber, und der Schaden, der durchkommt, trifft die Barriere dieser Lane; es gibt keine Würfel und keinen Snap, und der Ranglisten-Modus bewegt sich über Victory Points bis Grandmaster; jede Karte für den Wettkampf ist kostenlos, und gekauft werden Sammlervarianten mit Grading, die seit Update 0.8 vom 27. Oktober 2026 auf dem Steam-Marktplatz gehandelt werden. Origins TCG kommt von Koin Games, Marvel Snap von Second Dinner, zwei verschiedenen Studios. Unser Guide geht die Unterschiede einen nach dem anderen durch.",
+    guides: ["origins-tcg-vs-marvel-snap", "origins-tcg-explained"],
+    keywords: ["marvel", "snap", "marvel snap", "second dinner", "ähnlich", "vergleich", "vergleichen", "unterschied", "unterschiede", "umstieg", "umsteigen"],
+  },
+  {
     id: "free-to-compete",
     q: "Ist Origins TCG Pay-to-Win?",
     a: "Koin Games sagt nein: Jeder Spieler bekommt jede Karte kostenlos, und was du kaufst, sind Sammlerversionen – gegradet, limitiert, auf dem Steam-Markt handelbar –, also ändert Geld, was du besitzt, nicht, was du spielen kannst. Auf der Steam-Seite (gelesen am 28. Oktober 2026) schreibt Koin, dass das Spiel für immer Free-to-Play und Free-to-Compete bleibt, im Early Access und danach, dass Geld nie stärkere Karten freischaltet oder einen Vorteil im Spiel verschafft und dass der Early Access einige kostenpflichtige Premium-Funktionen haben wird. Was Geld im Einzelnen kauft, steht in unserem Guide.",
@@ -870,6 +917,13 @@ const ru: Faq[] = [
     a: "Нет. Origins TCG — цифровая коллекционная карточная игра от Koin Games в Steam, где играют легенды из общественного достояния, такие как Robin Hood, Mulan и Dracula. «Riftbound Origins» — набор карт для Riftbound, коллекционной карточной игры по League of Legends (официальный сайт Riftbound, по состоянию на 25 сентября 2026): это другая игра, и её делает не Koin Games. Если искать колоды или карты «Origins», можно наткнуться на обе.",
     guides: ["origins-tcg-explained"],
     keywords: ["riftbound", "league of legends", "riot"],
+  },
+  {
+    id: "marvel-snap",
+    q: "Origins TCG похожа на Marvel Snap?",
+    a: "По ритму — да: обе игры — цифровые карточные игры на трёх линиях, у каждой из которых своя локация, оба игрока ходят одновременно, ресурсы растут с каждым раундом, а При раскрытии (On Reveal) означает в обеих одно и то же. Дальше правила расходятся. В колоде Origins 25 карт — одна Легендарная карта и двенадцать базовых карт в двух копиях, а не 12; у юнитов есть Сила и Здоровье, они сражаются с врагом напротив, а прошедший урон достаётся барьеру этой линии; кубов и снапа нет, а рейтинг движется очками победы до Grandmaster; все карты для соревновательной игры бесплатны, а за деньги продаются коллекционные варианты с грейдом, которыми с обновления 0.8 от 27 октября 2026 года торгуют на торговой площадке Steam. Origins TCG делает Koin Games, Marvel Snap — Second Dinner: две разные студии. Наш гайд разбирает отличия одно за другим.",
+    guides: ["origins-tcg-vs-marvel-snap", "origins-tcg-explained"],
+    keywords: ["marvel", "snap", "marvel snap", "second dinner", "похожа", "похож", "похоже", "похожи", "сравнение", "сравнить", "отличия", "отличие", "разница", "различия"],
   },
   {
     id: "free-to-compete",

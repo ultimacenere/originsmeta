@@ -1,7 +1,8 @@
 /**
  * Test delle FAQ approvate (`faq.ts`) e della loro ricerca per l'assistente (`risposteApprovate` in
  * src/lib/faq/retrieve.ts), con il runner integrato di Node: `node --test src/lib/content/faq.test.ts`.
- * Nati con l'Ondata 3 del piano SEO/GEO (25/09/2026), quando le risposte sono passate da 6 a 15.
+ * Nati con l'Ondata 3 del piano SEO/GEO (25/09/2026), quando le risposte sono passate da 6 a 15; 16 dal 02/11/2026,
+ * con la risposta "marvel-snap" (la guida origins-tcg-vs-marvel-snap come pagina primaria).
  *
  * `newsMeta.test.ts` controlla già che domande, guide e news collegate siano le stesse nelle tre lingue e che
  * esistano. Qui si controlla il resto: che ogni risposta porti alla sua pagina primaria, che i link alle sezioni
@@ -69,10 +70,10 @@ const legendaries = cards.filter((c) => c.status === "active" && c.legendary && 
 const created = cards.filter((c) => c.status === "active" && c.type === "token");
 
 describe("FAQ approvate", () => {
-  test("15 risposte, con id unici che fanno da ancora (/faq#id), nello stesso ordine in ogni lingua", () => {
+  test("16 risposte, con id unici che fanno da ancora (/faq#id), nello stesso ordine in ogni lingua", () => {
     for (const l of locales) {
       const ids = faqs[l].map((f) => f.id);
-      assert.equal(ids.length, 15, `[${l}] ${ids.length} risposte`);
+      assert.equal(ids.length, 16, `[${l}] ${ids.length} risposte`);
       assert.equal(new Set(ids).size, ids.length, `[${l}] id ripetuti`);
       for (const id of ids) assert.match(id, /^[a-z0-9-]+$/);
       assert.deepEqual(ids, faqs.en.map((f) => f.id), `[${l}] ordine diverso dall'inglese`);
@@ -267,6 +268,15 @@ describe("risposte approvate per l'assistente", () => {
       ["Когда начнётся рейтинговый режим?", "ru", "ranked"],
       ["Как импортировать колоду по коду?", "ru", "deck-code"],
       ["Какие призы на Crimson Cup?", "ru", "crimson-cup"],
+      // la risposta su Marvel Snap (02/11/2026): le domande di chi arriva da Snap, in ogni lingua del test
+      ["Is Origins TCG similar to Marvel Snap?", "en", "marvel-snap"],
+      ["What are the differences between Origins and Snap?", "en", "marvel-snap"],
+      ["Origins TCG è simile a Marvel Snap?", "it", "marvel-snap"],
+      ["Che differenze ci sono con Marvel Snap?", "it", "marvel-snap"],
+      ["¿Origins TCG es similar a Marvel Snap?", "es", "marvel-snap"],
+      ["Origins TCG é semelhante ao Marvel Snap?", "pt", "marvel-snap"],
+      ["Ist Origins TCG ähnlich wie Marvel Snap?", "de", "marvel-snap"],
+      ["Чем Origins TCG отличается от Marvel Snap?", "ru", "marvel-snap"],
     ];
     for (const [q, l, id] of cases) assert.equal(first(q, l), id, `[${l}] "${q}" → ${ids(q, l).join(", ") || "nessuna"}`);
   });
