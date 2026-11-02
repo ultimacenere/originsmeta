@@ -87,13 +87,28 @@ che scrive quattro derivati per carta in `public/` e il manifest generato `src/l
 | `public/cards/art/<slug>.webp` (560 px) | `art` | finestra d'arte della carta di gioco (`GameCard`) |
 | `public/cards/cover/<slug>.webp` (1200×675) | `cover` | solo Leggendarie: copertina dei mazzi della community |
 
-I PNG originali non entrano nel repo (610 MB). Lo script importa solo la variante base `V00000`, elenca le varianti alternative nel manifest senza convertirle, e salta le carte che il database non conosce. Le carte senza illustrazione mostrano da sole la cornice con le iniziali.
+I PNG originali non entrano nel repo (610 MB). Lo script importa solo la variante base `V00000`, elenca le varianti alternative nel manifest senza convertirle (le converte `import-card-variants.mjs`, sezione qui sotto), e salta le carte che il database non conosce. Le carte senza illustrazione mostrano da sole la cornice con le iniziali.
 
 I crediti stampati sulle carte (illustratore e numero di collezione) stanno in `src/lib/data/card-credits.ts`, scritto a mano: vanno sempre mostrati accanto all'illustrazione.
 
 **La carta di gioco** (`src/components/GameCard.tsx`, stili `.game-card` in `globals.css`) è disegnata da noi con i dati del database — quindi anche in italiano — e usa solo la finestra d'arte: la cornice, la palette e il testo sono del sito. La carta ufficiale dentro lo slab resta `CardArt`.
 
 **Copertina dei mazzi della community**: è automatica, l'illustrazione della Leggendaria del mazzo (`cover`). Nessuno la sceglie, né in `/decks` né nell'anteprima social della scheda mazzo.
+
+### Illustrazioni alternative delle carte (dal 02/11/2026)
+
+Sezione "Illustrazioni alternative" della scheda carta, subito sotto la scheda, con il richiamo "N illustrazioni alternative ↓" sotto la carta da collezione (Pierluigi: "perché non abbiamo le alternative art sulle schede delle carte? le voglio!"). Due gruppi, tutti e due materiale Koin come contenuto, immagini intere con i crediti impressi e l'illustratore scritto sotto:
+
+- **Alpha Edition**: le varianti a tutta carta con il segno ALPHA del pacco creator del 19/09/2026 (file `_V00001`, `_V00011`–`_V00015`, che `import:art` lascia fuori). Le converte
+
+  ```
+  node scripts/import-card-variants.mjs --src "<cartella dei PNG delle carte>"
+  ```
+
+  in `public/cards/alt/<slug>-v00011.webp` (480 px) con il manifest generato `src/lib/data/card-variants.json` (misure e `since`, il giorno in cui la variante è entrata, che lo script non sposta più). Illustratore e numero stampati sulla variante si trascrivono a mano in `variantCredits` di `card-credits.ts`, prima di lanciare lo script (senza credito si ferma). Solo carte del database: le carte non annunciate del pacco (Peter Pan, Wukong, Nezha) restano fuori.
+- **Promo del Kickstarter**: le promo della Alpha Edition di `src/lib/kickstarterPromos.ts` (le stesse della landing e della guida), con lo stretch goal per la scatola; il link porta alla landing `/kickstarter#promos` finché dura la campagna (evento `kickstarter_landing_open` con placement `card`), poi alla sezione delle promo della guida.
+
+Codice: `src/lib/cardVariants.ts` (dati e funzioni pure), testi nelle sette lingue in `src/lib/cardVariantLabels.ts`, componente `src/components/card/CardAltArt.tsx`, test `src/lib/cardVariants.test.ts` (file, crediti, numero uguale alla carta base, niente carte non annunciate, testi). Le immagini vanno anche nella sitemap della scheda, dopo la carta ufficiale (`cardAltArtImages`), e il giorno dell'ultima entrata nelle date della carta (`cardAltArtDay` in `cardDates.ts`, come il riquadro della Crimson Cup: `PAGE_UPDATED` non cambia). Le immagini sono `<img>` semplici, senza `/_next/image`.
 
 ### Aggiornare i Luoghi
 

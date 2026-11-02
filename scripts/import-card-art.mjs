@@ -10,7 +10,8 @@
  * Il nome del file porta la chiave ufficiale, la stessa del campo `key` di `woo-cards.json` e dei codici
  * mazzo KGBLDC: `C00064_MB_V00000 - Aladdin.png`. Si importa solo la variante base V00000; le varianti
  * alternative (V00001, V00011-V00015, le skin con badge ALPHA) sono elencate nel manifest ma non convertite,
- * perché non sono l'aspetto normale della carta.
+ * perché non sono l'aspetto normale della carta: le converte `import-card-variants.mjs` per la sezione
+ * "Illustrazioni alternative" della scheda carta (02/11/2026).
  *
  * Condizione d'uso posta da Koin (19/09/2026): il materiale non si usa per il design del sito. Le carte sono
  * contenuto e restano intere, con i crediti impressi (`ILLUS // <illustratore>`, `KOIN GAMES INC | 2026`):

@@ -9,6 +9,7 @@ import { authors, guidesByAuthor, newsByAuthor } from "./data/authors";
 import { NEWS_PAGES_SINCE, latestDay, pageLastmod, type Day, type PageRoute } from "./lastmod";
 import { cardDates, cardLastmod } from "./cardDates";
 import { cardPageDeckDays, cardPageLastmod, type DeckRef } from "./cardSynergy";
+import { cardAltArtImages } from "./cardVariants";
 import type { IndexEntry, UrlEntry } from "./seoXml";
 import { directoryIndexable } from "./community/creatorDirectory";
 import type { SitemapComic } from "./community/comics";
@@ -270,7 +271,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     // /privacy non entra in sitemap: la pagina è noindex, elencarla manderebbe un segnale contraddittorio.
     // Lo stesso giorno del `dateModified` della scheda, dalle stesse funzioni (`cardLastmod` in src/lib/cardDates.ts,
     // più i giorni dei mazzi elencati nella scheda in quella lingua: `cardPageLastmod` e `cardPageDeckDays`).
-    // L'immagine è la carta ufficiale (media kit Koin, contenuto e non interfaccia), che la scheda mostra intera.
+    // L'immagine è la carta ufficiale (media kit Koin, contenuto e non interfaccia), che la scheda mostra intera; dopo
+    // vengono le illustrazioni alternative della sezione sotto la scheda (02/11/2026, `cardAltArtImages`).
     ...cards.map(
       (c): SitemapPage => ({
         path: `/cards/${c.slug}`,
@@ -278,7 +280,7 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
         route: "/cards/[slug]",
         dates: [],
         lastmod: (l, today) => cardPageLastmod(cardLastmod(c, l, today, guidesBy[l]), l, cardPageDeckDays(c, l, data.deckRefs ?? null), today),
-        images: () => [c.image],
+        images: () => [c.image, ...cardAltArtImages(c.slug)],
       }),
     ),
     ...decks.map((d): SitemapPage => ({ path: `/decks/${d.slug}`, section: "decks", route: "/decks/[slug]", dates: [d.updated] })),

@@ -7,6 +7,7 @@ import { pageLastmod, type Day } from "./lastmod";
 import type { TextSource } from "./cardTitles";
 import { crimsonQualifiers } from "./data/crimsonCup";
 import { crimsonCardDay } from "./crimsonCup";
+import { cardAltArtDay } from "./cardVariants";
 
 /**
  * Date di una scheda carta, in un posto solo (Ondata 1 SEO/GEO, correzione del 25/09/2026 dopo la revisione): le
@@ -60,6 +61,9 @@ export function cardDates(card: Card, locale: Locale, guides: readonly Guide[] =
     // il riquadro "Nella Crimson Cup" (20/10/2026): solo le carte che le tabelle di Koin nominano, dal giorno in cui le
     // abbiamo lette (il modello delle schede non cambia per le altre, quindi PAGE_UPDATED resta com'è)
     crimsonCardDay(card.slug, crimsonQualifiers),
+    // la sezione "Illustrazioni alternative" (02/11/2026): solo le carte che ne hanno, dal giorno in cui è entrata
+    // l'ultima (come il riquadro della Crimson Cup, PAGE_UPDATED non cambia)
+    cardAltArtDay(card.slug),
   ];
 }
 

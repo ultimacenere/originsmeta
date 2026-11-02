@@ -46,6 +46,9 @@ import { CardRelations, CardRootCta } from "@/components/card/CardRelations";
 import { CardBrief, CardCommunityScore } from "@/components/card/CardBrief";
 import { CardCollectible } from "@/components/card/CardCollectible";
 import { CardCrimson } from "@/components/card/CardCrimson";
+import { CardAltArt } from "@/components/card/CardAltArt";
+import { altArtCount, cardAltArts } from "@/lib/cardVariants";
+import { cardVariantLabels } from "@/lib/cardVariantLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -152,6 +155,10 @@ export default async function CardPage({ params }: { params: Params }) {
   const power = card.legendary && playable ? legendaryPowers[card.slug]?.[locale] : undefined;
   const outdated = textOutdated(card, cardTextSource);
   const asOf = asOfLine(card, locale, cardSource) ?? d.common.asOf;
+  // Illustrazioni alternative (02/11/2026): varianti ALPHA e promo del Kickstarter, nella sezione sotto la scheda
+  const altArts = cardAltArts(card.slug);
+  const altCount = altArtCount(altArts);
+  const altLabels = cardVariantLabels[locale];
 
   const path = href(locale, `/cards/${card.slug}`);
   const today = todayUtc();
@@ -222,6 +229,12 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : (
             <p className="text-center text-[11px] text-pale-muted">{d.common.noImage}</p>
           )}
+          {/* Le illustrazioni alternative stanno sotto la scheda: qui il richiamo, accanto alla carta da collezione */}
+          {altCount ? (
+            <a href={`#${altLabels.anchor}`} className="link-mint text-xs font-bold">
+              {fill(altCount === 1 ? altLabels.jumpOne : altLabels.jumpMany, { n: altCount })} ↓
+            </a>
+          ) : null}
           {/* Voti alle carte da 1 a 10 (06/10/2026, Pierluigi: "subito sotto la carta la possibilità del voto"): il widget
               compatto, la fascia nella tier list dei voti e il link alla pagina, nella colonna della carta */}
           {playable ? <CardVoteBox card={card} locale={locale} data={cardVotes} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} /> : null}
@@ -329,6 +342,10 @@ export default async function CardPage({ params }: { params: Params }) {
 
       {/* Carte create: prima come si ottengono, poi i mazzi con la carta che le genera */}
       {token ? <CardRelations card={card} locale={locale} rel={rel} /> : null}
+
+      {/* Illustrazioni alternative (02/11/2026, Pierluigi: "le voglio!"): subito sotto la scheda, dopo il "come si ottiene"
+          delle carte create; solo sulle carte che ne hanno (src/lib/cardVariants.ts) */}
+      <CardAltArt name={card.name} locale={locale} arts={altArts} />
 
       {!removed ? decksSection : null}
 

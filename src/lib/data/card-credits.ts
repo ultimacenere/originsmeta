@@ -8,8 +8,8 @@
  * - `num`: numero di collezione senza il prefisso "M&L #"; assente sulle carte che non lo portano stampato.
  *
  * Il credito va sempre mostrato accanto all'illustrazione: è un diritto dell'autore, non una cortesia.
- * Le varianti alternative hanno spesso un illustratore diverso dalla carta base: quando le importeremo,
- * il credito andrà per variante, non per carta.
+ * Le varianti alternative hanno spesso un illustratore diverso dalla carta base: il loro credito sta in
+ * `variantCredits`, per variante e non per carta.
  */
 export type CardCredit = { illus: string; num?: string };
 
@@ -235,3 +235,12 @@ export const cardCredits: Record<string, CardCredit> = {
   "yuki-onna": { illus: "Marcos Rissette", num: "061" },
   zombie: { illus: "Andrea Negroponte" },
 };
+
+/**
+ * Crediti stampati sulle varianti ALPHA delle carte (illustrazioni alternative del pacco creator del 19/09/2026,
+ * file `C00316_MC_V00011 - Alice.png`), trascritti a mano dalle immagini il 02/11/2026 per la sezione
+ * "Illustrazioni alternative" della scheda carta (`src/lib/cardVariants.ts`). Chiave = chiave della carta più
+ * il codice della variante, come nel nome del file e in `card-variants.json`; `num` è il numero stampato, anche quando
+ * ha quattro cifre (Red: "0123"). Una variante senza credito qui non si mostra (lo controlla `cardVariants.test.ts`).
+ */
+export const variantCredits: Record<string, CardCredit> = {};

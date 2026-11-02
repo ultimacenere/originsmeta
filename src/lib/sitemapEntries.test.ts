@@ -34,6 +34,8 @@ registerHooks({
 const mod: typeof import("./sitemapEntries") = await import("./sitemapEntries.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const cardsModule: typeof import("./data/cards") = await import("./data/cards.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const variants: typeof import("./cardVariants") = await import("./cardVariants.ts");
 const { EMPTY_COMMUNITY, HOME_SITEMAP_PATH, SITEMAP_SECTIONS, cardSection, homeEntries, sectionEntries, sectionSitemapPath, sitemapIndexEntries, sitemapPages } = mod;
 const { cards } = cardsModule;
 
@@ -102,13 +104,17 @@ describe("sezioni", () => {
     assert.equal(cardSection({ status: "active", type: "token" }), "cards-created");
     assert.equal(cardSection({ status: "active", type: "spell" }), "cards");
   });
-  test("le schede carta portano l'immagine della carta ufficiale, dal nostro dominio", () => {
+  test("le schede carta portano l'immagine della carta ufficiale, dal nostro dominio, poi le illustrazioni alternative", () => {
     const withImage = cards.filter((c) => c.image);
     assert.ok(withImage.length > 100);
     for (const c of withImage) {
       const entry = bySection(cardSection(c), "it").find((e) => e.url === `${SITE}/it/cards/${c.slug}`);
-      assert.deepEqual(entry?.images, [`${SITE}${c.image}`]);
+      assert.deepEqual(entry?.images, [c.image, ...variants.cardAltArtImages(c.slug)].map((i) => `${SITE}${i}`));
     }
+    // Alice: le promo del Kickstarter (ritratto numerato) dopo la carta ufficiale
+    const alice = bySection("cards-removed", "it").find((e) => e.url === `${SITE}/it/cards/alice`);
+    assert.ok(alice?.images?.includes(`${SITE}/media/kickstarter/promos/profile-alice.webp`));
+    assert.equal(alice?.images?.[0], `${SITE}/cards/alice.webp`);
   });
   test("solo immagini del nostro dominio, in tutte le sitemap", () => {
     for (const l of locales) for (const s of SITEMAP_SECTIONS) for (const e of bySection(s, l)) for (const img of e.images ?? []) assert.ok(img.startsWith(`${SITE}/`), img);
