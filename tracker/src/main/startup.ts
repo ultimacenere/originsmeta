@@ -53,8 +53,11 @@ export function loginItemFix(items: readonly LoginItem[], mode: StartMode): { en
   return { enabled: ours.enabled !== false };
 }
 
-/** Gli eseguibili del gioco (demo, playtest, gioco completo): `OriginsTCGDemo.exe`, mai `UnityCrashHandler64.exe`. */
-const GAME_EXE = /^"?(originstcg[a-z0-9_]*\.exe)"?\s*,/im;
+/**
+ * Gli eseguibili del gioco: `OriginsTCG.exe` del gioco completo (e del playtest), mai `UnityCrashHandler64.exe`. Dal
+ * 28/10/2026 la demo (`OriginsTCGDemo.exe`) non fa più partire l'app.
+ */
+const GAME_EXE = /^"?(originstcg(?!demo)[a-z0-9_]*\.exe)"?\s*,/im;
 
 /** Il gioco è aperto, dall'uscita di `tasklist /FO CSV /NH`. */
 export function gameRunning(tasklistCsv: string): boolean {

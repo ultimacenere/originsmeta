@@ -1,5 +1,5 @@
 /**
- * Test dell'OCR senza PowerShell (0.4.10, 03/11/2026; ocr.ts): dove si cerca il programma, che cosa gli si manda e,
+ * Test dell'OCR senza PowerShell (0.5.1, 03/11/2026; ocr.ts): dove si cerca il programma, che cosa gli si manda e,
  * soprattutto, che l'app non lanci più PowerShell, che Norton bloccava come "IDP.HELU.PSE96 - Command Line Detection".
  * `npm test` nella cartella tracker/.
  */

@@ -78,7 +78,7 @@ export function launcherScript(cmdPath: string): string {
  *
  * Aspetta che l'app sia davvero chiusa (al massimo un minuto circa) senza pipe: lanciato dall'app senza console, il
  * "tasklist | find" di prima restava bloccato su find (prova dell'11/10/2026), quindi tasklist scrive in un file
- * accanto al log e find legge quello; una pausa di un secondo con ping. Dalla 0.4.10 (03/11/2026) niente PowerShell:
+ * accanto al log e find legge quello; una pausa di un secondo con ping. Dalla 0.5.1 (03/11/2026) niente PowerShell:
  * il suo Wait-Process, lanciato da wscript e cmd, è la catena che gli antivirus guardano storto (ocr.ts). I programmi
  * di Windows con il percorso intero, così un find.exe di un'altra cartella del PATH non prende il posto di quello vero.
  */

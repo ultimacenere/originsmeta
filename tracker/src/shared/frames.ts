@@ -7,8 +7,11 @@
  * con `--frames` l'app riprende solo la finestra del gioco e salva i fotogrammi sul PC, mai altrove.
  */
 
-/** Nomi della finestra del gioco (il titolo della finestra Unity è il nome del prodotto: app.info della demo). */
-export const GAME_WINDOWS = ["Origins TCG Demo", "Origins TCG", "Origins TCG Playtest"] as const;
+/**
+ * Nomi della finestra del gioco (il titolo della finestra Unity è il nome del prodotto, quello di app.info: "Origins
+ * TCG" nel gioco completo). La demo ("Origins TCG Demo") non c'è più dal 28/10/2026.
+ */
+export const GAME_WINDOWS = ["Origins TCG", "Origins TCG Playtest"] as const;
 
 /** Un fotogramma ogni mezzo secondo: le giocate restano a schermo più a lungo. */
 export const FRAME_MS = 500;

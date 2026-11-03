@@ -1,6 +1,7 @@
 // I pannelli dell'app per l'estensione Twitch (14/10/2026; src/overlay/twitchPanels.ts): `npm run twitch-panels` dalla
 // cartella tracker/. Scrive in ../twitch-extension/ panels.js (esbuild, NON minificato: Twitch vuole codice leggibile),
-// panels.css (il CSS dei pannelli dell'app, deck.css, più le regole per stare sopra il video), i font e il logo piccolo.
+// panels.css (il CSS dei pannelli dell'app, deck.css, più le regole per stare sopra il video) e i font (il marchio è una
+// scritta dal 28/10/2026, niente più logo in immagine).
 // I file generati si committano e vanno nello zip dell'estensione (twitch-extension/README.md). Da rilanciare quando
 // cambiano deckRender.ts, deck.css o twitchPanels.ts.
 import { build } from "esbuild";
@@ -35,5 +36,4 @@ const extra = `
 fs.writeFileSync(path.join(out, "panels.css"), `/* OriginsMeta Deck tracker: il CSS dei pannelli dell'app (deck.css), generato da tracker/scripts/twitch-panels.mjs */\n${css}\n${extra}`);
 fs.mkdirSync(path.join(out, "fonts"), { recursive: true });
 for (const f of fs.readdirSync(path.join(root, "assets/fonts"))) fs.copyFileSync(path.join(root, "assets/fonts", f), path.join(out, "fonts", f));
-fs.copyFileSync(path.join(root, "assets/logo-originsmeta-sm.webp"), path.join(out, "logo-originsmeta-sm.webp"));
-console.log("pannelli per l'estensione Twitch: twitch-extension/panels.js, panels.css, fonts/, logo");
+console.log("pannelli per l'estensione Twitch: twitch-extension/panels.js, panels.css, fonts/");

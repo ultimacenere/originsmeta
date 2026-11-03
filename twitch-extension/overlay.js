@@ -220,9 +220,9 @@
       var c = cards[k];
       raw[k] = [c.name, c.slug, c.type, c.cost, c.power, c.health, c.legendary ? 1 : 0, c.text, null];
     });
-    appHosts[side] = { host: host, panel: window.OMPanels.create(host, side, PANEL_LANG, "logo-originsmeta-sm.webp"), table: raw };
+    appHosts[side] = { host: host, panel: window.OMPanels.create(host, side, PANEL_LANG), table: raw };
     if (appResize) appResize.observe(host);
-    // trascinamento dalla linguetta del pannello (logo)
+    // trascinamento dalla linguetta del pannello (scritta OriginsMeta)
     host.addEventListener("pointerdown", function (e) {
       if (e.button !== 0 || !e.target.closest || !e.target.closest(".tab, .chead")) return;
       e.preventDefault();

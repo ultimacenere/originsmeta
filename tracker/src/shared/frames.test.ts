@@ -3,15 +3,17 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { frameFileName, frameSignature, isJpegFrame, MAX_FRAME_BYTES, pickGameWindow, SAME_FRAME_DIFF, sessionDirName, signatureDiff } from "./frames";
 
-test("finestra del gioco: solo un titolo esatto, la demo prima delle altre", () => {
+test("finestra del gioco: solo un titolo esatto, il gioco completo prima del playtest, mai la demo", () => {
   const sources = [
-    { id: "window:1", name: "Origins TCG Demo - Discord" },
+    { id: "window:1", name: "Origins TCG - Discord" },
     { id: "window:2", name: "OriginsMeta Tracker" },
-    { id: "window:3", name: "Origins TCG Demo" },
+    { id: "window:3", name: "Origins TCG" },
   ];
-  assert.deepEqual(pickGameWindow(sources), { id: "window:3", name: "Origins TCG Demo" });
+  assert.deepEqual(pickGameWindow(sources), { id: "window:3", name: "Origins TCG" });
   assert.equal(pickGameWindow(sources.slice(0, 2)), null, "un titolo che contiene il nome non basta");
-  assert.equal(pickGameWindow([{ id: "window:9", name: "Origins TCG" }, { id: "window:8", name: "Origins TCG Demo" }])?.id, "window:8");
+  assert.equal(pickGameWindow([{ id: "window:9", name: "Origins TCG Playtest" }, { id: "window:8", name: "Origins TCG" }])?.id, "window:8");
+  // la demo non c'è più (28/10/2026): la sua finestra non si riprende
+  assert.equal(pickGameWindow([{ id: "window:7", name: "Origins TCG Demo" }]), null);
   assert.equal(pickGameWindow([]), null);
 });
 

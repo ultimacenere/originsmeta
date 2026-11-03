@@ -101,7 +101,7 @@ scrive uno con le statistiche vuote (48 byte) e un `stats<uuid>.json` con `offli
 
 | File | Dove | Quando cambia | Cosa ci serve |
 |---|---|---|---|
-| Statistiche del profilo | `%USERPROFILE%\AppData\LocalLow\Koin Games\Origins TCG Demo\beamable\cache\<cid>\<realm>\<versione>\<impronta>.json` | pochi secondi dopo ogni partita; `ActiveUserDeckIndex` appena si sceglie il mazzo; all'avvio del gioco si riscrive senza cambiare valori | esito, ora e id dell'ultima partita, mazzo scelto, `BattleMode`, id dell'account (solo per riconoscere il giocatore) |
+| Statistiche del profilo | `%USERPROFILE%\AppData\LocalLow\Koin Games\Origins TCG\beamable\cache\<cid>\<realm>\<versione>\<impronta>.json` (fino al 27/10/2026 `Origins TCG Demo`) | nella demo pochi secondi dopo ogni partita; `ActiveUserDeckIndex` appena si sceglie il mazzo; all'avvio del gioco si riscrive senza cambiare valori | nella demo esito, ora e id dell'ultima partita; mazzo scelto, `BattleMode`, id dell'account (solo per riconoscere il giocatore). **Il gioco completo (0.8.0) non scrive più l'esito**: vedi "Gioco completo e marchio in scritta" |
 | Inventario | stessa cartella | circa 15 s dopo la partita | i mazzi: nome, 13 chiavi delle carte |
 | Replay | `%USERPROFILE%\Documents\My Games\Origins TCG Demo\Replays\LatestMatch_<modalità>_<aaaa-mm-gg_hh-mm-ss>.replay` | a fine partita, **sovrascritto dalla successiva** | mazzi di tutti e due, rank, giocate; la modalità nel nome |
 | `Player.log` | cartella del gioco in LocalLow | sempre | niente: solo messaggi del motore |
@@ -841,8 +841,8 @@ perfetti", comandante `H0001` nei dati del gioco); i boss della Battaglia Boss h
 - **Lettura**: nella schermata VS (Leggendarie di tutti e due riconosciute) la finestra nascosta ritaglia il nome in basso a
   destra (`VS_OPP_NAME` in recognize.ts, frazioni dell'area `vs`), lo raddrizza (è in corsivo, `VS_NAME_SHEAR`) e lo
   ingrandisce (`VS_NAME_SCALE`), fino a tre ritagli per schermata; il processo principale lo legge con l'**OCR di
-  Windows** (Windows.Media.Ocr, `main/ocr.ts`: nessuna dipendenza nuova, niente rete; fino alla 0.4.9 da PowerShell con
-  il PNG sul disco il tempo della lettura, dalla 0.4.10 con un programma nostro, vedi "OCR senza PowerShell"). Il
+  Windows** (Windows.Media.Ocr, `main/ocr.ts`: nessuna dipendenza nuova, niente rete; fino alla 0.5.0 da PowerShell con
+  il PNG sul disco il tempo della lettura, dalla 0.5.1 con un programma nostro, vedi "OCR senza PowerShell"). Il
   TextDetector di Chromium in Electron 44 non c'è (provato con le opzioni sperimentali, riprovato il 03/11 anche senza sandbox).
 - **Decisione** (`shared/botNames.ts`, test `botNames.test.ts`): bot se il nome intero è in `bot-names.json` (lettere e
   cifre, maiuscole, 0/O, 1/I, 5/S, 8/B ripiegati) o finisce con "(BOT)". Resta solo `{ ms, bot }`, mai il nome. La
@@ -934,12 +934,38 @@ dipende.
   averlo affatto prima del gioco sarebbero le opzioni di avvio di Steam (`"<percorso>\OriginsMeta Tracker.exe" %command%`),
   che ogni giocatore dovrebbe scrivere a mano: non fatto.
 
-## OCR senza PowerShell (0.4.10, 03/11/2026)
+## Gioco completo e marchio in scritta (0.5.0, 28/10/2026)
+
+- **Il gioco completo al posto della demo** (Pierluigi: "con l'uscita della release la demo non esiste più, il tracker
+  si deve attivare quando parte il gioco release"). La release del 27/10/2026 (app Steam 4429430, build 26186443) è
+  `OriginsTCG.exe` nella cartella di Steam `Origins TCG`, finestra "Origins TCG", dati in
+  `LocalLow\Koin Games\Origins TCG\beamable\cache\<cid>\DE_1618175429308427\0.8.0\`; niente `Replays`. `PRODUCTS`
+  (paths.ts), `GAME_WINDOWS` (frames.ts) e l'eseguibile di `gameRunning` (startup.ts) hanno solo il gioco completo e il
+  playtest: la demo (`OriginsTCGDemo.exe`, "Origins TCG Demo") non fa più partire l'app né si legge.
+- **Il guasto del 27/10**: il file delle statistiche della release ha `ActiveUserDeckIndex` e `BattleMode` ma non più
+  `lastMatchPlayedDateTime` né `onboardingResults`, quindi `readStatsFile` lo scartava e il watcher prendeva le
+  statistiche e l'inventario della demo, rimasti sul PC (su un PC senza demo: "gioco non trovato" e partite senza
+  mazzo). Le 5 partite di Pierluigi della sera del 27/10 (21:28–21:57 UTC) sono state registrate dallo schermo con il
+  mazzo della demo, "Remedy", mentre giocava On Death (indice 4 della release): nessuna sua giocata riconosciuta.
+  Dalla 0.5.0 `readStatsFile` riconosce anche il file con mazzo scelto e modalità insieme (`DECK_KEYS` di profile.ts;
+  uno solo dei due non basta), e il watcher legge mazzo e account dalla release (test in tracker.test.ts e
+  watcher.test.ts, più quello sui file veri del PC).
+- **Esito solo dallo schermo**: la release non scrive l'esito delle partite sul PC (come il playtest per le online), quindi
+  senza scanner le partite non si registrano. **Da verificare in partita**: che `ActiveUserDeckIndex` si riscriva quando si
+  cambia mazzo (il 27/10 il file è cambiato alle 22:22 ora italiana e poi più fino alla chiusura del gioco alle 23:00).
+- **Il marchio nei pannelli è una scritta** (Pierluigi: "i loghi di OriginsMeta fanno oggettivamente schifo così
+  piccoli, sostituiamoli con una scritta come abbiamo sul layover di Twitch"): rombo menta e "OriginsMeta" in Unbounded
+  (`.om-word`, `.om-mark`), come la linguetta dell'estensione Twitch, nelle linguette di Minimal e Strutturato, in testa
+  al Personalizzato e in fondo all'overlay per OBS, al posto del logo in immagine alto 11–14 px. I pannelli
+  dell'estensione (modalità "come l'app") sono rigenerati con `npm run twitch-panels` e non usano più
+  `logo-originsmeta-sm.webp`; resta il logo grande nella finestra dell'app.
+
+## OCR senza PowerShell (0.5.1, 03/11/2026)
 
 - **Segnalazione** (un giocatore, girata da Pierluigi: "questo è un feedback molto preoccupante"): a ogni avvio del
   tracker Norton blocca PowerShell, dice che è infetto da **"IDP.HELU.PSE96 - Command Line Detection"**, e le partite non
   si registrano.
-- **Causa**: fino alla 0.4.9 l'OCR della schermata VS (nome dell'avversario per i bot, lega per la classificata) lanciava
+- **Causa**: fino alla 0.5.0 l'OCR della schermata VS (nome dell'avversario per i bot, lega per la classificata) lanciava
   `powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand <base64>`, fino a sette volte per
   schermata VS (tre ritagli del nome, quattro della lega). È la riga di comando dei programmi malevoli, e gli antivirus
   la bloccano a vista. Anche lo script dell'aggiornamento usava PowerShell (`Wait-Process`, lanciato da wscript e cmd).
@@ -963,5 +989,5 @@ dipende.
 - **Quello che resta**: il programma, come l'app, non è firmato (Fase 5); un antivirus che giudica la reputazione dei
   file nuovi può ancora fermarlo, e allora l'OCR si spegne da solo e le partite si registrano come prima, senza bot e
   classificata. Il lanciatore dell'aggiornamento resta un VBScript con wscript (`launcherScript`). A chi ha avuto
-  l'avviso di Norton può servire ripristinare l'app dalla quarantena o metterla fra le eccezioni, e scaricare la 0.4.10
+  l'avviso di Norton può servire ripristinare l'app dalla quarantena o metterla fra le eccezioni, e scaricare la 0.5.1
   a mano se l'aggiornamento automatico non parte.

@@ -75,7 +75,7 @@ export class FrameRecorder {
   constructor(userData: string, opts: { save: boolean; cards: CardInfo; onScan?: (f: ScanFrame) => void }, onChange: () => void = () => {}) {
     this.onScan = opts.onScan ?? (() => {});
     this.root = path.join(userData, "frames");
-    // fino alla 0.4.9 i ritagli per l'OCR passavano un attimo da questa cartella (ocr.ts): dalla 0.4.10 non serve più
+    // fino alla 0.5.0 i ritagli per l'OCR passavano un attimo da questa cartella (ocr.ts): dalla 0.5.1 non serve più
     fs.rm(path.join(userData, "ocr"), { recursive: true, force: true }, () => {});
     this.save = opts.save;
     this.cards = opts.cards;

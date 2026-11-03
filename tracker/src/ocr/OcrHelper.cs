@@ -1,6 +1,6 @@
 // OCR di Windows per OriginsMeta Tracker (03/11/2026; chi lo chiama: src/main/ocr.ts).
 //
-// Fino alla 0.4.9 l'app chiamava l'OCR di Windows da PowerShell con "-ExecutionPolicy Bypass -EncodedCommand", la
+// Fino alla 0.5.0 l'app chiamava l'OCR di Windows da PowerShell con "-ExecutionPolicy Bypass -EncodedCommand", la
 // riga di comando dei programmi malevoli: Norton la bloccava ("IDP.HELU.PSE96 - Command Line Detection") e diceva
 // che l'app era infetta. Questo programma fa la stessa cosa senza PowerShell: legge un PNG dallo standard input (il
 // ritaglio della schermata VS, al massimo 512 KB), lo passa a Windows.Media.Ocr con le lingue del profilo di Windows

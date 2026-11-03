@@ -6,7 +6,7 @@
  * standard input e il testo torna dallo standard output. Niente file sul disco, niente rete, nessuna dipendenza nuova;
  * il testo letto torna al chiamante, che ne tiene solo "bot sì o no" e "lega sì o no".
  *
- * 03/11/2026: fino alla 0.4.9 l'OCR passava da PowerShell con "-ExecutionPolicy Bypass -EncodedCommand", la riga di
+ * 03/11/2026: fino alla 0.5.0 l'OCR passava da PowerShell con "-ExecutionPolicy Bypass -EncodedCommand", la riga di
  * comando dei programmi malevoli. Norton la bloccava ("IDP.HELU.PSE96 - Command Line Detection") e diceva che l'app era
  * infetta, e a chi lo usa le partite non si registravano. L'app non lancia più PowerShell (test in ocr.test.ts); il
  * TextDetector di Chromium, che userebbe lo stesso OCR, in Electron non è implementato (riprovato il 03/11 con la 44).

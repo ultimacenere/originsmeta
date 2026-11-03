@@ -82,7 +82,9 @@ html, body { margin: 0; background: transparent; color: var(--chalk); font-famil
 .res.L { background: var(--bad); }
 .res.X { background: var(--night-3); color: var(--muted); }
 .brand { grid-area: brand; display: flex; align-items: center; gap: 6px; font-size: 0.6rem; color: var(--muted); opacity: 0.9; }
-.brand img { height: 11px; width: auto; }
+/* il marchio (28/10/2026): scritta come la linguetta dell'estensione Twitch al posto del logo in immagine, illeggibile così piccolo */
+.om-word { display: inline-flex; align-items: center; gap: 5px; font-family: var(--display); font-weight: 700; font-size: 0.62rem; letter-spacing: 0.04em; line-height: 1; color: var(--mint); white-space: nowrap; }
+.om-mark { flex: none; width: 7px; height: 7px; background: var(--mint); transform: rotate(45deg); }
 
 /* verticale (per OBS: ?layout=v): la carta accanto al nome, i numeri sotto uno per riga */
 .layout-v .ov { display: grid; width: 250px; }

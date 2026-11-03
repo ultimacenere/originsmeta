@@ -154,8 +154,23 @@ describe("readStatsFile", () => {
     });
   });
 
+  test("gioco completo (0.8.0, 27/10/2026): senza le chiavi delle partite, con mazzo scelto e modalità", () => {
+    // come il file vero del 27/10: niente lastMatchPlayedDateTime né onboardingResults (prima si scartava e il tracker
+    // prendeva il mazzo dalla cache della demo)
+    assert.deepEqual(readStatsFile(statsJson({ FTUE_TaskStatus_Match6: "1", ActiveUserDeckIndex: "4", ActiveUserDeckItemId: "105", BattleMode: "0", ActiveAvatarKey: "AV00007" })), {
+      accountId: "2048",
+      lastMatchAt: null,
+      results: "",
+      lastMatchId: null,
+      activeDeckIndex: 4,
+      battleMode: "0",
+    });
+  });
+
   test("altri file e testo rotto: null", () => {
     assert.equal(readStatsFile(statsJson({ ActiveUserDeckIndex: "1", ActiveAvatarKey: "AV00007" })), null);
+    assert.equal(readStatsFile(statsJson({ BattleMode: "0" })), null);
+    assert.equal(readStatsFile(statsJson({})), null);
     assert.equal(readStatsFile(JSON.stringify({ id: 2048, email: "x@example.com" })), null);
     assert.equal(readStatsFile("{"), null);
     assert.equal(readStatsFile("[1,2]"), null);
@@ -383,18 +398,22 @@ describe("pickMe e replayBelongsTo", () => {
 /* ---------- file veri del PC, se ci sono ---------- */
 
 const home = process.env.USERPROFILE ?? process.env.HOME ?? "";
-const replayDirs = [
-  path.join(home, "Documents", "My Games", "Origins TCG Demo", "Replays"),
-  path.join(home, "OneDrive", "Documents", "My Games", "Origins TCG Demo", "Replays"),
-  path.join(home, "OneDrive", "Documenti", "My Games", "Origins TCG Demo", "Replays"),
-];
+// il gioco completo dal 27/10/2026; i replay e la cache della demo restano sul PC e provano ancora il lettore
+const PRODUCTS = ["Origins TCG", "Origins TCG Demo"];
+const replayDirs = PRODUCTS.flatMap((p) => [
+  path.join(home, "Documents", "My Games", p, "Replays"),
+  path.join(home, "OneDrive", "Documents", "My Games", p, "Replays"),
+  path.join(home, "OneDrive", "Documenti", "My Games", p, "Replays"),
+]);
 const realReplays = replayDirs.flatMap((dir) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => replayFileInfo(f)).map((f) => path.join(dir, f)) : []));
-const cacheRoot = path.join(home, "AppData", "LocalLow", "Koin Games", "Origins TCG Demo", "beamable", "cache");
 const subdirs = (p: string) => (fs.existsSync(p) ? fs.readdirSync(p, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => path.join(p, e.name)) : []);
-const cacheFiles = subdirs(cacheRoot)
-  .flatMap(subdirs)
-  .flatMap(subdirs)
-  .flatMap((d) => fs.readdirSync(d).filter((f) => f.endsWith(".json")).map((f) => path.join(d, f)));
+const cacheFilesOf = (product: string) =>
+  subdirs(path.join(home, "AppData", "LocalLow", "Koin Games", product, "beamable", "cache"))
+    .flatMap(subdirs)
+    .flatMap(subdirs)
+    .flatMap((d) => fs.readdirSync(d).filter((f) => f.endsWith(".json")).map((f) => path.join(d, f)));
+const cacheFiles = PRODUCTS.flatMap(cacheFilesOf);
+const releaseCacheFiles = cacheFilesOf("Origins TCG");
 
 describe("file veri del gioco su questo PC", () => {
   test("replay: grammatica, due giocatori con 13 carte, istanze tutte al loro posto", { skip: realReplays.length ? false : "nessun replay su questo PC" }, () => {
@@ -423,5 +442,11 @@ describe("file veri del gioco su questo PC", () => {
       assert.ok(d.cards.length >= 1 && d.cards.length <= 13);
       for (const k of d.cards) assert.match(k, /^C\d+_[A-Z]{2}(?:_V\d+)?$/);
     }
+  });
+
+  test("cache del gioco completo: il file delle statistiche c'è, con il mazzo scelto", { skip: releaseCacheFiles.length ? false : "nessuna cache del gioco completo su questo PC" }, () => {
+    const stats = releaseCacheFiles.map((f) => readStatsFile(fs.readFileSync(f, "utf8"))).filter((s) => s !== null);
+    assert.ok(stats.length >= 1, "il file delle statistiche della release si riconosce");
+    assert.ok(stats.some((s) => s.activeDeckIndex !== null));
   });
 });

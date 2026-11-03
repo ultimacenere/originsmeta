@@ -56,8 +56,8 @@ export function viewFromState(s: LiveState, table: CardTable): DeckTrackerView {
 }
 
 /** Un pannello: la radice `.dt` dentro `host`, con le classi della forma sul contenitore (il CSS dell'app le cerca lì). */
-export function create(host: HTMLElement, view: PanelSide, lang: Lang, logo: string) {
-  const { L, paint } = createDeckRenderer({ view, lang, inWindow: false, logo });
+export function create(host: HTMLElement, view: PanelSide, lang: Lang) {
+  const { L, paint } = createDeckRenderer({ view, lang, inWindow: false });
   const root = document.createElement("div");
   root.className = "dt";
   root.setAttribute("aria-label", L.spot(view === "opp"));

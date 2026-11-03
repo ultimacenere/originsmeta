@@ -42,7 +42,7 @@ test("lanciatore dello script: cmd con la finestra nascosta, percorsi con spazi 
 
 test("script di installazione: aspetta l'app, copia, riapre", () => {
   const s = installScript({ pid: 4242, source: "C:\\Temp\\u\\app\\OriginsMeta Analytics-win32-x64", target: "C:\\Giochi\\OriginsMeta", exe: "C:\\Giochi\\OriginsMeta\\OriginsMeta Analytics.exe", log: "C:\\Temp\\u\\install.log" });
-  // dalla 0.4.10 (03/11/2026) niente PowerShell: tasklist in un file accanto al log, find, al massimo 60 giri
+  // dalla 0.5.1 (03/11/2026) niente PowerShell: tasklist in un file accanto al log, find, al massimo 60 giri
   assert.ok(!/powershell|wait-process/i.test(s), "niente PowerShell");
   assert.ok(s.includes('"%SystemRoot%\\System32\\tasklist.exe" /FI "PID eq 4242" /FO CSV /NH > "C:\\Temp\\u\\processi.txt"'), "tasklist in un file");
   assert.ok(s.includes('"%SystemRoot%\\System32\\find.exe" ",""4242""," "C:\\Temp\\u\\processi.txt"'), "find sul file");
