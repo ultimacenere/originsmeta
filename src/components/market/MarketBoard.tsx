@@ -71,6 +71,8 @@ export function MarketBoard({
   const move = useMemo(() => movers(items, 3), [items]);
   const variant = (it: BoardItem) => (it.variant ? (b.variants[it.variant] ?? it.variant) : null);
   const countText = shown.length === 1 ? b.countOne : fillMarket(b.count, { n: new Intl.NumberFormat(locale).format(shown.length) });
+  // il giorno dell'ultimo prezzo visto, in UTC come l'HTML del server (niente differenze all'idratazione)
+  const shortDay = (iso: string) => new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(iso));
 
 
   return (
@@ -202,7 +204,19 @@ export function MarketBoard({
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-2 text-right font-mono text-chalk tabular-nums">
-                    {it.price === null ? <span className="font-sans text-xs text-pale-muted">{b.noOffers}</span> : <MarketMoney cents={it.price} usdPerEur={usdPerEur} locale={locale} />}
+                    {it.price !== null ? (
+                      <MarketMoney cents={it.price} usdPerEur={usdPerEur} locale={locale} />
+                    ) : (
+                      <>
+                        <span className="block font-sans text-xs text-pale-muted">{b.noOffers}</span>
+                        {it.last_price !== null ? (
+                          <span className="block font-sans text-xs text-pale-muted">
+                            {b.lastSeen} <span className="font-mono">~<MarketMoney cents={it.last_price} usdPerEur={usdPerEur} locale={locale} /></span>
+                            {it.last_price_at ? ` · ${shortDay(it.last_price_at)}` : null}
+                          </span>
+                        ) : null}
+                      </>
+                    )}
                   </td>
                   <td className="whitespace-nowrap px-3 py-2 text-right">
                     <Change now={it.price} before={it.price_24h} locale={locale} />

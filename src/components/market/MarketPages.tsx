@@ -254,6 +254,21 @@ export async function MarketItemPage({ locale, source, slug }: { locale: Locale;
           <dd className="mt-1 font-mono text-xl text-chalk tabular-nums">
             <MarketMoney cents={item.price} usdPerEur={rate} locale={locale} empty={l.board.noOffers} />
           </dd>
+          {/* senza offerte, l'ultimo prezzo visto (03/11/2026): dichiarato come tale, non come prezzo di adesso */}
+          {item.price === null && item.last_price !== null ? (
+            <dd className="mt-2 text-xs text-pale-muted">
+              {l.item.lastPrice}:{" "}
+              <span className="font-mono text-pale">
+                <MarketMoney cents={item.last_price} usdPerEur={rate} locale={locale} />
+              </span>
+              {item.last_price_at ? (
+                <>
+                  {" · "}
+                  <LocalTime iso={item.last_price_at} locale={locale} utcLabel={l.status.utc} />
+                </>
+              ) : null}
+            </dd>
+          ) : null}
         </div>
         {tiles.map((t) => (
           <div key={t.label} className="card-night p-4">
@@ -282,7 +297,7 @@ export async function MarketItemPage({ locale, source, slug }: { locale: Locale;
         <h2 id="market-chart" className="t-section mb-4">
           {l.item.chartTitle}
         </h2>
-        <PriceChart hourly={data.hourly} daily={data.daily} fx={data.fx} usdPerEur={rate} locale={locale} name={item.name} labels={l.item} currencyLabel={l.currency.label} now={data.at} />
+        <PriceChart hourly={data.hourly} daily={data.daily} fx={data.fx} usdPerEur={rate} locale={locale} name={item.name} labels={l.item} currencyLabel={l.currency.label} now={data.at} staleSince={item.price === null ? item.last_price_at : null} />
       </section>
 
       <Notes locale={locale} />

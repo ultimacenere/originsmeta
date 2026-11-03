@@ -28,6 +28,7 @@ export function PriceChart({
   labels,
   currencyLabel,
   now,
+  staleSince = null,
 }: {
   hourly: PricePoint[];
   daily: PricePoint[];
@@ -39,6 +40,11 @@ export function PriceChart({
   currencyLabel: string;
   /** l'ora del render della pagina (server): gli intervalli si contano da qui, uguali nel server e nel browser */
   now: number;
+  /**
+   * Oggi nessuna offerta: l'ora dell'ultimo prezzo visto (03/11/2026). Il pallino in fondo alla linea diventa vuoto e
+   * sotto il grafico una nota dice da quando non c'è niente in vendita, così l'ultimo punto non sembra un'offerta di adesso.
+   */
+  staleSince?: string | null;
 }) {
   const currency = useMarketCurrency(locale);
   // le ore nel fuso di chi guarda solo dopo l'idratazione (prima UTC, come l'HTML del server)
@@ -58,6 +64,11 @@ export function PriceChart({
   const fmtTime = (t: number) =>
     new Intl.DateTimeFormat(locale, byDay ? { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" } : { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", ...(mounted ? {} : { timeZone: "UTC" }) }).format(new Date(t));
   const money = (cents: number) => formatMoney(cents, currency, locale);
+  const staleNote = staleSince
+    ? fillMarket(labels.stale, {
+        when: new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", ...(mounted ? {} : { timeZone: "UTC" }) }).format(new Date(staleSince)),
+      })
+    : null;
   const tickMoney = (cents: number) => new Intl.NumberFormat(locale, { style: "currency", currency, currencyDisplay: "narrowSymbol", maximumFractionDigits: cents < 1000 ? 2 : 0 }).format(cents / 100);
 
   const onMove = (e: React.PointerEvent<SVGSVGElement>) => {
@@ -89,7 +100,7 @@ export function PriceChart({
       </div>
 
       {!geo ? (
-        <p className="mt-4 rounded-lg border-2 border-dashed border-night-3 p-6 text-center text-sm text-pale-muted">{labels.noHistory}</p>
+        <p className="mt-4 rounded-lg border-2 border-dashed border-night-3 p-6 text-center text-sm text-pale-muted">{staleNote ?? labels.noHistory}</p>
       ) : (
         <div className="relative mt-4">
           <svg
@@ -124,9 +135,17 @@ export function PriceChart({
                 <circle cx={geo.xs[h]} cy={geo.ys[h]} r={5} fill="var(--color-mint)" stroke="var(--color-night)" strokeWidth={2} />
               </g>
             ) : (
-              <circle cx={geo.xs[geo.xs.length - 1]} cy={geo.ys[geo.ys.length - 1]} r={4} fill="var(--color-mint)" stroke="var(--color-night)" strokeWidth={2} />
+              <circle
+                cx={geo.xs[geo.xs.length - 1]}
+                cy={geo.ys[geo.ys.length - 1]}
+                r={4}
+                fill={staleNote ? "var(--color-night)" : "var(--color-mint)"}
+                stroke={staleNote ? "var(--color-mint)" : "var(--color-night)"}
+                strokeWidth={2}
+              />
             )}
           </svg>
+          {staleNote ? <p className="mt-2 text-xs text-pale-muted">{staleNote}</p> : null}
           {h !== null ? (
             <div
               className="pointer-events-none absolute top-2 rounded-lg border-2 border-sky bg-night-2 px-3 py-2 text-xs shadow-lg"

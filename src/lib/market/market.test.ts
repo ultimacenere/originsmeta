@@ -22,6 +22,7 @@ import {
   formatMoney,
   fxFor,
   ingestRows,
+  lastPrice,
   marketSlug,
   movers,
   nextCursor,
@@ -176,6 +177,8 @@ const item = (over: Partial<BoardItem>): BoardItem => ({
   price_24h: null,
   price_7d: null,
   price_30d: null,
+  last_price: null,
+  last_price_at: null,
   ...over,
 });
 
@@ -237,6 +240,14 @@ describe("tabellone e storico", () => {
   test("prezzi di prima con le regole di market_board", () => {
     assert.deepEqual(pastPrices(hourly, daily, now), { price_24h: 100, price_7d: 80, price_30d: 50 });
     assert.deepEqual(pastPrices([], [], now), { price_24h: null, price_7d: null, price_30d: null });
+  });
+  test("ultimo prezzo visto: l'ora più recente, se no il giorno, se no niente", () => {
+    assert.deepEqual(lastPrice(hourly, daily), { last_price: 130, last_price_at: "2026-10-17T11:00:00.000Z" });
+    assert.deepEqual(lastPrice([], daily), { last_price: 130, last_price_at: "2026-10-17T12:00:00.000Z" });
+    assert.deepEqual(lastPrice([], []), { last_price: null, last_price_at: null });
+    const [row] = boardRows([{ hash_name: "a", slug: "a", name: "A", kind: "card", price: null, listings: 0, last_price: 27800, last_price_at: "2026-10-31T22:00:00+00:00" }]);
+    assert.equal(row.last_price, 27800);
+    assert.equal(boardRows([{ hash_name: "a", slug: "a", name: "A", kind: "card" }])[0].last_price, null, "market_board di prima, senza le colonne");
   });
   test("intervalli del grafico: orario fino a 30 giorni, giornaliero per tutto, niente punti inventati", () => {
     assert.deepEqual(rangePoints("24h", hourly, daily, now).points.map((p) => p.close), [120, 130]);

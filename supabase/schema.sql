@@ -6794,10 +6794,14 @@ grant execute on function public.market_ingest(text, text, integer, jsonb, integ
 
 -- Il tabellone di una fonte: ogni oggetto con il prezzo di adesso e quelli di 24 ore, 7 e 30 giorni fa (null se lo
 -- storico non arriva così indietro), per le variazioni. Letta da /market (ISR) con il client anonimo, a pagine.
+-- Dal 03/11/2026 anche l'ultimo prezzo visto in vendita e quando (l'ora più recente dello storico orario, se no il
+-- giorno, a mezzogiorno UTC): la tabella lo mostra quando oggi non ci sono offerte. Il tipo restituito è cambiato e
+-- "create or replace" non può cambiarlo, quindi la funzione si toglie e si rifà (come kpi_daily).
+drop function if exists public.market_board(text);
 create or replace function public.market_board(p_source text)
 returns table (hash_name text, slug text, name text, item_type text, kind text, card text, variant text, icon text,
                name_color text, price integer, listings integer, first_seen timestamptz, last_seen timestamptz,
-               price_24h integer, price_7d integer, price_30d integer)
+               price_24h integer, price_7d integer, price_30d integer, last_price integer, last_price_at timestamptz)
 language sql stable security invoker set search_path = public, pg_temp as $$
   select i.hash_name, i.slug, i.name, i.item_type, i.kind, i.card, i.variant, i.icon, i.name_color, i.price, i.listings,
          i.first_seen, i.last_seen,
@@ -6806,8 +6810,14 @@ language sql stable security invoker set search_path = public, pg_temp as $$
          (select d.close from market_prices_daily d where d.source = i.source and d.hash_name = i.hash_name
             and d.day <= (now() at time zone 'utc')::date - 7 order by d.day desc limit 1),
          (select d.close from market_prices_daily d where d.source = i.source and d.hash_name = i.hash_name
-            and d.day <= (now() at time zone 'utc')::date - 30 order by d.day desc limit 1)
+            and d.day <= (now() at time zone 'utc')::date - 30 order by d.day desc limit 1),
+         coalesce(lh.close, ld.close),
+         coalesce(lh.hour, (ld.day + time '12:00') at time zone 'utc')
     from market_items i
+    left join lateral (select h.close, h.hour from market_prices_hourly h
+                        where h.source = i.source and h.hash_name = i.hash_name order by h.hour desc limit 1) lh on true
+    left join lateral (select d.close, d.day from market_prices_daily d
+                        where d.source = i.source and d.hash_name = i.hash_name order by d.day desc limit 1) ld on lh.close is null
    where i.source = p_source
    order by i.name, i.hash_name;
 $$;

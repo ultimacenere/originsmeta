@@ -37,6 +37,8 @@ type Labels = {
     countOne: string;
     noResults: string;
     noOffers: string;
+    /** davanti all'ultimo prezzo visto, nella tabella, quando oggi non ci sono offerte (03/11/2026) */
+    lastSeen: string;
     variants: Record<string, string>;
   };
   movers: { title: string; up: string; down: string; none: string };
@@ -54,6 +56,9 @@ type Labels = {
     chartAria: string;
     ranges: Record<MarketRange, string>;
     noHistory: string;
+    /** ultimo prezzo visto nel riquadro del prezzo e nota sotto il grafico quando oggi non ci sono offerte (03/11/2026) */
+    lastPrice: string;
+    stale: string;
     table: { show: string; time: string; low: string; high: string; close: string; listings: string };
     kind: string;
     variant: string;
@@ -119,6 +124,7 @@ const en: Labels = {
     countOne: "1 item",
     noResults: "No item matches the filters.",
     noOffers: "No listings",
+    lastSeen: "last seen",
     variants: { normal: "Normal", foil: "Foil" },
   },
   movers: { title: "Last 24 hours", up: "Rising", down: "Falling", none: "No change to show yet: the comparison starts after 24 hours of history." },
@@ -136,6 +142,8 @@ const en: Labels = {
     chartAria: "Lowest price on sale of {name}, {range}",
     ranges: { "24h": "24h", "7d": "7 days", "30d": "30 days", all: "All" },
     noHistory: "The history starts now: the chart fills up at every check.",
+    lastPrice: "Last price seen",
+    stale: "No listings since {when}: the line stops at the last price seen.",
     table: { show: "Show the data", time: "Time", low: "Low", high: "High", close: "Last", listings: "Listings" },
     kind: "Type",
     variant: "Variant",
@@ -209,6 +217,7 @@ const it: Labels = {
     countOne: "1 oggetto",
     noResults: "Nessun oggetto con questi filtri.",
     noOffers: "Nessuna offerta",
+    lastSeen: "ultimo visto",
     variants: { normal: "Normale", foil: "Foil" },
   },
   movers: { title: "Ultime 24 ore", up: "In salita", down: "In discesa", none: "Ancora nessuna variazione da mostrare: il confronto parte dopo 24 ore di storico." },
@@ -226,6 +235,8 @@ const it: Labels = {
     chartAria: "Prezzo più basso in vendita di {name}, {range}",
     ranges: { "24h": "24 ore", "7d": "7 giorni", "30d": "30 giorni", all: "Tutto" },
     noHistory: "Lo storico comincia adesso: il grafico si riempie a ogni controllo.",
+    lastPrice: "Ultimo prezzo visto",
+    stale: "Nessuna offerta dal {when}: la linea si ferma all'ultimo prezzo visto.",
     table: { show: "Mostra i dati", time: "Ora", low: "Minimo", high: "Massimo", close: "Ultimo", listings: "Offerte" },
     kind: "Tipo",
     variant: "Variante",
@@ -299,6 +310,7 @@ const es: Labels = {
     countOne: "1 objeto",
     noResults: "Ningún objeto con estos filtros.",
     noOffers: "Sin ofertas",
+    lastSeen: "visto por última vez",
     variants: { normal: "Normal", foil: "Foil" },
   },
   movers: { title: "Últimas 24 horas", up: "Suben", down: "Bajan", none: "Todavía no hay variaciones que mostrar: la comparación empieza tras 24 horas de historial." },
@@ -316,6 +328,8 @@ const es: Labels = {
     chartAria: "Precio más bajo a la venta de {name}, {range}",
     ranges: { "24h": "24 horas", "7d": "7 días", "30d": "30 días", all: "Todo" },
     noHistory: "El historial empieza ahora: el gráfico se llena con cada revisión.",
+    lastPrice: "Último precio visto",
+    stale: "Sin ofertas desde {when}: la línea se detiene en el último precio visto.",
     table: { show: "Mostrar los datos", time: "Hora", low: "Mínimo", high: "Máximo", close: "Último", listings: "Ofertas" },
     kind: "Tipo",
     variant: "Variante",
@@ -389,6 +403,7 @@ const fr: Labels = {
     countOne: "1 objet",
     noResults: "Aucun objet avec ces filtres.",
     noOffers: "Aucune offre",
+    lastSeen: "vu en dernier",
     variants: { normal: "Normale", foil: "Foil" },
   },
   movers: { title: "Dernières 24 heures", up: "En hausse", down: "En baisse", none: "Aucune variation à afficher pour l'instant : la comparaison commence après 24 heures d'historique." },
@@ -406,6 +421,8 @@ const fr: Labels = {
     chartAria: "Prix le plus bas en vente de {name}, {range}",
     ranges: { "24h": "24 heures", "7d": "7 jours", "30d": "30 jours", all: "Tout" },
     noHistory: "L'historique commence maintenant : le graphique se remplit à chaque vérification.",
+    lastPrice: "Dernier prix vu",
+    stale: "Aucune offre depuis le {when} : la courbe s'arrête au dernier prix vu.",
     table: { show: "Afficher les données", time: "Heure", low: "Minimum", high: "Maximum", close: "Dernier", listings: "Offres" },
     kind: "Type",
     variant: "Variante",
@@ -480,6 +497,7 @@ const pt: Labels = {
     countOne: "1 item",
     noResults: "Nenhum item corresponde aos filtros.",
     noOffers: "Sem ofertas",
+    lastSeen: "visto por último",
     variants: { normal: "Normal", foil: "Foil" },
   },
   movers: { title: "Últimas 24 horas", up: "Em alta", down: "Em queda", none: "Ainda não há variações para mostrar: a comparação começa depois de 24 horas de histórico." },
@@ -497,6 +515,8 @@ const pt: Labels = {
     chartAria: "Menor preço à venda de {name}, {range}",
     ranges: { "24h": "24h", "7d": "7 dias", "30d": "30 dias", all: "Tudo" },
     noHistory: "O histórico começa agora: o gráfico se preenche a cada verificação.",
+    lastPrice: "Último preço visto",
+    stale: "Sem ofertas desde {when}: a linha para no último preço visto.",
     table: { show: "Mostrar os dados", time: "Hora", low: "Mínimo", high: "Máximo", close: "Último", listings: "Ofertas" },
     kind: "Tipo",
     variant: "Variante",
@@ -571,6 +591,7 @@ const de: Labels = {
     countOne: "1 Gegenstand",
     noResults: "Kein Gegenstand passt zu den Filtern.",
     noOffers: "Keine Angebote",
+    lastSeen: "zuletzt gesehen",
     variants: { normal: "Normal", foil: "Foil" },
   },
   movers: { title: "Letzte 24 Stunden", up: "Steigend", down: "Fallend", none: "Noch keine Änderung zu zeigen: Der Vergleich beginnt nach 24 Stunden Verlauf." },
@@ -588,6 +609,8 @@ const de: Labels = {
     chartAria: "Niedrigster Verkaufspreis von {name}, {range}",
     ranges: { "24h": "24 Std.", "7d": "7 Tage", "30d": "30 Tage", all: "Alles" },
     noHistory: "Der Verlauf beginnt jetzt: Das Diagramm füllt sich mit jeder Prüfung.",
+    lastPrice: "Zuletzt gesehener Preis",
+    stale: "Keine Angebote seit {when}: Die Linie endet beim zuletzt gesehenen Preis.",
     table: { show: "Daten anzeigen", time: "Zeit", low: "Tief", high: "Hoch", close: "Letzter", listings: "Angebote" },
     kind: "Typ",
     variant: "Variante",
@@ -662,6 +685,7 @@ const ru: Labels = {
     countOne: "1 предмет",
     noResults: "Ни один предмет не подходит под фильтры.",
     noOffers: "Нет лотов",
+    lastSeen: "последняя цена",
     variants: { normal: "Обычная", foil: "Фольга" },
   },
   movers: { title: "Последние 24 часа", up: "Растут", down: "Падают", none: "Пока нечего показать: сравнение начнётся после 24 часов истории." },
@@ -679,6 +703,8 @@ const ru: Labels = {
     chartAria: "Минимальная цена продажи: {name}, {range}",
     ranges: { "24h": "24 ч", "7d": "7 дней", "30d": "30 дней", all: "Всё" },
     noHistory: "История начинается сейчас: график заполняется с каждой проверкой.",
+    lastPrice: "Последняя замеченная цена",
+    stale: "Нет лотов с {when}: линия обрывается на последней замеченной цене.",
     table: { show: "Показать данные", time: "Время", low: "Мин.", high: "Макс.", close: "Последняя", listings: "Лоты" },
     kind: "Тип",
     variant: "Вариант",
