@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { SHORT_LINK_LOCALES, profileShortLinkTarget } from "@/lib/community/shortLink";
 import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
+import { membersOnlySection } from "@/lib/membersOnly";
 
 /**
  * Rinfresca la sessione Supabase (cookie) sulle sole pagine renderizzate sul server che leggono
@@ -23,7 +24,11 @@ export async function proxy(request: NextRequest) {
     return new NextResponse("410 Gone", { status: 410, headers: { "content-type": "text/plain; charset=utf-8", "x-robots-tag": "noindex" } });
   }
   let response = NextResponse.next({ request });
-  if (!supabaseEnabled) return response;
+  // Sezioni riservate agli iscritti (03/11/2026, src/lib/membersOnly.ts): senza accesso, allo stesso indirizzo, la pagina
+  // sfocata con l'invito a registrarsi. Senza Supabase (demo locale) nessuno può accedere, quindi la vedono tutti.
+  const gate = membersOnlySection(pathname);
+  const membersOnly = () => NextResponse.rewrite(new URL(`/${gate!.locale}/members-only/${gate!.section}`, request.url));
+  if (!supabaseEnabled) return gate ? membersOnly() : response;
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       getAll: () => request.cookies.getAll(),
@@ -37,6 +42,7 @@ export async function proxy(request: NextRequest) {
   // getClaims e non getUser (17/10/2026): rinnova il token scaduto come prima, ma la firma la controlla qui con la chiave
   // pubblica ES256 invece di chiedere a Supabase a ogni pagina (vedi `currentUser` in src/lib/supabase/server.ts)
   const { data } = await supabase.auth.getClaims();
+  if (gate && !data?.claims?.sub) return membersOnly();
   // Pagine private senza accesso: al login con un 307 da qui (17/10/2026). Dentro le pagine il `redirect()` non basta più:
   // il loading.tsx di /account fa partire la risposta prima, e il rimando diventerebbe un 200 con un refresh nella pagina.
   const account = /^\/(en|it|es|fr|pt|de|ru)\/account(?:\/|$)/.exec(pathname);
@@ -52,10 +58,11 @@ export async function proxy(request: NextRequest) {
 // nuova va aggiunta a mano su ogni riga, come lo spagnolo il 25/09/2026 (ES-06).
 export const config = {
   matcher: [
-    // Mercato in prova riservata (18/10/2026, MARKET_PUBLIC spento): le pagine leggono la sessione per sapere se chi guarda
-    // è admin; quando il Mercato si apre a tutti queste due righe si possono togliere
+    // Mercato e Analytics riservati agli iscritti (03/11/2026, src/lib/membersOnly.ts): qui si decide chi vede la pagina
+    // vera e chi quella sfocata (dal 18/10 al 03/11/2026 il Mercato era in prova riservata ai soli admin)
     "/:locale(en|it|es|fr|pt|de|ru)/market",
     "/:locale(en|it|es|fr|pt|de|ru)/market/:path*",
+    "/:locale(en|it|es|fr|pt|de|ru)/analytics",
     "/:locale(en|it|es|fr|pt|de|ru)/account",
     // "Modifica la mia pagina pubblica" (01/10/2026): profilo pubblico, foto e vetrina, pagina renderizzata sul server
     "/:locale(en|it|es|fr|pt|de|ru)/account/profile",

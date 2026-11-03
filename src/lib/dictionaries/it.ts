@@ -30,7 +30,7 @@ export const it: Dictionary = {
     crimsonCup: "Crimson Cup",
     cards: "Carte",
     decks: "Mazzi",
-    events: "Tornei ed Eventi",
+    events: "Tornei",
     about: "Chi siamo",
     builder: "Deck builder",
     draft: "Draft",

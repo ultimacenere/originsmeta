@@ -35,7 +35,7 @@ export const ru: Dictionary = {
     crimsonCup: "Crimson Cup",
     cards: "Карты",
     decks: "Колоды",
-    events: "Турниры и события",
+    events: "Турниры",
     about: "О нас",
     builder: "Конструктор колод",
     draft: "Драфт",

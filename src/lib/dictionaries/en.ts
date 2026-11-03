@@ -28,7 +28,7 @@ export const en = {
     crimsonCup: "Crimson Cup",
     cards: "Cards",
     decks: "Decks",
-    events: "Tournaments & Events",
+    events: "Tournaments",
     about: "About",
     builder: "Deck builder",
     draft: "Draft",

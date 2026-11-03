@@ -15,6 +15,7 @@ import { directoryIndexable } from "./community/creatorDirectory";
 import type { SitemapComic } from "./community/comics";
 import { isEarly } from "./tracker/stats";
 import { ANALYTICS_PUBLIC } from "./community/badges";
+import { ANALYTICS_MEMBERS_ONLY } from "./membersOnly";
 import { crimsonQualifiers } from "./data/crimsonCup";
 import { withStats } from "./crimsonCup";
 
@@ -208,8 +209,9 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/tier-list/votes", section: "pages", route: "/tier-list/votes", dates: [data.cardVotes?.latest] },
     // Analytics, le statistiche (dal 12/10/2026 in /analytics; prima /tier-list/win-rate, ora un 308): solo quando la pagina
     // si indicizza (almeno 100 partite nella patch mostrata); sotto è noindex e fuori da hreflang. I numeri cambiano a ogni
-    // partita: le date sono quelle del modello. Mai in sitemap finché ANALYTICS_PUBLIC è spento.
-    ...(ANALYTICS_PUBLIC && data.winrateGames && !isEarly(data.winrateGames)
+    // partita: le date sono quelle del modello. Mai in sitemap finché ANALYTICS_PUBLIC è spento, né finché è riservata agli
+    // iscritti (03/11/2026): il crawler troverebbe la pagina sfocata, che è noindex.
+    ...(ANALYTICS_PUBLIC && !ANALYTICS_MEMBERS_ONLY && data.winrateGames && !isEarly(data.winrateGames)
       ? [{ path: "/analytics", section: "pages", route: "/analytics", dates: [] } satisfies SitemapPage]
       : []),
     // Crimson Cup (20/10/2026): i numeri ufficiali di Koin, statici; la data è quella dell'ultima lettura delle tabelle.

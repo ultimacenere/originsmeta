@@ -73,6 +73,8 @@ const sections = [
   // tracker dei prezzi del mercato di Steam (17/10/2026)
   "market",
   "login",
+  // la pagina sfocata delle sezioni riservate agli iscritti (03/11/2026): il proxy la mostra al posto di /market e /analytics
+  "members-only",
   "metashifting",
   "news",
   "privacy",

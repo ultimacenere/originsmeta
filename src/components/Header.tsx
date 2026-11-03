@@ -4,6 +4,7 @@ import { Wordmark } from "./Wordmark";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { LockMark } from "./LockMark";
 import { MARKET_PUBLIC } from "@/lib/community/badges";
+import { MARKET_MEMBERS_ONLY } from "@/lib/membersOnly";
 import { AccountMenu } from "./AccountMenu";
 import { AutoCloseDetails } from "./AutoCloseDetails";
 import { NavLink } from "./NavLink";
@@ -124,7 +125,8 @@ export function navItems(dict: Dictionary, locale: Locale): NavItem[] {
     // il tracker dei prezzi del Mercato di Steam fra le voci principali, al posto delle FAQ (18/10/2026, Pierluigi: "sposta
     // mercato e il suo lucchetto nel main menu, voglio che gli utenti vedano"; il 18/10 era stato per poche ore nel
     // sottomenu Database): con il lucchetto finché è in prova riservata (MARKET_PUBLIC spento: "solo io e Davdas")
-    { label: dict.nav.market, path: "/market", locked: !MARKET_PUBLIC },
+    // senza lucchetto dal 03/11/2026: aperto agli iscritti (src/lib/membersOnly.ts), chi non lo è trova l'invito a registrarsi
+    { label: dict.nav.market, path: "/market", locked: !MARKET_PUBLIC && !MARKET_MEMBERS_ONLY },
   ];
 }
 

@@ -42,6 +42,8 @@ import {
 import { marketLabels } from "../marketLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { MARKET_PUBLIC, canSeeMarket } from "../community/badges.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { ANALYTICS_MEMBERS_ONLY, MARKET_MEMBERS_ONLY, membersOnlySection } from "../membersOnly.ts";
 
 const steamRow = (over: Record<string, unknown> = {}) => ({
   name: "Lord Hades",
@@ -327,6 +329,22 @@ describe("prova riservata del Mercato (18/10/2026)", () => {
     const proxy = fs.readFileSync(new URL("../../proxy.ts", import.meta.url), "utf8");
     assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\|de\|ru\)\/market"/);
     assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\|de\|ru\)\/market\/:path\*"/);
+  });
+});
+
+describe("Mercato e Analytics riservati agli iscritti (03/11/2026)", () => {
+  test("il Mercato è riservato tutto, di Analytics solo /analytics", () => {
+    assert.equal(MARKET_MEMBERS_ONLY, true);
+    assert.equal(ANALYTICS_MEMBERS_ONLY, true);
+    for (const p of ["/it/market", "/en/market/", "/ru/market/demo", "/de/market/some-item", "/pt/market/demo/x"]) assert.deepEqual(membersOnlySection(p)?.section, "market", p);
+    assert.deepEqual(membersOnlySection("/fr/analytics"), { locale: "fr", section: "analytics" });
+    for (const p of ["/it/analytics/crimson-cup", "/it/analytics/crimson-cup/playoffs", "/it/tracker", "/it/marketing", "/xx/market", "/market", "/it/tournaments"]) assert.equal(membersOnlySection(p), null, p);
+  });
+  test("il proxy fa passare /analytics e scambia la pagina per chi non ha l'accesso", () => {
+    const proxy = fs.readFileSync(new URL("../../proxy.ts", import.meta.url), "utf8");
+    assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\|de\|ru\)\/analytics"/);
+    assert.match(proxy, /if \(gate && !data\?\.claims\?\.sub\) return membersOnly\(\);/);
+    assert.match(proxy, /members-only/);
   });
   test("pagina riservata e lucchetto nelle quattro lingue", () => {
     for (const l of Object.values(marketLabels)) assert.ok(l.locked.text.length > 40 && l.locked.kicker && l.locked.back);
