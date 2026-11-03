@@ -173,6 +173,348 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Dr. Frank, il boss della missione 12, e le sue otto carte nuove (04/11/2026). Pierluigi: "nuovo boss e nuove carte
+    // usciranno questo weekend [video di ZulsoiD] guarda sto video, intanto cerca l'annuncio e crea una news". Fonti: il post
+    // Steam "Happy Halloween, Dr. Frank is coming" (31/10/2026, 16:41 UTC, apix) con la sua grafica, che danno mercoledì 4
+    // novembre (non il weekend); sul Discord ufficiale l'offerta di apix del 29/10 (500 recensioni su Steam → missione 12
+    // in anticipo), "You all did it! 500 reviews!" di Mawr (31/10, 01:41 UTC) e "Balance Patch will be tomorrow when
+    // Dr. Frank arrives" di Mawr (03/11, 18:22 UTC); le carte dalla cartella della Bounty Blitz del Creator Program (02/11:
+    // Koin chiede ai creator di rivelarle con quei file; originali e provenienza in 10_Materiale_Koin/2026-11-02_dr-frank-bounty
+    // sul Drive); il video di ZulsoiD (03/11) per le prime impressioni, quello di Robip per It's Alive a inizio partita
+    // ("non ci hanno detto"). Le otto carte erano già nel database fra le rimosse, con costo e statistiche uguali a quelle
+    // di Koin: i testi inglesi qui sono quelli delle carte di Koin, le altre lingue una traduzione nostra con il glossario
+    // del gioco. Da fare all'uscita: carte attive, testi letti nel gioco nelle sette lingue, patch notes del bilanciamento.
+    // Immagini: scripts/dr-frank-images.mjs (carte intere; in copertina le otto nella cornice ALPHA, perché la grafica del
+    // post Steam è la copertina di balance-patch-dr-frank-roadmap-ama, la news del 02/11 su patch, AMA e fine stagione
+    // preparata da un'altra sessione sul branch claude/patch-roadmap-announcements-02ed70: questa racconta il boss e le
+    // carte, l'AMA lo lascia a quella).
+    slug: "dr-frank-boss-new-cards",
+    image: "/media/news-dr-frank-cards.webp",
+    url: "https://store.steampowered.com/news/app/4429430/view/1847920302242676",
+    source: "steam",
+    guides: ["origins-tcg-legendaries"],
+    cards: ["dr-frank", "its-alive", "franks-monster", "franken-bride", "morgan-le-fay", "doppelganger", "necromancer", "red-knight"],
+    date: "2026-11-04",
+    title: n(
+      "Dr. Frank arrives in Origins TCG on 4 November: the new boss and his eight new cards",
+      "Dr. Frank arriva su Origins TCG il 4 novembre: il nuovo boss e le sue otto carte nuove",
+      "Dr. Frank llega a Origins TCG el 4 de noviembre: el nuevo jefe y sus ocho cartas nuevas",
+    ),
+    metaTitle: n(
+      "Dr. Frank in Origins TCG: new boss and 8 new cards",
+      "Dr. Frank su Origins TCG: il nuovo boss e 8 carte nuove",
+      "Dr. Frank en Origins TCG: el nuevo jefe y 8 cartas nuevas",
+    ),
+    description: n(
+      "Dr. Frank, the new Origins TCG boss, arrives on Wednesday 4 November with a balance patch and eight new cards: here they are, one by one.",
+      "Dr. Frank, il nuovo boss di Origins TCG, arriva mercoledì 4 novembre con una patch di bilanciamento e otto carte nuove: eccole una per una.",
+      "Dr. Frank, el nuevo jefe de Origins TCG, llega el miércoles 4 de noviembre con un parche de equilibrio y ocho cartas nuevas: aquí están, una a una.",
+    ),
+    summary: n(
+      "Dr. Frank, the next boss of Origins TCG, arrives on Wednesday 4 November 2026, a week earlier than planned because players reached 500 reviews on Steam. He brings eight new cards, which Koin Games revealed through its creators: Dr. Frank himself is a Legendary, and six of the eight are Evil. A balance patch lands the same day.",
+      "Dr. Frank, il prossimo boss di Origins TCG, arriva mercoledì 4 novembre 2026, una settimana prima del previsto perché i giocatori hanno raggiunto le 500 recensioni su Steam. Porta otto carte nuove, che Koin Games ha fatto rivelare ai suoi creator: lo stesso Dr. Frank è una Leggendaria, e sei carte su otto sono Malvagie. Lo stesso giorno arriva una patch di bilanciamento.",
+      "Dr. Frank, el próximo jefe de Origins TCG, llega el miércoles 4 de noviembre de 2026, una semana antes de lo previsto porque los jugadores alcanzaron las 500 reseñas en Steam. Trae ocho cartas nuevas, que Koin Games ha revelado a través de sus creadores: el propio Dr. Frank es una Legendaria, y seis de las ocho son Malvadas. Ese mismo día llega un parche de equilibrio.",
+    ),
+    highlights: {
+      en: [
+        { label: "Wednesday 4 November", text: "Dr. Frank, the boss of mission 12, arrives with new cards", anchor: "arrival" },
+        { label: "A week early", text: "players reached the 500 Steam reviews Koin asked for", anchor: "reviews" },
+        { label: "Eight new cards", text: "a Legendary, a spell and six characters, six of them Evil", anchor: "cards" },
+        { label: "The graveyard comes back", text: "Dr. Frank and It's Alive summon characters from your graveyard", anchor: "graveyard" },
+        { label: "A new keyword", text: "Red Knight brings Ongoing, which no card in the game has today", anchor: "red-knight" },
+        { label: "Balance patch", text: "Koin's Studio Head says it arrives with Dr. Frank", anchor: "balance" },
+        { label: "Try them now", text: "build a deck with the eight cards in our Theory craft", anchor: "theory-craft" },
+      ],
+      it: [
+        { label: "Mercoledì 4 novembre", text: "Dr. Frank, il boss della missione 12, arriva con carte nuove", anchor: "arrivo" },
+        { label: "Una settimana prima", text: "i giocatori hanno raggiunto le 500 recensioni su Steam chieste da Koin", anchor: "recensioni" },
+        { label: "Otto carte nuove", text: "una Leggendaria, una magia e sei personaggi, sei carte Malvagie", anchor: "carte" },
+        { label: "Il cimitero torna in campo", text: "Dr. Frank e It's Alive evocano personaggi dal tuo cimitero", anchor: "cimitero" },
+        { label: "Una parola chiave nuova", text: "Red Knight porta Ongoing, che oggi nessuna carta del gioco ha", anchor: "red-knight" },
+        { label: "Patch di bilanciamento", text: "lo Studio Head di Koin dice che arriva con Dr. Frank", anchor: "bilanciamento" },
+        { label: "Provale subito", text: "costruisci un mazzo con le otto carte nel nostro Theory craft", anchor: "theory-craft" },
+      ],
+      es: [
+        { label: "Miércoles 4 de noviembre", text: "Dr. Frank, el jefe de la misión 12, llega con cartas nuevas", anchor: "llegada" },
+        { label: "Una semana antes", text: "los jugadores alcanzaron las 500 reseñas en Steam que pedía Koin", anchor: "resenas" },
+        { label: "Ocho cartas nuevas", text: "una Legendaria, un hechizo y seis personajes, seis cartas Malvadas", anchor: "cartas" },
+        { label: "El cementerio vuelve", text: "Dr. Frank e It's Alive invocan personajes de tu cementerio", anchor: "cementerio" },
+        { label: "Una palabra clave nueva", text: "Red Knight trae Ongoing, que hoy no tiene ninguna carta del juego", anchor: "red-knight" },
+        { label: "Parche de equilibrio", text: "el Studio Head de Koin dice que llega con Dr. Frank", anchor: "equilibrio" },
+        { label: "Pruébalas ya", text: "construye un mazo con las ocho cartas en nuestro Theory craft", anchor: "theory-craft" },
+      ],
+    },
+    body: n(
+      `## Dr. Frank arrives on Wednesday 4 November {#arrival}
+
+"The next boss Dr. Frank is coming to Origins next week, which will feature a deck full of new cards." Koin Games announced it on Steam on 31 October 2026, Halloween, in a post titled "Happy Halloween, Dr. Frank is coming": the date is **Wednesday 4 November**. Dr. Frank is the boss of mission 12, the next of the missions against the game's AI, and he brings the new cards with him. When we published this article Koin had not yet said at what time the update arrives.
+
+## A week early, thanks to the reviews {#reviews}
+
+Dr. Frank was due a week later. On 29 October, on the official Discord, apix of Koin made the players an offer: about 10,000 people had played the day before, but only 200 had left a review on Steam; with 500 reviews by the end of the week, mission 12 would come the following week, "earlier than planned". The goal was reached in less than two days. On 31 October Koin's Studio Head Mawr wrote: "You all did it! 500 reviews! The boss is coming a week early." The Steam graphic says the same: "Because you hit the goal, Dr. Frank drops a full week ahead of schedule."
+
+## The eight new cards {#cards}
+
+On 2 November Koin gave its creators early access to "all eight new Origins cards", with the official images to reveal them: they are the cards in the pictures below. Six of the eight are Evil. All eight were already in our database, among the cards removed from the game, with the same cost and the same stats.
+
+| Card | Cost | Stats | Type and keywords |
+|---|---|---|---|
+| [Dr. Frank](/en/cards/dr-frank) | 6 | 2/2 | Legendary, Evil |
+| [It's Alive](/en/cards/its-alive) | 3 | – | Spell |
+| [Frank's Monster](/en/cards/franks-monster) | 6 | 5/4 | Evil, Rebirth |
+| [Franken Bride](/en/cards/franken-bride) | 5 | 4/4 | Evil, Rebirth |
+| [Morgan le Fay](/en/cards/morgan-le-fay) | 2 | 1/3 | Evil, On Reveal |
+| [Doppelganger](/en/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/en/cards/necromancer) | 4 | 2/2 | Evil, On Reveal |
+| [Red Knight](/en/cards/red-knight) | 2 | 4/1 | Trample, Ongoing |
+
+### Dr. Frank and It's Alive: the graveyard comes back {#graveyard}
+
+![The official Dr. Frank and It's Alive cards by Koin Games: Dr. Frank, Legendary, 6 mana, 2/2; It's Alive, a 3-mana spell](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank is a Legendary: "Before combat, summon a random character from your graveyard on a random space." It's Alive is a 3-mana spell that does the same thing once: "Summon a random character from your graveyard to a random space." Koin has not said whether It's Alive is the card Dr. Frank puts in your hand at the start of a game: ZulsoiD presents it that way in his video, Robip thinks it likely.
+
+### Frank's Monster and Franken Bride: Rebirth {#rebirth}
+
+![The official Frank's Monster and Franken Bride cards by Koin Games, both Evil and with Rebirth](/media/news-dr-frank-rebirth.webp)
+
+Both have **Rebirth**, the keyword of Mummy and Phuong Hoang, and both do something when they come back. Frank's Monster, 6 mana for a 5/4: "When I enter play from the graveyard, double my ⚔️." Franken Bride, 5 mana for a 4/4: "When I enter play from the graveyard, heal 4 damage from your barrier here." In the creators' videos the Monster comes back as a 10/1 and the Bride as a 4/1.
+
+### Morgan le Fay, Doppelganger and Necromancer: discard {#discard}
+
+![The official Morgan le Fay, Doppelganger and Necromancer cards by Koin Games: three Evil characters for discard decks](/media/news-dr-frank-discard.webp)
+
+Three cards for discard decks, the ones built around Dracula, Koschei and Aladdin.
+
+- [Morgan le Fay](/en/cards/morgan-le-fay), 2 mana for a 1/3: "On Reveal: Discard your right-most card. Add a random spell to your hand and reduce its cost by 2."
+- [Doppelganger](/en/cards/doppelganger), 4 mana for a 2/2: "When you discard a character, I transform into a copy of that character."
+- [Necromancer](/en/cards/necromancer), 4 mana for a 2/2: "On Reveal: Discard a random card to add 2 Zombies [2⚔️/2❤️] to your hand. If you discarded an Evil card, summon those Zombies instead."
+
+### Red Knight brings Ongoing {#red-knight}
+
+![The official Red Knight card by Koin Games: 2 mana, 4/1, Trample and Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/en/cards/red-knight), 2 mana for a 4/1: "Trample. Ongoing: The character across from me has Trample." **Ongoing** marks an ability that is always active while the card is in play, and no card in the game has it today: as long as Red Knight is on the board, the character across from it has Trample too.
+
+## A balance patch on the same day {#balance}
+
+"Balance Patch will be tomorrow when Dr. Frank arrives", Mawr wrote on the Discord on 3 November. The changes are not public yet: when the patch notes come out we will publish them, and [MetaShifting](/en/metashifting) will show what changes card by card. Until then the stats on OriginsMeta are those of [patch 0.7](/en/news/patch-0-7).
+
+## What the creators say {#creators}
+
+In his [video of 3 November](https://www.youtube.com/watch?v=tU9muG1MZts) ZulsoiD goes through all eight cards. His first impressions, which are opinions and not data:
+
+- Dr. Frank and It's Alive are value for midrange and control decks: bringing back a character that costs 4 or more with a 3-mana spell is already a gain. A character summoned this way does not trigger its On Reveal, so Boogeyman and Asanbosam come back without their drawback.
+- Frank's Monster is "right now the strongest Rebirth card": a 5/4 that blocks twice.
+- Franken Bride can take Bridge Troll's place in decks that want to slow the damage down.
+- Morgan le Fay is worth more for the discard than for the spell, even if an Obliterate for 7 or a Rain of Arrows for 3 are welcome. Play Ugly Duckling, then Morgan le Fay discarding Aladdin: Aladdin enters the board and Ugly Duckling transforms.
+- Doppelganger wants characters that cost 4 or more, above all Dracula and Koschei.
+- Necromancer convinces him less: today's discard decks play few Evil cards (King Shahryar, Dracula, Koschei), and for one more mana Three Musketeers gives a similar board with First Strike.
+- Red Knight is a card for aggro decks that grows with every buff, for example with Glinda, but it can struggle against Baby Bear, Bagheera and Musketeer, all played a lot right now.
+
+Robip has also gone through the eight cards, [in Italian](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Try them now on OriginsMeta {#theory-craft}
+
+The eight cards are in the [card database](/en/cards) with the "Not in game" filter, and in [Theory craft](/en/theory-craft) you can already build a deck with them: the decks you publish go among the [theory craft decks](/en/theory-craft/decks). When the update is in the game we will mark them as game cards and check their texts in all seven languages; the decks built with them will then move among the single decks by themselves.
+
+## What we don't know yet {#unknown}
+
+- At what time the update arrives on 4 November.
+- How Dr. Frank and his cards are unlocked, and whether they can be used in ranked from the first day.
+- Whether It's Alive is the card Dr. Frank gives you at the start of a game.
+- What the balance patch changes.
+
+Sources: the Steam post "Happy Halloween, Dr. Frank is coming" (31 October 2026) and its graphic; the messages of apix (29 October) and of Mawr (31 October and 3 November) on the official Origins TCG Discord; the card images Koin Games gave its creators to reveal the cards (2 November); ZulsoiD's video (3 November). Illustrations: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+      `## Dr. Frank arriva mercoledì 4 novembre {#arrivo}
+
+"Il prossimo boss, Dr. Frank, arriva su Origins la settimana prossima, con un mazzo pieno di carte nuove." Koin Games l'ha annunciato su Steam il 31 ottobre 2026, il giorno di Halloween, con il post "Happy Halloween, Dr. Frank is coming": la data è **mercoledì 4 novembre**. Dr. Frank è il boss della missione 12, la prossima delle missioni contro l'IA del gioco, e porta con sé le carte nuove. Quando abbiamo pubblicato questo articolo Koin non aveva ancora detto a che ora arriva l'aggiornamento.
+
+## Una settimana prima, grazie alle recensioni {#recensioni}
+
+Dr. Frank doveva arrivare una settimana dopo. Il 29 ottobre, sul Discord ufficiale, apix di Koin ha fatto una proposta ai giocatori: il giorno prima avevano giocato circa 10.000 persone, ma solo 200 avevano lasciato una recensione su Steam; con 500 recensioni entro la fine della settimana, la missione 12 sarebbe uscita la settimana successiva, "prima del previsto". L'obiettivo è arrivato in meno di due giorni. Il 31 ottobre Mawr, Studio Head di Koin, ha scritto: "Ce l'avete fatta! 500 recensioni! Il boss arriva con una settimana di anticipo". La grafica del post su Steam dice lo stesso: "Visto che avete raggiunto l'obiettivo, Dr. Frank arriva con una settimana intera di anticipo".
+
+## Le otto carte nuove {#carte}
+
+Il 2 novembre Koin ha dato ai suoi creator l'accesso in anteprima a "tutte e otto le nuove carte di Origins", con le immagini ufficiali per rivelarle: sono le carte delle immagini qui sotto. Sei carte su otto sono Malvagie. Tutte e otto erano già nel nostro database, fra le carte rimosse dal gioco, con lo stesso costo e le stesse statistiche.
+
+| Carta | Costo | Statistiche | Tipo e parole chiave |
+|---|---|---|---|
+| [Dr. Frank](/it/cards/dr-frank) | 6 | 2/2 | Leggendaria, Evil |
+| [It's Alive](/it/cards/its-alive) | 3 | – | Magia |
+| [Frank's Monster](/it/cards/franks-monster) | 6 | 5/4 | Evil, Rinascita |
+| [Franken Bride](/it/cards/franken-bride) | 5 | 4/4 | Evil, Rinascita |
+| [Morgan le Fay](/it/cards/morgan-le-fay) | 2 | 1/3 | Evil, Alla rivelazione |
+| [Doppelganger](/it/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/it/cards/necromancer) | 4 | 2/2 | Evil, Alla rivelazione |
+| [Red Knight](/it/cards/red-knight) | 2 | 4/1 | Travolgere, Ongoing |
+
+Le immagini sono le carte inglesi di Koin; i testi in italiano qui sotto sono una traduzione nostra con il glossario del gioco, che confronteremo con il gioco appena l'aggiornamento sarà uscito.
+
+### Dr. Frank e It's Alive: il cimitero torna in campo {#cimitero}
+
+![Le carte ufficiali di Dr. Frank e It's Alive, di Koin Games: Dr. Frank, Leggendaria, 6 mana, 2/2; It's Alive, magia da 3 mana](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank è una Leggendaria: "Prima del combattimento, evoca un personaggio casuale dal tuo cimitero su uno spazio casuale". It's Alive è una magia da 3 mana che fa la stessa cosa una volta: "Evoca un personaggio casuale dal tuo cimitero su uno spazio casuale". Koin non ha detto se It's Alive è la carta che Dr. Frank ti mette in mano a inizio partita: ZulsoiD nel suo video la presenta così, Robip lo ritiene probabile.
+
+### Frank's Monster e Franken Bride: la Rinascita {#rinascita}
+
+![Le carte ufficiali di Frank's Monster e Franken Bride, di Koin Games, Malvagie e con Rinascita](/media/news-dr-frank-rebirth.webp)
+
+Hanno tutte e due **Rinascita**, la parola chiave di Mummy e Phuong Hoang, e tutte e due fanno qualcosa quando tornano. Frank's Monster, 6 mana per un 5/4: "Quando entro in gioco dal cimitero, raddoppio la mia ⚔️". Franken Bride, 5 mana per un 4/4: "Quando entro in gioco dal cimitero, cura 4 danni alla tua barriera qui". Nei video dei creator il Monster torna come un 10/1 e la Bride come un 4/1.
+
+### Morgan le Fay, Doppelganger e Necromancer: lo scarto {#scarto}
+
+![Le carte ufficiali di Morgan le Fay, Doppelganger e Necromancer, di Koin Games: tre personaggi Malvagi per i mazzi che scartano](/media/news-dr-frank-discard.webp)
+
+Tre carte per i mazzi che scartano, quelli costruiti attorno a Dracula, Koschei e Aladdin.
+
+- [Morgan le Fay](/it/cards/morgan-le-fay), 2 mana per un 1/3: "Alla rivelazione: Scarta la carta più a destra della tua mano. Aggiungi una magia casuale alla tua mano e riduci il suo costo di 2".
+- [Doppelganger](/it/cards/doppelganger), 4 mana per un 2/2: "Quando scarti un personaggio, mi trasformo in una copia di quel personaggio".
+- [Necromancer](/it/cards/necromancer), 4 mana per un 2/2: "Alla rivelazione: Scarta una carta casuale per aggiungere 2 Zombie [2⚔️/2❤️] alla tua mano. Se hai scartato una carta Malvagia, evoca invece quegli Zombie".
+
+### Red Knight porta Ongoing {#red-knight}
+
+![La carta ufficiale di Red Knight, di Koin Games: 2 mana, 4/1, Travolgere e Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/it/cards/red-knight), 2 mana per un 4/1: "Travolgere. Ongoing: Il personaggio di fronte a me ha Travolgere". **Ongoing** indica un'abilità sempre attiva finché la carta è in gioco, e oggi nessuna carta del gioco ce l'ha: finché Red Knight è sul tabellone, anche il personaggio di fronte a lui ha Travolgere.
+
+## Una patch di bilanciamento lo stesso giorno {#bilanciamento}
+
+"La patch di bilanciamento arriva domani, con Dr. Frank": l'ha scritto Mawr sul Discord il 3 novembre. Le modifiche non sono ancora pubbliche: appena usciranno le patch notes le pubblicheremo, e [MetaShifting](/it/metashifting) mostrerà che cosa cambia carta per carta. Fino ad allora le statistiche su OriginsMeta restano quelle della [patch 0.7](/it/news/patch-0-7).
+
+## Che cosa dicono i creator {#creator}
+
+Nel suo [video del 3 novembre](https://www.youtube.com/watch?v=tU9muG1MZts) ZulsoiD passa in rassegna tutte e otto le carte. Le sue prime impressioni, che sono opinioni e non dati:
+
+- Dr. Frank e It's Alive valgono per i mazzi midrange e control: riportare in campo un personaggio da 4 mana o più con una magia da 3 è già un guadagno. Un personaggio evocato così non attiva la sua abilità Alla rivelazione, quindi Boogeyman e Asanbosam tornano senza il loro svantaggio.
+- Frank's Monster è "adesso la carta con Rinascita più forte": un 5/4 che blocca due volte.
+- Franken Bride può prendere il posto di Bridge Troll nei mazzi che vogliono rallentare i danni.
+- Morgan le Fay vale più per lo scarto che per la magia, anche se un Obliterate a 7 o un Rain of Arrows a 3 fanno comodo. Giochi Ugly Duckling, poi Morgan le Fay scartando Aladdin: Aladdin entra sul tabellone e Ugly Duckling si trasforma.
+- Doppelganger vuole personaggi da 4 mana o più, soprattutto Dracula e Koschei.
+- Necromancer lo convince meno: i mazzi che scartano oggi giocano poche carte Malvagie (King Shahryar, Dracula, Koschei), e per un mana in più Three Musketeers dà un tabellone simile con Primo colpo.
+- Red Knight è una carta da aggro che cresce con ogni buff, per esempio con Glinda, ma può soffrire contro Baby Bear, Bagheera e Musketeer, molto giocate in questo momento.
+
+Anche Robip ha presentato le otto carte, [in italiano](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Provale subito su OriginsMeta {#theory-craft}
+
+Le otto carte sono nel [database carte](/it/cards) con il filtro "Non nel gioco", e nel [Theory craft](/it/theory-craft) puoi già costruirci un mazzo: quelli che pubblichi finiscono fra i [mazzi theory craft](/it/theory-craft/decks). Quando l'aggiornamento sarà nel gioco le segneremo come carte del gioco e confronteremo i testi in tutte e sette le lingue; i mazzi costruiti con loro passeranno da soli fra i mazzi singoli.
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- A che ora arriva l'aggiornamento il 4 novembre.
+- Come si sbloccano Dr. Frank e le sue carte, e se si possono usare in classificata dal primo giorno.
+- Se It's Alive è la carta che Dr. Frank dà a inizio partita.
+- Che cosa cambia la patch di bilanciamento.
+
+Fonti: il post Steam "Happy Halloween, Dr. Frank is coming" (31 ottobre 2026) e la sua grafica; i messaggi di apix (29 ottobre) e di Mawr (31 ottobre e 3 novembre) sul Discord ufficiale di Origins TCG; le immagini delle carte che Koin Games ha dato ai creator per rivelarle (2 novembre); il video di ZulsoiD (3 novembre). Le citazioni sono tradotte da noi. Illustrazioni: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+      `## Dr. Frank llega el miércoles 4 de noviembre {#llegada}
+
+"El próximo jefe, Dr. Frank, llega a Origins la semana que viene, con un mazo lleno de cartas nuevas." Koin Games lo anunció en Steam el 31 de octubre de 2026, el día de Halloween, con la publicación "Happy Halloween, Dr. Frank is coming": la fecha es el **miércoles 4 de noviembre**. Dr. Frank es el jefe de la misión 12, la siguiente de las misiones contra la IA del juego, y trae consigo las cartas nuevas. Cuando publicamos este artículo, Koin todavía no había dicho a qué hora llega la actualización.
+
+## Una semana antes, gracias a las reseñas {#resenas}
+
+Dr. Frank iba a llegar una semana después. El 29 de octubre, en el Discord oficial, apix, de Koin, hizo una propuesta a los jugadores: el día anterior habían jugado unas 10.000 personas, pero solo 200 habían dejado una reseña en Steam; con 500 reseñas antes del final de la semana, la misión 12 saldría la semana siguiente, "antes de lo previsto". El objetivo se alcanzó en menos de dos días. El 31 de octubre Mawr, Studio Head de Koin, escribió: "¡Lo consiguieron! ¡500 reseñas! El jefe llega una semana antes". La imagen de la publicación de Steam dice lo mismo: "Como se alcanzó el objetivo, Dr. Frank llega con una semana entera de adelanto".
+
+## Las ocho cartas nuevas {#cartas}
+
+El 2 de noviembre Koin dio a sus creadores acceso anticipado a "las ocho nuevas cartas de Origins", con las imágenes oficiales para revelarlas: son las cartas de las imágenes de abajo. Seis de las ocho son Malvadas. Las ocho ya estaban en nuestra base de datos, entre las cartas retiradas del juego, con el mismo coste y las mismas estadísticas.
+
+| Carta | Coste | Estadísticas | Tipo y palabras clave |
+|---|---|---|---|
+| [Dr. Frank](/es/cards/dr-frank) | 6 | 2/2 | Legendaria, Evil |
+| [It's Alive](/es/cards/its-alive) | 3 | – | Hechizo |
+| [Frank's Monster](/es/cards/franks-monster) | 6 | 5/4 | Evil, Renacer |
+| [Franken Bride](/es/cards/franken-bride) | 5 | 4/4 | Evil, Renacer |
+| [Morgan le Fay](/es/cards/morgan-le-fay) | 2 | 1/3 | Evil, Al revelar |
+| [Doppelganger](/es/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/es/cards/necromancer) | 4 | 2/2 | Evil, Al revelar |
+| [Red Knight](/es/cards/red-knight) | 2 | 4/1 | Arrollar, Ongoing |
+
+Las imágenes son las cartas en inglés de Koin; los textos en español de abajo son una traducción nuestra con el glosario del juego, que compararemos con el juego en cuanto salga la actualización.
+
+### Dr. Frank e It's Alive: el cementerio vuelve al tablero {#cementerio}
+
+![Las cartas oficiales de Dr. Frank e It's Alive, de Koin Games: Dr. Frank, Legendaria, 6 de maná, 2/2; It's Alive, hechizo de 3 de maná](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank es una Legendaria: "Antes del combate, invoca un personaje aleatorio de tu cementerio en un espacio aleatorio". It's Alive es un hechizo de 3 de maná que hace lo mismo una vez: "Invoca un personaje aleatorio de tu cementerio en un espacio aleatorio". Koin no ha dicho si It's Alive es la carta que Dr. Frank te pone en la mano al empezar la partida: ZulsoiD la presenta así en su vídeo, y Robip lo ve probable.
+
+### Frank's Monster y Franken Bride: Renacer {#renacer}
+
+![Las cartas oficiales de Frank's Monster y Franken Bride, de Koin Games, Malvadas y con Renacer](/media/news-dr-frank-rebirth.webp)
+
+Las dos tienen **Renacer**, la palabra clave de Mummy y Phuong Hoang, y las dos hacen algo al volver. Frank's Monster, 6 de maná por un 5/4: "Cuando entro en juego desde el cementerio, duplico mi ⚔️". Franken Bride, 5 de maná por un 4/4: "Cuando entro en juego desde el cementerio, cura 4 de daño de tu barrera aquí". En los vídeos de los creadores el Monster vuelve como un 10/1 y la Bride como un 4/1.
+
+### Morgan le Fay, Doppelganger y Necromancer: el descarte {#descarte}
+
+![Las cartas oficiales de Morgan le Fay, Doppelganger y Necromancer, de Koin Games: tres personajes Malvados para los mazos de descarte](/media/news-dr-frank-discard.webp)
+
+Tres cartas para los mazos de descarte, los que se construyen alrededor de Dracula, Koschei y Aladdin.
+
+- [Morgan le Fay](/es/cards/morgan-le-fay), 2 de maná por un 1/3: "Al revelar: Descarta la carta más a la derecha de tu mano. Añade un hechizo aleatorio a tu mano y reduce su coste en 2".
+- [Doppelganger](/es/cards/doppelganger), 4 de maná por un 2/2: "Cuando descartas un personaje, me transformo en una copia de ese personaje".
+- [Necromancer](/es/cards/necromancer), 4 de maná por un 2/2: "Al revelar: Descarta una carta aleatoria para añadir 2 Zombies [2⚔️/2❤️] a tu mano. Si descartaste una carta Malvada, invoca esos Zombies en su lugar".
+
+### Red Knight trae Ongoing {#red-knight}
+
+![La carta oficial de Red Knight, de Koin Games: 2 de maná, 4/1, Arrollar y Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/es/cards/red-knight), 2 de maná por un 4/1: "Arrollar. Ongoing: El personaje frente a mí tiene Arrollar". **Ongoing** marca una habilidad siempre activa mientras la carta está en juego, y hoy ninguna carta del juego la tiene: mientras Red Knight esté en el tablero, el personaje frente a él también tiene Arrollar.
+
+## Un parche de equilibrio el mismo día {#equilibrio}
+
+"El parche de equilibrio llega mañana, con Dr. Frank": lo escribió Mawr en el Discord el 3 de noviembre. Los cambios todavía no son públicos: en cuanto salgan las notas del parche las publicaremos, y [MetaShifting](/es/metashifting) mostrará qué cambia carta por carta. Hasta entonces las estadísticas de OriginsMeta siguen siendo las del [parche 0.7](/es/news/patch-0-7).
+
+## Qué dicen los creadores {#creadores}
+
+En su [vídeo del 3 de noviembre](https://www.youtube.com/watch?v=tU9muG1MZts) ZulsoiD repasa las ocho cartas. Sus primeras impresiones, que son opiniones y no datos:
+
+- Dr. Frank e It's Alive valen para los mazos midrange y control: traer de vuelta un personaje de 4 de maná o más con un hechizo de 3 ya es ganar. Un personaje invocado así no activa su habilidad Al revelar, así que Boogeyman y Asanbosam vuelven sin su desventaja.
+- Frank's Monster es "ahora mismo la carta con Renacer más fuerte": un 5/4 que bloquea dos veces.
+- Franken Bride puede ocupar el lugar de Bridge Troll en los mazos que quieren frenar el daño.
+- Morgan le Fay vale más por el descarte que por el hechizo, aunque un Obliterate a 7 o un Rain of Arrows a 3 vienen bien. Juegas Ugly Duckling y luego Morgan le Fay descartando a Aladdin: Aladdin entra en el tablero y Ugly Duckling se transforma.
+- Doppelganger quiere personajes de 4 de maná o más, sobre todo Dracula y Koschei.
+- Necromancer le convence menos: los mazos de descarte de hoy juegan pocas cartas Malvadas (King Shahryar, Dracula, Koschei), y por un maná más Three Musketeers da un tablero parecido con Primer golpe.
+- Red Knight es una carta para mazos aggro que crece con cada buff, por ejemplo con Glinda, pero puede sufrir contra Baby Bear, Bagheera y Musketeer, muy jugadas ahora mismo.
+
+Robip también ha repasado las ocho cartas, [en italiano](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Pruébalas ya en OriginsMeta {#theory-craft}
+
+Las ocho cartas están en la [base de datos de cartas](/es/cards) con el filtro "Fuera del juego", y en [Theory craft](/es/theory-craft) ya puedes construir un mazo con ellas: los que publiques van a los [mazos de theory craft](/es/theory-craft/decks). Cuando la actualización esté en el juego las marcaremos como cartas del juego y compararemos sus textos en los siete idiomas; los mazos construidos con ellas pasarán solos a los mazos individuales.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- A qué hora llega la actualización el 4 de noviembre.
+- Cómo se desbloquean Dr. Frank y sus cartas, y si se pueden usar en la clasificatoria desde el primer día.
+- Si It's Alive es la carta que Dr. Frank te da al empezar la partida.
+- Qué cambia el parche de equilibrio.
+
+Fuentes: la publicación de Steam "Happy Halloween, Dr. Frank is coming" (31 de octubre de 2026) y su imagen; los mensajes de apix (29 de octubre) y de Mawr (31 de octubre y 3 de noviembre) en el Discord oficial de Origins TCG; las imágenes de las cartas que Koin Games dio a sus creadores para revelarlas (2 de noviembre); el vídeo de ZulsoiD (3 de noviembre). Las citas están traducidas por nosotros. Ilustraciones: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+    ),
+    faq: {
+      en: [
+        { q: "When does Dr. Frank arrive in Origins TCG?", a: "On Wednesday 4 November 2026, a week earlier than planned because players reached 500 reviews on Steam. When we published this article Koin had not announced the time." },
+        { q: "What are Dr. Frank's new cards?", a: "Eight: Dr. Frank (Legendary, 6 mana, 2/2), It's Alive (spell, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) and Red Knight (2, 4/1)." },
+        { q: "Is there a balance patch with Dr. Frank?", a: "Yes: Koin's Studio Head Mawr wrote that the balance patch arrives with Dr. Frank on 4 November. The changes had not been published yet." },
+        { q: "Can I already build a deck with the new cards?", a: "On OriginsMeta, yes: the eight cards are in Theory craft, our deck builder with the cards that are not in the game, until the update is live." },
+      ],
+      it: [
+        { q: "Quando arriva Dr. Frank su Origins TCG?", a: "Mercoledì 4 novembre 2026, una settimana prima del previsto perché i giocatori hanno raggiunto le 500 recensioni su Steam. Quando abbiamo pubblicato questo articolo Koin non aveva annunciato l'ora." },
+        { q: "Quali sono le carte nuove di Dr. Frank?", a: "Otto: Dr. Frank (Leggendaria, 6 mana, 2/2), It's Alive (magia, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) e Red Knight (2, 4/1)." },
+        { q: "C'è una patch di bilanciamento con Dr. Frank?", a: "Sì: Mawr, Studio Head di Koin, ha scritto che la patch di bilanciamento arriva con Dr. Frank il 4 novembre. Le modifiche non erano ancora state pubblicate." },
+        { q: "Posso già costruire un mazzo con le carte nuove?", a: "Su OriginsMeta sì: le otto carte sono nel Theory craft, il nostro deck builder con le carte che non sono nel gioco, finché l'aggiornamento non esce." },
+      ],
+      es: [
+        { q: "¿Cuándo llega Dr. Frank a Origins TCG?", a: "El miércoles 4 de noviembre de 2026, una semana antes de lo previsto porque los jugadores alcanzaron las 500 reseñas en Steam. Cuando publicamos este artículo Koin no había anunciado la hora." },
+        { q: "¿Cuáles son las cartas nuevas de Dr. Frank?", a: "Ocho: Dr. Frank (Legendaria, 6 de maná, 2/2), It's Alive (hechizo, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) y Red Knight (2, 4/1)." },
+        { q: "¿Hay un parche de equilibrio con Dr. Frank?", a: "Sí: Mawr, Studio Head de Koin, escribió que el parche de equilibrio llega con Dr. Frank el 4 de noviembre. Los cambios todavía no se habían publicado." },
+        { q: "¿Puedo construir ya un mazo con las cartas nuevas?", a: "En OriginsMeta, sí: las ocho cartas están en Theory craft, nuestro deck builder con las cartas que no están en el juego, hasta que salga la actualización." },
+      ],
+    },
+  },
+  {
     // Intervista a SouL, secondo alla Crimson Cup (28/10/2026). Pierluigi: "ecco l'intervista a soul da mettere online,
     // studiala, va intervallata di immagini e le sue decklist devono diventare un deck da torneo e devono essere linkate e
     // i codici facilmente copiabili"; poi "l'intervistatore è davdas e non sono io": le domande e la firma sono di Davdas.
