@@ -841,8 +841,9 @@ perfetti", comandante `H0001` nei dati del gioco); i boss della Battaglia Boss h
 - **Lettura**: nella schermata VS (Leggendarie di tutti e due riconosciute) la finestra nascosta ritaglia il nome in basso a
   destra (`VS_OPP_NAME` in recognize.ts, frazioni dell'area `vs`), lo raddrizza (è in corsivo, `VS_NAME_SHEAR`) e lo
   ingrandisce (`VS_NAME_SCALE`), fino a tre ritagli per schermata; il processo principale lo legge con l'**OCR di
-  Windows** (Windows.Media.Ocr da PowerShell, `main/ocr.ts`: nessuna dipendenza nuova, niente rete; il PNG sta sul disco
-  il tempo della lettura). Il TextDetector di Chromium in Electron 44 non c'è (provato con le opzioni sperimentali).
+  Windows** (Windows.Media.Ocr, `main/ocr.ts`: nessuna dipendenza nuova, niente rete; fino alla 0.4.9 da PowerShell con
+  il PNG sul disco il tempo della lettura, dalla 0.4.10 con un programma nostro, vedi "OCR senza PowerShell"). Il
+  TextDetector di Chromium in Electron 44 non c'è (provato con le opzioni sperimentali, riprovato il 03/11 anche senza sandbox).
 - **Decisione** (`shared/botNames.ts`, test `botNames.test.ts`): bot se il nome intero è in `bot-names.json` (lettere e
   cifre, maiuscole, 0/O, 1/I, 5/S, 8/B ripiegati) o finisce con "(BOT)". Resta solo `{ ms, bot }`, mai il nome. La
   partita è contro un bot se lo dice la schermata VS più recente prima della fine (`botMatch`, entro 40 minuti); una
@@ -932,3 +933,35 @@ dipende.
   22/10: avviato il 19/10 alle 23:37 con Windows, partito davvero il 20/10 alle 10:05 con il gioco. L'unico modo per non
   averlo affatto prima del gioco sarebbero le opzioni di avvio di Steam (`"<percorso>\OriginsMeta Tracker.exe" %command%`),
   che ogni giocatore dovrebbe scrivere a mano: non fatto.
+
+## OCR senza PowerShell (0.4.10, 03/11/2026)
+
+- **Segnalazione** (un giocatore, girata da Pierluigi: "questo è un feedback molto preoccupante"): a ogni avvio del
+  tracker Norton blocca PowerShell, dice che è infetto da **"IDP.HELU.PSE96 - Command Line Detection"**, e le partite non
+  si registrano.
+- **Causa**: fino alla 0.4.9 l'OCR della schermata VS (nome dell'avversario per i bot, lega per la classificata) lanciava
+  `powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand <base64>`, fino a sette volte per
+  schermata VS (tre ritagli del nome, quattro della lega). È la riga di comando dei programmi malevoli, e gli antivirus
+  la bloccano a vista. Anche lo script dell'aggiornamento usava PowerShell (`Wait-Process`, lanciato da wscript e cmd).
+- **Rimedio**: `originsmeta-tracker-ocr.exe` (`tracker/src/ocr/OcrHelper.cs`, una trentina di KB), compilato da
+  `build.mjs` con il csc.exe di .NET Framework 4 che c'è in ogni Windows 10 e 11, contro i metadati di
+  `System32\WinMetadata` (niente SDK: le estensioni `AsTask` vogliono il Windows.winmd dell'SDK, quindi le operazioni
+  asincrone si aspettano nel programma). Legge il PNG dallo standard input, chiama Windows.Media.Ocr con le lingue del
+  profilo di Windows come prima e scrive le righe sullo standard output: niente file sul disco (la vecchia cartella
+  `ocr` nei dati dell'app si cancella all'avvio), niente rete. Ha versione, icona e nome dell'app nelle proprietà.
+  `package.mjs` lo mette in `resources\`, fuori da app.asar (un eseguibile dentro l'archivio non si lancia), e si ferma
+  se manca. `ocr.ts` lo cerca lì e poi in `dist/ocr` (sviluppo); dopo tre errori di fila (un antivirus che lo blocca)
+  l'OCR si ferma fino al riavvio dell'app, con l'uscita 3 (nessuna lingua OCR) subito. Lo script dell'aggiornamento
+  aspetta la chiusura dell'app con tasklist in un file, find e ping, con i programmi di System32 per percorso intero.
+  Test in `ocr.test.ts` (nessun PowerShell nei sorgenti dell'app, commenti esclusi) e `updateRules.test.ts`.
+- **Prova** (03/11, sul PC di Pierluigi): sulle 91 schermate VS salvate dal 10 al 12/10 (91 ritagli del nome e 91 della
+  lega, fatti come lo scanner) le 182 letture del programma sono identiche a quelle di PowerShell, sia dalla build sia dal
+  pacchetto, con gli stessi bot e le stesse classificate; 100–150 ms a lettura invece di 270. Lo script nuovo
+  dell'aggiornamento, lanciato da wscript come nell'app, ha aspettato un processo vero prima di copiare. Il TextDetector
+  di Chromium (stesso OCR, nessun programma esterno) in Electron 44 risponde "Text Detection not implemented", anche
+  con le opzioni sperimentali e senza sandbox.
+- **Quello che resta**: il programma, come l'app, non è firmato (Fase 5); un antivirus che giudica la reputazione dei
+  file nuovi può ancora fermarlo, e allora l'OCR si spegne da solo e le partite si registrano come prima, senza bot e
+  classificata. Il lanciatore dell'aggiornamento resta un VBScript con wscript (`launcherScript`). A chi ha avuto
+  l'avviso di Norton può servire ripristinare l'app dalla quarantena o metterla fra le eccezioni, e scaricare la 0.4.10
+  a mano se l'aggiornamento automatico non parte.

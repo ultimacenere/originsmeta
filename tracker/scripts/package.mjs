@@ -13,6 +13,8 @@
 //
 // Non firmata (Fase 5: certificato o Microsoft Store): Windows mostra "Windows ha protetto il PC" e si apre con
 // "Ulteriori informazioni" → "Esegui comunque". Dentro il pacchetto solo dist/ e package.json (asar): niente sorgenti.
+// Dalla 0.4.10 (03/11/2026) anche resources\originsmeta-tracker-ocr.exe, l'OCR di Windows senza PowerShell (ocr.ts):
+// fuori da app.asar, perché un eseguibile dentro l'archivio non si lancia; senza, il pacchetto non si fa.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -31,6 +33,8 @@ const legacyExe = "OriginsMeta Analytics.exe";
 const run = (cmd, args) => execFileSync(cmd, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
 
 run("node", ["build.mjs"]);
+const ocrExe = "originsmeta-tracker-ocr.exe";
+if (!fs.existsSync(path.join(root, "dist", "ocr", ocrExe))) throw new Error(`manca dist/ocr/${ocrExe}: serve il csc.exe di .NET Framework 4 (build.mjs)`);
 run("npx", [
   "--yes",
   "@electron/packager@20.3.0",
@@ -47,9 +51,11 @@ run("npx", [
   '--win32metadata.CompanyName="OriginsMeta"',
   `--win32metadata.FileDescription="${name}"`,
   `--win32metadata.ProductName="${name}"`,
-  // solo dist/ e package.json: sorgenti, script, risorse di partenza e uscite restano fuori
-  '--ignore="^/(src|scripts|assets|out|tsconfig\\.json|build\\.mjs|README\\.md|\\.gitignore)($|/)"',
+  // solo dist/ e package.json: sorgenti, script, risorse di partenza e uscite restano fuori; l'OCR va in resources\
+  '--ignore="^/(src|scripts|assets|out|tsconfig\\.json|build\\.mjs|README\\.md|\\.gitignore|dist/ocr)($|/)"',
+  `--extra-resource=dist/ocr/${ocrExe}`,
 ]);
+if (!fs.existsSync(path.join(folder, "resources", ocrExe))) throw new Error(`manca resources/${ocrExe} nel pacchetto`);
 
 const readme = `${name} ${version} (versione di prova, non firmata)
 

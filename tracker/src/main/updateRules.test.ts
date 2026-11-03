@@ -42,7 +42,13 @@ test("lanciatore dello script: cmd con la finestra nascosta, percorsi con spazi 
 
 test("script di installazione: aspetta l'app, copia, riapre", () => {
   const s = installScript({ pid: 4242, source: "C:\\Temp\\u\\app\\OriginsMeta Analytics-win32-x64", target: "C:\\Giochi\\OriginsMeta", exe: "C:\\Giochi\\OriginsMeta\\OriginsMeta Analytics.exe", log: "C:\\Temp\\u\\install.log" });
-  assert.match(s, /Wait-Process -Id 4242 -Timeout 60/);
+  // dalla 0.4.10 (03/11/2026) niente PowerShell: tasklist in un file accanto al log, find, al massimo 60 giri
+  assert.ok(!/powershell|wait-process/i.test(s), "niente PowerShell");
+  assert.ok(s.includes('"%SystemRoot%\\System32\\tasklist.exe" /FI "PID eq 4242" /FO CSV /NH > "C:\\Temp\\u\\processi.txt"'), "tasklist in un file");
+  assert.ok(s.includes('"%SystemRoot%\\System32\\find.exe" ",""4242""," "C:\\Temp\\u\\processi.txt"'), "find sul file");
+  assert.match(s, /if errorlevel 1 goto copia\r\n/);
+  assert.match(s, /if %n% geq 60 goto copia\r\n/);
+  assert.ok(s.indexOf(":copia") < s.indexOf("robocopy"), "copia dopo l'attesa");
   assert.ok(!s.includes("|"), "niente pipe");
   assert.match(s, /robocopy "C:\\Temp\\u\\app\\OriginsMeta Analytics-win32-x64" "C:\\Giochi\\OriginsMeta" \/E/);
   assert.match(s, /start "" "C:\\Giochi\\OriginsMeta\\OriginsMeta Analytics.exe"/);

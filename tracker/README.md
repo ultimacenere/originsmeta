@@ -16,6 +16,10 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
   collegamento e "Chiudi l'app". Il token si verifica all'avvio e ogni 4 ore (zero partite a `/api/tracker/sync`);
   rifiutato = blocco subito; sito irraggiungibile = 7 giorni di tolleranza dall'ultima verifica riuscita (salvata
   cifrata in `account.json`). Lo storico sul PC resta.
+- **OCR senza PowerShell** (0.4.10, 03/11/2026, `src/main/ocr.ts` e `src/ocr/OcrHelper.cs`; dettagli in docs/tracker.md,
+  "OCR senza PowerShell"): i ritagli della schermata VS (bot e classificata) li legge l'OCR di Windows attraverso
+  `originsmeta-tracker-ocr.exe`, un programma nostro compilato da `build.mjs` con il csc.exe di Windows e messo da
+  `package.mjs` in `resources\`. Prima passava da PowerShell con `-EncodedCommand`, e Norton bloccava l'app come infetta.
 - Icona accanto all'orologio; clic = finestra. La X della finestra chiude tutta l'app, overlay e Deck tracker compresi
   (dal 10/10/2026; prima la nascondeva). Avviata con Windows resta solo nell'icona e registra finché non si sceglie "Esci".
 - Riconosce la fine di ogni partita (statistiche del profilo), aspetta il replay (fino a 15 secondi) e salva la partita:
@@ -65,7 +69,7 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
   release `analytics-v…` su GitHub 30 s dopo l'avvio e ogni 3 ore, scarica lo zip dal nome fisso (solo da github.com,
   dimensione controllata), lo scompatta con il tar di Windows e, a gioco chiuso (dalla 0.3.7; prima fuori dalle
   partite), si chiude: uno script
-  (`Wait-Process`, robocopy) copia i file nuovi e la riapre. Registro in `%TEMP%\OriginsMeta-Analytics-update-<v>\`.
+  (attesa con tasklist e find, robocopy; fino alla 0.4.9 `Wait-Process` di PowerShell) copia i file nuovi e la riapre. Registro in `%TEMP%\OriginsMeta-Analytics-update-<v>\`.
   Prove: `ORIGINSMETA_UPDATE_FROM=<versione finta>`, `ORIGINSMETA_UPDATE_DELAY_MS`; spento con `ORIGINSMETA_NO_UPDATE=1`.
 - Tasto "Chiudi l'app" in alto a destra (11/10/2026), come la X e "Esci".
 - Interfaccia e menu dell'icona in inglese, italiano e spagnolo secondo la lingua di Windows.
@@ -75,6 +79,8 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
 ## Regole (da docs/tracker.md)
 
 - Solo lettura, mai il processo del gioco, mai i token della cache.
+- **Mai PowerShell** (0.4.10, 03/11/2026): gli antivirus bloccano le sue righe di comando lanciate da un'app sconosciuta
+  (Norton: "IDP.HELU.PSE96 - Command Line Detection"); test in `src/main/ocr.test.ts`.
 - **Mai dire se l'avversario è un bot o una persona**: niente segnale bot, modalità "BotBattle" o rank dell'avversario
   in nessuna parte dell'app (test in `src/main/watcher.test.ts`, `sync.test.ts`, `overlay.test.ts` e nel lettore).
 - Mai nomi né id di giocatori o partite; il mazzo completo dell'avversario resta sul PC.

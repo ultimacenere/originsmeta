@@ -75,6 +75,8 @@ export class FrameRecorder {
   constructor(userData: string, opts: { save: boolean; cards: CardInfo; onScan?: (f: ScanFrame) => void }, onChange: () => void = () => {}) {
     this.onScan = opts.onScan ?? (() => {});
     this.root = path.join(userData, "frames");
+    // fino alla 0.4.9 i ritagli per l'OCR passavano un attimo da questa cartella (ocr.ts): dalla 0.4.10 non serve più
+    fs.rm(path.join(userData, "ocr"), { recursive: true, force: true }, () => {});
     this.save = opts.save;
     this.cards = opts.cards;
     this.onChange = onChange;
@@ -289,7 +291,7 @@ export class FrameRecorder {
     const png = raw instanceof Uint8Array ? raw : raw instanceof ArrayBuffer ? new Uint8Array(raw) : null;
     if (!png) return;
     const ms = Date.now();
-    const text = await readNameText(path.join(this.root, "..", "ocr"), png);
+    const text = await readNameText(png);
     const bot = text !== null && isBotName(text);
     this.versus = [...this.versus.filter((v) => v.ms >= ms - VERSUS_LOOKBACK_MS), { ms, bot }];
     if (bot) this.event("versus", { bot: true });
@@ -305,7 +307,7 @@ export class FrameRecorder {
     if (!png) return;
     const ms = Date.now();
     if (this.leagues.some((r) => r.league && ms - r.ms <= SAME_VERSUS_MS)) return;
-    const text = await readNameText(path.join(this.root, "..", "ocr"), png);
+    const text = await readNameText(png);
     const league = isLeagueText(text);
     this.leagues = [...this.leagues.filter((r) => r.ms >= ms - VERSUS_LOOKBACK_MS), { ms, league }];
     if (league) this.event("versus", { ranked: true });

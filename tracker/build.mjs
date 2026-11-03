@@ -2,6 +2,7 @@
 // per il browser. Il lettore dei file (../src/lib/tracker/) entra nel pacchetto così com'è: una sola copia del codice,
 // con i test del sito.
 import { build } from "esbuild";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -39,4 +40,35 @@ for (const page of ["renderer", "overlay"]) {
   for (const f of fs.readdirSync(path.join(root, "assets/fonts"))) fs.copyFileSync(path.join(root, "assets/fonts", f), path.join(dist, page, "fonts", f));
   for (const f of ["logo-originsmeta.webp", "logo-originsmeta-sm.webp"]) fs.copyFileSync(path.join(root, "assets", f), path.join(dist, page, f));
 }
+
+// L'OCR di Windows senza PowerShell (03/11/2026, src/main/ocr.ts): dist/ocr/originsmeta-tracker-ocr.exe, compilato con
+// il csc.exe di .NET Framework 4 che c'è in ogni Windows, contro i metadati di System32\WinMetadata, con la versione e
+// l'icona dell'app. package.mjs lo mette accanto ad app.asar; senza csc l'app funziona ma senza OCR (bot e classificate).
+const windows = process.env.SystemRoot ?? "C:\\Windows";
+const csc = path.join(windows, "Microsoft.NET", "Framework64", "v4.0.30319", "csc.exe");
+if (process.platform === "win32" && fs.existsSync(csc)) {
+  const ocr = path.join(dist, "ocr");
+  fs.mkdirSync(ocr, { recursive: true });
+  const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  const info = path.join(ocr, "version.cs");
+  fs.writeFileSync(info, `[assembly: System.Reflection.AssemblyVersion("${version}.0")]\n[assembly: System.Reflection.AssemblyFileVersion("${version}.0")]\n`);
+  const meta = path.join(windows, "System32", "WinMetadata");
+  execFileSync(
+    csc,
+    [
+      "/nologo",
+      "/target:exe",
+      "/platform:anycpu",
+      "/optimize+",
+      `/out:${path.join(ocr, "originsmeta-tracker-ocr.exe")}`,
+      `/win32icon:${path.join(root, "assets", "icon.ico")}`,
+      ...["Windows.Foundation", "Windows.Graphics", "Windows.Media", "Windows.Storage"].map((n) => `/r:${path.join(meta, `${n}.winmd`)}`),
+      `/r:${path.join(path.dirname(csc), "System.Runtime.dll")}`,
+      path.join(root, "src", "ocr", "OcrHelper.cs"),
+      info,
+    ],
+    { stdio: "inherit" },
+  );
+  fs.rmSync(info);
+} else console.warn("build dell'app: csc.exe non trovato, niente OCR (dist/ocr/originsmeta-tracker-ocr.exe)");
 console.log("build dell'app: dist/");

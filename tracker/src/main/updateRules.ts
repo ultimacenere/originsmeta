@@ -73,16 +73,35 @@ export function launcherScript(cmdPath: string): string {
   return [`CreateObject("WScript.Shell").Run "${inner.replace(/"/g, '""')}", 0, False`, ""].join("\r\n");
 }
 
-/** Lo script che, chiusa l'app, copia la versione nuova sopra quella vecchia e la riapre (cmd di Windows). */
+/**
+ * Lo script che, chiusa l'app, copia la versione nuova sopra quella vecchia e la riapre (cmd di Windows).
+ *
+ * Aspetta che l'app sia davvero chiusa (al massimo un minuto circa) senza pipe: lanciato dall'app senza console, il
+ * "tasklist | find" di prima restava bloccato su find (prova dell'11/10/2026), quindi tasklist scrive in un file
+ * accanto al log e find legge quello; una pausa di un secondo con ping. Dalla 0.4.10 (03/11/2026) niente PowerShell:
+ * il suo Wait-Process, lanciato da wscript e cmd, è la catena che gli antivirus guardano storto (ocr.ts). I programmi
+ * di Windows con il percorso intero, così un find.exe di un'altra cartella del PATH non prende il posto di quello vero.
+ */
 export function installScript(input: { pid: number; source: string; target: string; exe: string; log: string }): string {
   const q = (p: string) => `"${p.replace(/"/g, "")}"`;
+  const sys = (exe: string) => `"%SystemRoot%\\System32\\${exe}"`;
+  const pid = Math.trunc(input.pid);
+  const list = q(`${input.log.replace(/[^\\/]*$/, "")}processi.txt`);
   return [
     "@echo off",
     "setlocal",
     `echo avviato >> ${q(input.log)}`,
-    // aspetta che l'app sia davvero chiusa (al massimo un minuto). Niente pipe: lanciato dall'app senza console, il
-    // "tasklist | find" di prima restava bloccato su find (prova dell'11/10/2026)
-    `powershell -NoProfile -NonInteractive -Command "Wait-Process -Id ${input.pid} -Timeout 60 -ErrorAction SilentlyContinue"`,
+    "set /a n=0",
+    ":attesa",
+    `${sys("tasklist.exe")} /FI "PID eq ${pid}" /FO CSV /NH > ${list} 2>nul`,
+    // la riga dell'app nel CSV ha ,"<pid>", (in find le virgolette dentro la stringa si raddoppiano)
+    `${sys("find.exe")} ",""${pid}""," ${list} >nul 2>nul`,
+    "if errorlevel 1 goto copia",
+    "set /a n+=1",
+    "if %n% geq 60 goto copia",
+    `${sys("PING.EXE")} -n 2 127.0.0.1 >nul`,
+    "goto attesa",
+    ":copia",
     `robocopy ${q(input.source)} ${q(input.target)} /E /R:5 /W:2 /NFL /NDL /NJH /NJS /NP >> ${q(input.log)}`,
     `start "" ${q(input.exe)}`,
     "endlocal",

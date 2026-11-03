@@ -3,7 +3,8 @@
  * schermata VS ritaglia la zona sopra il mio ritratto come la finestra nascosta dello scanner (frames/frames.ts:
  * `VS_MY_LEAGUE`, alta `LEAGUE_TEXT_H` pixel, nera su bianco con `inkOnWhite`), la legge con l'OCR di Windows
  * (main/ocr.ts) e stampa il testo letto e se c'è una lega (`isLeagueText`). Resta sul PC.
- * Uso (dalla cartella tracker/, con i fotogrammi della schermata VS):
+ * Uso (dalla cartella tracker/, dopo `npm run build`, che compila l'OCR in dist/ocr/originsmeta-tracker-ocr.exe, con i
+ * fotogrammi della schermata VS):
  *   npx esbuild scripts/league-check.ts --bundle --platform=node --format=cjs --external:electron --outfile=out/leaguecheck/main.js
  *   echo {"main":"main.js"} > out/leaguecheck/package.json
  *   node_modules/electron/dist/electron.exe out/leaguecheck <file.jpg> [<file.jpg> ...]
@@ -11,11 +12,10 @@
  * 5 altre (demo 0.7 prima della classificata, Battaglia Boss, allenamento contro Big Bob).
  */
 import { app, BrowserWindow } from "electron";
-import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { isLeagueText } from "../../src/lib/tracker/queue";
-import { readNameText } from "../src/main/ocr";
+import { OCR_EXE, readNameText } from "../src/main/ocr";
 import { inkOnWhite, LEAGUE_TEXT_H, VS_MY_LEAGUE, layoutFor } from "../src/shared/recognize";
 
 const files = process.argv.slice(2).filter((a) => /\.jpe?g$/i.test(a));
@@ -50,7 +50,7 @@ app.whenReady().then(async () => {
       const blob = await new Promise((res) => c.toBlob(res, "image/png"));
       return Array.from(new Uint8Array(await blob.arrayBuffer()));
     })()`)) as number[];
-    const text = await readNameText(path.join(os.tmpdir(), "originsmeta-ocr-check"), new Uint8Array(bytes));
+    const text = await readNameText(new Uint8Array(bytes), path.resolve("dist", "ocr", OCR_EXE));
     console.log(`${path.basename(path.dirname(file))}/${path.basename(file)}\t${JSON.stringify(text)}\t${isLeagueText(text) ? "CLASSIFICATA" : "-"}`);
   }
   app.exit(0);
