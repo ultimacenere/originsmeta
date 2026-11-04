@@ -42,7 +42,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 | 传说卡 | 费用 | 力量/生命值 | 阵营 | 卡组 |
 | --- | --- | --- | --- | --- |
-| [Dorothy](/zh-cn/cards/dorothy) | 4 | 1/1 | Good | 2 |
+| [Dorothy](/zh-cn/cards/dorothy) | 4 | 3/3 | Good | 2 |
 | [Dracula](/zh-cn/cards/dracula) | 4 | 3/2 | Evil | 2 |
 | [Mulan](/zh-cn/cards/mulan) | 4 | 2/4 | Good | 1 |
 | [Queen of Hearts](/zh-cn/cards/queen-of-hearts) | 4 | 3/3 | Evil | 2 |
@@ -66,7 +66,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 ## Dorothy {#dorothy}
 
-**4 法力 · 1/1 · 单位 · Good** · 出处：绿野仙踪
+**4 法力 · 3/3 · 单位 · Good** · 出处：绿野仙踪
 
 > 我每回合都可以移动。
 >
@@ -729,7 +729,7 @@ Mulan 还拥有**连击**（Double Attack），所以她自己的 2/4 身材在�
 
 | 卡牌 | 费用 | 作用 |
 | --- | --- | --- |
-| [Dorothy](/zh-cn/cards/dorothy) ★ | 4 | 1/1；每回合都可以移动，本局对局中友方每移动一次获得 +1⚔️/+1❤️ |
+| [Dorothy](/zh-cn/cards/dorothy) ★ | 4 | 3/3；每回合都可以移动，本局对局中友方每移动一次获得 +1⚔️/+1❤️ |
 | [Twister Toss](/zh-cn/cards/twister-toss) | 1 | 法术：将一个友方移动到任意格位；如果那里已有另一张卡，两者交换位置 |
 | [Card Soldier](/zh-cn/cards/card-soldier) | 2 | 3/1；移动后，在原来的格位召唤一个自己的复制 |
 | [Roo](/zh-cn/cards/roo) | 2 | 2/4，具有移动 |
@@ -747,7 +747,7 @@ Mulan 还拥有**连击**（Double Attack），所以她自己的 2/4 身材在�
 
 ## 这副卡组如何获胜
 
-Dorothy 是一个会计数的 1/1：**本局对局中友方每移动一次，+1⚔️/+1❤️**。计数不会重置，而且统计的是整个战场上的移动，所以像 [Twister Toss](/zh-cn/cards/twister-toss) 这样的廉价法术永远不会浪费——一费就能让你的传说卡永久 +1。在几次移动之后于第五回合打出，Dorothy 登场时就是一个像样的单位，并且之后每回合继续成长，因为她自己也会移动（Move）。
+Dorothy 是一个会计数的 3/3：**本局对局中友方每移动一次，+1⚔️/+1❤️**。计数不会重置，而且统计的是整个战场上的移动，所以像 [Twister Toss](/zh-cn/cards/twister-toss) 这样的廉价法术永远不会浪费——一费就能让你的传说卡永久 +1。在几次移动之后于第五回合打出，Dorothy 登场时就是一个像样的单位，并且之后每回合继续成长，因为她自己也会移动（Move）。
 
 这份卡表的核心是三个组合技：
 

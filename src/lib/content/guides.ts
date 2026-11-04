@@ -148,7 +148,7 @@ The Legendaries below are in order of cost and, at the same cost, in alphabetica
 
 | Legendary | Cost | Power/Health | Alignment | Decks |
 | --- | --- | --- | --- | --- |
-| [Dorothy](/en/cards/dorothy) | 4 | 1/1 | Good | 2 |
+| [Dorothy](/en/cards/dorothy) | 4 | 3/3 | Good | 2 |
 | [Dracula](/en/cards/dracula) | 4 | 3/2 | Evil | 2 |
 | [Mulan](/en/cards/mulan) | 4 | 2/4 | Good | 1 |
 | [Queen of Hearts](/en/cards/queen-of-hearts) | 4 | 3/3 | Evil | 2 |
@@ -172,7 +172,7 @@ The card texts quoted below are the official ones, read in the game; costs and s
 
 ## Dorothy {#dorothy}
 
-**4 mana · 1/1 · unit · Good** · Saga: Land of Oz
+**4 mana · 3/3 · unit · Good** · Saga: Land of Oz
 
 > I can Move each round.
 >
@@ -626,7 +626,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each. St
 | --- | --- | --- |
 | [Mulan](/en/cards/mulan) ★ | 4 | 2/4, Double Attack; when an ally On Reveal happens, it repeats |
 | [Bagheera](/en/cards/bagheera) | 2 | 1/1; On Reveal on a middle space it gets +2⚔️/+2❤️ |
-| [Baby Bear](/en/cards/baby-bear) | 2 | 1/1; hits back for 1 when an enemy damages your barrier here, and on death adds a 4/4 Papa Bear to your hand |
+| 3 || [Baby Bear](/en/cards/baby-bear) | 2 | 1/1; hits back for 1 when an enemy damages your barrier here, and on death adds a 4/4 Papa Bear to your hand |
 | [Mary](/en/cards/mary) | 3 | 1/1; On Reveal adds a Little Lamb to hand, on death your Lambs get +3⚔️/+3❤️ permanently |
 | [Black Knight](/en/cards/black-knight) | 3 | 2/2; On Reveal deals 2 damage to the enemy across from it |
 | [Frog Prince](/en/cards/frog-prince) | 3 | 2/2; On Reveal, +3⚔️ or +3❤️, your choice |
@@ -809,7 +809,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 
 | Card | Cost | What it does |
 | --- | --- | --- |
-| [Dorothy](/en/cards/dorothy) ★ | 4 | 1/1; can Move each round, and gets +1⚔️/+1❤️ for each time an ally moved this game |
+| [Dorothy](/en/cards/dorothy) ★ | 4 | 3/3; can Move each round, and gets +1⚔️/+1❤️ for each time an ally moved this game |
 | [Twister Toss](/en/cards/twister-toss) | 1 | Spell: move an ally to any space; if another card is already there, the two swap places |
 | [Card Soldier](/en/cards/card-soldier) | 2 | 3/1; after it moves, it summons a copy of itself on its previous space |
 | [Roo](/en/cards/roo) | 2 | 2/4 with Move |
@@ -827,7 +827,7 @@ Nine units and three spells, and almost everything either moves or rewards a mov
 
 ## How the deck wins
 
-Dorothy is a 1/1 that counts: **+1⚔️/+1❤️ for each time an ally moved this game**. The counter does not reset, and it counts moves anywhere on the board, so a cheap spell like [Twister Toss](/en/cards/twister-toss) is never wasted — it is one mana for a permanent point on your Legendary. Played on round five after a few moves, Dorothy lands as a real body and keeps growing every round afterwards, because she moves herself.
+Dorothy is a 3/3 that counts: **+1⚔️/+1❤️ for each time an ally moved this game**. The counter does not reset, and it counts moves anywhere on the board, so a cheap spell like [Twister Toss](/en/cards/twister-toss) is never wasted — it is one mana for a permanent point on your Legendary. Played on round five after a few moves, Dorothy lands as a real body and keeps growing every round afterwards, because she moves herself.
 
 Three combos are the point of the list:
 
@@ -1137,7 +1137,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 | Card | Cost | Role |
 | --- | --- | --- |
 | [Van Helsing](/en/cards/van-helsing) ★ | 4 | Legendary: before combat he adds Van Helsing's Tools to your hand if you do not have it |
-| [Baby Bear](/en/cards/baby-bear) | 2 | Pings enemies that damage your barrier; On Death adds Papa Bear to your hand |
+| 3 || [Baby Bear](/en/cards/baby-bear) | 2 | Pings enemies that damage your barrier; On Death adds Papa Bear to your hand |
 | [Scarecrow](/en/cards/scarecrow) | 2 | On Reveal: draw a card |
 | [Shahrazad](/en/cards/shahrazad) | 2 | 1/4: heals 1 damage from your barrier every time a card enters your hand |
 | [Ali Baba](/en/cards/ali-baba) | 3 | 2/3 that draws a card when it damages the opponent's barrier |
@@ -1145,7 +1145,7 @@ Twenty-five cards: the Legendary plus twelve cards played as two copies each.
 | [Spellbook](/en/cards/spellbook) | 4 | For the rest of the game, a random spell in hand at the start of every round |
 | [Phuong Hoang](/en/cards/phuong-hoang) | 4 | Rebirth, Move; gets +1/+1 every time an ally or barrier is healed |
 | [Jekyll](/en/cards/jekyll) | 4 | On Reveal heals 3; if still in hand after combat he becomes Hyde, a 5/3 with Trample |
-| [Searing Light](/en/cards/searing-light) | 4 | 4 damage to an enemy and 4 healing to your barrier there |
+| 3 || [Searing Light](/en/cards/searing-light) | 4 | 4 damage to an enemy and 4 healing to your barrier there |
 | [Boitata](/en/cards/boitata) | 5 | 5/5: spell and ability damage to your barriers is dealt to the opponent's barrier instead |
 | [Tin Woodman](/en/cards/tin-woodman) | 6 | On Reveal heals 8 from any other character or barrier in its location |
 | [Forbidden Knowledge](/en/cards/forbidden-knowledge) | 8 | Destroy all characters |
@@ -1776,7 +1776,7 @@ Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordin
 
 | Leggendaria | Costo | Potenza/Salute | Allineamento | Mazzi |
 | --- | --- | --- | --- | --- |
-| [Dorothy](/it/cards/dorothy) | 4 | 1/1 | Good | 2 |
+| [Dorothy](/it/cards/dorothy) | 4 | 3/3 | Good | 2 |
 | [Dracula](/it/cards/dracula) | 4 | 3/2 | Evil | 2 |
 | [Mulan](/it/cards/mulan) | 4 | 2/4 | Good | 1 |
 | [Queen of Hearts](/it/cards/queen-of-hearts) | 4 | 3/3 | Evil | 2 |
@@ -1800,7 +1800,7 @@ I testi delle carte citati qui sotto sono quelli ufficiali del gioco, letti nel 
 
 ## Dorothy {#dorothy}
 
-**4 mana · 1/1 · unità · Good** · Saga: Terra di Oz
+**4 mana · 3/3 · unità · Good** · Saga: Terra di Oz
 
 > Posso Muovermi ogni round.
 >
@@ -2254,7 +2254,7 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna. Le st
 | --- | --- | --- |
 | [Mulan](/it/cards/mulan) ★ | 4 | 2/4, Doppio attacco; quando si attiva un'abilità Alla rivelazione di un alleato, la ripete |
 | [Bagheera](/it/cards/bagheera) | 2 | 1/1; Alla rivelazione su uno spazio centrale ottiene +2⚔️/+2❤️ |
-| [Baby Bear](/it/cards/baby-bear) | 2 | 1/1; infligge 1 danno a chi colpisce la tua barriera qui e Alla morte aggiunge un Papa Bear 4/4 alla mano |
+| 3 || [Baby Bear](/it/cards/baby-bear) | 2 | 1/1; infligge 1 danno a chi colpisce la tua barriera qui e Alla morte aggiunge un Papa Bear 4/4 alla mano |
 | [Mary](/it/cards/mary) | 3 | 1/1; Alla rivelazione aggiunge un Little Lamb alla mano, Alla morte i tuoi Lamb ottengono +3⚔️/+3❤️ per sempre |
 | [Black Knight](/it/cards/black-knight) | 3 | 2/2; Alla rivelazione infligge 2 danni al nemico di fronte |
 | [Frog Prince](/it/cards/frog-prince) | 3 | 2/2; Alla rivelazione +3⚔️ oppure +3❤️, a scelta |
@@ -2437,7 +2437,7 @@ Venticinque carte: la Leggendaria più dodici carte in due copie ciascuna.
 
 | Carta | Costo | Che cosa fa |
 | --- | --- | --- |
-| [Dorothy](/it/cards/dorothy) ★ | 4 | 1/1; può muoversi ogni round e ottiene +1⚔️/+1❤️ per ogni movimento di un alleato nella partita |
+| [Dorothy](/it/cards/dorothy) ★ | 4 | 3/3; può muoversi ogni round e ottiene +1⚔️/+1❤️ per ogni movimento di un alleato nella partita |
 | [Twister Toss](/it/cards/twister-toss) | 1 | Magia: muovi un alleato in qualsiasi spazio; se lì c'è già un'altra carta, le due si scambiano di posto |
 | [Card Soldier](/it/cards/card-soldier) | 2 | 3/1; dopo che si muove evoca una copia di sé sullo spazio precedente |
 | [Roo](/it/cards/roo) | 2 | 2/4 con Muovere |
@@ -2455,7 +2455,7 @@ Nove unità e tre magie, e quasi tutto o si muove o premia un movimento.
 
 ## Come vince il mazzo
 
-Dorothy è un 1/1 che conta: **+1⚔️/+1❤️ per ogni volta che un alleato si è mosso nella partita**. Il contatore non si azzera e conta i movimenti ovunque sul campo, quindi una magia da un mana come [Twister Toss](/it/cards/twister-toss) non è mai sprecata: è un punto permanente sulla tua Leggendaria. Giocata al quinto round dopo qualche movimento, Dorothy arriva come un corpo vero e continua a crescere, perché si muove da sola.
+Dorothy è un 3/3 che conta: **+1⚔️/+1❤️ per ogni volta che un alleato si è mosso nella partita**. Il contatore non si azzera e conta i movimenti ovunque sul campo, quindi una magia da un mana come [Twister Toss](/it/cards/twister-toss) non è mai sprecata: è un punto permanente sulla tua Leggendaria. Giocata al quinto round dopo qualche movimento, Dorothy arriva come un corpo vero e continua a crescere, perché si muove da sola.
 
 Le combo che danno senso alla lista sono tre:
 
@@ -2765,7 +2765,7 @@ Venticinque carte: la Leggendaria più dodici carte giocate in due copie ciascun
 | Carta | Costo | Ruolo |
 | --- | --- | --- |
 | [Van Helsing](/it/cards/van-helsing) ★ | 4 | Leggendaria: prima del combattimento aggiunge Van Helsing's Tools alla tua mano se non ce l'hai |
-| [Baby Bear](/it/cards/baby-bear) | 2 | Colpisce i nemici che danneggiano la tua barriera; Alla morte aggiunge Papa Bear alla tua mano |
+| 3 || [Baby Bear](/it/cards/baby-bear) | 2 | Colpisce i nemici che danneggiano la tua barriera; Alla morte aggiunge Papa Bear alla tua mano |
 | [Scarecrow](/it/cards/scarecrow) | 2 | Alla rivelazione: pesca una carta |
 | [Shahrazad](/it/cards/shahrazad) | 2 | 1/4: cura 1 danno alla tua barriera ogni volta che una carta entra nella tua mano |
 | [Ali Baba](/it/cards/ali-baba) | 3 | 2/3 che pesca una carta quando danneggia la barriera avversaria |
@@ -2773,7 +2773,7 @@ Venticinque carte: la Leggendaria più dodici carte giocate in due copie ciascun
 | [Spellbook](/it/cards/spellbook) | 4 | Per il resto della partita, una magia casuale in mano all'inizio di ogni round |
 | [Phuong Hoang](/it/cards/phuong-hoang) | 4 | Rinascita, Muovere; ottiene +1/+1 ogni volta che un alleato o una barriera viene curato |
 | [Jekyll](/it/cards/jekyll) | 4 | Alla rivelazione cura 3; se resta in mano dopo il combattimento diventa Hyde, un 5/3 con Travolgere |
-| [Searing Light](/it/cards/searing-light) | 4 | 4 danni a un nemico e 4 cure alla tua barriera in quel luogo |
+| 3 || [Searing Light](/it/cards/searing-light) | 4 | 4 danni a un nemico e 4 cure alla tua barriera in quel luogo |
 | [Boitata](/it/cards/boitata) | 5 | 5/5: i danni di magie e abilità alle tue barriere vengono inflitti invece alla barriera avversaria |
 | [Tin Woodman](/it/cards/tin-woodman) | 6 | Alla rivelazione cura 8 a qualsiasi altro personaggio o barriera nel suo luogo |
 | [Forbidden Knowledge](/it/cards/forbidden-knowledge) | 8 | Distruggi tutti i personaggi |

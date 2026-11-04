@@ -213,6 +213,13 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 6, power: 4, health: 4 },
       note: { en: "+1 Power, +1 Health.", it: "+1 Potenza, +1 Salute.", es: "+1 de Poder, +1 de Salud.", fr: "+1 Puissance, +1 Santé.", pt: "+1 de Poder, +1 de Vida.", de: "+1 Kraft, +1 Leben.", ru: "+1 к Силе, +1 к Здоровью.", "zh-cn": "力量 +1，生命值 +1。" },
     },
+    {
+      patch: "ea-1104",
+      kind: "nerf",
+      from: { mana: 6, power: 4, health: 4 },
+      to: { mana: 6, power: 3, health: 4 },
+      note: { en: "-1 Power.", it: "-1 Potenza.", es: "-1 de Poder.", fr: "-1 Puissance.", pt: "-1 de Poder.", de: "-1 Kraft.", ru: "-1 к Силе.", "zh-cn": "力量 -1。" },
+    },
   ],
   "brides-of-dracula": [
     {
@@ -405,6 +412,13 @@ export const cardHistory: Record<string, Change[]> = {
       kind: "nerf",
       note: { en: "On Death now grants +1 Power only; it no longer grants Health.", it: "L'abilità Alla morte dà solo +1 Potenza; non dà più Salute.", es: "Su habilidad Al morir ahora solo otorga +1 de Poder; ya no otorga Salud.", fr: "Sa capacité À la mort ne donne plus que +1 Puissance ; elle ne donne plus de Santé.", pt: "Ao morrer agora dá só +1 de Poder; não dá mais Vida.", de: "Bei Tod gibt jetzt nur noch +1 Kraft, kein Leben mehr.", ru: "При смерти теперь даёт только +1 к Силе; Здоровье больше не даёт.", "zh-cn": "死亡时现在只给予 +1 力量，不再给予生命值。" },
     },
+    {
+      patch: "ea-1104",
+      kind: "buff",
+      from: { mana: 2, power: 1, health: 1 },
+      to: { mana: 2, power: 2, health: 1 },
+      note: { en: "+1 Power.", it: "+1 Potenza.", es: "+1 de Poder.", fr: "+1 Puissance.", pt: "+1 de Poder.", de: "+1 Kraft.", ru: "+1 к Силе.", "zh-cn": "+1 力量。" },
+    },
   ],
   koschei: [
     {
@@ -427,6 +441,13 @@ export const cardHistory: Record<string, Change[]> = {
       patch: "0.6.1",
       kind: "deck",
       note: { en: "Removed from the Discard deck: he got in the way of discarding Koschei.", it: "Rimosso dal mazzo Discard: intralciava lo scarto di Koschei.", es: "Retirado del mazo Discard: estorbaba a la hora de descartar a Koschei.", fr: "Retiré du deck Discard : il gênait la défausse de Koschei.", pt: "Sai do deck Discard: atrapalhava o descarte de Koschei.", de: "Aus dem Discard-Deck entfernt: Er stand dem Abwerfen von Koschei im Weg.", ru: "Убран из колоды Discard: мешал сбрасывать Koschei.", "zh-cn": "移出 Discard 卡组：他妨碍了弃掉 Koschei。" },
+    },
+    {
+      patch: "ea-1104",
+      kind: "buff",
+      from: { mana: 6, power: 4, health: 4 },
+      to: { mana: 5, power: 4, health: 4 },
+      note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
     },
   ],
   "mind-palace": [
@@ -512,6 +533,13 @@ export const cardHistory: Record<string, Change[]> = {
       from: { mana: 5, power: 1, health: 1 },
       to: { mana: 4, power: 1, health: 1 },
       note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
+    },
+    {
+      patch: "ea-1104",
+      kind: "buff",
+      from: { mana: 4, power: 1, health: 1 },
+      to: { mana: 4, power: 3, health: 3 },
+      note: { en: "+2 Power, +2 Health.", it: "+2 Potenza, +2 Salute.", es: "+2 de Poder, +2 de Salud.", fr: "+2 Puissance, +2 Santé.", pt: "+2 de Poder, +2 de Vida.", de: "+2 Kraft, +2 Leben.", ru: "+2 к Силе, +2 к Здоровью.", "zh-cn": "力量 +2，生命值 +2。" },
     },
   ],
   "itsy-bitsy-spider": [
@@ -616,6 +644,60 @@ export const cardHistory: Record<string, Change[]> = {
         de: "Kostet 1 mehr; die zufälligen Zauber, die es hinzufügt, können nicht mehr Spellbook sein.",
         ru: "Стоит на 1 больше; среди случайных заклинаний, которые она добавляет, больше не может быть Spellbook.", "zh-cn": "费用增加 1；它添加的随机法术不会再是 Spellbook。",
       },
+    },
+  ],
+  "baby-bear": [
+    {
+      patch: "ea-1104",
+      kind: "nerf",
+      from: { mana: 2, power: 1, health: 1 },
+      to: { mana: 3, power: 1, health: 1 },
+      note: { en: "Costs 1 more.", it: "Costa 1 in più.", es: "Cuesta 1 más.", fr: "Coûte 1 de plus.", pt: "Custa 1 a mais.", de: "Kostet 1 mehr.", ru: "Стоит на 1 больше.", "zh-cn": "费用增加 1。" },
+    },
+  ],
+  esmeralda: [
+    {
+      patch: "ea-1104",
+      kind: "buff",
+      from: { mana: 2, power: 2, health: 2 },
+      to: { mana: 2, power: 2, health: 3 },
+      note: { en: "+1 Health.", it: "+1 Salute.", es: "+1 de Salud.", fr: "+1 Santé.", pt: "+1 de Vida.", de: "+1 Leben.", ru: "+1 к Здоровью.", "zh-cn": "+1 生命值。" },
+    },
+  ],
+  "mama-bear": [
+    {
+      patch: "ea-1104",
+      kind: "nerf",
+      from: { mana: 6, power: 6, health: 6 },
+      to: { mana: 7, power: 6, health: 6 },
+      note: { en: "Costs 1 more.", it: "Costa 1 in più.", es: "Cuesta 1 más.", fr: "Coûte 1 de plus.", pt: "Custa 1 a mais.", de: "Kostet 1 mehr.", ru: "Стоит на 1 больше.", "zh-cn": "费用增加 1。" },
+    },
+  ],
+  obliterate: [
+    {
+      patch: "ea-1104",
+      kind: "nerf",
+      from: { mana: 9 },
+      to: { mana: 10 },
+      note: { en: "Costs 1 more.", it: "Costa 1 in più.", es: "Cuesta 1 más.", fr: "Coûte 1 de plus.", pt: "Custa 1 a mais.", de: "Kostet 1 mehr.", ru: "Стоит на 1 больше.", "zh-cn": "费用增加 1。" },
+    },
+  ],
+  "papa-bear": [
+    {
+      patch: "ea-1104",
+      kind: "nerf",
+      from: { mana: 4, power: 4, health: 4 },
+      to: { mana: 5, power: 4, health: 4 },
+      note: { en: "Costs 1 more.", it: "Costa 1 in più.", es: "Cuesta 1 más.", fr: "Coûte 1 de plus.", pt: "Custa 1 a mais.", de: "Kostet 1 mehr.", ru: "Стоит на 1 больше.", "zh-cn": "费用增加 1。" },
+    },
+  ],
+  "searing-light": [
+    {
+      patch: "ea-1104",
+      kind: "buff",
+      from: { mana: 4 },
+      to: { mana: 3 },
+      note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
     },
   ],
 };

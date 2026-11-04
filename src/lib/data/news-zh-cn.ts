@@ -6,21 +6,87 @@ import type { NewsCopy } from "./news-fr";
  * "prima il nucleo, news dopo", quindi si parte dalle news dal 20/10/2026 e una news assente resta fuori da /zh-cn
  * (`untranslated` in news.ts). Regole e glossario in docs/cinese.md.
  *
- * Tradotte dall'inglese il 04/11/2026: le otto news dal 20/10/2026 in poi. Ancore in pinyin senza toni; i link alle news
+ * Tradotte dall'inglese il 04/11/2026: le otto news dal 20/10/2026 in poi, più le patch notes del 4/11
+ * (balance-patch-1104-cyber-queen) e la correzione Cyber Queen / Dr. Frank Leggendaria nelle due news del 2 e 4/11.
+ * Ancore in pinyin senza toni; i link alle news
  * più vecchie, che in cinese non ci sono, vanno all'inglese (`/en/news/…`, ammesso da `linkProblem` in newsMeta.ts).
  * Nell'intervista a SouL le etichette "**Davdas:**" e "**SouL:**" tengono i due punti latini: `markSpeakers` di
  * Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
-  "dr-frank-boss-new-cards": {
-    title: "Dr. Frank 将于 11月4日登陆 Origins TCG：新首领和他的八张新卡",
-    metaTitle: "Origins TCG 新首领 Dr. Frank：8 张新卡一览",
+  "balance-patch-1104-cyber-queen": {
+    title: "Origins TCG 11月4日补丁说明：十张卡牌平衡调整，Cyber Queen 成为第 11 位首领",
+    metaTitle: "Origins TCG 11月4日补丁：Obliterate 10 费，三熊涨价",
     description:
-      "Origins TCG 的新首领 Dr. Frank 将于 11月4日（周三）登场，同时到来的还有一个平衡补丁和八张新卡。我们逐一介绍这八张卡牌的费用、数值和效果，整理创作者们的第一印象，列出目前仍不确定的信息，并告诉你如何提前用它们组建卡组。",
+      "Origins TCG 11月4日补丁说明：Obliterate 涨到 10 法力，三只熊的费用各增加 1，Dorothy 变为 3/3，Genie 和 Searing Light 变便宜。第 11 位首领 Cyber Queen 同时登场，带来以 Dr. Frank 为传说卡的 Relentless 卡组。",
     summary:
-      "Origins TCG 的下一位首领 Dr. Frank 将于 2026年11月4日（周三）登场，比原计划提前了一周，因为玩家们在 Steam 上达到了 500 条评测。他带来了八张新卡，Koin Games 让旗下的创作者们公开了这些卡牌：Dr. Frank 本身是一张传说卡，八张中有六张属于 Evil 阵营。同一天还会推出一个平衡补丁。",
+      "Origins TCG 抢先体验的第一个平衡补丁于今天 11月4日 UTC 时间 14:00 左右（北京时间 22:00）上线，无需更新客户端。十张卡牌有改动：Obliterate 涨到 10 法力，Baby Bear、Mama Bear 和 Papa Bear 的费用各增加 1，Dorothy 变为 3/3，Genie 和 Searing Light 费用降低。同时到来的还有第 11 位首领 Cyber Queen，她使用 Relentless 卡组，传说卡是 Dr. Frank。",
     highlights: [
-      { label: "11月4日（周三）", text: "第 12 个任务的首领 Dr. Frank 带着新卡到来", anchor: "dao-lai" },
+      { label: "今天 UTC 14:00 左右上线", text: "无需更新客户端", anchor: "he-shi-shang-xian" },
+      { label: "第 11 位首领：Cyber Queen", text: "使用 Relentless 卡组，传说卡是 Dr. Frank", anchor: "cyber-queen" },
+      { label: "十张卡牌有改动", text: "五个削弱、五个增强，只改费用和数值", anchor: "suo-you-gai-dong" },
+      { label: "三只熊的费用各加 1", text: "Baby Bear 是 Crimson Cup 中使用率最高的卡", anchor: "san-zhi-xiong" },
+      { label: "Obliterate 涨到 10 法力", anchor: "obliterate" },
+      { label: "Dorothy 变为 3/3", text: "仍然是 4 法力", anchor: "dorothy" },
+    ],
+    body: `## 何时上线 {#he-shi-shang-xian}
+
+Koin Games 于 11月4日 UTC 时间 09:08（北京时间 17:08）在官方 Discord 上发布了补丁说明：更新“应该会在”大约五小时后上线，也就是 UTC 时间 14:00 左右（北京时间 22:00），而且无需更新客户端。这是抢先体验的第一个平衡补丁，也就是 Koin 承诺在 Dr. Frank 到来当天推出的那个（[我们 11月2日的新闻](/zh-cn/news/balance-patch-dr-frank-roadmap-ama)）。
+
+OriginsMeta 上的卡牌和卡组构筑器已经显示新的数值。
+
+## 第 11 位首领：Cyber Queen 和 Relentless 卡组 {#cyber-queen}
+
+新首领是 Cyber Queen，她使用 Relentless 卡组。这副卡组的传说卡是 Dr. Frank，玩法围绕从墓地带回角色展开：一个全新的流派，还有几张新卡可以尝试。我们在 [Dr. Frank 的八张新卡](/zh-cn/news/dr-frank-boss-new-cards)中逐一介绍过它们。
+
+更正：直到今天，我们一直把 Dr. Frank 称为新首领。补丁说明明确指出，首领是 Cyber Queen，Dr. Frank 是她卡组中的传说卡。
+
+## 所有平衡改动 {#suo-you-gai-dong}
+
+格式：角色为“法力 · 力量/生命值”，法术只列法力。
+
+| 卡牌 | 改动前 | 改动后 | 改了什么 |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | 费用增加 1 |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | 费用增加 1 |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | 费用增加 1 |
+| Obliterate | 9 | 10 | 费用增加 1 |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | 力量 -1 |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | 力量 +2，生命值 +2 |
+| Banshee | 2 · 1/1 | 2 · 2/1 | 力量 +1 |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | 生命值 +1 |
+| Genie | 6 · 4/4 | 5 · 4/4 | 费用减少 1 |
+| Searing Light | 4 | 3 | 费用减少 1 |
+
+五个削弱，五个增强。没有任何卡牌改动文本或能力：只改费用和数值。团队表示，这些改动来自围绕这些卡牌的“大量热烈讨论”。
+
+## 三只熊全部涨价 {#san-zhi-xiong}
+
+Baby Bear、Mama Bear 和 Papa Bear 的费用各增加 1 法力。三者都会惩罚伤害你在其所在地点屏障的敌人：Baby Bear 对它造成 1 点伤害，Papa Bear 造成 3 点，Mama Bear 则消灭它。
+
+Baby Bear 是 Crimson Cup 全部四场资格赛中使用率最高的卡：在 Koin 的官方统计表中，46% 到 50% 的卡组都带了它。涨到 3 法力后，它不再是几乎必带的选择。
+
+## Obliterate 涨到 10 法力 {#obliterate}
+
+Obliterate 是游戏中最贵的法术，现在需要 10 法力。在 Crimson Cup 资格赛中，21% 到 24% 的卡组使用了它。团队开玩笑说，X 上那条要求削弱它的帖子收获了那么多点赞，他们差点把它的伤害改成 -12，可惜游戏引擎处理不了负数伤害。
+
+## Dorothy 变为 3/3 {#dorothy}
+
+传说卡 Dorothy 仍然是 4 法力，但从 1/1 变为 3/3：她不会再被 1 点伤害打死。Banshee 获得 +1 力量，Esmeralda 获得 +1 生命值，Genie（5）和 Searing Light（3）的费用各减少 1。Guy of Gisborne 是唯一一张费用不变却丢了数值的卡：从 4/4 变为 3/4。
+
+## 接下来 {#jie-xia-lai}
+
+如果你的卡组里有 Obliterate、三只熊或 Guy of Gisborne，检查一下你的法力曲线：[MetaShifting](/zh-cn/metashifting) 会逐个补丁显示每一项改动，在 [Theory craft](/zh-cn/theory-craft) 中你可以马上按新费用重组卡表。Koin 希望大家打几局之后反馈意见：改过头了、改得不够，还是像金发姑娘说的那样，刚刚好。`,
+  },
+  "dr-frank-boss-new-cards": {
+    title: "Dr. Frank 将于 11月4日登陆 Origins TCG：新首领的传说卡和八张新卡",
+    metaTitle: "Origins TCG 的 Dr. Frank：传说卡和 8 张新卡一览",
+    description:
+      "Dr. Frank 是首领 Cyber Queen 的 Relentless 卡组中的传说卡，将于 11月4日（周三）登陆 Origins TCG，同时到来的还有一个平衡补丁和八张新卡。我们逐一介绍这八张卡牌的费用、数值和效果，整理创作者们的第一印象，并告诉你如何提前用它们组建卡组。",
+    summary:
+      "Dr. Frank 是 Origins TCG 新首领 Cyber Queen 卡组中的传说卡，将于 2026年11月4日（周三）登场，比原计划提前了一周，因为玩家们在 Steam 上达到了 500 条评测。他带来了八张新卡，Koin Games 让旗下的创作者们公开了这些卡牌：Dr. Frank 本身是一张传说卡，八张中有六张属于 Evil 阵营。同一天还会推出一个平衡补丁。",
+    highlights: [
+      { label: "11月4日（周三）", text: "Dr. Frank 带着新卡到来，出现在首领 Cyber Queen 的卡组中", anchor: "dao-lai" },
       { label: "提前一周", text: "玩家们达到了 Koin 要求的 500 条 Steam 评测", anchor: "ti-qian-yi-zhou" },
       { label: "八张新卡", text: "一张传说卡、一张法术和六个角色，其中六张是 Evil", anchor: "ba-zhang-xin-ka" },
       { label: "墓地回归", text: "Dr. Frank 和 It's Alive 从你的墓地召唤角色", anchor: "mu-di" },
@@ -48,7 +114,7 @@ export const zhCnText: Record<string, NewsCopy> = {
     ],
     body: `## Dr. Frank 于 11月4日（周三）到来 {#dao-lai}
 
-“下一位首领 Dr. Frank 将于下周来到 Origins，他的卡组里满是新卡。”Koin Games 于 2026年10月31日万圣节在 Steam 上发布了这条消息，帖子标题为“Happy Halloween, Dr. Frank is coming”：日期是 **11月4日（周三）**。Dr. Frank 是第 12 个任务的首领，也就是对战游戏 AI 的任务中的下一个，他会带着新卡一起到来。在我们发布这篇文章时，Koin 还没有公布更新的具体时间。
+“下一位首领 Dr. Frank 将于下周来到 Origins，他的卡组里满是新卡。”Koin Games 于 2026年10月31日万圣节在 Steam 上发布了这条消息，帖子标题为“Happy Halloween, Dr. Frank is coming”：日期是 **11月4日（周三）**。在补丁说明发布之前，我们写的是 Dr. Frank 是第 12 个任务的首领，也就是对战游戏 AI 的任务中的下一个：11月4日的补丁说明明确指出，首领是第 11 位首领 Cyber Queen，Dr. Frank 是她的 Relentless 卡组中的传说卡（[补丁说明](/zh-cn/news/balance-patch-1104-cyber-queen#cyber-queen)）。在我们发布这篇文章时，Koin 还没有公布更新的具体时间。
 
 ## 多亏了评测，提前一周 {#ti-qian-yi-zhou}
 
@@ -132,12 +198,12 @@ Robip 也[用意大利语](https://www.youtube.com/watch?v=L5CfgUtIYA4)介绍了
     title: "Origins TCG：周三迎来平衡补丁和 Dr. Frank，周五举行路线图 AMA",
     metaTitle: "Origins TCG：周三平衡补丁，周五路线图 AMA",
     description:
-      "Origins TCG 抢先体验的第一个平衡补丁和新首领 Dr. Frank 将于 11月4日（周三）到来，路线图 AMA 则于 11月6日（周五）在官方 Discord 举行。这里汇总了本周的所有日期、排位第 1 赛季的结束时间，以及 Koin 正在开发的内容。",
+      "Origins TCG 抢先体验的第一个平衡补丁和新首领将于 11月4日（周三）到来，路线图 AMA 则于 11月6日（周五）在官方 Discord 举行。这里汇总了本周的所有日期、排位第 1 赛季的结束时间，以及 Koin 正在开发的内容。",
     summary:
-      "Origins TCG 本周有两个重要日期。11月4日（周三）将推出抢先体验的第一个平衡补丁，同时到来的还有新首领 Dr. Frank 和他满是新卡的卡组；11月6日（周五）UTC 时间 21:00，Koin Games 将在官方 Discord 举办路线图 AMA。补丁说明尚未发布。",
+      "Origins TCG 本周有两个重要日期。11月4日（周三）将推出抢先体验的第一个平衡补丁，同时到来的还有新首领 Cyber Queen 和她满是新卡的卡组，卡组的传说卡是 Dr. Frank；11月6日（周五）UTC 时间 21:00，Koin Games 将在官方 Discord 举办路线图 AMA。补丁说明已于 11月4日发布。",
     highlights: [
-      { label: "周三的平衡补丁", text: "11月4日，抢先体验的第一个；补丁说明尚未发布", anchor: "ping-heng-bu-ding" },
-      { label: "Dr. Frank 到来", text: "带着满是新卡的卡组的新首领，提前一周登场", anchor: "dr-frank" },
+      { label: "周三的平衡补丁", text: "11月4日，抢先体验的第一个；补丁说明已在当天发布", anchor: "ping-heng-bu-ding" },
+      { label: "Dr. Frank 到来", text: "新首领 Cyber Queen 卡组中的传说卡，提前一周登场", anchor: "dr-frank" },
       { label: "周五的路线图 AMA", text: "11月6日 UTC 21:00，在官方 Discord", anchor: "lu-xian-tu-ama" },
       { label: "排位第 1 赛季", text: "在 12月7日那一周结束", anchor: "pai-wei" },
       { label: "开发中", text: "更快的动画、更多锦标赛、游戏内的 Collector Pass", anchor: "kai-fa-zhong" },
@@ -153,20 +219,22 @@ Robip 也[用意大利语](https://www.youtube.com/watch?v=L5CfgUtIYA4)介绍了
       },
       {
         q: "Origins TCG 里的 Dr. Frank 是什么？",
-        a: "任务模式的下一位首领：他将于 11月4日带着满是新卡的卡组到来，因为游戏达到了 500 条 Steam 评测，所以提前了一周。",
+        a: "任务模式新首领 Cyber Queen 卡组中的传说卡：它们将于 11月4日带着满是新卡的卡组到来，因为游戏达到了 500 条 Steam 评测，所以提前了一周。",
       },
       {
         q: "排位第 1 赛季什么时候结束？",
         a: "据 Koin 所说，在 2026年12月7日那一周；具体日期仍可能变动。",
       },
     ],
-    body: `## 11月4日（周三）：平衡补丁 {#ping-heng-bu-ding}
+    body: `**11月4日更新：**补丁说明已经发布（[我们的文章](/zh-cn/news/balance-patch-1104-cyber-queen)）：十张卡牌有改动，新首领是第 11 位首领 Cyber Queen，她使用 Relentless 卡组，传说卡是 Dr. Frank。下文中凡是把 Dr. Frank 称为新首领的地方，请理解为首领卡组中的传说卡。
+
+## 11月4日（周三）：平衡补丁 {#ping-heng-bu-ding}
 
 Origins TCG 抢先体验的第一个平衡补丁将于 2026年11月4日（周三）推出。11月2日（周一），版主 Senith 在官方 Discord 的 #the-courtyard 频道转达了 Koin Games 工作室负责人 Mawr 的一条消息：“我想你们会对 11月4日周三到来的平衡更新感到满意。”当天晚上，Koin 团队的 apix 在 X 上写道，“第一个真正的平衡补丁就要来了”（[他的帖子](https://x.com/apixtwts/status/2117383252478456012)）。
 
 这是自 2026年9月29日 [0.7 补丁](/en/news/patch-0-7)以来卡牌的第一次改动：10月27日开启抢先体验的 [0.8 更新](/zh-cn/news/origins-tcg-early-access-0-8)没有改动任何卡牌。补丁说明尚未发布，所以我们还不知道哪些卡牌会改动，也不知道更新几点上线。补丁说明一发布，我们就会整理出每张卡改动前后的对比，[卡牌数据库](/zh-cn/cards)、[卡组构筑器](/zh-cn/deck-builder)和 [MetaShifting](/zh-cn/metashifting) 也会显示新的数值。
 
-## 同一天：新首领 Dr. Frank {#dr-frank}
+## 同一天：Dr. Frank 和新首领 {#dr-frank}
 
 周三还会迎来下一位首领 Dr. Frank。Koin 于 10月31日在 Steam 上宣布了这一消息（“[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)”）：这位首领“会带来一副满是新卡的卡组”，并且比原计划提前一周到来。原因写在帖子的宣传图里，Discord 上也有：社区达到了 500 条 Steam 评测，当晚 Koin 在 #announcements 中写道“首领将提前一周到来”。11月2日，apix 在 Discord 上确认：“周三上新首领”。
 
