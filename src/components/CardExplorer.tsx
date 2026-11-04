@@ -5,6 +5,9 @@ import { matchesSearch, searchHaystack, searchTerms } from "@/lib/cardSearch";
 import { trackSearch } from "@/lib/analytics";
 import { FlipCard, type FlipCardData } from "./FlipCard";
 import type { CardFilterLabels } from "@/lib/cardFilterLabels";
+import { CARD_RANKED_MIN_VOTES, tierFromScore, votesWord } from "@/lib/cardVotes";
+import type { CardVoteWidgetLabels } from "./CardVote";
+import { CardQuickVote, useMyCardVotes } from "./card/CardQuickVote";
 
 /**
  * Carta del database: i dati della carta che si gira (`FlipCard`, la stessa della scheda di un mazzo, costruiti
@@ -22,7 +25,12 @@ export type ExplorerCard = FlipCardData & {
   /** testo inglese del gioco, solo sulle pagine non inglesi: la ricerca trova "draw" anche dove c'è "Pesca" */
   abilityEn?: string;
   removed: boolean;
+  /** si vota (attiva nel gioco e non creata, come `voteCard`): solo queste hanno il voto rapido al passaggio del mouse */
+  votable: boolean;
 };
+
+/** Voto rapido nella griglia (04/11/2026): testi del widget della scheda carta e ritorno dalla pagina di accesso. */
+export type ExplorerVote = { labels: CardVoteWidgetLabels; loginHref: string; locale: string };
 
 type Labels = {
   search: string;
@@ -76,6 +84,7 @@ export function CardExplorer({
   rarities,
   keywordOptions,
   filterLabels,
+  vote,
 }: {
   cards: ExplorerCard[];
   labels: Labels;
@@ -85,6 +94,8 @@ export function CardExplorer({
   /** tag delle carte per il filtro "Parola chiave" (30/09/2026), già nella lingua della pagina */
   keywordOptions: KeywordOption[];
   filterLabels: CardFilterLabels;
+  /** assente: niente voto rapido (community spenta) */
+  vote?: ExplorerVote;
 }) {
   const initialQ = useSyncExternalStore(noSubscribe, readQueryQ, emptyQ);
   const [qEdit, setQEdit] = useState<string | null>(null);
@@ -151,7 +162,19 @@ export function CardExplorer({
 
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const removedCount = cards.filter((c) => c.removed).length;
-  const flipLabels = { legendary: labels.legendary, mana: labels.mana, power: labels.power, health: labels.health };
+  /* Voto rapido: i voti di chi è loggato letti una volta per la griglia; media e voti di una carta appena votata
+     sostituiscono quelli della pagina (in ISR, cinque minuti), con la fascia ricalcolata come fa il server */
+  const my = useMyCardVotes(Boolean(vote));
+  const [live, setLive] = useState<Record<string, { avg: number; votes: number }>>({});
+  const oneDecimal = useMemo(() => new Intl.NumberFormat(vote?.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }), [vote?.locale]);
+  const withLive = (c: ExplorerCard): ExplorerCard => {
+    const r = live[c.slug];
+    if (!r || !vote) return c;
+    const text = `${oneDecimal.format(r.avg)}/10 · ${votesWord({ one: vote.labels.votesOne, many: vote.labels.votesMany }, r.votes)}`;
+    return { ...c, rating: { text, tier: r.votes >= CARD_RANKED_MIN_VOTES ? tierFromScore(r.avg) : undefined } };
+  };
+  const onVoted = (slug: string, r: { avg: number; votes: number }) => setLive((m) => ({ ...m, [slug]: r }));
+  const flipLabels ={ legendary: labels.legendary, mana: labels.mana, power: labels.power, health: labels.health };
 
   return (
     <div>
@@ -354,8 +377,9 @@ export function CardExplorer({
            scheda di un mazzo (`FlipCard`); qui il piede con nome e statistiche c'è sempre. */
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {list.map((c) => (
-            <li key={c.slug} className="min-w-0">
-              <FlipCard card={c} labels={flipLabels} sizes="(min-width: 1280px) 190px, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 44vw" />
+            <li key={c.slug} className={`min-w-0${vote && c.votable ? " card-qv-host" : ""}`}>
+              <FlipCard card={withLive(c)} labels={flipLabels} sizes="(min-width: 1280px) 190px, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 44vw" />
+              {vote && c.votable ? <CardQuickVote slug={c.slug} name={c.name} my={my} labels={vote.labels} loginHref={vote.loginHref} onVoted={onVoted} /> : null}
             </li>
           ))}
         </ul>

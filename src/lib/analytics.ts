@@ -52,7 +52,8 @@
  *     deck_comment        commento o risposta pubblicati sotto un mazzo           placement (deck_page | deck_set_page),
  *                         (22/10/2026)                                            kind (comment | reply)
  *   ★ card_vote           voto a una carta da 1 a 10 (06/10/2026), dalla scheda   score (1-10), vote_type (new | update),
- *                         carta o dal dettaglio della tier list dei voti           placement (card_page | tier_list)
+ *                         carta, dal dettaglio della tier list dei voti o dalla   placement (card_page | tier_list |
+ *                         griglia di /cards al passaggio del mouse (04/11/2026)   cards_grid)
  *   ★ tierlist_created    prima tier list di un tipo salvata nel profilo (le      locale, kind (legendaries | cards)
  *                         sostituzioni no: una per utente e per tipo, `created` di saveTierList; dal 25/09/2026)
  *     tier_list_share     link o testo di una tier list copiati                   method (link | text), kind
@@ -235,7 +236,7 @@ export type EventParams = {
   deck_save: { placement: string };
   deck_unsave: { placement: string };
   deck_comment: { placement: "deck_page" | "deck_set_page"; kind: "comment" | "reply" };
-  card_vote: { score: number; vote_type: "new" | "update"; placement: "card_page" | "tier_list" };
+  card_vote: { score: number; vote_type: "new" | "update"; placement: "card_page" | "tier_list" | "cards_grid" };
   tierlist_created: { locale: string; kind: string };
   tier_list_share: { method: "link" | "text"; kind: string };
   tournament_create: { visibility: string; deck_mode: string };
