@@ -80,7 +80,7 @@ Drei Karten für Abwurf-Decks, also die Decks, die um Dracula, Koschei und Aladd
 
 ## Ein Balance-Patch am selben Tag {#balance}
 
-„Der Balance-Patch kommt morgen, mit Dr. Frank“: Das hat Mawr am 3. November auf dem Discord geschrieben. Die Änderungen sind noch nicht öffentlich: Sobald die Patchnotes da sind, veröffentlichen wir sie, und [MetaShifting](/de/metashifting) zeigt Karte für Karte, was sich ändert. Bis dahin bleiben die Werte auf OriginsMeta die von [Patch 0.7](/de/news/patch-0-7).
+„Der Balance-Patch kommt morgen, mit Dr. Frank“: Das hat Mawr am 3. November auf dem Discord geschrieben. Die Änderungen sind noch nicht öffentlich: Sobald die Patchnotes da sind, veröffentlichen wir sie, und [MetaShifting](/de/metashifting) zeigt Karte für Karte, was sich ändert. Bis dahin bleiben die Werte auf OriginsMeta die von [Patch 0.7](/de/news/patch-0-7). Die anderen Termine der Woche, vom Roadmap-AMA am Freitag, 6. November, bis zum Ende der Ranglisten-Saison 1, stehen in [unserem Artikel vom 2. November](/de/news/balance-patch-dr-frank-roadmap-ama).
 
 ## Was die Creator sagen {#creator}
 
@@ -113,6 +113,61 @@ Quellen: der Steam-Beitrag „Happy Halloween, Dr. Frank is coming“ (31. Oktob
       { q: "Welche neuen Karten bringt Dr. Frank?", a: "Acht: Dr. Frank (Legendär, 6 Mana, 2/2), It's Alive (Zauber, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) und Red Knight (2, 4/1)." },
       { q: "Gibt es mit Dr. Frank einen Balance-Patch?", a: "Ja: Mawr, Studio Head von Koin, hat geschrieben, dass der Balance-Patch am 4. November mit Dr. Frank kommt. Die Änderungen waren noch nicht veröffentlicht." },
       { q: "Kann ich schon ein Deck mit den neuen Karten bauen?", a: "Auf OriginsMeta ja: Die acht Karten sind im Theory Craft, unserem Deckbuilder mit den Karten, die nicht im Spiel sind, bis das Update draußen ist." },
+    ],
+  },
+  "balance-patch-dr-frank-roadmap-ama": {
+    title: "Origins TCG: Balance-Patch und Dr. Frank am Mittwoch, Roadmap-AMA am Freitag",
+    metaTitle: "Origins TCG: Balance-Patch Mittwoch, Roadmap-AMA Freitag",
+    description:
+      "Origins TCG: Der erste Balance-Patch des Early Access und der Boss Dr. Frank kommen am Mittwoch, 4. November, das Roadmap-AMA ist am Freitag, 6. November.",
+    summary:
+      "Origins TCG hat diese Woche zwei Termine. Am Mittwoch, 4. November, kommt der erste Balance-Patch des Early Access, zusammen mit Dr. Frank, einem neuen Boss mit einem Deck voller neuer Karten; am Freitag, 6. November, um 22:00 Uhr deutscher Zeit hält Koin Games ein AMA zur Roadmap im offiziellen Discord. Die Patchnotes sind noch nicht erschienen.",
+    highlights: [
+      { label: "Balance-Patch am Mittwoch", text: "4. November, der erste des Early Access; Patchnotes noch nicht erschienen", anchor: "balance-patch" },
+      { label: "Dr. Frank kommt", text: "der neue Boss mit einem Deck voller neuer Karten, eine Woche früher", anchor: "dr-frank" },
+      { label: "Roadmap-AMA am Freitag", text: "6. November um 22:00 Uhr deutscher Zeit im offiziellen Discord", anchor: "roadmap-ama" },
+      { label: "Ranglisten-Saison 1", text: "endet in der Woche des 7. Dezember", anchor: "ranglisten" },
+      { label: "In Arbeit", text: "schnellere Animationen, mehr Turniere, der Collector Pass im Spiel", anchor: "in-arbeit" },
+    ],
+    body: `## Mittwoch, 4. November: der Balance-Patch {#balance-patch}
+
+Der erste Balance-Patch des Early Access von Origins TCG kommt am Mittwoch, 4. November 2026. Am Montag, 2. November, gab Moderator Senith in #the-courtyard im offiziellen Discord eine Nachricht von Mawr weiter, dem Studio Head von Koin Games: „Ich glaube, ihr werdet mit den Balance-Updates zufrieden sein, die am Mittwoch, 4. November, kommen.“ Am selben Abend schrieb apix aus dem Koin-Team auf X, dass „der erste richtige Balance-Patch vor der Tür steht“ ([sein Post](https://x.com/apixtwts/status/2117383252478456012)).
+
+Es ist die erste Änderung an den Karten seit [Patch 0.7](/de/news/patch-0-7) vom 29. September 2026: Das [Update 0.8](/de/news/origins-tcg-early-access-0-8), das am 27. Oktober den Early Access eröffnet hat, hat keine Karten verändert. Die Patchnotes sind noch nicht erschienen, deshalb wissen wir weder, welche Karten sich ändern, noch, um wie viel Uhr das Update kommt. Sobald sie veröffentlicht sind, stellen wir sie mit dem Vorher und Nachher jeder Karte vor, und die [Kartendatenbank](/de/cards), der [Deckbuilder](/de/deck-builder) und [MetaShifting](/de/metashifting) zeigen die neuen Werte.
+
+## Am selben Tag: Dr. Frank, der neue Boss {#dr-frank}
+
+Am Mittwoch kommt auch der nächste Boss, Dr. Frank. Koin hat ihn am 31. Oktober auf Steam angekündigt („[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)“): Der Boss „bekommt ein Deck voller neuer Karten“ und kommt eine Woche früher als geplant. Den Grund nennen die Grafik des Posts und der Discord: Die Community hat 500 Steam-Rezensionen erreicht, und in jener Nacht schrieb Koin in #announcements, dass „der Boss eine Woche früher kommt“. Am 2. November bestätigte apix im Discord: „neuer Boss am Mittwoch“.
+
+Die Bosse sind die Gegner der Missionen, die gegen die KI gespielt werden. Unsere Datenbank hat bereits eine Legendäre [Dr. Frank](/de/cards/dr-frank), die nicht mehr im Spiel ist: Ihre Seite zeigt die letzten bekannten Daten, nicht im Spiel überprüft, und der Boss muss nicht damit übereinstimmen. Koin hat nicht gesagt, ob die neuen Karten seines Decks auch in die Sammlung der Spieler kommen.
+
+## Freitag, 6. November: das Roadmap-AMA {#roadmap-ama}
+
+Am Freitag, 6. November, um 22:00 Uhr deutscher Zeit (21:00 UTC) veranstaltet Koin das „Super Secret Early Access Roadmap AMA“, eine Fragerunde zur Roadmap des Early Access. Es ist ein Event im offiziellen Discord, im Kanal #live-events, erstellt von apix. Tim Jooste, Gründer und CEO von Koin Games, hatte es in seiner Nachricht in #announcements vom 1. November als Erstes unter den nächsten Neuigkeiten genannt, ohne weitere Details.
+
+In derselben Nachricht kündigte er zwei weitere Dinge an, ebenfalls ohne Datum: einen „Tell Your Local TCG Shop About Origins Day“, einen Tag, an dem du deinem Kartenladen Origins vorstellst, mit Details „in Kürze“, und einen Überblick über die Turnierszene mit Turnieren, Belohnungen und Formaten. Das letzte AMA am 2. Oktober brachte die Termine der Ranglisten und die ersten Zahlen zu neuen Karten ([unser Artikel](/de/news/building-origins-ama-design-balance)); die bisher bestätigten Termine stehen in unserer [Roadmap](/de/guides/roadmap-and-dates). Über das AMA berichten wir nach dem Stream.
+
+## Die Ranglisten-Saison 1 endet in der Woche des 7. Dezember {#ranglisten}
+
+Ein weiterer Termin kam am 31. Oktober in #game-announcements: Die erste Ranglisten-Saison des Early Access endet Anfang Dezember, „in der Woche des 7. Dezember“. Koin erklärt, dass es eine Saison noch gar nicht beenden kann: Die Technik dafür kommt mit dem großen Update, das das Saisonende begleitet, deshalb kann sich der genaue Tag noch verschieben. Das Datum erscheint bald im Spiel. Wie die Rangliste und Grandmaster funktionieren, steht in unserem [Ranglisten-Guide](/de/guides/origins-tcg-ranked).
+
+## Woran Koin noch arbeitet {#in-arbeit}
+
+In seinem Post vom 2. November zählte apix die Updates auf, an denen gearbeitet wird: schnellere Animationen, mehr Turniere, der Balance-Patch, neue Karten („Karten Karten Karten“), der Collector Pass im Spiel, die nächste Ranglisten-Saison und „jede Menge Feinschliff“. Er schrieb auch, dass heute etwa 60–70 % der Karten des ersten Sets verfügbar sind. Außer dem Patch hat keine dieser Neuerungen ein Datum.
+
+## Was wir noch nicht wissen {#offen}
+
+- Welche Karten der Balance-Patch ändert und um wie viel Uhr er am Mittwoch kommt.
+- Ob die neuen Karten von Dr. Frank in die Sammlung und in den Deckbuilder kommen.
+- Worum es im Roadmap-AMA geht und ob es aufgezeichnet wird.
+- Der genaue letzte Tag der Ranglisten-Saison 1.
+
+Quellen: die Nachrichten in #the-courtyard (2. November 2026, 18:11 UTC), #announcements (31. Oktober, 01:41 UTC, und 1. November, 00:05 UTC) und #game-announcements (31. Oktober, 22:56 UTC) im offiziellen Discord von Origins TCG, das Event „Super Secret Early Access Roadmap AMA“ auf demselben Server, gelesen am 3. November, der Steam-Post vom 31. Oktober (16:41 UTC) und der Post von apix auf X vom 2. November. Die Zitate haben wir übersetzt.`,
+    faq: [
+      { q: "Wann kommt der nächste Balance-Patch von Origins TCG?", a: "Am Mittwoch, 4. November 2026, wie Mawr, Studio Head von Koin, im offiziellen Discord angekündigt hat. Es ist der erste seit Patch 0.7 vom 29. September; die Patchnotes sind noch nicht erschienen." },
+      { q: "Wann ist das Roadmap-AMA von Origins TCG?", a: "Am Freitag, 6. November 2026, um 22:00 Uhr deutscher Zeit (21:00 UTC), im Kanal #live-events des offiziellen Discord." },
+      { q: "Was ist Dr. Frank in Origins TCG?", a: "Der nächste Boss der Missionen: Er kommt am 4. November mit einem Deck voller neuer Karten, eine Woche früher, weil das Spiel 500 Steam-Rezensionen erreicht hat." },
+      { q: "Wann endet die Ranglisten-Saison 1?", a: "In der Woche des 7. Dezember 2026, laut Koin; der genaue Tag kann sich noch verschieben." },
     ],
   },
   "soul-crimson-cup-interview": {

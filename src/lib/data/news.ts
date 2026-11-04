@@ -298,7 +298,7 @@ Three cards for discard decks, the ones built around Dracula, Koschei and Aladdi
 
 ## A balance patch on the same day {#balance}
 
-"Balance Patch will be tomorrow when Dr. Frank arrives", Mawr wrote on the Discord on 3 November. The changes are not public yet: when the patch notes come out we will publish them, and [MetaShifting](/en/metashifting) will show what changes card by card. Until then the stats on OriginsMeta are those of [patch 0.7](/en/news/patch-0-7).
+"Balance Patch will be tomorrow when Dr. Frank arrives", Mawr wrote on the Discord on 3 November. The changes are not public yet: when the patch notes come out we will publish them, and [MetaShifting](/en/metashifting) will show what changes card by card. Until then the stats on OriginsMeta are those of [patch 0.7](/en/news/patch-0-7). The other dates of the week, from the roadmap AMA on Friday 6 November to the end of ranked season 1, are in [our article of 2 November](/en/news/balance-patch-dr-frank-roadmap-ama).
 
 ## What the creators say {#creators}
 
@@ -381,7 +381,7 @@ Tre carte per i mazzi che scartano, quelli costruiti attorno a Dracula, Koschei 
 
 ## Una patch di bilanciamento lo stesso giorno {#bilanciamento}
 
-"La patch di bilanciamento arriva domani, con Dr. Frank": l'ha scritto Mawr sul Discord il 3 novembre. Le modifiche non sono ancora pubbliche: appena usciranno le patch notes le pubblicheremo, e [MetaShifting](/it/metashifting) mostrerà che cosa cambia carta per carta. Fino ad allora le statistiche su OriginsMeta restano quelle della [patch 0.7](/it/news/patch-0-7).
+"La patch di bilanciamento arriva domani, con Dr. Frank": l'ha scritto Mawr sul Discord il 3 novembre. Le modifiche non sono ancora pubbliche: appena usciranno le patch notes le pubblicheremo, e [MetaShifting](/it/metashifting) mostrerà che cosa cambia carta per carta. Fino ad allora le statistiche su OriginsMeta restano quelle della [patch 0.7](/it/news/patch-0-7). Le altre date della settimana, dall'AMA sulla roadmap di venerdì 6 novembre alla fine della stagione classificata 1, sono nel [nostro articolo del 2 novembre](/it/news/balance-patch-dr-frank-roadmap-ama).
 
 ## Che cosa dicono i creator {#creator}
 
@@ -464,7 +464,7 @@ Tres cartas para los mazos de descarte, los que se construyen alrededor de Dracu
 
 ## Un parche de equilibrio el mismo día {#equilibrio}
 
-"El parche de equilibrio llega mañana, con Dr. Frank": lo escribió Mawr en el Discord el 3 de noviembre. Los cambios todavía no son públicos: en cuanto salgan las notas del parche las publicaremos, y [MetaShifting](/es/metashifting) mostrará qué cambia carta por carta. Hasta entonces las estadísticas de OriginsMeta siguen siendo las del [parche 0.7](/es/news/patch-0-7).
+"El parche de equilibrio llega mañana, con Dr. Frank": lo escribió Mawr en el Discord el 3 de noviembre. Los cambios todavía no son públicos: en cuanto salgan las notas del parche las publicaremos, y [MetaShifting](/es/metashifting) mostrará qué cambia carta por carta. Hasta entonces las estadísticas de OriginsMeta siguen siendo las del [parche 0.7](/es/news/patch-0-7). Las otras fechas de la semana, del AMA sobre la hoja de ruta del viernes 6 de noviembre al final de la temporada clasificatoria 1, están en [nuestro artículo del 2 de noviembre](/es/news/balance-patch-dr-frank-roadmap-ama).
 
 ## Qué dicen los creadores {#creadores}
 
@@ -511,6 +511,193 @@ Fuentes: la publicación de Steam "Happy Halloween, Dr. Frank is coming" (31 de 
         { q: "¿Cuáles son las cartas nuevas de Dr. Frank?", a: "Ocho: Dr. Frank (Legendaria, 6 de maná, 2/2), It's Alive (hechizo, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) y Red Knight (2, 4/1)." },
         { q: "¿Hay un parche de equilibrio con Dr. Frank?", a: "Sí: Mawr, Studio Head de Koin, escribió que el parche de equilibrio llega con Dr. Frank el 4 de noviembre. Los cambios todavía no se habían publicado." },
         { q: "¿Puedo construir ya un mazo con las cartas nuevas?", a: "En OriginsMeta, sí: las ocho cartas están en Theory craft, nuestro deck builder con las cartas que no están en el juego, hasta que salga la actualización." },
+      ],
+    },
+  },
+  {
+    // Patch di bilanciamento e boss Dr. Frank mercoledì 4/11, AMA sulla roadmap venerdì 6/11 (03/11/2026). Pierluigi:
+    // "mercoledì ci sarà la patch e venerdì la roadmap, recupera gli annunci su discord e fai una notizia". Fonti lette dal
+    // Discord ufficiale il 03/11/2026: in #the-courtyard il moderatore Senith riporta alle 18:11 UTC del 2/11 il messaggio di
+    // Mawr (Studio Head di Koin) "I think you'll be pleased with the balance updates coming Wednesday November 4th" e apix
+    // scrive "new boss on wednesday" (17:30 italiane); in #announcements "500 reviews! The boss is coming a week early"
+    // (31/10, 01:41 UTC) e il "WHAT'S NEXT" di TimothyJ (Tim Jooste, 1/11, 00:05 UTC: roadmap AMA, giornata dei negozi,
+    // scena competitiva); in #game-announcements la fine della stagione "the week of December 7th" (31/10, 22:56 UTC);
+    // l'evento del server "Super Secret Early Access Roadmap AMA", venerdì 6/11 alle 22:00 di Roma, #live-events, creato da
+    // apix. Più il post Steam "Happy Halloween, Dr. Frank is coming" (31/10, 16:41 UTC) e il post su X di apix del 2/11.
+    // Copertina: la grafica ufficiale di quel post Steam (800×450) portata a 1600×900 senza ritagli, crediti compresi.
+    // Quando escono le patch notes: patch in cards.ts e card-history.ts, news con le tabelle, e qui un aggiornamento.
+    slug: "balance-patch-dr-frank-roadmap-ama",
+    image: "/media/news-dr-frank-boss.webp",
+    url: "https://store.steampowered.com/news/app/4429430/view/1847920302242676",
+    source: "steam",
+    cards: ["dr-frank"],
+    guides: ["roadmap-and-dates", "origins-tcg-ranked"],
+    date: "2026-11-02",
+    title: n(
+      "Origins TCG: balance patch and Dr. Frank on Wednesday, roadmap AMA on Friday",
+      "Origins TCG: patch di bilanciamento e Dr. Frank mercoledì, AMA sulla roadmap venerdì",
+      "Origins TCG: parche de equilibrio y Dr. Frank el miércoles, AMA sobre la hoja de ruta el viernes",
+    ),
+    metaTitle: n(
+      "Origins TCG: balance patch Wednesday, roadmap AMA Friday",
+      "Origins TCG: patch mercoledì, AMA sulla roadmap venerdì",
+      "Origins TCG: parche el miércoles, AMA de la hoja de ruta",
+    ),
+    description: n(
+      "Origins TCG: the first Early Access balance patch and the Dr. Frank boss arrive on Wednesday 4 November, the roadmap AMA is on Friday 6 November on Discord.",
+      "Origins TCG: la prima patch di bilanciamento dell'Accesso anticipato e il boss Dr. Frank arrivano mercoledì 4 novembre, l'AMA sulla roadmap è venerdì 6.",
+      "Origins TCG: el primer parche de equilibrio del Acceso anticipado y el jefe Dr. Frank llegan el miércoles 4 de noviembre, y el viernes 6, el AMA en Discord.",
+    ),
+    summary: n(
+      "Origins TCG has two dates this week. On Wednesday 4 November comes the first balance patch of Early Access, together with Dr. Frank, a new boss with a deck full of new cards; on Friday 6 November at 21:00 UTC Koin Games hosts a roadmap AMA on the official Discord. The patch notes are not out yet.",
+      "Origins TCG ha due date questa settimana. Mercoledì 4 novembre arriva la prima patch di bilanciamento dell'Accesso anticipato, insieme a Dr. Frank, un boss nuovo con un mazzo pieno di carte nuove; venerdì 6 novembre alle 22:00 italiane Koin Games tiene un AMA sulla roadmap sul Discord ufficiale. Le patch notes non sono ancora uscite.",
+      "Origins TCG tiene dos fechas esta semana. El miércoles 4 de noviembre llega el primer parche de equilibrio del Acceso anticipado, junto con Dr. Frank, un jefe nuevo con un mazo lleno de cartas nuevas; el viernes 6 de noviembre a las 21:00 UTC Koin Games celebra un AMA sobre la hoja de ruta en el Discord oficial. Las notas del parche todavía no han salido.",
+    ),
+    highlights: {
+      en: [
+        { label: "Balance patch on Wednesday", text: "4 November, the first of Early Access; patch notes not out yet", anchor: "balance-patch" },
+        { label: "Dr. Frank arrives", text: "the new boss with a deck full of new cards, one week early", anchor: "dr-frank" },
+        { label: "Roadmap AMA on Friday", text: "6 November at 21:00 UTC on the official Discord", anchor: "roadmap-ama" },
+        { label: "Ranked season 1", text: "ends the week of 7 December", anchor: "ranked" },
+        { label: "In the works", text: "faster animations, more tournaments, the Collector Pass in the game", anchor: "next" },
+      ],
+      it: [
+        { label: "Patch di bilanciamento mercoledì", text: "il 4 novembre, la prima dell'Accesso anticipato; patch notes non ancora uscite", anchor: "patch-bilanciamento" },
+        { label: "Arriva Dr. Frank", text: "il boss nuovo con un mazzo pieno di carte nuove, una settimana in anticipo", anchor: "dr-frank" },
+        { label: "AMA sulla roadmap venerdì", text: "il 6 novembre alle 22:00 italiane sul Discord ufficiale", anchor: "ama-roadmap" },
+        { label: "Stagione classificata 1", text: "finisce nella settimana del 7 dicembre", anchor: "classificata" },
+        { label: "In lavorazione", text: "animazioni più veloci, più tornei, il Collector Pass nel gioco", anchor: "in-arrivo" },
+      ],
+      es: [
+        { label: "Parche de equilibrio el miércoles", text: "el 4 de noviembre, el primero del Acceso anticipado; notas todavía sin publicar", anchor: "parche-equilibrio" },
+        { label: "Llega Dr. Frank", text: "el jefe nuevo con un mazo lleno de cartas nuevas, una semana antes", anchor: "dr-frank" },
+        { label: "AMA de la hoja de ruta el viernes", text: "el 6 de noviembre a las 21:00 UTC en el Discord oficial", anchor: "ama-roadmap" },
+        { label: "Temporada clasificatoria 1", text: "termina la semana del 7 de diciembre", anchor: "clasificatoria" },
+        { label: "En preparación", text: "animaciones más rápidas, más torneos, el Collector Pass en el juego", anchor: "en-camino" },
+      ],
+    },
+    body: n(
+      `## Wednesday 4 November: the balance patch {#balance-patch}
+
+The first balance patch of Origins TCG's Early Access arrives on Wednesday 4 November 2026. On Monday 2 November, in #the-courtyard on the official Discord, moderator Senith passed on a message from Mawr, Koin Games' Studio Head: "I think you'll be pleased with the balance updates coming Wednesday November 4th." That same evening apix, from the Koin team, wrote on X that "the first proper balance patch is around the corner" ([his post](https://x.com/apixtwts/status/2117383252478456012)).
+
+It is the first change to the cards since [patch 0.7](/en/news/patch-0-7) of 29 September 2026: [update 0.8](/en/news/origins-tcg-early-access-0-8), which opened Early Access on 27 October, touched no cards. The patch notes are not out yet, so we don't know which cards change or at what time the update lands. As soon as they are published we'll write them up with the before and after of every card, and the [card database](/en/cards), the [deck builder](/en/deck-builder) and [MetaShifting](/en/metashifting) will show the new values.
+
+## The same day: Dr. Frank, the new boss {#dr-frank}
+
+Wednesday also brings the next boss, Dr. Frank. Koin announced it on Steam on 31 October ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): the boss "will feature a deck full of new cards" and arrives one week earlier than planned. The reason is in the post's graphic and on Discord: the community reached 500 Steam reviews, and that night Koin wrote in #announcements that "the boss is coming a week early". On 2 November apix confirmed it on Discord: "new boss on wednesday".
+
+Bosses are the opponents of the Missions, played against the AI. Our database already has a [Dr. Frank](/en/cards/dr-frank) Legendary, which is no longer in the game: its page shows the last known data, not verified in the game, and the boss may not match it. Koin hasn't said whether the new cards of his deck will also go into players' collections.
+
+## Friday 6 November: the roadmap AMA {#roadmap-ama}
+
+On Friday 6 November at 21:00 UTC (16:00 on the US East Coast, 22:00 in Central Europe) Koin hosts the "Super Secret Early Access Roadmap AMA", a questions-and-answers session on the Early Access roadmap. It is an event on the official Discord, in the #live-events channel, created by apix. Tim Jooste, founder and CEO of Koin Games, had listed it first under "What's next" in his post in #announcements on 1 November, without further details.
+
+In the same post he announced two more things, still without dates: a "Tell Your Local TCG Shop About Origins Day", with details "coming soon", and an overview of the competitive scene, with tournaments, rewards and formats. The last AMA, on 2 October, gave the ranked dates and the first numbers on new cards ([our article](/en/news/building-origins-ama-design-balance)); the dates confirmed so far are in our [roadmap](/en/guides/roadmap-and-dates). We'll write up the AMA after the stream.
+
+## Ranked season 1 ends the week of 7 December {#ranked}
+
+One more date arrived on 31 October in #game-announcements: the first ranked season of Early Access ends in early December, "the week of December 7th". Koin explains that it can't end a season yet: the technology for it ships with the major update that will accompany the end of the season, so the exact day may still move. The date will appear in the game soon. How the ladder and Grandmaster work is in our [Ranked guide](/en/guides/origins-tcg-ranked).
+
+## What else Koin is working on {#next}
+
+In his post of 2 November apix listed the updates in progress: faster animations, more tournaments, the balance patch, new cards ("cards cards cards"), the Collector Pass in the game, the next ranked season and "a lot of polish". He also wrote that about 60-70% of the cards of the first set are available today. Apart from the patch, none of these has a date.
+
+## What we don't know yet {#unknown}
+
+- Which cards the balance patch changes, and at what time it goes live on Wednesday.
+- Whether Dr. Frank's new cards end up in the collection and in the deck builder.
+- What the roadmap AMA will cover, and whether it will be recorded.
+- The exact last day of ranked season 1.
+
+Sources: the messages in #the-courtyard (2 November 2026, 18:11 UTC), #announcements (31 October, 01:41 UTC, and 1 November, 00:05 UTC) and #game-announcements (31 October, 22:56 UTC) on the official Origins TCG Discord, the "Super Secret Early Access Roadmap AMA" event on the same server, read on 3 November, the Steam post of 31 October (16:41 UTC) and apix's post on X of 2 November.`,
+      `## Mercoledì 4 novembre: la patch di bilanciamento {#patch-bilanciamento}
+
+La prima patch di bilanciamento dell'Accesso anticipato di Origins TCG arriva mercoledì 4 novembre 2026. Lunedì 2 novembre, in #the-courtyard sul Discord ufficiale, il moderatore Senith ha riportato un messaggio di Mawr, Studio Head di Koin Games: "Penso che sarete contenti degli aggiornamenti di bilanciamento in arrivo mercoledì 4 novembre." La sera stessa apix, del team di Koin, ha scritto su X che "la prima vera patch di bilanciamento è dietro l'angolo" ([il suo post](https://x.com/apixtwts/status/2117383252478456012)).
+
+È la prima modifica alle carte dalla [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: l'[aggiornamento 0.8](/it/news/origins-tcg-early-access-0-8), che il 27 ottobre ha aperto l'Accesso anticipato, non ha toccato le carte. Le patch notes non sono ancora uscite, quindi non sappiamo quali carte cambiano né a che ora arriva l'aggiornamento. Appena escono le raccontiamo con il prima e il dopo di ogni carta, e il [database carte](/it/cards), il [deck builder](/it/deck-builder) e [MetaShifting](/it/metashifting) mostreranno i valori nuovi.
+
+## Lo stesso giorno: Dr. Frank, il boss nuovo {#dr-frank}
+
+Mercoledì arriva anche il prossimo boss, Dr. Frank. Koin l'ha annunciato su Steam il 31 ottobre ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): il boss "avrà un mazzo pieno di carte nuove" e arriva con una settimana di anticipo sul previsto. Il motivo sta nella grafica del post e sul Discord: la community ha raggiunto le 500 recensioni su Steam, e quella notte Koin ha scritto in #announcements che "il boss arriva una settimana prima". Il 2 novembre apix l'ha confermato sul Discord: "boss nuovo mercoledì".
+
+I boss sono gli avversari delle Missioni, giocate contro l'IA. Il nostro database ha già una Leggendaria [Dr. Frank](/it/cards/dr-frank), che non è più nel gioco: la sua pagina mostra gli ultimi dati noti, non verificati nel gioco, e il boss potrebbe non coincidere. Koin non ha detto se le carte nuove del suo mazzo entreranno anche nella collezione dei giocatori.
+
+## Venerdì 6 novembre: l'AMA sulla roadmap {#ama-roadmap}
+
+Venerdì 6 novembre alle 22:00 italiane (21:00 UTC) Koin tiene il "Super Secret Early Access Roadmap AMA", una sessione di domande e risposte sulla roadmap dell'Accesso anticipato. È un evento del Discord ufficiale, nel canale #live-events, creato da apix. Tim Jooste, fondatore e CEO di Koin Games, l'aveva messo al primo posto fra le prossime novità nel suo messaggio in #announcements del 1° novembre, senza altri dettagli.
+
+Nello stesso messaggio ha annunciato altre due cose, ancora senza date: un "Tell Your Local TCG Shop About Origins Day", la giornata per far conoscere Origins al proprio negozio di carte, con i dettagli "in arrivo", e una panoramica della scena competitiva, con tornei, premi e formati. L'ultimo AMA, il 2 ottobre, aveva dato le date della classificata e i primi numeri sulle carte nuove ([il nostro articolo](/it/news/building-origins-ama-design-balance)); le date confermate finora sono nella nostra [roadmap](/it/guides/roadmap-and-dates). Racconteremo l'AMA dopo la diretta.
+
+## La stagione classificata 1 finisce nella settimana del 7 dicembre {#classificata}
+
+Un'altra data è arrivata il 31 ottobre in #game-announcements: la prima stagione classificata dell'Accesso anticipato finisce a inizio dicembre, "nella settimana del 7 dicembre". Koin spiega che per ora non è in grado di chiudere una stagione: la tecnologia per farlo arriva con il grande aggiornamento che accompagnerà la fine della stagione, quindi il giorno esatto può ancora spostarsi. La data comparirà presto nel gioco. Come funzionano la scalata e Grandmaster è nella nostra [guida alla classificata](/it/guides/origins-tcg-ranked).
+
+## Che altro prepara Koin {#in-arrivo}
+
+Nel suo post del 2 novembre apix ha elencato gli aggiornamenti in lavorazione: animazioni più veloci, più tornei, la patch di bilanciamento, carte nuove ("carte carte carte"), il Collector Pass nel gioco, la prossima stagione classificata e "tanta rifinitura". Ha scritto anche che oggi è disponibile circa il 60-70% delle carte del primo set. A parte la patch, nessuna di queste novità ha una data.
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- Quali carte cambia la patch di bilanciamento, e a che ora arriva mercoledì.
+- Se le carte nuove di Dr. Frank entreranno nella collezione e nel deck builder.
+- Di che cosa parlerà l'AMA sulla roadmap, e se resterà registrato.
+- L'ultimo giorno esatto della stagione classificata 1.
+
+Fonti: i messaggi in #the-courtyard (2 novembre 2026, 18:11 UTC), #announcements (31 ottobre, 01:41 UTC, e 1° novembre, 00:05 UTC) e #game-announcements (31 ottobre, 22:56 UTC) sul Discord ufficiale di Origins TCG, l'evento "Super Secret Early Access Roadmap AMA" sullo stesso server, letto il 3 novembre, il post Steam del 31 ottobre (16:41 UTC) e il post su X di apix del 2 novembre. Le citazioni sono tradotte da noi.`,
+      `## Miércoles 4 de noviembre: el parche de equilibrio {#parche-equilibrio}
+
+El primer parche de equilibrio del Acceso anticipado de Origins TCG llega el miércoles 4 de noviembre de 2026. El lunes 2 de noviembre, en #the-courtyard del Discord oficial, el moderador Senith transmitió un mensaje de Mawr, Studio Head de Koin Games: "Creo que os gustarán las actualizaciones de equilibrio que llegan el miércoles 4 de noviembre." Esa misma noche apix, del equipo de Koin, escribió en X que "el primer parche de equilibrio de verdad está a la vuelta de la esquina" ([su publicación](https://x.com/apixtwts/status/2117383252478456012)).
+
+Es el primer cambio en las cartas desde el [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026: la [actualización 0.8](/es/news/origins-tcg-early-access-0-8), que abrió el Acceso anticipado el 27 de octubre, no tocó las cartas. Las notas del parche todavía no han salido, así que no sabemos qué cartas cambian ni a qué hora llega la actualización. En cuanto se publiquen las contaremos con el antes y el después de cada carta, y la [base de datos de cartas](/es/cards), el [deck builder](/es/deck-builder) y [MetaShifting](/es/metashifting) mostrarán los valores nuevos.
+
+## El mismo día: Dr. Frank, el jefe nuevo {#dr-frank}
+
+El miércoles llega también el próximo jefe, Dr. Frank. Koin lo anunció en Steam el 31 de octubre ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): el jefe "tendrá un mazo lleno de cartas nuevas" y llega una semana antes de lo previsto. El motivo está en la imagen de la publicación y en Discord: la comunidad alcanzó las 500 reseñas en Steam, y esa noche Koin escribió en #announcements que "el jefe llega una semana antes". El 2 de noviembre apix lo confirmó en Discord: "jefe nuevo el miércoles".
+
+Los jefes son los rivales de las Misiones, que se juegan contra la IA. Nuestra base de datos ya tiene una Legendaria [Dr. Frank](/es/cards/dr-frank), que ya no está en el juego: su página muestra los últimos datos conocidos, no verificados en el juego, y el jefe puede no coincidir. Koin no ha dicho si las cartas nuevas de su mazo llegarán también a la colección de los jugadores.
+
+## Viernes 6 de noviembre: el AMA sobre la hoja de ruta {#ama-roadmap}
+
+El viernes 6 de noviembre a las 21:00 UTC (22:00 en la España peninsular, 15:00 en Ciudad de México) Koin celebra el "Super Secret Early Access Roadmap AMA", una sesión de preguntas y respuestas sobre la hoja de ruta del Acceso anticipado. Es un evento del Discord oficial, en el canal #live-events, creado por apix. Tim Jooste, fundador y CEO de Koin Games, lo había puesto en primer lugar entre las próximas novedades en su mensaje en #announcements del 1 de noviembre, sin más detalles.
+
+En el mismo mensaje anunció dos cosas más, todavía sin fecha: un "Tell Your Local TCG Shop About Origins Day", el día para dar a conocer Origins en tu tienda de cartas, con detalles "muy pronto", y un repaso de la escena competitiva, con torneos, premios y formatos. El último AMA, el 2 de octubre, dio las fechas de la clasificatoria y las primeras cifras sobre cartas nuevas ([nuestro artículo](/es/news/building-origins-ama-design-balance)); las fechas confirmadas hasta ahora están en nuestra [hoja de ruta](/es/guides/roadmap-and-dates). Contaremos el AMA después de la emisión.
+
+## La temporada clasificatoria 1 termina la semana del 7 de diciembre {#clasificatoria}
+
+Otra fecha llegó el 31 de octubre en #game-announcements: la primera temporada clasificatoria del Acceso anticipado termina a principios de diciembre, "la semana del 7 de diciembre". Koin explica que todavía no puede cerrar una temporada: la tecnología para hacerlo llega con la gran actualización que acompañará el final de la temporada, así que el día exacto aún puede moverse. La fecha aparecerá pronto en el juego. Cómo funcionan la escalada y Grandmaster lo explica nuestra [guía de la clasificatoria](/es/guides/origins-tcg-ranked).
+
+## Qué más prepara Koin {#en-camino}
+
+En su publicación del 2 de noviembre apix enumeró las actualizaciones en marcha: animaciones más rápidas, más torneos, el parche de equilibrio, cartas nuevas ("cartas cartas cartas"), el Collector Pass en el juego, la próxima temporada clasificatoria y "mucho pulido". También escribió que hoy está disponible alrededor del 60-70% de las cartas del primer set. Aparte del parche, ninguna de estas novedades tiene fecha.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- Qué cartas cambia el parche de equilibrio, y a qué hora llega el miércoles.
+- Si las cartas nuevas de Dr. Frank llegarán a la colección y al deck builder.
+- De qué hablará el AMA sobre la hoja de ruta, y si quedará grabado.
+- El último día exacto de la temporada clasificatoria 1.
+
+Fuentes: los mensajes en #the-courtyard (2 de noviembre de 2026, 18:11 UTC), #announcements (31 de octubre, 01:41 UTC, y 1 de noviembre, 00:05 UTC) y #game-announcements (31 de octubre, 22:56 UTC) del Discord oficial de Origins TCG, el evento "Super Secret Early Access Roadmap AMA" en el mismo servidor, consultado el 3 de noviembre, la publicación de Steam del 31 de octubre (16:41 UTC) y la publicación de apix en X del 2 de noviembre. Las citas están traducidas por nosotros.`,
+    ),
+    faq: {
+      en: [
+        { q: "When is the next Origins TCG balance patch?", a: "On Wednesday 4 November 2026, as Koin's Studio Head Mawr announced on the official Discord. It is the first since patch 0.7 of 29 September; the patch notes are not out yet." },
+        { q: "When is the Origins TCG roadmap AMA?", a: "On Friday 6 November 2026 at 21:00 UTC (22:00 in Central Europe), in the #live-events channel of the official Discord." },
+        { q: "What is Dr. Frank in Origins TCG?", a: "The next boss of the Missions: it arrives on 4 November with a deck full of new cards, one week early because the game reached 500 Steam reviews." },
+        { q: "When does ranked season 1 end?", a: "The week of 7 December 2026, according to Koin; the exact day may still move." },
+      ],
+      it: [
+        { q: "Quando esce la prossima patch di bilanciamento di Origins TCG?", a: "Mercoledì 4 novembre 2026, come ha annunciato sul Discord ufficiale Mawr, Studio Head di Koin. È la prima dalla patch 0.7 del 29 settembre; le patch notes non sono ancora uscite." },
+        { q: "Quando c'è l'AMA sulla roadmap di Origins TCG?", a: "Venerdì 6 novembre 2026 alle 22:00 italiane (21:00 UTC), nel canale #live-events del Discord ufficiale." },
+        { q: "Che cos'è Dr. Frank in Origins TCG?", a: "Il prossimo boss delle Missioni: arriva il 4 novembre con un mazzo pieno di carte nuove, una settimana prima perché il gioco ha raggiunto le 500 recensioni su Steam." },
+        { q: "Quando finisce la stagione classificata 1?", a: "Nella settimana del 7 dicembre 2026, secondo Koin; il giorno esatto può ancora spostarsi." },
+      ],
+      es: [
+        { q: "¿Cuándo sale el próximo parche de equilibrio de Origins TCG?", a: "El miércoles 4 de noviembre de 2026, como anunció en el Discord oficial Mawr, Studio Head de Koin. Es el primero desde el parche 0.7 del 29 de septiembre; las notas todavía no han salido." },
+        { q: "¿Cuándo es el AMA sobre la hoja de ruta de Origins TCG?", a: "El viernes 6 de noviembre de 2026 a las 21:00 UTC (22:00 en la España peninsular), en el canal #live-events del Discord oficial." },
+        { q: "¿Qué es Dr. Frank en Origins TCG?", a: "El próximo jefe de las Misiones: llega el 4 de noviembre con un mazo lleno de cartas nuevas, una semana antes porque el juego alcanzó las 500 reseñas en Steam." },
+        { q: "¿Cuándo termina la temporada clasificatoria 1?", a: "La semana del 7 de diciembre de 2026, según Koin; el día exacto aún puede moverse." },
       ],
     },
   },
