@@ -18,13 +18,13 @@ export const deText: Record<string, NewsCopy> = {
       "CoachCrono hat den Crimson Cup gewonnen, das erste große Turnier von Origins TCG: Er hat sich aus dem Loser-Bracket zurückgekämpft und SouL in einem rein italienischen großen Finale geschlagen. In diesem Gespräch erzählt er von seiner Aufstellung aus Pigs, Van Helsing und Legion of the Dead, warum er Obliterate nicht anfassen würde und wohin sich das Spiel seiner Meinung nach entwickelt. Seine drei Listen sind jetzt ein Turnierdeck, mit den Spielcodes zum Kopieren.",
     body: `CoachCrono ist der **Champion des Crimson Cup**, des bisher größten Turniers von Origins TCG: Er hat sich aus dem Loser-Bracket zurückgekämpft, den Finaltag mit 9-3 abgeschlossen und im großen Finale SouL geschlagen. Mit nach Hause nimmt er die 1/1-Promokarte Dracula ([hier ist sein Weg zum Titel](/de/news/crimson-cup-coachcrono-wins)). Er ist Streamer und hat auf OriginsMeta die Rolle Creator: Seine Kanäle und Decks findest du auf [seinem Profil](/de/u/coachcrono).
 
-Wir sprechen oft miteinander, in letzter Zeit fast nur über Origins, und das hier ist weniger ein Interview als ein Gespräch unter Freunden, ein kleiner Podcast, aufgenommen wenige Tage nach dem Start des [Kickstarters der Alpha Edition](/de/kickstarter). Die Fragen stellt [Pierluigi Cella](/de/authors/pierluigi-cella), Gründer von OriginsMeta.
+Wir sprechen oft miteinander, in letzter Zeit fast nur über Origins, und das hier ist weniger ein Interview als ein Gespräch unter Freunden, ein kleiner Podcast, aufgenommen wenige Tage nach dem Start des [Kickstarters der Alpha Edition](/de/kickstarter). Die Fragen stellt Luigi „[Davdas](/de/authors/davdas)“ Ragoni.
 
 Die drei Listen, mit denen er gewonnen hat und die Koin Games am Tag der Finals veröffentlicht hat, sind jetzt ein [Turnierdeck](/de/decks/tournament/coachcrono-crimson-cup-lineup): **Du findest sie weiter unten, mit den Spielcodes zum Kopieren**.
 
 ## Das erste Turnier von Origins {#erstes-turnier}
 
-**Pierluigi:** Hallo Coach, wie schön, dich hier bei mir zu haben. Ich muss ehrlich sein: Wir sprechen oft miteinander, über viele Dinge, aber in letzter Zeit immer über Origins, und das macht es umso schöner. Es ist verrückt, dich hier zu Gast zu haben, bei etwas, das, seien wir ehrlich, kein richtiges Interview wird, sondern ein privates Gespräch, eine Art kleiner Podcast unter Freunden. Als Erstes wollte ich dich fragen: Was bedeutet es heute für dich, an einem Turnier teilzunehmen, am ersten Turnier von Origins?
+**Davdas:** Hallo Coach, wie schön, dich hier bei mir zu haben. Ich muss ehrlich sein: Wir sprechen oft miteinander, über viele Dinge, aber in letzter Zeit immer über Origins, und das macht es umso schöner. Es ist verrückt, dich hier zu Gast zu haben, bei etwas, das, seien wir ehrlich, kein richtiges Interview wird, sondern ein privates Gespräch, eine Art kleiner Podcast unter Freunden. Als Erstes wollte ich dich fragen: Was bedeutet es heute für dich, an einem Turnier teilzunehmen, am ersten Turnier von Origins?
 
 **CoachCrono:** Na ja, das ist eine interessante Frage, denn das Erste, was ich gesagt habe, als das Turnier losging, war: „Ganz entspannt, Leute, wir gehen 0-2 und casten dann das Turnier.“ Ich wusste, dass ich ein Turnier zum Spaß spiele: Ich hatte nicht einmal ein Delay auf meinen Stream gelegt und habe alles getan, damit es wie eine Show aussieht und nicht wie ein kompetitives Turnier, von meiner Seite natürlich. Dann ist es doch kompetitiv geworden.
 
@@ -32,7 +32,7 @@ Angefangen hat es ganz zum Spaß, natürlich eher als Streamer denn als Profispi
 
 ## Was Origins für den Coach ist {#origins}
 
-**Pierluigi:** Origins ist ein Spiel mit bekannten Fundamenten und Wurzeln, denn es schöpft aus verschiedenen anderen Titeln und erinnert uns an viele Spiele, die wir gespielt haben, aber es hat eine neue Seele, und das bringt einen ein bisschen zum Lächeln, denn es ist eine extrem kompetitive Seele, die auch künstlerisch mitreißt, mit diesem ganzen Konzept der Karten. Also: Was ist Origins heute für den Coach?
+**Davdas:** Origins ist ein Spiel mit bekannten Fundamenten und Wurzeln, denn es schöpft aus verschiedenen anderen Titeln und erinnert uns an viele Spiele, die wir gespielt haben, aber es hat eine neue Seele, und das bringt einen ein bisschen zum Lächeln, denn es ist eine extrem kompetitive Seele, die auch künstlerisch mitreißt, mit diesem ganzen Konzept der Karten. Also: Was ist Origins heute für den Coach?
 
 **CoachCrono:** Für mich ist Origins im Moment ein Platz, an dem ich mit meiner Community entspannen kann, es ist **meine wichtigste Quelle fürs Streaming**, und es ist das Spiel, das sich für mich am passendsten anfühlt, und auch für meine Community, denn als Streamer denke ich natürlich auch an sie, nicht nur an mich. Und ich finde, es macht richtig Spaß: **Ich wache morgens auf und weiß, dass ich ein paar Partien Origins spiele** und Spaß dabei habe.
 
@@ -40,11 +40,11 @@ Angefangen hat es ganz zum Spaß, natürlich eher als Streamer denn als Profispi
 
 > „Die schlechteste Liste ist ohne jeden Zweifel Legion of the Dead. Sie hat mir nie gefallen, aber von den dreien hat dieses Deck am besten performt.“
 
-**Pierluigi:** Dann lass uns in das Turnier einsteigen, das du gewonnen hast. Du hast Entscheidungen getroffen, viel getestet, wir haben dich auf deinen Kanälen verfolgt: Du hast auch verrückte Ideen ausprobiert, die Aufstellungen mal so und mal anders zusammengesetzt, manchmal mit katastrophalen Ergebnissen, manchmal mit verblüffenden. Und am Ende? Wofür hast du dich entschieden, und warum? Bist du rundum zufrieden?
+**Davdas:** Dann lass uns in das Turnier einsteigen, das du gewonnen hast. Du hast Entscheidungen getroffen, viel getestet, wir haben dich auf deinen Kanälen verfolgt: Du hast auch verrückte Ideen ausprobiert, die Aufstellungen mal so und mal anders zusammengesetzt, manchmal mit katastrophalen Ergebnissen, manchmal mit verblüffenden. Und am Ende? Wofür hast du dich entschieden, und warum? Bist du rundum zufrieden?
 
 **CoachCrono:** Die Entscheidungen, die wir getroffen haben, beruhen auf meinen Ideen, aber auch auf denen vieler anderer Jungs, die mir beim Testen geholfen haben. Weil es das erste Turnier war, war ziemlich unvorhersehbar, was die anderen machen würden, also habe ich beschlossen, einfach **die stärkste und konstanteste Aufstellung** mitzubringen, die möglich war. Wir haben auch andere Wege erwogen, viel riskantere, zum Beispiel Aufstellungen, die die stärksten Aufstellungen countern, aber am Ende habe ich mich, weil es das erste Turnier war, entschieden, es einfach zu halten.
 
-**Pierluigi:** Erzählst du uns von den Listen, die du mitgebracht hast? Was hast du geändert, was hat dir gefallen? Und vielleicht auch, welche die beste und welche die schlechteste der drei war: Hättest du im Nachhinein etwas geändert?
+**Davdas:** Erzählst du uns von den Listen, die du mitgebracht hast? Was hast du geändert, was hat dir gefallen? Und vielleicht auch, welche die beste und welche die schlechteste der drei war: Hättest du im Nachhinein etwas geändert?
 
 **CoachCrono:** Die schlechteste Liste ist ohne jeden Zweifel Legion of the Dead. Ich wollte sie nie spielen und sie hat mir nie gefallen, aber am Ende war sie im Meta wirklich stark und hat richtig, richtig gut performt: **Von den dreien war es das Deck, das am meisten gebracht hat**.
 
@@ -64,7 +64,7 @@ Das sind die Listen vom 25. Oktober. Der [Patch vom 4. November](/de/news/balanc
 
 > „Ich hätte nie gedacht, dass ich mit Van Helsing auch nur ein einziges Matchup gewinnen würde, und doch ist dieser Van Helsing in der ersten Partie durchgekommen.“
 
-**Pierluigi:** Im Finale bist du gegen einen anderen Italiener angetreten, SouL, der uns hier auf OriginsMeta von [seinen Erfahrungen](/de/news/soul-crimson-cup-interview) erzählt hat: Er hat sehr gut über eure Matches gesprochen, über völlig entspannte Partien, denn wenn du mit einem Freund spielst, den du kennst, respektierst du auch die Seele des anderen, selbst wenn es um einen wichtigen Preis geht. Ihr habt während des Duells sogar ein paar Freundlichkeiten ausgetauscht, aber es war trotzdem ein Finale. Wie lief es aus Sicht des Coachs?
+**Davdas:** Im Finale bist du gegen einen anderen Italiener angetreten, SouL, der uns hier auf OriginsMeta von [seinen Erfahrungen](/de/news/soul-crimson-cup-interview) erzählt hat: Er hat sehr gut über eure Matches gesprochen, über völlig entspannte Partien, denn wenn du mit einem Freund spielst, den du kennst, respektierst du auch die Seele des anderen, selbst wenn es um einen wichtigen Preis geht. Ihr habt während des Duells sogar ein paar Freundlichkeiten ausgetauscht, aber es war trotzdem ein Finale. Wie lief es aus Sicht des Coachs?
 
 **CoachCrono:** Aus meiner Sicht war das Finale schrecklich, denn ich ging mit dem Wissen hinein, dass wir uns schon am Tag davor in den Playoffs begegnet waren: Er hatte mich glatt 2-0 geschlagen, ich habe praktisch nicht gespielt, **er hat mich ohne jede Chance auf eine Antwort ins Lower Bracket geschickt**. Ich wusste also, dass ich gegen ihn die schlechtere Aufstellung hatte: Er hat eine sehr, sehr clevere Aufstellung mitgebracht, und ich war klar im Nachteil.
 
@@ -76,7 +76,7 @@ Das 2-0 aus den Playoffs steht im [Turnierbaum](/de/analytics/crimson-cup/playof
 
 ## Der 1/1-Dracula {#dracula}
 
-**Pierluigi:** Du hast einen besonderen Dracula gewonnen, eine Karte, die im Moment im Meta nicht viel gespielt wird, aber eine verrückte Geschichte hat: Es ist die erste 1 von 1 dieses Spiels, mit einer komplett goldenen Version. Sie zu gewinnen muss etwas Besonderes sein, und ich nehme an, das ist es auch für dich. Was hast du als inzwischen erfahrener kompetitiver Spieler gefühlt, als du mehr als einen Gegenstand gewonnen hast, mehr als eine Karte, mehr als einen Wert: das Symbol eines neuen Spiels, noch bevor es richtig erschienen ist?
+**Davdas:** Du hast einen besonderen Dracula gewonnen, eine Karte, die im Moment im Meta nicht viel gespielt wird, aber eine verrückte Geschichte hat: Es ist die erste 1 von 1 dieses Spiels, mit einer komplett goldenen Version. Sie zu gewinnen muss etwas Besonderes sein, und ich nehme an, das ist es auch für dich. Was hast du als inzwischen erfahrener kompetitiver Spieler gefühlt, als du mehr als einen Gegenstand gewonnen hast, mehr als eine Karte, mehr als einen Wert: das Symbol eines neuen Spiels, noch bevor es richtig erschienen ist?
 
 **CoachCrono:** Zu gewinnen war auf jeden Fall eine große Ehre und hat riesigen Spaß gemacht, und das zusammen mit der Community: **Das war das Wichtigste, dass meine Community dabei war**. Man muss aber auch sagen: Gewinnen ist immer schön, und wenn es einen Preis gibt, umso besser.
 
@@ -86,7 +86,7 @@ Das 2-0 aus den Playoffs steht im [Turnierbaum](/de/analytics/crimson-cup/playof
 
 > „Ich würde am Meta überhaupt nichts ändern: Sonst müsste man es wieder anfassen, sobald der Counter rauskommt, und es entstünde eine Endlosschleife.“
 
-**Pierluigi:** Auch hier auf OriginsMeta haben wir jede Menge Auswertungen gesehen, die uns von Karten erzählen, die häufiger gespielt werden als andere, und von Combos, die viel öfter genutzt werden. Der aktuelle Stand des Spiels zeigt ein, nennen wir es mal, hinkendes Set mitten in seinem Wachstum: Die Karten, die das Startset vervollständigen werden, kommen erst noch. Gibt es Situationen oder Karten, die du ändern würdest? Was macht das Meta von Origins gerade ein bisschen erdrückend? Wie würdest du es ändern?
+**Davdas:** Auch hier auf OriginsMeta haben wir jede Menge Auswertungen gesehen, die uns von Karten erzählen, die häufiger gespielt werden als andere, und von Combos, die viel öfter genutzt werden. Der aktuelle Stand des Spiels zeigt ein, nennen wir es mal, hinkendes Set mitten in seinem Wachstum: Die Karten, die das Startset vervollständigen werden, kommen erst noch. Gibt es Situationen oder Karten, die du ändern würdest? Was macht das Meta von Origins gerade ein bisschen erdrückend? Wie würdest du es ändern?
 
 **CoachCrono:** Es gibt sicher ein paar Karten, die gerade overperformen. Mir fällt **Obliterate** ein: Das ist eigentlich eine Karte, die man in Control-Combo-Decks spielen sollte, doch stattdessen wird sie einfach in Aggro- und Midrange-Decks benutzt, weil sie zu stark ist und keinen Counter hat.
 
@@ -102,7 +102,7 @@ Koin hat das anders gesehen: Mit dem [Patch vom 4. November](/de/news/balance-pa
 
 > „Wenn sie sich nicht auf die Kompromisse einlassen, die man ihnen anbieten wird, und das Spiel kompetitiv halten, können sie leicht Erfolg haben.“
 
-**Pierluigi:** Das ist interessant, denn es bringt uns zu der Frage, was der Coach heute über Origins denkt. Origins hat vor ein paar Tagen seinen Kickstarter gestartet, sehr viele Leute fangen an, sich für das Spiel zu interessieren, und wir haben schon aktive Communitys: Die Zahlen unserer Streamer, unserer Seite und der Turniere sagen uns, dass es wächst, dass es sich sichtbar ausbreitet. Wie siehst du die nahe Zukunft von Origins, auf dem Weg zum offiziellen Launch? Und was kann deiner Meinung nach ab da passieren?
+**Davdas:** Das ist interessant, denn es bringt uns zu der Frage, was der Coach heute über Origins denkt. Origins hat vor ein paar Tagen seinen Kickstarter gestartet, sehr viele Leute fangen an, sich für das Spiel zu interessieren, und wir haben schon aktive Communitys: Die Zahlen unserer Streamer, unserer Seite und der Turniere sagen uns, dass es wächst, dass es sich sichtbar ausbreitet. Wie siehst du die nahe Zukunft von Origins, auf dem Weg zum offiziellen Launch? Und was kann deiner Meinung nach ab da passieren?
 
 **CoachCrono:** Ich glaube, Origins hat eine große Zukunft vor sich, sicher mit ein paar großen Unbekannten. Man muss aber sagen, dass sie bisher alles getan haben, was nötig war, um das Spiel unterhaltsam und für immer mehr Leute zugänglich zu machen, natürlich angefangen beim Free-to-Play, ihrem Markenzeichen: **Jeder kann kostenlos spielen und kostenlos antreten** und ein Stück von diesem amerikanischen Traum leben, den ich ja tatsächlich erlebt habe, als ich das erste Turnier gewonnen habe.
 
@@ -114,7 +114,7 @@ Es geht um den Kickstarter der Alpha Edition: Belohnungen, Wahrscheinlichkeiten 
 
 ## Warum man Origins spielen sollte, ob Einsteiger oder Experte {#einsteiger}
 
-**Pierluigi:** Warum würdest du Origins jemandem empfehlen, der bei Kartenspielen noch ganz am Anfang steht? Und warum dagegen einem erfahrenen Spieler, der das Genre schon kennt?
+**Davdas:** Warum würdest du Origins jemandem empfehlen, der bei Kartenspielen noch ganz am Anfang steht? Und warum dagegen einem erfahrenen Spieler, der das Genre schon kennt?
 
 **CoachCrono:** Jemandem, der mit solchen Spielen keine Erfahrung hat, würde ich es auf jeden Fall empfehlen, aus zwei Hauptgründen. Der erste ist das Fehlen, in Anführungszeichen, eines Kampfsystems: **Die Karten kämpfen von allein**, du musst also nicht von Anfang an an Abtausch und Ketten denken wie bei Magic oder Yu-Gi-Oh!, und das macht den Einstieg leichter. Der zweite ist, dass es **free-to-play** ist: Du musst kein Geld investieren, um in die Welt der Kartenspiele einzusteigen, wie es bei einem physischen Kartenspiel der Fall wäre.
 
@@ -122,7 +122,7 @@ Erfahreneren Spielern empfehle ich es trotzdem, eigentlich aus dem umgekehrten G
 
 ## Märchen als Gewand {#maerchen}
 
-**Pierluigi:** Findest du, dass Origins auch das passende Gewand gewählt hat, um seine Geschichte zu erzählen? Eine Lore, die auf Märchen basiert, macht schon viele Spieler verrückt, aber andere rümpfen die Nase: Kann sie die Herzen der Kartenspielfans erobern?
+**Davdas:** Findest du, dass Origins auch das passende Gewand gewählt hat, um seine Geschichte zu erzählen? Eine Lore, die auf Märchen basiert, macht schon viele Spieler verrückt, aber andere rümpfen die Nase: Kann sie die Herzen der Kartenspielfans erobern?
 
 **CoachCrono:** Ich finde schon. Du musst nur ins Spiel gehen und siehst Winnie-the-Pooh, Die Schöne und das Biest und andere große Marken, in einem ganz eigenen Stil neu interpretiert, komplett verwandelt: **Winnie-the-Pooh wird vom wehrlosen kleinen Bären zum 200-Kilo-Bodybuilder**. Das macht alles sehr witzig, aber gleichzeitig sehr vertraut, denn es ist immer noch Winnie-the-Pooh, der kleine Bär, den du als Kind kanntest. Also ja, ich glaube, ihre Marketingentscheidung war absolut goldrichtig: **minimale Kosten, maximales Ergebnis**.
 
@@ -130,13 +130,13 @@ Erfahreneren Spielern empfehle ich es trotzdem, eigentlich aus dem umgekehrten G
 
 ## OriginsMeta aus Sicht des Coachs {#originsmeta}
 
-**Pierluigi:** Du kennst das Projekt OriginsMeta seit seinen Anfängen, weil wir immer darüber gesprochen haben: Ich habe dich eingeweiht, noch bevor wir an die Öffentlichkeit gegangen sind, und du warst immer eine wertvolle Stütze, um unser Produkt wachsen zu lassen. Wir expandieren ständig, schaffen neue Tools und neue Seiten zum Entdecken, und die Leute danken uns sehr für die Statistiken, die Daten und vieles mehr; und wir werden nie aufhören, ihnen dafür zu danken, dass sie sich jeden Tag für uns entscheiden. Was können wir noch tun, um besser zu werden? Damit die Community von Origins immer lieber auf OriginsMeta vorbeischaut?
+**Davdas:** Du kennst das Projekt OriginsMeta seit seinen Anfängen, weil wir immer darüber gesprochen haben: Ich habe dich eingeweiht, noch bevor wir an die Öffentlichkeit gegangen sind, und du warst immer eine wertvolle Stütze, um unser Produkt wachsen zu lassen. Wir expandieren ständig, schaffen neue Tools und neue Seiten zum Entdecken, und die Leute danken uns sehr für die Statistiken, die Daten und vieles mehr; und wir werden nie aufhören, ihnen dafür zu danken, dass sie sich jeden Tag für uns entscheiden. Was können wir noch tun, um besser zu werden? Damit die Community von Origins immer lieber auf OriginsMeta vorbeischaut?
 
 **CoachCrono:** Ich finde, OriginsMeta macht einen großartigen Job, vor allem bei der Zugänglichkeit, und ich würde auf diesem Weg weitermachen: **auf der Seite der Leute stehen**, wie ihr es schon tut, und OriginsMeta so einfach und intuitiv wie möglich machen. Man muss sagen, dass da schon unglaubliche Arbeit geleistet wurde, aber wie alles im Leben kann man es immer noch verbessern. Vielleicht gibt es beim Tracker noch ein bisschen was zu tun, aber ich glaube, das Gröbste ist geschafft, also kann ich euch statt Ratschlägen nur jede Menge Komplimente machen. **Ich weiß, mit wie viel Leidenschaft und Hingabe ihr arbeitet**, immer mit einem offenen Ohr für die Spieler, und das macht den Unterschied.
 
 Der Tracker ist [OriginsMeta Tracker](/de/tracker), die App für Windows, die die Partien von selbst aufzeichnet und die Statistiken in [Analytics](/de/analytics) speist.
 
-**Pierluigi:** Du bist zu lieb, mein Freund: Wir machen weiter unser Bestes. Ich lade alle ein, dem Coach auf [all seinen Kanälen](/de/u/coachcrono) zu folgen: Er ist oft live, und zwar mit Origins, um uns immer mehr von diesem wunderbaren Spiel zu erzählen. Coach, ich umarme dich und danke dir.
+**Davdas:** Du bist zu lieb, mein Freund: Wir machen weiter unser Bestes. Ich lade alle ein, dem Coach auf [all seinen Kanälen](/de/u/coachcrono) zu folgen: Er ist oft live, und zwar mit Origins, um uns immer mehr von diesem wunderbaren Spiel zu erzählen. Coach, ich umarme dich und danke dir.
 
 **CoachCrono:** Ich dich auch. Hab euch lieb, Leute.
 
