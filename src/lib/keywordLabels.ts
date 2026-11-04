@@ -21,49 +21,53 @@ import type { Locale } from "./i18n";
  *   Пробивной удар, Перемещение, Оглушение, Меткий выстрел…); le categorie hanno il verbo dei testi delle carte in terza
  *   persona, come il gioco (Наносит урон, Призывает, Уничтожает), e l'imperativo col «вы» dove lo usa il gioco
  *   (Возьмите карту, Сбросьте, Выберите).
+ * - Il cinese semplificato (04/11/2026, `"zh-cn"`) usa il glossario PROVVISORIO di docs/cinese.md (揭示时, 践踏, 移动,
+ *   眩晕, 狙击…), da allineare a quello del gioco quando lo leggeremo (il gioco ha il cinese dalla patch 0.7); le
+ *   categorie sono nomi brevi d'azione (召唤, 抽牌, 弃牌, 消灭), "Vanilla" è 白板 come nel gergo dei giocatori, e
+ *   "Ongoing" ha il nome del glossario, 持续.
  * Un tag nuovo portato da `npm run import:woo` senza etichetta qui si mostra in inglese e fa fallire il test.
  */
-type Label = { it: string; es: string; fr: string; pt: string; de: string; ru: string; game?: true };
+type Label = { it: string; es: string; fr: string; pt: string; de: string; ru: string; "zh-cn": string; game?: true };
 
 export const keywordLabels: Record<string, Label> = {
   // parole chiave del gioco: nomi ufficiali
-  "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", pt: "Ao revelar", de: "Beim Aufdecken", ru: "При раскрытии", game: true },
-  "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", pt: "Ao morrer", de: "Bei Tod", ru: "При смерти", game: true },
-  "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", pt: "Ao matar", de: "Bei Vernichtung", ru: "При убийстве", game: true },
-  Shield: { it: "Scudo", es: "Escudo", fr: "Bouclier", pt: "Escudo", de: "Schild", ru: "Щит", game: true },
-  Trample: { it: "Travolgere", es: "Arrollar", fr: "Piétinement", pt: "Atropelar", de: "Überrennen", ru: "Пробивной удар", game: true },
-  Deathtouch: { it: "Tocco letale", es: "Toque mortal", fr: "Contact mortel", pt: "Toque mortífero", de: "Todesberührung", ru: "Смертельное касание", game: true },
-  Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", pt: "Defensor", de: "Verteidiger", ru: "Защитник", game: true },
-  Rebirth: { it: "Rinascita", es: "Renacer", fr: "Renaissance", pt: "Renascimento", de: "Wiedergeburt", ru: "Возрождение", game: true },
-  "First Strike": { it: "Primo colpo", es: "Primer golpe", fr: "Première frappe", pt: "Primeiro golpe", de: "Erstschlag", ru: "Первый удар", game: true },
-  "Double Attack": { it: "Doppio attacco", es: "Ataque doble", fr: "Double attaque", pt: "Ataque duplo", de: "Doppelangriff", ru: "Двойная атака", game: true },
-  Snipe: { it: "Tiro di precisione", es: "Disparo certero", fr: "Tir de précision", pt: "Tiro certeiro", de: "Präzisionsschuss", ru: "Меткий выстрел", game: true },
-  Move: { it: "Muovere", es: "Mover", fr: "Déplacer", pt: "Mover", de: "Bewegen", ru: "Перемещение", game: true },
-  Stun: { it: "Stordisci", es: "Aturde", fr: "Étourdir", pt: "Atordoa", de: "Betäube", ru: "Оглушение", game: true },
-  Ongoing: { it: "Ongoing", es: "Ongoing", fr: "Ongoing", pt: "Ongoing", de: "Ongoing", ru: "Ongoing" },
+  "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", pt: "Ao revelar", de: "Beim Aufdecken", ru: "При раскрытии", "zh-cn": "揭示时", game: true },
+  "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", pt: "Ao morrer", de: "Bei Tod", ru: "При смерти", "zh-cn": "死亡时", game: true },
+  "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", pt: "Ao matar", de: "Bei Vernichtung", ru: "При убийстве", "zh-cn": "击杀时", game: true },
+  Shield: { it: "Scudo", es: "Escudo", fr: "Bouclier", pt: "Escudo", de: "Schild", ru: "Щит", "zh-cn": "护盾", game: true },
+  Trample: { it: "Travolgere", es: "Arrollar", fr: "Piétinement", pt: "Atropelar", de: "Überrennen", ru: "Пробивной удар", "zh-cn": "践踏", game: true },
+  Deathtouch: { it: "Tocco letale", es: "Toque mortal", fr: "Contact mortel", pt: "Toque mortífero", de: "Todesberührung", ru: "Смертельное касание", "zh-cn": "死触", game: true },
+  Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", pt: "Defensor", de: "Verteidiger", ru: "Защитник", "zh-cn": "守卫", game: true },
+  Rebirth: { it: "Rinascita", es: "Renacer", fr: "Renaissance", pt: "Renascimento", de: "Wiedergeburt", ru: "Возрождение", "zh-cn": "重生", game: true },
+  "First Strike": { it: "Primo colpo", es: "Primer golpe", fr: "Première frappe", pt: "Primeiro golpe", de: "Erstschlag", ru: "Первый удар", "zh-cn": "先攻", game: true },
+  "Double Attack": { it: "Doppio attacco", es: "Ataque doble", fr: "Double attaque", pt: "Ataque duplo", de: "Doppelangriff", ru: "Двойная атака", "zh-cn": "连击", game: true },
+  Snipe: { it: "Tiro di precisione", es: "Disparo certero", fr: "Tir de précision", pt: "Tiro certeiro", de: "Präzisionsschuss", ru: "Меткий выстрел", "zh-cn": "狙击", game: true },
+  Move: { it: "Muovere", es: "Mover", fr: "Déplacer", pt: "Mover", de: "Bewegen", ru: "Перемещение", "zh-cn": "移动", game: true },
+  Stun: { it: "Stordisci", es: "Aturde", fr: "Étourdir", pt: "Atordoa", de: "Betäube", ru: "Оглушение", "zh-cn": "眩晕", game: true },
+  Ongoing: { it: "Ongoing", es: "Ongoing", fr: "Ongoing", pt: "Ongoing", de: "Ongoing", ru: "Ongoing", "zh-cn": "持续" },
   // categorie di World of Origins: il verbo o il nome che usa il testo delle carte
-  "Deal Damage": { it: "Infliggi danni", es: "Inflige daño", fr: "Infligez des dégâts", pt: "Causa dano", de: "Füge Schaden zu", ru: "Наносит урон" },
-  Summon: { it: "Evoca", es: "Invoca", fr: "Invoquez", pt: "Invoca", de: "Beschwöre", ru: "Призывает" },
-  Discard: { it: "Scarta", es: "Descarta", fr: "Défaussez", pt: "Descarta", de: "Wirf ab", ru: "Сбросьте" },
-  Draw: { it: "Pesca", es: "Roba", fr: "Piochez", pt: "Compra", de: "Ziehe", ru: "Возьмите карту" },
-  Add: { it: "Aggiungi", es: "Añade", fr: "Ajoutez", pt: "Adiciona", de: "Füge hinzu", ru: "Добавляет" },
-  Destroy: { it: "Distruggi", es: "Destruye", fr: "Détruisez", pt: "Destrói", de: "Zerstöre", ru: "Уничтожает" },
-  Return: { it: "Riporta", es: "Devuelve", fr: "Renvoyez", pt: "Devolve", de: "Bringe zurück", ru: "Возвращает" },
-  Heal: { it: "Cura", es: "Cura", fr: "Soignez", pt: "Cura", de: "Heile", ru: "Исцеляет" },
-  Transform: { it: "Trasforma", es: "Transforma", fr: "Transformez", pt: "Transforma", de: "Verwandle", ru: "Превращает" },
-  Shuffle: { it: "Mescola", es: "Baraja", fr: "Mélangez", pt: "Embaralha", de: "Mische", ru: "Замешивает" },
-  Choose: { it: "Scegli", es: "Elige", fr: "Choisissez", pt: "Escolhe", de: "Wähle", ru: "Выберите" },
-  Buff: { it: "Potenziamento", es: "Mejora", fr: "Amélioration", pt: "Fortalecimento", de: "Verstärkung", ru: "Усиление" },
-  "Self Buff": { it: "Autopotenziamento", es: "Automejora", fr: "Auto-amélioration", pt: "Autofortalecimento", de: "Selbstverstärkung", ru: "Самоусиление" },
-  Debuff: { it: "Indebolimento", es: "Penalización", fr: "Affaiblissement", pt: "Enfraquecimento", de: "Schwächung", ru: "Ослабление" },
-  Spell: { it: "Magia", es: "Hechizo", fr: "Sort", pt: "Feitiço", de: "Zauber", ru: "Заклинание" },
-  Vanilla: { it: "Senza abilità", es: "Sin habilidad", fr: "Sans capacité", pt: "Sem habilidade", de: "Ohne Fähigkeit", ru: "Без способностей" },
-  Mana: { it: "Mana", es: "Maná", fr: "Mana", pt: "Mana", de: "Mana", ru: "Мана" },
-  Food: { it: "Cibo", es: "Comida", fr: "Nourriture", pt: "Comida", de: "Essen", ru: "Еда" },
-  Graveyard: { it: "Cimitero", es: "Cementerio", fr: "Cimetière", pt: "Cemitério", de: "Friedhof", ru: "Кладбище" },
-  Location: { it: "Luogo", es: "Ubicación", fr: "Lieu", pt: "Local", de: "Ort", ru: "Локация" },
-  Good: { it: "Personaggi Buoni", es: "Personajes Buenos", fr: "Personnages Bons", pt: "Personagens Bons", de: "Gute Charaktere", ru: "Добрые персонажи" },
-  Evil: { it: "Personaggi Malvagi", es: "Personajes Malvados", fr: "Personnages Mauvais", pt: "Personagens Malignos", de: "Böse Charaktere", ru: "Злые персонажи" },
+  "Deal Damage": { it: "Infliggi danni", es: "Inflige daño", fr: "Infligez des dégâts", pt: "Causa dano", de: "Füge Schaden zu", ru: "Наносит урон", "zh-cn": "造成伤害" },
+  Summon: { it: "Evoca", es: "Invoca", fr: "Invoquez", pt: "Invoca", de: "Beschwöre", ru: "Призывает", "zh-cn": "召唤" },
+  Discard: { it: "Scarta", es: "Descarta", fr: "Défaussez", pt: "Descarta", de: "Wirf ab", ru: "Сбросьте", "zh-cn": "弃牌" },
+  Draw: { it: "Pesca", es: "Roba", fr: "Piochez", pt: "Compra", de: "Ziehe", ru: "Возьмите карту", "zh-cn": "抽牌" },
+  Add: { it: "Aggiungi", es: "Añade", fr: "Ajoutez", pt: "Adiciona", de: "Füge hinzu", ru: "Добавляет", "zh-cn": "加入手牌" },
+  Destroy: { it: "Distruggi", es: "Destruye", fr: "Détruisez", pt: "Destrói", de: "Zerstöre", ru: "Уничтожает", "zh-cn": "消灭" },
+  Return: { it: "Riporta", es: "Devuelve", fr: "Renvoyez", pt: "Devolve", de: "Bringe zurück", ru: "Возвращает", "zh-cn": "移回手牌" },
+  Heal: { it: "Cura", es: "Cura", fr: "Soignez", pt: "Cura", de: "Heile", ru: "Исцеляет", "zh-cn": "治疗" },
+  Transform: { it: "Trasforma", es: "Transforma", fr: "Transformez", pt: "Transforma", de: "Verwandle", ru: "Превращает", "zh-cn": "变形" },
+  Shuffle: { it: "Mescola", es: "Baraja", fr: "Mélangez", pt: "Embaralha", de: "Mische", ru: "Замешивает", "zh-cn": "洗入卡组" },
+  Choose: { it: "Scegli", es: "Elige", fr: "Choisissez", pt: "Escolhe", de: "Wähle", ru: "Выберите", "zh-cn": "选择" },
+  Buff: { it: "Potenziamento", es: "Mejora", fr: "Amélioration", pt: "Fortalecimento", de: "Verstärkung", ru: "Усиление", "zh-cn": "增益" },
+  "Self Buff": { it: "Autopotenziamento", es: "Automejora", fr: "Auto-amélioration", pt: "Autofortalecimento", de: "Selbstverstärkung", ru: "Самоусиление", "zh-cn": "自我增益" },
+  Debuff: { it: "Indebolimento", es: "Penalización", fr: "Affaiblissement", pt: "Enfraquecimento", de: "Schwächung", ru: "Ослабление", "zh-cn": "减益" },
+  Spell: { it: "Magia", es: "Hechizo", fr: "Sort", pt: "Feitiço", de: "Zauber", ru: "Заклинание", "zh-cn": "法术" },
+  Vanilla: { it: "Senza abilità", es: "Sin habilidad", fr: "Sans capacité", pt: "Sem habilidade", de: "Ohne Fähigkeit", ru: "Без способностей", "zh-cn": "白板" },
+  Mana: { it: "Mana", es: "Maná", fr: "Mana", pt: "Mana", de: "Mana", ru: "Мана", "zh-cn": "法力" },
+  Food: { it: "Cibo", es: "Comida", fr: "Nourriture", pt: "Comida", de: "Essen", ru: "Еда", "zh-cn": "食物" },
+  Graveyard: { it: "Cimitero", es: "Cementerio", fr: "Cimetière", pt: "Cemitério", de: "Friedhof", ru: "Кладбище", "zh-cn": "墓地" },
+  Location: { it: "Luogo", es: "Ubicación", fr: "Lieu", pt: "Local", de: "Ort", ru: "Локация", "zh-cn": "地点" },
+  Good: { it: "Personaggi Buoni", es: "Personajes Buenos", fr: "Personnages Bons", pt: "Personagens Bons", de: "Gute Charaktere", ru: "Добрые персонажи", "zh-cn": "善良角色" },
+  Evil: { it: "Personaggi Malvagi", es: "Personajes Malvados", fr: "Personnages Mauvais", pt: "Personagens Malignos", de: "Böse Charaktere", ru: "Злые персонажи", "zh-cn": "邪恶角色" },
 };
 
 /** Etichetta di un tag nella lingua della pagina; l'inglese è il tag stesso, un tag sconosciuto resta com'è. */

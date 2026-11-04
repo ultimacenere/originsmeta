@@ -7,6 +7,7 @@ import { fr } from "./forCreatorsLabels-fr";
 import { pt } from "./forCreatorsLabels-pt";
 import { de } from "./forCreatorsLabels-de";
 import { ru } from "./forCreatorsLabels-ru";
+import { zhCn } from "./forCreatorsLabels-zh-cn";
 
 /**
  * Testi della pagina per i creator, /for-creators (30/10/2026, src/lib/forCreators.ts). Una lingua per file,
@@ -125,7 +126,7 @@ export type ForCreatorsLabels = {
   unofficial: string;
 };
 
-export const forCreatorsLabels: Record<Locale, ForCreatorsLabels> = { en, it, es, fr, pt, de, ru };
+export const forCreatorsLabels: Record<Locale, ForCreatorsLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 /** Sostituisce i segnaposto `{nome}` di un testo. */
 export function fillFc(text: string, vars: Record<string, string | number>): string {

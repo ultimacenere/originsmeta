@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { formatDate, href, locales } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { authors, decksByAuthor, getAuthor, guidesByAuthor, newsByAuthor, nicknameOf } from "@/lib/data/authors";
-import { newsPath } from "@/lib/data/news";
+import { hasNews, newsPath } from "@/lib/data/news";
 import { fill } from "@/lib/tournament/types";
 import { isExternalHref, newTabProps } from "@/components/SteamButton";
 import { JsonLd, authorProfilePage, breadcrumbs, person } from "@/components/JsonLd";
@@ -32,7 +32,7 @@ export default async function AuthorPage({ params }: { params: Params }) {
   const a = getAuthor(slug);
   if (!a) notFound();
   const guides = guidesByAuthor(locale, a.slug);
-  const signedNews = newsByAuthor(a.slug);
+  const signedNews = newsByAuthor(a.slug).filter((item) => hasNews(item, locale));
   const decks = decksByAuthor(a.slug);
   const path = href(locale, `/authors/${a.slug}`);
   const email = a.links.find((l) => l.url.startsWith("mailto:"))?.url.slice("mailto:".length);

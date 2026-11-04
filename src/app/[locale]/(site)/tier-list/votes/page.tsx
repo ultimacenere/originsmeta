@@ -65,11 +65,10 @@ export default async function CardVotesTierListPage({ params }: { params: Locale
     { id: "legendaries" as const, title: p.sections.legendaries.title, text: p.sections.legendaries.text, entries: data.cards.filter((x) => x.legendary) },
     { id: "cards" as const, title: p.sections.cards.title, text: p.sections.cards.text, entries: data.cards.filter((x) => !x.legendary) },
   ];
-  // il widget nel dettaglio di ogni carta: testi, ritorno dall'accesso a questa pagina, soglia, stato della migrazione
+  // il widget nel dettaglio di ogni carta: testi, soglia, stato della migrazione
   const explorerVotes = {
     labels: l.explorer,
     widget: l.widget,
-    loginHref: `${href(locale, "/login")}?next=${encodeURIComponent(path)}`,
     minVotes: CARD_RANKED_MIN_VOTES,
   };
   // ItemList vera (come /tier-list/community) solo a regime: le carte in fascia, fascia per fascia, nell'ordine visibile

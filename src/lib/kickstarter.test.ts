@@ -35,6 +35,8 @@ import { pt } from "./kickstarterLabels-pt.ts";
 import { de } from "./kickstarterLabels-de.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { ru } from "./kickstarterLabels-ru.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { zhCn } from "./kickstarterLabels-zh-cn.ts";
 
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { KICKSTARTER_TIERS, KICKSTARTER_TIERS_PUBLIC, formatUsd, tierRange } from "./kickstarterTiers.ts";
@@ -49,7 +51,7 @@ import {
 } from "./kickstarterPromos.ts";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
-const all = { en, it, es, fr, pt, de, ru } as Record<string, unknown>;
+const all = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn } as Record<string, unknown>;
 
 describe("livelli della campagna", () => {
   type Tier = { name: string; usd: number; packs: number; items: string[]; verify?: string };

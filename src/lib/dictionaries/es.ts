@@ -12,7 +12,7 @@ export const es: Dictionary = {
        "tier list", "mazos" e "cartas" sono delle loro pagine */
     homeTitle: "Origins TCG, el juego de cartas de Koin Games · OriginsMeta",
     description:
-      "Origins TCG es el juego de cartas free-to-compete de Koin Games. Sitio no oficial en siete idiomas: cartas, mazos, guías, noticias.",
+      "Origins TCG es el juego de cartas free-to-compete de Koin Games. Sitio no oficial en ocho idiomas: cartas, mazos, guías, noticias.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Sitio de fans no oficial sobre Origins TCG, el juego de cartas de Koin Games, en español, inglés, italiano, francés, portugués, alemán y ruso: cartas, mazos, deck builder, tier list, guías y noticias.",
@@ -35,7 +35,7 @@ export const es: Dictionary = {
     crimsonCup: "Crimson Cup",
     cards: "Cartas",
     decks: "Mazos",
-    events: "Torneos y eventos",
+    events: "Torneos",
     about: "Quiénes somos",
     builder: "Deck builder",
     draft: "Draft",
@@ -245,7 +245,7 @@ export const es: Dictionary = {
     statusTitle: "Estado del juego",
     /* "In breve" dentro Stato del gioco (decisione di Pierluigi del 25/09/2026): che cos'è il gioco e che cos'è il sito,
        solo con fatti già sul sito (slider, righe qui sotto, llms.txt) */
-    inBrief: "Origins TCG es el juego de cartas digital free-to-compete de Koin Games: es gratuito en Steam en Acceso anticipado desde el 27 de octubre de 2026, y Koin prevé la versión 1.0 hacia marzo de 2027, según la página de Steam. OriginsMeta es un sitio de fans no oficial en siete idiomas, sin afiliación con Koin Games.",
+    inBrief: "Origins TCG es el juego de cartas digital free-to-compete de Koin Games: es gratuito en Steam en Acceso anticipado desde el 27 de octubre de 2026, y Koin prevé la versión 1.0 hacia marzo de 2027, según la página de Steam. OriginsMeta es un sitio de fans no oficial en ocho idiomas, sin afiliación con Koin Games.",
     status: {
       demo: "Acceso anticipado",
       demoValue: "En Steam desde el 27 de octubre de 2026",
@@ -872,14 +872,14 @@ export const es: Dictionary = {
     deckListNote: "1 Legendaria + 12 cartas base × 2 = 25 cartas",
     /* "Send us your guide" box on /guides (Twitch live of 23/09/2026) */
     submitTitle: "¿Escribiste una guía?",
-    submitText: "Envíanosla: el staff la lee y, si encaja con el sitio, la publicamos con tu firma, en los siete idiomas del sitio.",
+    submitText: "Envíanosla: el staff la lee y, si encaja con el sitio, la publicamos con tu firma, en los ocho idiomas del sitio.",
     submitCta: "Envíanos tu guía",
   },
   /* "Send us your guide" form (/guides/submit): the guide reaches the staff's private Discord channel */
   guideSubmit: {
     title: "Envíanos tu guía",
     description: "¿Escribiste una guía sobre un mazo o una mecánica de Origins TCG? Envíala a OriginsMeta: el staff las lee todas y publica las mejores con tu firma.",
-    intro: "Una guía sobre un mazo, una Legendaria, una mecánica o cómo subir en la clasificatoria: si la escribiste tú, envíanosla. El staff la lee y, si encaja con el sitio, la editamos, la traducimos y la publicamos en los siete idiomas del sitio con tu firma.",
+    intro: "Una guía sobre un mazo, una Legendaria, una mecánica o cómo subir en la clasificatoria: si la escribiste tú, envíanosla. El staff la lee y, si encaja con el sitio, la editamos, la traducimos y la publicamos en los ocho idiomas del sitio con tu firma.",
     form: {
       titleLabel: "Título de la guía",
       titlePlaceholder: "Ej.: Dorothy Combo, cómo jugarlo y contra quién",
@@ -1063,7 +1063,7 @@ export const es: Dictionary = {
   footer: {
     /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
     disclaimer: "OriginsMeta es un sitio de fans independiente y no oficial sobre Origins TCG, el juego de cartas digital de Koin Games, y no está afiliado a Koin Games. Origins TCG y todos los nombres e ilustraciones relacionados pertenecen a sus respectivos titulares.",
-    built: "Construido sobre la mesa, en siete idiomas.",
+    built: "Construido sobre la mesa, en ocho idiomas.",
     links: "Enlaces",
     official: "Oficiales",
     legal: "Información legal",
@@ -1321,9 +1321,9 @@ export const es: Dictionary = {
     },
     kicker: "Mazo de Origins",
     guideLangNote: "Quien publicó el mazo escribió esta guía en {lang} y la mostramos tal cual: la traducción automática aún no está lista.",
-    langNames: { en: "inglés", it: "italiano", es: "español", fr: "francés", pt: "portugués", de: "alemán", ru: "ruso" },
+    langNames: { en: "inglés", it: "italiano", es: "español", fr: "francés", pt: "portugués", de: "alemán", ru: "ruso", "zh-cn": "chino" },
     /** "from <language>", after "Translated automatically" */
-    langFrom: { en: "del inglés", it: "del italiano", es: "del español", fr: "del francés", pt: "del portugués", de: "del alemán", ru: "del ruso" },
+    langFrom: { en: "del inglés", it: "del italiano", es: "del español", fr: "del francés", pt: "del portugués", de: "del alemán", ru: "del ruso", "zh-cn": "del chino" },
     translatedNote: "Traducida automáticamente {from}: los nombres de las cartas se mantienen en inglés, como en el juego.",
     originalText: "Texto original ({lang})",
     metaTail: "Lista completa, gráficos y código del juego en OriginsMeta.",

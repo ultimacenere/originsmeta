@@ -1,20 +1,20 @@
 import type { Locale } from "../i18n";
 
 type L10n = Record<Locale, string>;
-const n = (en: string, it: string, es: string, fr: string, pt: string, de: string, ru: string): L10n => ({ en, it, es, fr, pt, de, ru });
+const n = (en: string, it: string, es: string, fr: string, pt: string, de: string, ru: string, zh: string): L10n => ({ en, it, es, fr, pt, de, ru, "zh-cn": zh });
 
 /** Archetipi (tag obbligatorio su ogni mazzo). */
 export const archetypeLabels: Record<string, L10n> = {
-  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large", "Swarm / jogar largo", "Swarm / breit spielen", "Swarm / широкий стол"),
+  swarm: n("Swarm / go wide", "Swarm / vai largo", "Swarm / ir a lo ancho", "Swarm / jouer large", "Swarm / jogar largo", "Swarm / breit spielen", "Swarm / широкий стол", "Swarm / 铺场"),
   // "Evil" si chiama "Big" dal 12/10/2026 (Pierluigi: "evil diventa big"); l'id resta `evil` per i mazzi già salvati
-  evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits", "Big / corpos grandes", "Big / große Körper", "Big / крупные персонажи"),
-  discard: n("Discard", "Scarto", "Descarte", "Défausse", "Descarte", "Discard", "Сброс"),
-  midrange: n("Midrange", "Midrange", "Midrange", "Midrange", "Midrange", "Midrange", "Мидрейндж"),
+  evil: n("Big / big bodies", "Big / grossi corpi", "Big / cuerpos grandes", "Big / gros gabarits", "Big / corpos grandes", "Big / große Körper", "Big / крупные персонажи", "Big / 大体型"),
+  discard: n("Discard", "Scarto", "Descarte", "Défausse", "Descarte", "Discard", "Сброс", "Discard"),
+  midrange: n("Midrange", "Midrange", "Midrange", "Midrange", "Midrange", "Midrange", "Мидрейндж", "Midrange"),
   // Tempo dal 12/10/2026 (Pierluigi, nota "winrate 2.0" e "sì aggiungilo"): lo sceglie chi pubblica, suggestArchetype non lo propone
-  tempo: n("Tempo", "Tempo", "Tempo", "Tempo", "Tempo", "Tempo", "Темпо"),
-  control: n("Control", "Controllo", "Control", "Contrôle", "Controle", "Control", "Контроль"),
-  aggro: n("Aggro", "Aggro", "Aggro", "Aggro", "Aggro", "Aggro", "Агро"),
-  combo: n("Combo", "Combo", "Combo", "Combo", "Combo", "Combo", "Комбо"),
+  tempo: n("Tempo", "Tempo", "Tempo", "Tempo", "Tempo", "Tempo", "Темпо", "Tempo"),
+  control: n("Control", "Controllo", "Control", "Contrôle", "Controle", "Control", "Контроль", "Control"),
+  aggro: n("Aggro", "Aggro", "Aggro", "Aggro", "Aggro", "Aggro", "Агро", "Aggro"),
+  combo: n("Combo", "Combo", "Combo", "Combo", "Combo", "Combo", "Комбо", "Combo"),
 };
 
 export type DeckSource = "playtest" | "official" | "community";

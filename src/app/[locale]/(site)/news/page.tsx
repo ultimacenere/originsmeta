@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { newsPath, sortedNews } from "@/lib/data/news";
+import { newsInLocale, newsPath } from "@/lib/data/news";
 import { CardChipList } from "@/components/CardChip";
 import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { SteamButton } from "@/components/SteamButton";
@@ -34,7 +34,7 @@ export default async function NewsPage({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
   const C = comicLabels[locale];
   // News del sito e fumetti dei creator in un solo elenco, dal più recente (mergeFeed in comics.ts)
-  const feed = mergeFeed(sortedNews, comicFeedCards(await listPublishedComics(60), locale, supabaseUrl, authorName));
+  const feed = mergeFeed(newsInLocale(locale), comicFeedCards(await listPublishedComics(60), locale, supabaseUrl, authorName));
 
   // Lista per i dati strutturati: ogni news ha la sua pagina (/news/<slug>), ogni fumetto la sua (/news/comics/<slug>).
   // Le ancore restano sulle voci qui sotto, così i vecchi link /news#slug continuano a funzionare.

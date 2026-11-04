@@ -1146,6 +1146,10 @@ export type Database = {
       card_ratings: { Args: { p_card?: string | null }; Returns: { card: string; avg_score: number | string; votes: number; dist: Record<string, number> }[] };
       /** voti, votanti, carte votate e ora dell'ultimo voto */
       card_vote_totals: { Args: Record<string, never>; Returns: { votes: number; voters: number; cards: number; latest: string | null }[] };
+      /* voti senza account (04/11/2026, blocco VOTI ALLE CARTE SENZA ACCOUNT): solo col segreto del server, codice e connessione come impronte sha256 */
+      card_vote_guest: { Args: { p_key: string; p_voter: string; p_ip: string; p_card: string; p_score: number }; Returns: string };
+      card_votes_guest_mine: { Args: { p_key: string; p_voter: string }; Returns: { card: string; score: number }[] };
+      card_vote_guest_forget: { Args: { p_key: string; p_voter: string; p_card: string }; Returns: undefined };
       /* statistiche anonime (anon): solo aggregati di una patch, ogni numero sopra la soglia (stats.ts le ricontrolla) */
       tracker_stats_overview: { Args: { p_patch: string }; Returns: (TrackerStatCount & { with_opponent: number | null })[] };
       tracker_stats_legendaries: { Args: { p_patch: string }; Returns: (TrackerStatCount & { legendary: string })[] };

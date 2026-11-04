@@ -6,6 +6,7 @@ import { fr } from "./kickstarterLabels-fr";
 import { pt } from "./kickstarterLabels-pt";
 import { de } from "./kickstarterLabels-de";
 import { ru } from "./kickstarterLabels-ru";
+import { zhCn } from "./kickstarterLabels-zh-cn";
 
 /**
  * Testi della landing /kickstarter, della slide in home, della barra in cima al sito e del riquadro nella guida al
@@ -25,7 +26,7 @@ import { ru } from "./kickstarterLabels-ru";
 
 export type KickstarterLabels = typeof en;
 
-export const kickstarterLabels: Record<Locale, KickstarterLabels> = { en, it, es, fr, pt, de, ru };
+export const kickstarterLabels: Record<Locale, KickstarterLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 /** Sostituisce i segnaposto `{nome}` di un testo. */
 export function fillKs(text: string, vars: Record<string, string | number>): string {

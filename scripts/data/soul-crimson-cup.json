@@ -132,6 +132,16 @@
       "weaknesses": "Лайнап построен против Van Helsing: если сопернику удаётся его протащить, например при неудачной комбинации локаций, как в первой партии финала, отстающим вдруг оказываетесь вы. Против лайнапов без Van Helsing партии проходят более равно.",
       "matchups": "Против CoachCrono (Three Not So Little Pigs, Van Helsing, Legion of the Dead): 2:0 до финалов, катком по его Van Helsing. В финале, в серии best-of-five, первая партия проиграна Van Helsing из-за неудачных локаций, затем 2:2 и решающая партия, проигранная его агро.",
       "notes": "Баны: SouL часто банили Pigs и Merlin, Mulan — ни разу. Полный рассказ о лайнапе и финале — в интервью с SouL на OriginsMeta."
+    },
+    "zh-cn": {
+      "summary": "SouL 在 Crimson Cup 拿下亚军的阵容：点子来自 Nimer，和 Lord Von 一起测试，再由他本人打磨。一套控制（Merlin）、一套中速（Mulan）、一套快攻（Three Not So Little Pigs），三套都调整成组合技的打法。目标是 Van Helsing 治疗卡组，在他们看来这是当前环境的 T1 卡组：不禁用它，然后正面碾过去。这里是 Koin Games 在决赛日（2026年10月25日）公布的卡表。",
+      "deck_1": "三套里最强、也是 SouL 最喜欢的一套：“所有卡组里最稳的”，一套“绝对需要削弱”的卡组。最早的版本只靠连续打出两张 Obliterate，如果两张 Obliterate 都沉在卡组底部，这局就输了。加入 Puck 和 First Aid 之后，治疗帮你控制战场，配合 Puck 还能打到对手，帮你收下对局。锦标赛中对手经常禁用它。",
+      "deck_2": "按 SouL 的说法是三套里最弱的，但它补全了这套组合技阵容的闭环。锦标赛中从没有对手禁用它。决赛里它输给了 CoachCrono 的 Van Helsing，这是本不该输的一局。",
+      "deck_3": "三套里最不像组合技的一套：打法相当快攻，但尤其是对阵 Van Helsing 时，会把资源留在手里，在对手揭示时放下 Glinda 和 Sandman。然后用两张 Reinforcements 和卡组里大量的 1 费法术，在一个回合内铺满战场，在几个回合里触发 Glinda 五次、六次、七次，堆出一个怪物级的场面。最佳时机是对手只有 7 点法力的时候，这样他们没法用 Forbidden Knowledge 回应。",
+      "strengths": "对阵 Van Helsing。锦标赛 7 轮里有 6 轮 SouL 遇到的对手带着 Van Helsing，他只是不禁用它，就每次都碾了过去：每一轮都是 2-0 获胜，只有一轮是 2-1，而那位对手没有带 Van Helsing。",
+      "weaknesses": "这套阵容是针对 Van Helsing 打造的：如果对手成功让它打出效果，比如决赛第一局那样碰上一组不走运的地点，你会突然变成落后的一方。对阵没有 Van Helsing 的阵容时，对局会更胶着。",
+      "matchups": "对阵 CoachCrono（Three Not So Little Pigs、Van Helsing、Legion of the Dead）：决赛前 2-0，碾过了他的 Van Helsing。五局三胜的决赛中，第一局在糟糕的地点下输给 Van Helsing，之后打成 2-2，决胜局输给了他的快攻卡组。",
+      "notes": "禁用：SouL 的对手经常禁用 Pigs 和 Merlin，从不禁用 Mulan。这套阵容和决赛的完整故事，见 OriginsMeta 上对 SouL 的专访。"
     }
   },
   "videos": [],

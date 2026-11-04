@@ -121,6 +121,15 @@ const titleTails: Record<Locale, { legendary: string; card: string; created: str
     removed: "удалённая карта Origins TCG",
     removedLegendary: "удалённая Легендарная карта Origins TCG",
   },
+  // cinese semplificato (docs/cinese.md): 传说卡 per la Leggendaria, 衍生卡 per le carte create (il termine dei giocatori
+  // cinesi per i token), 已移除 per le rimosse; spazio fra "Origins TCG" e gli ideogrammi
+  "zh-cn": {
+    legendary: "Origins TCG 传说卡",
+    card: "Origins TCG 卡牌",
+    created: "Origins TCG 衍生卡",
+    removed: "已移除的 Origins TCG 卡牌",
+    removedLegendary: "已移除的 Origins TCG 传说卡",
+  },
 };
 
 /**
@@ -133,7 +142,7 @@ export function cardTitle(card: TitleCard, locale: Locale): string {
   const t = titleTails[locale];
   const tail = card.status === "removed" ? (card.legendary ? t.removedLegendary : t.removed) : card.type === "token" ? t.created : card.legendary ? t.legendary : t.card;
   // francese: spazio insecabile prima dei due punti (docs/francese.md), come nella description
-  const colon = locale === "fr" ? " : " : ": ";
+  const colon = locale === "fr" ? " : " : locale === "zh-cn" ? "：" : ": "; // cinese: due punti a larghezza piena, senza spazi
   for (const option of [tail, t.card]) {
     const title = `${card.name}${colon}${option}`;
     if (title.length <= CARD_TITLE_MAX) return title;
@@ -283,6 +292,22 @@ const descWords: Record<Locale, DescWords> = {
     tail: "Характеристики, опубликованные колоды и происхождение легенды на OriginsMeta.",
     shortTail: "Все подробности на OriginsMeta.",
   },
+  // Cinese (docs/cinese.md): 角色 / 法术, 传说 davanti al tipo, 衍生卡 per le carte create, il costo in 费; punteggiatura a
+  // larghezza piena e nessuno spazio fra i pezzi (`compose` con `zh`). La frase cinese è corta in caratteri: la coda
+  // lunga serve ad arrivare ai 120 della description.
+  "zh-cn": {
+    stats: (m, p, h) => (p === undefined ? `${m ?? "?"} 费` : `${m ?? "?"} 费，${p}/${h ?? "?"}`),
+    former: (x) => `（原名 ${x}）`,
+    and: " 和 ",
+    active: (h) => `${h.name}，Koin Games 出品的 Origins TCG 中的 ${h.align} ${h.legendary ? "传说" : ""}${h.spell ? "法术" : "角色"}：${h.stats}。`,
+    created: (h) =>
+      h.creators
+        ? `${h.name}，Koin Games 出品的 Origins TCG 中由 ${h.creators} 生成的 ${h.align} 衍生卡：${h.stats}。`
+        : `${h.name}，Koin Games 出品的 Origins TCG 中的 ${h.align} 衍生卡：${h.stats}。`,
+    removed: (h) => `${h.name}，Koin Games 出品的 Origins TCG 中的 ${h.align} ${h.legendary ? "传说" : ""}${h.spell ? "法术" : "角色"}，已不在游戏中：${h.stats}。`,
+    tail: "在 OriginsMeta 查看这张卡牌的属性、平衡改动历史、使用它的已发布卡组，以及它所出自的传说故事。",
+    shortTail: "完整资料见 OriginsMeta。",
+  },
 };
 
 /** Tipo della carta in russo, con l'aggettivo accordato al genere: "Легендарный персонаж", "Легендарное заклинание". */
@@ -333,9 +358,17 @@ function oneLine(text: string): string {
     .split(/\n+/)
     .map((l) => l.replace(/\s+/g, " ").trim())
     .filter(Boolean);
+  // Cinese (04/11/2026): punto 。 e nessuno spazio fra le frasi ("践踏。揭示时：…")
+  if (HAN.test(text)) {
+    const zh = lines.reduce((acc, line) => (!acc ? line : /[。！？：；，…]$/.test(acc) ? `${acc}${line}` : `${acc}。${line}`), "");
+    return zh && !/[。！？…]$/.test(zh) ? `${zh}。` : zh;
+  }
   const joined = lines.reduce((acc, line) => (!acc ? line : /[.!?:;,…]$/.test(acc) ? `${acc} ${line}` : `${acc}. ${line}`), "");
   return joined && !/[.!?…]$/.test(joined) ? `${joined}.` : joined;
 }
+
+/** Un testo con ideogrammi cinesi: frasi chiuse da 。！？ e pezzi uniti senza spazio. */
+const HAN = /\p{Script=Han}/u;
 
 /**
  * Indice dell'ultima fine di frase entro `max` caratteri (il punto compreso), -1 se non ce n'è: un punto seguito da
@@ -345,7 +378,7 @@ function lastSentenceEnd(text: string, max: number): number {
   const within = text.slice(0, max + 1);
   let end = -1;
   // anche il russo "ед." ("3 ед. урона"), dove `\b` non vale per il cirillico
-  for (const m of within.matchAll(/[.!?](?= |$)/g)) if (m.index < max && !/(?:\b(?:Dr|Mr|Mrs|Ms|St)|(?<!\p{L})ед)$/u.test(within.slice(0, m.index))) end = m.index;
+  for (const m of within.matchAll(/[.!?](?= |$)|[。！？]/g)) if (m.index < max && !/(?:\b(?:Dr|Mr|Mrs|Ms|St)|(?<!\p{L})ед)$/u.test(within.slice(0, m.index))) end = m.index;
   return end;
 }
 
@@ -390,6 +423,12 @@ function cut(text: string, max: number): string {
   if (sentence + 1 >= max * 0.6) return text.slice(0, sentence + 1);
   let hard = text.slice(0, max - 1);
   if (/[\uD800-\uDBFF]$/.test(hard)) hard = hard.slice(0, -1);
+  // Cinese: niente spazi fra le parole, si taglia all'ultima virgola o pausa (，、；：) se ne resta abbastanza
+  if (HAN.test(text)) {
+    const pause = Math.max(...["，", "、", "；", "："].map((p) => hard.lastIndexOf(p)));
+    const kept = pause >= max * 0.5 ? hard.slice(0, pause) : hard;
+    return `${kept.replace(/[\s,.;:·—–\-，、；：。]+$/, "")}…`;
+  }
   // Una parola spezzata ("bonificacione…") non si legge: si taglia di netto solo un testo senza spazi.
   const space = hard.lastIndexOf(" ");
   if (space <= 0) return `${hard.replace(/[\s,.;:·—–-]+$/, "")}…`;
@@ -429,9 +468,9 @@ function fitName(name: string, max: number): string {
  * - Se non ci sta neanche la sua prima frase: prima l'origine intera al suo posto; poi il testo tagliato, che finisce
  *   con i puntini e senza parole vuote; poi l'origine tagliata; in ultimo la sola riga sulla pagina.
  */
-function compose(lead: string, ability: string, origin: string, tails: readonly string[]): string {
-  const room = (s: string) => CARD_DESC_MAX - s.length - 1;
-  const add = (s: string, piece: string) => (piece ? `${s} ${piece}` : s);
+function compose(lead: string, ability: string, origin: string, tails: readonly string[], sep: string = " "): string {
+  const room = (s: string) => CARD_DESC_MAX - s.length - sep.length;
+  const add = (s: string, piece: string) => (piece ? `${s}${sep}${piece}` : s);
   // Pezzo tagliato solo se ne resta abbastanza: sotto i 24 caratteri sarebbe un moncone ("Duplica todas…").
   const addCut = (s: string, piece: string) => {
     const kept = piece ? cut(piece, room(s)) : "";
@@ -441,7 +480,7 @@ function compose(lead: string, ability: string, origin: string, tails: readonly 
   const withTail = (s: string) => {
     if (s.length >= CARD_DESC_MIN) return s;
     const fitting = tails.filter((p) => p.length <= room(s));
-    return add(s, fitting.find((p) => s.length + 1 + p.length >= CARD_DESC_MIN) ?? fitting[0] ?? "");
+    return add(s, fitting.find((p) => s.length + sep.length + p.length >= CARD_DESC_MIN) ?? fitting[0] ?? "");
   };
   const withOrigin = (s: string) => (s.length < CARD_DESC_MIN && origin && origin.length <= room(s) ? add(s, origin) : s);
 
@@ -480,7 +519,7 @@ export function cardDescription(card: TitleCard, locale: Locale, all: readonly T
   // Senza allineamento resterebbe un doppio spazio: il database oggi lo ha per tutte le carte, ma non costa niente.
   const ability = textOutdated(card, src) ? undefined : (card.ability?.[locale] ?? card.ability?.en);
   const origin = card.origin?.[locale];
-  return compose(lead.replace(/ {2,}/g, " ").trim(), ability ? oneLine(ability) : "", origin ? oneLine(origin) : "", [w.tail, w.shortTail]);
+  return compose(lead.replace(/ {2,}/g, " ").trim(), ability ? oneLine(ability) : "", origin ? oneLine(origin) : "", [w.tail, w.shortTail], locale === "zh-cn" ? "" : " ");
 }
 
 // ---------- Mazzi della community ----------
@@ -584,6 +623,16 @@ const deckTitles: Record<
     withWord: (l, n) => `${n} с ${l}`,
     namedWord: (n) => `${n} для Origins TCG`,
   },
+  // cinese (04/11/2026, docs/cinese.md): "卡组", nomi inglesi con lo spazio, due punti a larghezza piena:
+  // "Spellcast：使用 Merlin 的卡组", "Merlin 卡组", "Dorothy Combo：Origins TCG 卡组", "Spellcast 卡组（Merlin）"
+  "zh-cn": {
+    with: (l, n) => `${n}：使用 ${l} 的卡组`,
+    only: (l) => `${l} 卡组`,
+    named: (n) => `${n}：Origins TCG 卡组`,
+    word: /卡组/u,
+    withWord: (l, n) => `${n}（${l}）`,
+    namedWord: (n) => `${n}｜Origins TCG`,
+  },
 };
 
 /**
@@ -632,6 +681,7 @@ export function deckLead(deck: { name: string; legendary?: string; author: strin
   if (locale === "pt") return `${l ? `Deck de ${l} para Origins TCG` : "Deck de Origins TCG"}: ${name} de ${deck.author}, arquétipo ${arch}.`;
   if (locale === "de") return `${l ? `Deck mit ${l} für Origins TCG` : "Deck für Origins TCG"}: ${name} von ${deck.author}, Archetyp ${arch}.`;
   if (locale === "ru") return `${l ? `Колода с ${l} для Origins TCG` : "Колода для Origins TCG"}: ${name}, автор ${deck.author}, архетип ${arch}.`;
+  if (locale === "zh-cn") return `${l ? `Origins TCG ${l} 卡组` : "Origins TCG 卡组"}：${name}，作者 ${deck.author}，流派 ${arch}。`;
   return `${l ? `${l} deck for Origins TCG` : "Origins TCG deck"}: ${name} by ${deck.author}, ${arch} archetype.`;
 }
 
@@ -648,4 +698,5 @@ export const deckShortTail: Record<Locale, string> = {
   pt: "Lista completa no OriginsMeta.",
   de: "Vollständige Liste auf OriginsMeta.",
   ru: "Полный список на OriginsMeta.",
+  "zh-cn": "完整卡表见 OriginsMeta。",
 };

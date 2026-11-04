@@ -26,8 +26,10 @@ import { pt as dictPt } from "./dictionaries/pt.ts";
 import { de as dictDe } from "./dictionaries/de.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { ru as dictRu } from "./dictionaries/ru.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { zhCn as dictZhCn } from "./dictionaries/zh-cn.ts";
 
-const dictionaries = { en: dictEn, it: dictIt, es: dictEs, fr: dictFr, pt: dictPt, de: dictDe, ru: dictRu } as const;
+const dictionaries = { en: dictEn, it: dictIt, es: dictEs, fr: dictFr, pt: dictPt, de: dictDe, ru: dictRu, "zh-cn": dictZhCn } as const;
 type Tree = { [key: string]: string | Tree };
 
 function leaves(obj: Tree, prefix = ""): Map<string, string> {
@@ -47,7 +49,7 @@ for (const [title, all] of [
 ] as const) {
   describe(title, () => {
     const en = leaves(all.en as unknown as Tree);
-    for (const locale of ["it", "es", "fr", "pt", "de", "ru"] as const) {
+    for (const locale of ["it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const) {
       test(`${locale}: stesse chiavi e stessi segnaposto dell'inglese, nessun testo vuoto`, () => {
         const other = leaves(all[locale] as unknown as Tree);
         assert.deepEqual([...other.keys()].sort(), [...en.keys()].sort());
@@ -103,6 +105,7 @@ describe("contenuti", () => {
     assert.equal(followNavLabelsFor("pt").follow, "Seguir");
     assert.equal(followNavLabelsFor("de").follow, "Folgen");
     assert.equal(followNavLabelsFor("ru").follow, "Подписаться");
+    assert.equal(followNavLabelsFor("zh-cn").follow, "关注");
     assert.equal(followNavLabelsFor("toString").follow, "Follow");
     assert.equal(fillFollowLabel("{name} · {x}", { name: "Vega" }), "Vega · {x}");
   });

@@ -5,7 +5,7 @@ export const en = {
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "decks" e "cards" sono delle loro pagine */
     homeTitle: "Origins TCG, Koin Games' digital card game · OriginsMeta",
     description:
-      "Origins TCG is Koin Games' free-to-compete card game. Unofficial fan site in seven languages: cards, decks, deck builder, guides, news.",
+      "Origins TCG is Koin Games' free-to-compete card game. Unofficial fan site in eight languages: cards, decks, deck builder, guides, news.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Unofficial fan site for Origins TCG, the Koin Games card game, in English, Italian, Spanish, French, Portuguese, German and Russian: cards, decks, deck builder, tier list, guides and news.",
@@ -28,7 +28,7 @@ export const en = {
     crimsonCup: "Crimson Cup",
     cards: "Cards",
     decks: "Decks",
-    events: "Tournaments & Events",
+    events: "Tournaments",
     about: "About",
     builder: "Deck builder",
     draft: "Draft",
@@ -243,7 +243,7 @@ export const en = {
     statusTitle: "State of the game",
     /* "In breve" dentro Stato del gioco (decisione di Pierluigi del 25/09/2026): che cos'è il gioco e che cos'è il sito,
        solo con fatti già sul sito (slider, righe qui sotto, llms.txt) */
-    inBrief: "Origins TCG is the free-to-compete digital card game by Koin Games: it has been free on Steam in Early Access since 27 October 2026, and Koin aims for version 1.0 around March 2027, according to the Steam page. OriginsMeta is an unofficial fan site in seven languages, not affiliated with Koin Games.",
+    inBrief: "Origins TCG is the free-to-compete digital card game by Koin Games: it has been free on Steam in Early Access since 27 October 2026, and Koin aims for version 1.0 around March 2027, according to the Steam page. OriginsMeta is an unofficial fan site in eight languages, not affiliated with Koin Games.",
     status: {
       demo: "Early Access",
       demoValue: "On Steam since 27 October 2026",
@@ -879,14 +879,14 @@ export const en = {
     deckListNote: "1 Legendary + 12 base cards × 2 = 25 cards",
     /* "Send us your guide" box on /guides (Twitch live of 23/09/2026) */
     submitTitle: "Wrote a guide?",
-    submitText: "Send it in: the staff reads it and, if it fits the site, we publish it under your name, in the seven languages of the site.",
+    submitText: "Send it in: the staff reads it and, if it fits the site, we publish it under your name, in the eight languages of the site.",
     submitCta: "Send us your guide",
   },
   /* "Send us your guide" form (/guides/submit): the guide reaches the staff's private Discord channel */
   guideSubmit: {
     title: "Send us your guide",
     description: "Wrote a guide to an Origins TCG deck or mechanic? Send it to OriginsMeta: the staff reads every one and publishes the best under your name.",
-    intro: "A guide to a deck, a Legendary, a mechanic or climbing ranked: if you wrote it, send it in. The staff reads it and, if it fits the site, we edit it, translate it and publish it in the seven languages of the site under your name.",
+    intro: "A guide to a deck, a Legendary, a mechanic or climbing ranked: if you wrote it, send it in. The staff reads it and, if it fits the site, we edit it, translate it and publish it in the eight languages of the site under your name.",
     form: {
       titleLabel: "Guide title",
       titlePlaceholder: "E.g. Dorothy Combo: how to play it and against whom",
@@ -1071,7 +1071,7 @@ export const en = {
   footer: {
     /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
     disclaimer: "OriginsMeta is an independent, unofficial fan site about Origins TCG, the digital card game by Koin Games, and is not affiliated with Koin Games. Origins TCG and all related names and artwork belong to their owners.",
-    built: "Built at the table, in seven languages.",
+    built: "Built at the table, in eight languages.",
     links: "Links",
     official: "Official",
     legal: "Legal",
@@ -1329,9 +1329,9 @@ export const en = {
     },
     kicker: "Origins deck",
     guideLangNote: "This guide was written in {lang} by whoever published the deck and is shown as written: the automatic translation is not ready yet.",
-    langNames: { en: "English", it: "Italian", es: "Spanish", fr: "French", pt: "Portuguese", de: "German", ru: "Russian" },
+    langNames: { en: "English", it: "Italian", es: "Spanish", fr: "French", pt: "Portuguese", de: "German", ru: "Russian", "zh-cn": "Chinese" },
     /** "from <language>", after "Translated automatically" */
-    langFrom: { en: "from English", it: "from Italian", es: "from Spanish", fr: "from French", pt: "from Portuguese", de: "from German", ru: "from Russian" },
+    langFrom: { en: "from English", it: "from Italian", es: "from Spanish", fr: "from French", pt: "from Portuguese", de: "from German", ru: "from Russian", "zh-cn": "from Chinese" },
     translatedNote: "Translated automatically {from}: card names stay in English, as in the game.",
     originalText: "Original text ({lang})",
     metaTail: "Full list, charts and the game's deck code on OriginsMeta.",

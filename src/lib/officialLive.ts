@@ -99,6 +99,7 @@ export const officialLiveLabels: Record<Locale, OfficialLiveLabels> = {
   de: { kicker: "Jetzt live", heading: "Origins TCG ist live auf Twitch", castHeading: "Der Crimson Cup live mit {name}", viewers: "{n} Zuschauer", viewersOne: "1 Zuschauer", openTwitch: "Auf Twitch öffnen" },
   // russo (20/10/2026): "Зрителей: {n}" regge ogni numero
   ru: { kicker: "Сейчас в эфире", heading: "Origins TCG в эфире на Twitch", castHeading: "Crimson Cup в прямом эфире с {name}", viewers: "Зрителей: {n}", viewersOne: "1 зритель", openTwitch: "Открыть на Twitch" },
+  "zh-cn": { kicker: "正在直播", heading: "Origins TCG 正在 Twitch 直播", castHeading: "{name} 正在直播 Crimson Cup", viewers: "{n} 名观众", viewersOne: "1 名观众", openTwitch: "在 Twitch 打开" },
 };
 
 /** Il titolo del riquadro per una diretta. */

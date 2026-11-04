@@ -14,7 +14,7 @@ import { CardVote } from "@/components/CardVote";
  * pagina. `data` null (community spenta, migrazione non applicata o lettura fallita in build): il widget vota lo stesso
  * e mostra i numeri della risposta; i tasti non dipendono dai dati della pagina.
  */
-export function CardVoteBox({ card, locale, data, loginHref }: { card: Pick<Card, "slug" | "name">; locale: Locale; data: CardVotesData | null; loginHref: string }) {
+export function CardVoteBox({ card, locale, data }: { card: Pick<Card, "slug" | "name">; locale: Locale; data: CardVotesData | null }) {
   const l = cardVoteLabels[locale];
   const rating = data?.ratings[card.slug];
   return (
@@ -23,7 +23,7 @@ export function CardVoteBox({ card, locale, data, loginHref }: { card: Pick<Card
         {l.cardPage.kicker}
       </p>
       <div className="mt-2">
-        <CardVote slug={card.slug} avg={rating?.avg ?? 0} votes={rating?.votes ?? 0} labels={l.widget} loginHref={loginHref} placement="card_page" locale={locale} compact />
+        <CardVote slug={card.slug} avg={rating?.avg ?? 0} votes={rating?.votes ?? 0} labels={l.widget} placement="card_page" locale={locale} compact />
       </div>
       <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] leading-snug text-pale-muted">
         {rating?.tier ? (

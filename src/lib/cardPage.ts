@@ -73,11 +73,11 @@ const cardRef = (c: { slug: string; name: string }): Part => ({ card: c.slug, te
  * Elenco con virgole e congiunzione finale ("A, B and C"), fatto di pezzi. Un elemento può essere un gruppo di pezzi
  * ("Koschei (in 2 su 3)"): la congiunzione guarda il primo.
  */
-function listParts(items: readonly (Part | readonly Part[])[], and: (next: string) => string): Part[] {
+function listParts(items: readonly (Part | readonly Part[])[], and: (next: string) => string, comma: string = ", "): Part[] {
   const out: Part[] = [];
   items.forEach((item, i) => {
     const group = (Array.isArray(item) ? item : [item]) as readonly Part[];
-    if (i > 0) out.push(i === items.length - 1 ? and(partsText(group.slice(0, 1))) : ", ");
+    if (i > 0) out.push(i === items.length - 1 ? and(partsText(group.slice(0, 1))) : comma);
     out.push(...group);
   });
   return out;
@@ -92,6 +92,8 @@ const andWord: Record<Locale, (next: string) => string> = {
   pt: () => " e ",
   de: () => " und ",
   ru: () => " и ",
+  // cinese: spazi intorno a 和 / 或, che stanno fra nomi inglesi; la virgola dell'elenco è 、 (`listComma`)
+  "zh-cn": () => " 和 ",
 };
 
 const orWord: Record<Locale, (next: string) => string> = {
@@ -103,11 +105,15 @@ const orWord: Record<Locale, (next: string) => string> = {
   pt: () => " ou ",
   de: () => " oder ",
   ru: () => " или ",
+  "zh-cn": () => " 或 ",
 };
 
 /** Le carte come pezzi, unite con "e": Animate Object and Sorcerer's Apprentice. */
+/** Virgola fra gli elementi di un elenco: in cinese la virgola enumerativa 、. */
+const listComma = (locale: Locale): string => (locale === "zh-cn" ? "、" : ", ");
+
 export function cardList(cards: readonly { slug: string; name: string }[], locale: Locale, or = false): Part[] {
-  return listParts(cards.map(cardRef), (or ? orWord : andWord)[locale]);
+  return listParts(cards.map(cardRef), (or ? orWord : andWord)[locale], listComma(locale));
 }
 
 /**
@@ -571,6 +577,60 @@ export const cardLabels: Record<Locale, CardLabels> = {
     kind: { unit: "персонаж", spell: "заклинание", token: "созданная карта", legendaryUnit: "Легендарный персонаж", legendarySpell: "Легендарное заклинание" },
     creditText: "Иллюстрация: {illus} · © Koin Games",
   },
+  // cinese semplificato (04/11/2026, docs/cinese.md): 角色 / 法术 / 衍生卡, 传说卡; i testi cinesi delle carte sono una
+  // traduzione nostra provvisoria (card-lore-zh-cn.ts), quindi `textOurs` dice che non sono ancora verificati nel gioco
+  "zh-cn": {
+    decksLed: "以 {name} 为核心的卡组",
+    decksWith: "使用 {name} 的卡组",
+    decksCreating: "能生成 {name} 的卡组",
+    tokenDecksOne: "1 套已发布的卡组包含 {roots}。",
+    tokenDecksMany: "{n} 套已发布的卡组包含 {roots}。",
+    decksNote: "先列出有评分的卡组，按评分从高到低，然后是最新的卡组。一张卡牌的使用次数代表它的热门程度，而不是胜率：",
+    mostPlayed: "使用最多的卡牌",
+    moreDecksOne: "另有 1 套使用这张卡牌的卡组在全部卡组列表中。",
+    moreDecksMany: "另有 {n} 套使用这张卡牌的卡组在全部卡组列表中。",
+    allDecks: "全部卡组",
+    together: "常在同一卡组中",
+    togetherIntroLed: "在以 {name} 为核心的 {n} 套卡组中，至少出现在 {min} 套里的卡牌。",
+    togetherIntro: "在 {name} 的 {n} 套已发布卡组中，至少有 {min} 套同时使用的卡牌。",
+    togetherCount: "{n} 套中有 {k} 套",
+    creates: "它生成的卡牌",
+    createdPast: "它曾生成的卡牌",
+    createsIntro: "根据卡牌文本。",
+    createsNextOne: "{name} 又会生成",
+    createsNextMany: "这些卡牌又会生成",
+    howToGet: "如何获得",
+    createdBy: "生成者",
+    createdByNext: "而它由以下卡牌生成：",
+    createdByEarlier: "在之前的版本中，还可由以下卡牌生成：",
+    noCreator: "没有任何卡牌文本说明由哪张卡牌生成它。",
+    brief: "简而言之",
+    textOfficial: "游戏官方文本",
+    textEnglish: "游戏英文文本",
+    textEnglishWoo: "英文文本（未在游戏中核对）",
+    textOurs: "OriginsMeta 翻译（临时译文，尚未与游戏中文核对）",
+    textWoo: "卡牌文本（未在游戏中核对）",
+    textOutdated: "之后的补丁修改了这段文本：请看下方的平衡改动历史。",
+    asOfToken: "衍生卡：它不在游戏的收藏中，因此其文本和属性没有在游戏中核对。平衡改动说明来自官方补丁说明。",
+    asOfRemoved: "已不在游戏中：最后已知数据，截至 {patch} 补丁；无法在游戏中核对。",
+    community: "社区强度榜",
+    communityScoreOne: "{tier} 级：1 票，平均 {avg} 分（满分 5）。",
+    communityScore: "{tier} 级：{votes} 票，平均 {avg} 分（满分 5）。",
+    communityUnranked: "还没有任何已保存的强度榜给它排名。",
+    communityInvite: "在你自己的强度榜中为 {name} 排名：社区强度榜从 {min} 份榜单起生成",
+    communitySoFar: "（目前 {n} 份）",
+    communityCta: "制作你的强度榜",
+    communityOpen: "打开社区强度榜",
+    deckGuide: "卡组攻略",
+    sameSagaDemo: "游戏中的同一传说",
+    buildRoot: "用 {roots} 构筑卡组",
+    buildRootText: "{name} 是衍生卡，无法在卡组构筑器中加入卡组：想在对局中见到它，就把 {roots} 放进你的卡组。",
+    legendaryPower: "传说之力",
+    alt: "{name}，{kind}：Origins TCG 官方卡牌，画师 {illus}，© Koin Games",
+    altNoCredit: "{name}，{kind}：Origins TCG 官方卡牌，© Koin Games",
+    kind: { unit: "角色", spell: "法术", token: "衍生卡", legendaryUnit: "传说角色", legendarySpell: "传说法术" },
+    creditText: "画师：{illus} · © Koin Games",
+  },
 };
 
 /** Sostituisce i segnaposto {chiave} di un'etichetta. */
@@ -675,6 +735,13 @@ function statsClause(card: LeadCard, locale: Locale, tense: Tense): string {
     if (align) clauses.push(`мировоззрение — ${align}`);
     return clauses.join(", ");
   }
+  if (locale === "zh-cn") {
+    // niente tempi verbali: "费用为 5，力量为 5，生命值为 5，阵营为 Neutral" vale anche per le carte rimosse
+    if (m !== undefined) clauses.push(`费用为 ${m}`);
+    if (p !== undefined) clauses.push(`力量为 ${p}，生命值为 ${h ?? "?"}`);
+    if (align) clauses.push(`阵营为 ${align}`);
+    return clauses.join("，");
+  }
   if (m !== undefined) clauses.push(`${past ? "cost" : "costs"} ${m} mana`);
   if (p !== undefined) clauses.push(`${past ? "had" : "has"} ${p} Power and ${h ?? "?"} Health`);
   if (align) clauses.push(`${past ? "was" : "is"} ${align}`);
@@ -692,6 +759,7 @@ function statsSentence(card: LeadCard, locale: Locale): string {
   if (locale === "en") return `It ${c}.`;
   if (locale === "fr") return `${cap(frIl(card))} ${c}.`;
   if (locale === "de") return `${cap(deEr(card))} ${c}.`;
+  if (locale === "zh-cn") return `它的${c}。`;
   return `${cap(c)}.`;
 }
 
@@ -705,6 +773,7 @@ function withArticle(card: Pick<Card, "type" | "legendary">, locale: Locale): st
   if (locale === "de") return deMasculine(card) ? `ein ${word}` : `eine ${word}`;
   // il russo non ha articoli
   if (locale === "ru") return word;
+  if (locale === "zh-cn") return word;
   return `${/^[aeio]/i.test(word) ? "an" : "a"} ${word}`;
 }
 
@@ -718,6 +787,7 @@ const gameName: Record<Locale, string> = {
   de: "Origins TCG, dem digitalen Kartenspiel von Koin Games",
   // al genitivo: si usa sempre dopo "из" e "сборок"
   ru: "Origins TCG, цифровой карточной игры от Koin Games",
+  "zh-cn": "Koin Games 出品的数字卡牌游戏 Origins TCG",
 };
 
 /**
@@ -736,6 +806,7 @@ const notInBuilder: Record<Locale, string> = {
   de: "Im Deckbuilder lässt sie sich nicht in ein Deck aufnehmen",
   // solo per le carte create: "её" è la carta
   ru: "её нельзя добавить в колоду в конструкторе колод",
+  "zh-cn": "无法在卡组构筑器中把它加入卡组",
 };
 
 /**
@@ -794,6 +865,13 @@ export function deckSentence(card: Pick<Card, "type" | "legendary">, count: Deck
     if (n === 0) return `Ни одна из ${ruPublishedDecks(total)} пока не использует эту карту${leg ? " как Легендарную" : ""}.`;
     return `${leg ? "Возглавляет" : "Есть в"} ${n} из ${ruPublishedDecks(total)}.`;
   }
+  if (locale === "zh-cn") {
+    if (total === 0) return "OriginsMeta 上还没有已发布的卡组。";
+    if (total === 1 && n === 1) return leg ? "它是 OriginsMeta 上唯一一套已发布卡组的核心。" : "它出现在 OriginsMeta 上唯一一套已发布的卡组中。";
+    if (total === 1) return leg ? "OriginsMeta 上唯一一套已发布的卡组以另一张传说卡为核心。" : "OriginsMeta 上唯一一套已发布的卡组没有使用它。";
+    if (n === 0) return `OriginsMeta 上已发布的 ${total} 套卡组中，还没有一套${leg ? "以它为核心" : "使用它"}。`;
+    return `OriginsMeta 上已发布的 ${total} 套卡组中，有 ${n} 套${leg ? "以它为核心" : "使用了它"}。`;
+  }
   if (total === 0) return "No deck has been published on OriginsMeta yet.";
   if (total === 1 && n === 1) return leg ? "It leads the only deck published on OriginsMeta." : "It appears in the only deck published on OriginsMeta.";
   if (total === 1) return leg ? "The only deck published on OriginsMeta is led by another Legendary." : "The only deck published on OriginsMeta does not use it.";
@@ -810,6 +888,7 @@ function formerSentence(card: LeadCard, locale: Locale): string {
   if (locale === "pt") return `Em builds anteriores, se chamava ${card.formerName}.`;
   if (locale === "de") return `In früheren Builds hieß ${deEr(card)} ${card.formerName}.`;
   if (locale === "ru") return `В прежних сборках карта называлась ${card.formerName}.`;
+  if (locale === "zh-cn") return `在之前的版本中，它名为 ${card.formerName}。`;
   return `In earlier builds it was called ${card.formerName}.`;
 }
 
@@ -820,8 +899,10 @@ function chainParts(chain: readonly RelCard[][], locale: Locale): Part[] {
   // il secondo passaggio solo se il primo è una carta sola: con più carte "a sua volta" non si capirebbe di chi.
   // In francese "elle-même" si accorda con la prima carta, che per avere a sua volta chi la genera è una carta creata.
   if (first.length === 1 && second?.length) {
-    const next = { en: ", which is in turn created by ", it: ", a sua volta generata da ", es: ", a su vez creada por ", fr: ", elle-même créée par ", pt: ", por sua vez criada por ", de: ", ihrerseits erschaffen von ", ru: second.length > 1 ? ", которую, в свою очередь, создают " : ", которую, в свою очередь, создаёт " }[locale];
-    out.push(next, ...cardList(second, locale));
+    const next = { en: ", which is in turn created by ", it: ", a sua volta generata da ", es: ", a su vez creada por ", fr: ", elle-même créée par ", pt: ", por sua vez criada por ", de: ", ihrerseits erschaffen von ", ru: second.length > 1 ? ", которую, в свою очередь, создают " : ", которую, в свою очередь, создаёт ", "zh-cn": "" }[locale];
+    // cinese: il verbo va dopo l'elenco ("……，它又由 Van Helsing 生成")
+    if (locale === "zh-cn") out.push("，它又由 ", ...cardList(second, locale), " 生成");
+    else out.push(next, ...cardList(second, locale));
   }
   return out;
 }
@@ -842,8 +923,9 @@ function tokenOrigin(facts: CardFacts, locale: Locale): Part[] {
       // "durch" vale per una o più carte e non manda il verbo in fondo alla frase
       de: "; im Match entsteht sie durch ",
       ru: many ? "; в матче её создают " : "; в матче её создаёт ",
+      "zh-cn": "；在对局中，它由 ",
     }[locale];
-    return [verb, ...chainParts(facts.createdBy, locale), "."];
+    return [verb, ...chainParts(facts.createdBy, locale), locale === "zh-cn" ? " 生成。" : "."];
   }
   // Nessun testo la nomina: si dice solo questo. Fino al 25/09/2026 seguiva la carta a cui la collegava il database
   // da cui importiamo i dati (campo `related`); tolta la fonte dalle pagine, quel legame non aveva più una base.
@@ -856,6 +938,7 @@ function tokenOrigin(facts: CardFacts, locale: Locale): Part[] {
       pt: ". Nenhum texto de carta diz qual carta a cria.",
       de: ". Kein Kartentext sagt, welche Karte sie erschafft.",
       ru: ". Ни один текст карты не говорит, какая карта её создаёт.",
+      "zh-cn": "。没有任何卡牌文本说明由哪张卡牌生成它。",
     }[locale],
   ];
 }
@@ -891,7 +974,8 @@ function verifiedOn(locale: Locale): string {
 export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part[] {
   const name = cardRef(card);
   const out: Part[] = [];
-  const sp = (s: string) => (s ? ` ${s}` : "");
+  // in cinese le frasi si attaccano senza spazio
+  const sp = (s: string) => (s ? (locale === "zh-cn" ? s : ` ${s}`) : "");
 
   if (card.status === "removed") {
     const head = {
@@ -903,6 +987,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
       pt: " não está mais no jogo, então não pode entrar em um deck no deck builder.",
       de: " ist nicht mehr im Spiel und lässt sich daher im Deckbuilder nicht hinzufügen.",
       ru: " больше нет в игре, поэтому эту карту нельзя добавить в конструкторе колод.",
+      "zh-cn": " 已不在游戏中，因此无法在卡组构筑器中加入。",
     }[locale];
     const was = {
       en: `It was ${withArticle(card, locale)} in earlier builds of ${gameName.en}.`,
@@ -912,6 +997,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
       pt: `Era ${withArticle(card, locale)} das builds anteriores de ${gameName.pt}.`,
       de: `${cap(deEr(card))} war ${withArticle(card, locale)} aus früheren Builds von ${gameName.de}.`,
       ru: `Это ${withArticle(card, locale)} из прежних сборок ${gameName.ru}.`,
+      "zh-cn": `它是${gameName["zh-cn"]}之前版本中的${withArticle(card, locale)}。`,
     }[locale];
     const clause = statsClause(card, locale, "past");
     const stats = clause
@@ -923,6 +1009,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
           pt: `Últimas estatísticas conhecidas: ${clause}.`,
           de: `Zuletzt bekannte Werte: ${cap(deEr(card))} ${clause}.`,
           ru: `Последние известные характеристики: ${clause}.`,
+          "zh-cn": `最后已知属性：${clause}。`,
         }[locale]
       : "";
     out.push(name, head, sp(was), sp(stats), sp(formerSentence(card, locale)));
@@ -938,6 +1025,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
       pt: ` é uma carta criada de ${gameName.pt}: ${notInBuilder.pt}`,
       de: ` ist eine erschaffene Karte aus ${gameName.de}: ${notInBuilder.de}`,
       ru: ` — созданная карта из ${gameName.ru}: ${notInBuilder.ru}`,
+      "zh-cn": ` 是${gameName["zh-cn"]}中的衍生卡：${notInBuilder["zh-cn"]}`,
     }[locale];
     out.push(name, head, ...tokenOrigin(facts, locale), sp(statsSentence(card, locale)));
     return out.filter((p) => p !== "");
@@ -951,6 +1039,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
     pt: ` é ${withArticle(card, locale)} de ${gameName.pt}.`,
     de: ` ist ${withArticle(card, locale)} aus ${gameName.de}.`,
     ru: ` — ${withArticle(card, locale)} из ${gameName.ru}.`,
+    "zh-cn": ` 是${gameName["zh-cn"]}中的${withArticle(card, locale)}。`,
   }[locale];
   // Nella collezione del gioco, con il giorno della verifica (fatta nella demo, il 22/09/2026: resta al passato)
   const inGame = {
@@ -961,6 +1050,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
     pt: `Está na coleção do jogo (${ptMasculine(card) ? "verificado" : "verificada"} em ${verifiedOn(locale)}).`,
     de: `Die Karte ist in der Sammlung (am ${verifiedOn(locale)} im Spiel überprüft).`,
     ru: `Карта есть в коллекции (проверено в игре ${verifiedOn(locale)}).`,
+    "zh-cn": `它在游戏的收藏中（${verifiedOn(locale)}在游戏中核对）。`,
   }[locale];
   out.push(name, is, sp(statsSentence(card, locale)), sp(inGame));
   if (facts.decks) out.push(sp(deckSentence(card, facts.decks, locale)));
@@ -989,6 +1079,7 @@ function changeWhat(ch: Change, locale: Locale): string {
     de: { mana: "die Kosten", power: "die Kraft", health: "das Leben" },
     // all'accusativo, dopo "изменил"
     ru: { mana: "стоимость", power: "Силу", health: "Здоровье" },
+    "zh-cn": { mana: "费用", power: "力量", health: "生命值" },
   }[locale];
   const fromTo = {
     en: (a: number, b: number) => `from ${a} to ${b}`,
@@ -998,19 +1089,22 @@ function changeWhat(ch: Change, locale: Locale): string {
     pt: (a: number, b: number) => `de ${a} para ${b}`,
     de: (a: number, b: number) => `von ${a} auf ${b}`,
     ru: (a: number, b: number) => `с ${a} до ${b}`,
+    "zh-cn": (a: number, b: number) => `从 ${a} 改为 ${b}`,
   }[locale];
   const bits: string[] = [];
   for (const k of ["mana", "power", "health"] as const) {
     const a = ch.from?.[k];
     const b = ch.to?.[k];
-    if (a !== undefined && b !== undefined && a !== b) bits.push(`${stat[k]} ${fromTo(a, b)}`);
+    // cinese: niente spazio fra due ideogrammi ("力量从 3 改为 5")
+    if (a !== undefined && b !== undefined && a !== b) bits.push(`${stat[k]}${locale === "zh-cn" ? "" : " "}${fromTo(a, b)}`);
   }
   if (ch.alignment) {
-    const [what, from, to] = { en: ["its alignment", "from", "to"], it: ["l'allineamento", "da", "a"], es: ["su alineamiento", "de", "a"], fr: ["son alignement", "de", "à"], pt: ["o alinhamento", "de", "para"], de: ["die Gesinnung", "von", "auf"], ru: ["мировоззрение", "с", "на"] }[locale];
-    bits.push(`${what} ${from} ${alignWord[ch.alignment.from]} ${to} ${alignWord[ch.alignment.to]}`);
+    const [what, from, to] = { en: ["its alignment", "from", "to"], it: ["l'allineamento", "da", "a"], es: ["su alineamiento", "de", "a"], fr: ["son alignement", "de", "à"], pt: ["o alinhamento", "de", "para"], de: ["die Gesinnung", "von", "auf"], ru: ["мировоззрение", "с", "на"], "zh-cn": ["阵营", "从", "改为"] }[locale];
+    bits.push(locale === "zh-cn" ? `${what}${from} ${alignWord[ch.alignment.from]} ${to} ${alignWord[ch.alignment.to]}` : `${what} ${from} ${alignWord[ch.alignment.from]} ${to} ${alignWord[ch.alignment.to]}`);
   }
-  if (!bits.length) return { en: "its text", it: "il testo", es: "su texto", fr: "son texte", pt: "o texto", de: "den Text", ru: "текст" }[locale];
-  const and = { en: " and ", it: " e ", es: " y ", fr: " et ", pt: " e ", de: " und ", ru: " и " }[locale];
+  if (!bits.length) return { en: "its text", it: "il testo", es: "su texto", fr: "son texte", pt: "o texto", de: "den Text", ru: "текст", "zh-cn": "卡牌文本" }[locale];
+  if (locale === "zh-cn") return bits.join("，");
+  const and = { en: " and ", it: " e ", es: " y ", fr: " et ", pt: " e ", de: " und ", ru: " и ", "zh-cn": "，" }[locale];
   return bits.length === 1 ? bits[0] : `${bits.slice(0, -1).join(", ")}${and}${bits[bits.length - 1]}`;
 }
 
@@ -1029,6 +1123,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
       pt: `Não: nenhum patch desde o ${since} mudou as suas estatísticas ou o seu texto.`,
       de: `Nein: Seit ${since} hat kein Patch die Werte oder den Text dieser Karte geändert.`,
       ru: `Нет: начиная с ${since}, ни один патч не менял характеристики или текст этой карты.`,
+      "zh-cn": `没有：自 ${since} 以来，没有任何补丁修改过它的属性或文本。`,
     }[locale];
     const only = deckOnly.length
       ? {
@@ -1039,6 +1134,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
           pt: ` Aparece apenas nas mudanças dos decks predefinidos do playtest (${deckOnly.join(", ")}).`,
           de: ` Sie taucht nur in den Änderungen an den vorgefertigten Decks des Playtests auf (${deckOnly.join(", ")}).`,
           ru: ` Карта упоминается только в изменениях готовых колод плейтеста (${deckOnly.join(", ")}).`,
+          "zh-cn": `它只出现在测试版预设卡组的改动中（${deckOnly.join("、")}）。`,
         }[locale]
       : "";
     return [no + only];
@@ -1059,6 +1155,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
     if (locale === "pt") return ["Sim: o patch ", patchPart, ` de ${date} mudou ${what}.`];
     if (locale === "de") return ["Ja: Patch ", patchPart, ` vom ${date} änderte ${what}.`];
     if (locale === "ru") return ["Да: патч ", patchPart, ` от ${date} изменил ${what}.`];
+    if (locale === "zh-cn") return ["是的：", patchPart, ` 补丁（${date}）改动了这张卡牌。改动内容：${what}。`];
     return ["Yes: patch ", patchPart, ` (${date}) changed ${what}.`];
   }
   // "patch" in italiano non cambia al plurale; in francese è maschile e fa "patchs"
@@ -1069,6 +1166,7 @@ function patchAnswer(card: LeadCard, locale: Locale): Part[] {
   if (locale === "de") return [`Ja, in ${k} Patches. Der letzte ist Patch `, patchPart, ` vom ${date}, der ${what} änderte.`];
   // "в патчах: 2", così il numero non declina il nome
   if (locale === "ru") return [`Да, в патчах: ${k}. Последний — патч `, patchPart, ` от ${date}, который изменил ${what}.`];
+  if (locale === "zh-cn") return [`是的，共有 ${k} 个补丁改动过它。最近一次是 `, patchPart, ` 补丁（${date}），改动内容：${what}。`];
   return [`Yes, in ${k} patches. The latest is patch `, patchPart, ` (${date}), which changed ${what}.`];
 }
 
@@ -1081,6 +1179,7 @@ const fromTexts: Record<Locale, string> = {
   pt: " (segundo os textos das cartas).",
   de: " (laut den Kartentexten).",
   ru: " (по текстам карт).",
+  "zh-cn": "（根据卡牌文本）。",
 };
 
 /**
@@ -1091,7 +1190,7 @@ const fromTexts: Record<Locale, string> = {
 function createsParts(card: LeadCard, creates: readonly RelCard[][], locale: Locale): Part[] {
   const [first, second] = creates;
   const past = card.status === "removed";
-  const verb = past ? { en: " created ", it: " generava ", es: " creaba ", fr: " créait ", pt: " criava ", de: " erschuf ", ru: " создавала " } : { en: " creates ", it: " genera ", es: " crea ", fr: " crée ", pt: " cria ", de: " erschafft ", ru: " создаёт " };
+  const verb = past ? { en: " created ", it: " generava ", es: " creaba ", fr: " créait ", pt: " criava ", de: " erschuf ", ru: " создавала ", "zh-cn": " 曾生成 " } : { en: " creates ", it: " genera ", es: " crea ", fr: " crée ", pt: " cria ", de: " erschafft ", ru: " создаёт ", "zh-cn": " 会生成 " };
   const out: Part[] = [cardRef(card), verb[locale], ...cardList(first, locale)];
   if (second?.length) {
     const one = first.length === 1;
@@ -1104,6 +1203,7 @@ function createsParts(card: LeadCard, creates: readonly RelCard[][], locale: Loc
       // frase principale dopo il punto e virgola: il verbo resta al secondo posto
       de: one ? "; diese erschafft wiederum " : "; diese erschaffen wiederum ",
       ru: one ? ", которая, в свою очередь, создаёт " : "; они, в свою очередь, создают ",
+      "zh-cn": one ? "，而它又会生成 " : "；这些卡牌又会生成 ",
     }[locale];
     out.push(next, ...cardList(second, locale));
   }
@@ -1121,8 +1221,9 @@ function companionParts(list: readonly BriefCompanion[], decks: number, locale: 
     .slice(0, 3);
   const count = cardLabels[locale].togetherCount;
   return listParts(
-    top.map((c) => [cardRef(c.card), ` (${fill(count, { k: c.together, n: decks })})`]),
+    top.map((c) => [cardRef(c.card), locale === "zh-cn" ? `（${fill(count, { k: c.together, n: decks })}）` : ` (${fill(count, { k: c.together, n: decks })})`]),
     andWord[locale],
+    listComma(locale),
   );
 }
 
@@ -1148,6 +1249,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
     pt: `Dá para jogar com ${n} em Origins TCG?`,
     de: `Ist ${n} in Origins TCG spielbar?`,
     ru: `Можно ли играть картой ${n} в Origins TCG?`,
+    "zh-cn": `${n} 能在 Origins TCG 中使用吗？`,
   }[locale];
   if (card.status === "removed") {
     items.push({
@@ -1161,6 +1263,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           pt: "Não: estava em builds anteriores de Origins TCG e não está mais no jogo, então não pode entrar em um deck no deck builder.",
           de: "Nein: Die Karte war in früheren Builds von Origins TCG und ist nicht mehr im Spiel, daher lässt sie sich im Deckbuilder nicht hinzufügen.",
           ru: "Нет: карта была в прежних сборках Origins TCG, но её больше нет в игре, поэтому её нельзя добавить в конструкторе колод.",
+          "zh-cn": "不能：它曾出现在 Origins TCG 之前的版本中，现已不在游戏中，因此无法在卡组构筑器中加入。",
         }[locale],
       ],
     });
@@ -1177,6 +1280,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           pt: `Sim, como carta criada: ${notInBuilder.pt}, mas chega à partida por meio de uma carta da coleção do jogo.`,
           de: `Ja, als erschaffene Karte: ${notInBuilder.de}, aber sie kommt über eine Karte aus der Sammlung des Spiels ins Match.`,
           ru: `Да, как созданная карта: ${notInBuilder.ru}, но в матче она появляется благодаря карте из коллекции игры.`,
+          "zh-cn": `可以，作为衍生卡：${notInBuilder["zh-cn"]}，但在对局中，它会由游戏收藏中的某张卡牌生成。`,
         }[locale]
       : {
           en: `We cannot say for sure: no card text in the game creates it, and created cards are not in the game's collection. ${cap(notInBuilder.en)}.`,
@@ -1186,6 +1290,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           pt: `Não dá para afirmar com certeza: nenhum texto das cartas do jogo a cria, e as cartas criadas não estão na coleção do jogo. ${cap(notInBuilder.pt)}.`,
           de: `Das lässt sich nicht sicher sagen: Kein Kartentext des Spiels erschafft sie, und erschaffene Karten sind nicht in der Sammlung des Spiels. ${cap(notInBuilder.de)}.`,
           ru: `Точно сказать нельзя: ни один текст карт игры её не создаёт, а созданных карт нет в коллекции игры. ${cap(notInBuilder.ru)}.`,
+          "zh-cn": `无法确定：游戏中没有任何卡牌文本会生成它，而衍生卡不在游戏的收藏中。${notInBuilder["zh-cn"]}。`,
         }[locale];
     items.push({ q: q1, a: [a] });
   } else {
@@ -1199,6 +1304,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           pt: `Sim: é uma das ${legendaries} Lendárias da coleção do jogo, verificadas em ${date}, então pode liderar um deck no deck builder.`,
           de: `Ja: Die Karte ist eine der ${legendaries} Legendären aus der Sammlung des Spiels, am ${date} überprüft, und kann daher im Deckbuilder ein Deck anführen.`,
           ru: `Да: это одна из ${legendaries} Легендарных карт коллекции игры, проверенных ${date}, поэтому она может возглавить колоду в конструкторе колод.`,
+          "zh-cn": `可以：它是游戏收藏中的 ${legendaries} 张传说卡之一（${date}核对），因此可以在卡组构筑器中作为卡组核心。`,
         }[locale]
       : {
           en: `Yes: it is one of the ${total} cards in the game's collection, checked on ${date}, so you can put it in a deck in the deck builder.`,
@@ -1208,30 +1314,31 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           pt: `Sim: é uma das ${total} cartas da coleção do jogo, verificadas em ${date}, então você pode colocá-la em um deck no deck builder.`,
           de: `Ja: Die Karte ist eine der ${total} Karten aus der Sammlung des Spiels, am ${date} überprüft, du kannst sie also im Deckbuilder in ein Deck aufnehmen.`,
           ru: `Да: это одна из ${total} карт коллекции игры, проверенных ${date}, поэтому её можно положить в колоду в конструкторе колод.`,
+          "zh-cn": `可以：它是游戏收藏中的 ${total} 张卡牌之一（${date}核对），因此你可以在卡组构筑器中把它放进卡组。`,
         }[locale];
     items.push({ q: q1, a: [a] });
   }
 
   // 2. Le patch l'hanno cambiata?
   items.push({
-    q: { en: `Has a patch changed ${n}?`, it: `Le patch hanno cambiato ${n}?`, es: `¿Algún parche ha cambiado ${n}?`, fr: `Un patch a-t-il changé ${n}\u00a0?`, pt: `Algum patch mudou ${n}?`, de: `Hat ein Patch ${n} verändert?`, ru: `Менял ли патч карту ${n}?` }[locale],
+    q: { en: `Has a patch changed ${n}?`, it: `Le patch hanno cambiato ${n}?`, es: `¿Algún parche ha cambiado ${n}?`, fr: `Un patch a-t-il changé ${n}\u00a0?`, pt: `Algum patch mudou ${n}?`, de: `Hat ein Patch ${n} verändert?`, ru: `Менял ли патч карту ${n}?`, "zh-cn": `${n} 被补丁改动过吗？` }[locale],
     a: patchAnswer(card, locale),
   });
 
   // 3. Chi la genera, che cosa genera o con quali carte sta
   if (card.type === "token") {
-    const q = { en: `Which card creates ${n}?`, it: `Quale carta genera ${n}?`, es: `¿Qué carta crea ${n}?`, fr: `Quelle carte crée ${n}\u00a0?`, pt: `Qual carta cria ${n}?`, de: `Welche Karte erschafft ${n}?`, ru: `Какая карта создаёт ${n}?` }[locale];
+    const q = { en: `Which card creates ${n}?`, it: `Quale carta genera ${n}?`, es: `¿Qué carta crea ${n}?`, fr: `Quelle carte crée ${n}\u00a0?`, pt: `Qual carta cria ${n}?`, de: `Welche Karte erschafft ${n}?`, ru: `Какая карта создаёт ${n}?`, "zh-cn": `哪张卡牌会生成 ${n}？` }[locale];
     const [first] = facts.createdBy;
     const a: Part[] = [];
     if (first?.length) {
       const many = first.length > 1;
       a.push(
-        { en: "It is created by ", it: many ? "La generano " : "La genera ", es: many ? "La crean " : "La crea ", fr: "Elle est créée par ", pt: "É criada por ", de: "Sie entsteht durch ", ru: many ? "Её создают " : "Её создаёт " }[locale],
+        { en: "It is created by ", it: many ? "La generano " : "La genera ", es: many ? "La crean " : "La crea ", fr: "Elle est créée par ", pt: "É criada por ", de: "Sie entsteht durch ", ru: many ? "Её создают " : "Её создаёт ", "zh-cn": "它由 " }[locale],
         ...chainParts(facts.createdBy, locale),
-        fromTexts[locale],
+        locale === "zh-cn" ? " 生成（根据卡牌文本）。" : fromTexts[locale],
       );
     } else {
-      a.push({ en: "No card text says so.", it: "Nessun testo di carta lo dice.", es: "Ningún texto de carta lo dice.", fr: "Aucun texte de carte ne le dit.", pt: "Nenhum texto de carta diz isso.", de: "Kein Kartentext sagt das.", ru: "Ни один текст карты об этом не говорит." }[locale]);
+      a.push({ en: "No card text says so.", it: "Nessun testo di carta lo dice.", es: "Ningún texto de carta lo dice.", fr: "Aucun texte de carte ne le dit.", pt: "Nenhum texto de carta diz isso.", de: "Kein Kartentext sagt das.", ru: "Ни один текст карты об этом не говорит.", "zh-cn": "没有任何卡牌文本说明这一点。" }[locale]);
     }
     if (facts.createdByEarlier.length) {
       const many = facts.createdByEarlier.length > 1;
@@ -1244,9 +1351,10 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           pt: " Em builds anteriores, também era criada por ",
           de: " In früheren Builds entstand sie auch durch ",
           ru: many ? " В прежних сборках её также создавали " : " В прежних сборках её также создавала ",
+          "zh-cn": "在之前的版本中，它也可由 ",
         }[locale],
         ...cardList(facts.createdByEarlier, locale),
-        ".",
+        locale === "zh-cn" ? " 生成。" : ".",
       );
     }
     items.push({ q, a });
@@ -1255,8 +1363,8 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
     // in francese l'inversione con il soggetto nominale: "Quelles cartes crée Merlin ?"
     items.push({
       q: past
-        ? { en: `Which cards did ${n} create?`, it: `Quali carte generava ${n}?`, es: `¿Qué cartas creaba ${n}?`, fr: `Quelles cartes créait ${n}\u00a0?`, pt: `Quais cartas ${n} criava?`, de: `Welche Karten erschuf ${n}?`, ru: `Какие карты создавала ${n}?` }[locale]
-        : { en: `Which cards does ${n} create?`, it: `Quali carte genera ${n}?`, es: `¿Qué cartas crea ${n}?`, fr: `Quelles cartes crée ${n}\u00a0?`, pt: `Quais cartas ${n} cria?`, de: `Welche Karten erschafft ${n}?`, ru: `Какие карты создаёт ${n}?` }[locale],
+        ? { en: `Which cards did ${n} create?`, it: `Quali carte generava ${n}?`, es: `¿Qué cartas creaba ${n}?`, fr: `Quelles cartes créait ${n}\u00a0?`, pt: `Quais cartas ${n} criava?`, de: `Welche Karten erschuf ${n}?`, ru: `Какие карты создавала ${n}?`, "zh-cn": `${n} 曾生成哪些卡牌？` }[locale]
+        : { en: `Which cards does ${n} create?`, it: `Quali carte genera ${n}?`, es: `¿Qué cartas crea ${n}?`, fr: `Quelles cartes crée ${n}\u00a0?`, pt: `Quais cartas ${n} cria?`, de: `Welche Karten erschafft ${n}?`, ru: `Какие карты создаёт ${n}?`, "zh-cn": `${n} 会生成哪些卡牌？` }[locale],
       a: createsParts(card, facts.creates, locale),
     });
   } else if (card.status === "active" && facts.decks && facts.companions?.length) {
@@ -1270,6 +1378,7 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
       pt: `Quais cartas costumam estar no mesmo deck que ${n}?`,
       de: `Welche Karten sind oft im selben Deck wie ${n}?`,
       ru: `Какие карты часто бывают в одной колоде с ${n}?`,
+      "zh-cn": `哪些卡牌常和 ${n} 出现在同一卡组中？`,
     }[locale];
     const intro = {
       en: leg ? `The cards found most often in the ${d} decks it leads: ` : `The cards found most often in its ${d} published decks: `,
@@ -1280,8 +1389,9 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
       de: leg ? `Die häufigsten Karten in den ${d} Decks, die ${deEr(card)} anführt: ` : `Die häufigsten Karten in den ${d} veröffentlichten Decks mit dieser Karte: `,
       // il numero fra parentesi, così non declina "колода"
       ru: leg ? `Чаще всего в колодах, которые возглавляет эта карта (всего ${d}): ` : `Чаще всего в опубликованных колодах с этой картой (всего ${d}): `,
+      "zh-cn": leg ? `在以它为核心的 ${d} 套卡组中最常见的卡牌：` : `在它的 ${d} 套已发布卡组中最常见的卡牌：`,
     }[locale];
-    items.push({ q, a: [intro, ...companionParts(facts.companions, d, locale), "."] });
+    items.push({ q, a: [intro, ...companionParts(facts.companions, d, locale), locale === "zh-cn" ? "。" : "."] });
   }
   return items;
 }

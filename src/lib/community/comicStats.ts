@@ -34,7 +34,7 @@ export const COMIC_STAT_CAP = 2000;
  * Le lingue ammesse dalla chiave della tabella: le stesse di `COMIC_LANGS` (comics.ts) e del vincolo SQL. Copiate qui
  * perché il beacon del browser non debba caricare comics.ts; il test controlla che coincidano.
  */
-export const COMIC_STAT_LANGS = ["en", "it", "es", "fr", "pt", "de", "ru"] as const satisfies readonly Locale[];
+export const COMIC_STAT_LANGS = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const satisfies readonly Locale[];
 const LANG_SET = new Set<string>(COMIC_STAT_LANGS);
 export const isComicStatLang = (v: unknown): v is Locale => typeof v === "string" && LANG_SET.has(v);
 

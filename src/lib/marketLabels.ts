@@ -720,7 +720,101 @@ const ru: Labels = {
   },
 };
 
-export const marketLabels: Record<Locale, Labels> = { en, it, es, fr, pt, de, ru };
+// cinese semplificato (04/11/2026, docs/cinese.md): «Steam 社区市场» come lo chiama Steam in cinese, 你
+const zhCn: Labels = {
+  meta: {
+    title: "Origins TCG 卡牌在 Steam 社区市场的价格",
+    description: "Steam 社区市场上每一张 Origins TCG 卡牌、每个变体和每件物品的价格：最低售价、在售数量以及以欧元和美元计价的历史价格走势。每 10 分钟检查一次，持续记录价格变化，并由 OriginsMeta 自行建立完整的价格历史记录，供所有玩家和收藏者随时查看、比较与参考。",
+    demoTitle: "Steam 市场价格追踪器：引擎测试",
+    demoDescription: "在 Origins TCG 物品上架之前，我们的 Steam 社区市场价格追踪器先在一款已经在市场上交易的游戏上运行：最低售价、在售数量和历史价格走势一目了然。等 Origins TCG 物品开售后，同一套引擎就会切换过来，为每张卡牌记录价格。",
+    itemSuffix: "Steam 价格",
+    itemDescription: "{name}：Steam 社区市场上的最低售价、在售数量以及以欧元和美元计价的历史价格，每 10 分钟检查一次。",
+  },
+  h1: "Origins TCG 在 Steam 社区市场的价格",
+  demoH1: "价格追踪器：引擎测试",
+  locked: { kicker: "内部测试", text: "Steam 社区市场价格追踪器正在与 OriginsMeta 团队进行内部测试。首批 Origins TCG 物品开售后，它将向所有人开放。", back: "返回首页" },
+  crumb: "市场",
+  status: {
+    closed: "自 2026年10月27日的 0.8 版本更新起，Origins TCG 卡牌已可在 Steam 社区市场交易，但目前还没有任何物品在售。",
+    checking: "我们每 {min} 分钟检查一次：从第一件物品上架开始，网站会记录每张卡牌、每个变体和每件物品的价格与在售数量，并建立自己的价格历史。",
+    lastCheck: "上次检查：",
+    neverChecked: "首次检查即将开始。",
+    unavailable: "价格追踪器尚未启用。",
+    live: "价格来自 Steam 社区市场，每 {min} 分钟检查一次。",
+    utc: "UTC",
+    sweep: "物品较多时，完整轮询一遍需要不止一次检查：每件物品至少每 {min} 分钟更新一次。",
+  },
+  soon: {
+    title: "你将在这里看到什么",
+    points: [
+      "每张卡牌、每个变体和每件物品的最低售价和在售数量，以欧元或美元显示。",
+      "每件物品的价格走势图：最近 24 小时、7 天、30 天以及全部历史。",
+      "最近 24 小时涨幅和跌幅最大的物品。",
+    ],
+    when: "自 2026年10月27日的 0.8 版本更新起，Origins TCG 收藏卡牌可以在 Steam 社区市场上购买、出售和上架；卡牌以外的收藏外观将在后续更新中推出。",
+    sets: "系列、稀有度与评级",
+    guide: "收藏经济",
+  },
+  demoLink: {
+    title: "看看引擎如何运作",
+    text: "在首批 Origins TCG 物品开售之前，追踪器运行在 Counter-Strike 2 的一个收藏品系列上，那是 Steam 上最大的市场。",
+    cta: "打开引擎测试",
+  },
+  demo: {
+    banner: "这是在 Counter-Strike 2（Valve）的 Dreams & Nightmares 收藏品系列上进行的引擎测试，那是 Steam 上最大的市场：皮肤有稀有度、磨损程度和 StatTrak 版本，就像 Origins TCG 卡牌将来会有稀有度、评级和变体一样。它们不是 Origins TCG 卡牌。",
+    back: "返回 Origins TCG 价格",
+  },
+  currency: { label: "货币" },
+  board: {
+    search: "搜索",
+    searchPlaceholder: "物品名称……",
+    kind: "类型",
+    kinds: { all: "全部", card: "卡牌", pack: "卡包", other: "其他物品" },
+    demoKinds: { all: "全部", card: "皮肤", pack: "武器箱", other: "其他物品" },
+    sort: "排序方式",
+    sorts: { name: "名称", price: "价格", change: "24 小时涨跌", listings: "在售数量" },
+    sortDirs: { az: "A 到 Z", za: "Z 到 A", high: "从高到低", low: "从低到高" },
+    columns: { item: "物品", price: "最低价", change24h: "24 小时", change7d: "7 天", listings: "在售数量" },
+    count: "{n} 件物品",
+    countOne: "1 件物品",
+    noResults: "没有物品符合筛选条件。",
+    noOffers: "暂无在售",
+    lastSeen: "最后见到",
+    variants: { normal: "普通", foil: "闪卡" },
+  },
+  movers: { title: "最近 24 小时", up: "上涨", down: "下跌", none: "暂时没有可显示的变化：积累 24 小时的历史后才开始比较。" },
+  item: {
+    back: "所有价格",
+    price: "最低价",
+    listings: "在售数量",
+    change24h: "24 小时",
+    change7d: "7 天",
+    change30d: "30 天",
+    firstSeen: "上架时间",
+    lastSeen: "上次检查",
+    onSteam: "在 Steam 上查看",
+    chartTitle: "最低售价",
+    chartAria: "{name} 的最低售价，{range}",
+    ranges: { "24h": "24 小时", "7d": "7 天", "30d": "30 天", all: "全部" },
+    noHistory: "历史记录从现在开始：每次检查都会补充图表。",
+    lastPrice: "最后见到的价格",
+    stale: "自 {when} 起没有在售：曲线停在最后见到的价格。",
+    table: { show: "显示数据", time: "时间", low: "最低", high: "最高", close: "最新", listings: "在售数量" },
+    kind: "类型",
+    variant: "变体",
+  },
+  notes: {
+    title: "我们如何解读价格",
+    points: [
+      "来源：Steam 社区市场的公开页面。我们为每件物品记录最低售价和在售数量；Steam 不会在未登录的情况下公开销售历史，因此本页的历史记录由 OriginsMeta 一次次检查自行建立。",
+      "美元价格来自 Steam；欧元价格按欧洲中央银行当日参考汇率换算，因此可能与 Steam 显示的欧元价格相差几分钱。",
+      "最低售价不等于最近一笔成交价。价格仅供参考，不构成投资建议。",
+      "OriginsMeta 与 Koin Games 和 Valve 无关联。",
+    ],
+  },
+};
+
+export const marketLabels: Record<Locale, Labels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 export type MarketLabels = Labels;
 
 /** Riempie i segnaposto {nome} di un testo. */

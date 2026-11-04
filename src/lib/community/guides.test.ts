@@ -926,7 +926,7 @@ describe("messaggi Discord", () => {
     lang: "es" as const,
     author: "Vega @everyone",
     summary: "Una **guía** con [link](https://evil.example)",
-    category: { en: "Deck guides", it: "Guide ai mazzi", es: "Guías de mazos", fr: "Guides de decks", pt: "Guias de decks", de: "Deck-Guides", ru: "Гайды по колодам" },
+    category: { en: "Deck guides", it: "Guide ai mazzi", es: "Guías de mazos", fr: "Guides de decks", pt: "Guias de decks", de: "Deck-Guides", ru: "Гайды по колодам", "zh-cn": "卡组攻略" },
     image: "/media/keyart-mulan.webp",
   };
 
@@ -1005,7 +1005,7 @@ describe("etichette", () => {
 
   test("stesse chiavi e stessi segnaposto in inglese, italiano e spagnolo", () => {
     const en = L.communityGuideLabels.en;
-    for (const locale of ["it", "es"] as const) {
+    for (const locale of ["it", "es", "zh-cn"] as const) {
       const other = L.communityGuideLabels[locale];
       assert.deepEqual(sorted(paths(other)), sorted(paths(en)), locale);
       for (const p of paths(en)) assert.deepEqual(holes(String(at(other, p))), holes(String(at(en, p))), `${locale}: ${p}`);

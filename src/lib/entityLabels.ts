@@ -318,6 +318,46 @@ export const entityLabels: Record<Locale, EntityLabels> = {
       ],
     },
   },
+  // cinese semplificato (04/11/2026, docs/cinese.md): il gioco ha il cinese dalla patch 0.7, ma i testi cinesi delle carte
+  // sono ancora una traduzione nostra PROVVISORIA (card-lore-zh-cn.ts), non letti nel gioco: "我们如何核实数据" lo dice
+  "zh-cn": {
+    about: {
+      description:
+        "OriginsMeta 是由玩家运营的 Origins TCG 独立粉丝网站：日期、规则和赛事只来自官方来源，游戏收藏中的卡牌已逐张在游戏中核对，每个页面都注明最后更新日期。本页介绍我们是谁、我们如何核实数据、遵循哪些编辑原则，以及如何联系我们。",
+      p2: "我们是玩家，不是发行商。日期、规则和赛事只来自官方来源；游戏收藏中的卡牌已逐张在游戏中核对；每个页面都注明最后更新的时间。",
+      newToGame: "刚接触这款游戏？从{link}开始。",
+      newToGameLink: "了解 Origins TCG 是什么",
+      checkTitle: "我们如何核实数据",
+      check: [
+        "日期、规则、赛事和平衡改动只来自官方来源：Steam 页面、Steam 上的补丁说明、官方 Discord 以及 Koin Games 的公告。如果某个细节只出现在 Discord 上，文章会注明。",
+        "每个新补丁的平衡改动都从官方补丁说明抄录到卡牌页面上，并附上日期和公告链接。",
+        "{date}，我们将全部 {count} 张卡牌与游戏中的收藏逐张比对：费用、属性和阵营全部一致，落后的英文文本也已改为游戏中的文本。意大利语和西班牙语的卡牌文本同样是官方文本，于 {textsDate} 在游戏中读取；法语、葡萄牙语、德语和俄语的文本也来自游戏。中文卡牌文本目前是我们按自己的术语表翻译的临时版本，尚未与游戏中的中文核对。2026年10月27日的 0.8 补丁说明（抢先体验的第一个版本）没有列出卡牌改动。每个补丁之后我们都会重新核对。",
+        "生成卡牌和已移除的卡牌不在游戏的收藏中，因此没有在游戏中核对，它们的页面会注明这一点；它们在其他语言中的文本由我们按游戏的术语表撰写。地点也还没有逐个在游戏中核对：地点页面会在核对后注明，它们在其他语言中的效果同样由我们撰写。传说分类和每个传说的注释也是我们写的。",
+      ],
+      checkErrors: "发现错误？请写信至 {email}：我们会修正，页面也会显示新的日期。",
+      disclaimer:
+        "OriginsMeta 是非官方粉丝网站，与 Koin Games 无关联，也未获得 Koin Games 的认可或赞助。Origins TCG 是其所有者的商标。卡牌名称、插画和游戏数据归 Koin Games 所有；本站的官方素材（卡图、主视觉、截图）作为内容用于提供信息和评论，从不作为 OriginsMeta 自身的品牌形象。",
+      disclaimerPermission:
+        "OriginsMeta 是非官方粉丝网站，与 Koin Games 无关联，也未获得 Koin Games 的认可或赞助。Origins TCG 是其所有者的商标。卡牌名称、插画和游戏数据归 Koin Games 所有；本站的官方素材（卡图、主视觉、截图）经 Koin Games 于 2026年9月19日给予的许可作为内容使用，从不作为 OriginsMeta 自身的品牌形象。",
+    },
+    author: {
+      communityProfile: "社区主页",
+      allAuthors: "全体编辑",
+    },
+    builder: {
+      appDescription:
+        "Origins TCG（Koin Games 出品的数字卡牌游戏）的免费卡组构筑器：检查卡组规则（{legendary} 张传说卡加 {cards} 张基础卡，每张以 {copies} 份打出：共 {size} 张），读取和生成游戏内的卡组代码，并为 Crimson Cup 的 Conquest 赛制同时检查 {decks} 套卡组。",
+      features: [
+        "卡组规则检查：{legendary} 张传说卡加 {cards} 张基础卡，每张以 {copies} 份打出（共 {size} 张）",
+        "导入和导出 Origins TCG 游戏内卡组代码",
+        "Conquest 模式：同时检查 {decks} 套卡组，每套使用不同的传说卡，每两套之间至少有 {min} 张不同的卡牌",
+        "导入和导出文本卡表",
+        "卡组的法力曲线",
+        "分享链接，并在浏览器中自动保存",
+        "注册免费账户后可私密保存，或附上攻略发布",
+      ],
+    },
+  },
 };
 
 /**

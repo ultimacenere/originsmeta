@@ -429,7 +429,7 @@ export function metaMapLayout(points: readonly MapPoint[], opts: { W: number; na
 
 /* ---------- numeri nella lingua della pagina ---------- */
 
-const TAG: Record<Locale, string> = { en: "en-GB", it: "it-IT", es: "es-ES", fr: "fr-FR", pt: "pt-BR", de: "de-DE", ru: "ru-RU" };
+const TAG: Record<Locale, string> = { en: "en-GB", it: "it-IT", es: "es-ES", fr: "fr-FR", pt: "pt-BR", de: "de-DE", ru: "ru-RU", "zh-cn": "zh-CN" };
 /** In francese lo spazio delle migliaia e quello prima del "%" sono insecabili (U+00A0, docs/francese.md). */
 const fixSpaces = (s: string) => s.replace(/[   ]/g, " ");
 

@@ -209,6 +209,31 @@ export const linkLabels: Record<Locale, LinkLabels> = {
     deckChange: "Изменение колоды",
     guideNews: "Новости по теме",
   },
+  "zh-cn": {
+    explore: {
+      title: "探索",
+      metashifting: "补丁说明（MetaShifting）",
+      locations: "地点",
+      mostPlayed: "最常用",
+      communityTierList: "社区强度榜",
+      makeTierList: "制作你的强度榜",
+      authors: "编辑团队",
+    },
+    relatedNews: "相关新闻",
+    patch: {
+      title: "本次补丁的改动",
+      introOne: "本次补丁改动了 1 张卡牌。",
+      introMany: "本次补丁改动了 {n} 张卡牌。",
+      swapsOne: "1 张卡牌涉及试玩预设卡组的调整。",
+      swapsMany: "{n} 张卡牌涉及试玩预设卡组的调整。",
+      linksOne: "点击卡牌名称即可打开卡牌页面，查看完整的平衡改动记录。",
+      linksMany: "点击每个卡牌名称即可打开卡牌页面，查看完整的平衡改动记录。",
+      numbers: "数字为法力 · 力量/生命值，改动前后对比。",
+      metashifting: "MetaShifting 中的所有平衡改动",
+    },
+    deckChange: "卡组调整",
+    guideNews: "相关主题新闻",
+  },
 };
 
 // ---------- Modifiche di bilanciamento ----------
@@ -247,5 +272,6 @@ export function patchIntro(items: readonly { card: { slug: string }; change: { k
   const swapped = new Set(items.filter((m) => m.change.kind === "deck").map((m) => m.card.slug));
   const count = (n: number, one: string, many: string) => (n === 0 ? "" : n === 1 ? one : many.replace("{n}", String(n)));
   const names = new Set([...changed, ...swapped]).size;
-  return [count(changed.size, l.introOne, l.introMany), count(swapped.size, l.swapsOne, l.swapsMany), count(names, l.linksOne, l.linksMany)].filter(Boolean).join(" ");
+  // il cinese non mette spazi fra una frase e l'altra (docs/cinese.md)
+  return [count(changed.size, l.introOne, l.introMany), count(swapped.size, l.swapsOne, l.swapsMany), count(names, l.linksOne, l.linksMany)].filter(Boolean).join(locale === "zh-cn" ? "" : " ");
 }

@@ -1,7 +1,7 @@
-import { defaultLocale, href, locales, siteUrl, type Locale } from "./i18n";
+import { defaultLocale, href, hreflang, locales, siteUrl, type Locale } from "./i18n";
 import { cards, cardsVerified, latestPatch, patches, type Card } from "./data/cards";
 import { decks } from "./data/decks";
-import { newsPath, sortedNews, type NewsItem } from "./data/news";
+import { hasNews, newsPath, sortedNews, type NewsItem } from "./data/news";
 import { tierList } from "./data/tierlist";
 import { locationsPatch, locationsVerified } from "./data/locations";
 import { getGuides, type Guide } from "./content/guides";
@@ -15,6 +15,7 @@ import { directoryIndexable } from "./community/creatorDirectory";
 import type { SitemapComic } from "./community/comics";
 import { isEarly } from "./tracker/stats";
 import { ANALYTICS_PUBLIC } from "./community/badges";
+import { ANALYTICS_MEMBERS_ONLY } from "./membersOnly";
 import { crimsonQualifiers } from "./data/crimsonCup";
 import { withStats } from "./crimsonCup";
 
@@ -208,8 +209,9 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/tier-list/votes", section: "pages", route: "/tier-list/votes", dates: [data.cardVotes?.latest] },
     // Analytics, le statistiche (dal 12/10/2026 in /analytics; prima /tier-list/win-rate, ora un 308): solo quando la pagina
     // si indicizza (almeno 100 partite nella patch mostrata); sotto è noindex e fuori da hreflang. I numeri cambiano a ogni
-    // partita: le date sono quelle del modello. Mai in sitemap finché ANALYTICS_PUBLIC è spento.
-    ...(ANALYTICS_PUBLIC && data.winrateGames && !isEarly(data.winrateGames)
+    // partita: le date sono quelle del modello. Mai in sitemap finché ANALYTICS_PUBLIC è spento, né finché è riservata agli
+    // iscritti (03/11/2026): il crawler troverebbe la pagina sfocata, che è noindex.
+    ...(ANALYTICS_PUBLIC && !ANALYTICS_MEMBERS_ONLY && data.winrateGames && !isEarly(data.winrateGames)
       ? [{ path: "/analytics", section: "pages", route: "/analytics", dates: [] } satisfies SitemapPage]
       : []),
     // Crimson Cup (20/10/2026): i numeri ufficiali di Koin, statici; la data è quella dell'ultima lettura delle tabelle.
@@ -313,7 +315,15 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     ),
     // Ogni news ha la sua pagina dal 21/09/2026: una news più vecchia non può dichiarare una pagina che non c'era.
     ...sortedNews.map(
-      (n): SitemapPage => ({ path: newsPath(n), section: "news", route: "/news/[slug]", dates: [newsDay(n), NEWS_PAGES_SINCE], images: () => [n.image] }),
+      (n): SitemapPage => ({
+        path: newsPath(n),
+        section: "news",
+        route: "/news/[slug]",
+        dates: [newsDay(n), NEWS_PAGES_SINCE],
+        images: () => [n.image],
+        // solo le lingue in cui è tradotta (il cinese parte dalle news recenti, 04/11/2026)
+        ...(n.untranslated ? { locales: locales.filter((l) => hasNews(n, l)) } : {}),
+      }),
     ),
     // Solo le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate, 25/09/2026): le altre
     // versioni della scheda sono noindex finché la traduzione non c'è.
@@ -347,7 +357,7 @@ function langsOf(page: SitemapPage): Locale[] {
 export function pageEntry(page: SitemapPage, locale: Locale, today: Day): UrlEntry {
   const langs = langsOf(page);
   const alternates: Record<string, string> = {};
-  for (const l of langs) alternates[l] = `${siteUrl}${href(l, page.path)}`;
+  for (const l of langs) alternates[hreflang[l]] = `${siteUrl}${href(l, page.path)}`;
   // x-default: la stessa riga che l'HTML dichiara in alternatesFor(), così i due segnali coincidono.
   alternates["x-default"] = `${siteUrl}${href(langs.includes(defaultLocale) ? defaultLocale : langs[0], page.path)}`;
   const lastmod = page.lastmod

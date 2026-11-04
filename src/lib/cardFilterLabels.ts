@@ -138,4 +138,23 @@ const ru: CardFilterLabels = {
   active: "Активно: {n}",
 };
 
-export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es, fr, pt, de, ru };
+// cinese semplificato (04/11/2026): 费用 / 力量 / 生命值 come nel glossario di docs/cinese.md
+const zhCn: CardFilterLabels = {
+  cost: "费用",
+  more: "更多筛选",
+  keyword: "关键词",
+  gameKeywords: "游戏关键词",
+  effects: "效果",
+  power: "力量",
+  health: "生命值",
+  min: "最小",
+  max: "最大",
+  status: "卡牌",
+  statusGame: "游戏中",
+  statusAll: "全部",
+  statusRemoved: "不在游戏中",
+  clear: "清除筛选",
+  active: "已启用 {n} 项",
+};
+
+export const cardFilterLabels: Record<Locale, CardFilterLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };

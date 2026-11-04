@@ -73,6 +73,7 @@ const MONTHS: Record<Locale, readonly string[]> = {
   pt: ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"],
   de: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
   ru: ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"],
+  "zh-cn": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
 };
 
 /**
@@ -90,6 +91,8 @@ export function updateMarkers(locale: Locale, isoDate: string): string[] {
   if (locale === "pt") return [`Atualização de ${day} de ${month}`];
   if (locale === "de") return [`Update vom ${day}. ${month}`];
   if (locale === "ru") return [`Обновление от ${day} ${month}`];
+  // cinese semplificato (04/11/2026, docs/cinese.md): "11月4日更新"
+  if (locale === "zh-cn") return [`${month}${day}日更新`];
   if (locale === "fr") return [`Mise à jour du ${day} ${month}`, ...(day === 1 ? [`Mise à jour du 1er ${month}`] : [])];
   return [`Update, ${day} ${month}`, `Update of ${day} ${month}`];
 }
@@ -97,8 +100,18 @@ export function updateMarkers(locale: Locale, isoDate: string): string[] {
 /**
  * Cosa non va in un link interno scritto nel testo di una news in `locale`, o `undefined` se va bene: prefisso della
  * lingua, news e guide che esistono (con l'ancora, per gli articoli), prima parte del percorso fra le sezioni del sito.
+ * Una news non tradotta in `locale` (`untranslated`, dal 04/11/2026 per il cinese) si linka in inglese, `/en/news/…`:
+ * la pagina in quella lingua rimanda comunque all'inglese, il link diretto evita il passaggio (anche `/zh-cn/news/…`
+ * resta valido, perché rimanda).
  */
 export function linkProblem(path: string, locale: Locale, checks: NewsChecks): string | undefined {
+  if (locale !== "en" && path.startsWith("/en/news/")) {
+    const [route, anchor] = path.slice("/en/news/".length).split("#");
+    const target = checks.news.find((n) => n.slug === route);
+    if (!target?.untranslated?.includes(locale)) return `link interno senza il prefisso /${locale}: ${path}`;
+    if (anchor && !anchorsOf(target.body?.en ?? "").has(anchor)) return `link a un'ancora che non c'è nella news: ${path}`;
+    return undefined;
+  }
   if (path !== `/${locale}` && !path.startsWith(`/${locale}/`) && !path.startsWith(`/${locale}#`)) return `link interno senza il prefisso /${locale}: ${path}`;
   const [route, anchor] = path.slice(locale.length + 1).split("#");
   const [section, slug] = route.split("/").filter(Boolean);
@@ -126,6 +139,8 @@ export function newsProblems(item: NewsItem, locales: readonly Locale[], checks:
   const out: string[] = [];
   const at = (locale: Locale, msg: string) => out.push(`${item.slug} [${locale}]: ${msg}`);
   for (const l of locales) {
+    // una news non ancora tradotta (`untranslated`, cinese dal 04/11/2026) ha l'inglese al posto della lingua: non si controlla
+    if (item.untranslated?.includes(l)) continue;
     const title = item.title[l];
     if (!title) at(l, "manca il titolo");
     else if (title.length > HEADLINE_MAX) at(l, `titolo di ${title.length} caratteri, oltre ${HEADLINE_MAX}`);
@@ -167,6 +182,7 @@ export function duplicateMetaTitles(items: readonly NewsItem[], locales: readonl
   for (const l of locales) {
     const seen = new Map<string, string>();
     for (const item of items) {
+      if (item.untranslated?.includes(l)) continue;
       const key = item.metaTitle?.[l]?.trim().toLowerCase();
       if (!key) continue;
       const other = seen.get(key);

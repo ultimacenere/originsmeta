@@ -94,7 +94,7 @@ type Filters = { q: string; type: "" | "unit" | "spell"; cost: CostBand; align: 
 type SortKey = "name" | "mana" | "community" | "used" | "rating";
 
 /** Quello che serve alla fonte `votes`: testi del dettaglio e del widget, link d'accesso, voti per entrare in fascia. */
-export type TierVotes = { labels: CardVoteLabels["explorer"]; widget: CardVoteLabels["widget"]; loginHref: string; minVotes: number };
+export type TierVotes = { labels: CardVoteLabels["explorer"]; widget: CardVoteLabels["widget"]; minVotes: number };
 
 const USAGE_LIMIT = 20;
 const DECKS_IN_DETAIL = 6;
@@ -642,7 +642,6 @@ export function TierExplorer({
                       avg={r?.avg ?? 0}
                       votes={r?.votes ?? 0}
                       labels={votes.widget}
-                      loginHref={votes.loginHref}
                       placement="tier_list"
                       locale={locale}
                       onChange={(next) => setFresh((prev) => ({ ...prev, [e.slug]: next }))}

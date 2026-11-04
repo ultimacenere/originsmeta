@@ -51,9 +51,11 @@
   --color-good: #46d369;
   --color-bad: #ff5c5c;
 
-  --font-display: var(--font-unbounded), "Arial Black", Impact, sans-serif;
-  --font-body: var(--font-manrope), "Segoe UI", Arial, sans-serif;
-  --font-mono: var(--font-jet), Consolas, "Courier New", monospace;
+  /* var(--font-cjk…): gli ideogrammi delle pagine cinesi (04/11/2026, dal layout); nelle altre lingue la variabile non c'è e
+     vale il nome di sistema, che per lettere e numeri non serve mai (il font latino viene prima) */
+  --font-display: var(--font-unbounded), var(--font-cjk, "PingFang SC"), "Arial Black", Impact, sans-serif;
+  --font-body: var(--font-manrope), var(--font-cjk, "PingFang SC"), "Segoe UI", Arial, sans-serif;
+  --font-mono: var(--font-jet), var(--font-cjk, "PingFang SC"), Consolas, "Courier New", monospace;
 
   --shadow-card: 0 1px 0 rgba(22, 16, 42, 0.35), 0 10px 30px -12px rgba(0, 0, 0, 0.55);
   --shadow-lift: 0 2px 0 rgba(22, 16, 42, 0.35), 0 24px 40px -18px rgba(0, 0, 0, 0.7);
@@ -626,7 +628,7 @@
     z-index: 2;
     display: inline-block;
     padding: 0.3rem 0.9rem 0.25rem 0.8rem;
-    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-hand, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-size: 1.3rem;
     font-weight: 700;
     line-height: 1.05;
@@ -894,7 +896,7 @@
     position: relative;
     display: inline-block;
     padding: 0.4rem 1.25rem 0.3rem 1.1rem;
-    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-hand, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-size: 2.1rem;
     font-weight: 700;
     line-height: 1;
@@ -960,7 +962,7 @@
     /* il bordo inferiore lascia respiro alla sottolineatura disegnata (vedi .strip-postit-text::before) */
     padding: 0.45rem 1rem 0.9rem;
     /* grafia a penna (Reenie Beanie, --font-pen dal layout): richiesta di Pierluigi del 22/09/2026 */
-    font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-pen, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-weight: 400;
     color: var(--color-ink);
     text-align: left;
@@ -1095,7 +1097,7 @@
   .tape-note {
     display: inline-block;
     padding: 0.3rem 1.2rem 0.45rem;
-    font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-pen, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-size: 2.9rem;
     line-height: 1;
     color: var(--color-ink);
@@ -3691,6 +3693,110 @@
     gap: 0.35rem;
     font: 600 11px/1.2 var(--font-mono);
     color: var(--color-mint);
+  }
+}
+
+/* Voto rapido nella griglia del database /cards (4/11/2026, CardQuickVote): al passaggio del mouse una fila di dieci
+   tasti copre il piede della carta. È sorella del link della carta nello stesso <li> (.card-qv-host), quindi qui la
+   carta resta sollevata e girata anche col mouse sopra la fila. Su touch non c'è: il tocco apre la scheda. */
+@layer components {
+  .card-qv {
+    display: none;
+  }
+  @media (hover: hover) {
+    .card-qv-host {
+      position: relative;
+    }
+    .card-qv {
+      position: absolute;
+      z-index: 4;
+      right: 3px;
+      bottom: 3px;
+      left: 3px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 7px 7px;
+      border-top: 2px solid var(--color-night-3);
+      border-radius: 0 0 11px 11px;
+      background: var(--color-night-2);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 120ms ease, transform 140ms ease, visibility 0s linear 120ms;
+    }
+    .card-qv-host:hover .card-qv {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-3px);
+      transition: opacity 120ms ease, transform 140ms ease;
+    }
+    .card-qv.is-pending {
+      opacity: 0.7;
+    }
+    .card-qv-host:hover .card-tile {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-mint);
+    }
+    /* il piede sparisce sotto la fila: se la fila è più bassa del piede il nome non spunta tagliato */
+    .card-qv-host:hover .card-tile-foot > * {
+      visibility: hidden;
+    }
+    .card-qv-host:hover .card-tile:not(.is-legendary) {
+      border-color: var(--color-mint);
+    }
+    .card-qv-host:hover .card-tile-art > img,
+    .card-qv-host:hover .card-tile-art > .card-tile-initials {
+      transform: rotateY(90deg);
+      transition: transform 160ms ease-in;
+    }
+    .card-qv-host:hover .card-tile-info {
+      visibility: visible;
+      transform: rotateY(0deg);
+      transition: transform 160ms ease-out 160ms, visibility 0s linear 160ms;
+    }
+  }
+  .card-qv-head {
+    overflow: hidden;
+    font: 600 10px/1.2 var(--font-mono);
+    letter-spacing: 0.03em;
+    color: var(--color-pale-muted);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .card-qv-head.is-ok {
+    color: var(--color-mint);
+  }
+  .card-qv-head.is-err {
+    color: var(--color-bad);
+  }
+  .card-qv-scale {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .card-qv-btn {
+    min-width: 0;
+    padding: 0.3rem 0;
+    border: 1px solid var(--color-sky);
+    border-radius: 5px;
+    background: var(--color-night);
+    font: 700 0.65rem/1 var(--font-mono);
+    color: var(--color-pale);
+    cursor: pointer;
+    transition: background-color 0.1s, color 0.1s;
+  }
+  .card-qv-btn.is-on {
+    border-color: var(--color-mint);
+    background: var(--color-mint);
+    color: var(--color-ink);
+  }
+  .card-qv-btn.is-mine {
+    border-color: var(--color-gold);
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  .card-qv-btn:disabled {
+    cursor: wait;
   }
 }
 

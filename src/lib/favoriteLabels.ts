@@ -185,4 +185,29 @@ const ru: FavoriteLabels = {
   },
 };
 
-export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr, pt, de, ru };
+const zhCn: FavoriteLabels = {
+  save: "收藏",
+  saved: "已收藏",
+  countOne: "1 位玩家收藏",
+  count: "{n} 位玩家收藏",
+  countNone: "收藏后可在你的主页里再次找到它",
+  loginToSave: "登录后收藏",
+  errors: {
+    limit: "你已收藏 500 个卡组，已达上限：请先在你的主页里移除一些。",
+    invalid: "此卡组无法收藏。",
+    unavailable: "卡组收藏功能暂不可用：请几分钟后再试。",
+    db: "出了点问题：请再试一次。",
+  },
+  sortTrending: "热门",
+  sortSaved: "收藏最多",
+  favoritesShort: "☆ {n}",
+  account: {
+    title: "已收藏的卡组",
+    hint: "你用“收藏”保存的卡组。这个列表只有你能看到。",
+    empty: "还没有收藏的卡组：打开一个卡组并按“收藏”。",
+    remove: "移除",
+    unpublished: "已不再公开",
+  },
+};
+
+export const favoriteLabels: Record<Locale, FavoriteLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
