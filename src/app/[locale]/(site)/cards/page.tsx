@@ -106,7 +106,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
             keywordOptions={keywordOptions}
             filterLabels={cardFilterLabels[locale]}
             // Voto rapido al passaggio del mouse (04/11/2026): solo con la community accesa, come il widget della scheda
-            vote={supabaseEnabled ? { labels: vw, loginHref: `${href(locale, "/login")}?next=${encodeURIComponent(href(locale, "/cards"))}`, locale } : undefined}
+            vote={supabaseEnabled ? { labels: vw, locale } : undefined}
             labels={{
               search: d.common.search,
               searchHint: d.cards.searchHint,

@@ -7720,3 +7720,125 @@ end $$;
 revoke all on function public.bump_comic_stat(text, text, text) from public;
 grant execute on function public.bump_comic_stat(text, text, text) to anon, authenticated;
 comment on table public.comic_stats_daily is 'Statistiche giornaliere dei fumetti per chi li disegna, per lingua della pagina (solo totali: visite e letture complete): le scrive solo bump_comic_stat (02/11/2026).';
+
+-- =====================================================================================================
+-- ===== 04/11/2026: VOTI ALLE CARTE SENZA ACCOUNT =====
+-- =====================================================================================================
+-- Richiesta di Pierluigi del 04/11/2026: "il voto deve essere libero, senza iscrizione". Chi ha l'account continua a
+-- votare in card_votes (voto legato al profilo); chi non ce l'ha vota qui, con un codice anonimo che il sito tiene in un
+-- cookie del browser (om_card_voter, un anno) e che arriva al database solo come impronta sha256 (`voter`).
+-- Niente accesso anonimo di Supabase: ogni utente di auth crea un profilo (on_auth_user_created) e i votanti sarebbero
+-- diventati iscritti senza nome.
+-- Scrive SOLO il server del sito: le funzioni chiedono il segreto del server (notify_key_ok, lo stesso CRON_SECRET di
+-- twitch_link_claim), così nessuno può chiamarle dall'esterno inventando codici o indirizzi. Contro chi cancella i cookie
+-- per votare di nuovo: al massimo 5 codici nuovi al giorno dalla stessa connessione. Della connessione si tiene
+-- un'impronta (`ip_hash`, sha256 dell'indirizzo col segreto del server: dall'impronta l'indirizzo non si ricava) e solo
+-- per un giorno: ogni voto cancella quelle più vecchie. Un codice vota al massimo 300 righe, come un iscritto.
+-- Gli aggregati (card_ratings, card_vote_totals) sommano le due tabelle: una media sola, una tier list sola.
+-- Nessuno legge la tabella direttamente (RLS senza policy, nessun grant). Il sito regge senza questo blocco: chi non ha
+-- l'account vede "I voti non sono ancora attivi". Idempotente.
+-- =====================================================================================================
+
+create table if not exists public.card_votes_guest (
+  card text not null check (card ~ '^[a-z0-9]+(-[a-z0-9]+)*$' and char_length(card) <= 80),
+  voter text not null check (voter ~ '^[0-9a-f]{64}$'),
+  score smallint not null check (score between 1 and 10),
+  ip_hash text check (ip_hash ~ '^[0-9a-f]{64}$'),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (card, voter)
+);
+create index if not exists card_votes_guest_voter_idx on public.card_votes_guest (voter);
+create index if not exists card_votes_guest_ip_idx on public.card_votes_guest (ip_hash, updated_at) where ip_hash is not null;
+drop trigger if exists card_votes_guest_touch on public.card_votes_guest;
+create trigger card_votes_guest_touch before update on public.card_votes_guest
+  for each row execute function public.touch_updated_at();
+drop trigger if exists card_votes_guest_guard_created on public.card_votes_guest;
+create trigger card_votes_guest_guard_created before insert or update on public.card_votes_guest
+  for each row execute function public.guard_created_at();
+alter table public.card_votes_guest enable row level security;
+revoke all on public.card_votes_guest from anon, authenticated;
+
+-- il voto di chi non ha l'account: 'ok', 'limit' (tetti), 'invalid' (forma), 'denied' (segreto sbagliato)
+create or replace function public.card_vote_guest(p_key text, p_voter text, p_ip text, p_card text, p_score integer)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not public.notify_key_ok(p_key) then return 'denied'; end if;
+  if p_voter is null or p_voter !~ '^[0-9a-f]{64}$' or p_ip is null or p_ip !~ '^[0-9a-f]{64}$' then return 'invalid'; end if;
+  if p_card is null or char_length(p_card) > 80 or p_card !~ '^[a-z0-9]+(-[a-z0-9]+)*$' then return 'invalid'; end if;
+  if p_score is null or p_score not between 1 and 10 then return 'invalid'; end if;
+  perform pg_advisory_xact_lock(hashtextextended('card_votes_guest:' || p_ip, 0));
+  -- le impronte delle connessioni restano un giorno solo
+  update public.card_votes_guest set ip_hash = null where ip_hash is not null and updated_at < now() - interval '1 day';
+  if not exists (select 1 from public.card_votes_guest g where g.voter = p_voter)
+     and (select count(distinct g.voter) from public.card_votes_guest g
+           where g.ip_hash = p_ip and g.updated_at >= now() - interval '1 day') >= 5 then
+    return 'limit';
+  end if;
+  if not exists (select 1 from public.card_votes_guest g where g.voter = p_voter and g.card = p_card)
+     and (select count(*) from public.card_votes_guest g where g.voter = p_voter) >= 300 then
+    return 'limit';
+  end if;
+  insert into public.card_votes_guest as g (card, voter, score, ip_hash) values (p_card, p_voter, p_score, p_ip)
+  on conflict (card, voter) do update set score = excluded.score, ip_hash = excluded.ip_hash;
+  return 'ok';
+end $$;
+revoke all on function public.card_vote_guest(text, text, text, text, integer) from public;
+grant execute on function public.card_vote_guest(text, text, text, text, integer) to anon, authenticated;
+
+-- i voti di un codice anonimo, per mostrarli nel suo browser
+create or replace function public.card_votes_guest_mine(p_key text, p_voter text)
+returns table (card text, score smallint)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select g.card, g.score from public.card_votes_guest g
+   where public.notify_key_ok(p_key) and g.voter = p_voter;
+$$;
+revoke all on function public.card_votes_guest_mine(text, text) from public;
+grant execute on function public.card_votes_guest_mine(text, text) to anon, authenticated;
+
+-- chi vota con l'account una carta già votata senza, dallo stesso browser: il voto anonimo si toglie (niente doppio voto)
+create or replace function public.card_vote_guest_forget(p_key text, p_voter text, p_card text)
+returns void language sql security definer set search_path = public, pg_temp as $$
+  delete from public.card_votes_guest g where public.notify_key_ok(p_key) and g.voter = p_voter and g.card = p_card;
+$$;
+revoke all on function public.card_vote_guest_forget(text, text, text) from public;
+grant execute on function public.card_vote_guest_forget(text, text, text) to anon, authenticated;
+
+-- gli aggregati sommano i voti con e senza account
+create or replace function public.card_ratings(p_card text default null)
+returns table (card text, avg_score numeric, votes integer, dist jsonb)
+language sql stable security definer set search_path = public, pg_temp as $$
+  with allv as (
+    select v.card, v.score from public.card_votes v
+    union all
+    select g.card, g.score from public.card_votes_guest g
+  ), per as (
+    select a.card as c, a.score as s, count(*)::int as n
+      from allv a
+     where p_card is null or a.card = p_card
+     group by a.card, a.score
+  )
+  select per.c,
+         round(sum(per.s * per.n)::numeric / sum(per.n), 2),
+         sum(per.n)::int,
+         jsonb_object_agg(per.s::text, per.n)
+    from per
+   group by per.c;
+$$;
+revoke all on function public.card_ratings(text) from public;
+grant execute on function public.card_ratings(text) to anon, authenticated;
+
+create or replace function public.card_vote_totals()
+returns table (votes bigint, voters bigint, cards bigint, latest timestamptz)
+language sql stable security definer set search_path = public, pg_temp as $$
+  with allv as (
+    select 'u:' || cv.user_id::text as who, cv.card, cv.updated_at from public.card_votes cv
+    union all
+    select 'g:' || g.voter, g.card, g.updated_at from public.card_votes_guest g
+  )
+  select count(*), count(distinct a.who), count(distinct a.card), max(a.updated_at) from allv a;
+$$;
+revoke all on function public.card_vote_totals() from public;
+grant execute on function public.card_vote_totals() to anon, authenticated;
+
+comment on table public.card_votes_guest is 'Voti alle carte di chi non ha l''account (04/11/2026): codice anonimo del browser (impronta), impronta della connessione per un giorno; li scrive solo il server del sito.';

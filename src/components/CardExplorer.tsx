@@ -29,8 +29,8 @@ export type ExplorerCard = FlipCardData & {
   votable: boolean;
 };
 
-/** Voto rapido nella griglia (04/11/2026): testi del widget della scheda carta e ritorno dalla pagina di accesso. */
-export type ExplorerVote = { labels: CardVoteWidgetLabels; loginHref: string; locale: string };
+/** Voto rapido nella griglia (04/11/2026): testi del widget della scheda carta. */
+export type ExplorerVote = { labels: CardVoteWidgetLabels; locale: string };
 
 type Labels = {
   search: string;
@@ -162,7 +162,7 @@ export function CardExplorer({
 
   const selectCls = "rounded-lg border border-felt-line bg-felt-deep px-3 py-2 text-sm text-chalk focus:border-mint";
   const removedCount = cards.filter((c) => c.removed).length;
-  /* Voto rapido: i voti di chi è loggato letti una volta per la griglia; media e voti di una carta appena votata
+  /* Voto rapido: i voti di chi guarda letti una volta per la griglia; media e voti di una carta appena votata
      sostituiscono quelli della pagina (in ISR, cinque minuti), con la fascia ricalcolata come fa il server */
   const my = useMyCardVotes(Boolean(vote));
   const [live, setLive] = useState<Record<string, { avg: number; votes: number }>>({});
@@ -379,7 +379,7 @@ export function CardExplorer({
           {list.map((c) => (
             <li key={c.slug} className={`min-w-0${vote && c.votable ? " card-qv-host" : ""}`}>
               <FlipCard card={withLive(c)} labels={flipLabels} sizes="(min-width: 1280px) 190px, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 44vw" />
-              {vote && c.votable ? <CardQuickVote slug={c.slug} name={c.name} my={my} labels={vote.labels} loginHref={vote.loginHref} onVoted={onVoted} /> : null}
+              {vote && c.votable ? <CardQuickVote slug={c.slug} name={c.name} my={my} labels={vote.labels} onVoted={onVoted} /> : null}
             </li>
           ))}
         </ul>

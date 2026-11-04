@@ -3735,7 +3735,7 @@
       transform: translateY(-3px);
       box-shadow: var(--shadow-mint);
     }
-    /* il piede sparisce sotto la fila: se la fila è più bassa (solo "Accedi per votare") il nome non spunta tagliato */
+    /* il piede sparisce sotto la fila: se la fila è più bassa del piede il nome non spunta tagliato */
     .card-qv-host:hover .card-tile-foot > * {
       visibility: hidden;
     }
@@ -3795,15 +3795,6 @@
   }
   .card-qv-btn:disabled {
     cursor: wait;
-  }
-  .card-qv-login {
-    padding: 0.35rem 0;
-    text-align: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--color-mint);
-    text-decoration: underline;
-    text-underline-offset: 2px;
   }
 }
 
