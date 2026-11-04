@@ -1,0 +1,139 @@
+{
+  "_nota": "Mazzo torneo di CoachCrono (coachcrono, Creator), campione della Crimson Cup: le tre liste pubblicate da Koin Games il giorno delle finali (25/10/2026, crimsonFinals in src/lib/data/crimsonCup.ts), le stesse dei tre codici del gioco mandati da Pierluigi il 04/11/2026; guida scritta dalle sue parole nell'intervista del 04/11/2026 (news coachcrono-crimson-cup-interview, che linka questo slug). Lo pubblica scripts/publish-deck-set-as.mjs. newsDecklists.test.ts controlla che liste, nomi e archetipi coincidano con quelli della news.",
+  "slug": "coachcrono-crimson-cup-lineup",
+  "name": "Crimson Cup: Champion Line-up",
+  "decks": [
+    {
+      "name": "Pigs Aggro",
+      "archetype": "aggro",
+      "legendary": "three-not-so-little-pigs",
+      "cards": [
+        "bullseye",
+        "glinda",
+        "golden-egg",
+        "guy-of-gisborne",
+        "mind-palace",
+        "mummy",
+        "obliterate",
+        "reinforcements",
+        "sandman",
+        "stroke-of-midnight",
+        "three-blind-mice",
+        "trash-for-treasure"
+      ]
+    },
+    {
+      "name": "Van Helsing Control",
+      "archetype": "control",
+      "legendary": "van-helsing",
+      "cards": [
+        "ali-baba",
+        "baby-bear",
+        "bridge-troll",
+        "dark-omen",
+        "first-aid",
+        "forbidden-knowledge",
+        "phuong-hoang",
+        "puck",
+        "searing-light",
+        "shahrazad",
+        "spellbook",
+        "tin-woodman"
+      ]
+    },
+    {
+      "name": "Legion of the Dead Midrange",
+      "archetype": "midrange",
+      "legendary": "legion-of-the-dead",
+      "cards": [
+        "asanbosam",
+        "baby-bear",
+        "boogeyman",
+        "bridge-troll",
+        "dark-omen",
+        "en-passant",
+        "golden-egg",
+        "morgiana",
+        "mummy",
+        "obliterate",
+        "paul-bunyan",
+        "trash-for-treasure"
+      ]
+    }
+  ],
+  "guide": {
+    "lang": "it",
+    "summary": "La lineup con cui CoachCrono ha vinto la Crimson Cup risalendo dal tabellone dei perdenti: Three Not So Little Pigs, Van Helsing e Legion of the Dead. Al primo torneo le scelte degli altri erano imprevedibili, quindi il Coach ha portato la lineup più forte e consistente possibile, costruita con le sue idee e con quelle dei ragazzi che l'hanno aiutato nel testing, puntando a contrastare i Pigs più che Van Helsing. Sono le liste pubblicate da Koin Games il giorno delle finali, il 25 ottobre 2026.",
+    "deck_1": "Three Not So Little Pigs con Glinda, Sandman e Reinforcements, più i danni di Bullseye, Stroke of Midnight e Obliterate. Per il Coach i Pigs erano il mazzo più fastidioso del meta, più ancora di Van Helsing: nelle finali erano in tutte e quattro le lineup.",
+    "deck_2": "Il mazzo che domina il meta e che quasi tutti cercavano di contrastare. In finale contro SouL, che aveva una lineup costruita per batterlo, il Coach ha rubato proprio con Van Helsing la prima partita, aiutato dai luoghi: «Non pensavo che avrei mai vinto un singolo matchup con Van Helsing».",
+    "deck_3": "La lista che al Coach non è mai piaciuta e che non voleva giocare, ma forte nel meta: dei tre è il mazzo che ha performato meglio nel torneo. Gioca Obliterate, che secondo il Coach oggi sta overperformando negli aggro e nei midrange.",
+    "strengths": "La consistenza: tre mazzi forti del meta, senza scommettere su un avversario preciso. Con questa lineup il Coach ha chiuso 9-3 il giorno delle finali, secondo il post ufficiale, risalendo dal tabellone dei perdenti fino al titolo.",
+    "weaknesses": "Le lineup costruite apposta per batterla. SouL, con Merlin, Mulan e Three Not So Little Pigs pensati contro Van Helsing, l'ha battuta 2-0 nei playoff, e in finale il Coach si sentiva «nettamente in svantaggio».",
+    "matchups": "Contro SouL (Merlin, Mulan, Three Not So Little Pigs): 0-2 nei playoff, che hanno mandato il Coach nel tabellone dei perdenti; in gran finale la prima partita vinta con Van Helsing, poi la serie al 2-2 e il titolo alla partita decisiva.",
+    "notes": "Il premio del campione è la carta promo Dracula 1/1, la prima 1 di 1 del gioco. Il racconto completo del torneo e della finale è nell'intervista a CoachCrono su OriginsMeta."
+  },
+  "translations": {
+    "en": {
+      "summary": "The line-up CoachCrono used to win the Crimson Cup, coming back from the losers bracket: Three Not So Little Pigs, Van Helsing and Legion of the Dead. At the first tournament the other players' choices were unpredictable, so the Coach brought the strongest, most consistent line-up possible, built with his own ideas and those of the guys who helped him test, aiming to counter the Pigs more than Van Helsing. These are the lists Koin Games published on finals day, 25 October 2026.",
+      "deck_1": "Three Not So Little Pigs with Glinda, Sandman and Reinforcements, plus the damage of Bullseye, Stroke of Midnight and Obliterate. For the Coach the Pigs were the most annoying deck in the meta, even more than Van Helsing: in the finals they were in all four line-ups.",
+      "deck_2": "The deck that dominates the meta and that almost everyone was trying to counter. In the final against SouL, whose line-up was built to beat it, the Coach stole the first game with Van Helsing itself, helped by the locations: \"I never thought I'd win a single matchup with Van Helsing\".",
+      "deck_3": "The list the Coach never liked and didn't want to play, but strong in the meta: of the three, it was the best-performing deck in the tournament. It plays Obliterate, which according to the Coach is overperforming in aggro and midrange decks right now.",
+      "strengths": "Consistency: three strong meta decks, without betting on a specific opponent. With this line-up the Coach went 9-3 on finals day, according to the official post, climbing from the losers bracket all the way to the title.",
+      "weaknesses": "Line-ups built specifically to beat it. SouL, with Merlin, Mulan and Three Not So Little Pigs tuned against Van Helsing, beat it 2-0 in the playoffs, and in the final the Coach felt \"clearly at a disadvantage\".",
+      "matchups": "Against SouL (Merlin, Mulan, Three Not So Little Pigs): 0-2 in the playoffs, which sent the Coach to the losers bracket; in the grand final, the first game won with Van Helsing, then the series at 2-2 and the title in the deciding game.",
+      "notes": "The champion's prize is the 1/1 Dracula promo card, the game's first 1-of-1. The full story of the tournament and the final is in the interview with CoachCrono on OriginsMeta."
+    },
+    "es": {
+      "summary": "El lineup con el que CoachCrono ganó la Crimson Cup remontando desde el cuadro de perdedores: Three Not So Little Pigs, Van Helsing y Legion of the Dead. En el primer torneo las elecciones de los demás eran imprevisibles, así que el Coach llevó el lineup más fuerte y consistente posible, construido con sus ideas y con las de los chicos que lo ayudaron con el testing, apuntando a contrarrestar a los Pigs más que a Van Helsing. Son las listas que publicó Koin Games el día de las finales, el 25 de octubre de 2026.",
+      "deck_1": "Three Not So Little Pigs con Glinda, Sandman y Reinforcements, más el daño de Bullseye, Stroke of Midnight y Obliterate. Para el Coach los Pigs eran el mazo más molesto del meta, más incluso que Van Helsing: en las finales estaban en los cuatro lineups.",
+      "deck_2": "El mazo que domina el meta y que casi todos intentaban contrarrestar. En la final contra SouL, que tenía un lineup construido para vencerlo, el Coach robó justo con Van Helsing la primera partida, con la ayuda de las ubicaciones: «Nunca pensé que ganaría un solo matchup con Van Helsing».",
+      "deck_3": "La lista que al Coach nunca le gustó y que no quería jugar, pero fuerte en el meta: de los tres fue el mazo que mejor rindió en el torneo. Juega Obliterate, que según el Coach hoy está rindiendo por encima de lo normal en los aggro y los midrange.",
+      "strengths": "La consistencia: tres mazos fuertes del meta, sin apostar por un rival concreto. Con este lineup el Coach hizo 9-3 el día de las finales, según la publicación oficial, remontando desde el cuadro de perdedores hasta el título.",
+      "weaknesses": "Los lineups construidos a propósito para vencerlo. SouL, con Merlin, Mulan y Three Not So Little Pigs pensados contra Van Helsing, lo venció 2-0 en los playoffs, y en la final el Coach se sentía «claramente en desventaja».",
+      "matchups": "Contra SouL (Merlin, Mulan, Three Not So Little Pigs): 0-2 en los playoffs, que mandaron al Coach al cuadro de perdedores; en la gran final, la primera partida ganada con Van Helsing, luego la serie en 2-2 y el título en la partida decisiva.",
+      "notes": "El premio del campeón es la carta promo Dracula 1/1, la primera 1 de 1 del juego. El relato completo del torneo y de la final está en la entrevista a CoachCrono en OriginsMeta."
+    },
+    "fr": {
+      "summary": "La line-up avec laquelle CoachCrono a remporté la Crimson Cup en remontant du tableau des perdants : Three Not So Little Pigs, Van Helsing et Legion of the Dead. Pour ce premier tournoi, les choix des autres joueurs étaient imprévisibles, donc le Coach a apporté la line-up la plus forte et la plus régulière possible, construite avec ses idées et celles des joueurs qui l'ont aidé pendant les tests, en visant à contrer les Pigs plus que Van Helsing. Ce sont les listes publiées par Koin Games le jour des finales, le 25 octobre 2026.",
+      "deck_1": "Three Not So Little Pigs avec Glinda, Sandman et Reinforcements, plus les dégâts de Bullseye, Stroke of Midnight et Obliterate. Pour le Coach, les Pigs étaient le deck le plus pénible du meta, encore plus que Van Helsing : aux finales, ils étaient dans les quatre line-ups.",
+      "deck_2": "Le deck qui domine le meta et que presque tout le monde cherchait à contrer. En finale contre SouL, dont la line-up était construite pour le battre, le Coach a volé la première partie justement avec Van Helsing, aidé par les lieux : « Je n'aurais jamais pensé gagner un seul matchup avec Van Helsing ».",
+      "deck_3": "La liste que le Coach n'a jamais aimée et qu'il ne voulait pas jouer, mais forte dans le meta : des trois, c'est le deck qui a le mieux performé dans le tournoi. Il joue Obliterate, qui selon le Coach surperforme aujourd'hui dans les decks aggro et midrange.",
+      "strengths": "La régularité : trois decks forts du meta, sans parier sur un adversaire précis. Avec cette line-up, le Coach a signé un 9-3 le jour des finales, selon le post officiel, en remontant du tableau des perdants jusqu'au titre.",
+      "weaknesses": "Les line-ups construites exprès pour la battre. SouL, avec Merlin, Mulan et Three Not So Little Pigs pensés contre Van Helsing, l'a battue 2-0 pendant les playoffs, et en finale le Coach se sentait « nettement désavantagé ».",
+      "matchups": "Contre SouL (Merlin, Mulan, Three Not So Little Pigs) : 0-2 pendant les playoffs, qui ont envoyé le Coach dans le tableau des perdants ; en grande finale, la première partie gagnée avec Van Helsing, puis la série à 2-2 et le titre à la partie décisive.",
+      "notes": "Le prix du champion est la carte promo Dracula 1/1, la première 1 sur 1 du jeu. Le récit complet du tournoi et de la finale est dans l'interview de CoachCrono sur OriginsMeta."
+    },
+    "pt": {
+      "summary": "A lineup com que CoachCrono venceu a Crimson Cup, recuperando-se pela chave dos perdedores: Three Not So Little Pigs, Van Helsing e Legion of the Dead. No primeiro torneio, as escolhas dos outros eram imprevisíveis, então o Coach levou a lineup mais forte e consistente possível, construída com as ideias dele e com as das pessoas que o ajudaram nos testes, buscando neutralizar os Pigs mais do que Van Helsing. São as listas publicadas pela Koin Games no dia das finais, 25 de outubro de 2026.",
+      "deck_1": "Three Not So Little Pigs com Glinda, Sandman e Reinforcements, mais o dano de Bullseye, Stroke of Midnight e Obliterate. Para o Coach, os Pigs eram o deck mais incômodo do meta, mais até do que Van Helsing: nas finais eles estavam nas quatro lineups.",
+      "deck_2": "O deck que domina o meta e que quase todo mundo tentava neutralizar. Na final contra SouL, que tinha uma lineup construída para vencê-lo, o Coach roubou a primeira partida justamente com Van Helsing, com a ajuda dos locais: \"Eu nunca pensei que fosse vencer um único matchup com Van Helsing\".",
+      "deck_3": "A lista de que o Coach nunca gostou e que ele não queria jogar, mas forte no meta: dos três, foi o deck com o melhor desempenho no torneio. Joga Obliterate, que segundo o Coach hoje está rendendo acima do esperado nos aggro e nos midrange.",
+      "strengths": "A consistência: três decks fortes do meta, sem apostar em um oponente específico. Com esta lineup o Coach fechou o dia das finais com 9-3, segundo a publicação oficial, subindo da chave dos perdedores até o título.",
+      "weaknesses": "As lineups construídas de propósito para vencê-la. SouL, com Merlin, Mulan e Three Not So Little Pigs pensados contra Van Helsing, a derrotou por 2-0 nos playoffs, e na final o Coach se sentia \"claramente em desvantagem\".",
+      "matchups": "Contra SouL (Merlin, Mulan, Three Not So Little Pigs): 0-2 nos playoffs, que mandaram o Coach para a chave dos perdedores; na grande final, a primeira partida vencida com Van Helsing, depois a série no 2-2 e o título na partida decisiva.",
+      "notes": "O prêmio do campeão é a carta promo Dracula 1/1, a primeira 1 de 1 do jogo. O relato completo do torneio e da final está na entrevista com CoachCrono no OriginsMeta."
+    },
+    "de": {
+      "summary": "Die Aufstellung, mit der sich CoachCrono aus dem Loser-Bracket zurückgekämpft und den Crimson Cup gewonnen hat: Three Not So Little Pigs, Van Helsing und Legion of the Dead. Beim ersten Turnier waren die Entscheidungen der anderen unvorhersehbar, also hat der Coach die stärkste und konstanteste Aufstellung mitgebracht, die möglich war, gebaut mit seinen Ideen und denen der Jungs, die ihm beim Testen geholfen haben, und darauf ausgelegt, eher die Pigs zu countern als Van Helsing. Es sind die Listen, die Koin Games am Tag der Finals veröffentlicht hat, am 25. Oktober 2026.",
+      "deck_1": "Three Not So Little Pigs mit Glinda, Sandman und Reinforcements, dazu der Schaden von Bullseye, Stroke of Midnight und Obliterate. Für den Coach waren die Pigs das nervigste Deck im Meta, noch mehr als Van Helsing: In den Finals steckten sie in allen vier Aufstellungen.",
+      "deck_2": "Das Deck, das das Meta dominiert und das fast alle countern wollten. Im Finale gegen SouL, dessen Aufstellung gebaut war, um es zu schlagen, hat der Coach ausgerechnet mit Van Helsing die erste Partie gestohlen, mit Hilfe der Orte: „Ich hätte nie gedacht, dass ich mit Van Helsing auch nur ein einziges Matchup gewinnen würde.“",
+      "deck_3": "Die Liste, die dem Coach nie gefallen hat und die er nicht spielen wollte, die aber im Meta stark ist: Von den dreien hat dieses Deck im Turnier am besten performt. Es spielt Obliterate, eine Karte, die laut dem Coach im Moment in Aggro- und Midrange-Decks overperformt.",
+      "strengths": "Die Konstanz: drei starke Decks aus dem Meta, ohne auf einen bestimmten Gegner zu setzen. Mit dieser Aufstellung hat der Coach den Finaltag laut dem offiziellen Post mit 9-3 abgeschlossen und sich aus dem Loser-Bracket bis zum Titel zurückgekämpft.",
+      "weaknesses": "Aufstellungen, die gezielt gebaut wurden, um sie zu schlagen. SouL, mit Merlin, Mulan und Three Not So Little Pigs, ausgelegt gegen Van Helsing, hat sie in den Playoffs 2-0 geschlagen, und im Finale fühlte sich der Coach „klar im Nachteil“.",
+      "matchups": "Gegen SouL (Merlin, Mulan, Three Not So Little Pigs): 0-2 in den Playoffs, die den Coach ins Loser-Bracket geschickt haben; im großen Finale die erste Partie mit Van Helsing gewonnen, dann die Serie beim 2-2 und der Titel in der entscheidenden Partie.",
+      "notes": "Der Preis des Champions ist die 1/1-Promokarte Dracula, die erste 1 von 1 des Spiels. Die ganze Geschichte des Turniers und des Finales steht im Interview mit CoachCrono auf OriginsMeta."
+    },
+    "ru": {
+      "summary": "Лайнап, с которым CoachCrono выиграл Crimson Cup, поднявшись из нижней сетки: Three Not So Little Pigs, Van Helsing и Legion of the Dead. На первом турнире выбор соперников было не предугадать, поэтому Coach взял самый сильный и стабильный лайнап из возможных, собранный на основе его идей и идей ребят, которые помогали ему с тестами, с прицелом скорее против Pigs, чем против Van Helsing. Это списки, опубликованные Koin Games в день финалов, 25 октября 2026 года.",
+      "deck_1": "Three Not So Little Pigs с Glinda, Sandman и Reinforcements, плюс урон от Bullseye, Stroke of Midnight и Obliterate. Для Coach Pigs были самой неприятной колодой меты, даже неприятнее Van Helsing: в финалах они были во всех четырёх лайнапах.",
+      "deck_2": "Колода, которая доминирует в мете и которую почти все пытались контрить. В финале против SouL, чей лайнап был собран, чтобы её обыграть, Coach вырвал первую партию именно с Van Helsing, с помощью локаций: «Я и не думал, что выиграю с Van Helsing хоть один матчап».",
+      "deck_3": "Список, который никогда не нравился Coach и которым он не хотел играть, но сильный в мете: из трёх колод именно эта показала на турнире лучший результат. В ней есть Obliterate — карта, которая, по мнению Coach, сейчас в агро и мидрейндже сильнее, чем должна быть.",
+      "strengths": "Стабильность: три сильные колоды меты без ставки на конкретного соперника. С этим лайнапом Coach набрал 9:3 в день финалов, по данным официального поста, и поднялся из нижней сетки до титула.",
+      "weaknesses": "Лайнапы, собранные специально, чтобы его обыграть. SouL с Merlin, Mulan и Three Not So Little Pigs, заточенными против Van Helsing, обыграл его 2:0 в плей-офф, и в финале Coach чувствовал себя «явно в невыгодном положении».",
+      "matchups": "Против SouL (Merlin, Mulan, Three Not So Little Pigs): 0:2 в плей-офф, после которых Coach оказался в нижней сетке; в гранд-финале первая партия, выигранная с Van Helsing, затем 2:2 в серии и титул в решающей партии.",
+      "notes": "Приз чемпиона — промокарта Dracula 1/1, первая карта 1 из 1 в игре. Полный рассказ о турнире и финале — в интервью с CoachCrono на OriginsMeta."
+    }
+  },
+  "videos": [],
+  "links": []
+}

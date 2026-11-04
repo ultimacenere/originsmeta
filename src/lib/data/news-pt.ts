@@ -10,6 +10,144 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "coachcrono-crimson-cup-interview": {
+    title: "Uma conversa com CoachCrono, campeão da Crimson Cup: a lineup vencedora e o futuro de Origins TCG",
+    metaTitle: "Entrevista: CoachCrono, campeão Crimson Cup de Origins TCG",
+    description:
+      "CoachCrono, campeão da Crimson Cup de Origins TCG, fala da lineup com Pigs, Van Helsing e Legion of the Dead, de Obliterate e do futuro do jogo.",
+    summary:
+      "CoachCrono venceu a Crimson Cup, o primeiro grande torneio de Origins TCG: ele se recuperou pela chave dos perdedores e derrotou SouL numa grande final toda italiana. Nesta conversa ele conta a lineup com Pigs, Van Helsing e Legion of the Dead, por que não mexeria em Obliterate e para onde acha que o jogo está indo. As três listas dele viraram um deck de torneio, com os códigos do jogo para copiar.",
+    body: `CoachCrono é o **campeão da Crimson Cup**, o maior torneio de Origins TCG até agora: ele se recuperou pela chave dos perdedores, fechou o dia das finais com 9-3 e derrotou SouL na grande final, levando para casa a carta promo Dracula 1/1 ([aqui está a campanha dele](/pt/news/crimson-cup-coachcrono-wins)). Ele é streamer e, no OriginsMeta, tem a função Creator: os canais e os decks dele estão no [seu perfil](/pt/u/coachcrono).
+
+Nós nos falamos com frequência, ultimamente quase só sobre Origins, e, mais do que uma entrevista, esta é uma conversa entre amigos, um pequeno podcast gravado poucos dias depois da abertura do [Kickstarter da Alpha Edition](/pt/kickstarter). As perguntas são de [Pierluigi Cella](/pt/authors/pierluigi-cella), fundador do OriginsMeta.
+
+As três listas com que ele venceu, as que a Koin Games publicou no dia das finais, viraram um [deck de torneio](/pt/decks/tournament/coachcrono-crimson-cup-lineup): **você as encontra mais abaixo, com os códigos do jogo para copiar**.
+
+## O primeiro torneio de Origins {#primeiro-torneio}
+
+**Pierluigi:** Olá, Coach, que prazer ter você aqui comigo. Tenho que dizer a verdade: nós nos falamos muito, sobre muitas coisas, mas ultimamente sempre sobre Origins, e isso é um prazer a mais. É uma loucura receber você no que, sejamos sinceros, não vai ser bem uma entrevista, e sim uma conversa particular, uma espécie de pequeno podcast entre amigos. A primeira coisa que eu queria perguntar é: o que significa para você, hoje, participar de um torneio, do primeiro torneio de Origins?
+
+**CoachCrono:** Bom, é uma pergunta interessante, porque a primeira coisa que eu disse assim que o torneio começou foi: "Relaxem, pessoal, a gente faz 0-2 e vai castar o torneio." Eu sabia que estava jogando um torneio por diversão: nem tinha colocado delay na live e fiz de tudo para que parecesse um show, e não um torneio competitivo, da minha parte, claro. Depois ele acabou virando competitivo.
+
+Começou muito por diversão, mais como streamer, obviamente, do que como jogador profissional. Mas, no meio do caminho, as coisas mudaram. Quanto mais as partidas avançavam, quanto mais rodadas eu vencia em sequência, **mais voltava a vontade de jogar para valer que eu tinha quando era garoto**, uma vontade que tinha adormecido um pouco desde a época de Marvel Snap e The Bazaar, que infelizmente nunca foram tão competitivos assim, e The Bazaar nem um pouco.
+
+## O que é Origins para o Coach {#origins}
+
+**Pierluigi:** Origins é um jogo com bases e raízes conhecidas, porque bebe de vários outros títulos e nos lembra muitos jogos que já jogamos, mas tem uma alma nova, e isso faz a gente sorrir um pouco, porque é uma alma extremamente competitiva e envolvente também do ponto de vista artístico, com esse conceito das cartas. Então: o que é Origins, hoje, para o Coach?
+
+**CoachCrono:** Para mim, neste momento, Origins é um lugar onde eu posso relaxar com a minha comunidade, é **a minha principal fonte de streaming** e é o jogo que eu sinto que mais combina comigo e também com a minha comunidade, porque, como streamer, obviamente também penso neles, não só em mim. E acho que é muito divertido: **eu acordo de manhã sabendo que vou jogar umas partidas de Origins** e me divertir.
+
+## A lineup: Pigs, Van Helsing e Legion of the Dead {#lineup}
+
+> "A pior lista é, sem sombra de dúvida, Legion of the Dead. Eu nunca gostei dela, mas dos três foi o deck que teve o melhor desempenho."
+
+**Pierluigi:** Então vamos entrar no torneio que você venceu. Você fez escolhas, testou muito, nós acompanhamos você nos seus canais: você tentou até ideias absurdas, encaixou as lineups de um jeito e depois de outro, às vezes com resultados desastrosos, outras vezes incríveis. E no fim? O que você escolheu, e por quê? Você está totalmente satisfeito?
+
+**CoachCrono:** As escolhas que fizemos se baseiam nas minhas ideias, mas também nas de muitas outras pessoas que me ajudaram nos testes. Como era o primeiro torneio, era meio imprevisível o que os outros iam fazer, então escolhi levar simplesmente **a lineup mais forte e mais consistente possível**. Também avaliamos outros caminhos, muito mais arriscados, como as lineups que counteram as lineups mais fortes, mas no fim, como era o primeiro torneio, escolhi o caminho mais simples.
+
+**Pierluigi:** Você conta para a gente as listas que levou? O que você mudou, do que gostou? E talvez também a melhor e a pior das três: olhando para trás, você teria mudado alguma coisa?
+
+**CoachCrono:** A pior lista é, sem sombra de dúvida, Legion of the Dead. Eu nunca quis jogar com ela e nunca gostei dela, mas no fim ela era forte de verdade no meta e teve um desempenho muito, muito bom: **dos três, foi o deck que mais rendeu**.
+
+[![Legion of the Dead, a lista de que o Coach nunca gostou e que no torneio rendeu mais que as outras](/cards/cover/legion-of-the-dead.webp)](/pt/cards/legion-of-the-dead)
+
+Acho que a chave para ler as lineups, no fim, era muito simples: counterar Van Helsing, que está dominando o meta. Só que eu fiz uma escolha diferente, buscando counterar **Three Not So Little Pigs**: para mim os Pigs eram mais chatos que Van Helsing e, no fim, tenho que dizer, deu certo.
+
+O Coach não era o único a temê-los: nas finais **Three Not So Little Pigs estava nas quatro lineups**, Van Helsing em três. As doze listas dos finalistas estão na nossa [página da Crimson Cup](/pt/analytics/crimson-cup#finals).
+
+## As três listas do Coach {#listas}
+
+{{decklists}}
+
+## A final contra SouL {#final}
+
+> "Eu nunca pensei que fosse vencer um único matchup com Van Helsing, e, no entanto, na primeira partida aquele Van Helsing passou."
+
+**Pierluigi:** Na final você enfrentou outro italiano, SouL, que aqui no OriginsMeta nos contou [a experiência dele](/pt/news/soul-crimson-cup-interview): ele falou muito bem das partidas de vocês, de partidas totalmente relaxadas, porque quando você joga com um amigo que conhece, mesmo que o prêmio seja importante, você também respeita a alma do outro. Vocês até trocaram algumas gentilezas durante o confronto, mas ainda assim era uma final. Como foi do ponto de vista do Coach?
+
+**CoachCrono:** Do meu ponto de vista a final foi terrível, porque eu cheguei nela sabendo que a gente já tinha se enfrentado nos playoffs no dia anterior: ele tinha me vencido por um 2-0 seco, eu praticamente não joguei, **ele me mandou para o lower bracket sem chance de resposta**. Então eu sabia que tinha a pior lineup contra ele: ele levou uma lineup muito, muito inteligente e eu estava claramente em desvantagem.
+
+Mas na final eu pude aproveitar a ajuda dos locais para **roubar a primeira partida, o matchup com Van Helsing**, e vencê-la justamente com o deck que ele queria derrotar a qualquer custo. Depois disso, tudo ficou um pouco mais fácil. Eu nunca pensei que fosse vencer um único matchup com Van Helsing, e, no entanto, na primeira partida aquele Van Helsing passou.
+
+[![Van Helsing, o deck com que o Coach roubou a primeira partida da final](/cards/cover/van-helsing.webp)](/pt/cards/van-helsing)
+
+O 2-0 está na [chave dos playoffs](/pt/analytics/crimson-cup/playoffs): dali o Coach caiu para a chave dos perdedores e subiu de novo até a grande final. A final vista por SouL está na [entrevista dele](/pt/news/soul-crimson-cup-interview#final): depois daquela primeira partida a série chegou ao 2-2 e foi decidida na última partida.
+
+## O Dracula 1/1 {#dracula}
+
+**Pierluigi:** Você ganhou um Dracula especial, uma carta que neste momento não é muito jogada no meta, mas que tem uma história incrível: é a primeira 1 de 1 deste jogo, com uma versão totalmente dourada. Ganhá-la deve ser algo especial, e imagino que para você também seja. O que você sentiu, como jogador competitivo já veterano, ao ganhar mais do que um objeto, mais do que uma carta, mais do que um valor: o símbolo de um jogo novo, antes mesmo do seu lançamento de verdade?
+
+**CoachCrono:** Com certeza foi uma grande honra e muito divertido vencer, e fazer isso junto com a comunidade: **essa foi a coisa mais importante, a presença da minha comunidade**. Mas também é preciso dizer que vencer é sempre bom, e, se tem prêmio, melhor ainda.
+
+[![A imagem oficial da Koin Games para CoachCrono, campeão da Crimson Cup: a carta promo Dracula 1/1, dois cases de caixas de boosters e 1.500 dólares](/media/news-crimson-cup-winner.webp)](/pt/news/crimson-cup-coachcrono-wins)
+
+## Obliterate e o meta {#meta}
+
+> "Eu não mudaria absolutamente nada no meta: depois seria preciso mexer de novo assim que saísse o counter, e isso criaria um loop infinito."
+
+**Pierluigi:** Aqui no OriginsMeta também vimos muitíssimas análises que nos falam de cartas jogadas mais do que outras e de combos muito mais usados. O estado atual do jogo fala de um set, digamos, manco, na metade do seu crescimento: as cartas que vão completar o set inicial ainda estão por chegar. Há situações ou cartas que você mudaria? O que está deixando o meta de Origins um pouco opressivo? Como você o mudaria?
+
+**CoachCrono:** Com certeza há algumas cartas que estão rendendo acima do esperado. Me vem à cabeça **Obliterate**: é uma carta que deveria ser jogada nos decks control combo e, em vez disso, é usada simplesmente nos aggro e nos midrange, porque é forte demais e não tem counter.
+
+Mas acho que isso vai se ajeitar e evoluir naturalmente quando sair o resto do set. Hoje eu não vejo isso como um problema, de jeito nenhum: acho simplesmente que é preciso esperar e dar tempo ao tempo. Então não, **eu não mudaria absolutamente nada no meta**, porque depois seria preciso mexer de novo assim que saísse o counter, e isso criaria um loop infinito.
+
+[![As cartas mais presentes nas 12 listas dos quatro finalistas, da página da Crimson Cup do OriginsMeta: Obliterate está em 6](/media/news-coachcrono-obliterate-pt.webp)](/pt/analytics/crimson-cup#finals)
+
+Nas finais Obliterate está em **6 das 12 listas**, como Golden Egg, Mind Palace e Tin Woodman, e só Baby Bear aparece em mais listas (7): Obliterate está nos quatro Three Not So Little Pigs, no Legion of the Dead do Coach e no Merlin de SouL. As contagens de todas as cartas estão na nossa [página da Crimson Cup](/pt/analytics/crimson-cup#finals); as estatísticas do ladder, das partidas registradas com o OriginsMeta Tracker, estão em [Analytics](/pt/analytics).
+
+## O futuro de Origins {#futuro}
+
+> "Se não cederem às propostas que vão receber e mantiverem o jogo competitivo, eles podem fazer sucesso com facilidade."
+
+**Pierluigi:** Isso é interessante, porque nos leva ao que o Coach pensa de Origins hoje. Origins lançou o Kickstarter há poucos dias, muitíssimas pessoas estão começando a se interessar pelo jogo e já temos comunidades ativas: os números dos nossos streamers, do nosso site e dos torneios nos dizem que ele está crescendo, que está em clara expansão. Como você vê o futuro próximo de Origins, rumo ao lançamento oficial? E o que você acha que pode acontecer daí em diante?
+
+**CoachCrono:** Eu acho que Origins tem um grande futuro pela frente, com certeza com algumas grandes incógnitas. Mas é preciso dizer que, até agora, eles fizeram tudo o que tinham que fazer para deixar o jogo divertido e acessível para cada vez mais gente, começando, claro, pelo free-to-play, a marca registrada deles: **qualquer um pode jogar de graça e competir de graça**, e recriar um pouco aquele sonho americano que eu, na verdade, vivi ao vencer o primeiro torneio.
+
+[![A imagem "Zero pay to win" da Koin Games: cada jogador recebe todas as cartas vencendo partidas, sem gastar](/media/ls-zero-pay-to-win.webp)](/pt/kickstarter)
+
+Acho que esse é o caminho certo. **Se não cederem às propostas** que as grandes empresas com certeza vão fazer a eles e mantiverem o jogo competitivo, eles podem fazer sucesso com facilidade. Só precisam continuar fazendo o que estão fazendo, com muita constância, e melhorar os aspectos que, naturalmente, ainda faltam, como a experiência de organização durante os torneios.
+
+O Kickstarter é o da Alpha Edition: recompensas, probabilidades e datas estão na nossa [página do Kickstarter](/pt/kickstarter).
+
+## Por que jogar, sendo iniciante ou experiente {#iniciantes}
+
+**Pierluigi:** Por que você recomendaria Origins para quem está começando nos jogos de cartas? E por que, por outro lado, para um jogador experiente, que já conhece o gênero?
+
+**CoachCrono:** Para quem não tem experiência com esses jogos, eu recomendaria com certeza, por dois motivos principais. O primeiro é a falta, entre aspas, de um sistema de combate: **as cartas combatem sozinhas**, então você não precisa pensar desde o início em trocas e correntes, como no Magic ou no Yu-Gi-Oh!, e isso facilita a entrada. O segundo é que ele é **free-to-play**: você não precisa investir dinheiro para entrar no mundo dos card games, como aconteceria com um jogo de cartas físico.
+
+Para os jogadores mais experientes eu também recomendo, na verdade pelo motivo oposto: como é um jogo de fácil acesso, tem muita gente começando, e para um jogador profissional isso se traduz, neste momento, em **mais prêmios, e mais fáceis de conquistar**.
+
+## Os contos de fadas como roupagem {#contos-de-fadas}
+
+**Pierluigi:** Você acha que Origins também escolheu a roupagem certa para contar a sua história? Uma lore baseada nos contos de fadas já está deixando muitos jogadores loucos, mas faz outros torcerem o nariz: ela pode conquistar o coração de quem ama jogos de cartas?
+
+**CoachCrono:** Para mim, sim. Basta entrar no jogo e ver Winnie-the-Pooh, A Bela e a Fera e outras marcas importantes readaptadas com um estilo muito particular, completamente transformadas: **Winnie-the-Pooh deixa de ser um ursinho indefeso e vira um fisiculturista de 200 quilos**. Isso deixa tudo muito divertido, mas ao mesmo tempo muito familiar, porque continua sendo o Winnie-the-Pooh, o ursinho que você conhecia quando era criança. Então sim, acho que a escolha de marketing deles foi muito acertada: **custo mínimo, resultado máximo**.
+
+[![Winnie-the-Pooh na versão de Origins TCG: o ursinho da infância transformado em um gigante](/cards/cover/winnie-the-pooh.webp)](/pt/cards/winnie-the-pooh)
+
+## O OriginsMeta segundo o Coach {#originsmeta}
+
+**Pierluigi:** Você conhece o projeto OriginsMeta desde que ele nasceu, porque sempre falamos dele: eu envolvi você antes mesmo de virmos a público, e você sempre foi um aliado precioso para fazer o nosso produto crescer. Estamos sempre em expansão, criamos novas ferramentas e novas páginas para visitar, e as pessoas nos agradecem muitíssimo pelas estatísticas, pelos dados e por muito mais; nós nunca vamos parar de agradecer a elas por nos escolherem todos os dias. O que mais podemos fazer para melhorar? Para deixar a comunidade de Origins cada vez mais feliz em visitar o OriginsMeta?
+
+**CoachCrono:** Eu acho que o OriginsMeta está fazendo um trabalho enorme, sobretudo em acessibilidade, e eu continuaria nesse caminho: **estar do lado das pessoas**, como vocês já estão fazendo, e deixar o OriginsMeta o mais simples e intuitivo possível. É preciso dizer que, nesse aspecto, já foi feito um trabalho incrível, mas, como tudo na vida, sempre dá para melhorar. Talvez no tracker ainda haja algum pequeno trabalho a fazer, mas acho que o grosso já foi feito, então, mais do que conselhos, eu só posso dar muitos parabéns a vocês. **Eu sei com quanta paixão e dedicação vocês trabalham**, sempre ouvindo os jogadores, e isso faz a diferença.
+
+O tracker é o [OriginsMeta Tracker](/pt/tracker), o app para Windows que registra as partidas sozinho e alimenta as estatísticas em [Analytics](/pt/analytics).
+
+**Pierluigi:** Você é gentil demais, meu amigo: vamos continuar dando o nosso melhor. Convido todo mundo a seguir o Coach em [todos os canais dele](/pt/u/coachcrono): ele faz live com frequência, e com Origins, para nos contar cada vez mais sobre este jogo magnífico. Coach, um abraço e obrigado.
+
+**CoachCrono:** Igualmente. Amo vocês, pessoal.
+
+## Fora do ar {#fora-do-ar}
+
+Com os microfones desligados, o Coach nos contou uma história, "se quiser fazer meme":
+
+**CoachCrono:** Uns dois meses atrás, talvez dois meses e meio ou até três, quando saiu a primeira demo de Origins, o Senit me disse: "Olha, tem esse TCG novo, acho que ele é muito promissor." Eu respondi: "Pare de me recomendar joguinhos meia-boca." Voltei a testar dois meses depois, quando estava menos frustrado com The Bazaar, e me apaixonei por Origins na hora. Olhando para trás, é engraçado que o maior representante de Origins neste momento seja justamente aquele que disse a ele: "Não me recomende esse joguinho meia-boca."`,
+    faq: [
+      { q: "Onde encontro as listas de CoachCrono da Crimson Cup com os códigos do jogo?", a: "Neste artigo e no deck de torneio dele no OriginsMeta: Three Not So Little Pigs, Van Helsing e Legion of the Dead, as listas Conquest publicadas pela Koin Games no dia das finais, com os códigos do jogo para copiar." },
+      { q: "Qual deck da lineup dele teve o melhor desempenho?", a: "Legion of the Dead: a lista de que ele menos gostava, mas forte no meta e, dos três, a que mais rendeu. A lineup buscava neutralizar Three Not So Little Pigs mais do que Van Helsing." },
+      { q: "O que CoachCrono pensa de Obliterate?", a: "Que ela está rendendo acima do esperado: é pensada para decks control combo, mas é jogada nos aggro e nos midrange porque é forte demais e não tem counter. Mesmo assim, ele não mexeria nela: para ele, isso vai se ajeitar quando sair o resto do set." },
+    ],
+  },
   "soul-crimson-cup-interview": {
     title: "Uma conversa com SouL, finalista da Crimson Cup: a lineup anti Van Helsing e o futuro de Origins TCG",
     metaTitle: "Entrevista com SouL, finalista da Crimson Cup de Origins TCG",
