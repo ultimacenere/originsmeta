@@ -46,7 +46,7 @@ Die Legendären unten sind nach Kosten sortiert und bei gleichen Kosten alphabet
 
 | Legendäre | Kosten | Kraft/Leben | Gesinnung | Decks |
 | --- | --- | --- | --- | --- |
-| [Dorothy](/de/cards/dorothy) | 4 | 1/1 | Good | 2 |
+| [Dorothy](/de/cards/dorothy) | 4 | 3/3 | Good | 2 |
 | [Dracula](/de/cards/dracula) | 4 | 3/2 | Evil | 2 |
 | [Mulan](/de/cards/mulan) | 4 | 2/4 | Good | 1 |
 | [Queen of Hearts](/de/cards/queen-of-hearts) | 4 | 3/3 | Evil | 2 |
@@ -70,7 +70,7 @@ Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 i
 
 ## Dorothy {#dorothy}
 
-**4 Mana · 1/1 · Einheit · Good** · Saga: Land Oz
+**4 Mana · 3/3 · Einheit · Good** · Saga: Land Oz
 
 > Ich kann mich jede Runde Bewegen.
 >
@@ -598,7 +598,7 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 | --- | --- | --- |
 | [Mulan](/de/cards/mulan) ★ | 4 | 2/4, Doppelangriff; wenn ein Beim Aufdecken eines Verbündeten ausgelöst wird, wiederholt es sich |
 | [Bagheera](/de/cards/bagheera) | 2 | 1/1; Beim Aufdecken auf einem mittleren Feld erhält er +2⚔️/+2❤️ |
-| [Baby Bear](/de/cards/baby-bear) | 2 | 1/1; schlägt mit 1 Schaden zurück, wenn ein Gegner hier deiner Barriere Schaden zufügt, und fügt beim Tod deiner Hand einen 4/4-Papa Bear hinzu |
+| 3 || [Baby Bear](/de/cards/baby-bear) | 2 | 1/1; schlägt mit 1 Schaden zurück, wenn ein Gegner hier deiner Barriere Schaden zufügt, und fügt beim Tod deiner Hand einen 4/4-Papa Bear hinzu |
 | [Mary](/de/cards/mary) | 3 | 1/1; Beim Aufdecken fügt sie deiner Hand ein Little Lamb hinzu, beim Tod erhalten deine Lambs dauerhaft +3⚔️/+3❤️ |
 | [Black Knight](/de/cards/black-knight) | 3 | 2/2; Beim Aufdecken fügt er dem Gegner gegenüber 2 Schaden zu |
 | [Frog Prince](/de/cards/frog-prince) | 3 | 2/2; Beim Aufdecken +3⚔️ oder +3❤️, nach deiner Wahl |
@@ -785,7 +785,7 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 
 | Karte | Kosten | Was sie tut |
 | --- | --- | --- |
-| [Dorothy](/de/cards/dorothy) ★ | 4 | 1/1; kann sich jede Runde bewegen und erhält +1⚔️/+1❤️ für jede Bewegung eines Verbündeten in dieser Partie |
+| [Dorothy](/de/cards/dorothy) ★ | 4 | 3/3; kann sich jede Runde bewegen und erhält +1⚔️/+1❤️ für jede Bewegung eines Verbündeten in dieser Partie |
 | [Twister Toss](/de/cards/twister-toss) | 1 | Zauber: Bewege einen Verbündeten auf ein beliebiges Feld. Steht dort bereits eine Karte, tauschen sie die Felder |
 | [Card Soldier](/de/cards/card-soldier) | 2 | 3/1; nachdem er sich bewegt hat, beschwört er eine Kopie von sich auf seinem vorherigen Feld |
 | [Roo](/de/cards/roo) | 2 | 2/4 mit Bewegen |
@@ -803,7 +803,7 @@ Neun Einheiten und drei Zauber, und fast alles bewegt sich entweder oder belohnt
 
 ## Wie das Deck gewinnt
 
-Dorothy ist eine 1/1, die mitzählt: **+1⚔️/+1❤️ für jede Bewegung eines Verbündeten in dieser Partie**. Der Zähler wird nicht zurückgesetzt und zählt Bewegungen überall auf dem Spielfeld, also ist ein günstiger Zauber wie [Twister Toss](/de/cards/twister-toss) nie verschwendet — er ist ein Mana für einen dauerhaften Punkt auf deiner Legendären. In Runde fünf nach ein paar Bewegungen gespielt, landet Dorothy als echter Körper und wächst danach jede Runde weiter, weil sie sich selbst bewegt.
+Dorothy ist eine 3/3, die mitzählt: **+1⚔️/+1❤️ für jede Bewegung eines Verbündeten in dieser Partie**. Der Zähler wird nicht zurückgesetzt und zählt Bewegungen überall auf dem Spielfeld, also ist ein günstiger Zauber wie [Twister Toss](/de/cards/twister-toss) nie verschwendet — er ist ein Mana für einen dauerhaften Punkt auf deiner Legendären. In Runde fünf nach ein paar Bewegungen gespielt, landet Dorothy als echter Körper und wächst danach jede Runde weiter, weil sie sich selbst bewegt.
 
 Drei Combos sind der Sinn der Liste:
 
@@ -1115,7 +1115,7 @@ Fünfundzwanzig Karten: die Legendäre plus zwölf Karten in je zwei Exemplaren.
 | Karte | Kosten | Rolle |
 | --- | --- | --- |
 | [Van Helsing](/de/cards/van-helsing) ★ | 4 | Legendär: Vor dem Kampf gibt er dir Van Helsing's Tools auf die Hand, falls du die Karte nicht hast |
-| [Baby Bear](/de/cards/baby-bear) | 2 | Fügt Gegnern Schaden zu, die deiner Barriere schaden; Bei Tod: Füge deiner Hand Papa Bear [4⚔️/4❤️] hinzu |
+| 3 || [Baby Bear](/de/cards/baby-bear) | 2 | Fügt Gegnern Schaden zu, die deiner Barriere schaden; Bei Tod: Füge deiner Hand Papa Bear [4⚔️/4❤️] hinzu |
 | [Scarecrow](/de/cards/scarecrow) | 2 | Beim Aufdecken: Ziehe eine Karte |
 | [Shahrazad](/de/cards/shahrazad) | 2 | 1/4: heilt 1 Schaden an deiner Barriere, jedes Mal wenn eine Karte auf deine Hand kommt |
 | [Ali Baba](/de/cards/ali-baba) | 3 | 2/3, der eine Karte zieht, wenn er der gegnerischen Barriere Schaden zufügt |
@@ -1123,7 +1123,7 @@ Fünfundzwanzig Karten: die Legendäre plus zwölf Karten in je zwei Exemplaren.
 | [Spellbook](/de/cards/spellbook) | 4 | Für den Rest der Partie zu Beginn jeder Runde ein zufälliger Zauber auf die Hand |
 | [Phuong Hoang](/de/cards/phuong-hoang) | 4 | Wiedergeburt, Bewegen; erhält +1/+1, jedes Mal wenn ein Verbündeter oder eine Barriere geheilt wird |
 | [Jekyll](/de/cards/jekyll) | 4 | Beim Aufdecken heilt er 3; ist er nach dem Kampf noch auf der Hand, wird er zu Hyde, einem 5/3 mit Überrennen |
-| [Searing Light](/de/cards/searing-light) | 4 | 4 Schaden an einem Gegner und 4 Heilung für deine Barriere an diesem Ort |
+| 3 || [Searing Light](/de/cards/searing-light) | 4 | 4 Schaden an einem Gegner und 4 Heilung für deine Barriere an diesem Ort |
 | [Boitata](/de/cards/boitata) | 5 | 5/5: Schaden durch Zauber und Fähigkeiten an deinen Barrieren wird stattdessen der gegnerischen Barriere zugefügt |
 | [Tin Woodman](/de/cards/tin-woodman) | 6 | Beim Aufdecken heilt er 8 an einem anderen Charakter oder einer Barriere an seinem Ort |
 | [Forbidden Knowledge](/de/cards/forbidden-knowledge) | 8 | Zerstöre ALLE Charaktere |

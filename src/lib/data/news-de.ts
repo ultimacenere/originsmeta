@@ -9,6 +9,70 @@ import type { NewsCopy } from "./news-fr";
  * docs/tedesco.md; controlli in newsMeta.test.ts (lunghezze, link con /de/, ancore, paragrafo "Update vom …").
  */
 export const deText: Record<string, NewsCopy> = {
+  "balance-patch-1104-cyber-queen": {
+    title: "Origins TCG Patch Notes vom 4. November: zehn Karten angepasst, Cyber Queen ist Boss Nr. 11",
+    metaTitle: "Patch 4.11.: Obliterate auf 10, Bären teurer",
+    description:
+      "Origins TCG Patch Notes vom 4. November: Obliterate steigt auf 10 Mana, die drei Bären kosten 1 mehr, Dorothy wird 3/3. Cyber Queen kommt als Boss Nr. 11.",
+    summary:
+      "Der erste Balance-Patch des Early Access von Origins TCG kommt heute, am 4. November, gegen 14:00 UTC, ohne Client-Update. Zehn Karten ändern sich: Obliterate steigt auf 10 Mana, Baby Bear, Mama Bear und Papa Bear kosten 1 mehr, Dorothy wird 3/3, Genie und Searing Light werden billiger. Mit ihm kommt Boss Nr. 11, Cyber Queen, die das Relentless-Deck mit Dr. Frank spielt.",
+    highlights: [
+      { label: "Kommt heute gegen 14:00 UTC", text: "ohne Client-Update", anchor: "wann" },
+      { label: "Boss Nr. 11: Cyber Queen", text: "sie spielt das Relentless-Deck, mit Dr. Frank als Legendärer", anchor: "cyber-queen" },
+      { label: "Zehn Karten ändern sich", text: "fünf Nerfs und fünf Buffs, nur Kosten und Werte", anchor: "aenderungen" },
+      { label: "Die drei Bären kosten 1 mehr", text: "Baby Bear war die meistgespielte Karte des Crimson Cup", anchor: "baeren" },
+      { label: "Obliterate steigt auf 10 Mana", anchor: "obliterate" },
+      { label: "Dorothy wird 3/3", text: "weiterhin für 4 Mana", anchor: "dorothy" },
+    ],
+    body: `## Wann er kommt {#wann}
+
+Koin Games hat die Patch Notes am 4. November um 09:08 UTC im offiziellen Discord veröffentlicht: Das Update „sollte“ etwa fünf Stunden später kommen, also gegen 14:00 UTC, und braucht kein Client-Update. Es ist der erste Balance-Patch des Early Access, den Koin für den Tag von Dr. Frank versprochen hatte ([unsere News vom 2. November](/de/news/balance-patch-dr-frank-roadmap-ama)).
+
+Die Karten und der Deck Builder von OriginsMeta zeigen die neuen Werte bereits an.
+
+## Boss Nr. 11: Cyber Queen und das Relentless-Deck {#cyber-queen}
+
+Der neue Boss ist Cyber Queen, und sie spielt das Relentless-Deck. Seine Legendäre ist Dr. Frank, und der Spielplan dreht sich darum, Charaktere aus dem Friedhof zurückzuholen: ein neuer Archetyp mit einer Handvoll neuer Karten zum Ausprobieren. Wir haben sie einzeln vorgestellt in [Dr. Franks acht neue Karten](/de/news/dr-frank-boss-new-cards).
+
+Eine Korrektur: Bis heute haben wir Dr. Frank den neuen Boss genannt. Die Patch Notes stellen klar, dass der Boss Cyber Queen ist und Dr. Frank die Legendäre ihres Decks.
+
+## Alle Änderungen {#aenderungen}
+
+Format: Mana · Kraft/Leben bei Charakteren, nur Mana bei Zaubern.
+
+| Karte | Vorher | Nachher | Was sich ändert |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | kostet 1 mehr |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | kostet 1 mehr |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | kostet 1 mehr |
+| Obliterate | 9 | 10 | kostet 1 mehr |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 Kraft |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 Kraft, +2 Leben |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 Kraft |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 Leben |
+| Genie | 6 · 4/4 | 5 · 4/4 | kostet 1 weniger |
+| Searing Light | 4 | 3 | kostet 1 weniger |
+
+Fünf Nerfs und fünf Buffs. Keine Karte ändert ihren Text oder ihre Fähigkeiten: nur Kosten und Werte. Laut Team kommen die Änderungen nach „vielen leidenschaftlichen Diskussionen“ über diese Karten.
+
+## Die drei Bären werden alle teurer {#baeren}
+
+Baby Bear, Mama Bear und Papa Bear kosten jeweils 1 Mana mehr. Alle drei bestrafen den Feind, der deiner Barriere dort Schaden zufügt, wo sie stehen: Baby Bear fügt ihm 1 Schaden zu, Papa Bear 3, Mama Bear zerstört ihn.
+
+Baby Bear war in allen vier Qualifikationen des Crimson Cup die meistgespielte Karte: In Koins offiziellen Tabellen steckte sie in 46 % bis 50 % der Decks. Für 3 Mana ist sie keine fast automatische Wahl mehr.
+
+## Obliterate steigt auf 10 Mana {#obliterate}
+
+Obliterate, der teuerste Zauber des Spiels, kostet jetzt 10. In den Qualifikationen des Crimson Cup steckte er in 21 % bis 24 % der Decks. Das Team scherzt: Nach all den Likes für den X-Post, der einen Nerf forderte, hätten sie seinen Schaden fast auf -12 gesetzt, aber die Engine kann keinen negativen Schaden.
+
+## Dorothy wird 3/3 {#dorothy}
+
+Dorothy, eine Legendäre, bleibt bei 4 Mana, geht aber von 1/1 auf 3/3: Sie stirbt nicht mehr an einem einzigen Schadenspunkt. Banshee erhält 1 Kraft, Esmeralda 1 Leben, während Genie (5) und Searing Light (3) 1 weniger kosten. Guy of Gisborne ist die einzige Karte, die Werte verliert, ohne die Kosten zu ändern: 3/4 statt 4/4.
+
+## Und jetzt {#jetzt}
+
+Wenn deine Decks Obliterate, die Bären oder Guy of Gisborne spielen, prüfe deine Manakurve: [MetaShifting](/de/metashifting) zeigt jede Änderung Patch für Patch, und in [Theory craft](/de/theory-craft) kannst du eine Liste sofort mit den neuen Kosten neu bauen. Koin bittet nach ein paar Partien um Feedback: zu viel, zu wenig oder, wie Goldlöckchen sagen würde, genau richtig.`,
+  },
   "dr-frank-boss-new-cards": {
     title: "Dr. Frank kommt am 4. November zu Origins TCG: der neue Boss und seine acht neuen Karten",
     metaTitle: "Dr. Frank in Origins TCG: neuer Boss und 8 neue Karten",

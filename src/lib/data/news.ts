@@ -173,6 +173,215 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Patch notes del 04/11/2026, la prima patch di bilanciamento dell'Accesso anticipato (richiesta di Pierluigi: "patch
+    // note!! sul sito subito"). Fonte: il messaggio di apix in #announcements del Discord ufficiale, 04/11 alle 10:08
+    // italiane, che Pierluigi ha incollato: dieci carte, boss n. 11 Cyber Queen con il mazzo Relentless e Dr. Frank
+    // Leggendaria, uscita "at around" cinque ore dopo senza aggiornare il client (stima, non orario confermato). Il post
+    // Steam non c'era ancora: fonte il Discord, come le altre news del Discord. I valori "prima" sono quelli del sito
+    // (import più card-history.ts) e coincidono tutti con le patch notes. Le percentuali di Baby Bear e Obliterate sono le
+    // tabelle ufficiali di Koin delle quattro qualificazioni della Crimson Cup (crimsonCup.ts). I testi dei tre orsi vengono
+    // dalle loro carte, non dalle patch notes. Copertina: scripts/patch-1104-images.mjs.
+    slug: "balance-patch-1104-cyber-queen",
+    image: "/media/news-patch-1104.webp",
+    url: "https://discord.gg/originstcg",
+    source: "press",
+    cards: ["dorothy", "obliterate", "genie", "searing-light", "guy-of-gisborne", "baby-bear", "mama-bear", "papa-bear", "banshee", "esmeralda", "dr-frank"],
+    guides: ["origins-tcg-legendaries"],
+    date: "2026-11-04",
+    title: n(
+      "Origins TCG patch notes, 4 November: ten cards rebalanced, Cyber Queen is boss #11",
+      "Patch notes di Origins TCG del 4 novembre: dieci carte ribilanciate, Cyber Queen è il boss n. 11",
+      "Notas del parche de Origins TCG del 4 de noviembre: diez cartas reequilibradas, Cyber Queen es el jefe n.º 11",
+    ),
+    metaTitle: n(
+      "Origins TCG patch notes 4 Nov: Obliterate 10, bears nerfed",
+      "Patch del 4/11: Obliterate a 10, orsi più cari",
+      "Parche 4/11: Obliterate a 10, osos más caros",
+    ),
+    description: n(
+      "Origins TCG patch notes of 4 November: Obliterate goes to 10 mana, the three bears cost 1 more, Dorothy becomes a 3/3. Cyber Queen arrives as boss #11.",
+      "Patch notes di Origins TCG del 4 novembre: Obliterate a 10 mana, i tre orsi costano 1 in più, Dorothy diventa 3/3. Arriva Cyber Queen, il boss n. 11.",
+      "Notas del parche de Origins TCG del 4 de noviembre: Obliterate a 10 de maná, los tres osos cuestan 1 más y Dorothy pasa a 3/3. Llega Cyber Queen, jefe n.º 11.",
+    ),
+    summary: n(
+      "The first balance patch of Origins TCG's Early Access lands today, 4 November, around 14:00 UTC, with no client update. Ten cards change: Obliterate goes to 10 mana, Baby Bear, Mama Bear and Papa Bear cost 1 more, Dorothy becomes a 3/3, and Genie and Searing Light get cheaper. With it comes boss #11, Cyber Queen, piloting the Relentless deck with Dr. Frank.",
+      "La prima patch di bilanciamento dell'Accesso anticipato di Origins TCG arriva oggi, 4 novembre, verso le 15:00 italiane, senza aggiornare il client. Cambiano dieci carte: Obliterate sale a 10 mana, Baby Bear, Mama Bear e Papa Bear costano 1 in più, Dorothy diventa 3/3, Genie e Searing Light costano meno. Insieme arriva il boss n. 11, Cyber Queen, con il mazzo Relentless e Dr. Frank.",
+      "El primer parche de equilibrio del Acceso anticipado de Origins TCG llega hoy, 4 de noviembre, hacia las 14:00 UTC, sin actualizar el cliente. Cambian diez cartas: Obliterate sube a 10 de maná, Baby Bear, Mama Bear y Papa Bear cuestan 1 más, Dorothy pasa a 3/3, y Genie y Searing Light bajan de coste. Con él llega el jefe n.º 11, Cyber Queen, con el mazo Relentless y Dr. Frank.",
+    ),
+    highlights: {
+      en: [
+        { label: "Lands today around 14:00 UTC", text: "no client update needed", anchor: "when" },
+        { label: "Boss #11: Cyber Queen", text: "she pilots the Relentless deck, with Dr. Frank as the Legendary", anchor: "cyber-queen" },
+        { label: "Ten cards change", text: "five nerfs and five buffs, only cost and stats", anchor: "changes" },
+        { label: "The three bears cost 1 more", text: "Baby Bear was the most played card of the Crimson Cup", anchor: "bears" },
+        { label: "Obliterate goes to 10 mana", anchor: "obliterate" },
+        { label: "Dorothy becomes a 3/3", text: "still at 4 mana", anchor: "dorothy" },
+      ],
+      it: [
+        { label: "Arriva oggi verso le 15:00", text: "senza aggiornare il client", anchor: "quando" },
+        { label: "Boss n. 11: Cyber Queen", text: "guida il mazzo Relentless, con Dr. Frank come Leggendaria", anchor: "cyber-queen" },
+        { label: "Cambiano dieci carte", text: "cinque nerf e cinque buff, solo costo e statistiche", anchor: "modifiche" },
+        { label: "I tre orsi costano 1 in più", text: "Baby Bear era la carta più giocata della Crimson Cup", anchor: "orsi" },
+        { label: "Obliterate sale a 10 mana", anchor: "obliterate" },
+        { label: "Dorothy diventa 3/3", text: "sempre a 4 mana", anchor: "dorothy" },
+      ],
+      es: [
+        { label: "Llega hoy hacia las 14:00 UTC", text: "sin actualizar el cliente", anchor: "cuando" },
+        { label: "Jefe n.º 11: Cyber Queen", text: "pilota el mazo Relentless, con Dr. Frank como Legendaria", anchor: "cyber-queen" },
+        { label: "Cambian diez cartas", text: "cinco nerfs y cinco buffs, solo coste y estadísticas", anchor: "cambios" },
+        { label: "Los tres osos cuestan 1 más", text: "Baby Bear fue la carta más jugada de la Crimson Cup", anchor: "osos" },
+        { label: "Obliterate sube a 10 de maná", anchor: "obliterate" },
+        { label: "Dorothy pasa a 3/3", text: "con el mismo coste de 4", anchor: "dorothy" },
+      ],
+    },
+    body: n(
+      `## When it lands {#when}
+
+Koin Games published the patch notes on the official Discord on 4 November at 09:08 UTC: the update "should land" about five hours later, so around 14:00 UTC, and it does not need a client update. It is the first balance patch of Early Access, the one Koin had promised for the day Dr. Frank arrives ([our news of 2 November](/en/news/balance-patch-dr-frank-roadmap-ama)).
+
+The cards and the deck builder on OriginsMeta already show the new values.
+
+## Boss #11: Cyber Queen and the Relentless deck {#cyber-queen}
+
+The new boss is Cyber Queen, and she pilots the Relentless deck. Its Legendary is Dr. Frank, and its game plan is about bringing characters back from the graveyard: a new archetype, with a handful of new cards to experiment with. We presented them one by one in [Dr. Frank's eight new cards](/en/news/dr-frank-boss-new-cards).
+
+A correction: until today we called Dr. Frank the new boss. The patch notes make it clear that the boss is Cyber Queen, and Dr. Frank is the Legendary of her deck.
+
+## All the balance changes {#changes}
+
+Format: mana · Power/Health for characters, mana only for spells.
+
+| Card | Before | After | What changes |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | costs 1 more |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | costs 1 more |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | costs 1 more |
+| Obliterate | 9 | 10 | costs 1 more |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 Power |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 Power, +2 Health |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 Power |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 Health |
+| Genie | 6 · 4/4 | 5 · 4/4 | costs 1 less |
+| Searing Light | 4 | 3 | costs 1 less |
+
+Five nerfs and five buffs. No card changes its text or abilities: only cost and stats. The team says these changes come after "a lot of passionate discussions" around these cards.
+
+## The three bears all cost more {#bears}
+
+Baby Bear, Mama Bear and Papa Bear each cost 1 more mana. All three punish the enemy that damages your barrier where they stand: Baby Bear deals it 1 damage, Papa Bear 3, Mama Bear destroys it.
+
+Baby Bear was the most played card in all four Crimson Cup qualifiers: in Koin's official tables it was in 46% to 50% of the decks. At 3 mana it stops being an almost automatic pick.
+
+## Obliterate goes to 10 mana {#obliterate}
+
+Obliterate, the most expensive spell in the game, now costs 10. In the Crimson Cup qualifiers it was in 21% to 24% of the decks. The team jokes that, after all the likes on the X post asking for a nerf, they almost set its damage to -12, but the engine cannot handle negative damage.
+
+## Dorothy becomes a 3/3 {#dorothy}
+
+Dorothy, a Legendary, stays at 4 mana but goes from 1/1 to 3/3: she no longer dies to a single point of damage. Banshee gains 1 Power, Esmeralda 1 Health, while Genie (5) and Searing Light (3) cost 1 less. Guy of Gisborne is the only card that loses stats without changing cost: 3/4 instead of 4/4.
+
+## What now {#now}
+
+If your decks run Obliterate, the bears or Guy of Gisborne, check your mana curve: [MetaShifting](/en/metashifting) shows every change patch by patch, and in [Theory craft](/en/theory-craft) you can rebuild a list with the new costs right away. Koin asks for feedback once you have played a little: too far, not far enough or, as Goldilocks would say, just right.`,
+      `## Quando arriva {#quando}
+
+Koin Games ha pubblicato le patch notes sul Discord ufficiale il 4 novembre alle 10:08 italiane: l'aggiornamento "dovrebbe arrivare" circa cinque ore dopo, quindi verso le 15:00, e non richiede di aggiornare il client. È la prima patch di bilanciamento dell'Accesso anticipato, quella che Koin aveva promesso per il giorno di Dr. Frank ([la nostra news del 2 novembre](/it/news/balance-patch-dr-frank-roadmap-ama)).
+
+Le carte e il deck builder di OriginsMeta mostrano già i valori nuovi.
+
+## Boss n. 11: Cyber Queen e il mazzo Relentless {#cyber-queen}
+
+Il nuovo boss è Cyber Queen, e guida il mazzo Relentless. La sua Leggendaria è Dr. Frank e il piano di gioco ruota attorno al riportare personaggi dal cimitero: un archetipo nuovo, con una manciata di carte nuove da provare. Le abbiamo presentate una per una in [le otto carte nuove di Dr. Frank](/it/news/dr-frank-boss-new-cards).
+
+Una correzione: fino a oggi abbiamo chiamato Dr. Frank il nuovo boss. Le patch notes chiariscono che il boss è Cyber Queen e che Dr. Frank è la Leggendaria del suo mazzo.
+
+## Tutte le modifiche {#modifiche}
+
+Formato: mana · Potenza/Salute per i personaggi, solo mana per le magie.
+
+| Carta | Prima | Dopo | Che cosa cambia |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | costa 1 in più |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | costa 1 in più |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | costa 1 in più |
+| Obliterate | 9 | 10 | costa 1 in più |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 Potenza |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 Potenza, +2 Salute |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 Potenza |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 Salute |
+| Genie | 6 · 4/4 | 5 · 4/4 | costa 1 in meno |
+| Searing Light | 4 | 3 | costa 1 in meno |
+
+Cinque nerf e cinque buff. Nessuna carta cambia testo o abilità: solo costo e statistiche. Il team scrive che le modifiche arrivano dopo "tante discussioni appassionate" su queste carte.
+
+## I tre orsi costano tutti di più {#orsi}
+
+Baby Bear, Mama Bear e Papa Bear costano 1 mana in più ciascuno. Tutti e tre puniscono il nemico che danneggia la tua barriera dove si trovano: Baby Bear gli infligge 1 danno, Papa Bear 3, Mama Bear lo distrugge.
+
+Baby Bear era la carta più giocata in tutte e quattro le qualificazioni della Crimson Cup: nelle tabelle ufficiali di Koin stava fra il 46% e il 50% dei mazzi. A 3 mana smette di essere una scelta quasi automatica.
+
+## Obliterate sale a 10 mana {#obliterate}
+
+Obliterate, la magia più cara del gioco, ora costa 10. Nelle qualificazioni della Crimson Cup era fra il 21% e il 24% dei mazzi. Il team scherza: dopo tutti i like al post su X che ne chiedeva il nerf, stavano per portarne il danno a -12, ma il motore del gioco non gestisce i danni negativi.
+
+## Dorothy diventa 3/3 {#dorothy}
+
+Dorothy, Leggendaria, resta a 4 mana ma passa da 1/1 a 3/3: non muore più con un solo danno. Banshee guadagna 1 Potenza, Esmeralda 1 Salute, mentre Genie (5) e Searing Light (3) costano 1 in meno. Guy of Gisborne è l'unica carta che perde statistiche senza cambiare costo: 3/4 invece di 4/4.
+
+## E adesso {#adesso}
+
+Se i tuoi mazzi giocano Obliterate, gli orsi o Guy of Gisborne, ricontrolla la curva di mana: [MetaShifting](/it/metashifting) mostra ogni modifica patch per patch, e in [Theory craft](/it/theory-craft) puoi rifare subito una lista con i costi nuovi. Koin chiede un parere dopo qualche partita: troppo, troppo poco o, come direbbe Riccioli d'Oro, giusto così.`,
+      `## Cuándo llega {#cuando}
+
+Koin Games publicó las notas del parche en el Discord oficial el 4 de noviembre a las 09:08 UTC: la actualización "debería llegar" unas cinco horas después, así que hacia las 14:00 UTC, y no hace falta actualizar el cliente. Es el primer parche de equilibrio del Acceso anticipado, el que Koin había prometido para el día de Dr. Frank ([nuestra noticia del 2 de noviembre](/es/news/balance-patch-dr-frank-roadmap-ama)).
+
+Las cartas y el deck builder de OriginsMeta ya muestran los valores nuevos.
+
+## Jefe n.º 11: Cyber Queen y el mazo Relentless {#cyber-queen}
+
+El nuevo jefe es Cyber Queen, que pilota el mazo Relentless. Su Legendaria es Dr. Frank y su plan de juego gira en torno a traer personajes de vuelta desde el cementerio: un arquetipo nuevo, con un puñado de cartas nuevas para experimentar. Las presentamos una a una en [las ocho cartas nuevas de Dr. Frank](/es/news/dr-frank-boss-new-cards).
+
+Una corrección: hasta hoy llamábamos a Dr. Frank el nuevo jefe. Las notas del parche dejan claro que el jefe es Cyber Queen y que Dr. Frank es la Legendaria de su mazo.
+
+## Todos los cambios {#cambios}
+
+Formato: maná · Poder/Salud para los personajes, solo maná para los hechizos.
+
+| Carta | Antes | Después | Qué cambia |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | cuesta 1 más |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | cuesta 1 más |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | cuesta 1 más |
+| Obliterate | 9 | 10 | cuesta 1 más |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 de Poder |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 de Poder, +2 de Salud |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 de Poder |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 de Salud |
+| Genie | 6 · 4/4 | 5 · 4/4 | cuesta 1 menos |
+| Searing Light | 4 | 3 | cuesta 1 menos |
+
+Cinco nerfs y cinco buffs. Ninguna carta cambia su texto ni sus habilidades: solo coste y estadísticas. El equipo cuenta que los cambios llegan tras "muchas discusiones apasionadas" sobre estas cartas.
+
+## Los tres osos cuestan más {#osos}
+
+Baby Bear, Mama Bear y Papa Bear cuestan 1 de maná más cada uno. Los tres castigan al enemigo que daña tu barrera donde están: Baby Bear le inflige 1 de daño, Papa Bear 3 y Mama Bear lo destruye.
+
+Baby Bear fue la carta más jugada en los cuatro clasificatorios de la Crimson Cup: en las tablas oficiales de Koin estaba en entre el 46% y el 50% de los mazos. A 3 de maná deja de ser una elección casi automática.
+
+## Obliterate sube a 10 de maná {#obliterate}
+
+Obliterate, el hechizo más caro del juego, cuesta ahora 10. En los clasificatorios de la Crimson Cup estaba en entre el 21% y el 24% de los mazos. El equipo bromea: tras todos los likes del post en X que pedía su nerf, casi ponen su daño en -12, pero el motor del juego no admite daño negativo.
+
+## Dorothy pasa a 3/3 {#dorothy}
+
+Dorothy, Legendaria, sigue costando 4 pero pasa de 1/1 a 3/3: ya no muere con un solo punto de daño. Banshee gana 1 de Poder y Esmeralda 1 de Salud, mientras que Genie (5) y Searing Light (3) cuestan 1 menos. Guy of Gisborne es la única carta que pierde estadísticas sin cambiar de coste: 3/4 en lugar de 4/4.
+
+## Y ahora {#ahora}
+
+Si tus mazos llevan Obliterate, los osos o Guy of Gisborne, revisa tu curva de maná: [MetaShifting](/es/metashifting) muestra cada cambio parche a parche, y en [Theory craft](/es/theory-craft) puedes rehacer una lista con los costes nuevos ahora mismo. Koin pide opiniones tras unas partidas: demasiado, demasiado poco o, como diría Ricitos de Oro, justo.`,
+    ),
+  },
+  {
     // Dr. Frank, il boss della missione 12, e le sue otto carte nuove (04/11/2026). Pierluigi: "nuovo boss e nuove carte
     // usciranno questo weekend [video di ZulsoiD] guarda sto video, intanto cerca l'annuncio e crea una news". Fonti: il post
     // Steam "Happy Halloween, Dr. Frank is coming" (31/10/2026, 16:41 UTC, apix) con la sua grafica, che danno mercoledì 4
