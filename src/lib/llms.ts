@@ -198,7 +198,7 @@ export function llmsFullText(data: LlmsFullData): string {
     `- Short index: ${siteUrl}/llms.txt`,
     `- Generated from the site's data at every deploy: ${data.guides.length} guides, ${data.news.length} news articles, ${inPlay.length} cards of the game's collection and ${created.length} created cards.`,
     `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} cards of the game's collection were checked one by one in the game on ${longDate(cardsVerified.date)}, and ${EARLY_ACCESS_NOTE}. Created cards are not in the game's collection, so they have not been checked in the game.`,
-    "- Every guide and article is also on the site in Italian (/it/), Spanish (/es/), French (/fr/), Brazilian Portuguese (/pt/), German (/de/) and Russian (/ru/), with the same slug.",
+    "- Every guide and article is also on the site in Italian (/it/), Spanish (/es/), French (/fr/), Brazilian Portuguese (/pt/), German (/de/), Russian (/ru/) and Simplified Chinese (/zh-cn/: guides and the news from 20 October 2026 on), with the same slug.",
     "- For rules, dates and announcements the official sources win: the Steam pages of Origins TCG, Koin Games' posts and the official Discord.",
     "- Card art and card text © Koin Games.",
     "",
@@ -237,7 +237,7 @@ export function llmsFull(): string {
 export function legendariesSection(list: readonly Card[] = cards): string {
   const legendaries = activeLegendaries(list);
   return [
-    `The ${legendaries.length} Legendaries in the game: every deck is led by one of them. Data of the latest patch (${patchLine()}); ${EARLY_ACCESS_NOTE}. Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…) and Russian (/ru/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.`,
+    `The ${legendaries.length} Legendaries in the game: every deck is led by one of them. Data of the latest patch (${patchLine()}); ${EARLY_ACCESS_NOTE}. Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…), Russian (/ru/cards/…) and Simplified Chinese (/zh-cn/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.`,
     "",
     ...legendaries.map(cardLine),
   ].join("\n");
@@ -257,7 +257,7 @@ export function guidesSection(guides: Guide[] = getGuides("en")): string {
   };
   const ordered = guides.map((g, i) => ({ g, i })).sort((a, b) => rank(a.g) - rank(b.g) || a.i - b.i);
   return [
-    "Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…), Brazilian Portuguese (/pt/guides/…), German (/de/guides/…) and Russian (/ru/guides/…) with the same slug.",
+    "Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…), Brazilian Portuguese (/pt/guides/…), German (/de/guides/…), Russian (/ru/guides/…) and Simplified Chinese (/zh-cn/guides/…) with the same slug.",
     "",
     ...ordered.map(({ g }) => `- [${g.title}](${siteUrl}/en/guides/${g.slug}): ${g.excerpt}`),
   ].join("\n");

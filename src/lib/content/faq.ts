@@ -969,7 +969,139 @@ const ru: Faq[] = [
   },
 ];
 
-export const faqs: Record<Locale, Faq[]> = { en, it, es, fr, pt, de, ru };
+// cinese semplificato (04/11/2026, docs/cinese.md): 你, nomi di carte, eventi e prodotti in inglese, punteggiatura a
+// larghezza piena; tradotto dall'inglese. I testi cinesi delle carte sono una traduzione nostra (languages, legendaries,
+// card-list, where-cards lo dicono). Le `keywords` sono parole cinesi intere: la ricerca le divide in coppie di
+// ideogrammi come le domande (`spezzaCjk` in src/lib/faq/retrieve.ts).
+const zhCn: Faq[] = [
+  {
+    id: "release-date",
+    q: "Origins TCG 什么时候发售？",
+    a: "游戏已经以抢先体验的形式推出：自 2026年10月27日起，Origins TCG 在 Steam 上免费开放，版本为 0.8，正是这次更新结束了试玩版。Koin Games 的目标是在 2027年3月17日左右以 1.0 版本结束抢先体验，Steam 页面注明这个日期仅供参考、可能变动（2026年10月28日查阅）。在此之前，免费试玩版于 2026年7月15日至10月27日在 Steam 上开放。我们的路线图收录了每一个已确认的日期。",
+    guides: ["roadmap-and-dates", "play-the-demo"],
+    keywords: ["发售", "上线", "推出", "什么时候出", "发售日期", "上线时间", "正式版", "抢先体验", "1.0", "release", "early access"],
+  },
+  {
+    id: "languages",
+    q: "Origins TCG 有哪些语言版本？",
+    a: "自 2026年9月29日的 0.7 补丁起，游戏支持 13 种语言：英语、法语、意大利语、德语、西班牙语（西班牙）、西班牙语（拉丁美洲）、葡萄牙语（巴西）、葡萄牙语（葡萄牙）、日语、韩语、波兰语、俄语和简体中文（官方补丁说明）。Steam 页面列出的界面语言也是这 13 种，完整语音只有英语（2026年9月30日查阅，10月28日再次查阅）。要切换语言，在 Steam 库中右键点击游戏，依次选择“属性”和“语言”。OriginsMeta 提供英语、意大利语、西班牙语、法语（自 2026年10月7日起）、葡萄牙语、德语、俄语（这三种自 2026年10月20日起）和简体中文（自 2026年11月4日起）版本；意大利语、西班牙语、法语、葡萄牙语、德语和俄语的卡牌文本与游戏内一致（德语和俄语于 2026年10月20日在游戏中读取），中文卡牌文本目前是我们自己的翻译。",
+    guides: ["play-the-demo"],
+    news: [{ slug: "patch-0-7", label: "0.7 补丁说明" }],
+    keywords: ["语言", "中文", "简体中文", "汉化", "翻译", "字幕", "配音", "英语", "chinese"],
+  },
+  {
+    id: "mobile",
+    q: "Origins TCG 有安卓或 iOS 版吗？",
+    a: "暂时没有。Steam 页面列出的平台是 Windows 和 macOS（2026年9月25日查阅）。Koin Games 在预注册页面上写道，手机端开包功能即将推出：“我们把 Origins 手机版的目标定在 2027 年。”两个页面都没有说明这指的是安卓、iOS 还是两者都有。2025年11月，在工作室把卡牌交易转到 Steam 之前，游戏曾在部分地区的 App Store 小范围上线（soft launch）。",
+    guides: ["roadmap-and-dates"],
+    keywords: ["手机", "移动端", "手游", "安卓", "苹果", "平板", "iphone", "ipad", "android", "ios", "app store", "google play", "mac", "macos"],
+  },
+  {
+    id: "riftbound",
+    q: "Origins TCG 和 Riftbound Origins 是同一款游戏吗？",
+    a: "不是。Origins TCG 是 Koin Games 在 Steam 上推出的数字集换式卡牌游戏，角色是 Robin Hood、Mulan、Dracula 等公有领域的传说人物。“Riftbound Origins”是 Riftbound 的一个卡牌系列，而 Riftbound 是《英雄联盟》的集换式卡牌游戏（Riftbound 官网，2026年9月25日查阅）：那是另一款游戏，并非 Koin Games 制作。搜索“Origins”的卡组或卡牌时，两者都可能出现。",
+    guides: ["origins-tcg-explained"],
+    keywords: ["riftbound", "英雄联盟", "拳头", "league of legends", "riot"],
+  },
+  {
+    id: "free-to-compete",
+    q: "Origins TCG 是付费取胜（pay-to-win）的游戏吗？",
+    a: "Koin Games 说不是：每位玩家都能免费获得所有卡牌，你购买的是收藏版本——经过评级、限量发行、可以在 Steam 市场交易——所以花钱改变的是你拥有什么，而不是你能用什么来玩。在 Steam 页面上（2026年10月28日查阅），Koin 写道：无论在抢先体验期间还是之后，游戏都将永远免费游玩、免费竞技；花钱永远不会解锁更强的卡牌，也不会带来游戏上的优势；抢先体验期间会有一些付费的高级功能。花钱具体能买到什么，详见我们的攻略。",
+    guides: ["is-origins-tcg-pay-to-win"],
+    keywords: ["pay to win", "p2w", "氪金", "付费", "付费取胜", "免费游玩", "免费竞技", "内购", "微交易", "free to play"],
+  },
+  {
+    id: "kickstarter",
+    q: "Origins TCG 的 Kickstarter 有确定日期吗？",
+    a: "有：它于 2026年10月27日开启，正是 Origins TCG 进入抢先体验的那一天，Koin Games 在 Steam 上以帖子“The Origins Kickstarter is LIVE”宣布。这次众筹的对象是 Alpha Set “Myths & Legends”，一套 Kickstarter 独占的 218 张卡牌，Koin 表示会在抢先体验期间逐步发布。Koin Games 的 CEO Tim Jooste 早在 2026年9月17日就在 X 上公布了日期（“back the Alpha Edition Kickstarter (Oct 27th)”），试玩版的主菜单也曾显示“Coming soon – Oct 27”。我们的 Kickstarter 攻略会持续更新所有信息。",
+    guides: ["origins-tcg-kickstarter", "collector-economy"],
+    news: [{ slug: "kickstarter-ama-pre-registration", label: "9月10日的 Kickstarter AMA" }],
+    keywords: ["kickstarter", "众筹", "预注册", "预约", "定金", "founder", "alpha"],
+  },
+  {
+    id: "demo-progress",
+    q: "Origins TCG 试玩版的进度会保留吗？",
+    a: "会。试玩版于 2026年10月27日随 0.8 版本结束，Koin Games 在 Steam 上的相关帖子写道：“你的账号、收藏、进度以及其他一切，现在都在 Origins 的抢先体验版中。”在官方 Discord 上，Koin 的工作室负责人 Mawr 补充说，所有进度都已转移到抢先体验版，试玩版可以卸载。更早之前，在 2026年9月21日，Koin 就已经让玩过试玩版、封闭测试或两者都玩过的玩家保留进度更靠前的那一份，“这样就没有人需要重新解锁卡牌了”。",
+    guides: ["play-the-demo"],
+    news: [
+      { slug: "demo-first-big-update", label: "9月21日的试玩版更新" },
+      { slug: "demo-2-progress-carryover", label: "Demo 1 的解锁会保留" },
+    ],
+    keywords: ["进度", "解锁", "继承", "保留", "转移", "存档", "重置", "清空"],
+  },
+  {
+    id: "ranked",
+    q: "什么时候可以在 Origins TCG 玩排位赛？",
+    a: "现在就可以：排位赛于 2026年10月15日随 0.7.1 更新在试玩版中开放，比 Steam Next Fest 早四天；自 2026年10月27日起，它成为抢先体验版的一部分。0.8 版本开放了 Grandmaster 段位及其全球排行榜，抢先体验的第一个排位赛季预计在 12 月初结束，最终排名最高的玩家将获得限量版奖励（这是 Koin 的计划，可能会变）。排位赛在封闭测试中就已存在，始于 2026年8月14日的 0.6.1 补丁：一条直达 Grandmaster 的段位天梯。",
+    guides: ["origins-tcg-ranked", "steam-next-fest-2026"],
+    news: [
+      { slug: "demo-patch-notes-0-7-1", label: "试玩版 0.7.1：排位赛开放" },
+      { slug: "patch-0-6-1-ranked", label: "0.6.1 补丁：排位天梯" },
+    ],
+    keywords: ["排位", "排位赛", "天梯", "段位", "排行榜", "赛季", "grandmaster", "ranked"],
+  },
+  {
+    id: "crimson-cup",
+    q: "Crimson Cup 什么时候举行，奖励是什么？",
+    a: "2026年10月19日至25日，在 Steam Next Fest 期间举行：19日至22日进行五场预选赛，每场 512 个名额（AMER 19日 EST 晚上 7 点，EMEA 20日 CEST 晚上 7 点，AMER 21日 EST 晚上 9 点，APAC 和 EMEA 22日），24日季后赛，25日决赛。奖励总价值 10,000 美元，分为现金、收藏品和宣传卡：冠军获得一张 1/1 的 Dracula 宣传卡、两整箱补充包和 1,500 美元，宣传卡一直发到前 32 名，卡包发到前 256 名。报名在 Koin 的官方 Discord 上进行，签到在每场预选赛开始前五分钟截止：错过签到就不能参赛。2026年10月25日，CoachCrono 从败者组一路打上来，赢得了冠军。",
+    guides: ["steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup 规则" }, { slug: "crimson-cup-coachcrono-wins", label: "CoachCrono 赢得 Crimson Cup" }],
+    keywords: ["奖励", "奖品", "奖金", "预选赛", "签到", "季后赛", "决赛", "报名", "prize"],
+  },
+  {
+    id: "conquest",
+    q: "Conquest 赛制是怎么运作的？",
+    a: "你要报名不止一副卡组，而且各卡组之间必须有所不同。对手会禁掉你的一副卡组，你需要用剩下的每一副卡组都战胜对手，才能赢下这场比赛。在 Crimson Cup 中是三副卡组，每两副之间至少有 8 张独有卡牌，卡表在前 4 名之前都不公开（禁用时你只能看到传说卡），五局三胜的比赛没有禁用：你必须用全部三副卡组获胜。Koin 第一次使用这个赛制是在 Big Bob's Playtest Battle，当时每副卡组需要不同的传说卡，且至少有九张卡牌不同。",
+    guides: ["origins-tcg-conquest", "steam-next-fest-2026"],
+    news: [{ slug: "crimson-cup-format-check-in", label: "Crimson Cup 规则" }],
+    keywords: ["conquest", "三副卡组", "禁用", "禁卡", "独特卡牌", "ban"],
+  },
+  {
+    id: "deck-rules",
+    q: "Origins TCG 的一副卡组有多少张牌？",
+    a: "二十五张：一张传说卡，加上十二张不同的卡牌，每张各两份。你只需选出十三个卡名，游戏会自动把十二张基础卡牌各复制一份。本站的卡组构筑器会按这条规则检查你的卡组，并告诉你还缺什么、哪里不合规。",
+    guides: ["origins-tcg-explained"],
+    keywords: ["多少张", "卡组大小", "合规", "组建", "构筑", "两份", "卡组规则"],
+  },
+  {
+    id: "legendaries",
+    q: "Origins TCG 有哪些传说卡？",
+    a: "游戏中共有 11 张，数值为 2026年9月29日 0.7 补丁的数值（2026年10月27日的 0.8 补丁说明没有列出卡牌改动）：Dorothy、Dracula、King Arthur、Legion of the Dead、Merlin、Mulan、Queen of Hearts、Robin Hood、Three Not So Little Pigs、Van Helsing 和 Wicked Stepmother。每副卡组都恰好由其中一张领衔；Legion of the Dead 是唯一的法术，其余十张都是角色。每张传说卡在我们的卡牌数据库中都有自己的页面，包括卡牌文本（中文为我们的翻译）、数值和平衡改动记录。",
+    cards: legendaries,
+    guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
+    links: [{ path: "/cards", label: "卡牌数据库" }],
+    keywords: ["传说", "传说卡", "legendary"],
+  },
+  {
+    id: "deck-code",
+    q: "如何导入卡组代码？",
+    a: "要把游戏里的卡组带到本站，把它的代码（以 KGBLDC 开头）粘贴到卡组构筑器顶部的输入框中，然后点击“导入”：输入框也能读取分享链接或文字卡表，并会列出无法匹配的卡牌。反过来，当本站掌握卡组中每张卡牌的 ID 时，OriginsMeta 的卡组页面会有“复制游戏代码”按钮；在卡组构筑器中，满足同样条件时，代码在“分享”下面。这就是要粘贴到 Origins 里的代码。",
+    links: [
+      { path: "/deck-builder", label: "卡组构筑器" },
+      { path: "/decks", label: "社区卡组" },
+    ],
+    keywords: ["代码", "导入", "导出", "kgbldc", "游戏代码", "卡组代码"],
+  },
+  {
+    id: "card-list",
+    q: "在哪里可以看到 Origins TCG 的全部卡牌？",
+    a: "在我们的卡牌数据库里：游戏中的 122 张卡牌，附有当前数值、游戏内显示的英语、意大利语、西班牙语、法语、葡萄牙语、德语和俄语官方文本（中文文本是我们的翻译）以及每张卡的平衡改动记录；另外还有 22 张衍生卡牌，也就是只有在其他卡牌生成它们时才会出现的卡，它们的文本未在游戏中核实。在游戏里，我们查看时（抢先体验之前）收藏位于 My Decks → Cards：打开“Unowned”筛选，就能同时看到你还没有的卡牌。",
+    links: [{ path: "/cards", label: "卡牌数据库" }],
+    keywords: ["卡牌列表", "全部卡牌", "卡牌数据库", "数据库", "图鉴", "收藏", "unowned"],
+  },
+  {
+    id: "where-cards",
+    q: "本站的卡牌数据从哪里来？",
+    a: "游戏收藏中 122 张卡牌的费用、数值、阵营和文本，于 2026年9月22日在游戏中逐张核对（英语），9月25日又核对了意大利语和西班牙语，这些都是游戏自己的文本，基于 2026年9月21日的试玩版补丁。9月29日的 0.7 补丁改变了 Bagheera、Mind Palace 和 Spellbook 的费用，并重做了 Twister Toss：本站根据 Steam 上的官方补丁说明应用了这些改动，Twister Toss 的新文本还没有在游戏中读取。法语卡牌文本同样是游戏自己的，于 2026年10月8日在收藏中读取；葡萄牙语、德语和俄语文本也是，于 2026年10月20日连同 0.7 补丁的文本一起读取。中文卡牌文本是我们自己的翻译。2026年10月27日的 0.8 补丁说明（抢先体验的第一个版本）没有列出卡牌改动。衍生卡牌和已移除的卡牌不在游戏收藏中，因此未在游戏中核实。卡图是 Koin Games 的官方插画；系列和每个传说的介绍由我们撰写。",
+    news: [
+      { slug: "patch-0-7", label: "0.7 补丁说明" },
+      { slug: "demo-patch-notes-0921", label: "9月21日的试玩版补丁说明" },
+    ],
+    keywords: ["数据", "数值", "来源", "出处", "准确", "核实", "核对", "验证"],
+  },
+];
+
+export const faqs: Record<Locale, Faq[]> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 /** Domande pronte sotto il campo: non sostituiscono la domanda libera, la riempiono. */
 export const suggerimenti: Record<Locale, string[]> = {
@@ -1027,5 +1159,13 @@ export const suggerimenti: Record<Locale, string[]> = {
     "Что изменилось в патче от 21 сентября?",
     "Какие Легендарные карты есть в игре?",
     "Что делает способность При раскрытии?",
+  ],
+  "zh-cn": [
+    "Mulan 有什么效果？",
+    "哪些卡牌和 Van Helsing 搭配得好？",
+    "怎样组建一副合规的卡组？",
+    "9月21日的补丁改了什么？",
+    "游戏里有哪些传说卡？",
+    "揭示时能力有什么作用？",
   ],
 };

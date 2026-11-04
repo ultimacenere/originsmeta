@@ -1,7 +1,7 @@
 import { statSync } from "node:fs";
 import { join } from "node:path";
 import { href, siteUrl, type Locale } from "./i18n";
-import { newsPath, sortedNews, type NewsItem } from "./data/news";
+import { newsInLocale, newsPath, sortedNews, type NewsItem } from "./data/news";
 import { authorOfNews } from "./data/authors";
 import { imageSizeOf } from "./imageSize";
 import { imageMime, rssXml, type RssImage, type RssItem } from "./seoXml";
@@ -54,7 +54,7 @@ function coverOf(n: NewsItem): RssImage | undefined {
 
 /** Le voci del feed di una lingua, dalla news più recente. */
 export function newsFeedItems(locale: Locale, now: Date, limit = NEWS_FEED_ITEMS): RssItem[] {
-  return sortedNews.slice(0, limit).map((n) => {
+  return newsInLocale(locale).slice(0, limit).map((n) => {
     const link = `${siteUrl}${href(locale, newsPath(n))}`;
     return {
       title: n.title[locale],

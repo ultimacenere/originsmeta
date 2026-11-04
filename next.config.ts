@@ -12,7 +12,7 @@ const spamKeys = ["r", "channel"] as const;
 
 /**
  * Lingua del visitatore per i redirect senza lingua (la radice e le sezioni): italiano; spagnolo anche per catalano,
- * galiziano e basco, che leggono lo spagnolo; francese (dal 07/10/2026); portoghese, anche europeo, tedesco e russo (dal 20/10/2026); altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
+ * galiziano e basco, che leggono lo spagnolo; francese (dal 07/10/2026); portoghese, anche europeo, tedesco e russo (dal 20/10/2026); cinese, semplificato e tradizionale (dal 04/11/2026); altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
  * solo la prima lingua dell'header (è un'espressione regolare); i link brevi dei tornei pesano tutto l'elenco
  * (`preferredLocale` in src/app/t/locale.ts).
  */
@@ -27,6 +27,8 @@ const browserLocales = [
   { locale: "de", acceptLanguage: "^de.*" },
   // russo dal 20/10/2026 (settima lingua)
   { locale: "ru", acceptLanguage: "^ru.*" },
+  // cinese semplificato dal 04/11/2026 (ottava lingua, /zh-cn): anche chi legge il tradizionale (zh-TW, zh-HK) lo legge meglio dell'inglese
+  { locale: "zh-cn", acceptLanguage: "^zh.*" },
 ] as const;
 
 const acceptLanguage = (value: string) => [{ type: "header" as const, key: "accept-language", value }];
@@ -134,7 +136,7 @@ const nextConfig: NextConfig = {
       // viene incorniciata altrove; il sito incornicia altri (YouTube, Twitch, Turnstile), e questo non cambia.
       // X-Frame-Options per i browser che non leggono frame-ancestors. L'overlay (/overlay/…) non rientra nel percorso.
       {
-        source: "/:locale(en|it|es|fr|pt|de|ru)/:path*",
+        source: "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/:path*",
         headers: [
           { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -194,7 +196,7 @@ const nextConfig: NextConfig = {
       // verso /analytics, che ora è la pagina delle statistiche (Pierluigi: "non si chiama più win rate ma si chiama
       // analytics"); la pagina dell'app è /tracker. Una sola regola per le quattro lingue, con l'ancora che resta.
       {
-        source: "/:locale(en|it|es|fr|pt|de|ru)/tier-list/win-rate",
+        source: "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/tier-list/win-rate",
         destination: "/:locale/analytics",
         permanent: true,
       },

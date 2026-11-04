@@ -16,7 +16,7 @@ export const ru: Dictionary = {
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "тир-лист", "колоды" e "карты" sono delle loro pagine */
     homeTitle: "Origins TCG, карточная игра Koin Games · OriginsMeta",
     description:
-      "Origins TCG — карточная игра free-to-compete от Koin Games. Неофициальный фан-сайт на семи языках: карты, колоды, конструктор колод, гайды и новости.",
+      "Origins TCG — карточная игра free-to-compete от Koin Games. Неофициальный фан-сайт на восьми языках: карты, колоды, конструктор колод, гайды и новости.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Неофициальный фан-сайт об игре Origins TCG, карточной игре Koin Games, на английском, итальянском, испанском, французском, португальском, немецком и русском: карты, колоды, конструктор колод, тир-лист, гайды и новости.",
@@ -226,7 +226,7 @@ export const ru: Dictionary = {
     guidesTitle: "С чего начать",
     guidesStartSub: "Впервые в Origins TCG? Три коротких текста: что это за игра, как начать играть и как устроен рейтинговый режим.",
     statusTitle: "Состояние игры",
-    inBrief: "Origins TCG — цифровая карточная игра free-to-compete от Koin Games: с 27 октября 2026 года она бесплатно доступна в Steam в раннем доступе, а версию 1.0, по данным страницы в Steam, Koin планирует выпустить примерно в марте 2027 года. OriginsMeta — неофициальный фан-сайт на семи языках, не связанный с Koin Games.",
+    inBrief: "Origins TCG — цифровая карточная игра free-to-compete от Koin Games: с 27 октября 2026 года она бесплатно доступна в Steam в раннем доступе, а версию 1.0, по данным страницы в Steam, Koin планирует выпустить примерно в марте 2027 года. OriginsMeta — неофициальный фан-сайт на восьми языках, не связанный с Koin Games.",
     status: {
       demo: "Ранний доступ",
       demoValue: "В Steam с 27 октября 2026",
@@ -992,7 +992,7 @@ export const ru: Dictionary = {
   },
   footer: {
     disclaimer: "OriginsMeta — независимый неофициальный фан-сайт об Origins TCG, цифровой карточной игре Koin Games, и не связан с Koin Games. Origins TCG и все связанные с ней названия и иллюстрации принадлежат их владельцам.",
-    built: "Сделано за игровым столом, на семи языках.",
+    built: "Сделано за игровым столом, на восьми языках.",
     links: "Ссылки",
     official: "Официальное",
     legal: "Правовая информация",
@@ -1246,9 +1246,9 @@ export const ru: Dictionary = {
     kicker: "Колода Origins",
     guideLangNote: "Этот гайд написан на языке «{lang}» тем, кто опубликовал колоду, и показан как есть: автоматический перевод ещё не готов.",
     /* en.ts non ha ancora la chiave ru: oggetti dichiarati a parte (const qui sotto), così il tipo resta quello di en.ts */
-    langNames: { en: "английский", it: "итальянский", es: "испанский", fr: "французский", pt: "португальский", de: "немецкий", ru: "русский" },
+    langNames: { en: "английский", it: "итальянский", es: "испанский", fr: "французский", pt: "португальский", de: "немецкий", ru: "русский", "zh-cn": "китайский" },
     /** "с <языка>", после «Переведено автоматически» */
-    langFrom: { en: "с английского", it: "с итальянского", es: "с испанского", fr: "с французского", pt: "с португальского", de: "с немецкого", ru: "с русского" },
+    langFrom: { en: "с английского", it: "с итальянского", es: "с испанского", fr: "с французского", pt: "с португальского", de: "с немецкого", ru: "с русского", "zh-cn": "с китайского" },
     translatedNote: "Переведено автоматически {from}: названия карт остаются на английском, как в игре.",
     originalText: "Оригинальный текст ({lang})",
     metaTail: "Полный список, графики и код колоды для игры на OriginsMeta.",

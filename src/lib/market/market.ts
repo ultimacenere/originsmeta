@@ -263,8 +263,8 @@ export function changePct(now: number | null, before: number | null): number | n
 /** La valuta di partenza per lingua: dollari sulle pagine inglesi, euro sulle altre. */
 export function defaultCurrency(locale: string): MarketCurrency {
   // il portoghese è quello del Brasile, dove il riferimento è il dollaro (Steam lì vende in real, che il mercato non ha)
-  // e il russo: il mercato non ha il rublo, il dollaro è il riferimento più vicino (20/10/2026)
-  return locale === "en" || locale === "pt" || locale === "ru" ? "USD" : "EUR";
+  // e il russo: il mercato non ha il rublo, il dollaro è il riferimento più vicino (20/10/2026); lo stesso per il cinese (04/11/2026)
+  return locale === "en" || locale === "pt" || locale === "ru" || locale === "zh-cn" ? "USD" : "EUR";
 }
 
 /** Una riga del tabellone (funzione market_board). */

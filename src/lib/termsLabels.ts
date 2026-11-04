@@ -576,4 +576,83 @@ export const termsLabels: Record<Locale, TermsLabels> = {
     ],
     footer: "Условия использования",
   },
+  "zh-cn": {
+    title: "使用条款",
+    description: "OriginsMeta 的使用条款，适用于 originsmeta.com 网站、Windows 版 OriginsMeta Tracker 应用和 Twitch 扩展 OriginsMeta Deck tracker：我们是谁、免费服务、您的账号、您发布的内容、Origins TCG 内容、免责声明和适用法律。",
+    updated: "最后更新：2026年10月14日",
+    intro:
+      "本条款适用于 originsmeta.com、Windows 版 OriginsMeta Tracker 应用和 Twitch 扩展 OriginsMeta Deck tracker（合称“OriginsMeta”）。使用 OriginsMeta 即表示您接受本条款。如果您不接受，请不要使用。",
+    sections: [
+      {
+        id: "who",
+        title: "我们是谁",
+        body: [
+          "OriginsMeta 是关于 Origins TCG 的非官方粉丝网站，由 Pierluigi Cella 运营。本站与 Koin Games 无关联，也未获得其认可或赞助。您可以发送邮件至 staff@originsmeta.com 联系我们。",
+        ],
+      },
+      {
+        id: "service",
+        title: "服务",
+        body: [
+          "OriginsMeta 是免费的。我们可以随时更改、暂停或终止其中任何部分，包括应用和扩展。通过 PayPal 的捐赠完全自愿，不带来任何权利或回报。",
+        ],
+      },
+      {
+        id: "account",
+        title: "您的账号",
+        body: [
+          "您可以通过 Discord 或电子邮件发送的链接登录。您需要对使用账号所做的一切负责。角色和标签由 Staff 分配。对于违反本条款的内容或账号，我们可以隐藏内容或暂停账号；您也可以随时删除自己的账号。",
+        ],
+      },
+      {
+        id: "content",
+        title: "您发布的内容",
+        body: [
+          "您发布的卡组、攻略、强度榜、漫画、评分和消息仍归您所有。发布即表示您允许 OriginsMeta 在其上线期间将其展示在网站上、自动翻译成网站支持的语言，并分享到我们的 Discord 服务器和扩展中。",
+          "请勿发布任何违法、冒犯、误导性的内容、垃圾信息、他人的个人数据或您无权分享的作品。Staff 可以隐藏或删除违反这些规则的内容。",
+        ],
+      },
+      {
+        id: "game",
+        title: "Origins TCG 的内容",
+        body: [
+          "Origins TCG 及其卡牌、名称、文本和图片归 Koin Games 所有。OriginsMeta 展示它们是为了讨论这款游戏；它们不属于我们，也不受本条款约束。卡牌数据、平衡调整和统计数据可能有误：仅供参考。",
+        ],
+      },
+      {
+        id: "tracker",
+        title: "OriginsMeta Tracker",
+        body: [
+          "该应用只读取您电脑上游戏保存的文件和游戏窗口，从不修改游戏。它只有在关联 OriginsMeta 账号后才会工作，并按隐私政策所述向网站发送数据。安装和使用的风险由您自行承担；您可以随时在账号中解除关联并删除您的对局。根据对局计算出的统计数据均为估算。",
+        ],
+      },
+      {
+        id: "twitch",
+        title: "Twitch 扩展 OriginsMeta Deck tracker",
+        body: [
+          "该扩展向观众显示主播的卡组和卡牌，数据来自 OriginsMeta Tracker：从不显示玩家或对局的名称、段位或标识符。观众无需账号。关联频道的主播对其直播内容负责。Twitch 自身的条款同样适用。",
+        ],
+      },
+      {
+        id: "liability",
+        title: "免责声明",
+        body: [
+          "OriginsMeta 按“现状”提供，不作任何保证。在法律允许的范围内，对于间接损失，或因数据错误、服务中断以及使用应用和扩展而造成的损失，我们不承担责任。本条款的任何内容均不限制您所在国家法律赋予您作为消费者的权利。",
+        ],
+      },
+      {
+        id: "privacy",
+        title: "隐私",
+        body: ["我们如何使用数据，请参阅隐私政策。"],
+      },
+      {
+        id: "changes",
+        title: "条款变更与适用法律",
+        body: [
+          "我们可能会更新本条款：顶部的日期会告诉您更新时间。如果您在变更后继续使用 OriginsMeta，即表示您接受新版本。本条款受意大利法律管辖，但不影响您居住国的强制性规定。",
+        ],
+      },
+    ],
+    footer: "使用条款",
+  },
 };

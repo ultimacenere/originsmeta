@@ -5,6 +5,8 @@ import { frText } from "./guides-fr";
 import { ptText } from "./guides-pt";
 import { deText } from "./guides-de";
 import { ruText } from "./guides-ru";
+import { zhCnTextA } from "./guides-zh-cn";
+import { zhCnTextB } from "./guides-zh-cn-b";
 import type { GuideVideo } from "../videos";
 
 export type GuideCategory = "game" | "decks" | "rank" | "archetypes" | "interviews" | "events" | "economy";
@@ -3378,8 +3380,12 @@ const fr = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...frText[s]
 const pt = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...ptText[s] }])) as Record<GuideSlug, Guide>;
 const de = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...deText[s] }])) as Record<GuideSlug, Guide>;
 const ru = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...ruText[s] }])) as Record<GuideSlug, Guide>;
+// Cinese semplificato (04/11/2026): le guide stanno in due file, guides-zh-cn.ts (le prime dieci) e guides-zh-cn-b.ts (le altre)
+const zhCnText = { ...zhCnTextA, ...zhCnTextB } as Record<GuideSlug, GuideCopy>;
+for (const s of guideSlugs) if (!zhCnText[s]) throw new Error(`guida "${s}": manca il testo cinese in guides-zh-cn.ts o guides-zh-cn-b.ts`);
+const zhCn = Object.fromEntries(guideSlugs.map((s) => [s, { ...en[s], ...zhCnText[s] }])) as Record<GuideSlug, Guide>;
 
-const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, es, fr, pt, de, ru };
+const all: Record<Locale, Record<GuideSlug, Guide>> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 /** Giorno di prima pubblicazione di ogni guida (il primo commit che la contiene). Una guida nuova si aggiunge qui. */
 const publishedOn: Record<GuideSlug, string> = {

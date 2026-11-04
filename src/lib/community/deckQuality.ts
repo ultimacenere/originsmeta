@@ -53,10 +53,18 @@ const LETTER = /\p{L}/u;
  */
 const SEPARATORS = /[\s  ]+|[/|]+|(?<=\p{L})['’](?=\p{L})/u;
 
-/** Parole di un testo, uguali per inglese, italiano e spagnolo. */
+/**
+ * Ideogrammi cinesi (04/11/2026): il cinese non separa le parole con gli spazi, quindi una guida scritta in cinese
+ * sarebbe "una parola" per frase e non arriverebbe mai alla soglia. Si conta una parola ogni due ideogrammi, la
+ * lunghezza media di una parola cinese: 150 caratteri di guida valgono le 75 parole delle altre lingue.
+ */
+const HAN = /\p{Script=Han}/gu;
+
+/** Parole di un testo, uguali per inglese, italiano e spagnolo; per il cinese, una ogni due ideogrammi. */
 export function countWords(text: string): number {
-  let n = 0;
-  for (const token of text.split(SEPARATORS)) if (token && LETTER.test(token)) n++;
+  const han = text.match(HAN)?.length ?? 0;
+  let n = Math.ceil(han / 2);
+  for (const token of (han ? text.replace(HAN, " ") : text).split(SEPARATORS)) if (token && LETTER.test(token)) n++;
   return n;
 }
 
@@ -167,6 +175,11 @@ export const guideMeterLabels: Record<Locale, { below: string; ok: string }> = {
     below: "{n} из {min} слов. Если в гайде (план игры и разделы) не меньше {min} слов, страница колоды может появиться в Google; гайды короче остаются только на сайте.",
     ok: "Слов: {n}. Гайд полный, страница колоды может появиться в Google.",
   },
+  // cinese: "词" sono le parole di countWords, che per il cinese ne conta una ogni due ideogrammi
+  "zh-cn": {
+    below: "已写 {n} 词，需要 {min} 词。攻略（游戏计划加各部分）至少达到 {min} 词时，卡组页面才可能出现在 Google 上；更短的攻略只留在本站。",
+    ok: "{n} 词：攻略完整，卡组页面可以出现在 Google 上。",
+  },
 };
 
 /** La frase dell'indicatore per un numero di parole. */
@@ -227,7 +240,14 @@ type ProfileWords = {
   and: string;
   /** code per arrivare a 120 caratteri, dalla più lunga */
   tails: readonly string[];
+  /**
+   * Punteggiatura delle parti montate dal codice (elenco delle Leggendarie, punto finale, spazio prima della coda),
+   * solo dove non è quella latina: il cinese (04/11/2026) vuole （…）, 、, 。 e nessuno spazio.
+   */
+  punct?: { open: string; close: string; comma: string; stop: string; space: string };
 };
+
+const LATIN_PUNCT = { open: " (", close: ")", comma: ", ", stop: ".", space: " " } as const;
 
 /**
  * Title e description dei profili costruiti dai dati (DECKS-09): prima erano una frase fissa del dizionario ("The
@@ -439,6 +459,41 @@ const profileWords: Record<Locale, ProfileWords> = {
     and: " и ",
     tails: ["Профиль в сообществе OriginsMeta, неофициального фан-сайта об игре Origins TCG.", "Профиль в сообществе OriginsMeta, неофициального фан-сайта Origins TCG.", "Профиль игрока в сообществе фан-сайта OriginsMeta.", "Профиль в сообществе OriginsMeta.", "Профиль в сообществе."],
   },
+  // cinese semplificato (04/11/2026, docs/cinese.md): 卡组, 强度榜, 攻略; niente plurali, numeri con lo spazio, punteggiatura
+  // cinese anche nelle parti montate dal codice (`punct`). Una frase cinese è molto più corta in caratteri: le code
+  // lunghe servono ad avvicinarsi ai 120 caratteri della description.
+  "zh-cn": {
+    title: {
+      both: "{name}：Origins TCG 卡组与强度榜",
+      decks: "{name}：Origins TCG 卡组",
+      deck: "{name}：Origins TCG 卡组",
+      decksGuides: "{name}：Origins TCG 卡组与攻略",
+      guides: "{name}：Origins TCG 攻略",
+      guide: "{name}：Origins TCG 攻略",
+      none: "{name}：Origins TCG 社区主页",
+      short: "{name}：Origins TCG",
+    },
+    decks: ({ name, n, list }) => `${name} 的 ${n} 套 Origins TCG 卡组${list}，附有游戏计划和完整卡表`,
+    plusTiers: (k) => `，另有 ${k} 份已保存的强度榜`,
+    plusGuides: (g) => `，另有 ${g} 篇攻略`,
+    guidesOnly: ({ name, g }) => `${name} 为其他玩家撰写的 ${g} 篇 Origins TCG 攻略`,
+    tiersOnly: ({ name, k, kinds }) => {
+      const head = `${name} 的 ${k} 份 Origins TCG 强度榜（${kinds}），从 S 到 D 排列`;
+      return [`${head}，可以在强度榜制作器中打开。`, `${head}。`];
+    },
+    none: (name) => `${name} 在 Origins TCG 社区网站 OriginsMeta 上的主页：还没有发布卡组或强度榜。`,
+    kinds: { legendaries: "传说卡", cards: "基础卡" },
+    and: "和",
+    tails: [
+      "OriginsMeta 是 Origins TCG 的非官方粉丝网站，汇集社区玩家发布的卡组、强度榜和攻略，每套卡组都附有完整卡表和游戏计划，供所有玩家参考。",
+      "OriginsMeta 是 Origins TCG 的非官方粉丝网站，汇集社区玩家发布的卡组、强度榜和攻略，每套卡组都附有完整卡表。",
+      "OriginsMeta 是 Origins TCG 的非官方粉丝网站，汇集社区玩家发布的卡组、强度榜和攻略。",
+      "OriginsMeta 上的社区主页，Origins TCG 非官方粉丝网站。",
+      "OriginsMeta 上的社区主页。",
+      "社区主页。",
+    ],
+    punct: { open: "（", close: "）", comma: "、", stop: "。", space: "" },
+  },
 };
 
 /** Accorcia un nome all'ultima parola intera che ci sta, con l'ellissi (nomi utente lunghissimi). */
@@ -481,8 +536,8 @@ export function profileTitle(f: Pick<ProfileFacts, "name" | "decks" | "tierLists
 }
 
 /** Elenco con l'ultima congiunzione: "Dorothy, Merlin and Dracula". */
-function joinList(items: readonly string[], and: string): string {
-  return items.length <= 1 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")}${and}${items[items.length - 1]}`;
+function joinList(items: readonly string[], and: string, comma: string = ", "): string {
+  return items.length <= 1 ? (items[0] ?? "") : `${items.slice(0, -1).join(comma)}${and}${items[items.length - 1]}`;
 }
 
 /**
@@ -495,6 +550,7 @@ function joinList(items: readonly string[], and: string): string {
  */
 export function profileDescription(f: ProfileFacts, locale: Locale): string {
   const w = profileWords[locale];
+  const p = w.punct ?? LATIN_PUNCT;
   const name = cutName(f.name.replace(/\s+/g, " ").trim(), 40);
   const guides = f.guides ?? 0;
   let base: string;
@@ -504,17 +560,18 @@ export function profileDescription(f: ProfileFacts, locale: Locale): string {
     base = "";
     for (const k of lists) {
       const shown = f.legendaries.slice(0, k);
-      const list = shown.length ? ` (${k < f.legendaries.length ? `${shown.join(", ")}…` : joinList(shown, w.and)})` : "";
-      base = `${w.decks({ name, n: f.decks, list })}${tiers}.`;
+      const list = shown.length ? `${p.open}${k < f.legendaries.length ? `${shown.join(p.comma)}…` : joinList(shown, w.and, p.comma)}${p.close}` : "";
+      base = `${w.decks({ name, n: f.decks, list })}${tiers}${p.stop}`;
       if (base.length <= PROFILE_DESC_MAX) break;
     }
   } else if (guides > 0) {
-    const withTiers = `${w.guidesOnly({ name, g: guides })}${f.tierLists > 0 ? w.plusTiers(f.tierLists) : ""}.`;
-    base = withTiers.length <= PROFILE_DESC_MAX ? withTiers : `${w.guidesOnly({ name, g: guides })}.`;
+    const withTiers = `${w.guidesOnly({ name, g: guides })}${f.tierLists > 0 ? w.plusTiers(f.tierLists) : ""}${p.stop}`;
+    base = withTiers.length <= PROFILE_DESC_MAX ? withTiers : `${w.guidesOnly({ name, g: guides })}${p.stop}`;
   } else if (f.tierLists > 0) {
     const kinds = joinList(
       (["legendaries", "cards"] as const).filter((k) => f.tierKinds.includes(k)).map((k) => w.kinds[k]),
       w.and,
+      p.comma,
     );
     const [long, short] = w.tiersOnly({ name, k: f.tierLists, kinds: kinds || w.kinds.cards });
     base = long.length <= PROFILE_DESC_MAX ? long : short;
@@ -522,8 +579,8 @@ export function profileDescription(f: ProfileFacts, locale: Locale): string {
     base = w.none(name);
   }
   if (base.length >= PROFILE_DESC_MIN) return base;
-  const tail = w.tails.find((t) => base.length + 1 + t.length <= PROFILE_DESC_MAX);
-  return tail ? `${base} ${tail}` : base;
+  const tail = w.tails.find((t) => base.length + p.space.length + t.length <= PROFILE_DESC_MAX);
+  return tail ? `${base}${p.space}${tail}` : base;
 }
 
 // ——— Altri mazzi collegati da una scheda ———
@@ -688,5 +745,12 @@ export const communityPageLabels: Record<Locale, CommunityPageLabels> = {
     guideCallout: "Гайд OriginsMeta по этой колоде",
     authorPage: "Редакция OriginsMeta: {name}",
     tierList: "Тир-лист Origins TCG",
+  },
+  "zh-cn": {
+    sameLegendary: "更多 {legendary} 卡组",
+    moreAfter: "其他卡组",
+    guideCallout: "OriginsMeta 关于这套卡组的攻略",
+    authorPage: "OriginsMeta 编辑部：{name}",
+    tierList: "Origins TCG 强度榜",
   },
 };

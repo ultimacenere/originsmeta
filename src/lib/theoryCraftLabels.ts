@@ -374,6 +374,53 @@ export const theoryCraftLabels: Record<Locale, TheoryCraftLabels> = {
     },
     publishNotice: "Колода теорикрафта: в ней есть карты, которых сегодня нет в игре ({cards}), поэтому она попадёт в колоды теорикрафта, а не в одиночные колоды.",
   },
+  "zh-cn": {
+    tabs: { builder: "Theory Craft", decks: "Theory Craft 卡组", aria: "Theory Craft 栏目" },
+    builder: {
+      metaTitle: "Origins TCG Theory Craft：使用未上线卡牌的卡组",
+      title: "Theory Craft",
+      description:
+        "在 Theory Craft 中用尚未加入游戏的卡牌构筑 Origins TCG 卡组：规则与卡组构筑器完全相同，每张卡牌使用最后已知的费用和数值。你可以用链接分享卡组、私下保存，或者附上攻略公开发布，让社区为它评分和讨论，提前试验新卡可能带来的流派和环境变化。",
+      toDecks: "Theory Craft 卡组",
+      toOfficial: "卡组构筑器",
+      intro:
+        "Theory Craft 就是多了一样东西的卡组构筑器：除了游戏中的卡牌，你还能找到尚未加入游戏的卡牌。按同样的规则构筑卡组，用链接分享、私下保存，或附上攻略发布：它会进入 Theory Craft 卡组，社区可以像对待其他卡组一样为它评分和讨论。",
+      dataKicker: "尚未加入游戏的卡牌",
+      dataNote:
+        "{n} 张目前不在游戏中的卡牌（其中 {legendaries} 张传说卡），标有“未上线”。它们的费用、数值和文本是最后已知的版本：未经游戏内核实，卡牌上线时可能会变。使用这些卡牌的卡组没有游戏卡组代码。",
+      poolHint: "游戏中的卡牌以及尚未加入游戏的卡牌，附最后已知的费用和数值",
+      pill: "未上线",
+      filter: "卡牌",
+      filterAll: "全部",
+      filterGame: "游戏中",
+      filterTheory: "未上线",
+      gameCodeMissing: "没有游戏卡组代码：此卡组中有 {n} 张卡牌不在游戏中。",
+      rules: "规则与游戏相同：一张传说卡加十二张不同的卡牌，每张两份（共 25 张）。",
+    },
+    decks: {
+      metaTitle: "Origins TCG Theory Craft 卡组",
+      title: "Theory Craft 卡组",
+      description:
+        "社区用尚未加入游戏的卡牌构筑的 Origins TCG 卡组：卡表、攻略、评分和评论，附每张卡牌最后已知的费用和数值。这些卡组不计入强度榜和数据统计；当其中所有卡牌都加入游戏后，它们会自动移入单个卡组，地址保持不变，你可以随时打开卡组构筑器继续修改。",
+      cta: "构筑 Theory Craft 卡组",
+      intro:
+        "社区构筑的卡组，至少包含一张尚未加入游戏的卡牌。它们和单个卡组一样：攻略、评分、评论、版本，以及通往卡组构筑器的链接。",
+      note:
+        "这些卡组不会出现在单个卡组、强度榜、数据统计和卡牌页面中：它们使用了目前不在游戏中的卡牌。当其中所有卡牌都加入游戏后，它们会自动移入单个卡组，地址不变。",
+      legendariesTitle: "尚未加入游戏的传说卡",
+      legendariesText: "尚未加入游戏的 {total} 张卡牌中有 {n} 张传说卡。点击名称即可打开卡牌页面，查看最后已知的数据。",
+      inviteTitle: "还没有 Theory Craft 卡组",
+      inviteText: "用尚未加入游戏的卡牌构筑第一套卡组，并附上攻略发布。",
+      inviteCta: "打开 Theory Craft",
+    },
+    deck: {
+      pill: "Theory Craft",
+      noticeTitle: "Theory Craft 卡组",
+      noticeText: "它使用了目前不在游戏中的卡牌：{cards}。这些卡牌的费用、数值和文本是最后已知的版本，可能会变。",
+      gameCode: "在此卡组的所有卡牌加入游戏之前，没有游戏卡组代码。",
+    },
+    publishNotice: "Theory Craft 卡组：它使用了目前不在游戏中的卡牌（{cards}），因此会进入 Theory Craft 卡组，而不是单个卡组。",
+  },
 };
 
 /** Segnaposto fra graffe → valori. */

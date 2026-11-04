@@ -570,4 +570,85 @@ const ru: CardVoteLabels = {
     "Оценки карт (с 6 октября 2026; без аккаунта с 4 ноября 2026): любой может оценить каждую карту от 1 до 10 на её странице, на /cards или на /tier-list/votes. С аккаунтом оценка хранится вместе с ним (карта, оценка, дата), чтобы вы могли её изменить, и удаляется вместе с аккаунтом. Без аккаунта первая оценка сохраняет технический cookie (om_card_voter, один год) со случайным кодом, по которому вы видите и меняете свои оценки; база данных хранит рядом с оценками только необратимый отпечаток этого кода и в течение одного дня необратимый отпечаток вашего IP-адреса, который служит только для ограничения повторных оценок. Страницы показывают только средние значения, количества и распределение оценок, никогда — кто как оценил. Чтобы удалить ваши оценки, напишите на staff@originsmeta.com.",
 };
 
-export const cardVoteLabels: Record<Locale, CardVoteLabels> = { en, it, es, fr, pt, de, ru };
+// cinese semplificato (04/11/2026): 强度榜 per tier list (docs/cinese.md), 你 nei testi del sito e 您 nell'informativa
+// (pagina legale). La description resta nei 120–158 caratteri delle altre lingue (test), contati in caratteri.
+const zhCn: CardVoteLabels = {
+  page: {
+    title: "Origins TCG 卡牌评分强度榜（1–10 分）",
+    titlePreview: "Origins TCG 卡牌评分强度榜（预览）",
+    description: "为每一张 Origins TCG 卡牌打分，从 1（很弱）到 10（极强）：OriginsMeta 上的平均分生成一份涵盖传说卡和基础卡的强度榜。无需账户，每人每张卡投一票，随时可以修改，平均分决定卡牌所在的 S、A、B、C、D 梯队，票数够多的卡牌才会上榜。",
+    h1: "卡牌评分强度榜",
+    h1Preview: "卡牌评分强度榜（预览）",
+    intro:
+      "任何人无需账户都可以为每张可用卡牌打分，从 1（很弱）到 10（极强），每张卡一票，随时可以修改。卡牌按平均分进入相应梯队：{tierS} 分起为 S，{tierA} 分起为 A，{tierB} 分起为 B，{tierC} 分起为 C，更低为 D。这不是社区强度榜：社区强度榜取的是会员用强度榜制作器保存的完整榜单的平均，而这里每张卡都有自己的分数。",
+    sourceText: "访客为每张卡牌打出的 1 到 10 分",
+    sample: "{cards}共 {votes}",
+    votesOne: "1 票",
+    votesMany: "{n} 票",
+    cardsOne: "1 张卡牌",
+    cardsMany: "{n} 张卡牌",
+    updatedText: "最近一次在 {date}",
+    preview: "预览：评分人数达到 {min} 人后，这里将成为卡牌评分强度榜。",
+    previewBadge: "预览",
+    previewShort: "评分人数达到 {min} 人后将成为卡牌评分强度榜",
+    rankedRule: "卡牌获得 {min} 票后才会进入梯队；在此之前，其平均分显示在详情中，不分梯队。",
+    empty: "还没有人给卡牌打分：第一票可能就是你的。打开下面的一张卡牌，给它打个分吧。",
+    unavailable: "本站尚未开放卡牌评分。",
+    disclaimer: "这是在本站投票的人的看法，而不是游戏统计数据：它的分量取决于每张卡牌背后的票数。",
+    howTitle: "如何运作",
+    how: [
+      "在这里或卡牌页面打开一张卡牌，或在卡牌列表页将鼠标悬停在卡牌上，选择 1（很弱）到 10（极强）的分数：无需账户。",
+      "每张卡一票：点击另一个数字即可替换。",
+      "梯队由平均分决定：{tierS} 分起为 S，{tierA} 分起为 A，{tierB} 分起为 B，{tierC} 分起为 C，更低为 D；卡牌需要 {min} 票才能进入梯队。",
+      "投票后页面会在几分钟内更新。",
+    ],
+    sections: {
+      legendaries: { title: "传说卡", text: "传说卡，按平均分排序。" },
+      cards: { title: "基础卡", text: "角色和法术，按平均分排序。" },
+    },
+    goTitle: "卡牌评分",
+    goText: "会员为每张卡牌打出 1 到 10 分",
+    communityText: "查看会员保存的完整榜单：",
+    communityAnchor: "社区强度榜",
+  },
+  explorer: {
+    colRating: "评分",
+    tier: "{tier} 级",
+    average: "平均 {avg} 分（满分 10）",
+    votesOne: "1 票",
+    votesMany: "{n} 票",
+    distribution: "各分数票数",
+    unranked: "还没有评分：来投第一票吧。",
+    needMore: "获得 {min} 票后进入梯队（目前 {n} 票）。",
+    scale: "1 = 很弱 · 10 = 极强",
+    noVotesShort: "暂无评分",
+    peekNote: "会员评分：{avg}/10 · {votes}",
+  },
+  widget: {
+    title: "你的评分",
+    rate: "为这张卡牌打分，从 1（很弱）到 10（极强）",
+    yourVote: "你的评分：{n}/10",
+    loginToVote: "登录后评分",
+    voted: "谢谢，评分已保存",
+    voteError: "无法保存评分",
+    unavailable: "评分尚未开放。",
+    limit: "你已达到评分上限。",
+    average: "平均 {avg}/10",
+    noVotes: "暂无评分",
+    votesOne: "1 票",
+    votesMany: "{n} 票",
+    low: "很弱",
+    high: "极强",
+    updateNote: "梯队会在几分钟内更新。",
+  },
+  cardPage: {
+    kicker: "卡牌评分",
+    text: "为 {name} 打分，从 1（很弱）到 10（极强）：平均分生成卡牌评分强度榜。",
+    tier: "在卡牌评分强度榜中位列 {tier} 级。",
+    open: "打开卡牌评分强度榜",
+  },
+  privacy:
+    "卡牌评分（自 2026年10月6日起；自 2026年11月4日起无需账户）：任何人都可以在卡牌页面、/cards 或 /tier-list/votes 上为每张卡牌打 1 到 10 分。有账户时，评分与账户一同保存（卡牌、分数、日期），以便您修改，并随账户一同删除。没有账户时，您第一次评分会保存一个技术性 cookie（om_card_voter，一年），其中是一个随机代码，用来查看和修改您的评分；数据库在评分旁只保存该代码的不可逆指纹，并在一天内保存您 IP 地址的不可逆指纹，仅用于限制重复评分。页面只显示平均分、票数和分数分布，从不显示谁投了什么分。如需删除您的评分，请写信至 staff@originsmeta.com。",
+};
+
+export const cardVoteLabels: Record<Locale, CardVoteLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };

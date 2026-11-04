@@ -46,4 +46,8 @@ export const newsFeedLabels: Record<Locale, { title: string; description: string
     title: "Новости Origins TCG · OriginsMeta",
     description: "Новости OriginsMeta об Origins TCG: патчноуты, события, новинки игры и сайта. Неофициальный фан-сайт, не связан с Koin Games.",
   },
+  "zh-cn": {
+    title: "Origins TCG 新闻 · OriginsMeta",
+    description: "OriginsMeta 的 Origins TCG 新闻：补丁说明、赛事活动、游戏和网站的新内容。非官方粉丝网站，与 Koin Games 无关联。",
+  },
 };

@@ -39,8 +39,8 @@ const variants: typeof import("./cardVariants") = await import("./cardVariants.t
 const { EMPTY_COMMUNITY, HOME_SITEMAP_PATH, SITEMAP_SECTIONS, cardSection, homeEntries, sectionEntries, sectionSitemapPath, sitemapIndexEntries, sitemapPages } = mod;
 const { cards } = cardsModule;
 
-type Locale = "en" | "it" | "es" | "fr" | "pt" | "de" | "ru";
-const locales: Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru"];
+type Locale = "en" | "it" | "es" | "fr" | "pt" | "de" | "ru" | "zh-cn";
+const locales: Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"];
 const SITE = "https://originsmeta.com";
 // il giorno in cui sono nati il portoghese e il tedesco (LOCALE_SINCE.pt, LOCALE_SINCE.de e SITE_WIDE_CHANGE): le date di quel giorno si fermano qui
 const TODAY = "2026-10-20";
@@ -50,7 +50,7 @@ const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 const community = {
   decks: [
     { slug: "solo-italiano-1a2b", updated_at: "2026-09-24T10:00:00+00:00", locales: ["it"] as Locale[] },
-    { slug: "tre-lingue-3c4d", updated_at: "2026-09-23T08:00:00+00:00", locales: ["en", "it", "es", "fr", "pt", "de", "ru"] as Locale[] },
+    { slug: "tre-lingue-3c4d", updated_at: "2026-09-23T08:00:00+00:00", locales: ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"] as Locale[] },
   ],
   tournaments: [{ slug: "crimson-cup-om-ab12", updated_at: "2026-09-25T09:00:00+00:00" }],
   profiles: [{ username: "davdas", updated_at: "2026-09-22T12:00:00+00:00" }],
@@ -142,7 +142,7 @@ describe("sezioni", () => {
   });
   test("hreflang completo sulle pagine che esistono in tutte le lingue", () => {
     const faq = bySection("pages", "es").find((e) => e.url === `${SITE}/es/faq`);
-    assert.deepEqual(faq?.alternates, { en: `${SITE}/en/faq`, it: `${SITE}/it/faq`, es: `${SITE}/es/faq`, fr: `${SITE}/fr/faq`, pt: `${SITE}/pt/faq`, de: `${SITE}/de/faq`, ru: `${SITE}/ru/faq`, "x-default": `${SITE}/en/faq` });
+    assert.deepEqual(faq?.alternates, { en: `${SITE}/en/faq`, it: `${SITE}/it/faq`, es: `${SITE}/es/faq`, fr: `${SITE}/fr/faq`, pt: `${SITE}/pt/faq`, de: `${SITE}/de/faq`, ru: `${SITE}/ru/faq`, "zh-Hans": `${SITE}/zh-cn/faq`, "x-default": `${SITE}/en/faq` });
   });
 });
 
@@ -191,7 +191,7 @@ describe("indice", () => {
     assert.equal(index[0].url, `${SITE}${HOME_SITEMAP_PATH}`);
     assert.equal(index.length, 1 + locales.length * SITEMAP_SECTIONS.length);
     for (const item of index.slice(1)) {
-      const [, l, s] = item.url.match(/^https:\/\/originsmeta\.com\/(en|it|es|fr|pt|de|ru)\/sitemap-([a-z-]+)\.xml$/) ?? [];
+      const [, l, s] = item.url.match(/^https:\/\/originsmeta\.com\/(en|it|es|fr|pt|de|ru|zh-cn)\/sitemap-([a-z-]+)\.xml$/) ?? [];
       assert.ok(l && s, item.url);
       const days = bySection(s as (typeof SITEMAP_SECTIONS)[number], l as Locale).map((e) => e.lastmod ?? "");
       assert.equal(item.lastmod, days.sort().at(-1));

@@ -4,13 +4,14 @@ import { frText, type NewsCopy } from "./news-fr";
 import { ptText } from "./news-pt";
 import { deText } from "./news-de";
 import { ruText } from "./news-ru";
+import { zhCnText } from "./news-zh-cn";
 import { crimsonFinals } from "./crimsonCup";
 
 /**
  * Le lingue scritte in questo file; il francese (dal 07/10/2026) sta in news-fr.ts e il portoghese (dal 20/10/2026) in
  * news-pt.ts, il tedesco (dal 20/10/2026) in news-de.ts, e si uniscono in fondo (`withTranslations`).
  */
-type Base = Exclude<Locale, "fr" | "pt" | "de" | "ru">;
+type Base = Exclude<Locale, "fr" | "pt" | "de" | "ru" | "zh-cn">;
 type BaseL10n = Record<Base, string>;
 type L10n = Record<Locale, string>;
 type Highlight = { label: string; text?: string; anchor: string };
@@ -94,6 +95,13 @@ export type NewsItem = {
    * (`splitDecklists`; lo controlla newsDecklists.test.ts).
    */
   decklists?: NewsDecklists;
+  /**
+   * Lingue in cui la news non è ancora tradotta (dal 04/11/2026, cinese semplificato: Pierluigi ha scelto "prima il nucleo,
+   * news dopo"). I campi di quella lingua contengono l'inglese solo perché il tipo li vuole: la news non compare nelle
+   * liste, nel feed e nella sitemap di quella lingua, la sua pagina rimanda all'inglese e l'hreflang non la dichiara
+   * (`newsInLocale`, `hasNews`). Lo calcola `withTranslations`, non si scrive a mano.
+   */
+  untranslated?: Locale[];
 };
 
 /** Un mazzo di un riquadro `decklists`: nome e archetipo come nella scheda del mazzo torneo, Leggendaria e 12 carte base. */
@@ -137,7 +145,11 @@ const translations = {
   pt: { text: ptText, file: "news-pt.ts" },
   de: { text: deText, file: "news-de.ts" },
   ru: { text: ruText, file: "news-ru.ts" },
+  "zh-cn": { text: zhCnText, file: "news-zh-cn.ts" },
 } as const;
+
+/** Lingue in cui una news può mancare (04/11/2026): il cinese semplificato, tradotto a partire dalle news dal 20/10/2026. */
+const PARTIAL_LOCALES: readonly TranslatedLocale[] = ["zh-cn"];
 type TranslatedLocale = keyof typeof translations;
 
 /**
@@ -147,9 +159,23 @@ type TranslatedLocale = keyof typeof translations;
  */
 function withTranslations(item: RawNews): NewsItem {
   const copies = {} as Record<TranslatedLocale, NewsCopy>;
+  const untranslated: Locale[] = [];
   for (const lang of Object.keys(translations) as TranslatedLocale[]) {
     const { text, file } = translations[lang];
-    const copy: NewsCopy | undefined = text[item.slug];
+    let copy: NewsCopy | undefined = text[item.slug];
+    if (!copy && PARTIAL_LOCALES.includes(lang)) {
+      // non ancora tradotta: l'inglese tiene il posto, ma la news resta fuori da quella lingua (`untranslated`)
+      untranslated.push(lang);
+      copy = {
+        title: item.title.en,
+        metaTitle: item.metaTitle.en,
+        summary: item.summary.en,
+        description: item.description.en,
+        ...(item.body ? { body: item.body.en } : {}),
+        ...(item.highlights ? { highlights: item.highlights.en } : {}),
+        ...(item.faq ? { faq: item.faq.en } : {}),
+      };
+    }
     if (!copy) throw new Error(`news "${item.slug}": manca il testo ${lang} in src/lib/data/${file}`);
     for (const field of ["body", "highlights", "faq"] as const) {
       if (Boolean(item[field]) !== Boolean(copy[field])) throw new Error(`news "${item.slug}": il campo ${field} c'è solo in ${item[field] ? "news.ts" : file}`);
@@ -168,6 +194,7 @@ function withTranslations(item: RawNews): NewsItem {
     ...(body ? { body: { ...body, ...pick("body") } } : {}),
     ...(highlights ? { highlights: { ...highlights, ...pick("highlights") } } : {}),
     ...(faq ? { faq: { ...faq, ...pick("faq") } } : {}),
+    ...(untranslated.length ? { untranslated } : {}),
   };
 }
 
@@ -10855,6 +10882,16 @@ export const news: NewsItem[] = raw.map(withTranslations);
 
 export const sortedNews = [...news].sort((a, b) => b.date.localeCompare(a.date));
 
+/** La news si legge in questa lingua (non è fra le `untranslated`). */
+export function hasNews(item: NewsItem, locale: Locale): boolean {
+  return !item.untranslated?.includes(locale);
+}
+
+/** Le news tradotte in una lingua, dalla più recente: liste, feed e sitemap di quella lingua. */
+export function newsInLocale(locale: Locale): NewsItem[] {
+  return sortedNews.filter((item) => hasNews(item, locale));
+}
+
 export function getNews(slug: string): NewsItem | undefined {
   return news.find((item) => item.slug === slug);
 }
@@ -10881,7 +10918,7 @@ export function newsReadTime(item: NewsItem, locale: Locale): number {
  * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
  * import senza estensione.
  */
-export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20" };
+export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20", "zh-cn": "2026-11-04" };
 
 /** Data di modifica (giorno ISO) di un articolo nella lingua `locale`, secondo la regola qui sopra. */
 export function modifiedIn(locale: Locale, day: string): string {

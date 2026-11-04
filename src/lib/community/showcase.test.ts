@@ -500,7 +500,7 @@ describe("etichette EN/IT/ES", () => {
   const at = (t: Tree, path: string) => path.split(".").reduce<string | Tree>((x, k) => (x as Tree)[k], t) as string;
   test("stesse chiavi nelle tre lingue, nessun testo vuoto, stessi segnaposto dell'inglese", () => {
     const ref = keys(showcaseLabels.en as unknown as Tree).sort();
-    for (const l of ["it", "es"] as const) {
+    for (const l of ["it", "es", "zh-cn"] as const) {
       assert.deepEqual(keys(showcaseLabels[l] as unknown as Tree).sort(), ref, l);
       for (const k of ref) {
         const ph = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();

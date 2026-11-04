@@ -2,7 +2,7 @@ import Link from "next/link";
 import { formatDate, href, type Dictionary, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { getGuide } from "@/lib/content/guides";
-import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
+import { newsInLocale, newsPath, type NewsItem } from "@/lib/data/news";
 import { newsForGuide } from "@/lib/relatedNews";
 import { linkLabels } from "@/lib/linkLabels";
 import { newTabProps } from "./SteamButton";
@@ -123,7 +123,7 @@ export function NewsGuideLinks({ item, locale, dict }: Props) {
  * evergreen (Kickstarter, Next Fest, demo) portano così agli articoli datati che le aggiornano. Senza news, niente blocco.
  */
 export function GuideNewsLinks({ guideSlug, locale }: { guideSlug: string; locale: Locale }) {
-  const items = newsForGuide(guideSlug, sortedNews);
+  const items = newsForGuide(guideSlug, newsInLocale(locale));
   if (!items.length) return null;
   return (
     <section className="mt-10" aria-labelledby="guide-news">

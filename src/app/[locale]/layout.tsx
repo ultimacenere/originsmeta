@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat, Reenie_Beanie } from "next/font/google";
+import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat, Reenie_Beanie, Noto_Sans_SC, Long_Cang } from "next/font/google";
 import { notFound } from "next/navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
@@ -40,6 +40,12 @@ const manropeCyr = Manrope({ subsets: ["latin", "cyrillic"], weight: ["400", "50
 const jetCyr = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500"], variable: "--font-jet", display: "swap", preload: false });
 const notoCyr = Noto_Sans({ subsets: ["latin", "cyrillic"], weight: ["600"], variable: "--font-noto", display: "swap", preload: false });
 const handCyr = Caveat({ subsets: ["latin", "cyrillic"], variable: "--font-hand", display: "swap", preload: false });
+
+// Pagine cinesi (04/11/2026): i font latini restano per lettere e numeri, gli ideogrammi vengono da Noto Sans SC (testo e
+// titoli) e Long Cang (post-it a penna), dichiarati dopo i latini in globals.css. Senza preload: Google li divide in tanti
+// file per gruppi di caratteri e il browser scarica solo quelli che la pagina usa; le altre lingue non li toccano.
+const cjk = Noto_Sans_SC({ subsets: ["latin"], variable: "--font-cjk", display: "swap", preload: false });
+const cjkHand = Long_Cang({ subsets: ["latin"], weight: ["400"], variable: "--font-cjk-hand", display: "swap", preload: false });
 
 // dynamicParams resta al default (true): le lingue sconosciute finiscono in notFound() qui sotto, e le pagine
 // generate su richiesta (mazzi della community) restano possibili.
@@ -86,7 +92,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html
       lang={htmlLang[l]}
-      className={`${l === "ru" ? `${unboundedCyr.variable} ${manropeCyr.variable} ${jetCyr.variable} ${notoCyr.variable} ${handCyr.variable}` : `${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable}`} ${pen.variable} h-full`}
+      className={`${l === "ru" ? `${unboundedCyr.variable} ${manropeCyr.variable} ${jetCyr.variable} ${notoCyr.variable} ${handCyr.variable}` : `${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable}`} ${l === "zh-cn" ? `${cjk.variable} ${cjkHand.variable}` : ""} ${pen.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
         {/* Feed RSS delle news nella lingua della pagina (Ondata 2): React 19 porta i <link> nel <head>. Percorso e titolo

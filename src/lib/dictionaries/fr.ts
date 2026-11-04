@@ -247,7 +247,7 @@ export const fr: Dictionary = {
     statusTitle: "État du jeu",
     /* "In breve" dentro Stato del gioco (decisione di Pierluigi del 25/09/2026): che cos'è il gioco e che cos'è il sito,
        solo con fatti già sul sito (slider, righe qui sotto, llms.txt) */
-    inBrief: "Origins TCG est le jeu de cartes numérique free-to-compete de Koin Games : il est gratuit sur Steam en Accès anticipé depuis le 27 octobre 2026, et Koin vise la version 1.0 vers mars 2027, selon la page Steam. OriginsMeta est un site de fans non officiel en sept langues, sans lien avec Koin Games.",
+    inBrief: "Origins TCG est le jeu de cartes numérique free-to-compete de Koin Games : il est gratuit sur Steam en Accès anticipé depuis le 27 octobre 2026, et Koin vise la version 1.0 vers mars 2027, selon la page Steam. OriginsMeta est un site de fans non officiel en huit langues, sans lien avec Koin Games.",
     status: {
       demo: "Accès anticipé",
       demoValue: "Sur Steam depuis le 27 octobre 2026",
@@ -876,14 +876,14 @@ export const fr: Dictionary = {
     deckListNote: "1 Légendaire + 12 cartes de base × 2 = 25 cartes",
     /* riquadro "Mandaci la tua guida" su /guides (diretta Twitch del 23/09/2026) */
     submitTitle: "Vous avez écrit un guide ?",
-    submitText: "Envoyez-le-nous : le staff le lit et, s'il convient au site, nous le publions sous votre nom, dans les sept langues du site.",
+    submitText: "Envoyez-le-nous : le staff le lit et, s'il convient au site, nous le publions sous votre nom, dans les huit langues du site.",
     submitCta: "Envoyez-nous votre guide",
   },
   /* modulo "Mandaci la tua guida" (/guides/submit): la guida arriva nel canale Discord privato dello staff */
   guideSubmit: {
     title: "Envoyez-nous votre guide",
     description: "Vous avez écrit un guide sur un deck ou une mécanique d'Origins TCG ? Envoyez-le à OriginsMeta : le staff lit chaque guide et publie les meilleurs sous votre nom.",
-    intro: "Un guide sur un deck, une Légendaire, une mécanique ou la montée en classé : si vous l'avez écrit, envoyez-le-nous. Le staff le lit et, s'il convient au site, nous le relisons, le traduisons et le publions dans les sept langues du site sous votre nom.",
+    intro: "Un guide sur un deck, une Légendaire, une mécanique ou la montée en classé : si vous l'avez écrit, envoyez-le-nous. Le staff le lit et, s'il convient au site, nous le relisons, le traduisons et le publions dans les huit langues du site sous votre nom.",
     form: {
       titleLabel: "Titre du guide",
       titlePlaceholder: "Ex. : Dorothy Combo, comment le jouer et contre qui",
@@ -1068,7 +1068,7 @@ export const fr: Dictionary = {
   footer: {
     /* su ogni pagina: dice anche che cos'è il gioco (piano SEO/GEO del 25/09/2026); "non affiliato" resta com'era */
     disclaimer: "OriginsMeta est un site de fans indépendant et non officiel sur Origins TCG, le jeu de cartes numérique de Koin Games, et n'est pas affilié à Koin Games. Origins TCG et tous les noms et illustrations associés appartiennent à leurs propriétaires.",
-    built: "Construit à la table, en sept langues.",
+    built: "Construit à la table, en huit langues.",
     links: "Liens",
     official: "Officiel",
     legal: "Mentions légales",
@@ -1326,9 +1326,9 @@ export const fr: Dictionary = {
     },
     kicker: "Deck Origins",
     guideLangNote: "Ce guide a été écrit en {lang} par la personne qui a publié le deck et s'affiche tel quel : la traduction automatique n'est pas encore prête.",
-    langNames: { en: "anglais", it: "italien", es: "espagnol", fr: "français", pt: "portugais", de: "allemand", ru: "russe" },
+    langNames: { en: "anglais", it: "italien", es: "espagnol", fr: "français", pt: "portugais", de: "allemand", ru: "russe", "zh-cn": "chinois" },
     /** "de <langue>", après "Traduit automatiquement" */
-    langFrom: { en: "de l'anglais", it: "de l'italien", es: "de l'espagnol", fr: "du français", pt: "du portugais", de: "de l'allemand", ru: "du russe" },
+    langFrom: { en: "de l'anglais", it: "de l'italien", es: "de l'espagnol", fr: "du français", pt: "du portugais", de: "de l'allemand", ru: "du russe", "zh-cn": "du chinois" },
     translatedNote: "Traduit automatiquement {from} : les noms des cartes restent en anglais, comme dans le jeu.",
     originalText: "Texte original ({lang})",
     metaTail: "Liste complète, graphiques et code du jeu sur OriginsMeta.",

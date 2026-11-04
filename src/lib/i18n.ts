@@ -5,13 +5,15 @@ import { fr } from "./dictionaries/fr";
 import { pt } from "./dictionaries/pt";
 import { de } from "./dictionaries/de";
 import { ru } from "./dictionaries/ru";
+import { zhCn } from "./dictionaries/zh-cn";
 
 /**
  * Lingue del sito: inglese (riferimento dei dizionari), italiano, dal 25/09/2026 spagnolo, dal 07/10/2026 francese e dal
  * 20/10/2026 portoghese del Brasile (indirizzo /pt, hreflang "pt", html lang "pt-BR": docs/portoghese.md) e tedesco
- * (/de, docs/tedesco.md), e russo (/ru, docs/russo.md).
+ * (/de, docs/tedesco.md), e russo (/ru, docs/russo.md); dal 04/11/2026 cinese semplificato (/zh-cn, hreflang e html lang
+ * "zh-Hans": docs/cinese.md).
  */
-export const locales = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
+export const locales = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "en";
 
@@ -23,6 +25,7 @@ export const localeNames: Record<Locale, string> = {
   pt: "Português",
   de: "Deutsch",
   ru: "Русский",
+  "zh-cn": "简体中文",
 };
 
 export const ogLocale: Record<Locale, string> = {
@@ -33,10 +36,14 @@ export const ogLocale: Record<Locale, string> = {
   pt: "pt_BR",
   de: "de_DE",
   ru: "ru_RU",
+  "zh-cn": "zh_CN",
 };
 
 /** Valore di <html lang> e della lingua dei dati strutturati: il portoghese del sito è quello del Brasile. */
-export const htmlLang: Record<Locale, string> = { en: "en", it: "it", es: "es", fr: "fr", pt: "pt-BR", de: "de", ru: "ru" };
+export const htmlLang: Record<Locale, string> = { en: "en", it: "it", es: "es", fr: "fr", pt: "pt-BR", de: "de", ru: "ru", "zh-cn": "zh-Hans" };
+
+/** Codice hreflang: il codice dell'indirizzo, tranne il cinese semplificato che si dichiara "zh-Hans" (04/11/2026). */
+export const hreflang: Record<Locale, string> = { en: "en", it: "it", es: "es", fr: "fr", pt: "pt", de: "de", ru: "ru", "zh-cn": "zh-Hans" };
 
 export function isLocale(value: string): value is Locale {
   return (locales as readonly string[]).includes(value);
@@ -44,7 +51,7 @@ export function isLocale(value: string): value is Locale {
 
 export type Dictionary = typeof en;
 
-const dictionaries: Record<Locale, Dictionary> = { en, it, es, fr, pt, de, ru };
+const dictionaries: Record<Locale, Dictionary> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 export function getDictionary(locale: Locale): Dictionary {
   return dictionaries[locale];
@@ -67,7 +74,7 @@ export function alternatesFor(path: string = "", only?: readonly Locale[]) {
   const list = only?.length ? locales.filter((l) => only.includes(l)) : locales;
   const languages: Record<string, string> = {};
   for (const l of list) {
-    languages[l] = `${siteUrl}${href(l, path)}`;
+    languages[hreflang[l]] = `${siteUrl}${href(l, path)}`;
   }
   languages["x-default"] = `${siteUrl}${href(list.includes(defaultLocale) ? defaultLocale : list[0], path)}`;
   return { languages };

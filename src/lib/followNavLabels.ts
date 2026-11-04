@@ -153,6 +153,25 @@ export const followNavLabels: Record<Locale, FollowNavLabels> = {
     notifOne: "новых уведомлений: 1",
     notifMany: "новых уведомлений: {n}",
   },
+  "zh-cn": {
+    follow: "关注",
+    following: "已关注",
+    followAria: "关注 {name}",
+    followingAria: "已关注 {name}。按下以取消关注",
+    loginAria: "关注 {name}：请先登录",
+    followersOne: "1 位粉丝",
+    followersMany: "{n} 位粉丝",
+    errors: {
+      notLoggedIn: "登录后即可关注此主页。",
+      notFollowable: "此主页无法关注。",
+      self: "你不能关注自己。",
+      tooMany: "你已关注 {max} 个主页：请先在你的主页上取消关注一些人。",
+      unavailable: "关注功能暂时不可用。请几分钟后再试。",
+      db: "出了点问题：请再试一次。",
+    },
+    notifOne: "1 条新通知",
+    notifMany: "{n} 条新通知",
+  },
 };
 
 /**

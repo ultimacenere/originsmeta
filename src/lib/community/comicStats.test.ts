@@ -142,8 +142,8 @@ describe("riepiloghi", () => {
   });
 });
 
-describe("etichette nelle sette lingue", () => {
-  const locales = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
+describe("etichette nelle otto lingue", () => {
+  const locales = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const;
   test("ogni lingua ha le chiavi dell'inglese e il testo della privacy", () => {
     const keys = Object.keys(L.comicStatsLabels.en).sort();
     for (const l of locales) {

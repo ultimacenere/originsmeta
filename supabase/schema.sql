@@ -245,7 +245,7 @@ create table if not exists public.tournaments (
   cover_url text,
   description text not null default '' check (char_length(description) <= 2000),
   rules text not null default '' check (char_length(rules) <= 2000),
-  lang text not null default 'en' check (lang in ('en','it','es','fr','pt','de','ru')),
+  lang text not null default 'en' check (lang in ('en','it','es','fr','pt','de','ru','zh-cn')),
   starts_at timestamptz not null,
   size int not null check (size in (4,8,16,32,64,128)),
   format text not null default 'single_elim' check (format in ('single_elim')),
@@ -1296,7 +1296,7 @@ create trigger community_decks_touch before update on public.community_decks
 -- La lingua di un torneo è una delle lingue del sito: il vincolo scritto nella create table sopra vale solo per un
 -- database nuovo, su quello esistente si sostituisce qui (il nome è quello che Postgres dà ai check di colonna).
 alter table public.tournaments drop constraint if exists tournaments_lang_check;
-alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es','fr','pt','de','ru'));
+alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
 
 -- ===== 26/09/2026: CREATOR =====
 -- =====================================================================================================
@@ -1407,7 +1407,7 @@ alter table public.profiles drop constraint if exists profiles_links_check;
 alter table public.profiles add constraint profiles_links_check check (public.profile_links_ok(links));
 alter table public.profiles drop constraint if exists profiles_content_langs_check;
 alter table public.profiles add constraint profiles_content_langs_check
-  check (content_langs <@ array['en','it','es','fr','pt','de','ru']::text[] and cardinality(content_langs) <= 7 and array_position(content_langs, null) is null);
+  check (content_langs <@ array['en','it','es','fr','pt','de','ru','zh-cn']::text[] and cardinality(content_langs) <= 8 and array_position(content_langs, null) is null);
 
 -- Data dell'ultima modifica della vetrina (bio, canali, lingue, tag): la scrive solo questo trigger, gli utenti non
 -- hanno grant sulla colonna. Scatta anche quando lo staff cambia il tag con scripts/set-badge.mjs.
@@ -3143,7 +3143,7 @@ alter table public.community_guides drop constraint if exists community_guides_s
 alter table public.community_guides add constraint community_guides_slug_check
   check (char_length(slug) between 3 and 60 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
 alter table public.community_guides drop constraint if exists community_guides_lang_check;
-alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es','fr','pt','de','ru'));
+alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
 alter table public.community_guides drop constraint if exists community_guides_status_check;
 alter table public.community_guides add constraint community_guides_status_check check (status in ('draft','published','hidden'));
 alter table public.community_guides drop constraint if exists community_guides_title_check;
@@ -3275,7 +3275,7 @@ begin
     if new.translations is distinct from old.translations then
       for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
         if v is distinct from (old.translations -> k) then
-          if k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru') or k = new.lang
+          if k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') or k = new.lang
              or not public.community_guide_translation_ok(v, jsonb_array_length(new.sections)) then
             raise exception 'guide_translation' using errcode = '23514';
           end if;
@@ -3760,7 +3760,7 @@ alter table public.community_comics drop constraint if exists community_comics_s
 alter table public.community_comics add constraint community_comics_slug_check
   check (char_length(slug) between 3 and 60 and slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
 alter table public.community_comics drop constraint if exists community_comics_lang_check;
-alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es','fr','pt','de','ru'));
+alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
 alter table public.community_comics drop constraint if exists community_comics_status_check;
 alter table public.community_comics add constraint community_comics_status_check check (status in ('draft','published','hidden'));
 alter table public.community_comics drop constraint if exists community_comics_title_check;
@@ -3873,7 +3873,7 @@ begin
     if new.translations is distinct from old.translations then
       for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
         if v is distinct from (old.translations -> k) then
-          if k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru') or k = new.lang
+          if k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') or k = new.lang
              or not public.community_comic_translation_ok(v, jsonb_array_length(new.pages)) then
             raise exception 'comic_translation' using errcode = '23514';
           end if;
@@ -4175,7 +4175,7 @@ returns boolean language sql immutable set search_path = pg_catalog as $$
     else not exists (
       select 1 from jsonb_each(e) as x(k, v)
        where case
-         when k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru') or k = lang then true
+         when k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') or k = lang then true
          when jsonb_typeof(v) is distinct from 'object' then true
          when (v - 'title' - 'summary' - 'pages' - 'cover_path') <> '{}'::jsonb then true
          when jsonb_typeof(v -> 'title') is distinct from 'string' then true
@@ -4996,7 +4996,7 @@ create table if not exists public.analytics_interest (
   id bigint generated always as identity primary key,
   client_key text not null unique check (client_key ~ '^[0-9a-f]{32}$'),
   user_id uuid references public.profiles(id) on delete cascade,
-  locale text not null check (locale in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru')),
+  locale text not null check (locale in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn')),
   source text not null check (source in ('top', 'bottom')),
   created_at timestamptz not null default now()
 );
@@ -5014,7 +5014,7 @@ declare
   uid uuid := auth.uid();
   n integer := 0;
 begin
-  if p_client is null or p_client !~ '^[0-9a-f]{32}$' or p_locale is null or p_locale not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru')
+  if p_client is null or p_client !~ '^[0-9a-f]{32}$' or p_locale is null or p_locale not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn')
      or p_source is null or p_source not in ('top', 'bottom') then
     raise exception 'invalid';
   end if;
@@ -5274,7 +5274,7 @@ create index if not exists community_deck_sets_legendaries_idx on public.communi
 create or replace function public.deck_set_guide_ok(g jsonb)
 returns boolean language sql immutable set search_path = public, pg_temp as $$
   select jsonb_typeof(g) = 'object'
-     and coalesce(g->>'lang', '') in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru')
+     and coalesce(g->>'lang', '') in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn')
      and jsonb_typeof(g->'summary') = 'string'
      and char_length(g->>'summary') between 20 and 600
      and not exists (
@@ -6420,7 +6420,7 @@ comment on function public.card_vote_totals() is 'Voti, votanti, carte votate e 
 -- che il database rifiuta (trigger delle guide e dei fumetti) si riprova senza il francese, così le altre lingue non si
 -- perdono, e la pagina francese mostra l'originale con la sua nota; scripts/translate-*.mjs recuperano gli arretrati dopo.
 alter table public.analytics_interest drop constraint if exists analytics_interest_locale_check;
-alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru'));
+alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn'));
 
 -- ===== 13/10/2026: TWITCH =====
 -- =====================================================================================================
@@ -6585,7 +6585,7 @@ grant execute on function public.twitch_live_state(text) to anon, authenticated;
 create table if not exists public.tracker_downloads (
   id bigint generated always as identity primary key,
   owner uuid references public.profiles(id) on delete set null,
-  lang text check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru')),
+  lang text check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn')),
   created_at timestamptz not null default now()
 );
 create index if not exists tracker_downloads_created_idx on public.tracker_downloads (created_at);
@@ -6601,7 +6601,7 @@ returns void language plpgsql security definer set search_path = public, pg_temp
 begin
   if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
   insert into public.tracker_downloads (owner, lang)
-  values ((select p.id from public.profiles p where p.id = p_owner), case when p_lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru') then p_lang end);
+  values ((select p.id from public.profiles p where p.id = p_owner), case when p_lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') then p_lang end);
 end $$;
 revoke all on function public.tracker_download_log(text, uuid, text) from public;
 grant execute on function public.tracker_download_log(text, uuid, text) to anon, authenticated;
@@ -6837,7 +6837,7 @@ grant execute on function public.market_board(text) to anon, authenticated;
 -- portoghese (DB_PENDING_LOCALE in src/lib/community/translate.ts), e la pagina portoghese mostra l'originale con la sua
 -- nota; scripts/translate-*.mjs recuperano gli arretrati dopo.
 alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
-alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru'));
+alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn'));
 
 -- =====================================================================================================
 -- ===== 20/10/2026: TEDESCO =====
@@ -6848,7 +6848,7 @@ alter table public.tracker_downloads add constraint tracker_downloads_lang_check
 -- tracker_downloads si rifà qui con la lista intera. Il sito regge senza questa migrazione (DB_PENDING_LOCALES in
 -- src/lib/community/translate.ts).
 alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
-alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru'));
+alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn'));
 
 -- =====================================================================================================
 -- ===== 20/10/2026: RUSSO =====
@@ -6858,7 +6858,7 @@ alter table public.tracker_downloads add constraint tracker_downloads_lang_check
 -- lingue dei contenuti del profilo al massimo 7, check di colonna di tracker_downloads rifatto qui. Il sito regge senza
 -- questa migrazione (DB_PENDING_LOCALES in src/lib/community/translate.ts).
 alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
-alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru'));
+alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn'));
 
 -- =====================================================================================================
 -- ===== 22/10/2026: COMMENTI AI MAZZI =====
@@ -7660,7 +7660,7 @@ create table if not exists public.comic_stats_daily (
   comic_id uuid not null references public.community_comics(id) on delete cascade,
   day date not null,
   -- lingua della pagina letta (COMIC_LANGS di comics.ts): en, it, es, fr, pt, de, ru
-  lang text not null check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru')),
+  lang text not null check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn')),
   views int not null default 0 check (views >= 0),
   reads int not null default 0 check (reads >= 0),
   primary key (comic_id, day, lang)
@@ -7699,7 +7699,7 @@ declare
   cap constant int := 2000;
 begin
   if p_kind is null or p_kind not in ('view', 'read') then return; end if;
-  if p_lang is null or p_lang not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru') then return; end if;
+  if p_lang is null or p_lang not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') then return; end if;
   if p_slug is null or char_length(p_slug) not between 1 and 120 then return; end if;
   select c.id, c.owner into cid, cowner from public.community_comics c where c.slug = p_slug and c.status = 'published';
   if cid is null then return; end if;
@@ -7722,6 +7722,391 @@ grant execute on function public.bump_comic_stat(text, text, text) to anon, auth
 comment on table public.comic_stats_daily is 'Statistiche giornaliere dei fumetti per chi li disegna, per lingua della pagina (solo totali: visite e letture complete): le scrive solo bump_comic_stat (02/11/2026).';
 
 -- =====================================================================================================
+-- ===== 04/11/2026: CINESE SEMPLIFICATO =====
+-- =====================================================================================================
+-- Il cinese semplificato è l'ottava lingua del sito (richiesta di Pierluigi del 04/11/2026; docs/cinese.md), codice
+-- 'zh-cn'. Come per il russo: vincoli e funzioni qui sopra ora dicono (…,'ru','zh-cn'), lingue dei contenuti del profilo
+-- al massimo 8. Questo blocco rifà i vincoli e le funzioni toccati, così per la migrazione basta lanciare lui. Il sito
+-- regge senza (DB_PENDING_LOCALES in src/lib/community/translate.ts). Idempotente: drop constraint if exists, create or replace.
+-- Le tabelle di blocchi non ancora migrati (per esempio comic_stats_daily, se il blocco dei contatori dei fumetti non è
+-- stato lanciato: errore 42P01 la prima volta, 04/11/2026) si saltano: il loro blocco, quando si lancia, nasce già con 'zh-cn'.
+do $$
+begin
+  if to_regclass('public.tournaments') is not null then
+    alter table public.tournaments drop constraint if exists tournaments_lang_check;
+    alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.community_guides') is not null then
+    alter table public.community_guides drop constraint if exists community_guides_lang_check;
+    alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.community_comics') is not null then
+    alter table public.community_comics drop constraint if exists community_comics_lang_check;
+    alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.analytics_interest') is not null then
+    alter table public.analytics_interest drop constraint if exists analytics_interest_locale_check;
+    alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.tracker_downloads') is not null then
+    alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
+    alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.comic_stats_daily') is not null then
+    alter table public.comic_stats_daily drop constraint if exists comic_stats_daily_lang_check;
+    alter table public.comic_stats_daily add constraint comic_stats_daily_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.profiles') is not null then
+    alter table public.profiles drop constraint if exists profiles_content_langs_check;
+    alter table public.profiles add constraint profiles_content_langs_check
+      check (content_langs <@ array['en','it','es','fr','pt','de','ru','zh-cn']::text[] and cardinality(content_langs) <= 8 and array_position(content_langs, null) is null);
+  end if;
+end $$;
+
+-- guard_community_guide: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.guard_community_guide()') is not null then
+    execute $fn$
+create or replace function public.guard_community_guide()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  privileged boolean := me is null or public.is_staff();
+  n int;
+  k text;
+  v jsonb;
+begin
+  if tg_op = 'INSERT' then
+    new.created_at := now();
+    new.updated_at := now();
+    new.published_at := case when new.status = 'published' then now() else null end;
+    -- le richieste parallele dello stesso utente passano una alla volta: i tetti valgono anche così
+    perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
+    if not privileged then
+      if new.status not in ('draft', 'published') then raise exception 'guide_status' using errcode = '42501'; end if;
+      select count(*) into n from public.community_guides where owner = new.owner;
+      if n >= 100 then raise exception 'guide_limit' using errcode = '23514'; end if;
+      -- i tetti giornalieri contano il registro, non le guide ancora presenti
+      select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'create' and at > now() - interval '1 day';
+      if n >= 10 then raise exception 'guide_rate' using errcode = '23514'; end if;
+      if new.status = 'published' then
+        if exists (select 1 from public.community_guide_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+          raise exception 'guide_hidden_recent' using errcode = '42501';
+        end if;
+        select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'guide_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    delete from public.community_guide_events where owner = new.owner and at < now() - interval '7 days';
+    insert into public.community_guide_events (owner, kind) values (new.owner, 'create');
+    if new.status = 'published' then insert into public.community_guide_events (owner, kind) values (new.owner, 'publish'); end if;
+  else
+    -- id, proprietario, slug e nascita non cambiano mai (le grant per colonna non li danno; questo vale anche per lo staff)
+    if me is not null and (new.id is distinct from old.id or new.owner is distinct from old.owner
+        or new.slug is distinct from old.slug or new.created_at is distinct from old.created_at) then
+      raise exception 'guide_reserved_fields' using errcode = '42501';
+    end if;
+    -- 'hidden' è la moderazione dello staff: il proprietario non la toglie e non la mette
+    if not privileged and (old.status = 'hidden' or new.status = 'hidden') then
+      raise exception 'guide_hidden' using errcode = '42501';
+    end if;
+    new.published_at := old.published_at;
+    -- una guida che va (o torna) online: niente per 24 ore dopo una guida nascosta dallo staff; la prima pubblicazione
+    -- conta nel tetto giornaliero
+    if new.status = 'published' and old.status is distinct from 'published' and not privileged then
+      perform pg_advisory_xact_lock(hashtext('om_guides:' || new.owner::text));
+      if exists (select 1 from public.community_guide_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+        raise exception 'guide_hidden_recent' using errcode = '42501';
+      end if;
+      if old.published_at is null then
+        select count(*) into n from public.community_guide_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'guide_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    if new.status = 'published' and old.published_at is null then
+      new.published_at := now();
+      insert into public.community_guide_events (owner, kind) values (new.owner, 'publish');
+    end if;
+    if new.status = 'hidden' and old.status is distinct from 'hidden' then
+      insert into public.community_guide_events (owner, kind) values (new.owner, 'hide');
+    end if;
+    -- parole e impronta le scrive il sito insieme al testo: se il testo cambia senza una nuova impronta (una scrittura
+    -- via API che non passa dal sito), si azzerano e gli elenchi trattano la guida come da ricontare (non indicizzabile)
+    if (new.lang, new.summary, new.sections) is distinct from (old.lang, old.summary, old.sections)
+       and new.text_hash is not distinct from old.text_hash then
+      new.words := null;
+      new.text_hash := null;
+    end if;
+    -- traduzioni: ogni lingua cambiata deve essere un'altra lingua del sito e rispettare le regole del testo semplice,
+    -- con le stesse sezioni del testo attuale (vale per tutti, staff e script compresi)
+    if new.translations is distinct from old.translations then
+      for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
+        if v is distinct from (old.translations -> k) then
+          if k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') or k = new.lang
+             or not public.community_guide_translation_ok(v, jsonb_array_length(new.sections)) then
+            raise exception 'guide_translation' using errcode = '23514';
+          end if;
+        end if;
+      end loop;
+    end if;
+    -- la data di aggiornamento è quella dell'autore: scrivere le traduzioni non la sposta (come i mazzi)
+    if (to_jsonb(new) - 'translations' - 'updated_at' - 'published_at' - 'words' - 'text_hash')
+        is distinct from (to_jsonb(old) - 'translations' - 'updated_at' - 'published_at' - 'words' - 'text_hash') then
+      new.updated_at := now();
+    else
+      new.updated_at := old.updated_at;
+    end if;
+  end if;
+  -- copertina caricata: solo nella cartella del proprietario e solo per i ruoli con vetrina (SHOWCASE_BADGES di badges.ts)
+  if new.cover_path is not null and (tg_op = 'INSERT' or new.cover_path is distinct from old.cover_path) then
+    if split_part(new.cover_path, '/', 1) <> new.owner::text then raise exception 'guide_cover_path' using errcode = '42501'; end if;
+    if not exists (select 1 from public.profiles p where p.id = new.owner and (p.role = 'admin' or p.badge in ('creator','author','pro','staff'))) then
+      raise exception 'guide_cover_role' using errcode = '42501';
+    end if;
+  end if;
+  return new;
+end $$;
+    $fn$;
+  end if;
+end $mig$;
+
+-- guard_community_comic: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.guard_community_comic()') is not null then
+    execute $fn$
+create or replace function public.guard_community_comic()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  me uuid := auth.uid();
+  privileged boolean := me is null or public.is_staff();
+  n int;
+  k text;
+  v jsonb;
+begin
+  if tg_op = 'INSERT' then
+    new.created_at := now();
+    new.updated_at := now();
+    new.published_at := case when new.status = 'published' then now() else null end;
+    perform pg_advisory_xact_lock(hashtext('om_comics:' || new.owner::text));
+    if not privileged then
+      if new.status not in ('draft', 'published') then raise exception 'comic_status' using errcode = '42501'; end if;
+      select count(*) into n from public.community_comics where owner = new.owner;
+      if n >= 500 then raise exception 'comic_limit' using errcode = '23514'; end if;
+      select count(*) into n from public.community_comic_events where owner = new.owner and kind = 'create' and at > now() - interval '1 day';
+      if n >= 10 then raise exception 'comic_rate' using errcode = '23514'; end if;
+      if new.status = 'published' then
+        if exists (select 1 from public.community_comic_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+          raise exception 'comic_hidden_recent' using errcode = '42501';
+        end if;
+        select count(*) into n from public.community_comic_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'comic_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    delete from public.community_comic_events where owner = new.owner and at < now() - interval '7 days';
+    insert into public.community_comic_events (owner, kind) values (new.owner, 'create');
+    if new.status = 'published' then insert into public.community_comic_events (owner, kind) values (new.owner, 'publish'); end if;
+  else
+    -- id, proprietario, slug e nascita non cambiano mai (le grant per colonna non li danno; vale anche per lo staff)
+    if me is not null and (new.id is distinct from old.id or new.owner is distinct from old.owner
+        or new.slug is distinct from old.slug or new.created_at is distinct from old.created_at) then
+      raise exception 'comic_reserved_fields' using errcode = '42501';
+    end if;
+    -- 'hidden' è la moderazione dello staff: il proprietario non la toglie e non la mette
+    if not privileged and (old.status = 'hidden' or new.status = 'hidden') then
+      raise exception 'comic_hidden' using errcode = '42501';
+    end if;
+    new.published_at := old.published_at;
+    if new.status = 'published' and old.status is distinct from 'published' and not privileged then
+      perform pg_advisory_xact_lock(hashtext('om_comics:' || new.owner::text));
+      if exists (select 1 from public.community_comic_events where owner = new.owner and kind = 'hide' and at > now() - interval '1 day') then
+        raise exception 'comic_hidden_recent' using errcode = '42501';
+      end if;
+      if old.published_at is null then
+        select count(*) into n from public.community_comic_events where owner = new.owner and kind = 'publish' and at > now() - interval '1 day';
+        if n >= 3 then raise exception 'comic_daily_limit' using errcode = '23514'; end if;
+      end if;
+    end if;
+    if new.status = 'published' and old.published_at is null then
+      new.published_at := now();
+      insert into public.community_comic_events (owner, kind) values (new.owner, 'publish');
+    end if;
+    if new.status = 'hidden' and old.status is distinct from 'hidden' then
+      insert into public.community_comic_events (owner, kind) values (new.owner, 'hide');
+    end if;
+    -- l'impronta la scrive il sito con il testo: un testo cambiato via API senza impronta nuova la perde (le traduzioni
+    -- fatte sul testo di prima non valgono più)
+    if (new.lang, new.summary, new.pages) is distinct from (old.lang, old.summary, old.pages)
+       and new.text_hash is not distinct from old.text_hash then
+      new.text_hash := null;
+    end if;
+    -- traduzioni: ogni lingua cambiata deve essere un'altra lingua del sito, con le regole del testo semplice e un testo
+    -- per tavola (vale per tutti, staff e script compresi)
+    if new.translations is distinct from old.translations then
+      for k, v in select e.key, e.value from jsonb_each(new.translations) as e loop
+        if v is distinct from (old.translations -> k) then
+          if k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') or k = new.lang
+             or not public.community_comic_translation_ok(v, jsonb_array_length(new.pages)) then
+            raise exception 'comic_translation' using errcode = '23514';
+          end if;
+        end if;
+      end loop;
+    end if;
+    -- la data di aggiornamento è quella dell'autore: scrivere le traduzioni non la sposta
+    if (to_jsonb(new) - 'translations' - 'updated_at' - 'published_at' - 'text_hash')
+        is distinct from (to_jsonb(old) - 'translations' - 'updated_at' - 'published_at' - 'text_hash') then
+      new.updated_at := now();
+    else
+      new.updated_at := old.updated_at;
+    end if;
+  end if;
+  return new;
+end $$;
+    $fn$;
+  end if;
+end $mig$;
+
+-- community_comic_editions_ok: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.community_comic_editions_ok(jsonb, uuid, text, boolean)') is not null then
+    execute $fn$
+create or replace function public.community_comic_editions_ok(e jsonb, owner uuid, lang text, complete boolean)
+returns boolean language sql immutable set search_path = pg_catalog as $$
+  select case
+    when e is null or jsonb_typeof(e) is distinct from 'object' then false
+    when octet_length(e::text) > 150000 then false
+    else not exists (
+      select 1 from jsonb_each(e) as x(k, v)
+       where case
+         when k not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') or k = lang then true
+         when jsonb_typeof(v) is distinct from 'object' then true
+         when (v - 'title' - 'summary' - 'pages' - 'cover_path') <> '{}'::jsonb then true
+         when jsonb_typeof(v -> 'title') is distinct from 'string' then true
+         when not public.community_guide_text_ok(v ->> 'title', case when complete then 3 else 0 end, 110, false) then true
+         when jsonb_typeof(v -> 'summary') is distinct from 'string' then true
+         when not public.community_guide_text_ok(v ->> 'summary', case when complete then 40 else 0 end, 300, true) then true
+         when coalesce(jsonb_typeof(v -> 'cover_path'), 'null') not in ('string', 'null') then true
+         when jsonb_typeof(v -> 'cover_path') = 'string'
+              and (char_length(v ->> 'cover_path') > 200
+                   or (v ->> 'cover_path') !~ ('^' || owner::text || '/comic/[A-Za-z0-9_-]{8,64}\.(png|jpg|jpeg|webp)$')) then true
+         else not public.community_comic_pages_ok(v -> 'pages', owner, complete)
+       end)
+  end;
+$$;
+    $fn$;
+  end if;
+end $mig$;
+
+-- analytics_interest_add: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.analytics_interest_add(text, text, text)') is not null then
+    execute $fn$
+create or replace function public.analytics_interest_add(p_client text, p_locale text, p_source text)
+returns table (total bigint, accounts bigint, added boolean)
+language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  n integer := 0;
+begin
+  if p_client is null or p_client !~ '^[0-9a-f]{32}$' or p_locale is null or p_locale not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn')
+     or p_source is null or p_source not in ('top', 'bottom') then
+    raise exception 'invalid';
+  end if;
+  if uid is not null and not exists (select 1 from public.analytics_interest a where a.user_id = uid) then
+    update public.analytics_interest set user_id = uid where client_key = p_client and user_id is null;
+  end if;
+  if not exists (select 1 from public.analytics_interest a where a.client_key = p_client or (uid is not null and a.user_id = uid)) then
+    if (select count(*) from public.analytics_interest a where a.created_at > now() - interval '1 minute') >= 30 then
+      raise exception 'rate_limited';
+    end if;
+    insert into public.analytics_interest (client_key, user_id, locale, source) values (p_client, uid, p_locale, p_source)
+    on conflict do nothing;
+    get diagnostics n = row_count;
+  end if;
+  return query select (select count(*) from public.analytics_interest),
+                      (select count(*) from public.analytics_interest a where a.user_id is not null),
+                      n > 0;
+end $$;
+    $fn$;
+  end if;
+end $mig$;
+
+-- deck_set_guide_ok: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.deck_set_guide_ok(jsonb)') is not null then
+    execute $fn$
+create or replace function public.deck_set_guide_ok(g jsonb)
+returns boolean language sql immutable set search_path = public, pg_temp as $$
+  select jsonb_typeof(g) = 'object'
+     and coalesce(g->>'lang', '') in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn')
+     and jsonb_typeof(g->'summary') = 'string'
+     and char_length(g->>'summary') between 20 and 600
+     and not exists (
+       select 1 from jsonb_each(g) e
+       where e.key not in ('lang', 'summary', 'deck_1', 'deck_2', 'deck_3', 'strengths', 'weaknesses', 'matchups', 'notes')
+          or (e.key not in ('lang', 'summary') and (jsonb_typeof(e.value) <> 'string' or char_length(e.value #>> '{}') > 2000))
+     );
+$$;
+    $fn$;
+  end if;
+end $mig$;
+
+-- tracker_download_log: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.tracker_download_log(text, uuid, text)') is not null then
+    execute $fn$
+create or replace function public.tracker_download_log(p_key text, p_owner uuid, p_lang text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  insert into public.tracker_downloads (owner, lang)
+  values ((select p.id from public.profiles p where p.id = p_owner), case when p_lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') then p_lang end);
+end $$;
+    $fn$;
+  end if;
+end $mig$;
+
+-- bump_comic_stat: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.bump_comic_stat(text, text, text)') is not null then
+    execute $fn$
+create or replace function public.bump_comic_stat(p_slug text, p_lang text, p_kind text)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  cid uuid;
+  cowner uuid;
+  today date := (now() at time zone 'utc')::date;
+  cap constant int := 2000;
+begin
+  if p_kind is null or p_kind not in ('view', 'read') then return; end if;
+  if p_lang is null or p_lang not in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') then return; end if;
+  if p_slug is null or char_length(p_slug) not between 1 and 120 then return; end if;
+  select c.id, c.owner into cid, cowner from public.community_comics c where c.slug = p_slug and c.status = 'published';
+  if cid is null then return; end if;
+  -- con auth.uid() nullo (visitatore anonimo) il confronto è nullo e si conta
+  if cowner = auth.uid() then return; end if;
+  if exists (
+    select 1 from public.comic_stats_daily s
+    where s.comic_id = cid and s.day = today and s.lang = p_lang
+      and case p_kind when 'view' then s.views else s.reads end >= cap
+  ) then return; end if;
+  insert into public.comic_stats_daily as s (comic_id, day, lang, views, reads)
+  values (cid, today, p_lang, (p_kind = 'view')::int, (p_kind = 'read')::int)
+  on conflict (comic_id, day, lang) do update set
+    views = s.views + excluded.views,
+    reads = s.reads + excluded.reads
+  where case p_kind when 'view' then s.views else s.reads end < cap;
+end $$;
+    $fn$;
+  end if;
+end $mig$;
+
 -- ===== 04/11/2026: VOTI ALLE CARTE SENZA ACCOUNT =====
 -- =====================================================================================================
 -- Richiesta di Pierluigi del 04/11/2026: "il voto deve essere libero, senza iscrizione". Chi ha l'account continua a
