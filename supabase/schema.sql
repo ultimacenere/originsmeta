@@ -7728,22 +7728,46 @@ comment on table public.comic_stats_daily is 'Statistiche giornaliere dei fumett
 -- 'zh-cn'. Come per il russo: vincoli e funzioni qui sopra ora dicono (…,'ru','zh-cn'), lingue dei contenuti del profilo
 -- al massimo 8. Questo blocco rifà i vincoli e le funzioni toccati, così per la migrazione basta lanciare lui. Il sito
 -- regge senza (DB_PENDING_LOCALES in src/lib/community/translate.ts). Idempotente: drop constraint if exists, create or replace.
-alter table public.tournaments drop constraint if exists tournaments_lang_check;
-alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
-alter table public.profiles drop constraint if exists profiles_content_langs_check;
-alter table public.profiles add constraint profiles_content_langs_check
-  check (content_langs <@ array['en','it','es','fr','pt','de','ru','zh-cn']::text[] and cardinality(content_langs) <= 8 and array_position(content_langs, null) is null);
-alter table public.community_guides drop constraint if exists community_guides_lang_check;
-alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
-alter table public.community_comics drop constraint if exists community_comics_lang_check;
-alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
-alter table public.analytics_interest drop constraint if exists analytics_interest_locale_check;
-alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn'));
-alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
-alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn'));
-alter table public.comic_stats_daily drop constraint if exists comic_stats_daily_lang_check;
-alter table public.comic_stats_daily add constraint comic_stats_daily_lang_check check (lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn'));
+-- Le tabelle di blocchi non ancora migrati (per esempio comic_stats_daily, se il blocco dei contatori dei fumetti non è
+-- stato lanciato: errore 42P01 la prima volta, 04/11/2026) si saltano: il loro blocco, quando si lancia, nasce già con 'zh-cn'.
+do $$
+begin
+  if to_regclass('public.tournaments') is not null then
+    alter table public.tournaments drop constraint if exists tournaments_lang_check;
+    alter table public.tournaments add constraint tournaments_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.community_guides') is not null then
+    alter table public.community_guides drop constraint if exists community_guides_lang_check;
+    alter table public.community_guides add constraint community_guides_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.community_comics') is not null then
+    alter table public.community_comics drop constraint if exists community_comics_lang_check;
+    alter table public.community_comics add constraint community_comics_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.analytics_interest') is not null then
+    alter table public.analytics_interest drop constraint if exists analytics_interest_locale_check;
+    alter table public.analytics_interest add constraint analytics_interest_locale_check check (locale in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.tracker_downloads') is not null then
+    alter table public.tracker_downloads drop constraint if exists tracker_downloads_lang_check;
+    alter table public.tracker_downloads add constraint tracker_downloads_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.comic_stats_daily') is not null then
+    alter table public.comic_stats_daily drop constraint if exists comic_stats_daily_lang_check;
+    alter table public.comic_stats_daily add constraint comic_stats_daily_lang_check check (lang in ('en','it','es','fr','pt','de','ru','zh-cn'));
+  end if;
+  if to_regclass('public.profiles') is not null then
+    alter table public.profiles drop constraint if exists profiles_content_langs_check;
+    alter table public.profiles add constraint profiles_content_langs_check
+      check (content_langs <@ array['en','it','es','fr','pt','de','ru','zh-cn']::text[] and cardinality(content_langs) <= 8 and array_position(content_langs, null) is null);
+  end if;
+end $$;
 
+-- guard_community_guide: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.guard_community_guide()') is not null then
+    execute $fn$
 create or replace function public.guard_community_guide()
 returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -7843,7 +7867,15 @@ begin
   end if;
   return new;
 end $$;
+    $fn$;
+  end if;
+end $mig$;
 
+-- guard_community_comic: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.guard_community_comic()') is not null then
+    execute $fn$
 create or replace function public.guard_community_comic()
 returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -7931,7 +7963,15 @@ begin
   end if;
   return new;
 end $$;
+    $fn$;
+  end if;
+end $mig$;
 
+-- community_comic_editions_ok: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.community_comic_editions_ok(jsonb, uuid, text, boolean)') is not null then
+    execute $fn$
 create or replace function public.community_comic_editions_ok(e jsonb, owner uuid, lang text, complete boolean)
 returns boolean language sql immutable set search_path = pg_catalog as $$
   select case
@@ -7955,7 +7995,15 @@ returns boolean language sql immutable set search_path = pg_catalog as $$
        end)
   end;
 $$;
+    $fn$;
+  end if;
+end $mig$;
 
+-- analytics_interest_add: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.analytics_interest_add(text, text, text)') is not null then
+    execute $fn$
 create or replace function public.analytics_interest_add(p_client text, p_locale text, p_source text)
 returns table (total bigint, accounts bigint, added boolean)
 language plpgsql security definer set search_path = public, pg_temp as $$
@@ -7982,7 +8030,15 @@ begin
                       (select count(*) from public.analytics_interest a where a.user_id is not null),
                       n > 0;
 end $$;
+    $fn$;
+  end if;
+end $mig$;
 
+-- deck_set_guide_ok: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.deck_set_guide_ok(jsonb)') is not null then
+    execute $fn$
 create or replace function public.deck_set_guide_ok(g jsonb)
 returns boolean language sql immutable set search_path = public, pg_temp as $$
   select jsonb_typeof(g) = 'object'
@@ -7995,7 +8051,15 @@ returns boolean language sql immutable set search_path = public, pg_temp as $$
           or (e.key not in ('lang', 'summary') and (jsonb_typeof(e.value) <> 'string' or char_length(e.value #>> '{}') > 2000))
      );
 $$;
+    $fn$;
+  end if;
+end $mig$;
 
+-- tracker_download_log: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.tracker_download_log(text, uuid, text)') is not null then
+    execute $fn$
 create or replace function public.tracker_download_log(p_key text, p_owner uuid, p_lang text)
 returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
@@ -8003,7 +8067,15 @@ begin
   insert into public.tracker_downloads (owner, lang)
   values ((select p.id from public.profiles p where p.id = p_owner), case when p_lang in ('en', 'it', 'es', 'fr', 'pt', 'de', 'ru', 'zh-cn') then p_lang end);
 end $$;
+    $fn$;
+  end if;
+end $mig$;
 
+-- bump_comic_stat: si ricrea solo se esiste già (se il suo blocco non è stato lanciato, nascerà da quel blocco, già con 'zh-cn' e con i suoi permessi)
+do $mig$
+begin
+  if to_regprocedure('public.bump_comic_stat(text, text, text)') is not null then
+    execute $fn$
 create or replace function public.bump_comic_stat(p_slug text, p_lang text, p_kind text)
 returns void language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -8031,3 +8103,6 @@ begin
     reads = s.reads + excluded.reads
   where case p_kind when 'view' then s.views else s.reads end < cap;
 end $$;
+    $fn$;
+  end if;
+end $mig$;
