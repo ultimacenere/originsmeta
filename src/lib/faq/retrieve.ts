@@ -19,6 +19,8 @@ export type Contesto = { testo: string; fonti: Fonte[] };
 const STOPWORDS = new Set([
   ...["il", "lo", "la", "i", "gli", "le", "un", "uno", "una", "di", "a", "da", "in", "con", "su", "per", "tra", "fra", "che", "chi", "cosa", "come", "quale", "quali", "quando", "dove", "perche", "perché", "e", "o", "ma", "se", "non", "mi", "si", "ci", "vi", "ne", "del", "della", "dei", "delle", "nel", "nella", "al", "alla", "ai", "alle", "dal", "dalla", "sul", "sulla", "più", "piu", "meno", "molto", "carta", "carte", "mazzo", "mazzi", "gioco", "meglio", "migliore", "forte", "buona", "usare", "uso", "gioca", "giocare", "contro", "posso", "devo", "fare", "faccio", "sono", "essere", "avere", "ho"],
   ...["the", "a", "an", "of", "to", "in", "on", "for", "with", "and", "or", "but", "if", "not", "is", "are", "was", "be", "do", "does", "did", "how", "what", "which", "when", "where", "why", "who", "can", "should", "would", "card", "cards", "deck", "decks", "game", "best", "better", "good", "strong", "play", "playing", "against", "use", "using", "my", "i", "you", "it", "this", "that"],
+  // cinese (04/11/2026): coppie di ideogrammi, come escono da `spezzaCjk`
+  ...["卡牌", "卡组", "游戏", "如何", "多少", "时候", "怎样", "哪些", "什么", "怎么", "最好", "比较", "使用"],
 ]);
 
 const normalizza = (s: string) =>
@@ -28,8 +30,34 @@ const normalizza = (s: string) =>
     .replace(/ß/g, "ss")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
-    // il cirillico resta (russo dal 20/10/2026): con NFD la "й" diventa "и" e la "ё" diventa "е", come gli accenti
-    .replace(/[^a-z0-9а-я\s'-]/g, " ");
+    // il cirillico resta (russo dal 20/10/2026): con NFD la "й" diventa "и" e la "ё" diventa "е", come gli accenti;
+    // restano anche gli ideogrammi (cinese semplificato dal 04/11/2026), che NFD non tocca
+    .replace(/[^a-z0-9а-я㐀-鿿\s'-]/g, " ");
+
+/**
+ * Cinese (04/11/2026): le parole non sono separate da spazi, quindi un tratto di ideogrammi si divide in coppie di
+ * caratteri consecutivi ("发售日期" → "发售", "售日", "日期"), che fanno da parole per i confronti. Le coppie con una
+ * particella, un pronome o un verbo vuoto ("的", "吗", "么", "你", "有"…) si scartano: "什么", "怎么", "的卡" ci sono in
+ * mille domande e non dicono niente. Un ideogramma da solo non conta. Le lettere latine attaccate agli ideogrammi
+ * ("android版") restano una parola a parte.
+ */
+const CJK = /[㐀-鿿]/;
+const CJK_VUOTI = new Set([..."的了吗呢吧啊呀嘛么是在我你他她它们和与或也都还就很把被让给这那个哪有能会要可以"]);
+function spezzaCjk(token: string): string[] {
+  if (!CJK.test(token)) return [token];
+  const out: string[] = [];
+  for (const run of token.match(/[㐀-鿿]+|[^㐀-鿿]+/g) ?? []) {
+    if (!CJK.test(run)) {
+      out.push(run);
+      continue;
+    }
+    const chars = [...run];
+    for (let i = 0; i + 1 < chars.length; i++) {
+      if (!CJK_VUOTI.has(chars[i]) && !CJK_VUOTI.has(chars[i + 1])) out.push(chars[i] + chars[i + 1]);
+    }
+  }
+  return out;
+}
 
 /** Punteggio di pertinenza di una carta rispetto alla domanda. */
 function punteggio(card: Card, domanda: string, parole: string[], locale: Locale): number {
@@ -43,7 +71,8 @@ function punteggio(card: Card, domanda: string, parole: string[], locale: Locale
   // (Alla rivelazione, Travolgere…); contano le parole significative, non "on" o "alla"
   for (const k of card.keywords ?? []) {
     const termini = normalizza(`${k} ${keywordLabel(k, locale)}`).split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
-    if (termini.some((w) => parole.includes(w))) p += 8;
+    // un nome cinese ("揭示时") vale se compare intero nella domanda: le parole cinesi della domanda sono coppie
+    if (termini.some((w) => parole.includes(w) || (CJK.test(w) && domanda.includes(w)))) p += 8;
   }
   if (parole.some((w) => normalizza(sagas[card.saga][locale]).includes(w))) p += 6;
   // termini del testo dell'abilità
@@ -100,6 +129,9 @@ const RU_FAQ = [
   ...["и", "в", "во", "на", "с", "со", "к", "ко", "о", "об", "от", "до", "по", "за", "из", "у", "для", "без", "про", "при", "над", "под", "между", "через", "что", "чтобы", "кто", "как", "какои", "какая", "какое", "какие", "каких", "каким", "какую", "когда", "где", "куда", "почему", "зачем", "сколько", "ли", "или", "а", "но", "же", "не", "нет", "да", "это", "этот", "эта", "эти", "этого", "этои", "этом", "эту", "тот", "та", "те", "то", "мои", "моя", "мое", "моего", "мою", "мне", "меня", "я", "ты", "вы", "вас", "вам", "ваш", "ваша", "ваши", "он", "она", "они", "оно", "его", "ее", "их", "им"],
   ...["есть", "был", "была", "было", "были", "быть", "будет", "будут", "можно", "могу", "может", "могут", "нужно", "надо", "хочу", "уже", "еще", "тоже", "также", "все", "всех", "весь", "вся", "каждыи", "каждая", "очень", "более", "менее", "лучше", "лучшии", "лучшая", "лучшие", "хорошо", "хорошии", "игра", "игры", "игре", "игру", "игрои", "играть", "играю", "играет", "карта", "карты", "карт", "карте", "карту", "картои", "картами", "картах", "колода", "колоды", "колоду", "колоде", "колод", "колодои", "колодами", "колодах", "против", "работает", "работают", "начинается", "начнется", "сеичас", "здесь", "там", "потом", "после", "перед", "самое", "самыи", "такое", "такои", "делает", "делать", "сделать", "наити", "знать", "демо", "демоверсия", "демоверсии", "демоверсию", "патч", "патча", "патче", "работать"],
 ];
+// cinese semplificato (04/11/2026): coppie di ideogrammi come escono da `spezzaCjk` ("卡牌", "卡组", "游戏" sono
+// vuote come "card", "deck", "game"; "试玩" e "补丁" come "demo" e "patch"; "开始" come "start")
+const ZH_FAQ = ["卡牌", "卡组", "游戏", "如何", "为何", "多少", "时候", "试玩", "补丁", "玩家", "网站", "怎样", "一下", "现在", "开始", "哪些", "什么", "怎么", "为什", "请问", "知道", "一个", "一张", "最好", "比较", "使用", "所有", "没有", "目前", "已经"];
 const STOPWORDS_FAQ: Record<Locale, Set<string>> = {
   en: new Set([...COMUNI_FAQ, ...EN_FAQ]),
   it: new Set([...COMUNI_FAQ, ...EN_FAQ, ...IT_FAQ]),
@@ -108,10 +140,14 @@ const STOPWORDS_FAQ: Record<Locale, Set<string>> = {
   pt: new Set([...COMUNI_FAQ, ...EN_FAQ, ...PT_FAQ]),
   de: new Set([...COMUNI_FAQ, ...EN_FAQ, ...DE_FAQ]),
   ru: new Set([...COMUNI_FAQ, ...EN_FAQ, ...RU_FAQ]),
+  "zh-cn": new Set([...COMUNI_FAQ, ...EN_FAQ, ...ZH_FAQ]),
 };
 
-/** Parole di un testo per le risposte approvate: normalizzate e divise anche sull'apostrofo ("c'è", "un'abilità"). */
-const paroleDi = (s: string) => normalizza(s).split(/[\s']+/).filter(Boolean);
+/**
+ * Parole di un testo per le risposte approvate: normalizzate e divise anche sull'apostrofo ("c'è", "un'abilità");
+ * il cinese in coppie di ideogrammi (`spezzaCjk`).
+ */
+const paroleDi = (s: string) => normalizza(s).split(/[\s']+/).filter(Boolean).flatMap(spezzaCjk);
 
 /** Una parola della domanda vale per una parola della risposta approvata con la stessa radice (lingue/lingua, idioma/idiomas). */
 const stessaRadice = (a: string, b: string) => (a.length >= 5 && b.length >= 5 ? a.slice(0, 5) === b.slice(0, 5) : a === b);
@@ -131,11 +167,15 @@ const stessaRadice = (a: string, b: string) => (a.length >= 5 && b.length >= 5 ?
 export function risposteApprovate(domanda: string, locale: Locale, max = 2): Faq[] {
   const stop = STOPWORDS_FAQ[locale];
   const tutte = paroleDi(domanda);
-  const parole = tutte.filter((w) => w.length > 3 && !stop.has(w));
+  // le coppie cinesi hanno due caratteri ma pesano come le parole di almeno quattro lettere
+  const parole = tutte.filter((w) => (w.length > 3 || CJK.test(w)) && !stop.has(w));
   // per le frasi il nome del gioco non conta: "every Origins TCG card" vale come "every card"
   const frase = ` ${tutte.filter((w) => !NOME_GIOCO.has(w)).join(" ")} `;
   const punteggi = faqs[locale].map((f, i) => {
-    const chiavi = (f.keywords ?? []).map((k) => paroleDi(k).join(" ")).filter(Boolean);
+    // una parola chiave cinese ridotta alle sole coppie vuote ("所有卡牌" → "卡牌") non direbbe niente: si scarta
+    const chiavi = (f.keywords ?? [])
+      .map((k) => paroleDi(k).join(" "))
+      .filter((k) => k && !(CJK.test(k) && k.split(" ").every((w) => stop.has(w))));
     const frasi = chiavi.filter((k) => k.includes(" ") || k.length < 4);
     const nellaDomanda = [...paroleDi(f.q), ...chiavi.filter((k) => !frasi.includes(k))];
     const nellaRisposta = normalizza(f.a);
@@ -178,7 +218,7 @@ function schedaCarta(card: Card, locale: Locale): string {
  */
 export function contestoPer(domanda: string, locale: Locale, max = { carte: 12, guide: 4 }): Contesto {
   const d = normalizza(domanda);
-  const parole = d.split(/\s+/).filter((w) => w.length > 1 && !STOPWORDS.has(w));
+  const parole = d.split(/\s+/).flatMap(spezzaCjk).filter((w) => w.length > 1 && !STOPWORDS.has(w));
   const fonti: Fonte[] = [];
 
   const trovate = cards

@@ -10,6 +10,233 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "balance-patch-1104-cyber-queen": {
+    title: "Notas do patch de Origins TCG de 4 de novembro: dez cartas rebalanceadas, Cyber Queen é o chefe n.º 11",
+    metaTitle: "Patch 4/11: Obliterate a 10, ursos mais caros",
+    description:
+      "Notas do patch de Origins TCG de 4 de novembro: Obliterate vai a 10 de mana, os três ursos custam 1 a mais e Dorothy vira 3/3. Cyber Queen é o chefe n.º 11.",
+    summary:
+      "O primeiro patch de balanceamento do acesso antecipado de Origins TCG chega hoje, 4 de novembro, por volta das 14:00 UTC, sem atualizar o cliente. Dez cartas mudam: Obliterate vai a 10 de mana, Baby Bear, Mama Bear e Papa Bear custam 1 a mais, Dorothy vira 3/3, e Genie e Searing Light ficam mais baratas. Com ele chega o chefe n.º 11, Cyber Queen, pilotando o deck Relentless com Dr. Frank.",
+    highlights: [
+      { label: "Chega hoje por volta das 14:00 UTC", text: "sem atualizar o cliente", anchor: "quando" },
+      { label: "Chefe n.º 11: Cyber Queen", text: "pilota o deck Relentless, com Dr. Frank como Lendária", anchor: "cyber-queen" },
+      { label: "Dez cartas mudam", text: "cinco nerfs e cinco buffs, só custo e estatísticas", anchor: "mudancas" },
+      { label: "Os três ursos custam 1 a mais", text: "Baby Bear foi a carta mais jogada da Crimson Cup", anchor: "ursos" },
+      { label: "Obliterate vai a 10 de mana", anchor: "obliterate" },
+      { label: "Dorothy vira 3/3", text: "ainda por 4 de mana", anchor: "dorothy" },
+    ],
+    body: `## Quando chega {#quando}
+
+A Koin Games publicou as notas do patch no Discord oficial em 4 de novembro, às 09:08 UTC: a atualização "deve chegar" cerca de cinco horas depois, ou seja, por volta das 14:00 UTC, e não exige atualizar o cliente. É o primeiro patch de balanceamento do acesso antecipado, o que a Koin tinha prometido para o dia de Dr. Frank ([nossa notícia de 2 de novembro](/pt/news/balance-patch-dr-frank-roadmap-ama)).
+
+As cartas e o deck builder do OriginsMeta já mostram os valores novos.
+
+## Chefe n.º 11: Cyber Queen e o deck Relentless {#cyber-queen}
+
+O novo chefe é Cyber Queen, que pilota o deck Relentless. Sua Lendária é Dr. Frank, e o plano de jogo gira em torno de trazer personagens de volta do cemitério: um arquétipo novo, com um punhado de cartas novas para testar. Apresentamos cada uma em [as oito cartas novas de Dr. Frank](/pt/news/dr-frank-boss-new-cards).
+
+Uma correção: até hoje chamávamos Dr. Frank de novo chefe. As notas do patch deixam claro que o chefe é Cyber Queen e que Dr. Frank é a Lendária do deck dela.
+
+## Todas as mudanças {#mudancas}
+
+Formato: mana · Poder/Vida para os personagens, só mana para os feitiços.
+
+| Carta | Antes | Depois | O que muda |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | custa 1 a mais |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | custa 1 a mais |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | custa 1 a mais |
+| Obliterate | 9 | 10 | custa 1 a mais |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 de Poder |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 de Poder, +2 de Vida |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 de Poder |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 de Vida |
+| Genie | 6 · 4/4 | 5 · 4/4 | custa 1 a menos |
+| Searing Light | 4 | 3 | custa 1 a menos |
+
+Cinco nerfs e cinco buffs. Nenhuma carta muda de texto ou de habilidades: só custo e estatísticas. A equipe conta que as mudanças vêm depois de "muitas discussões apaixonadas" sobre essas cartas.
+
+## Os três ursos custam mais {#ursos}
+
+Baby Bear, Mama Bear e Papa Bear custam 1 de mana a mais cada um. Os três punem o inimigo que causa dano à sua barreira onde estão: Baby Bear causa 1 de dano a ele, Papa Bear 3, e Mama Bear o destrói.
+
+Baby Bear foi a carta mais jogada nas quatro classificatórias da Crimson Cup: nas tabelas oficiais da Koin, estava em 46% a 50% dos decks. Por 3 de mana, deixa de ser uma escolha quase automática.
+
+## Obliterate vai a 10 de mana {#obliterate}
+
+Obliterate, o feitiço mais caro do jogo, agora custa 10. Nas classificatórias da Crimson Cup, estava em 21% a 24% dos decks. A equipe brinca: depois de todas as curtidas no post no X que pedia o nerf, quase colocaram o dano dele em -12, mas o motor do jogo não lida com dano negativo.
+
+## Dorothy vira 3/3 {#dorothy}
+
+Dorothy, uma Lendária, continua custando 4, mas passa de 1/1 para 3/3: já não morre com um único ponto de dano. Banshee ganha 1 de Poder e Esmeralda 1 de Vida, enquanto Genie (5) e Searing Light (3) custam 1 a menos. Guy of Gisborne é a única carta que perde estatísticas sem mudar de custo: 3/4 em vez de 4/4.
+
+## E agora {#agora}
+
+Se seus decks usam Obliterate, os ursos ou Guy of Gisborne, revise sua curva de mana: o [MetaShifting](/pt/metashifting) mostra cada mudança patch a patch, e no [Theory craft](/pt/theory-craft) você pode refazer uma lista com os custos novos agora mesmo. A Koin pede opiniões depois de algumas partidas: demais, de menos ou, como diria Cachinhos Dourados, na medida certa.`,
+  },
+  "dr-frank-boss-new-cards": {
+    title: "Dr. Frank chega a Origins TCG em 4 de novembro: a Lendária do novo chefe e oito cartas novas",
+    metaTitle: "Dr. Frank em Origins TCG: Lendária e 8 cartas novas",
+    description:
+      "Dr. Frank, Lendária do deck Relentless do chefe Cyber Queen, chega a Origins TCG em 4 de novembro com um patch de balanceamento e oito cartas novas.",
+    summary:
+      "Dr. Frank, a Lendária do deck de Cyber Queen, o novo chefe de Origins TCG, chega na quarta-feira, 4 de novembro de 2026, uma semana antes do previsto porque os jogadores chegaram às 500 avaliações no Steam. Ele traz oito cartas novas, que a Koin Games revelou por meio dos seus criadores: o próprio Dr. Frank é uma Lendária, e seis das oito são Malignas. No mesmo dia chega um patch de balanceamento.",
+    highlights: [
+      { label: "Quarta-feira, 4 de novembro", text: "Dr. Frank chega com cartas novas, no deck do chefe Cyber Queen", anchor: "chegada" },
+      { label: "Uma semana antes", text: "os jogadores chegaram às 500 avaliações no Steam que a Koin pediu", anchor: "avaliacoes" },
+      { label: "Oito cartas novas", text: "uma Lendária, um feitiço e seis personagens; seis cartas são Malignas", anchor: "cartas" },
+      { label: "O cemitério volta", text: "Dr. Frank e It's Alive invocam personagens do seu cemitério", anchor: "cemiterio" },
+      { label: "Uma palavra-chave nova", text: "Red Knight traz Ongoing, que hoje nenhuma carta do jogo tem", anchor: "red-knight" },
+      { label: "Patch de balanceamento", text: "o Studio Head da Koin diz que ele chega com Dr. Frank", anchor: "balanceamento" },
+      { label: "Teste agora", text: "monte um deck com as oito cartas no nosso Theory craft", anchor: "theory-craft" },
+    ],
+    body: `## Dr. Frank chega na quarta-feira, 4 de novembro {#chegada}
+
+"O próximo chefe, Dr. Frank, chega a Origins na semana que vem, com um deck cheio de cartas novas." A Koin Games anunciou isso no Steam em 31 de outubro de 2026, dia de Halloween, no post "Happy Halloween, Dr. Frank is coming": a data é **quarta-feira, 4 de novembro**. Até as notas do patch, escrevemos que Dr. Frank é o chefe da missão 12, a próxima das missões contra a IA do jogo: as notas do patch de 4 de novembro deixam claro que o chefe é Cyber Queen, o chefe n.º 11, e que Dr. Frank é a Lendária do deck Relentless dela ([as notas do patch](/pt/news/balance-patch-1104-cyber-queen#cyber-queen)). Quando publicamos este artigo, a Koin ainda não tinha dito a que horas chega a atualização.
+
+## Uma semana antes, graças às avaliações {#avaliacoes}
+
+Dr. Frank ia chegar uma semana depois. Em 29 de outubro, no Discord oficial, apix, da Koin, fez uma proposta aos jogadores: no dia anterior cerca de 10.000 pessoas tinham jogado, mas só 200 tinham deixado uma avaliação no Steam; com 500 avaliações até o fim da semana, a missão 12 sairia na semana seguinte, "antes do previsto". A meta foi alcançada em menos de dois dias. Em 31 de outubro Mawr, Studio Head da Koin, escreveu: "Vocês conseguiram! 500 avaliações! O chefe chega uma semana antes." A arte do post no Steam diz o mesmo: "Como vocês bateram a meta, Dr. Frank chega com uma semana inteira de antecedência."
+
+## As oito cartas novas {#cartas}
+
+Em 2 de novembro a Koin deu aos seus criadores acesso antecipado a "todas as oito novas cartas de Origins", com as imagens oficiais para revelá-las: são as cartas das imagens abaixo. Seis das oito são Malignas. As oito já estavam no nosso banco de dados, entre as cartas removidas do jogo, com o mesmo custo e as mesmas estatísticas.
+
+| Carta | Custo | Estatísticas | Tipo e palavras-chave |
+|---|---|---|---|
+| [Dr. Frank](/pt/cards/dr-frank) | 6 | 2/2 | Lendária, Evil |
+| [It's Alive](/pt/cards/its-alive) | 3 | – | Feitiço |
+| [Frank's Monster](/pt/cards/franks-monster) | 6 | 5/4 | Evil, Renascimento |
+| [Franken Bride](/pt/cards/franken-bride) | 5 | 4/4 | Evil, Renascimento |
+| [Morgan le Fay](/pt/cards/morgan-le-fay) | 2 | 1/3 | Evil, Ao revelar |
+| [Doppelganger](/pt/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/pt/cards/necromancer) | 4 | 2/2 | Evil, Ao revelar |
+| [Red Knight](/pt/cards/red-knight) | 2 | 4/1 | Atropelar, Ongoing |
+
+As imagens são as cartas em inglês da Koin; os textos em português abaixo são uma tradução nossa com o glossário do jogo, que vamos comparar com o jogo assim que a atualização sair.
+
+### Dr. Frank e It's Alive: o cemitério volta ao jogo {#cemiterio}
+
+![As cartas oficiais de Dr. Frank e It's Alive, da Koin Games: Dr. Frank, Lendária, 6 de mana, 2/2; It's Alive, feitiço de 3 de mana](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank é uma Lendária: "Antes do combate, invoca um personagem aleatório do seu cemitério em um espaço aleatório." It's Alive é um feitiço de 3 de mana que faz a mesma coisa uma vez: "Invoca um personagem aleatório do seu cemitério em um espaço aleatório." A Koin não disse se It's Alive é a carta que Dr. Frank coloca na sua mão no início da partida: ZulsoiD a apresenta assim no vídeo dele, e Robip acha provável.
+
+### Frank's Monster e Franken Bride: Renascimento {#renascimento}
+
+![As cartas oficiais de Frank's Monster e Franken Bride, da Koin Games, Malignas e com Renascimento](/media/news-dr-frank-rebirth.webp)
+
+As duas têm **Renascimento**, a palavra-chave de Mummy e Phuong Hoang, e as duas fazem algo quando voltam. Frank's Monster, 6 de mana por um 5/4: "Quando entro em jogo a partir do cemitério, duplico o meu ⚔️." Franken Bride, 5 de mana por um 4/4: "Quando entro em jogo a partir do cemitério, cura 4 de dano da sua barreira aqui." Nos vídeos dos criadores, o Monster volta como um 10/1 e a Bride como um 4/1.
+
+### Morgan le Fay, Doppelganger e Necromancer: o descarte {#descarte}
+
+![As cartas oficiais de Morgan le Fay, Doppelganger e Necromancer, da Koin Games: três personagens Malignos para decks de descarte](/media/news-dr-frank-discard.webp)
+
+Três cartas para os decks de descarte, os que são montados em torno de Dracula, Koschei e Aladdin.
+
+- [Morgan le Fay](/pt/cards/morgan-le-fay), 2 de mana por um 1/3: "Ao revelar: Descarta a carta mais à direita da sua mão. Adiciona um feitiço aleatório à sua mão e reduz o custo dele em 2."
+- [Doppelganger](/pt/cards/doppelganger), 4 de mana por um 2/2: "Quando você descarta um personagem, me transformo em uma cópia desse personagem."
+- [Necromancer](/pt/cards/necromancer), 4 de mana por um 2/2: "Ao revelar: Descarta uma carta aleatória para adicionar 2 Zombies [2⚔️/2❤️] à sua mão. Se você descartou uma carta Maligna, invoca esses Zombies em vez disso."
+
+### Red Knight traz Ongoing {#red-knight}
+
+![A carta oficial de Red Knight, da Koin Games: 2 de mana, 4/1, Atropelar e Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/pt/cards/red-knight), 2 de mana por um 4/1: "Atropelar. Ongoing: O personagem à minha frente tem Atropelar." **Ongoing** indica uma habilidade sempre ativa enquanto a carta está em jogo, e hoje nenhuma carta do jogo a tem: enquanto Red Knight estiver no tabuleiro, o personagem à frente dele também tem Atropelar.
+
+## Um patch de balanceamento no mesmo dia {#balanceamento}
+
+"O patch de balanceamento chega amanhã, com Dr. Frank": foi o que Mawr escreveu no Discord em 3 de novembro. As mudanças ainda não são públicas: assim que as notas do patch saírem, vamos publicá-las, e o [MetaShifting](/pt/metashifting) vai mostrar o que muda carta por carta. Até lá, as estatísticas no OriginsMeta continuam as do [patch 0.7](/pt/news/patch-0-7). As outras datas da semana, do AMA sobre o roadmap na sexta-feira, 6 de novembro, ao fim da temporada ranqueada 1, estão no [nosso artigo de 2 de novembro](/pt/news/balance-patch-dr-frank-roadmap-ama).
+
+## O que dizem os criadores {#criadores}
+
+No [vídeo de 3 de novembro](https://www.youtube.com/watch?v=tU9muG1MZts), ZulsoiD analisa as oito cartas. As primeiras impressões dele, que são opiniões e não dados:
+
+- Dr. Frank e It's Alive valem a pena para decks midrange e controle: trazer de volta um personagem de 4 de mana ou mais com um feitiço de 3 já é lucro. Um personagem invocado assim não ativa a sua habilidade Ao revelar, então Boogeyman e Asanbosam voltam sem a desvantagem deles.
+- Frank's Monster é "agora a carta com Renascimento mais forte": um 5/4 que bloqueia duas vezes.
+- Franken Bride pode ocupar o lugar de Bridge Troll nos decks que querem segurar o dano.
+- Morgan le Fay vale mais pelo descarte do que pelo feitiço, mesmo que um Obliterate por 7 ou um Rain of Arrows por 3 caiam bem. Jogue Ugly Duckling e depois Morgan le Fay descartando Aladdin: Aladdin entra no tabuleiro e Ugly Duckling se transforma.
+- Doppelganger quer personagens de 4 de mana ou mais, sobretudo Dracula e Koschei.
+- Necromancer o convence menos: os decks de descarte de hoje jogam poucas cartas Malignas (King Shahryar, Dracula, Koschei), e por um mana a mais Three Musketeers dá um tabuleiro parecido, com Primeiro golpe.
+- Red Knight é uma carta para decks aggro que cresce a cada buff, por exemplo com Glinda, mas pode sofrer contra Baby Bear, Bagheera e Musketeer, muito jogadas neste momento.
+
+Robip também apresentou as oito cartas, [em italiano](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Teste agora no OriginsMeta {#theory-craft}
+
+As oito cartas estão no [banco de dados de cartas](/pt/cards) com o filtro "Fora do jogo", e no [Theory craft](/pt/theory-craft) você já pode montar um deck com elas: os que você publicar vão para os [decks de theory craft](/pt/theory-craft/decks). Quando a atualização estiver no jogo, vamos marcá-las como cartas do jogo e comparar os textos nos sete idiomas; os decks montados com elas vão passar sozinhos para os decks individuais.
+
+## O que ainda não sabemos {#o-que-nao-sabemos}
+
+- A que horas a atualização chega em 4 de novembro.
+- Como se desbloqueiam Dr. Frank e as cartas dele, e se dá para usá-las na ranqueada desde o primeiro dia.
+- Se It's Alive é a carta que Dr. Frank dá a você no início da partida.
+- O que o patch de balanceamento muda.
+
+Fontes: o post no Steam "Happy Halloween, Dr. Frank is coming" (31 de outubro de 2026) e a sua arte; as mensagens de apix (29 de outubro) e de Mawr (31 de outubro e 3 de novembro) no Discord oficial de Origins TCG; as imagens das cartas que a Koin Games deu aos seus criadores para revelá-las (2 de novembro); o vídeo de ZulsoiD (3 de novembro). As citações foram traduzidas por nós. Ilustrações: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+    faq: [
+      { q: "Quando Dr. Frank chega a Origins TCG?", a: "Na quarta-feira, 4 de novembro de 2026, uma semana antes do previsto porque os jogadores chegaram às 500 avaliações no Steam. Quando publicamos este artigo, a Koin não tinha anunciado o horário." },
+      { q: "Quais são as cartas novas de Dr. Frank?", a: "Oito: Dr. Frank (Lendária, 6 de mana, 2/2), It's Alive (feitiço, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) e Red Knight (2, 4/1)." },
+      { q: "Tem patch de balanceamento com Dr. Frank?", a: "Sim: Mawr, Studio Head da Koin, escreveu que o patch de balanceamento chega com Dr. Frank em 4 de novembro. As mudanças ainda não tinham sido publicadas." },
+      { q: "Já posso montar um deck com as cartas novas?", a: "No OriginsMeta, sim: as oito cartas estão no Theory craft, o nosso deck builder com as cartas que não estão no jogo, até a atualização sair." },
+    ],
+  },
+  "balance-patch-dr-frank-roadmap-ama": {
+    title: "Origins TCG: patch de balanceamento e Dr. Frank na quarta, AMA sobre o roadmap na sexta",
+    metaTitle: "Origins TCG: patch na quarta, AMA do roadmap na sexta",
+    description:
+      "Origins TCG: o primeiro patch de balanceamento do Acesso Antecipado e o novo chefe chegam na quarta, 4 de novembro; o AMA do roadmap é na sexta, dia 6.",
+    summary:
+      "Origins TCG tem duas datas nesta semana. Na quarta-feira, 4 de novembro, chega o primeiro patch de balanceamento do Acesso Antecipado, junto com um chefe novo, Cyber Queen, com um deck cheio de cartas novas e Dr. Frank como Lendária; na sexta-feira, 6 de novembro, às 18h de Brasília, a Koin Games faz um AMA sobre o roadmap no Discord oficial. As notas do patch saíram em 4 de novembro.",
+    highlights: [
+      { label: "Patch de balanceamento na quarta", text: "4 de novembro, o primeiro do Acesso Antecipado; notas publicadas no mesmo dia", anchor: "patch-balanceamento" },
+      { label: "Chega Dr. Frank", text: "a Lendária do deck do chefe novo, Cyber Queen, uma semana antes", anchor: "dr-frank" },
+      { label: "AMA do roadmap na sexta", text: "6 de novembro às 18h de Brasília no Discord oficial", anchor: "ama-roadmap" },
+      { label: "Temporada ranqueada 1", text: "termina na semana de 7 de dezembro", anchor: "ranqueada" },
+      { label: "Em preparação", text: "animações mais rápidas, mais torneios, o Collector Pass no jogo", anchor: "a-caminho" },
+    ],
+    body: `**Atualização de 4 de novembro:** as notas do patch saíram ([nosso artigo](/pt/news/balance-patch-1104-cyber-queen)): dez cartas mudam, e o chefe novo é Cyber Queen, o chefe n.º 11, que pilota o deck Relentless com Dr. Frank como Lendária. Mais abaixo, onde chamamos Dr. Frank de chefe novo, leia-se: a Lendária do deck do chefe.
+
+## Quarta-feira, 4 de novembro: o patch de balanceamento {#patch-balanceamento}
+
+O primeiro patch de balanceamento do Acesso Antecipado de Origins TCG chega na quarta-feira, 4 de novembro de 2026. Na segunda-feira, 2 de novembro, em #the-courtyard no Discord oficial, o moderador Senith repassou uma mensagem de Mawr, Studio Head da Koin Games: "Acho que vocês vão gostar das atualizações de balanceamento que chegam na quarta-feira, 4 de novembro." Na mesma noite, apix, da equipe da Koin, escreveu no X que "o primeiro patch de balanceamento de verdade está logo ali" ([o post dele](https://x.com/apixtwts/status/2117383252478456012)).
+
+É a primeira mudança nas cartas desde o [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026: a [atualização 0.8](/pt/news/origins-tcg-early-access-0-8), que abriu o Acesso Antecipado em 27 de outubro, não mexeu nas cartas. As notas do patch ainda não saíram, então não sabemos quais cartas mudam nem a que horas a atualização chega. Assim que forem publicadas, vamos contar tudo com o antes e o depois de cada carta, e o [banco de dados de cartas](/pt/cards), o [deck builder](/pt/deck-builder) e o [MetaShifting](/pt/metashifting) vão mostrar os valores novos.
+
+## No mesmo dia: Dr. Frank e o chefe novo {#dr-frank}
+
+Na quarta chega também o próximo chefe, Dr. Frank. A Koin anunciou no Steam em 31 de outubro ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): o chefe "vai ter um deck cheio de cartas novas" e chega uma semana antes do previsto. O motivo está na arte do post e no Discord: a comunidade chegou às 500 avaliações no Steam, e naquela noite a Koin escreveu em #announcements que "o chefe vem uma semana antes". Em 2 de novembro, apix confirmou no Discord: "chefe novo na quarta".
+
+Os chefes são os adversários das Missões, jogadas contra a IA. Nosso banco de dados já tem uma Lendária [Dr. Frank](/pt/cards/dr-frank), que não está mais no jogo: a página dela mostra os últimos dados conhecidos, não verificados no jogo, e o chefe pode não ser igual. A Koin não disse se as cartas novas do deck dele também vão entrar na coleção dos jogadores.
+
+## Sexta-feira, 6 de novembro: o AMA sobre o roadmap {#ama-roadmap}
+
+Na sexta-feira, 6 de novembro, às 18h de Brasília (21h UTC), a Koin faz o "Super Secret Early Access Roadmap AMA", uma sessão de perguntas e respostas sobre o roadmap do Acesso Antecipado. É um evento do Discord oficial, no canal #live-events, criado por apix. Tim Jooste, fundador e CEO da Koin Games, tinha colocado o AMA em primeiro lugar entre as próximas novidades na mensagem dele em #announcements de 1º de novembro, sem outros detalhes.
+
+Na mesma mensagem ele anunciou mais duas coisas, ainda sem data: um "Tell Your Local TCG Shop About Origins Day", o dia de apresentar Origins à sua loja de cartas, com detalhes "em breve", e um panorama da cena competitiva, com torneios, recompensas e formatos. O último AMA, em 2 de outubro, deu as datas da ranqueada e os primeiros números sobre cartas novas ([nosso artigo](/pt/news/building-origins-ama-design-balance)); as datas confirmadas até agora estão no nosso [roadmap](/pt/guides/roadmap-and-dates). Vamos contar o AMA depois da transmissão.
+
+## A temporada ranqueada 1 termina na semana de 7 de dezembro {#ranqueada}
+
+Outra data chegou em 31 de outubro em #game-announcements: a primeira temporada ranqueada do Acesso Antecipado termina no começo de dezembro, "na semana de 7 de dezembro". A Koin explica que ainda não consegue encerrar uma temporada: a tecnologia para isso chega com a grande atualização que vai acompanhar o fim da temporada, então o dia exato ainda pode mudar. A data vai aparecer no jogo em breve. Como funcionam a escalada e o Grandmaster está no nosso [guia da ranqueada](/pt/guides/origins-tcg-ranked).
+
+## O que mais a Koin está preparando {#a-caminho}
+
+No post de 2 de novembro, apix listou as atualizações em andamento: animações mais rápidas, mais torneios, o patch de balanceamento, cartas novas ("cartas cartas cartas"), o Collector Pass no jogo, a próxima temporada ranqueada e "muito polimento". Ele também escreveu que hoje está disponível cerca de 60-70% das cartas do primeiro set. Tirando o patch, nenhuma dessas novidades tem data.
+
+## O que ainda não sabemos {#pendente}
+
+- Quais cartas o patch de balanceamento muda, e a que horas ele chega na quarta.
+- Se as cartas novas de Dr. Frank vão entrar na coleção e no deck builder.
+- Do que vai tratar o AMA sobre o roadmap, e se ele vai ficar gravado.
+- O último dia exato da temporada ranqueada 1.
+
+Fontes: as mensagens em #the-courtyard (2 de novembro de 2026, 18h11 UTC), #announcements (31 de outubro, 01h41 UTC, e 1º de novembro, 00h05 UTC) e #game-announcements (31 de outubro, 22h56 UTC) no Discord oficial de Origins TCG, o evento "Super Secret Early Access Roadmap AMA" no mesmo servidor, consultado em 3 de novembro, o post no Steam de 31 de outubro (16h41 UTC) e o post de apix no X de 2 de novembro. As citações foram traduzidas por nós.`,
+    faq: [
+      { q: "Quando sai o próximo patch de balanceamento de Origins TCG?", a: "Na quarta-feira, 4 de novembro de 2026, como anunciou no Discord oficial Mawr, Studio Head da Koin. É o primeiro desde o patch 0.7 de 29 de setembro; as notas ainda não saíram." },
+      { q: "Quando é o AMA sobre o roadmap de Origins TCG?", a: "Na sexta-feira, 6 de novembro de 2026, às 18h de Brasília (21h UTC), no canal #live-events do Discord oficial." },
+      { q: "O que é Dr. Frank em Origins TCG?", a: "A Lendária do deck de Cyber Queen, o novo chefe das Missões: chegam em 4 de novembro com um deck cheio de cartas novas, uma semana antes porque o jogo chegou às 500 avaliações no Steam." },
+      { q: "Quando termina a temporada ranqueada 1?", a: "Na semana de 7 de dezembro de 2026, segundo a Koin; o dia exato ainda pode mudar." },
+    ],
+  },
   "soul-crimson-cup-interview": {
     title: "Uma conversa com SouL, finalista da Crimson Cup: a lineup anti Van Helsing e o futuro de Origins TCG",
     metaTitle: "Entrevista com SouL, finalista da Crimson Cup de Origins TCG",

@@ -233,7 +233,38 @@ const ru: DeckArtLabels = {
   },
 };
 
-export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es, fr, pt, de, ru };
+const zhCn: DeckArtLabels = {
+  form: {
+    title: "传说卡卡图",
+    roles: "Creator 与 Staff",
+    hint: "用你自己的图替换此卡组中 {legendary} 的插画：会显示在卡组页面、卡组列表、你的主页和强度榜中。卡牌比例 5:7，至少 {minw} × {minh} px（最佳为 {w} × {h}），PNG、JPG 或 WebP，最大 2 MB：我们会从中心裁成 5:7。只能使用你自己的图片或你有权使用的图片。官方卡牌仍会显示在它自己的页面和预览中。",
+    upload: "上传卡图",
+    replace: "更换卡图",
+    uploading: "上传中……",
+    remove: "使用官方卡牌",
+    official: "官方卡牌",
+    custom: "你的卡图",
+    notOwner: "只有发布此卡组的人才能上传卡图；你可以在这里移除它。",
+    noRole: "传说卡卡图仅限 Creator 和 Staff：你在这里只能移除它。",
+    errors: {
+      type: "此文件不是 PNG、JPG 或 WebP 图片。",
+      tooBig: "图片压缩后仍然太大：请换一张小一点的。",
+      upload: "上传失败：请检查网络连接后再试。",
+      limit: "你上传的图片已达上限：请删除不再使用的图片，或给 Staff 发消息。",
+    },
+  },
+  errors: {
+    artFile: "找不到卡图或卡图无法使用：请重新上传，或使用官方卡牌。",
+    artRole: "传说卡卡图仅限 Creator 和 Staff。",
+    artUnavailable: "暂时无法保存卡组卡图：请几分钟后再试，或使用官方卡牌发布。",
+  },
+  deck: {
+    caption: "Creator 卡图",
+    alt: "{legendary}：{author} 的卡组卡图",
+  },
+};
+
+export const deckArtLabels: Record<Locale, DeckArtLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 /** Le etichette del modulo nella lingua della pagina, con gli errori delle Server Action. */
 export function deckArtFormLabels(locale: Locale): DeckArtFormLabels {

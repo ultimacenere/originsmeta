@@ -39,9 +39,9 @@ The official Origins TCG tournament of Steam Next Fest, run by Koin Games (annou
 
 ## Legendaries
 
-The 11 Legendaries in the game: every deck is led by one of them. Data of the latest patch (patch 0.7 of 29 September 2026); the 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes. Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…) and Russian (/ru/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.
+The 11 Legendaries in the game: every deck is led by one of them. Data of the latest patch (patch of 4 November 2026 (EA · 4 Nov)); the 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes. Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…), Russian (/ru/cards/…) and Simplified Chinese (/zh-cn/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.
 
-- [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 1 Power / 1 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
+- [Dorothy](https://originsmeta.com/en/cards/dorothy): Legendary unit, 4 mana, 3 Power / 3 Health, Good. I can Move each round. I have +1 Power/+1 Health for each time an ally moved this game.
 - [Dracula](https://originsmeta.com/en/cards/dracula): Legendary unit, 4 mana, 3 Power / 2 Health, Evil. When you discard, return me from your graveyard to hand. On Reveal: Summon Brides of Dracula [2 Power/2 Health] on a random space here.
 - [King Arthur](https://originsmeta.com/en/cards/king-arthur): Legendary unit, 7 mana, 7 Power / 7 Health, Good. Shield. On Reveal: Give your Good characters Shield.
 - [Legion of the Dead](https://originsmeta.com/en/cards/legion-of-the-dead): Legendary spell, 7 mana, Neutral. Fill your board with Zombies [2 Power/2 Health].
@@ -83,7 +83,7 @@ The 11 Legendaries in the game: every deck is led by one of them. Data of the la
 
 ## Guides
 
-Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…), Brazilian Portuguese (/pt/guides/…), German (/de/guides/…) and Russian (/ru/guides/…) with the same slug.
+Every OriginsMeta guide in English, the game first and then the deck guides; each one is also in Italian (/it/guides/…), Spanish (/es/guides/…), French (/fr/guides/…), Brazilian Portuguese (/pt/guides/…), German (/de/guides/…), Russian (/ru/guides/…) and Simplified Chinese (/zh-cn/guides/…) with the same slug.
 
 - [The 11 Legendaries of Origins TCG: cards, stats, patches and decks](https://originsmeta.com/en/guides/origins-tcg-legendaries): All 11 playable Legendary cards of Origins TCG: cost, stats, official text, the cards they create, patch changes and the decks that use them.
 - [Origins TCG locations: how the three lanes change every game](https://originsmeta.com/en/guides/origins-tcg-locations): Locations are the third player at the table: they double damage, change costs and move your characters. How they work, which ones decide games, and how to build with them in mind.

@@ -50,7 +50,7 @@ import {
 import { streamLabels } from "./streamLabels.ts";
 
 const SITE = "https://originsmeta.com";
-const locales = ["en", "it", "es", "ru"] as const;
+const locales = ["en", "it", "es", "ru", "zh-cn"] as const;
 /** Un codice del gioco vero nella forma (13 chiavi): la lunghezza conta per il limite dei 400 caratteri. */
 const GAME_CODE = `KGBLDC${Buffer.from(`v1|${Array.from({ length: 13 }, (_, i) => `C${String(100 + i).padStart(5, "0")}_MB`).join("|")}`).toString("base64")}:0a1b2c3d`;
 
@@ -94,6 +94,9 @@ describe("indirizzi", () => {
     assert.equal(pickLang("it", locales, "en"), "it");
     assert.equal(pickLang("ES", locales, "en"), "es");
     assert.equal(pickLang("it-IT", locales, "en"), "it");
+    assert.equal(pickLang("zh-cn", locales, "en"), "zh-cn");
+    assert.equal(pickLang("zh_CN", locales, "en"), "zh-cn");
+    assert.equal(pickLang("zh-TW", locales, "en"), "zh-cn");
     assert.equal(pickLang("fr", locales, "en"), "en");
     assert.equal(pickLang(undefined, locales, "it"), "it");
   });
@@ -431,7 +434,7 @@ describe("etichette", () => {
     const keys = (o: object, prefix = ""): string[] =>
       Object.entries(o).flatMap(([k, v]) => (v && typeof v === "object" ? keys(v, `${prefix}${k}.`) : [`${prefix}${k}`]));
     const en = keys(streamLabels.en).sort();
-    for (const l of [...locales, "fr", "pt", "de"] as const) assert.deepEqual(keys(streamLabels[l]).sort(), en, l);
+    for (const l of [...locales, "fr", "pt", "de", "zh-cn"] as const) assert.deepEqual(keys(streamLabels[l]).sort(), en, l);
   });
 
   test("i segnaposto delle etichette sono gli stessi nelle tre lingue", () => {
@@ -442,6 +445,6 @@ describe("etichette", () => {
         else if (v && typeof v === "object") walk(v as Record<string, unknown>, b[k] as Record<string, unknown>, `${path}${k}.`);
       }
     };
-    for (const l of ["it", "es", "fr", "pt", "de"] as const) walk(streamLabels.en, streamLabels[l], `${l}.`);
+    for (const l of ["it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const) walk(streamLabels.en, streamLabels[l], `${l}.`);
   });
 });

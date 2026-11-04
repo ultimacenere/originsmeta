@@ -4,13 +4,14 @@ import { frText, type NewsCopy } from "./news-fr";
 import { ptText } from "./news-pt";
 import { deText } from "./news-de";
 import { ruText } from "./news-ru";
+import { zhCnText } from "./news-zh-cn";
 import { crimsonFinals } from "./crimsonCup";
 
 /**
  * Le lingue scritte in questo file; il francese (dal 07/10/2026) sta in news-fr.ts e il portoghese (dal 20/10/2026) in
  * news-pt.ts, il tedesco (dal 20/10/2026) in news-de.ts, e si uniscono in fondo (`withTranslations`).
  */
-type Base = Exclude<Locale, "fr" | "pt" | "de" | "ru">;
+type Base = Exclude<Locale, "fr" | "pt" | "de" | "ru" | "zh-cn">;
 type BaseL10n = Record<Base, string>;
 type L10n = Record<Locale, string>;
 type Highlight = { label: string; text?: string; anchor: string };
@@ -94,6 +95,13 @@ export type NewsItem = {
    * (`splitDecklists`; lo controlla newsDecklists.test.ts).
    */
   decklists?: NewsDecklists;
+  /**
+   * Lingue in cui la news non è ancora tradotta (dal 04/11/2026, cinese semplificato: Pierluigi ha scelto "prima il nucleo,
+   * news dopo"). I campi di quella lingua contengono l'inglese solo perché il tipo li vuole: la news non compare nelle
+   * liste, nel feed e nella sitemap di quella lingua, la sua pagina rimanda all'inglese e l'hreflang non la dichiara
+   * (`newsInLocale`, `hasNews`). Lo calcola `withTranslations`, non si scrive a mano.
+   */
+  untranslated?: Locale[];
 };
 
 /** Un mazzo di un riquadro `decklists`: nome e archetipo come nella scheda del mazzo torneo, Leggendaria e 12 carte base. */
@@ -137,7 +145,11 @@ const translations = {
   pt: { text: ptText, file: "news-pt.ts" },
   de: { text: deText, file: "news-de.ts" },
   ru: { text: ruText, file: "news-ru.ts" },
+  "zh-cn": { text: zhCnText, file: "news-zh-cn.ts" },
 } as const;
+
+/** Lingue in cui una news può mancare (04/11/2026): il cinese semplificato, tradotto a partire dalle news dal 20/10/2026. */
+const PARTIAL_LOCALES: readonly TranslatedLocale[] = ["zh-cn"];
 type TranslatedLocale = keyof typeof translations;
 
 /**
@@ -147,9 +159,23 @@ type TranslatedLocale = keyof typeof translations;
  */
 function withTranslations(item: RawNews): NewsItem {
   const copies = {} as Record<TranslatedLocale, NewsCopy>;
+  const untranslated: Locale[] = [];
   for (const lang of Object.keys(translations) as TranslatedLocale[]) {
     const { text, file } = translations[lang];
-    const copy: NewsCopy | undefined = text[item.slug];
+    let copy: NewsCopy | undefined = text[item.slug];
+    if (!copy && PARTIAL_LOCALES.includes(lang)) {
+      // non ancora tradotta: l'inglese tiene il posto, ma la news resta fuori da quella lingua (`untranslated`)
+      untranslated.push(lang);
+      copy = {
+        title: item.title.en,
+        metaTitle: item.metaTitle.en,
+        summary: item.summary.en,
+        description: item.description.en,
+        ...(item.body ? { body: item.body.en } : {}),
+        ...(item.highlights ? { highlights: item.highlights.en } : {}),
+        ...(item.faq ? { faq: item.faq.en } : {}),
+      };
+    }
     if (!copy) throw new Error(`news "${item.slug}": manca il testo ${lang} in src/lib/data/${file}`);
     for (const field of ["body", "highlights", "faq"] as const) {
       if (Boolean(item[field]) !== Boolean(copy[field])) throw new Error(`news "${item.slug}": il campo ${field} c'è solo in ${item[field] ? "news.ts" : file}`);
@@ -168,10 +194,757 @@ function withTranslations(item: RawNews): NewsItem {
     ...(body ? { body: { ...body, ...pick("body") } } : {}),
     ...(highlights ? { highlights: { ...highlights, ...pick("highlights") } } : {}),
     ...(faq ? { faq: { ...faq, ...pick("faq") } } : {}),
+    ...(untranslated.length ? { untranslated } : {}),
   };
 }
 
 const raw: RawNews[] = [
+  {
+    // Patch notes del 04/11/2026, la prima patch di bilanciamento dell'Accesso anticipato (richiesta di Pierluigi: "patch
+    // note!! sul sito subito"). Fonte: il messaggio di apix in #announcements del Discord ufficiale, 04/11 alle 10:08
+    // italiane, che Pierluigi ha incollato: dieci carte, boss n. 11 Cyber Queen con il mazzo Relentless e Dr. Frank
+    // Leggendaria, uscita "at around" cinque ore dopo senza aggiornare il client (stima, non orario confermato). Il post
+    // Steam non c'era ancora: fonte il Discord, come le altre news del Discord. I valori "prima" sono quelli del sito
+    // (import più card-history.ts) e coincidono tutti con le patch notes. Le percentuali di Baby Bear e Obliterate sono le
+    // tabelle ufficiali di Koin delle quattro qualificazioni della Crimson Cup (crimsonCup.ts). I testi dei tre orsi vengono
+    // dalle loro carte, non dalle patch notes. Copertina: scripts/patch-1104-images.mjs.
+    slug: "balance-patch-1104-cyber-queen",
+    image: "/media/news-patch-1104.webp",
+    url: "https://discord.gg/originstcg",
+    source: "press",
+    cards: ["dorothy", "obliterate", "genie", "searing-light", "guy-of-gisborne", "baby-bear", "mama-bear", "papa-bear", "banshee", "esmeralda", "dr-frank"],
+    guides: ["origins-tcg-legendaries"],
+    date: "2026-11-04",
+    title: n(
+      "Origins TCG patch notes, 4 November: ten cards rebalanced, Cyber Queen is boss #11",
+      "Patch notes di Origins TCG del 4 novembre: dieci carte ribilanciate, Cyber Queen è il boss n. 11",
+      "Notas del parche de Origins TCG del 4 de noviembre: diez cartas reequilibradas, Cyber Queen es el jefe n.º 11",
+    ),
+    metaTitle: n(
+      "Origins TCG patch notes 4 Nov: Obliterate 10, bears nerfed",
+      "Patch del 4/11: Obliterate a 10, orsi più cari",
+      "Parche 4/11: Obliterate a 10, osos más caros",
+    ),
+    description: n(
+      "Origins TCG patch notes of 4 November: Obliterate goes to 10 mana, the three bears cost 1 more, Dorothy becomes a 3/3. Cyber Queen arrives as boss #11.",
+      "Patch notes di Origins TCG del 4 novembre: Obliterate a 10 mana, i tre orsi costano 1 in più, Dorothy diventa 3/3. Arriva Cyber Queen, il boss n. 11.",
+      "Notas del parche de Origins TCG del 4 de noviembre: Obliterate a 10 de maná, los tres osos cuestan 1 más y Dorothy pasa a 3/3. Llega Cyber Queen, jefe n.º 11.",
+    ),
+    summary: n(
+      "The first balance patch of Origins TCG's Early Access lands today, 4 November, around 14:00 UTC, with no client update. Ten cards change: Obliterate goes to 10 mana, Baby Bear, Mama Bear and Papa Bear cost 1 more, Dorothy becomes a 3/3, and Genie and Searing Light get cheaper. With it comes boss #11, Cyber Queen, piloting the Relentless deck with Dr. Frank.",
+      "La prima patch di bilanciamento dell'Accesso anticipato di Origins TCG arriva oggi, 4 novembre, verso le 15:00 italiane, senza aggiornare il client. Cambiano dieci carte: Obliterate sale a 10 mana, Baby Bear, Mama Bear e Papa Bear costano 1 in più, Dorothy diventa 3/3, Genie e Searing Light costano meno. Insieme arriva il boss n. 11, Cyber Queen, con il mazzo Relentless e Dr. Frank.",
+      "El primer parche de equilibrio del Acceso anticipado de Origins TCG llega hoy, 4 de noviembre, hacia las 14:00 UTC, sin actualizar el cliente. Cambian diez cartas: Obliterate sube a 10 de maná, Baby Bear, Mama Bear y Papa Bear cuestan 1 más, Dorothy pasa a 3/3, y Genie y Searing Light bajan de coste. Con él llega el jefe n.º 11, Cyber Queen, con el mazo Relentless y Dr. Frank.",
+    ),
+    highlights: {
+      en: [
+        { label: "Lands today around 14:00 UTC", text: "no client update needed", anchor: "when" },
+        { label: "Boss #11: Cyber Queen", text: "she pilots the Relentless deck, with Dr. Frank as the Legendary", anchor: "cyber-queen" },
+        { label: "Ten cards change", text: "five nerfs and five buffs, only cost and stats", anchor: "changes" },
+        { label: "The three bears cost 1 more", text: "Baby Bear was the most played card of the Crimson Cup", anchor: "bears" },
+        { label: "Obliterate goes to 10 mana", anchor: "obliterate" },
+        { label: "Dorothy becomes a 3/3", text: "still at 4 mana", anchor: "dorothy" },
+      ],
+      it: [
+        { label: "Arriva oggi verso le 15:00", text: "senza aggiornare il client", anchor: "quando" },
+        { label: "Boss n. 11: Cyber Queen", text: "guida il mazzo Relentless, con Dr. Frank come Leggendaria", anchor: "cyber-queen" },
+        { label: "Cambiano dieci carte", text: "cinque nerf e cinque buff, solo costo e statistiche", anchor: "modifiche" },
+        { label: "I tre orsi costano 1 in più", text: "Baby Bear era la carta più giocata della Crimson Cup", anchor: "orsi" },
+        { label: "Obliterate sale a 10 mana", anchor: "obliterate" },
+        { label: "Dorothy diventa 3/3", text: "sempre a 4 mana", anchor: "dorothy" },
+      ],
+      es: [
+        { label: "Llega hoy hacia las 14:00 UTC", text: "sin actualizar el cliente", anchor: "cuando" },
+        { label: "Jefe n.º 11: Cyber Queen", text: "pilota el mazo Relentless, con Dr. Frank como Legendaria", anchor: "cyber-queen" },
+        { label: "Cambian diez cartas", text: "cinco nerfs y cinco buffs, solo coste y estadísticas", anchor: "cambios" },
+        { label: "Los tres osos cuestan 1 más", text: "Baby Bear fue la carta más jugada de la Crimson Cup", anchor: "osos" },
+        { label: "Obliterate sube a 10 de maná", anchor: "obliterate" },
+        { label: "Dorothy pasa a 3/3", text: "con el mismo coste de 4", anchor: "dorothy" },
+      ],
+    },
+    body: n(
+      `## When it lands {#when}
+
+Koin Games published the patch notes on the official Discord on 4 November at 09:08 UTC: the update "should land" about five hours later, so around 14:00 UTC, and it does not need a client update. It is the first balance patch of Early Access, the one Koin had promised for the day Dr. Frank arrives ([our news of 2 November](/en/news/balance-patch-dr-frank-roadmap-ama)).
+
+The cards and the deck builder on OriginsMeta already show the new values.
+
+## Boss #11: Cyber Queen and the Relentless deck {#cyber-queen}
+
+The new boss is Cyber Queen, and she pilots the Relentless deck. Its Legendary is Dr. Frank, and its game plan is about bringing characters back from the graveyard: a new archetype, with a handful of new cards to experiment with. We presented them one by one in [Dr. Frank's eight new cards](/en/news/dr-frank-boss-new-cards).
+
+A correction: until today we called Dr. Frank the new boss. The patch notes make it clear that the boss is Cyber Queen, and Dr. Frank is the Legendary of her deck.
+
+## All the balance changes {#changes}
+
+Format: mana · Power/Health for characters, mana only for spells.
+
+| Card | Before | After | What changes |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | costs 1 more |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | costs 1 more |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | costs 1 more |
+| Obliterate | 9 | 10 | costs 1 more |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 Power |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 Power, +2 Health |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 Power |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 Health |
+| Genie | 6 · 4/4 | 5 · 4/4 | costs 1 less |
+| Searing Light | 4 | 3 | costs 1 less |
+
+Five nerfs and five buffs. No card changes its text or abilities: only cost and stats. The team says these changes come after "a lot of passionate discussions" around these cards.
+
+## The three bears all cost more {#bears}
+
+Baby Bear, Mama Bear and Papa Bear each cost 1 more mana. All three punish the enemy that damages your barrier where they stand: Baby Bear deals it 1 damage, Papa Bear 3, Mama Bear destroys it.
+
+Baby Bear was the most played card in all four Crimson Cup qualifiers: in Koin's official tables it was in 46% to 50% of the decks. At 3 mana it stops being an almost automatic pick.
+
+## Obliterate goes to 10 mana {#obliterate}
+
+Obliterate, the most expensive spell in the game, now costs 10. In the Crimson Cup qualifiers it was in 21% to 24% of the decks. The team jokes that, after all the likes on the X post asking for a nerf, they almost set its damage to -12, but the engine cannot handle negative damage.
+
+## Dorothy becomes a 3/3 {#dorothy}
+
+Dorothy, a Legendary, stays at 4 mana but goes from 1/1 to 3/3: she no longer dies to a single point of damage. Banshee gains 1 Power, Esmeralda 1 Health, while Genie (5) and Searing Light (3) cost 1 less. Guy of Gisborne is the only card that loses stats without changing cost: 3/4 instead of 4/4.
+
+## What now {#now}
+
+If your decks run Obliterate, the bears or Guy of Gisborne, check your mana curve: [MetaShifting](/en/metashifting) shows every change patch by patch, and in [Theory craft](/en/theory-craft) you can rebuild a list with the new costs right away. Koin asks for feedback once you have played a little: too far, not far enough or, as Goldilocks would say, just right.`,
+      `## Quando arriva {#quando}
+
+Koin Games ha pubblicato le patch notes sul Discord ufficiale il 4 novembre alle 10:08 italiane: l'aggiornamento "dovrebbe arrivare" circa cinque ore dopo, quindi verso le 15:00, e non richiede di aggiornare il client. È la prima patch di bilanciamento dell'Accesso anticipato, quella che Koin aveva promesso per il giorno di Dr. Frank ([la nostra news del 2 novembre](/it/news/balance-patch-dr-frank-roadmap-ama)).
+
+Le carte e il deck builder di OriginsMeta mostrano già i valori nuovi.
+
+## Boss n. 11: Cyber Queen e il mazzo Relentless {#cyber-queen}
+
+Il nuovo boss è Cyber Queen, e guida il mazzo Relentless. La sua Leggendaria è Dr. Frank e il piano di gioco ruota attorno al riportare personaggi dal cimitero: un archetipo nuovo, con una manciata di carte nuove da provare. Le abbiamo presentate una per una in [le otto carte nuove di Dr. Frank](/it/news/dr-frank-boss-new-cards).
+
+Una correzione: fino a oggi abbiamo chiamato Dr. Frank il nuovo boss. Le patch notes chiariscono che il boss è Cyber Queen e che Dr. Frank è la Leggendaria del suo mazzo.
+
+## Tutte le modifiche {#modifiche}
+
+Formato: mana · Potenza/Salute per i personaggi, solo mana per le magie.
+
+| Carta | Prima | Dopo | Che cosa cambia |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | costa 1 in più |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | costa 1 in più |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | costa 1 in più |
+| Obliterate | 9 | 10 | costa 1 in più |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 Potenza |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 Potenza, +2 Salute |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 Potenza |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 Salute |
+| Genie | 6 · 4/4 | 5 · 4/4 | costa 1 in meno |
+| Searing Light | 4 | 3 | costa 1 in meno |
+
+Cinque nerf e cinque buff. Nessuna carta cambia testo o abilità: solo costo e statistiche. Il team scrive che le modifiche arrivano dopo "tante discussioni appassionate" su queste carte.
+
+## I tre orsi costano tutti di più {#orsi}
+
+Baby Bear, Mama Bear e Papa Bear costano 1 mana in più ciascuno. Tutti e tre puniscono il nemico che danneggia la tua barriera dove si trovano: Baby Bear gli infligge 1 danno, Papa Bear 3, Mama Bear lo distrugge.
+
+Baby Bear era la carta più giocata in tutte e quattro le qualificazioni della Crimson Cup: nelle tabelle ufficiali di Koin stava fra il 46% e il 50% dei mazzi. A 3 mana smette di essere una scelta quasi automatica.
+
+## Obliterate sale a 10 mana {#obliterate}
+
+Obliterate, la magia più cara del gioco, ora costa 10. Nelle qualificazioni della Crimson Cup era fra il 21% e il 24% dei mazzi. Il team scherza: dopo tutti i like al post su X che ne chiedeva il nerf, stavano per portarne il danno a -12, ma il motore del gioco non gestisce i danni negativi.
+
+## Dorothy diventa 3/3 {#dorothy}
+
+Dorothy, Leggendaria, resta a 4 mana ma passa da 1/1 a 3/3: non muore più con un solo danno. Banshee guadagna 1 Potenza, Esmeralda 1 Salute, mentre Genie (5) e Searing Light (3) costano 1 in meno. Guy of Gisborne è l'unica carta che perde statistiche senza cambiare costo: 3/4 invece di 4/4.
+
+## E adesso {#adesso}
+
+Se i tuoi mazzi giocano Obliterate, gli orsi o Guy of Gisborne, ricontrolla la curva di mana: [MetaShifting](/it/metashifting) mostra ogni modifica patch per patch, e in [Theory craft](/it/theory-craft) puoi rifare subito una lista con i costi nuovi. Koin chiede un parere dopo qualche partita: troppo, troppo poco o, come direbbe Riccioli d'Oro, giusto così.`,
+      `## Cuándo llega {#cuando}
+
+Koin Games publicó las notas del parche en el Discord oficial el 4 de noviembre a las 09:08 UTC: la actualización "debería llegar" unas cinco horas después, así que hacia las 14:00 UTC, y no hace falta actualizar el cliente. Es el primer parche de equilibrio del Acceso anticipado, el que Koin había prometido para el día de Dr. Frank ([nuestra noticia del 2 de noviembre](/es/news/balance-patch-dr-frank-roadmap-ama)).
+
+Las cartas y el deck builder de OriginsMeta ya muestran los valores nuevos.
+
+## Jefe n.º 11: Cyber Queen y el mazo Relentless {#cyber-queen}
+
+El nuevo jefe es Cyber Queen, que pilota el mazo Relentless. Su Legendaria es Dr. Frank y su plan de juego gira en torno a traer personajes de vuelta desde el cementerio: un arquetipo nuevo, con un puñado de cartas nuevas para experimentar. Las presentamos una a una en [las ocho cartas nuevas de Dr. Frank](/es/news/dr-frank-boss-new-cards).
+
+Una corrección: hasta hoy llamábamos a Dr. Frank el nuevo jefe. Las notas del parche dejan claro que el jefe es Cyber Queen y que Dr. Frank es la Legendaria de su mazo.
+
+## Todos los cambios {#cambios}
+
+Formato: maná · Poder/Salud para los personajes, solo maná para los hechizos.
+
+| Carta | Antes | Después | Qué cambia |
+| --- | --- | --- | --- |
+| Baby Bear | 2 · 1/1 | 3 · 1/1 | cuesta 1 más |
+| Mama Bear | 6 · 6/6 | 7 · 6/6 | cuesta 1 más |
+| Papa Bear | 4 · 4/4 | 5 · 4/4 | cuesta 1 más |
+| Obliterate | 9 | 10 | cuesta 1 más |
+| Guy of Gisborne | 6 · 4/4 | 6 · 3/4 | -1 de Poder |
+| Dorothy | 4 · 1/1 | 4 · 3/3 | +2 de Poder, +2 de Salud |
+| Banshee | 2 · 1/1 | 2 · 2/1 | +1 de Poder |
+| Esmeralda | 2 · 2/2 | 2 · 2/3 | +1 de Salud |
+| Genie | 6 · 4/4 | 5 · 4/4 | cuesta 1 menos |
+| Searing Light | 4 | 3 | cuesta 1 menos |
+
+Cinco nerfs y cinco buffs. Ninguna carta cambia su texto ni sus habilidades: solo coste y estadísticas. El equipo cuenta que los cambios llegan tras "muchas discusiones apasionadas" sobre estas cartas.
+
+## Los tres osos cuestan más {#osos}
+
+Baby Bear, Mama Bear y Papa Bear cuestan 1 de maná más cada uno. Los tres castigan al enemigo que daña tu barrera donde están: Baby Bear le inflige 1 de daño, Papa Bear 3 y Mama Bear lo destruye.
+
+Baby Bear fue la carta más jugada en los cuatro clasificatorios de la Crimson Cup: en las tablas oficiales de Koin estaba en entre el 46% y el 50% de los mazos. A 3 de maná deja de ser una elección casi automática.
+
+## Obliterate sube a 10 de maná {#obliterate}
+
+Obliterate, el hechizo más caro del juego, cuesta ahora 10. En los clasificatorios de la Crimson Cup estaba en entre el 21% y el 24% de los mazos. El equipo bromea: tras todos los likes del post en X que pedía su nerf, casi ponen su daño en -12, pero el motor del juego no admite daño negativo.
+
+## Dorothy pasa a 3/3 {#dorothy}
+
+Dorothy, Legendaria, sigue costando 4 pero pasa de 1/1 a 3/3: ya no muere con un solo punto de daño. Banshee gana 1 de Poder y Esmeralda 1 de Salud, mientras que Genie (5) y Searing Light (3) cuestan 1 menos. Guy of Gisborne es la única carta que pierde estadísticas sin cambiar de coste: 3/4 en lugar de 4/4.
+
+## Y ahora {#ahora}
+
+Si tus mazos llevan Obliterate, los osos o Guy of Gisborne, revisa tu curva de maná: [MetaShifting](/es/metashifting) muestra cada cambio parche a parche, y en [Theory craft](/es/theory-craft) puedes rehacer una lista con los costes nuevos ahora mismo. Koin pide opiniones tras unas partidas: demasiado, demasiado poco o, como diría Ricitos de Oro, justo.`,
+    ),
+  },
+  {
+    // Dr. Frank e le sue otto carte nuove (04/11/2026). Corretta lo stesso giorno con le patch notes: il boss n. 11 è Cyber
+    // Queen, Dr. Frank la Leggendaria del suo mazzo Relentless (prima la davamo per boss della missione 12). Pierluigi: "nuovo boss e nuove carte
+    // usciranno questo weekend [video di ZulsoiD] guarda sto video, intanto cerca l'annuncio e crea una news". Fonti: il post
+    // Steam "Happy Halloween, Dr. Frank is coming" (31/10/2026, 16:41 UTC, apix) con la sua grafica, che danno mercoledì 4
+    // novembre (non il weekend); sul Discord ufficiale l'offerta di apix del 29/10 (500 recensioni su Steam → missione 12
+    // in anticipo), "You all did it! 500 reviews!" di Mawr (31/10, 01:41 UTC) e "Balance Patch will be tomorrow when
+    // Dr. Frank arrives" di Mawr (03/11, 18:22 UTC); le carte dalla cartella della Bounty Blitz del Creator Program (02/11:
+    // Koin chiede ai creator di rivelarle con quei file; originali e provenienza in 10_Materiale_Koin/2026-11-02_dr-frank-bounty
+    // sul Drive); il video di ZulsoiD (03/11) per le prime impressioni, quello di Robip per It's Alive a inizio partita
+    // ("non ci hanno detto"). Le otto carte erano già nel database fra le rimosse, con costo e statistiche uguali a quelle
+    // di Koin: i testi inglesi qui sono quelli delle carte di Koin, le altre lingue una traduzione nostra con il glossario
+    // del gioco. Da fare all'uscita: carte attive, testi letti nel gioco nelle sette lingue, patch notes del bilanciamento.
+    // Immagini: scripts/dr-frank-images.mjs (carte intere; in copertina le otto nella cornice ALPHA, perché la grafica del
+    // post Steam è la copertina di balance-patch-dr-frank-roadmap-ama, la news del 02/11 su patch, AMA e fine stagione
+    // preparata da un'altra sessione sul branch claude/patch-roadmap-announcements-02ed70: questa racconta il boss e le
+    // carte, l'AMA lo lascia a quella).
+    slug: "dr-frank-boss-new-cards",
+    image: "/media/news-dr-frank-cards.webp",
+    url: "https://store.steampowered.com/news/app/4429430/view/1847920302242676",
+    source: "steam",
+    guides: ["origins-tcg-legendaries"],
+    cards: ["dr-frank", "its-alive", "franks-monster", "franken-bride", "morgan-le-fay", "doppelganger", "necromancer", "red-knight"],
+    date: "2026-11-04",
+    title: n(
+      "Dr. Frank arrives in Origins TCG on 4 November: the Legendary of the new boss and eight new cards",
+      "Dr. Frank arriva su Origins TCG il 4 novembre: la Leggendaria del nuovo boss e otto carte nuove",
+      "Dr. Frank llega a Origins TCG el 4 de noviembre: la Legendaria del nuevo jefe y ocho cartas nuevas",
+    ),
+    metaTitle: n(
+      "Dr. Frank in Origins TCG: Legendary and 8 new cards",
+      "Dr. Frank su Origins TCG: Leggendaria e 8 carte nuove",
+      "Dr. Frank en Origins TCG: Legendaria y 8 cartas nuevas",
+    ),
+    description: n(
+      "Dr. Frank, Legendary of boss Cyber Queen's Relentless deck, arrives in Origins TCG on 4 November with a balance patch and eight new cards: here they are.",
+      "Dr. Frank, Leggendaria del mazzo Relentless del boss Cyber Queen, arriva su Origins TCG il 4 novembre con una patch e otto carte nuove: eccole una per una.",
+      "Dr. Frank, Legendaria del mazo Relentless del jefe Cyber Queen, llega a Origins TCG el 4 de noviembre con un parche y ocho cartas nuevas: aquí están.",
+    ),
+    summary: n(
+      "Dr. Frank, the Legendary of the deck of Cyber Queen, Origins TCG's new boss, arrives on Wednesday 4 November 2026, a week earlier than planned because players reached 500 reviews on Steam. He brings eight new cards, which Koin Games revealed through its creators: Dr. Frank himself is a Legendary, and six of the eight are Evil. A balance patch lands the same day.",
+      "Dr. Frank, la Leggendaria del mazzo di Cyber Queen, il nuovo boss di Origins TCG, arriva mercoledì 4 novembre 2026, una settimana prima del previsto perché i giocatori hanno raggiunto le 500 recensioni su Steam. Porta otto carte nuove, che Koin Games ha fatto rivelare ai suoi creator: lo stesso Dr. Frank è una Leggendaria, e sei carte su otto sono Malvagie. Lo stesso giorno arriva una patch di bilanciamento.",
+      "Dr. Frank, la Legendaria del mazo de Cyber Queen, el nuevo jefe de Origins TCG, llega el miércoles 4 de noviembre de 2026, una semana antes de lo previsto porque los jugadores alcanzaron las 500 reseñas en Steam. Trae ocho cartas nuevas, que Koin Games ha revelado a través de sus creadores: el propio Dr. Frank es una Legendaria, y seis de las ocho son Malvadas. Ese mismo día llega un parche de equilibrio.",
+    ),
+    highlights: {
+      en: [
+        { label: "Wednesday 4 November", text: "Dr. Frank arrives with new cards, in the deck of the boss Cyber Queen", anchor: "arrival" },
+        { label: "A week early", text: "players reached the 500 Steam reviews Koin asked for", anchor: "reviews" },
+        { label: "Eight new cards", text: "a Legendary, a spell and six characters, six of them Evil", anchor: "cards" },
+        { label: "The graveyard comes back", text: "Dr. Frank and It's Alive summon characters from your graveyard", anchor: "graveyard" },
+        { label: "A new keyword", text: "Red Knight brings Ongoing, which no card in the game has today", anchor: "red-knight" },
+        { label: "Balance patch", text: "Koin's Studio Head says it arrives with Dr. Frank", anchor: "balance" },
+        { label: "Try them now", text: "build a deck with the eight cards in our Theory craft", anchor: "theory-craft" },
+      ],
+      it: [
+        { label: "Mercoledì 4 novembre", text: "Dr. Frank arriva con carte nuove, nel mazzo del boss Cyber Queen", anchor: "arrivo" },
+        { label: "Una settimana prima", text: "i giocatori hanno raggiunto le 500 recensioni su Steam chieste da Koin", anchor: "recensioni" },
+        { label: "Otto carte nuove", text: "una Leggendaria, una magia e sei personaggi, sei carte Malvagie", anchor: "carte" },
+        { label: "Il cimitero torna in campo", text: "Dr. Frank e It's Alive evocano personaggi dal tuo cimitero", anchor: "cimitero" },
+        { label: "Una parola chiave nuova", text: "Red Knight porta Ongoing, che oggi nessuna carta del gioco ha", anchor: "red-knight" },
+        { label: "Patch di bilanciamento", text: "lo Studio Head di Koin dice che arriva con Dr. Frank", anchor: "bilanciamento" },
+        { label: "Provale subito", text: "costruisci un mazzo con le otto carte nel nostro Theory craft", anchor: "theory-craft" },
+      ],
+      es: [
+        { label: "Miércoles 4 de noviembre", text: "Dr. Frank llega con cartas nuevas, en el mazo del jefe Cyber Queen", anchor: "llegada" },
+        { label: "Una semana antes", text: "los jugadores alcanzaron las 500 reseñas en Steam que pedía Koin", anchor: "resenas" },
+        { label: "Ocho cartas nuevas", text: "una Legendaria, un hechizo y seis personajes, seis cartas Malvadas", anchor: "cartas" },
+        { label: "El cementerio vuelve", text: "Dr. Frank e It's Alive invocan personajes de tu cementerio", anchor: "cementerio" },
+        { label: "Una palabra clave nueva", text: "Red Knight trae Ongoing, que hoy no tiene ninguna carta del juego", anchor: "red-knight" },
+        { label: "Parche de equilibrio", text: "el Studio Head de Koin dice que llega con Dr. Frank", anchor: "equilibrio" },
+        { label: "Pruébalas ya", text: "construye un mazo con las ocho cartas en nuestro Theory craft", anchor: "theory-craft" },
+      ],
+    },
+    body: n(
+      `## Dr. Frank arrives on Wednesday 4 November {#arrival}
+
+"The next boss Dr. Frank is coming to Origins next week, which will feature a deck full of new cards." Koin Games announced it on Steam on 31 October 2026, Halloween, in a post titled "Happy Halloween, Dr. Frank is coming": the date is **Wednesday 4 November**. Until the patch notes we wrote that Dr. Frank is the boss of mission 12, the next of the missions against the game's AI: the patch notes of 4 November make it clear that the boss is Cyber Queen, boss #11, and that Dr. Frank is the Legendary of her Relentless deck ([the patch notes](/en/news/balance-patch-1104-cyber-queen#cyber-queen)). When we published this article Koin had not yet said at what time the update arrives.
+
+## A week early, thanks to the reviews {#reviews}
+
+Dr. Frank was due a week later. On 29 October, on the official Discord, apix of Koin made the players an offer: about 10,000 people had played the day before, but only 200 had left a review on Steam; with 500 reviews by the end of the week, mission 12 would come the following week, "earlier than planned". The goal was reached in less than two days. On 31 October Koin's Studio Head Mawr wrote: "You all did it! 500 reviews! The boss is coming a week early." The Steam graphic says the same: "Because you hit the goal, Dr. Frank drops a full week ahead of schedule."
+
+## The eight new cards {#cards}
+
+On 2 November Koin gave its creators early access to "all eight new Origins cards", with the official images to reveal them: they are the cards in the pictures below. Six of the eight are Evil. All eight were already in our database, among the cards removed from the game, with the same cost and the same stats.
+
+| Card | Cost | Stats | Type and keywords |
+|---|---|---|---|
+| [Dr. Frank](/en/cards/dr-frank) | 6 | 2/2 | Legendary, Evil |
+| [It's Alive](/en/cards/its-alive) | 3 | – | Spell |
+| [Frank's Monster](/en/cards/franks-monster) | 6 | 5/4 | Evil, Rebirth |
+| [Franken Bride](/en/cards/franken-bride) | 5 | 4/4 | Evil, Rebirth |
+| [Morgan le Fay](/en/cards/morgan-le-fay) | 2 | 1/3 | Evil, On Reveal |
+| [Doppelganger](/en/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/en/cards/necromancer) | 4 | 2/2 | Evil, On Reveal |
+| [Red Knight](/en/cards/red-knight) | 2 | 4/1 | Trample, Ongoing |
+
+### Dr. Frank and It's Alive: the graveyard comes back {#graveyard}
+
+![The official Dr. Frank and It's Alive cards by Koin Games: Dr. Frank, Legendary, 6 mana, 2/2; It's Alive, a 3-mana spell](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank is a Legendary: "Before combat, summon a random character from your graveyard on a random space." It's Alive is a 3-mana spell that does the same thing once: "Summon a random character from your graveyard to a random space." Koin has not said whether It's Alive is the card Dr. Frank puts in your hand at the start of a game: ZulsoiD presents it that way in his video, Robip thinks it likely.
+
+### Frank's Monster and Franken Bride: Rebirth {#rebirth}
+
+![The official Frank's Monster and Franken Bride cards by Koin Games, both Evil and with Rebirth](/media/news-dr-frank-rebirth.webp)
+
+Both have **Rebirth**, the keyword of Mummy and Phuong Hoang, and both do something when they come back. Frank's Monster, 6 mana for a 5/4: "When I enter play from the graveyard, double my ⚔️." Franken Bride, 5 mana for a 4/4: "When I enter play from the graveyard, heal 4 damage from your barrier here." In the creators' videos the Monster comes back as a 10/1 and the Bride as a 4/1.
+
+### Morgan le Fay, Doppelganger and Necromancer: discard {#discard}
+
+![The official Morgan le Fay, Doppelganger and Necromancer cards by Koin Games: three Evil characters for discard decks](/media/news-dr-frank-discard.webp)
+
+Three cards for discard decks, the ones built around Dracula, Koschei and Aladdin.
+
+- [Morgan le Fay](/en/cards/morgan-le-fay), 2 mana for a 1/3: "On Reveal: Discard your right-most card. Add a random spell to your hand and reduce its cost by 2."
+- [Doppelganger](/en/cards/doppelganger), 4 mana for a 2/2: "When you discard a character, I transform into a copy of that character."
+- [Necromancer](/en/cards/necromancer), 4 mana for a 2/2: "On Reveal: Discard a random card to add 2 Zombies [2⚔️/2❤️] to your hand. If you discarded an Evil card, summon those Zombies instead."
+
+### Red Knight brings Ongoing {#red-knight}
+
+![The official Red Knight card by Koin Games: 2 mana, 4/1, Trample and Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/en/cards/red-knight), 2 mana for a 4/1: "Trample. Ongoing: The character across from me has Trample." **Ongoing** marks an ability that is always active while the card is in play, and no card in the game has it today: as long as Red Knight is on the board, the character across from it has Trample too.
+
+## A balance patch on the same day {#balance}
+
+"Balance Patch will be tomorrow when Dr. Frank arrives", Mawr wrote on the Discord on 3 November. The changes are not public yet: when the patch notes come out we will publish them, and [MetaShifting](/en/metashifting) will show what changes card by card. Until then the stats on OriginsMeta are those of [patch 0.7](/en/news/patch-0-7). The other dates of the week, from the roadmap AMA on Friday 6 November to the end of ranked season 1, are in [our article of 2 November](/en/news/balance-patch-dr-frank-roadmap-ama).
+
+## What the creators say {#creators}
+
+In his [video of 3 November](https://www.youtube.com/watch?v=tU9muG1MZts) ZulsoiD goes through all eight cards. His first impressions, which are opinions and not data:
+
+- Dr. Frank and It's Alive are value for midrange and control decks: bringing back a character that costs 4 or more with a 3-mana spell is already a gain. A character summoned this way does not trigger its On Reveal, so Boogeyman and Asanbosam come back without their drawback.
+- Frank's Monster is "right now the strongest Rebirth card": a 5/4 that blocks twice.
+- Franken Bride can take Bridge Troll's place in decks that want to slow the damage down.
+- Morgan le Fay is worth more for the discard than for the spell, even if an Obliterate for 7 or a Rain of Arrows for 3 are welcome. Play Ugly Duckling, then Morgan le Fay discarding Aladdin: Aladdin enters the board and Ugly Duckling transforms.
+- Doppelganger wants characters that cost 4 or more, above all Dracula and Koschei.
+- Necromancer convinces him less: today's discard decks play few Evil cards (King Shahryar, Dracula, Koschei), and for one more mana Three Musketeers gives a similar board with First Strike.
+- Red Knight is a card for aggro decks that grows with every buff, for example with Glinda, but it can struggle against Baby Bear, Bagheera and Musketeer, all played a lot right now.
+
+Robip has also gone through the eight cards, [in Italian](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Try them now on OriginsMeta {#theory-craft}
+
+The eight cards are in the [card database](/en/cards) with the "Not in game" filter, and in [Theory craft](/en/theory-craft) you can already build a deck with them: the decks you publish go among the [theory craft decks](/en/theory-craft/decks). When the update is in the game we will mark them as game cards and check their texts in all seven languages; the decks built with them will then move among the single decks by themselves.
+
+## What we don't know yet {#unknown}
+
+- At what time the update arrives on 4 November.
+- How Dr. Frank and his cards are unlocked, and whether they can be used in ranked from the first day.
+- Whether It's Alive is the card Dr. Frank gives you at the start of a game.
+- What the balance patch changes.
+
+Sources: the Steam post "Happy Halloween, Dr. Frank is coming" (31 October 2026) and its graphic; the messages of apix (29 October) and of Mawr (31 October and 3 November) on the official Origins TCG Discord; the card images Koin Games gave its creators to reveal the cards (2 November); ZulsoiD's video (3 November). Illustrations: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+      `## Dr. Frank arriva mercoledì 4 novembre {#arrivo}
+
+"Il prossimo boss, Dr. Frank, arriva su Origins la settimana prossima, con un mazzo pieno di carte nuove." Koin Games l'ha annunciato su Steam il 31 ottobre 2026, il giorno di Halloween, con il post "Happy Halloween, Dr. Frank is coming": la data è **mercoledì 4 novembre**. Fino alle patch notes abbiamo scritto che Dr. Frank è il boss della missione 12, la prossima delle missioni contro l'IA del gioco: le patch notes del 4 novembre chiariscono che il boss è Cyber Queen, il boss n. 11, e che Dr. Frank è la Leggendaria del suo mazzo Relentless ([le patch notes](/it/news/balance-patch-1104-cyber-queen#cyber-queen)). Quando abbiamo pubblicato questo articolo Koin non aveva ancora detto a che ora arriva l'aggiornamento.
+
+## Una settimana prima, grazie alle recensioni {#recensioni}
+
+Dr. Frank doveva arrivare una settimana dopo. Il 29 ottobre, sul Discord ufficiale, apix di Koin ha fatto una proposta ai giocatori: il giorno prima avevano giocato circa 10.000 persone, ma solo 200 avevano lasciato una recensione su Steam; con 500 recensioni entro la fine della settimana, la missione 12 sarebbe uscita la settimana successiva, "prima del previsto". L'obiettivo è arrivato in meno di due giorni. Il 31 ottobre Mawr, Studio Head di Koin, ha scritto: "Ce l'avete fatta! 500 recensioni! Il boss arriva con una settimana di anticipo". La grafica del post su Steam dice lo stesso: "Visto che avete raggiunto l'obiettivo, Dr. Frank arriva con una settimana intera di anticipo".
+
+## Le otto carte nuove {#carte}
+
+Il 2 novembre Koin ha dato ai suoi creator l'accesso in anteprima a "tutte e otto le nuove carte di Origins", con le immagini ufficiali per rivelarle: sono le carte delle immagini qui sotto. Sei carte su otto sono Malvagie. Tutte e otto erano già nel nostro database, fra le carte rimosse dal gioco, con lo stesso costo e le stesse statistiche.
+
+| Carta | Costo | Statistiche | Tipo e parole chiave |
+|---|---|---|---|
+| [Dr. Frank](/it/cards/dr-frank) | 6 | 2/2 | Leggendaria, Evil |
+| [It's Alive](/it/cards/its-alive) | 3 | – | Magia |
+| [Frank's Monster](/it/cards/franks-monster) | 6 | 5/4 | Evil, Rinascita |
+| [Franken Bride](/it/cards/franken-bride) | 5 | 4/4 | Evil, Rinascita |
+| [Morgan le Fay](/it/cards/morgan-le-fay) | 2 | 1/3 | Evil, Alla rivelazione |
+| [Doppelganger](/it/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/it/cards/necromancer) | 4 | 2/2 | Evil, Alla rivelazione |
+| [Red Knight](/it/cards/red-knight) | 2 | 4/1 | Travolgere, Ongoing |
+
+Le immagini sono le carte inglesi di Koin; i testi in italiano qui sotto sono una traduzione nostra con il glossario del gioco, che confronteremo con il gioco appena l'aggiornamento sarà uscito.
+
+### Dr. Frank e It's Alive: il cimitero torna in campo {#cimitero}
+
+![Le carte ufficiali di Dr. Frank e It's Alive, di Koin Games: Dr. Frank, Leggendaria, 6 mana, 2/2; It's Alive, magia da 3 mana](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank è una Leggendaria: "Prima del combattimento, evoca un personaggio casuale dal tuo cimitero su uno spazio casuale". It's Alive è una magia da 3 mana che fa la stessa cosa una volta: "Evoca un personaggio casuale dal tuo cimitero su uno spazio casuale". Koin non ha detto se It's Alive è la carta che Dr. Frank ti mette in mano a inizio partita: ZulsoiD nel suo video la presenta così, Robip lo ritiene probabile.
+
+### Frank's Monster e Franken Bride: la Rinascita {#rinascita}
+
+![Le carte ufficiali di Frank's Monster e Franken Bride, di Koin Games, Malvagie e con Rinascita](/media/news-dr-frank-rebirth.webp)
+
+Hanno tutte e due **Rinascita**, la parola chiave di Mummy e Phuong Hoang, e tutte e due fanno qualcosa quando tornano. Frank's Monster, 6 mana per un 5/4: "Quando entro in gioco dal cimitero, raddoppio la mia ⚔️". Franken Bride, 5 mana per un 4/4: "Quando entro in gioco dal cimitero, cura 4 danni alla tua barriera qui". Nei video dei creator il Monster torna come un 10/1 e la Bride come un 4/1.
+
+### Morgan le Fay, Doppelganger e Necromancer: lo scarto {#scarto}
+
+![Le carte ufficiali di Morgan le Fay, Doppelganger e Necromancer, di Koin Games: tre personaggi Malvagi per i mazzi che scartano](/media/news-dr-frank-discard.webp)
+
+Tre carte per i mazzi che scartano, quelli costruiti attorno a Dracula, Koschei e Aladdin.
+
+- [Morgan le Fay](/it/cards/morgan-le-fay), 2 mana per un 1/3: "Alla rivelazione: Scarta la carta più a destra della tua mano. Aggiungi una magia casuale alla tua mano e riduci il suo costo di 2".
+- [Doppelganger](/it/cards/doppelganger), 4 mana per un 2/2: "Quando scarti un personaggio, mi trasformo in una copia di quel personaggio".
+- [Necromancer](/it/cards/necromancer), 4 mana per un 2/2: "Alla rivelazione: Scarta una carta casuale per aggiungere 2 Zombie [2⚔️/2❤️] alla tua mano. Se hai scartato una carta Malvagia, evoca invece quegli Zombie".
+
+### Red Knight porta Ongoing {#red-knight}
+
+![La carta ufficiale di Red Knight, di Koin Games: 2 mana, 4/1, Travolgere e Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/it/cards/red-knight), 2 mana per un 4/1: "Travolgere. Ongoing: Il personaggio di fronte a me ha Travolgere". **Ongoing** indica un'abilità sempre attiva finché la carta è in gioco, e oggi nessuna carta del gioco ce l'ha: finché Red Knight è sul tabellone, anche il personaggio di fronte a lui ha Travolgere.
+
+## Una patch di bilanciamento lo stesso giorno {#bilanciamento}
+
+"La patch di bilanciamento arriva domani, con Dr. Frank": l'ha scritto Mawr sul Discord il 3 novembre. Le modifiche non sono ancora pubbliche: appena usciranno le patch notes le pubblicheremo, e [MetaShifting](/it/metashifting) mostrerà che cosa cambia carta per carta. Fino ad allora le statistiche su OriginsMeta restano quelle della [patch 0.7](/it/news/patch-0-7). Le altre date della settimana, dall'AMA sulla roadmap di venerdì 6 novembre alla fine della stagione classificata 1, sono nel [nostro articolo del 2 novembre](/it/news/balance-patch-dr-frank-roadmap-ama).
+
+## Che cosa dicono i creator {#creator}
+
+Nel suo [video del 3 novembre](https://www.youtube.com/watch?v=tU9muG1MZts) ZulsoiD passa in rassegna tutte e otto le carte. Le sue prime impressioni, che sono opinioni e non dati:
+
+- Dr. Frank e It's Alive valgono per i mazzi midrange e control: riportare in campo un personaggio da 4 mana o più con una magia da 3 è già un guadagno. Un personaggio evocato così non attiva la sua abilità Alla rivelazione, quindi Boogeyman e Asanbosam tornano senza il loro svantaggio.
+- Frank's Monster è "adesso la carta con Rinascita più forte": un 5/4 che blocca due volte.
+- Franken Bride può prendere il posto di Bridge Troll nei mazzi che vogliono rallentare i danni.
+- Morgan le Fay vale più per lo scarto che per la magia, anche se un Obliterate a 7 o un Rain of Arrows a 3 fanno comodo. Giochi Ugly Duckling, poi Morgan le Fay scartando Aladdin: Aladdin entra sul tabellone e Ugly Duckling si trasforma.
+- Doppelganger vuole personaggi da 4 mana o più, soprattutto Dracula e Koschei.
+- Necromancer lo convince meno: i mazzi che scartano oggi giocano poche carte Malvagie (King Shahryar, Dracula, Koschei), e per un mana in più Three Musketeers dà un tabellone simile con Primo colpo.
+- Red Knight è una carta da aggro che cresce con ogni buff, per esempio con Glinda, ma può soffrire contro Baby Bear, Bagheera e Musketeer, molto giocate in questo momento.
+
+Anche Robip ha presentato le otto carte, [in italiano](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Provale subito su OriginsMeta {#theory-craft}
+
+Le otto carte sono nel [database carte](/it/cards) con il filtro "Non nel gioco", e nel [Theory craft](/it/theory-craft) puoi già costruirci un mazzo: quelli che pubblichi finiscono fra i [mazzi theory craft](/it/theory-craft/decks). Quando l'aggiornamento sarà nel gioco le segneremo come carte del gioco e confronteremo i testi in tutte e sette le lingue; i mazzi costruiti con loro passeranno da soli fra i mazzi singoli.
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- A che ora arriva l'aggiornamento il 4 novembre.
+- Come si sbloccano Dr. Frank e le sue carte, e se si possono usare in classificata dal primo giorno.
+- Se It's Alive è la carta che Dr. Frank dà a inizio partita.
+- Che cosa cambia la patch di bilanciamento.
+
+Fonti: il post Steam "Happy Halloween, Dr. Frank is coming" (31 ottobre 2026) e la sua grafica; i messaggi di apix (29 ottobre) e di Mawr (31 ottobre e 3 novembre) sul Discord ufficiale di Origins TCG; le immagini delle carte che Koin Games ha dato ai creator per rivelarle (2 novembre); il video di ZulsoiD (3 novembre). Le citazioni sono tradotte da noi. Illustrazioni: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+      `## Dr. Frank llega el miércoles 4 de noviembre {#llegada}
+
+"El próximo jefe, Dr. Frank, llega a Origins la semana que viene, con un mazo lleno de cartas nuevas." Koin Games lo anunció en Steam el 31 de octubre de 2026, el día de Halloween, con la publicación "Happy Halloween, Dr. Frank is coming": la fecha es el **miércoles 4 de noviembre**. Hasta las notas del parche escribimos que Dr. Frank es el jefe de la misión 12, la siguiente de las misiones contra la IA del juego: las notas del 4 de noviembre dejan claro que el jefe es Cyber Queen, el jefe n.º 11, y que Dr. Frank es la Legendaria de su mazo Relentless ([las notas del parche](/es/news/balance-patch-1104-cyber-queen#cyber-queen)). Cuando publicamos este artículo, Koin todavía no había dicho a qué hora llega la actualización.
+
+## Una semana antes, gracias a las reseñas {#resenas}
+
+Dr. Frank iba a llegar una semana después. El 29 de octubre, en el Discord oficial, apix, de Koin, hizo una propuesta a los jugadores: el día anterior habían jugado unas 10.000 personas, pero solo 200 habían dejado una reseña en Steam; con 500 reseñas antes del final de la semana, la misión 12 saldría la semana siguiente, "antes de lo previsto". El objetivo se alcanzó en menos de dos días. El 31 de octubre Mawr, Studio Head de Koin, escribió: "¡Lo consiguieron! ¡500 reseñas! El jefe llega una semana antes". La imagen de la publicación de Steam dice lo mismo: "Como se alcanzó el objetivo, Dr. Frank llega con una semana entera de adelanto".
+
+## Las ocho cartas nuevas {#cartas}
+
+El 2 de noviembre Koin dio a sus creadores acceso anticipado a "las ocho nuevas cartas de Origins", con las imágenes oficiales para revelarlas: son las cartas de las imágenes de abajo. Seis de las ocho son Malvadas. Las ocho ya estaban en nuestra base de datos, entre las cartas retiradas del juego, con el mismo coste y las mismas estadísticas.
+
+| Carta | Coste | Estadísticas | Tipo y palabras clave |
+|---|---|---|---|
+| [Dr. Frank](/es/cards/dr-frank) | 6 | 2/2 | Legendaria, Evil |
+| [It's Alive](/es/cards/its-alive) | 3 | – | Hechizo |
+| [Frank's Monster](/es/cards/franks-monster) | 6 | 5/4 | Evil, Renacer |
+| [Franken Bride](/es/cards/franken-bride) | 5 | 4/4 | Evil, Renacer |
+| [Morgan le Fay](/es/cards/morgan-le-fay) | 2 | 1/3 | Evil, Al revelar |
+| [Doppelganger](/es/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/es/cards/necromancer) | 4 | 2/2 | Evil, Al revelar |
+| [Red Knight](/es/cards/red-knight) | 2 | 4/1 | Arrollar, Ongoing |
+
+Las imágenes son las cartas en inglés de Koin; los textos en español de abajo son una traducción nuestra con el glosario del juego, que compararemos con el juego en cuanto salga la actualización.
+
+### Dr. Frank e It's Alive: el cementerio vuelve al tablero {#cementerio}
+
+![Las cartas oficiales de Dr. Frank e It's Alive, de Koin Games: Dr. Frank, Legendaria, 6 de maná, 2/2; It's Alive, hechizo de 3 de maná](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank es una Legendaria: "Antes del combate, invoca un personaje aleatorio de tu cementerio en un espacio aleatorio". It's Alive es un hechizo de 3 de maná que hace lo mismo una vez: "Invoca un personaje aleatorio de tu cementerio en un espacio aleatorio". Koin no ha dicho si It's Alive es la carta que Dr. Frank te pone en la mano al empezar la partida: ZulsoiD la presenta así en su vídeo, y Robip lo ve probable.
+
+### Frank's Monster y Franken Bride: Renacer {#renacer}
+
+![Las cartas oficiales de Frank's Monster y Franken Bride, de Koin Games, Malvadas y con Renacer](/media/news-dr-frank-rebirth.webp)
+
+Las dos tienen **Renacer**, la palabra clave de Mummy y Phuong Hoang, y las dos hacen algo al volver. Frank's Monster, 6 de maná por un 5/4: "Cuando entro en juego desde el cementerio, duplico mi ⚔️". Franken Bride, 5 de maná por un 4/4: "Cuando entro en juego desde el cementerio, cura 4 de daño de tu barrera aquí". En los vídeos de los creadores el Monster vuelve como un 10/1 y la Bride como un 4/1.
+
+### Morgan le Fay, Doppelganger y Necromancer: el descarte {#descarte}
+
+![Las cartas oficiales de Morgan le Fay, Doppelganger y Necromancer, de Koin Games: tres personajes Malvados para los mazos de descarte](/media/news-dr-frank-discard.webp)
+
+Tres cartas para los mazos de descarte, los que se construyen alrededor de Dracula, Koschei y Aladdin.
+
+- [Morgan le Fay](/es/cards/morgan-le-fay), 2 de maná por un 1/3: "Al revelar: Descarta la carta más a la derecha de tu mano. Añade un hechizo aleatorio a tu mano y reduce su coste en 2".
+- [Doppelganger](/es/cards/doppelganger), 4 de maná por un 2/2: "Cuando descartas un personaje, me transformo en una copia de ese personaje".
+- [Necromancer](/es/cards/necromancer), 4 de maná por un 2/2: "Al revelar: Descarta una carta aleatoria para añadir 2 Zombies [2⚔️/2❤️] a tu mano. Si descartaste una carta Malvada, invoca esos Zombies en su lugar".
+
+### Red Knight trae Ongoing {#red-knight}
+
+![La carta oficial de Red Knight, de Koin Games: 2 de maná, 4/1, Arrollar y Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/es/cards/red-knight), 2 de maná por un 4/1: "Arrollar. Ongoing: El personaje frente a mí tiene Arrollar". **Ongoing** marca una habilidad siempre activa mientras la carta está en juego, y hoy ninguna carta del juego la tiene: mientras Red Knight esté en el tablero, el personaje frente a él también tiene Arrollar.
+
+## Un parche de equilibrio el mismo día {#equilibrio}
+
+"El parche de equilibrio llega mañana, con Dr. Frank": lo escribió Mawr en el Discord el 3 de noviembre. Los cambios todavía no son públicos: en cuanto salgan las notas del parche las publicaremos, y [MetaShifting](/es/metashifting) mostrará qué cambia carta por carta. Hasta entonces las estadísticas de OriginsMeta siguen siendo las del [parche 0.7](/es/news/patch-0-7). Las otras fechas de la semana, del AMA sobre la hoja de ruta del viernes 6 de noviembre al final de la temporada clasificatoria 1, están en [nuestro artículo del 2 de noviembre](/es/news/balance-patch-dr-frank-roadmap-ama).
+
+## Qué dicen los creadores {#creadores}
+
+En su [vídeo del 3 de noviembre](https://www.youtube.com/watch?v=tU9muG1MZts) ZulsoiD repasa las ocho cartas. Sus primeras impresiones, que son opiniones y no datos:
+
+- Dr. Frank e It's Alive valen para los mazos midrange y control: traer de vuelta un personaje de 4 de maná o más con un hechizo de 3 ya es ganar. Un personaje invocado así no activa su habilidad Al revelar, así que Boogeyman y Asanbosam vuelven sin su desventaja.
+- Frank's Monster es "ahora mismo la carta con Renacer más fuerte": un 5/4 que bloquea dos veces.
+- Franken Bride puede ocupar el lugar de Bridge Troll en los mazos que quieren frenar el daño.
+- Morgan le Fay vale más por el descarte que por el hechizo, aunque un Obliterate a 7 o un Rain of Arrows a 3 vienen bien. Juegas Ugly Duckling y luego Morgan le Fay descartando a Aladdin: Aladdin entra en el tablero y Ugly Duckling se transforma.
+- Doppelganger quiere personajes de 4 de maná o más, sobre todo Dracula y Koschei.
+- Necromancer le convence menos: los mazos de descarte de hoy juegan pocas cartas Malvadas (King Shahryar, Dracula, Koschei), y por un maná más Three Musketeers da un tablero parecido con Primer golpe.
+- Red Knight es una carta para mazos aggro que crece con cada buff, por ejemplo con Glinda, pero puede sufrir contra Baby Bear, Bagheera y Musketeer, muy jugadas ahora mismo.
+
+Robip también ha repasado las ocho cartas, [en italiano](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Pruébalas ya en OriginsMeta {#theory-craft}
+
+Las ocho cartas están en la [base de datos de cartas](/es/cards) con el filtro "Fuera del juego", y en [Theory craft](/es/theory-craft) ya puedes construir un mazo con ellas: los que publiques van a los [mazos de theory craft](/es/theory-craft/decks). Cuando la actualización esté en el juego las marcaremos como cartas del juego y compararemos sus textos en los siete idiomas; los mazos construidos con ellas pasarán solos a los mazos individuales.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- A qué hora llega la actualización el 4 de noviembre.
+- Cómo se desbloquean Dr. Frank y sus cartas, y si se pueden usar en la clasificatoria desde el primer día.
+- Si It's Alive es la carta que Dr. Frank te da al empezar la partida.
+- Qué cambia el parche de equilibrio.
+
+Fuentes: la publicación de Steam "Happy Halloween, Dr. Frank is coming" (31 de octubre de 2026) y su imagen; los mensajes de apix (29 de octubre) y de Mawr (31 de octubre y 3 de noviembre) en el Discord oficial de Origins TCG; las imágenes de las cartas que Koin Games dio a sus creadores para revelarlas (2 de noviembre); el vídeo de ZulsoiD (3 de noviembre). Las citas están traducidas por nosotros. Ilustraciones: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+    ),
+    faq: {
+      en: [
+        { q: "When does Dr. Frank arrive in Origins TCG?", a: "On Wednesday 4 November 2026, a week earlier than planned because players reached 500 reviews on Steam. When we published this article Koin had not announced the time." },
+        { q: "What are Dr. Frank's new cards?", a: "Eight: Dr. Frank (Legendary, 6 mana, 2/2), It's Alive (spell, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) and Red Knight (2, 4/1)." },
+        { q: "Is there a balance patch with Dr. Frank?", a: "Yes: Koin's Studio Head Mawr wrote that the balance patch arrives with Dr. Frank on 4 November. The changes had not been published yet." },
+        { q: "Can I already build a deck with the new cards?", a: "On OriginsMeta, yes: the eight cards are in Theory craft, our deck builder with the cards that are not in the game, until the update is live." },
+      ],
+      it: [
+        { q: "Quando arriva Dr. Frank su Origins TCG?", a: "Mercoledì 4 novembre 2026, una settimana prima del previsto perché i giocatori hanno raggiunto le 500 recensioni su Steam. Quando abbiamo pubblicato questo articolo Koin non aveva annunciato l'ora." },
+        { q: "Quali sono le carte nuove di Dr. Frank?", a: "Otto: Dr. Frank (Leggendaria, 6 mana, 2/2), It's Alive (magia, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) e Red Knight (2, 4/1)." },
+        { q: "C'è una patch di bilanciamento con Dr. Frank?", a: "Sì: Mawr, Studio Head di Koin, ha scritto che la patch di bilanciamento arriva con Dr. Frank il 4 novembre. Le modifiche non erano ancora state pubblicate." },
+        { q: "Posso già costruire un mazzo con le carte nuove?", a: "Su OriginsMeta sì: le otto carte sono nel Theory craft, il nostro deck builder con le carte che non sono nel gioco, finché l'aggiornamento non esce." },
+      ],
+      es: [
+        { q: "¿Cuándo llega Dr. Frank a Origins TCG?", a: "El miércoles 4 de noviembre de 2026, una semana antes de lo previsto porque los jugadores alcanzaron las 500 reseñas en Steam. Cuando publicamos este artículo Koin no había anunciado la hora." },
+        { q: "¿Cuáles son las cartas nuevas de Dr. Frank?", a: "Ocho: Dr. Frank (Legendaria, 6 de maná, 2/2), It's Alive (hechizo, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) y Red Knight (2, 4/1)." },
+        { q: "¿Hay un parche de equilibrio con Dr. Frank?", a: "Sí: Mawr, Studio Head de Koin, escribió que el parche de equilibrio llega con Dr. Frank el 4 de noviembre. Los cambios todavía no se habían publicado." },
+        { q: "¿Puedo construir ya un mazo con las cartas nuevas?", a: "En OriginsMeta, sí: las ocho cartas están en Theory craft, nuestro deck builder con las cartas que no están en el juego, hasta que salga la actualización." },
+      ],
+    },
+  },
+  {
+    // Patch di bilanciamento e boss Dr. Frank mercoledì 4/11, AMA sulla roadmap venerdì 6/11 (03/11/2026). Pierluigi:
+    // "mercoledì ci sarà la patch e venerdì la roadmap, recupera gli annunci su discord e fai una notizia". Fonti lette dal
+    // Discord ufficiale il 03/11/2026: in #the-courtyard il moderatore Senith riporta alle 18:11 UTC del 2/11 il messaggio di
+    // Mawr (Studio Head di Koin) "I think you'll be pleased with the balance updates coming Wednesday November 4th" e apix
+    // scrive "new boss on wednesday" (17:30 italiane); in #announcements "500 reviews! The boss is coming a week early"
+    // (31/10, 01:41 UTC) e il "WHAT'S NEXT" di TimothyJ (Tim Jooste, 1/11, 00:05 UTC: roadmap AMA, giornata dei negozi,
+    // scena competitiva); in #game-announcements la fine della stagione "the week of December 7th" (31/10, 22:56 UTC);
+    // l'evento del server "Super Secret Early Access Roadmap AMA", venerdì 6/11 alle 22:00 di Roma, #live-events, creato da
+    // apix. Più il post Steam "Happy Halloween, Dr. Frank is coming" (31/10, 16:41 UTC) e il post su X di apix del 2/11.
+    // Copertina: la grafica ufficiale di quel post Steam (800×450) portata a 1600×900 senza ritagli, crediti compresi.
+    // Quando escono le patch notes: patch in cards.ts e card-history.ts, news con le tabelle, e qui un aggiornamento.
+    slug: "balance-patch-dr-frank-roadmap-ama",
+    image: "/media/news-dr-frank-boss.webp",
+    url: "https://store.steampowered.com/news/app/4429430/view/1847920302242676",
+    source: "steam",
+    cards: ["dr-frank"],
+    guides: ["roadmap-and-dates", "origins-tcg-ranked"],
+    date: "2026-11-02",
+    updated: "2026-11-04",
+    title: n(
+      "Origins TCG: balance patch and Dr. Frank on Wednesday, roadmap AMA on Friday",
+      "Origins TCG: patch di bilanciamento e Dr. Frank mercoledì, AMA sulla roadmap venerdì",
+      "Origins TCG: parche de equilibrio y Dr. Frank el miércoles, AMA sobre la hoja de ruta el viernes",
+    ),
+    metaTitle: n(
+      "Origins TCG: balance patch Wednesday, roadmap AMA Friday",
+      "Origins TCG: patch mercoledì, AMA sulla roadmap venerdì",
+      "Origins TCG: parche el miércoles, AMA de la hoja de ruta",
+    ),
+    description: n(
+      "Origins TCG: the first Early Access balance patch and the new boss arrive on Wednesday 4 November, the roadmap AMA is on Friday 6 November on Discord.",
+      "Origins TCG: la prima patch di bilanciamento dell'Accesso anticipato e il boss nuovo arrivano mercoledì 4 novembre, l'AMA sulla roadmap è venerdì 6.",
+      "Origins TCG: el primer parche de equilibrio del Acceso anticipado y el jefe nuevo llegan el miércoles 4 de noviembre, y el viernes 6, el AMA en Discord.",
+    ),
+    summary: n(
+      "Origins TCG has two dates this week. On Wednesday 4 November comes the first balance patch of Early Access, together with a new boss, Cyber Queen, whose deck full of new cards has Dr. Frank as its Legendary; on Friday 6 November at 21:00 UTC Koin Games hosts a roadmap AMA on the official Discord. The patch notes came out on 4 November.",
+      "Origins TCG ha due date questa settimana. Mercoledì 4 novembre arriva la prima patch di bilanciamento dell'Accesso anticipato, insieme a un boss nuovo, Cyber Queen, con un mazzo pieno di carte nuove e Dr. Frank come Leggendaria; venerdì 6 novembre alle 22:00 italiane Koin Games tiene un AMA sulla roadmap sul Discord ufficiale. Le patch notes sono uscite il 4 novembre.",
+      "Origins TCG tiene dos fechas esta semana. El miércoles 4 de noviembre llega el primer parche de equilibrio del Acceso anticipado, junto con un jefe nuevo, Cyber Queen, con un mazo lleno de cartas nuevas y Dr. Frank como Legendaria; el viernes 6 de noviembre a las 21:00 UTC Koin Games celebra un AMA sobre la hoja de ruta en el Discord oficial. Las notas del parche salieron el 4 de noviembre.",
+    ),
+    highlights: {
+      en: [
+        { label: "Balance patch on Wednesday", text: "4 November, the first of Early Access; patch notes out on the day", anchor: "balance-patch" },
+        { label: "Dr. Frank arrives", text: "the Legendary of the new boss Cyber Queen's deck, one week early", anchor: "dr-frank" },
+        { label: "Roadmap AMA on Friday", text: "6 November at 21:00 UTC on the official Discord", anchor: "roadmap-ama" },
+        { label: "Ranked season 1", text: "ends the week of 7 December", anchor: "ranked" },
+        { label: "In the works", text: "faster animations, more tournaments, the Collector Pass in the game", anchor: "next" },
+      ],
+      it: [
+        { label: "Patch di bilanciamento mercoledì", text: "il 4 novembre, la prima dell'Accesso anticipato; patch notes uscite il giorno stesso", anchor: "patch-bilanciamento" },
+        { label: "Arriva Dr. Frank", text: "la Leggendaria del mazzo del boss nuovo, Cyber Queen, una settimana in anticipo", anchor: "dr-frank" },
+        { label: "AMA sulla roadmap venerdì", text: "il 6 novembre alle 22:00 italiane sul Discord ufficiale", anchor: "ama-roadmap" },
+        { label: "Stagione classificata 1", text: "finisce nella settimana del 7 dicembre", anchor: "classificata" },
+        { label: "In lavorazione", text: "animazioni più veloci, più tornei, il Collector Pass nel gioco", anchor: "in-arrivo" },
+      ],
+      es: [
+        { label: "Parche de equilibrio el miércoles", text: "el 4 de noviembre, el primero del Acceso anticipado; notas publicadas ese mismo día", anchor: "parche-equilibrio" },
+        { label: "Llega Dr. Frank", text: "la Legendaria del mazo del jefe nuevo, Cyber Queen, una semana antes", anchor: "dr-frank" },
+        { label: "AMA de la hoja de ruta el viernes", text: "el 6 de noviembre a las 21:00 UTC en el Discord oficial", anchor: "ama-roadmap" },
+        { label: "Temporada clasificatoria 1", text: "termina la semana del 7 de diciembre", anchor: "clasificatoria" },
+        { label: "En preparación", text: "animaciones más rápidas, más torneos, el Collector Pass en el juego", anchor: "en-camino" },
+      ],
+    },
+    body: n(
+      `**Update, 4 November:** the patch notes are out ([our article](/en/news/balance-patch-1104-cyber-queen)): ten cards change, and the new boss is Cyber Queen, boss #11, who pilots the Relentless deck with Dr. Frank as its Legendary. Below, where we call Dr. Frank the new boss, read: the Legendary of the boss's deck.
+
+## Wednesday 4 November: the balance patch {#balance-patch}
+
+The first balance patch of Origins TCG's Early Access arrives on Wednesday 4 November 2026. On Monday 2 November, in #the-courtyard on the official Discord, moderator Senith passed on a message from Mawr, Koin Games' Studio Head: "I think you'll be pleased with the balance updates coming Wednesday November 4th." That same evening apix, from the Koin team, wrote on X that "the first proper balance patch is around the corner" ([his post](https://x.com/apixtwts/status/2117383252478456012)).
+
+It is the first change to the cards since [patch 0.7](/en/news/patch-0-7) of 29 September 2026: [update 0.8](/en/news/origins-tcg-early-access-0-8), which opened Early Access on 27 October, touched no cards. The patch notes are not out yet, so we don't know which cards change or at what time the update lands. As soon as they are published we'll write them up with the before and after of every card, and the [card database](/en/cards), the [deck builder](/en/deck-builder) and [MetaShifting](/en/metashifting) will show the new values.
+
+## The same day: Dr. Frank and the new boss {#dr-frank}
+
+Wednesday also brings the next boss, Dr. Frank. Koin announced it on Steam on 31 October ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): the boss "will feature a deck full of new cards" and arrives one week earlier than planned. The reason is in the post's graphic and on Discord: the community reached 500 Steam reviews, and that night Koin wrote in #announcements that "the boss is coming a week early". On 2 November apix confirmed it on Discord: "new boss on wednesday".
+
+Bosses are the opponents of the Missions, played against the AI. Our database already has a [Dr. Frank](/en/cards/dr-frank) Legendary, which is no longer in the game: its page shows the last known data, not verified in the game, and the boss may not match it. Koin hasn't said whether the new cards of his deck will also go into players' collections.
+
+## Friday 6 November: the roadmap AMA {#roadmap-ama}
+
+On Friday 6 November at 21:00 UTC (16:00 on the US East Coast, 22:00 in Central Europe) Koin hosts the "Super Secret Early Access Roadmap AMA", a questions-and-answers session on the Early Access roadmap. It is an event on the official Discord, in the #live-events channel, created by apix. Tim Jooste, founder and CEO of Koin Games, had listed it first under "What's next" in his post in #announcements on 1 November, without further details.
+
+In the same post he announced two more things, still without dates: a "Tell Your Local TCG Shop About Origins Day", with details "coming soon", and an overview of the competitive scene, with tournaments, rewards and formats. The last AMA, on 2 October, gave the ranked dates and the first numbers on new cards ([our article](/en/news/building-origins-ama-design-balance)); the dates confirmed so far are in our [roadmap](/en/guides/roadmap-and-dates). We'll write up the AMA after the stream.
+
+## Ranked season 1 ends the week of 7 December {#ranked}
+
+One more date arrived on 31 October in #game-announcements: the first ranked season of Early Access ends in early December, "the week of December 7th". Koin explains that it can't end a season yet: the technology for it ships with the major update that will accompany the end of the season, so the exact day may still move. The date will appear in the game soon. How the ladder and Grandmaster work is in our [Ranked guide](/en/guides/origins-tcg-ranked).
+
+## What else Koin is working on {#next}
+
+In his post of 2 November apix listed the updates in progress: faster animations, more tournaments, the balance patch, new cards ("cards cards cards"), the Collector Pass in the game, the next ranked season and "a lot of polish". He also wrote that about 60-70% of the cards of the first set are available today. Apart from the patch, none of these has a date.
+
+## What we don't know yet {#unknown}
+
+- Which cards the balance patch changes, and at what time it goes live on Wednesday.
+- Whether Dr. Frank's new cards end up in the collection and in the deck builder.
+- What the roadmap AMA will cover, and whether it will be recorded.
+- The exact last day of ranked season 1.
+
+Sources: the messages in #the-courtyard (2 November 2026, 18:11 UTC), #announcements (31 October, 01:41 UTC, and 1 November, 00:05 UTC) and #game-announcements (31 October, 22:56 UTC) on the official Origins TCG Discord, the "Super Secret Early Access Roadmap AMA" event on the same server, read on 3 November, the Steam post of 31 October (16:41 UTC) and apix's post on X of 2 November.`,
+      `**Aggiornamento del 4 novembre:** le patch notes sono uscite ([il nostro articolo](/it/news/balance-patch-1104-cyber-queen)): cambiano dieci carte, e il boss nuovo è Cyber Queen, il boss n. 11, che guida il mazzo Relentless con Dr. Frank come Leggendaria. Qui sotto, dove chiamiamo Dr. Frank il boss nuovo, si legga: la Leggendaria del mazzo del boss.
+
+## Mercoledì 4 novembre: la patch di bilanciamento {#patch-bilanciamento}
+
+La prima patch di bilanciamento dell'Accesso anticipato di Origins TCG arriva mercoledì 4 novembre 2026. Lunedì 2 novembre, in #the-courtyard sul Discord ufficiale, il moderatore Senith ha riportato un messaggio di Mawr, Studio Head di Koin Games: "Penso che sarete contenti degli aggiornamenti di bilanciamento in arrivo mercoledì 4 novembre." La sera stessa apix, del team di Koin, ha scritto su X che "la prima vera patch di bilanciamento è dietro l'angolo" ([il suo post](https://x.com/apixtwts/status/2117383252478456012)).
+
+È la prima modifica alle carte dalla [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: l'[aggiornamento 0.8](/it/news/origins-tcg-early-access-0-8), che il 27 ottobre ha aperto l'Accesso anticipato, non ha toccato le carte. Le patch notes non sono ancora uscite, quindi non sappiamo quali carte cambiano né a che ora arriva l'aggiornamento. Appena escono le raccontiamo con il prima e il dopo di ogni carta, e il [database carte](/it/cards), il [deck builder](/it/deck-builder) e [MetaShifting](/it/metashifting) mostreranno i valori nuovi.
+
+## Lo stesso giorno: Dr. Frank e il boss nuovo {#dr-frank}
+
+Mercoledì arriva anche il prossimo boss, Dr. Frank. Koin l'ha annunciato su Steam il 31 ottobre ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): il boss "avrà un mazzo pieno di carte nuove" e arriva con una settimana di anticipo sul previsto. Il motivo sta nella grafica del post e sul Discord: la community ha raggiunto le 500 recensioni su Steam, e quella notte Koin ha scritto in #announcements che "il boss arriva una settimana prima". Il 2 novembre apix l'ha confermato sul Discord: "boss nuovo mercoledì".
+
+I boss sono gli avversari delle Missioni, giocate contro l'IA. Il nostro database ha già una Leggendaria [Dr. Frank](/it/cards/dr-frank), che non è più nel gioco: la sua pagina mostra gli ultimi dati noti, non verificati nel gioco, e il boss potrebbe non coincidere. Koin non ha detto se le carte nuove del suo mazzo entreranno anche nella collezione dei giocatori.
+
+## Venerdì 6 novembre: l'AMA sulla roadmap {#ama-roadmap}
+
+Venerdì 6 novembre alle 22:00 italiane (21:00 UTC) Koin tiene il "Super Secret Early Access Roadmap AMA", una sessione di domande e risposte sulla roadmap dell'Accesso anticipato. È un evento del Discord ufficiale, nel canale #live-events, creato da apix. Tim Jooste, fondatore e CEO di Koin Games, l'aveva messo al primo posto fra le prossime novità nel suo messaggio in #announcements del 1° novembre, senza altri dettagli.
+
+Nello stesso messaggio ha annunciato altre due cose, ancora senza date: un "Tell Your Local TCG Shop About Origins Day", la giornata per far conoscere Origins al proprio negozio di carte, con i dettagli "in arrivo", e una panoramica della scena competitiva, con tornei, premi e formati. L'ultimo AMA, il 2 ottobre, aveva dato le date della classificata e i primi numeri sulle carte nuove ([il nostro articolo](/it/news/building-origins-ama-design-balance)); le date confermate finora sono nella nostra [roadmap](/it/guides/roadmap-and-dates). Racconteremo l'AMA dopo la diretta.
+
+## La stagione classificata 1 finisce nella settimana del 7 dicembre {#classificata}
+
+Un'altra data è arrivata il 31 ottobre in #game-announcements: la prima stagione classificata dell'Accesso anticipato finisce a inizio dicembre, "nella settimana del 7 dicembre". Koin spiega che per ora non è in grado di chiudere una stagione: la tecnologia per farlo arriva con il grande aggiornamento che accompagnerà la fine della stagione, quindi il giorno esatto può ancora spostarsi. La data comparirà presto nel gioco. Come funzionano la scalata e Grandmaster è nella nostra [guida alla classificata](/it/guides/origins-tcg-ranked).
+
+## Che altro prepara Koin {#in-arrivo}
+
+Nel suo post del 2 novembre apix ha elencato gli aggiornamenti in lavorazione: animazioni più veloci, più tornei, la patch di bilanciamento, carte nuove ("carte carte carte"), il Collector Pass nel gioco, la prossima stagione classificata e "tanta rifinitura". Ha scritto anche che oggi è disponibile circa il 60-70% delle carte del primo set. A parte la patch, nessuna di queste novità ha una data.
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- Quali carte cambia la patch di bilanciamento, e a che ora arriva mercoledì.
+- Se le carte nuove di Dr. Frank entreranno nella collezione e nel deck builder.
+- Di che cosa parlerà l'AMA sulla roadmap, e se resterà registrato.
+- L'ultimo giorno esatto della stagione classificata 1.
+
+Fonti: i messaggi in #the-courtyard (2 novembre 2026, 18:11 UTC), #announcements (31 ottobre, 01:41 UTC, e 1° novembre, 00:05 UTC) e #game-announcements (31 ottobre, 22:56 UTC) sul Discord ufficiale di Origins TCG, l'evento "Super Secret Early Access Roadmap AMA" sullo stesso server, letto il 3 novembre, il post Steam del 31 ottobre (16:41 UTC) e il post su X di apix del 2 novembre. Le citazioni sono tradotte da noi.`,
+      `**Actualización del 4 de noviembre:** ya han salido las notas del parche ([nuestro artículo](/es/news/balance-patch-1104-cyber-queen)): cambian diez cartas, y el jefe nuevo es Cyber Queen, el jefe n.º 11, que pilota el mazo Relentless con Dr. Frank como Legendaria. Más abajo, donde llamamos a Dr. Frank el jefe nuevo, léase: la Legendaria del mazo del jefe.
+
+## Miércoles 4 de noviembre: el parche de equilibrio {#parche-equilibrio}
+
+El primer parche de equilibrio del Acceso anticipado de Origins TCG llega el miércoles 4 de noviembre de 2026. El lunes 2 de noviembre, en #the-courtyard del Discord oficial, el moderador Senith transmitió un mensaje de Mawr, Studio Head de Koin Games: "Creo que os gustarán las actualizaciones de equilibrio que llegan el miércoles 4 de noviembre." Esa misma noche apix, del equipo de Koin, escribió en X que "el primer parche de equilibrio de verdad está a la vuelta de la esquina" ([su publicación](https://x.com/apixtwts/status/2117383252478456012)).
+
+Es el primer cambio en las cartas desde el [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026: la [actualización 0.8](/es/news/origins-tcg-early-access-0-8), que abrió el Acceso anticipado el 27 de octubre, no tocó las cartas. Las notas del parche todavía no han salido, así que no sabemos qué cartas cambian ni a qué hora llega la actualización. En cuanto se publiquen las contaremos con el antes y el después de cada carta, y la [base de datos de cartas](/es/cards), el [deck builder](/es/deck-builder) y [MetaShifting](/es/metashifting) mostrarán los valores nuevos.
+
+## El mismo día: Dr. Frank y el jefe nuevo {#dr-frank}
+
+El miércoles llega también el próximo jefe, Dr. Frank. Koin lo anunció en Steam el 31 de octubre ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): el jefe "tendrá un mazo lleno de cartas nuevas" y llega una semana antes de lo previsto. El motivo está en la imagen de la publicación y en Discord: la comunidad alcanzó las 500 reseñas en Steam, y esa noche Koin escribió en #announcements que "el jefe llega una semana antes". El 2 de noviembre apix lo confirmó en Discord: "jefe nuevo el miércoles".
+
+Los jefes son los rivales de las Misiones, que se juegan contra la IA. Nuestra base de datos ya tiene una Legendaria [Dr. Frank](/es/cards/dr-frank), que ya no está en el juego: su página muestra los últimos datos conocidos, no verificados en el juego, y el jefe puede no coincidir. Koin no ha dicho si las cartas nuevas de su mazo llegarán también a la colección de los jugadores.
+
+## Viernes 6 de noviembre: el AMA sobre la hoja de ruta {#ama-roadmap}
+
+El viernes 6 de noviembre a las 21:00 UTC (22:00 en la España peninsular, 15:00 en Ciudad de México) Koin celebra el "Super Secret Early Access Roadmap AMA", una sesión de preguntas y respuestas sobre la hoja de ruta del Acceso anticipado. Es un evento del Discord oficial, en el canal #live-events, creado por apix. Tim Jooste, fundador y CEO de Koin Games, lo había puesto en primer lugar entre las próximas novedades en su mensaje en #announcements del 1 de noviembre, sin más detalles.
+
+En el mismo mensaje anunció dos cosas más, todavía sin fecha: un "Tell Your Local TCG Shop About Origins Day", el día para dar a conocer Origins en tu tienda de cartas, con detalles "muy pronto", y un repaso de la escena competitiva, con torneos, premios y formatos. El último AMA, el 2 de octubre, dio las fechas de la clasificatoria y las primeras cifras sobre cartas nuevas ([nuestro artículo](/es/news/building-origins-ama-design-balance)); las fechas confirmadas hasta ahora están en nuestra [hoja de ruta](/es/guides/roadmap-and-dates). Contaremos el AMA después de la emisión.
+
+## La temporada clasificatoria 1 termina la semana del 7 de diciembre {#clasificatoria}
+
+Otra fecha llegó el 31 de octubre en #game-announcements: la primera temporada clasificatoria del Acceso anticipado termina a principios de diciembre, "la semana del 7 de diciembre". Koin explica que todavía no puede cerrar una temporada: la tecnología para hacerlo llega con la gran actualización que acompañará el final de la temporada, así que el día exacto aún puede moverse. La fecha aparecerá pronto en el juego. Cómo funcionan la escalada y Grandmaster lo explica nuestra [guía de la clasificatoria](/es/guides/origins-tcg-ranked).
+
+## Qué más prepara Koin {#en-camino}
+
+En su publicación del 2 de noviembre apix enumeró las actualizaciones en marcha: animaciones más rápidas, más torneos, el parche de equilibrio, cartas nuevas ("cartas cartas cartas"), el Collector Pass en el juego, la próxima temporada clasificatoria y "mucho pulido". También escribió que hoy está disponible alrededor del 60-70% de las cartas del primer set. Aparte del parche, ninguna de estas novedades tiene fecha.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- Qué cartas cambia el parche de equilibrio, y a qué hora llega el miércoles.
+- Si las cartas nuevas de Dr. Frank llegarán a la colección y al deck builder.
+- De qué hablará el AMA sobre la hoja de ruta, y si quedará grabado.
+- El último día exacto de la temporada clasificatoria 1.
+
+Fuentes: los mensajes en #the-courtyard (2 de noviembre de 2026, 18:11 UTC), #announcements (31 de octubre, 01:41 UTC, y 1 de noviembre, 00:05 UTC) y #game-announcements (31 de octubre, 22:56 UTC) del Discord oficial de Origins TCG, el evento "Super Secret Early Access Roadmap AMA" en el mismo servidor, consultado el 3 de noviembre, la publicación de Steam del 31 de octubre (16:41 UTC) y la publicación de apix en X del 2 de noviembre. Las citas están traducidas por nosotros.`,
+    ),
+    faq: {
+      en: [
+        { q: "When is the next Origins TCG balance patch?", a: "On Wednesday 4 November 2026, as Koin's Studio Head Mawr announced on the official Discord. It is the first since patch 0.7 of 29 September; the patch notes are not out yet." },
+        { q: "When is the Origins TCG roadmap AMA?", a: "On Friday 6 November 2026 at 21:00 UTC (22:00 in Central Europe), in the #live-events channel of the official Discord." },
+        { q: "What is Dr. Frank in Origins TCG?", a: "The Legendary of the deck of Cyber Queen, the new boss of the Missions: they arrive on 4 November with a deck full of new cards, one week early because the game reached 500 Steam reviews." },
+        { q: "When does ranked season 1 end?", a: "The week of 7 December 2026, according to Koin; the exact day may still move." },
+      ],
+      it: [
+        { q: "Quando esce la prossima patch di bilanciamento di Origins TCG?", a: "Mercoledì 4 novembre 2026, come ha annunciato sul Discord ufficiale Mawr, Studio Head di Koin. È la prima dalla patch 0.7 del 29 settembre; le patch notes non sono ancora uscite." },
+        { q: "Quando c'è l'AMA sulla roadmap di Origins TCG?", a: "Venerdì 6 novembre 2026 alle 22:00 italiane (21:00 UTC), nel canale #live-events del Discord ufficiale." },
+        { q: "Che cos'è Dr. Frank in Origins TCG?", a: "La Leggendaria del mazzo di Cyber Queen, il nuovo boss delle Missioni: arrivano il 4 novembre con un mazzo pieno di carte nuove, una settimana prima perché il gioco ha raggiunto le 500 recensioni su Steam." },
+        { q: "Quando finisce la stagione classificata 1?", a: "Nella settimana del 7 dicembre 2026, secondo Koin; il giorno esatto può ancora spostarsi." },
+      ],
+      es: [
+        { q: "¿Cuándo sale el próximo parche de equilibrio de Origins TCG?", a: "El miércoles 4 de noviembre de 2026, como anunció en el Discord oficial Mawr, Studio Head de Koin. Es el primero desde el parche 0.7 del 29 de septiembre; las notas todavía no han salido." },
+        { q: "¿Cuándo es el AMA sobre la hoja de ruta de Origins TCG?", a: "El viernes 6 de noviembre de 2026 a las 21:00 UTC (22:00 en la España peninsular), en el canal #live-events del Discord oficial." },
+        { q: "¿Qué es Dr. Frank en Origins TCG?", a: "La Legendaria del mazo de Cyber Queen, el nuevo jefe de las Misiones: llegan el 4 de noviembre con un mazo lleno de cartas nuevas, una semana antes porque el juego alcanzó las 500 reseñas en Steam." },
+        { q: "¿Cuándo termina la temporada clasificatoria 1?", a: "La semana del 7 de diciembre de 2026, según Koin; el día exacto aún puede moverse." },
+      ],
+    },
+  },
   {
     // Intervista a SouL, secondo alla Crimson Cup (28/10/2026). Pierluigi: "ecco l'intervista a soul da mettere online,
     // studiala, va intervallata di immagini e le sue decklist devono diventare un deck da torneo e devono essere linkate e
@@ -10109,6 +10882,16 @@ export const news: NewsItem[] = raw.map(withTranslations);
 
 export const sortedNews = [...news].sort((a, b) => b.date.localeCompare(a.date));
 
+/** La news si legge in questa lingua (non è fra le `untranslated`). */
+export function hasNews(item: NewsItem, locale: Locale): boolean {
+  return !item.untranslated?.includes(locale);
+}
+
+/** Le news tradotte in una lingua, dalla più recente: liste, feed e sitemap di quella lingua. */
+export function newsInLocale(locale: Locale): NewsItem[] {
+  return sortedNews.filter((item) => hasNews(item, locale));
+}
+
 export function getNews(slug: string): NewsItem | undefined {
   return news.find((item) => item.slug === slug);
 }
@@ -10135,7 +10918,7 @@ export function newsReadTime(item: NewsItem, locale: Locale): number {
  * Il giorno è scritto qui e non importato da lastmod.ts perché `node --test` carica news.ts senza risolvere gli
  * import senza estensione.
  */
-export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20" };
+export const TRANSLATED_SINCE: Partial<Record<Locale, string>> = { es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20", "zh-cn": "2026-11-04" };
 
 /** Data di modifica (giorno ISO) di un articolo nella lingua `locale`, secondo la regola qui sopra. */
 export function modifiedIn(locale: Locale, day: string): string {

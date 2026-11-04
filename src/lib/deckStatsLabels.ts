@@ -235,6 +235,37 @@ export const deckStatsLabels: Record<Locale, DeckStatsLabels> = {
     deck: "Колода",
     by: "автор:",
   },
+  "zh-cn": {
+    title: "你的数据",
+    intro:
+      "你发布的卡组表现如何：最近 7 天、30 天和总计的访问、游戏代码复制（来自卡组页面和卡组列表）、评分、链接点击和视频播放。你登录时自己的访问不计入。",
+    estimate:
+      "这些都是估算：每个浏览器标签页对每个卡组、每种类型只计一次，机器人和 Staff 的流量不计入。在页面停留几秒后才算一次访问；第一次点击播放器或视频按钮时才算一次视频播放。日期按 UTC 计算。",
+    since: "首个有数据的日期：{date}",
+    noData: "还没有数据：你的卡组有了第一批访问后，数字就会出现。",
+    unavailable: "数据暂不可用。请稍后再试。",
+    d7: "7 天",
+    d30: "30 天",
+    total: "总计",
+    metric: "指标",
+    views: "访问",
+    codeCopies: "代码复制",
+    votes: "评分",
+    average: "平均评分",
+    linkClicks: "链接点击",
+    videoPlays: "视频播放",
+    allDecks: "你的所有卡组",
+    chartTitle: "最近 30 天每日访问和代码复制",
+    chartAria: "图表：最近 30 天每日的访问和代码复制。访问：{views}；代码复制：{copies}。",
+    hidden: "已隐藏",
+    staffTitle: "Staff：访问最多的卡组（30 天）",
+    staffIntro: "只有管理员和 Staff 能看到这个排行：所有社区卡组，估算方式相同。",
+    staffEmpty: "最近 30 天没有记录到访问。",
+    partial: "排行不完整：数据行太多，无法全部读取。",
+    notVisible: "卡组不可见",
+    deck: "卡组",
+    by: "作者：",
+  },
 };
 
 /**
@@ -249,6 +280,7 @@ export const deckStatsPrivacy: Record<Locale, string> = {
   fr: "Statistiques des decks : sur la page d'un deck de la communauté, et quand vous copiez un code du jeu depuis la liste des decks, le site compte, pour chaque deck et chaque jour, les visites, les copies du code du jeu, les clics sur les liens et les lectures de vidéos, et montre ces totaux uniquement à la personne qui a publié le deck et au staff d'OriginsMeta (à part les totaux de tous les decks publiés ensemble qu'un profil vitrine choisit d'afficher sur sa page publique : voir « Succès et chiffres publics des profils »). Seuls les totaux du jour sont enregistrés, sur Supabase (Irlande, UE) : aucune adresse IP, aucun compte, aucun identifiant. La requête passe par les serveurs de Supabase, qui, comme Vercel, conservent peu de temps les journaux techniques habituels (adresse IP comprise), jamais reliés aux totaux. Pour que la même visite ne compte pas deux fois, le navigateur note les decks déjà comptés dans la mémoire de session de l'onglet, effacée quand vous fermez l'onglet et jamais envoyée. Les bots, les navigateurs du staff et les personnes qui consultent leurs propres decks avec la session ouverte ne sont pas comptés.",
   pt: "Estatísticas dos decks: na página de um deck da comunidade, e quando você copia um código do jogo da lista de decks, o site conta, para cada deck e cada dia, as visitas, as cópias do código do jogo, os cliques nos links e os vídeos iniciados, e mostra esses totais só para quem publicou o deck e para o staff do OriginsMeta (fora os totais de todos os decks publicados juntos que um perfil vitrine escolhe mostrar na sua página pública: veja “Conquistas e números públicos dos perfis”). Só os totais do dia são salvos, no Supabase (Irlanda, UE): nenhum endereço IP, nenhuma conta, nenhum identificador. A solicitação passa pelos servidores do Supabase, que, como a Vercel, guardam por pouco tempo os registros técnicos habituais (endereço IP incluído), nunca ligados aos totais. Para que a mesma visita não conte duas vezes, o navegador anota os decks já contados na memória de sessão da aba, que é apagada quando você fecha a aba e nunca é enviada. Não são contados os bots, os navegadores do staff nem quem vê os próprios decks com o login feito.",
   de: "Deck-Statistiken: Auf der Seite eines Community-Decks und wenn du einen Spielcode aus der Deckliste kopierst, zählt die Website für jedes Deck und jeden Tag die Besuche, die Kopien des Spielcodes, die Klicks auf Links und die gestarteten Videos und zeigt diese Summen nur der Person, die das Deck veröffentlicht hat, und dem Staff von OriginsMeta (abgesehen von den Gesamtsummen aller veröffentlichten Decks zusammen, die ein Schaufenster-Profil auf seiner öffentlichen Seite zeigen kann: siehe „Erfolge und öffentliche Zahlen in Profilen“). Gespeichert werden nur die Tagessummen, bei Supabase (Irland, EU): keine IP-Adresse, kein Konto, keine Kennung. Die Anfrage läuft über die Server von Supabase, die wie Vercel die üblichen technischen Logs (einschließlich IP-Adresse) für kurze Zeit aufbewahren, nie mit den Summen verknüpft. Damit derselbe Besuch nicht doppelt zählt, merkt sich der Browser die bereits gezählten Decks im Sitzungsspeicher des Tabs, der beim Schließen des Tabs gelöscht und nie gesendet wird. Nicht gezählt werden Bots, Browser des Staffs und Personen, die mit Anmeldung ihre eigenen Decks ansehen.",
+  "zh-cn": "卡组数据：在社区卡组的页面上，以及当您从卡组列表复制游戏代码时，网站会按卡组、按天统计访问、游戏代码复制、链接点击和视频播放，并且只向发布该卡组的人和 OriginsMeta 的 Staff 显示这些总数（展示页主页选择在其公开页面上显示的所有已发布卡组的合计除外：参见“成就与主页上的公开数据”）。只保存每日总数，存放在 Supabase（欧盟爱尔兰）：不含 IP 地址、账号或任何标识符。请求会经过 Supabase 的服务器，它和 Vercel 一样会短期保留常规的技术日志（包括 IP 地址），但从不与这些总数关联。为了让同一次访问不被计算两次，浏览器会在标签页的会话存储中记下已计入的卡组，关闭标签页时即被清除，且从不发送。机器人、Staff 的浏览器以及登录后查看自己卡组的人不计入。",
   ru: "Статистика колод: на странице колоды сообщества и когда вы копируете код игры из списка колод, сайт считает для каждой колоды и каждого дня посещения, копирования кода игры, клики по ссылкам и запуски видео и показывает эти итоги только тому, кто опубликовал колоду, и команде Staff OriginsMeta (кроме общих итогов всех опубликованных колод вместе, которые профиль с витриной может показать на своей публичной странице: см. «Достижения и публичные числа в профилях»). Хранятся только дневные итоги, в Supabase (Ирландия, ЕС): ни IP-адреса, ни аккаунта, ни идентификатора. Запрос проходит через серверы Supabase, которые, как и Vercel, недолго хранят обычные технические журналы (включая IP-адрес), никогда не связанные с итогами. Чтобы одно и то же посещение не засчитывалось дважды, браузер отмечает уже учтённые колоды в сессионном хранилище вкладки, которое очищается при закрытии вкладки и никогда не отправляется. Не учитываются боты, браузеры команды Staff и те, кто смотрит свои собственные колоды после входа.",
 };
 

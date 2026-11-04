@@ -48,14 +48,20 @@ const KEYWORDS_RU = [
   ...["Пробивной удар", "Пробивным ударом", "Пробивного удара"],
   ...["Меткий выстрел", "Метким выстрелом", "Меткого выстрела", "Оглушает", "Оглушение", "Оглушения"],
 ];
+/**
+ * Cinese semplificato (04/11/2026): glossario PROVVISORIO di docs/cinese.md. Niente forme declinate e niente confini di
+ * parola (il cinese non ha spazi): la parola chiave si cerca così com'è.
+ */
+const KEYWORDS_ZH = ["揭示时", "死亡时", "击杀时", "先攻", "连击", "死触", "守卫", "重生", "护盾", "践踏", "狙击", "眩晕", "持续"];
 const escapeRe = (k: string) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const byLength = (a: string, b: string) => b.length - a.length;
 /** Le più lunghe prima: nell'alternativa della regex vince la prima che combacia. */
 const KEYWORD_PATTERN = [
   ...[...KEYWORDS].sort(byLength).map(escapeRe),
   `(?<![А-ЯЁа-яё])(?:${[...KEYWORDS_RU].sort(byLength).map(escapeRe).join("|")})(?![А-ЯЁа-яё])`,
+  ...[...KEYWORDS_ZH].sort(byLength).map(escapeRe),
 ].join("|");
-const ALL_KEYWORDS = new Set([...KEYWORDS, ...KEYWORDS_RU]);
+const ALL_KEYWORDS = new Set([...KEYWORDS, ...KEYWORDS_RU, ...KEYWORDS_ZH]);
 
 /*
   Allineamento come pastiglia piena: prima era testo colorato su un velo del suo colore, e l'Evil in magenta sul
@@ -77,15 +83,15 @@ const ALIGN: Record<string, { label: string; bg: string; fg: string; ring: strin
 function formatAbility(text: string): React.ReactNode[] {
   // danni e "qualsiasi" nelle sei lingue del testo: "3 damage", "3 danni", "1 danno", "3 de daño", "3 dégâts", "1 dégât",
   // "3 de dano", "3 Schaden", "3 урона" / "1 урон"; ANY, QUALSIASI, CUALQUIER, N'IMPORTE QUEL / N'IMPORTE QUELLE, QUALQUER, BELIEBIGEN / BELIEBIGE / BELIEBIGER, IRGENDEIN / IRGENDEINE,
-  // ЛЮБОЙ / ЛЮБУЮ / ЛЮБОЕ e le altre forme (ALL resta ALLE)
-  const pattern = new RegExp(`(${KEYWORD_PATTERN}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni|danno|de daño|de dano|dégâts|dégât|Schaden)\\b|\\b\\d+ (?:ед\\. )?урона?(?![А-ЯЁа-яё])|\\bQUALSIASI\\b|\\bCUALQUIER\\b|\\bQUALQUER\\b|\\bBELIEBIGE[NMRS]?\\b|\\bIRGENDEINE?[NMRS]?\\b|(?<![А-ЯЁа-яё])ЛЮБ(?:ОЙ|УЮ|ОЕ|ОГО|ОМУ|ОМ|ЫЕ|ЫХ|ЫМ|ЫМИ)(?![А-ЯЁа-яё])|\\bANY\\b|N'IMPORTE QUELLE?)`, "g");
+  // ЛЮБОЙ / ЛЮБУЮ / ЛЮБОЕ e le altre forme (ALL resta ALLE); in cinese "3 点伤害" e 任意 (04/11/2026)
+  const pattern = new RegExp(`(${KEYWORD_PATTERN}|[+-]?\\d+⚔️|[+-]?\\d+❤️|\\b\\d+ (?:damage|danni|danno|de daño|de dano|dégâts|dégât|Schaden)\\b|\\b\\d+ (?:ед\\. )?урона?(?![А-ЯЁа-яё])|\\bQUALSIASI\\b|\\bCUALQUIER\\b|\\bQUALQUER\\b|\\bBELIEBIGE[NMRS]?\\b|\\bIRGENDEINE?[NMRS]?\\b|(?<![А-ЯЁа-яё])ЛЮБ(?:ОЙ|УЮ|ОЕ|ОГО|ОМУ|ОМ|ЫЕ|ЫХ|ЫМ|ЫМИ)(?![А-ЯЁа-яё])|\\bANY\\b|N'IMPORTE QUELLE?|\\d+ ?点伤害|任意)`, "g");
   return text.split(pattern).map((part, i) => {
     if (!part) return null;
     if (ALL_KEYWORDS.has(part)) return <b key={i} className="gc-kw">{part}</b>;
     if (/⚔️$/.test(part)) return <b key={i} className="gc-atk">{part.replace("⚔️", "⚔")}</b>;
     if (/❤️$/.test(part)) return <b key={i} className="gc-hp">{part.replace("❤️", "♥")}</b>;
-    if (/^\d+ (damage|danni|danno|de daño|de dano|dégâts|dégât|Schaden|(?:ед\. )?урона?)$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
-    if (part === "QUALSIASI" || part === "CUALQUIER" || part === "QUALQUER" || /^(?:BELIEBIGE[NMRS]?|IRGENDEINE?[NMRS]?|ЛЮБ(?:ОЙ|УЮ|ОЕ|ОГО|ОМУ|ОМ|ЫЕ|ЫХ|ЫМ|ЫМИ))$/.test(part) || part === "ANY" || part === "N'IMPORTE QUEL" || part === "N'IMPORTE QUELLE") return <b key={i} className="gc-any">{part}</b>;
+    if (/^\d+ (damage|danni|danno|de daño|de dano|dégâts|dégât|Schaden|(?:ед\. )?урона?)$/.test(part) || /^\d+ ?点伤害$/.test(part)) return <b key={i} className="gc-dmg">{part}</b>;
+    if (part === "QUALSIASI" || part === "CUALQUIER" || part === "QUALQUER" || /^(?:BELIEBIGE[NMRS]?|IRGENDEINE?[NMRS]?|ЛЮБ(?:ОЙ|УЮ|ОЕ|ОГО|ОМУ|ОМ|ЫЕ|ЫХ|ЫМ|ЫМИ))$/.test(part) || part === "ANY" || part === "N'IMPORTE QUEL" || part === "N'IMPORTE QUELLE" || part === "任意") return <b key={i} className="gc-any">{part}</b>;
     return <span key={i}>{part}</span>;
   });
 }
@@ -106,6 +112,7 @@ const TYPE_LABEL: Record<string, Record<"unit" | "spell" | "token", string>> = {
   pt: { unit: "Personagem", spell: "Feitiço", token: "Criada" },
   de: { unit: "Charakter", spell: "Zauber", token: "Erschaffen" },
   ru: { unit: "Персонаж", spell: "Заклинание", token: "Созданная" },
+  "zh-cn": { unit: "角色", spell: "法术", token: "衍生" },
 };
 
 export function GameCard({ card, locale, className = "", priority = false }: { card: Card; locale: Locale; className?: string; priority?: boolean }) {

@@ -39,7 +39,7 @@ import { differentCards } from "./deckrules.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { crimsonCupLabels, crimsonFinalsLabels, crimsonOrdinal } from "./crimsonCupLabels.ts";
 
-const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
+const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const;
 const TITLE_MAX = 60;
 const TITLE_MAX_NO_BRAND = 46;
 const DESC_MIN = 120;
@@ -366,6 +366,7 @@ describe("Crimson Cup: testi", () => {
     assert.equal(crimsonOrdinal(3, "es"), "3.ª");
     assert.equal(crimsonOrdinal(3, "de"), "3.");
     assert.equal(crimsonOrdinal(3, "ru"), "3-я");
+    assert.equal(crimsonOrdinal(3, "zh-cn"), "第 3");
   });
 
   test("title e description nei limiti di Google, con Origins TCG", () => {

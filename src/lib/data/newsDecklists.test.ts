@@ -34,7 +34,7 @@ const { news, splitDecklists, DECKLISTS_MARKER } = newsModule;
 const { deckSetIssue, DECK_SET_GUIDE_SECTIONS } = setsModule;
 
 const read = (p: string) => readFileSync(new URL(p, import.meta.url), "utf8");
-const locales = [...(read("../i18n.ts").match(/export const locales = \[([^\]]*)\]/)?.[1] ?? "").matchAll(/"([a-z]{2})"/g)].map((m) => m[1]) as Locale[];
+const locales = [...(read("../i18n.ts").match(/export const locales = \[([^\]]*)\]/)?.[1] ?? "").matchAll(/"([a-z]{2}(?:-[a-z]{2})?)"/g)].map((m) => m[1]) as Locale[];
 const cards = new Map((JSON.parse(read("./woo-cards.json")).cards as { slug: string; legendary?: boolean; type: string; status: string }[]).map((c) => [c.slug, c]));
 const archetypes = [...read("./decks.ts").matchAll(/^\s{2}(\w+): n\(/gm)].map((m) => m[1]);
 

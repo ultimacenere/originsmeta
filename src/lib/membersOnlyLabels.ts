@@ -57,4 +57,11 @@ export const membersOnlyLabels: Record<Locale, MembersOnlyLabels> = {
     cta: "Зарегистрироваться или войти",
     metaDescription: "Раздел OriginsMeta для участников: зарегистрируйтесь бесплатно через Discord или по email, чтобы открыть его.",
   },
+  "zh-cn": {
+    kicker: "仅限注册用户",
+    title: "注册后即可访问此版块",
+    text: "账号免费，用 Discord 或电子邮箱即可快速创建，无需密码。",
+    cta: "注册或登录",
+    metaDescription: "OriginsMeta 的注册用户专属版块：用 Discord 或电子邮箱免费注册即可访问。",
+  },
 };

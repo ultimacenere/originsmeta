@@ -56,9 +56,10 @@ const { faqs, suggerimenti } = faqModule;
 const { cards, activeCards, cardsVerified } = cardsModule;
 const { risposteApprovate, contestoPer } = retrieveModule;
 
-// il portoghese dal 20/10/2026 (docs/portoghese.md), il tedesco e il russo dallo stesso giorno (docs/tedesco.md, docs/russo.md)
-type Locale = "en" | "it" | "es" | "pt" | "de" | "ru";
-const locales: Locale[] = ["en", "it", "es", "pt", "de", "ru"];
+// il portoghese dal 20/10/2026 (docs/portoghese.md), il tedesco e il russo dallo stesso giorno (docs/tedesco.md, docs/russo.md),
+// il cinese semplificato dal 04/11/2026 (docs/cinese.md)
+type Locale = "en" | "it" | "es" | "pt" | "de" | "ru" | "zh-cn";
+const locales: Locale[] = ["en", "it", "es", "pt", "de", "ru", "zh-cn"];
 const byId = (l: Locale, id: string) => {
   const f = faqs[l].find((x) => x.id === id);
   assert.ok(f, `[${l}] manca la risposta ${id}`);
@@ -81,7 +82,8 @@ describe("FAQ approvate", () => {
   test("domande vere e risposte in testo semplice", () => {
     for (const l of locales) {
       for (const f of faqs[l]) {
-        assert.match(f.q, /\?$/, `[${l}] ${f.id}: la domanda non finisce con "?"`);
+        // il cinese chiude con il punto interrogativo a larghezza piena (docs/cinese.md)
+        assert.match(f.q, l === "zh-cn" ? /？$/ : /\?$/, `[${l}] ${f.id}: la domanda non finisce con "?"`);
         if (l === "es") assert.match(f.q, /^¿/, `[es] ${f.id}: manca "¿"`);
         assert.ok(f.a.length >= 80, `[${l}] ${f.id}: risposta troppo corta`);
         // le risposte finiscono nell'HTML e nei dati strutturati come testo: niente Markdown né indirizzi
@@ -119,7 +121,8 @@ describe("FAQPage: una domanda marcata una volta sola nel sito", () => {
   test("nessuna domanda di /faq è uguale a una domanda delle FAQ di una guida o di una news, nella stessa lingua", () => {
     // /faq è la pagina ponte: risponde in breve e rimanda alla pagina primaria, che ha le sue FAQ. La guida di Google
     // chiede di marcare una FAQ ripetuta una sola volta: qui le domande si scrivono in un altro modo.
-    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9а-я]+/g, " ").trim();
+    // gli ideogrammi restano (cinese dal 04/11/2026): senza, ogni domanda cinese si ridurrebbe a "origins tcg"
+    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9а-я\u3400-\u9fff]+/g, " ").trim();
     for (const l of locales) {
       const altrove = new Map<string, string>();
       for (const g of guidesModule.getGuides(l)) for (const f of g.faq ?? []) altrove.set(norm(f.q), `guida ${g.slug}`);
@@ -132,7 +135,7 @@ describe("FAQPage: una domanda marcata una volta sola nel sito", () => {
     // la stessa risposta. Una FAQ di una pagina nuova si scrive su un altro aspetto (la guida: a che ora apre). Fra
     // guide dei mazzi le domande generiche ("What do you keep in the mulligan?") si ripetono con risposte diverse:
     // quelle non contano.
-    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9а-я]+/g, " ").trim();
+    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9а-я\u3400-\u9fff]+/g, " ").trim();
     for (const l of locales) {
       const inNews = new Map<string, string>();
       for (const n of newsModule.news) for (const f of n.faq?.[l] ?? []) inNews.set(norm(f.q), n.slug);
@@ -159,6 +162,7 @@ describe("numeri che cambiano con una patch", () => {
       pt: (n) => `${n} é o único feitiço`,
       de: (n) => `${n} ist der einzige Zauber`,
       ru: (n) => `${n} — единственное заклинание`,
+      "zh-cn": (n) => `${n} 是唯一的法术`,
     };
     for (const l of locales) {
       const a = byId(l, "legendaries").a;
@@ -190,7 +194,7 @@ describe("dati delle carte senza fonte dell'import (decisione di Pierluigi del 2
     }
   });
   test("where-cards e card-list dicono che le carte create e le rimosse non sono verificate nel gioco", () => {
-    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game/, it: /non (?:sono state )?verificat[ei] nel gioco/, es: /sin comprobar en el juego|no se han comprobado en el juego/, pt: /não foram verificad[oa]s no jogo/, de: /nicht im Spiel geprüft/, ru: /не проверен\S* в игре/ };
+    const notChecked: Record<Locale, RegExp> = { en: /not been checked in the game/, it: /non (?:sono state )?verificat[ei] nel gioco/, es: /sin comprobar en el juego|no se han comprobado en el juego/, pt: /não foram verificad[oa]s no jogo/, de: /nicht im Spiel geprüft/, ru: /не проверен\S* в игре/, "zh-cn": /未在游戏中核实/ };
     for (const l of locales) {
       assert.match(byId(l, "where-cards").a, notChecked[l], `[${l}] where-cards`);
       assert.match(byId(l, "card-list").a, notChecked[l], `[${l}] card-list`);
@@ -267,6 +271,16 @@ describe("risposte approvate per l'assistente", () => {
       ["Когда начнётся рейтинговый режим?", "ru", "ranked"],
       ["Как импортировать колоду по коду?", "ru", "deck-code"],
       ["Какие призы на Crimson Cup?", "ru", "crimson-cup"],
+      ["Origins TCG 什么时候出？", "zh-cn", "release-date"],
+      ["正式版发售日期是哪天？", "zh-cn", "release-date"],
+      ["游戏有中文吗？", "zh-cn", "languages"],
+      ["支持哪些语言？", "zh-cn", "languages"],
+      ["能在手机上玩吗？", "zh-cn", "mobile"],
+      ["有安卓版吗？", "zh-cn", "mobile"],
+      ["排位赛什么时候开始？", "zh-cn", "ranked"],
+      ["怎么导入卡组代码？", "zh-cn", "deck-code"],
+      ["Crimson Cup 的奖品是什么？", "zh-cn", "crimson-cup"],
+      ["这个游戏氪金吗？", "zh-cn", "free-to-compete"],
     ];
     for (const [q, l, id] of cases) assert.equal(first(q, l), id, `[${l}] "${q}" → ${ids(q, l).join(", ") || "nessuna"}`);
   });

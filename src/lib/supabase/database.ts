@@ -1127,10 +1127,10 @@ export type Database = {
         Args: { p_key: string; p_source: string; p_appid: number; p_items: unknown[]; p_next: number; p_total: number; p_done: boolean; p_usd_per_eur: number | null };
         Returns: number;
       };
-      /** il tabellone di una fonte con i prezzi di 24 ore, 7 e 30 giorni fa (anon) */
+      /** il tabellone di una fonte con i prezzi di 24 ore, 7 e 30 giorni fa e l'ultimo prezzo visto (anon) */
       market_board: {
         Args: { p_source: string };
-        Returns: (Omit<MarketItemRow, "source"> & { price_24h: number | null; price_7d: number | null; price_30d: number | null })[];
+        Returns: (Omit<MarketItemRow, "source"> & { price_24h: number | null; price_7d: number | null; price_30d: number | null; last_price: number | null; last_price_at: string | null })[];
       };
       /** partite dall'app (anon, con il token, dalla rotta /api/tracker/sync); restituisce quante aggiunte */
       tracker_submit: { Args: { p_token: string; p_matches: unknown[] }; Returns: number };

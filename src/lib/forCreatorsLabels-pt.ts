@@ -253,7 +253,7 @@ export const pt: ForCreatorsLabels = {
     title: "Media kit",
     intro: "Logo, símbolo, selo para a sua live e um painel para o seu canal da Twitch. Tudo feito pelo OriginsMeta, sem material da Koin Games: use à vontade quando mostrar ou citar o OriginsMeta.",
     all: "Baixar o kit completo (.zip, {size})",
-    allNote: "Todos os arquivos abaixo, o selo e o painel nos 7 idiomas e um README com cores e regras.",
+    allNote: "Todos os arquivos abaixo, o selo e o painel nos 8 idiomas e um README com cores e regras.",
     download: "Baixar",
     size: "{w} × {h} px",
     transparent: "fundo transparente",
@@ -320,7 +320,7 @@ export const pt: ForCreatorsLabels = {
       },
       {
         q: "Em quais idiomas?",
-        a: "O overlay do deck e o comando !deck falam inglês, italiano, espanhol, francês, português, alemão e russo: mude lang= no fim do endereço (en, it, es, fr, pt, de, ru).",
+        a: "O overlay do deck e o comando !deck falam inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado: mude lang= no fim do endereço (en, it, es, fr, pt, de, ru, zh-cn).",
       },
       { q: "O OriginsMeta é oficial?", a: "Não: é um site de fãs, não afiliado à Koin Games. O media kit contém só material do OriginsMeta." },
       { q: "Algo não funciona?", a: "Escreva para nós no Discord ou pelo envelope no alto do site: diga qual ferramenta e qual passo." },

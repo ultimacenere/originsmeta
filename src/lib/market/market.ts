@@ -263,8 +263,8 @@ export function changePct(now: number | null, before: number | null): number | n
 /** La valuta di partenza per lingua: dollari sulle pagine inglesi, euro sulle altre. */
 export function defaultCurrency(locale: string): MarketCurrency {
   // il portoghese è quello del Brasile, dove il riferimento è il dollaro (Steam lì vende in real, che il mercato non ha)
-  // e il russo: il mercato non ha il rublo, il dollaro è il riferimento più vicino (20/10/2026)
-  return locale === "en" || locale === "pt" || locale === "ru" ? "USD" : "EUR";
+  // e il russo: il mercato non ha il rublo, il dollaro è il riferimento più vicino (20/10/2026); lo stesso per il cinese (04/11/2026)
+  return locale === "en" || locale === "pt" || locale === "ru" || locale === "zh-cn" ? "USD" : "EUR";
 }
 
 /** Una riga del tabellone (funzione market_board). */
@@ -285,6 +285,13 @@ export type BoardItem = {
   price_24h: number | null;
   price_7d: number | null;
   price_30d: number | null;
+  /**
+   * L'ultimo prezzo più basso visto in vendita e l'ora (o il giorno) in cui l'abbiamo visto (03/11/2026, Pierluigi: la Top
+   * 32 di Dracula diceva solo "Nessuna offerta" mentre la scheda aveva lo storico): serve quando oggi non c'è nessuna
+   * offerta, per dire a che prezzo era l'oggetto l'ultima volta. Non è il prezzo di una vendita.
+   */
+  last_price: number | null;
+  last_price_at: string | null;
 };
 
 const KINDS: readonly MarketKind[] = ["card", "pack", "other"];
@@ -320,6 +327,9 @@ export function boardRows(rows: unknown): BoardItem[] {
       price_24h: num(x.price_24h),
       price_7d: num(x.price_7d),
       price_30d: num(x.price_30d),
+      // null finché il database non ha la market_board del 03/11/2026 (le due colonne in più)
+      last_price: num(x.last_price),
+      last_price_at: str(x.last_price_at),
     });
   }
   return out;
@@ -378,6 +388,12 @@ export function pastPrices(hourly: readonly PricePoint[], daily: readonly PriceP
     price_7d: lastBefore(daily, today - 7 * 24 * 3600_000),
     price_30d: lastBefore(daily, today - 30 * 24 * 3600_000),
   };
+}
+
+/** L'ultimo prezzo visto dallo storico di un oggetto, con le regole di market_board: l'ora più recente, se no il giorno. */
+export function lastPrice(hourly: readonly PricePoint[], daily: readonly PricePoint[]): Pick<BoardItem, "last_price" | "last_price_at"> {
+  const p = hourly.length ? hourly[hourly.length - 1] : daily.length ? daily[daily.length - 1] : null;
+  return { last_price: p?.close ?? null, last_price_at: p?.t ?? null };
 }
 
 /** Un cambio per giorno (YYYY-MM-DD → dollari per euro), con il giorno noto più vicino prima per i giorni senza. */

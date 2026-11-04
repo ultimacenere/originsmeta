@@ -23,12 +23,14 @@ import { pt } from "./forCreatorsLabels-pt.ts";
 import { de } from "./forCreatorsLabels-de.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { ru } from "./forCreatorsLabels-ru.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { zhCn } from "./forCreatorsLabels-zh-cn.ts";
 
 type Labels = typeof en;
 type Step = { text: string; code?: string; codes?: { label: string; code: string }[]; link?: { label: string; path: string } };
 type Tool = { id: string; steps: Step[]; stuck: string[]; more?: { path: string } };
 
-const all: Record<string, Labels> = { en, it, es, fr, pt, de, ru };
+const all: Record<string, Labels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 const root = new URL("../../", import.meta.url);
 
 /** Le foglie di un oggetto di testi: percorso → stringa (gli array con l'indice). */

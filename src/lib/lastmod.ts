@@ -20,7 +20,7 @@ import type { Locale } from "./i18n";
 export type Day = string;
 
 /** Primo giorno online di ogni lingua: nessuna pagina può dichiararsi cambiata prima di esistere. */
-export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20" };
+export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-09-15", es: "2026-09-25", fr: "2026-10-07", pt: "2026-10-20", de: "2026-10-20", ru: "2026-10-20", "zh-cn": "2026-11-04" };
 
 /**
  * Soglia comune a tutte le pagine: il 25/09/2026 lo spagnolo ha aggiunto a ogni URL l'hreflang `es` (e la voce del
@@ -33,7 +33,8 @@ export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-0
  * modelli (`PAGE_UPDATED`). Il test la vuole uguale alla nascita della lingua più recente: se un giorno si sposta per
  * un cambio di hreflang senza lingue nuove, si aggiorna anche il test, spiegando perché.
  */
-export const SITE_WIDE_CHANGE: Day = "2026-10-20";
+// 04/11/2026: il cinese aggiunge a ogni pagina l'hreflang zh-Hans (data da spostare al giorno in cui va online, con LOCALE_SINCE)
+export const SITE_WIDE_CHANGE: Day = "2026-11-04";
 
 /** Ogni news ha una pagina propria dal 21/09/2026: prima esisteva solo la scheda nell'elenco. */
 export const NEWS_PAGES_SINCE: Day = "2026-09-21";

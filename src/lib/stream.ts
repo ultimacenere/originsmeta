@@ -63,8 +63,12 @@ export function cleanDeckSlug(raw: string | null | undefined): string {
 
 /** Una lingua del sito dal parametro `lang` (en, it, es; anche "it-IT"); altrimenti `fallback`. */
 export function pickLang<L extends string>(raw: string | null | undefined, supported: readonly L[], fallback: L): L {
-  const base = (raw ?? "").trim().toLowerCase().split(/[-_]/)[0];
-  return (supported as readonly string[]).includes(base) ? (base as L) : fallback;
+  const full = (raw ?? "").trim().toLowerCase().replace("_", "-");
+  // prima il codice intero ("zh-cn", 04/11/2026), poi la sola lingua base ("it-IT" → "it", "zh-tw" → "zh")
+  if ((supported as readonly string[]).includes(full)) return full as L;
+  const base = full.split("-")[0];
+  if ((supported as readonly string[]).includes(base)) return base as L;
+  return base === "zh" && (supported as readonly string[]).includes("zh-cn") ? ("zh-cn" as L) : fallback;
 }
 
 /** Il primo valore di un parametro di `searchParams` di una pagina (stringa, elenco o assente). */

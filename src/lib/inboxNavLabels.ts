@@ -109,6 +109,19 @@ export const inboxNavLabels: Record<Locale, InboxNavLabels> = {
     feedbackNotSaved: "На этот раз сохранить его во входящих не удалось: если хотите получить ответ, напишите команде Staff оттуда.",
     openInbox: "Открыть входящие",
   },
+  "zh-cn": {
+    messages: "消息",
+    envelopeOne: "消息，1 条未读",
+    envelopeMany: "消息，{n} 条未读",
+    staffInbox: "Staff 收件箱",
+    unreadOne: "1 个未读对话",
+    unreadMany: "{n} 个未读对话",
+    writeToUser: "给此用户发消息",
+    feedbackNote: "你已登录：你的反馈会关联到你的账号，我们会在 OriginsMeta 的收件箱里回复你。",
+    feedbackSaved: "我们也已把它保存到你的收件箱：你会在那里看到我们的回复。",
+    feedbackNotSaved: "这次没能把它保存到你的收件箱：如果你希望得到回复，请从收件箱给 Staff 发消息。",
+    openInbox: "打开收件箱",
+  },
 };
 
 /**

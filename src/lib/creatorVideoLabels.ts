@@ -81,4 +81,13 @@ export const creatorVideoLabels: Record<Locale, CreatorVideoLabels> = {
     next: "Следующие видео",
     list: "Видео креаторов по Origins TCG",
   },
+  "zh-cn": {
+    title: "创作者视频",
+    sub: "OriginsMeta 创作者的最新 Origins TCG 视频，直接来自他们的 YouTube 频道。",
+    all: "所有创作者",
+    by: "作者：{name}",
+    prev: "上一组视频",
+    next: "下一组视频",
+    list: "创作者的 Origins TCG 视频",
+  },
 };

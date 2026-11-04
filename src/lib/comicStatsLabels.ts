@@ -3,9 +3,9 @@ import type { Locale } from "./i18n";
 /**
  * Etichette delle statistiche dei fumetti per chi li disegna (02/11/2026; Pierluigi: "aggiungi le statistiche di visita
  * dei fumetti nel pannello di Vega, come per i mazzi"): il pannello "Statistiche dei fumetti" in /account
- * (ComicStatsPanel) e la riga dell'informativa privacy. Un modulo solo per questo pacchetto, nelle sette lingue insieme
+ * (ComicStatsPanel) e la riga dell'informativa privacy. Un modulo solo per questo pacchetto, nelle otto lingue insieme
  * (l'inglese è il tipo di riferimento), come deckStatsLabels.ts; i segnaposto tra graffe li riempie `fillStats`.
- * Spagnolo neutro col tú, francese col vous, portoghese del Brasile col você, tedesco col du, russo col вы.
+ * Spagnolo neutro col tú, francese col vous, portoghese del Brasile col você, tedesco col du, russo col вы, cinese col 你.
  */
 const en = {
   title: "Comic stats",
@@ -224,6 +224,35 @@ export const comicStatsLabels: Record<Locale, ComicStatsLabels> = {
     notVisible: "комикс не виден",
     by: "автор:",
   },
+  "zh-cn": {
+    title: "漫画数据",
+    intro:
+      "你发布的漫画表现如何：访问次数和完整阅读次数（最后一页出现在屏幕上），按页面语言统计，分为最近 7 天、30 天和总计。你登录后访问自己漫画的次数不计入。",
+    estimate:
+      "以下为估算数据：每个浏览器标签页对每部漫画、每种语言和每种类型只计一次，机器人和 Staff 的流量不计入。在页面停留几秒后计为一次访问；最后一页进入视野时计为一次完整阅读。日期按 UTC 计算。",
+    since: "首个有数据的日期：{date}",
+    noData: "暂无数据：你的漫画有了首批访问后，这里就会显示数字。",
+    unavailable: "漫画数据暂不可用，请稍后再试。",
+    d7: "7 天",
+    d30: "30 天",
+    total: "总计",
+    metric: "指标",
+    views: "访问",
+    reads: "完整阅读",
+    readRate: "读完率",
+    allComics: "你的全部漫画",
+    byLang: "按页面语言",
+    chartTitle: "每日访问和完整阅读，最近 30 天",
+    chartAria: "图表：最近 30 天每日访问和完整阅读次数。访问：{views}；完整阅读：{reads}。",
+    draft: "草稿",
+    hidden: "已隐藏",
+    staffTitle: "Staff：访问最多的漫画（30 天）",
+    staffIntro: "只有管理员和 Staff 能看到这个排行：所有已发布的漫画，使用同样的估算方式。",
+    staffEmpty: "最近 30 天没有记录到访问。",
+    partial: "排行不完整：数据行太多，无法全部读取。",
+    notVisible: "漫画不可见",
+    by: "作者：",
+  },
 };
 
 /**
@@ -238,4 +267,5 @@ export const comicStatsPrivacy: Record<Locale, string> = {
   pt: "Estatísticas dos quadrinhos: na página do quadrinho de um creator, o site conta, para cada quadrinho, cada dia e cada idioma da página, as visitas e as leituras completas (a última página chegou à tela), e mostra esses totais só para quem desenhou o quadrinho e para o staff do OriginsMeta. Só os totais do dia são salvos, no Supabase (Irlanda, UE): nenhum endereço IP, nenhuma conta, nenhum identificador. A solicitação passa pelos servidores do Supabase, que, como a Vercel, guardam por pouco tempo os registros técnicos habituais (endereço IP incluído), nunca ligados aos totais. Para que a mesma visita não conte duas vezes, o navegador anota os quadrinhos já contados na memória de sessão da aba, que é apagada quando você fecha a aba e nunca é enviada. Não são contados os bots, os navegadores do staff nem quem vê os próprios quadrinhos com o login feito.",
   de: "Comic-Statistiken: Auf der Seite des Comics eines Creators zählt die Website für jeden Comic, jeden Tag und jede Sprache der Seite die Besuche und die vollständigen Lesungen (die letzte Seite ist auf dem Bildschirm angekommen) und zeigt diese Summen nur der Person, die den Comic gezeichnet hat, und dem Staff von OriginsMeta. Gespeichert werden nur die Tagessummen, bei Supabase (Irland, EU): keine IP-Adresse, kein Konto, keine Kennung. Die Anfrage läuft über die Server von Supabase, die wie Vercel die üblichen technischen Logs (einschließlich IP-Adresse) für kurze Zeit aufbewahren, nie mit den Summen verknüpft. Damit derselbe Besuch nicht doppelt zählt, merkt sich der Browser die bereits gezählten Comics im Sitzungsspeicher des Tabs, der beim Schließen des Tabs gelöscht und nie gesendet wird. Nicht gezählt werden Bots, Browser des Staffs und Personen, die mit Anmeldung ihre eigenen Comics ansehen.",
   ru: "Статистика комиксов: на странице комикса автора сайт считает для каждого комикса, каждого дня и каждого языка страницы посещения и полные прочтения (последняя страница появилась на экране) и показывает эти итоги только тому, кто нарисовал комикс, и команде Staff OriginsMeta. Хранятся только дневные итоги, в Supabase (Ирландия, ЕС): ни IP-адреса, ни аккаунта, ни идентификатора. Запрос проходит через серверы Supabase, которые, как и Vercel, недолго хранят обычные технические журналы (включая IP-адрес), никогда не связанные с итогами. Чтобы одно и то же посещение не засчитывалось дважды, браузер отмечает уже учтённые комиксы в сессионном хранилище вкладки, которое очищается при закрытии вкладки и никогда не отправляется. Не учитываются боты, браузеры команды Staff и те, кто смотрит свои собственные комиксы после входа.",
+  "zh-cn": "漫画数据：在创作者的漫画页面上，本网站会针对每部漫画、每一天和每种页面语言统计访问次数和完整阅读次数（最后一页出现在屏幕上），并且只向绘制该漫画的作者和 OriginsMeta 的 Staff 显示这些总数。我们只保存每日总数，存放在 Supabase（爱尔兰，欧盟）：不保存 IP 地址、账号或任何标识符。请求会经过 Supabase 的服务器，与 Vercel 一样，这些服务器会短期保留常规技术日志（包括 IP 地址），但这些日志从不与统计总数关联。为了避免同一次访问被重复计算，浏览器会在标签页的会话存储中记录已经统计过的漫画；关闭标签页时该记录即被清除，且从不发送。机器人、Staff 的浏览器以及登录后查看自己漫画的用户不计入统计。",
 };

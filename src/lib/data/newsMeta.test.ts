@@ -69,7 +69,8 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf
 
 // Lingue del sito e guide esistenti si leggono dai sorgenti (i18n.ts importa file senza estensione, che Node non
 // carica senza l'hook qui sopra): così una lingua o una guida nuova entra da sola nei controlli.
-const locales = [...(read("../i18n.ts").match(/export const locales = \[([^\]]*)\]/)?.[1] ?? "").matchAll(/"([a-z]{2})"/g)].map((m) => m[1]) as Locale[];
+// anche le lingue con la regione ("zh-cn", dal 04/11/2026)
+const locales = [...(read("../i18n.ts").match(/export const locales = \[([^\]]*)\]/)?.[1] ?? "").matchAll(/"([a-z]{2}(?:-[a-z]{2})?)"/g)].map((m) => m[1]) as Locale[];
 const guideList = read("../content/guides.ts").match(/export const guideSlugs = \[([^\]]*)\]/)?.[1] ?? "";
 const guides = new Set([...guideList.matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]));
 const newsSlugs = new Set(news.map((item) => item.slug));
@@ -100,7 +101,7 @@ const checks: NewsChecks = { pageTitle, guides, news, sections };
 
 describe("lettura dei sorgenti", () => {
   test("lingue, guide e sezioni trovate", () => {
-    assert.ok(locales.includes("en") && locales.includes("it") && locales.includes("es"), `lingue lette: ${locales.join(", ")}`);
+    assert.ok(locales.includes("en") && locales.includes("it") && locales.includes("es") && locales.includes("zh-cn"), `lingue lette: ${locales.join(", ")}`);
     assert.ok(guides.has("steam-next-fest-2026") && guides.has("play-the-demo"), "elenco guideSlugs di guides.ts");
     for (const s of ["news", "guides", "cards", "metashifting", "tier-list"]) assert.ok(sections.has(s), `sezione ${s}`);
   });
@@ -134,6 +135,7 @@ describe("funzioni di supporto", () => {
     assert.deepEqual(updateMarkers("it", "2026-10-08"), ["Aggiornamento dell'8 ottobre"]);
     assert.deepEqual(updateMarkers("es", "2026-10-01"), ["Actualización del 1 de octubre"]);
     assert.deepEqual(updateMarkers("ru", "2026-09-25"), ["Обновление от 25 сентября"]);
+    assert.deepEqual(updateMarkers("zh-cn", "2026-11-04"), ["11月4日更新"]);
   });
   test("destinazione dei link", () => {
     assert.equal(linkProblem("/en/news/crimson-cup-format-check-in#check-in", "en", checks), undefined);
@@ -144,11 +146,19 @@ describe("funzioni di supporto", () => {
     assert.match(linkProblem("/es/guides/steam-next-fest-2025", "es", checks) ?? "", /guida che non esiste/);
     assert.match(linkProblem("/en/tierlist", "en", checks) ?? "", /sezione che non esiste/);
     assert.match(linkProblem("/en/news/x", "it", checks) ?? "", /senza il prefisso \/it/);
+    // una news non tradotta in cinese (`untranslated`) si linka in inglese; una tradotta no (04/11/2026)
+    const old = news.find((n) => n.untranslated?.includes("zh-cn"));
+    const done = news.find((n) => !n.untranslated?.includes("zh-cn"));
+    assert.ok(old && done, "news cinesi tradotte e non tradotte");
+    assert.equal(linkProblem(`/en/news/${old.slug}`, "zh-cn", checks), undefined);
+    assert.equal(linkProblem(`/zh-cn/news/${old.slug}`, "zh-cn", checks), undefined);
+    assert.match(linkProblem(`/en/news/${done.slug}`, "zh-cn", checks) ?? "", /senza il prefisso \/zh-cn/);
+    assert.match(linkProblem(`/en/news/${old.slug}`, "it", checks) ?? "", /senza il prefisso \/it/);
   });
 });
 
 describe("newsProblems", () => {
-  const l10n = (s: string) => ({ en: s, it: s, es: s, fr: s, pt: s, de: s, ru: s });
+  const l10n = (s: string) => ({ en: s, it: s, es: s, fr: s, pt: s, de: s, ru: s, "zh-cn": s });
   const ok = {
     slug: "prova",
     date: "2026-09-25",
@@ -183,8 +193,13 @@ describe("newsProblems", () => {
     assert.ok(problems.some((p) => p.includes('"guida-che-non-esiste" non esiste')));
   });
   test("una news aggiornata senza il paragrafo dell'aggiornamento", () => {
-    const upd = { ...ok, date: "2026-09-20", updated: "2026-09-25", body: { en: "## A\n\nUpdate, 25 September: sì.", it: "## A\n\nNessun aggiornamento.", es: "## A\n\nActualización del 25 de septiembre: sí.", fr: "## A\n\nMise à jour du 25 septembre : oui.", pt: "## A\n\nAtualização de 25 de setembro: sim.", de: "## A\n\nUpdate vom 25. September: ja.", ru: "## A\n\nОбновление от 25 сентября: да." } };
+    const upd = { ...ok, date: "2026-09-20", updated: "2026-09-25", body: { en: "## A\n\nUpdate, 25 September: sì.", it: "## A\n\nNessun aggiornamento.", es: "## A\n\nActualización del 25 de septiembre: sí.", fr: "## A\n\nMise à jour du 25 septembre : oui.", pt: "## A\n\nAtualização de 25 de setembro: sim.", de: "## A\n\nUpdate vom 25. September: ja.", ru: "## A\n\nОбновление от 25 сентября: да.", "zh-cn": "## A\n\n9月25日更新：是的。" } };
     assert.deepEqual(newsProblems(upd, locales, checks), ["prova [it]: aggiornata il 2026-09-25 ma il testo non ha il paragrafo \"Aggiornamento del 25 settembre…\""]);
+  });
+  test("una news non tradotta in una lingua (`untranslated`) non si controlla in quella lingua", () => {
+    const partial = { ...ok, metaTitle: { ...ok.metaTitle, "zh-cn": "x".repeat(80) }, untranslated: ["zh-cn" as Locale] };
+    assert.deepEqual(newsProblems(partial, ["en", "zh-cn"], checks), []);
+    assert.equal(newsProblems({ ...partial, untranslated: undefined }, ["en", "zh-cn"], checks).length, 1);
   });
   test("un title senza Origins TCG in SERP", () => {
     const brand = { ...ok, metaTitle: l10n("Novità di OriginsMeta") };
@@ -255,11 +270,13 @@ describe("date delle versioni tradotte (news e guide)", () => {
     assert.equal(modifiedIn("de", "2026-10-25"), "2026-10-25");
     assert.equal(modifiedIn("ru", "2026-10-07"), "2026-10-20");
     assert.equal(modifiedIn("ru", "2026-10-25"), "2026-10-25");
+    assert.equal(modifiedIn("zh-cn", "2026-10-25"), "2026-11-04");
+    assert.equal(modifiedIn("zh-cn", "2026-11-05"), "2026-11-05");
     assert.equal(modifiedIn("en", "2026-03-13"), "2026-03-13");
     assert.equal(modifiedIn("it", "2026-09-09"), "2026-09-09");
   });
   test("la soglia di ogni lingua tradotta è il giorno in cui è nata, lo stesso della sitemap", () => {
-    assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es", "fr", "pt", "de", "ru"]);
+    assert.deepEqual(Object.keys(TRANSLATED_SINCE), ["es", "fr", "pt", "de", "ru", "zh-cn"]);
     for (const [l, day] of Object.entries(TRANSLATED_SINCE)) assert.equal(day, LOCALE_SINCE[l as Locale], l);
   });
   test("news: pubblicata alla data dell'articolo in ogni lingua; la modifica spagnola non va prima del 25/09/2026 e, se è solo la traduzione, la firma lo dice", () => {

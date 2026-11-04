@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { cache } from "react";
 import { supabasePublic } from "@/lib/supabase/public";
-import { boardRows, pastPrices, pricePoints, type BoardItem, type MarketSourceId, type PricePoint } from "./market";
+import { boardRows, lastPrice, pastPrices, pricePoints, type BoardItem, type MarketSourceId, type PricePoint } from "./market";
 
 /**
  * Letture del tracker dei prezzi (17/10/2026) per le pagine /market (ISR): client anonimo con la data cache di 60 s
@@ -102,7 +102,7 @@ export const loadMarketItem = cache(async (source: MarketSourceId, slug: string)
     const h = pricePoints(s.history?.[item.hash_name]?.hourly, "hour");
     const d = pricePoints(s.history?.[item.hash_name]?.daily, "day");
     const at = Date.now();
-    return { item: { ...item, ...pastPrices(h, d, at) }, hourly: h, daily: d, fx: fxRows(fx.fx), status: s.status ?? null, at };
+    return { item: { ...item, ...pastPrices(h, d, at), ...lastPrice(h, d) }, hourly: h, daily: d, fx: fxRows(fx.fx), status: s.status ?? null, at };
   }
   const db = supabasePublic();
   if (!db) return null;
@@ -139,9 +139,9 @@ export const loadMarketItem = cache(async (source: MarketSourceId, slug: string)
     const h = pricePoints(hourly, "hour");
     const d = pricePoints(daily, "day");
     const [status, fxs] = await Promise.all([readStatus(source), readFx()]);
-    // le variazioni con le stesse regole di market_board, dallo storico dell'oggetto
+    // le variazioni e l'ultimo prezzo visto con le stesse regole di market_board, dallo storico dell'oggetto
     const at = Date.now();
-    return { item: { ...base, ...pastPrices(h, d, at) }, hourly: h, daily: d, fx: fxs, status, at };
+    return { item: { ...base, ...pastPrices(h, d, at), ...lastPrice(h, d) }, hourly: h, daily: d, fx: fxs, status, at };
   } catch (error) {
     if (error instanceof MarketMissing) return null;
     throw error;

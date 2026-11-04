@@ -22,7 +22,7 @@ export const membersOnlyPath: Record<MembersOnlySection, string> = { market: "/m
 
 /** La pagina chiesta è riservata agli iscritti? Lingua e sezione, o `null`. */
 export function membersOnlySection(pathname: string): { locale: string; section: MembersOnlySection } | null {
-  const m = /^\/(en|it|es|fr|pt|de|ru)\/(market|analytics)(\/.*)?$/.exec(pathname);
+  const m = /^\/(en|it|es|fr|pt|de|ru|zh-cn)\/(market|analytics)(\/.*)?$/.exec(pathname);
   if (!m) return null;
   const [, locale, section, rest] = m;
   if (section === "market") return MARKET_MEMBERS_ONLY ? { locale, section } : null;

@@ -1,7 +1,7 @@
-import { defaultLocale, href, locales, siteUrl, type Locale } from "./i18n";
+import { defaultLocale, href, hreflang, locales, siteUrl, type Locale } from "./i18n";
 import { cards, cardsVerified, latestPatch, patches, type Card } from "./data/cards";
 import { decks } from "./data/decks";
-import { newsPath, sortedNews, type NewsItem } from "./data/news";
+import { hasNews, newsPath, sortedNews, type NewsItem } from "./data/news";
 import { tierList } from "./data/tierlist";
 import { locationsPatch, locationsVerified } from "./data/locations";
 import { getGuides, type Guide } from "./content/guides";
@@ -315,7 +315,15 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     ),
     // Ogni news ha la sua pagina dal 21/09/2026: una news più vecchia non può dichiarare una pagina che non c'era.
     ...sortedNews.map(
-      (n): SitemapPage => ({ path: newsPath(n), section: "news", route: "/news/[slug]", dates: [newsDay(n), NEWS_PAGES_SINCE], images: () => [n.image] }),
+      (n): SitemapPage => ({
+        path: newsPath(n),
+        section: "news",
+        route: "/news/[slug]",
+        dates: [newsDay(n), NEWS_PAGES_SINCE],
+        images: () => [n.image],
+        // solo le lingue in cui è tradotta (il cinese parte dalle news recenti, 04/11/2026)
+        ...(n.untranslated ? { locales: locales.filter((l) => hasNews(n, l)) } : {}),
+      }),
     ),
     // Solo le lingue in cui la guida si legge davvero (originale + traduzioni aggiornate, 25/09/2026): le altre
     // versioni della scheda sono noindex finché la traduzione non c'è.
@@ -349,7 +357,7 @@ function langsOf(page: SitemapPage): Locale[] {
 export function pageEntry(page: SitemapPage, locale: Locale, today: Day): UrlEntry {
   const langs = langsOf(page);
   const alternates: Record<string, string> = {};
-  for (const l of langs) alternates[l] = `${siteUrl}${href(l, page.path)}`;
+  for (const l of langs) alternates[hreflang[l]] = `${siteUrl}${href(l, page.path)}`;
   // x-default: la stessa riga che l'HTML dichiara in alternatesFor(), così i due segnali coincidono.
   alternates["x-default"] = `${siteUrl}${href(langs.includes(defaultLocale) ? defaultLocale : langs[0], page.path)}`;
   const lastmod = page.lastmod
