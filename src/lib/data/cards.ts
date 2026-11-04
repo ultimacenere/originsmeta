@@ -6,6 +6,7 @@ import { frLore } from "./card-lore-fr";
 import { ptLore } from "./card-lore-pt";
 import { deLore } from "./card-lore-de";
 import { ruLore } from "./card-lore-ru";
+import { zhCnLore } from "./card-lore-zh-cn";
 import { cardHistory } from "./card-history";
 import { cardCredits, type CardCredit } from "./card-credits";
 
@@ -66,23 +67,23 @@ export type SagaId =
   | "other";
 
 export const sagas: Record<SagaId, L10n> = {
-  arthurian: { en: "Arthurian legend", it: "Ciclo arturiano", es: "Leyenda artúrica", fr: "Légende arthurienne", pt: "Lenda arturiana", de: "Artussage", ru: "Артуровские легенды" },
-  wonderland: { en: "Wonderland", it: "Paese delle Meraviglie", es: "País de las Maravillas", fr: "Pays des Merveilles", pt: "País das Maravilhas", de: "Wunderland", ru: "Страна чудес" },
-  "hundred-acre-wood": { en: "Hundred Acre Wood", it: "Bosco dei Cento Acri", es: "Bosque de los Cien Acres", fr: "Forêt des Rêves bleus", pt: "Bosque dos Cem Acres", de: "Hundertmorgenwald", ru: "Стоакровый лес" },
-  oz: { en: "Land of Oz", it: "Terra di Oz", es: "Tierra de Oz", fr: "Pays d'Oz", pt: "Terra de Oz", de: "Land Oz", ru: "Страна Оз" },
-  sherwood: { en: "Sherwood", it: "Sherwood", es: "Sherwood", fr: "Sherwood", pt: "Sherwood", de: "Sherwood", ru: "Шервуд" },
-  gothic: { en: "Gothic horror", it: "Horror gotico", es: "Terror gótico", fr: "Horreur gothique", pt: "Horror gótico", de: "Gothic Horror", ru: "Готический хоррор" },
-  "jungle-book": { en: "The Jungle Book", it: "Il libro della giungla", es: "El libro de la selva", fr: "Le Livre de la jungle", pt: "O Livro da Selva", de: "Das Dschungelbuch", ru: "Книга джунглей" },
-  "fairy-tale": { en: "Fairy tales", it: "Fiabe", es: "Cuentos de hadas", fr: "Contes de fées", pt: "Contos de fadas", de: "Märchen", ru: "Сказки" },
-  "nursery-rhyme": { en: "Nursery rhymes", it: "Filastrocche", es: "Canciones infantiles", fr: "Comptines", pt: "Cantigas infantis", de: "Kinderreime", ru: "Детские стишки" },
-  "myth-folklore": { en: "Myth & folklore", it: "Miti e folclore", es: "Mitos y folclore", fr: "Mythes et folklore", pt: "Mitos e folclore", de: "Mythen und Folklore", ru: "Мифы и фольклор" },
-  "african-folklore": { en: "African folklore", it: "Folclore africano", es: "Folclore africano", fr: "Folklore africain", pt: "Folclore africano", de: "Afrikanische Folklore", ru: "Африканский фольклор" },
-  "american-tales": { en: "American tales", it: "Racconti americani", es: "Cuentos americanos", fr: "Récits américains", pt: "Contos americanos", de: "Amerikanische Erzählungen", ru: "Американские сказания" },
-  "classic-literature": { en: "Classic literature", it: "Letteratura classica", es: "Literatura clásica", fr: "Littérature classique", pt: "Literatura clássica", de: "Klassische Literatur", ru: "Классическая литература" },
-  "ballad-of-mulan": { en: "Ballad of Mulan", it: "Ballata di Mulan", es: "Balada de Mulán", fr: "Ballade de Mulan", pt: "Balada de Mulan", de: "Ballade von Mulan", ru: "Баллада о Мулан" },
-  "arabian-nights": { en: "Arabian Nights", it: "Le mille e una notte", es: "Las mil y una noches", fr: "Les Mille et Une Nuits", pt: "As Mil e Uma Noites", de: "Tausendundeine Nacht", ru: "Тысяча и одна ночь" },
-  "baker-street": { en: "Baker Street", it: "Baker Street", es: "Baker Street", fr: "Baker Street", pt: "Baker Street", de: "Baker Street", ru: "Бейкер-стрит" },
-  other: { en: "Other", it: "Altro", es: "Otras", fr: "Autre", pt: "Outras", de: "Sonstige", ru: "Другое" },
+  arthurian: { en: "Arthurian legend", it: "Ciclo arturiano", es: "Leyenda artúrica", fr: "Légende arthurienne", pt: "Lenda arturiana", de: "Artussage", ru: "Артуровские легенды", "zh-cn": "亚瑟王传说" },
+  wonderland: { en: "Wonderland", it: "Paese delle Meraviglie", es: "País de las Maravillas", fr: "Pays des Merveilles", pt: "País das Maravilhas", de: "Wunderland", ru: "Страна чудес", "zh-cn": "仙境" },
+  "hundred-acre-wood": { en: "Hundred Acre Wood", it: "Bosco dei Cento Acri", es: "Bosque de los Cien Acres", fr: "Forêt des Rêves bleus", pt: "Bosque dos Cem Acres", de: "Hundertmorgenwald", ru: "Стоакровый лес", "zh-cn": "百亩森林" },
+  oz: { en: "Land of Oz", it: "Terra di Oz", es: "Tierra de Oz", fr: "Pays d'Oz", pt: "Terra de Oz", de: "Land Oz", ru: "Страна Оз", "zh-cn": "奥兹国" },
+  sherwood: { en: "Sherwood", it: "Sherwood", es: "Sherwood", fr: "Sherwood", pt: "Sherwood", de: "Sherwood", ru: "Шервуд", "zh-cn": "舍伍德" },
+  gothic: { en: "Gothic horror", it: "Horror gotico", es: "Terror gótico", fr: "Horreur gothique", pt: "Horror gótico", de: "Gothic Horror", ru: "Готический хоррор", "zh-cn": "哥特恐怖" },
+  "jungle-book": { en: "The Jungle Book", it: "Il libro della giungla", es: "El libro de la selva", fr: "Le Livre de la jungle", pt: "O Livro da Selva", de: "Das Dschungelbuch", ru: "Книга джунглей", "zh-cn": "丛林之书" },
+  "fairy-tale": { en: "Fairy tales", it: "Fiabe", es: "Cuentos de hadas", fr: "Contes de fées", pt: "Contos de fadas", de: "Märchen", ru: "Сказки", "zh-cn": "童话" },
+  "nursery-rhyme": { en: "Nursery rhymes", it: "Filastrocche", es: "Canciones infantiles", fr: "Comptines", pt: "Cantigas infantis", de: "Kinderreime", ru: "Детские стишки", "zh-cn": "童谣" },
+  "myth-folklore": { en: "Myth & folklore", it: "Miti e folclore", es: "Mitos y folclore", fr: "Mythes et folklore", pt: "Mitos e folclore", de: "Mythen und Folklore", ru: "Мифы и фольклор", "zh-cn": "神话与民间传说" },
+  "african-folklore": { en: "African folklore", it: "Folclore africano", es: "Folclore africano", fr: "Folklore africain", pt: "Folclore africano", de: "Afrikanische Folklore", ru: "Африканский фольклор", "zh-cn": "非洲民间传说" },
+  "american-tales": { en: "American tales", it: "Racconti americani", es: "Cuentos americanos", fr: "Récits américains", pt: "Contos americanos", de: "Amerikanische Erzählungen", ru: "Американские сказания", "zh-cn": "美国故事" },
+  "classic-literature": { en: "Classic literature", it: "Letteratura classica", es: "Literatura clásica", fr: "Littérature classique", pt: "Literatura clássica", de: "Klassische Literatur", ru: "Классическая литература", "zh-cn": "经典文学" },
+  "ballad-of-mulan": { en: "Ballad of Mulan", it: "Ballata di Mulan", es: "Balada de Mulán", fr: "Ballade de Mulan", pt: "Balada de Mulan", de: "Ballade von Mulan", ru: "Баллада о Мулан", "zh-cn": "木兰辞" },
+  "arabian-nights": { en: "Arabian Nights", it: "Le mille e una notte", es: "Las mil y una noches", fr: "Les Mille et Une Nuits", pt: "As Mil e Uma Noites", de: "Tausendundeine Nacht", ru: "Тысяча и одна ночь", "zh-cn": "一千零一夜" },
+  "baker-street": { en: "Baker Street", it: "Baker Street", es: "Baker Street", fr: "Baker Street", pt: "Baker Street", de: "Baker Street", ru: "Бейкер-стрит", "zh-cn": "贝克街" },
+  other: { en: "Other", it: "Altro", es: "Otras", fr: "Autre", pt: "Outras", de: "Sonstige", ru: "Другое", "zh-cn": "其他" },
 };
 
 /** `url` è il post Steam della patch (gid verificati con l'API ufficiale Valve `ISteamNews/GetNewsForApp`, appid 4429430). */
@@ -117,7 +118,7 @@ export const patches: Record<PatchId, { date: string; at?: string; url: string; 
     date: "2026-09-21",
     url: "https://store.steampowered.com/news/app/4429430/view/1844115010502611",
     title: "The first big update to the Origins demo just landed!",
-    label: { en: "Demo · 21 Sep", it: "Demo · 21 set", es: "Demo · 21 sep", fr: "Démo · 21 sept.", pt: "Demo · 21 set.", de: "Demo · 21. Sept.", ru: "Демо · 21 сент." },
+    label: { en: "Demo · 21 Sep", it: "Demo · 21 set", es: "Demo · 21 sep", fr: "Démo · 21 sept.", pt: "Demo · 21 set.", de: "Demo · 21. Sept.", ru: "Демо · 21 сент.", "zh-cn": "试玩版 · 9月21日" },
     news: "demo-patch-notes-0921",
   },
   // Secondo aggiornamento della demo: post Steam del 29/09/2026 alle 19:37 UTC, "l'ultima patch di bilanciamento prima
@@ -319,8 +320,10 @@ export const cards: Card[] = data.cards.map((w) => {
   const de = deLore[w.slug];
   // Il russo (card-lore-ru.ts, dal 20/10/2026) come il tedesco: testo ufficiale letto nel gioco (dalla notte del 20/10), traduzione nostra per create e rimosse.
   const ru = ruLore[w.slug];
-  if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn, fr: fr?.text ?? abilityEn, pt: pt?.text ?? abilityEn, de: de?.text ?? abilityEn, ru: ru?.text ?? abilityEn };
-  if (lore?.origin) card.origin = { ...lore.origin, fr: fr?.origin ?? lore.origin.en, pt: pt?.origin ?? lore.origin.en, de: de?.origin ?? lore.origin.en, ru: ru?.origin ?? lore.origin.en };
+  // Il cinese semplificato (card-lore-zh-cn.ts, dal 04/11/2026): traduzione nostra PROVVISORIA di tutte le carte, finché i testi del gioco (patch 0.7) non sono letti; "zh-cn" resta fuori da officialTextLocales.
+  const zh = zhCnLore[w.slug];
+  if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn, fr: fr?.text ?? abilityEn, pt: pt?.text ?? abilityEn, de: de?.text ?? abilityEn, ru: ru?.text ?? abilityEn, "zh-cn": zh?.text ?? abilityEn };
+  if (lore?.origin) card.origin = { ...lore.origin, fr: fr?.origin ?? lore.origin.en, pt: pt?.origin ?? lore.origin.en, de: de?.origin ?? lore.origin.en, ru: ru?.origin ?? lore.origin.en, "zh-cn": zh?.origin ?? lore.origin.en };
   return card;
 });
 

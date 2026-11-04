@@ -31,12 +31,16 @@ on:
       - src/lib/data/news-de.ts
       - src/lib/content/guides-ru.ts
       - src/lib/data/news-ru.ts
+      - src/lib/content/guides-zh-cn.ts
+      - src/lib/content/guides-zh-cn-b.ts
+      - src/lib/data/news-zh-cn.ts
       - src/lib/data/card-history.ts
       - src/lib/data/card-lore.ts
       - src/lib/data/card-lore-fr.ts
       - src/lib/data/card-lore-pt.ts
       - src/lib/data/card-lore-de.ts
       - src/lib/data/card-lore-ru.ts
+      - src/lib/data/card-lore-zh-cn.ts
       - src/lib/data/locations.ts
   workflow_dispatch:
     inputs:

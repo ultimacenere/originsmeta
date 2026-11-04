@@ -9,9 +9,12 @@ Scelte di Pierluigi del 04/11/2026:
 - **Prima il nucleo, news dopo**: interfaccia, carte, luoghi, FAQ, guide e le news dal 20/10/2026 in poi. Le news più
   vecchie non sono tradotte: restano fuori da liste, feed e sitemap di /zh-cn e la loro pagina rimanda all'inglese
   (`untranslated` e `newsInLocale` in `src/lib/data/news.ts`). Una news nuova si scrive anche in cinese.
-- **Testi delle carte nostri**: il gioco non ha (o non sappiamo se ha) il cinese, quindi i testi delle carte sono una
-  traduzione nostra con il glossario qui sotto. Se Koin aggiunge il cinese, si leggono nel gioco come per il russo
-  (`scripts/official-texts.mjs`) e il glossario si allinea a quello del gioco.
+- **Testi delle carte PROVVISORI**: Pierluigi non sapeva se il gioco avesse il cinese, ma le note della patch 0.7 del
+  29/09/2026 e la pagina Steam lo elencano fra le 13 lingue del gioco (public/llms.txt). Si parte quindi con una
+  traduzione nostra col glossario qui sotto, come il russo il pomeriggio del 20/10/2026; il passo dopo è leggere i testi
+  ufficiali delle 122 carte nella demo in «简体中文» (trascrizione in `docs/testi-ufficiali/zh-cn.tsv`,
+  `node scripts/official-texts.mjs zh-cn --apply`, `"zh-cn"` in `officialTextLocales`) e allineare il glossario a quello
+  del gioco.
 
 ## Varietà e tono
 

@@ -26,6 +26,8 @@ import { pt } from "./dictionaries/pt.ts";
 import { de } from "./dictionaries/de.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { ru } from "./dictionaries/ru.ts";
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+import { zhCn } from "./dictionaries/zh-cn.ts";
 
 type Dict = typeof en;
 const dicts: [string, Dict][] = [
@@ -36,6 +38,7 @@ const dicts: [string, Dict][] = [
   ["pt", pt],
   ["de", de],
   ["ru", ru],
+  ["zh-cn", zhCn],
 ];
 
 /** Stesse costanti di src/lib/page.ts (TITLE_MAX, DESCRIPTION_MAX). */
@@ -137,7 +140,7 @@ for (const [locale, d] of dicts) {
       assert.match(d.tier.metaTitle, /meta\b|мета/i);
       assert.doesNotMatch(d.faq.metaTitle, /decks?\b|mazzi|mazos|колод/i);
       assert.doesNotMatch(d.decks.metaTitle, /codes?\b|codici|códigos|код/i);
-      assert.match(d.decks.metaTitle, /Guides|Guide|guías|guias|гайд/i);
+      assert.match(d.decks.metaTitle, /Guides|Guide|guías|guias|гайд|攻略/i);
     });
 
     test("/tournaments nomina la Crimson Cup ma lascia posti e premi alla news delle regole", () => {
@@ -163,7 +166,7 @@ for (const [locale, d] of dicts) {
     });
 
     test("la dicitura del footer dice sempre che il sito non è affiliato a Koin Games", () => {
-      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games|não é afiliado à Koin Games|nicht mit Koin Games verbunden|не связан с Koin Games/);
+      assert.match(d.footer.disclaimer, /not affiliated with Koin Games|non affiliato a Koin Games|no está afiliado a Koin Games|n'est pas affilié à Koin Games|não é afiliado à Koin Games|nicht mit Koin Games verbunden|не связан с Koin Games|与 Koin Games 无关联/);
     });
 
     test("le frasi costruite con i dati hanno i loro segnaposto", () => {

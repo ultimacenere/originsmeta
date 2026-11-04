@@ -25,7 +25,7 @@ const OUT = path.join(root, "public/media/creator-kit");
 const LOGO = path.join(root, "public/media/logo-originsmeta.webp");
 const LOGO_SIZE = { w: 640, h: 197 };
 const ZIP = "originsmeta-media-kit.zip";
-const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru"];
+const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"];
 
 const browser = [
   process.env.CHROME_PATH,
@@ -49,16 +49,17 @@ const C = {
   pink: "#ff4da6",
 };
 
-// Barlow Semi Condensed non ha il cirillico: per il russo ripiega su Roboto Condensed.
+// Barlow Semi Condensed non ha il cirillico: per il russo ripiega su Roboto Condensed; gli ideogrammi del cinese (04/11/2026)
+// vengono da Noto Sans SC.
 const FONTS =
   '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-  '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Barlow+Semi+Condensed:wght@600;700&family=Roboto+Condensed:wght@600;700&display=block" rel="stylesheet">';
+  '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Barlow+Semi+Condensed:wght@600;700&family=Roboto+Condensed:wght@600;700&family=Noto+Sans+SC:wght@700;900&display=block" rel="stylesheet">';
 
 const BASE_CSS = `
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:transparent;overflow:hidden}
-body{font-family:"Barlow Semi Condensed","Roboto Condensed",sans-serif;color:${C.chalk}}
-.om{font-family:Montserrat,sans-serif;font-weight:900;letter-spacing:-.01em;line-height:1;white-space:nowrap;display:inline-flex;align-items:baseline}
+body{font-family:"Barlow Semi Condensed","Roboto Condensed","Noto Sans SC",sans-serif;color:${C.chalk}}
+.om{font-family:Montserrat,"Noto Sans SC",sans-serif;font-weight:900;letter-spacing:-.01em;line-height:1;white-space:nowrap;display:inline-flex;align-items:baseline}
 .om .o{color:${C.chalk}}
 .om .m{color:${C.mint}}
 .om .d{display:inline-block;border-radius:50%;background:${C.pink}}
@@ -86,6 +87,7 @@ const COPY = {
   pt: { badge: "Decks e estatísticas no", panel: "Meus decks", panelSub: "no originsmeta.com" },
   de: { badge: "Decks und Statistiken auf", panel: "Meine Decks", panelSub: "auf originsmeta.com" },
   ru: { badge: "Колоды и статистика на", panel: "Мои колоды", panelSub: "на originsmeta.com" },
+  "zh-cn": { badge: "卡组与数据尽在", panel: "我的卡组", panelSub: "尽在 originsmeta.com" },
 };
 
 /** Badge da mettere in un angolo della diretta o del video: 480 × 120 a schermo, disegnato al doppio (960 × 240). */
@@ -100,7 +102,7 @@ function badge(locale) {
      .sym{position:relative;flex:none;width:118px;height:84px;border-radius:16px;border:2.5px solid ${C.mint};background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center}
      .txt{position:relative;min-width:0}
      .k{font-weight:700;font-size:16px;letter-spacing:.12em;text-transform:uppercase;color:${C.sub};white-space:nowrap}
-     .u{margin-top:4px;font-family:Montserrat,sans-serif;font-weight:900;font-size:29px;letter-spacing:-.01em;color:${C.mint};white-space:nowrap}`,
+     .u{margin-top:4px;font-family:Montserrat,"Noto Sans SC",sans-serif;font-weight:900;font-size:29px;letter-spacing:-.01em;color:${C.mint};white-space:nowrap}`,
   );
 }
 
@@ -115,7 +117,7 @@ function panel(locale) {
     `.p{position:relative;width:320px;height:100px;border-radius:16px;border:3px solid ${C.mint};overflow:hidden}
      .p .dots{background-size:16px 16px}
      .tile{position:absolute;left:16px;top:19px;width:56px;height:56px;border-radius:14px;border:2.5px solid ${C.mint};background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center}
-     .lbl{position:absolute;left:88px;top:22px;font-family:Montserrat,sans-serif;font-weight:900;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;color:${C.chalk}}
+     .lbl{position:absolute;left:88px;top:22px;font-family:Montserrat,"Noto Sans SC",sans-serif;font-weight:900;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;color:${C.chalk}}
      .sub{position:absolute;left:89px;top:56px;font-weight:600;font-size:16px;letter-spacing:.04em;color:${C.sub};white-space:nowrap}
      .acc{position:absolute;right:-18px;top:-26px;width:64px;height:88px;border:2.5px solid ${C.mint};border-radius:12px;opacity:.28;transform:rotate(18deg)}`,
   );

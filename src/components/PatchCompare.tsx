@@ -18,6 +18,7 @@ const L: Record<Locale, { title: string; before: string; after: string; mana: st
   pt: { title: "Antes e depois", before: "Antes", after: "Depois", mana: "Custo", power: "Poder", health: "Vida" },
   de: { title: "Vorher und nachher", before: "Vorher", after: "Nachher", mana: "Kosten", power: "Kraft", health: "Leben" },
   ru: { title: "До и после", before: "До", after: "После", mana: "Стоимость", power: "Сила", health: "Здоровье" },
+  "zh-cn": { title: "改动前后", before: "改动前", after: "改动后", mana: "费用", power: "力量", health: "生命值" },
 };
 
 type Item = { card: Card; change: Change };

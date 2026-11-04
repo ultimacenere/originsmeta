@@ -305,7 +305,7 @@ const en: CreatorLabels = {
     inviteGuide: "Send us a guide",
     listName: "Origins TCG creators and authors on OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
   privacy:
     "Public profile. The bio, channels and languages you write under \"Your public profile\" (My profile › Edit my public page) are public: they appear on your /u page and, if you have the Creator, Author, Pro or Staff role, on the Creators and authors page and next to your name on your decks. You can change or delete them at any time. For people with one of these roles and a Twitch channel, our server asks Twitch whether the channel is live on Origins TCG (public channel data) at most once every 90 seconds, when someone opens a page that shows the badge; your browser does not contact Twitch until you open the link.",
   footer: "Creators and authors",
@@ -426,7 +426,7 @@ const it: CreatorLabels = {
     inviteGuide: "Mandaci una guida",
     listName: "Creator e autori di Origins TCG su OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
   privacy:
     "Profilo pubblico. La bio, i canali e le lingue che scrivi in «Il tuo profilo pubblico» (Il mio profilo › Modifica la mia pagina pubblica) sono pubblici: compaiono sulla tua pagina /u e, se hai il ruolo Creator, Autore, Pro o Staff, nella pagina Creator e autori e accanto al tuo nome nei tuoi mazzi. Puoi cambiarli o cancellarli quando vuoi. Per chi ha uno di questi ruoli e un canale Twitch, il nostro server chiede a Twitch se il canale è in diretta su Origins TCG (dati pubblici del canale) al massimo una volta ogni 90 secondi, quando qualcuno apre una pagina con il bollino; il tuo browser non contatta Twitch finché non apri il link.",
   footer: "Creator e autori",
@@ -547,7 +547,7 @@ const es: CreatorLabels = {
     inviteGuide: "Envíanos una guía",
     listName: "Creadores y autores de Origins TCG en OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
   privacy:
     "Perfil público. La bio, los canales y los idiomas que escribes en «Tu perfil público» (Mi perfil › Editar mi página pública) son públicos: aparecen en tu página /u y, si tienes el rol Creator, Autor, Pro o Staff, en la página Creadores y autores y junto a tu nombre en tus mazos. Puedes cambiarlos o borrarlos cuando quieras. Para quien tiene uno de estos roles y un canal de Twitch, nuestro servidor pregunta a Twitch si el canal está en directo con Origins TCG (datos públicos del canal) como mucho una vez cada 90 segundos, cuando alguien abre una página con la etiqueta; tu navegador no contacta con Twitch hasta que abres el enlace.",
   footer: "Creadores y autores",
@@ -672,7 +672,7 @@ const fr: CreatorLabels = {
     inviteGuide: "Envoyez-nous un guide",
     listName: "Créateurs et auteurs d'Origins TCG sur OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
   privacy:
     "Profil public. La bio, les chaînes et les langues que vous écrivez sous « Votre profil public » (Mon profil › Modifier ma page publique) sont publiques : elles apparaissent sur votre page /u et, si vous avez le rôle Creator, Auteur, Pro ou Staff, sur la page Créateurs et auteurs et à côté de votre nom sur vos decks. Vous pouvez les changer ou les supprimer à tout moment. Pour les personnes ayant l'un de ces rôles et une chaîne Twitch, notre serveur demande à Twitch si la chaîne est en direct sur Origins TCG (données publiques de la chaîne) au plus une fois toutes les 90 secondes, quand quelqu'un ouvre une page qui affiche le badge ; votre navigateur ne contacte pas Twitch tant que vous n'ouvrez pas le lien.",
   footer: "Créateurs et auteurs",
@@ -797,7 +797,7 @@ const pt: CreatorLabels = {
     inviteGuide: "Envie um guia para nós",
     listName: "Criadores e autores de Origins TCG no OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
   privacy:
     "Perfil público. A bio, os canais e os idiomas que você escreve em “Perfil público” (Meu perfil › Editar minha página pública) são públicos: aparecem na sua página /u e, se você tem a função Creator, Autor, Pro ou Staff, na página Criadores e autores e ao lado do seu nome nos seus decks. Você pode alterá-los ou apagá-los quando quiser. Para quem tem uma dessas funções e um canal da Twitch, o nosso servidor pergunta à Twitch se o canal está ao vivo com Origins TCG (dados públicos do canal) no máximo uma vez a cada 90 segundos, quando alguém abre uma página que mostra o selo; o seu navegador não entra em contato com a Twitch até você abrir o link.",
   footer: "Criadores e autores",
@@ -922,7 +922,7 @@ const de: CreatorLabels = {
     inviteGuide: "Schick uns einen Guide",
     listName: "Creator und Autoren von Origins TCG auf OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
   privacy:
     "Öffentliches Profil. Die Bio, die Kanäle und die Sprachen, die du unter „Dein öffentliches Profil“ (Mein Profil › Meine öffentliche Seite bearbeiten) einträgst, sind öffentlich: Sie erscheinen auf deiner /u-Seite und, wenn du die Rolle Creator, Autor, Pro oder Staff hast, auf der Seite Creator und Autoren und neben deinem Namen bei deinen Decks. Du kannst sie jederzeit ändern oder löschen. Bei Personen mit einer dieser Rollen und einem Twitch-Kanal fragt unser Server höchstens alle 90 Sekunden bei Twitch nach, ob der Kanal mit Origins TCG live ist (öffentliche Daten des Kanals), wenn jemand eine Seite öffnet, die das Abzeichen zeigt; dein Browser kontaktiert Twitch erst, wenn du den Link öffnest.",
   footer: "Creator und Autoren",
@@ -1047,13 +1047,138 @@ const ru: CreatorLabels = {
     inviteGuide: "Прислать нам гайд",
     listName: "Креаторы и авторы Origins TCG на OriginsMeta",
   },
-  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский" },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
   privacy:
     "Публичный профиль. Описание, каналы и языки, которые вы указываете в разделе «Ваш публичный профиль» (Мой профиль › Редактировать мою публичную страницу), публичны: они видны на вашей странице /u и, если у вас роль Creator, Автор, Pro или Staff, на странице «Креаторы и авторы» и рядом с вашим именем на ваших колодах. Вы можете изменить или удалить их в любой момент. Для участников с одной из этих ролей и каналом Twitch наш сервер не чаще раза в 90 секунд спрашивает у Twitch, идёт ли на канале эфир по Origins TCG (публичные данные канала), когда кто-то открывает страницу со значком; ваш браузер не обращается к Twitch, пока вы не откроете ссылку.",
   footer: "Креаторы и авторы",
 };
 
-export const creatorLabels: Record<Locale, CreatorLabels> = { en, it, es, fr, pt, de, ru };
+/**
+ * Cinese semplificato (04/11/2026, docs/cinese.md): 你 (您 solo nel paragrafo della privacy), ruoli Creator / 作者 / Pro /
+ * Staff come in `community.badges`, filtro «角色»; la directory è «创作者与作者» (footer dentro H1 e title).
+ */
+const zhCn: CreatorLabels = {
+  channels: { website: "网站", newTab: "（在新标签页中打开）", listOf: "{name} 的频道" },
+  live: { badge: "LIVE", title: "正在 Twitch 直播：{viewers} 名观众" },
+  liveNow: {
+    strip: { title: "正在直播", one: "{name} 正在直播", many: "{n} 位创作者正在直播" },
+    page: {
+      kicker: "Twitch 直播中",
+      h1: "正在直播的 Origins TCG 创作者",
+      metaTitle: "正在 Twitch 直播的 Origins TCG 创作者",
+      description:
+        "看看哪些 Origins TCG 创作者、作者、Pro 玩家和 Staff 正在 Twitch 上直播，无需离开 OriginsMeta 就能直接观看。页面每分钟自动更新，只要有人在 Origins TCG 分类下开播，或在直播标题中写上 Origins TCG，就会第一时间出现在这里。",
+      intro:
+        "OriginsMeta 上拥有 Creator、作者、Pro 或 Staff 角色的人中，此刻谁正在 Twitch 上直播 Origins TCG。页面每分钟自动更新。",
+      loading: "正在查看谁在直播……",
+      none: "目前没有人在直播 Origins TCG。请稍后再来：此页面会自动更新。",
+      off: "直播状态暂时不可用。",
+      viewers: "观众：{viewers}",
+      profile: "主页",
+      openTwitch: "在 Twitch 上打开",
+      watch: "在这里观看 {name} 的直播",
+      playerTitle: "{name} 正在 Twitch 直播",
+      consent: "加载直播即表示接受 Twitch 的 Cookie。",
+      privacy: "隐私",
+      narrow: "在小屏幕上，直播会在 Twitch 上打开。",
+      openAria: "在 Twitch 上打开 {name} 的直播（新标签页）",
+      streamersTitle: "OriginsMeta 上的主播",
+      streamersIntro: "在主页中填写了 Twitch 频道的创作者、作者、Pro 玩家和 Staff：当他们直播 Origins TCG 时，会显示在上方。",
+      streamersEmpty: "还没有人在主页中添加 Twitch 频道。",
+      twitchChannel: "Twitch 频道",
+      howTo:
+        "你在直播 Origins TCG 吗？在你的账号中“编辑我的公开主页”里添加你的 Twitch 频道。拥有 Creator、作者、Pro 或 Staff 角色的你，在 Origins TCG 分类下直播，或直播标题中带有“Origins TCG”时，就会出现在这里。",
+      allCreators: "所有创作者与作者",
+    },
+  },
+  form: {
+    title: "你的公开主页",
+    intro:
+      "你的简介、频道和语言会显示在你的公开主页上。如果你拥有 Creator、作者、Pro 或 Staff 角色，它们还会出现在“创作者与作者”页面上，你的前三个频道也会显示在你的卡组中你的名字旁边。",
+    bio: "简介",
+    bioHint: "纯文本，最多 {max} 个字符、{lines} 行。这里不能放链接：频道请填在下方。",
+    bioLinesOver: "超过 {lines} 行：保存时，多出的行会合并到最后一行。",
+    bioPlaceholder: "例如：中国主播，控制卡组，每周二晚上备战 Crimson Cup。",
+    langs: "你的内容所用语言",
+    langsHint: "用于“创作者与作者”页面的语言筛选。",
+    channels: "你的频道",
+    channelsHint:
+      "最多 8 个。粘贴频道地址；Twitch、YouTube、X、TikTok、Instagram 和 Kick 只填名字也可以。拥有 Creator、作者、Pro 或 Staff 角色时，前三个频道会显示在你的卡组中你的名字旁边。",
+    kind: "平台",
+    url: "地址或名字",
+    add: "添加频道",
+    remove: "移除",
+    moveUp: "上移",
+    save: "保存主页",
+    saving: "保存中……",
+    saved: "主页已保存。",
+    viewPage: "查看你的公开主页",
+    shortLink: "你的短链接",
+    shortLinkHint: "在直播中念出来或放进你的频道面板：它会以观众的语言打开你的主页。",
+    copy: "复制",
+    copied: "已复制",
+    missing: "公开主页即将推出：网站下次更新后即可使用。",
+    readError: "暂时无法读取你的主页。请稍后刷新页面。",
+    errors: {
+      bioLong: "你的简介超过了 {max} 个字符。",
+      invalid: "这不是 {platform} 频道的地址。",
+      invalidWebsite: "这不是有效的网站地址。",
+      http: "地址必须以 https:// 开头。",
+      shortener: "不能使用短链接（bit.ly、tinyurl……）：请粘贴真实地址。",
+      redirect: "不能使用跳转链接：请粘贴页面本身的地址。",
+      platform: "这是 {platform} 的地址：请选择 {platform} 作为平台。",
+      long: "这个地址太长了。",
+      kind: "请选择一个平台。",
+      tooMany: "最多 8 个频道。",
+      tooFast: "你刚刚保存过：请等几秒钟再试。",
+      notLoggedIn: "登录后才能编辑你的主页。",
+      db: "无法保存你的主页。请稍后再试。",
+      disabled: "账号功能暂时不可用。",
+    },
+  },
+  profile: {
+    langs: "内容语言",
+    organizedTitle: "举办的锦标赛",
+    directoryLink: "所有创作者与作者",
+  },
+  directory: {
+    kicker: "社区",
+    h1: "Origins TCG 创作者与作者",
+    metaTitle: "Origins TCG 创作者与作者",
+    description:
+      "制作 Origins TCG 内容的创作者、作者和主播：他们的频道、内容语言、在 OriginsMeta 上发布的卡组，以及此刻谁正在 Twitch 上直播。可以按角色、语言和平台筛选，找到适合你的攻略作者、卡组讲解和直播频道，关注你喜欢的创作者，第一时间看到他们的新卡组。",
+    intro:
+      "OriginsMeta 上拥有 Creator、作者、Pro 或 Staff 角色并填写了公开主页的所有人。可按角色、语言和平台筛选；此刻正在直播 Origins TCG 的人会显示 LIVE 标志。",
+    order: "排序：先显示用本页语言制作内容的人，再显示发布卡组较多的人，最后按名字排序。",
+    lang: "语言",
+    platform: "平台",
+    role: "角色",
+    allRoles: "全部",
+    allLangs: "全部",
+    allPlatforms: "全部",
+    results: "{n} 个主页",
+    resultsOne: "1 个主页",
+    noResults: "没有主页符合这些筛选条件。",
+    decksMany: "{n} 个卡组",
+    deckOne: "1 个卡组",
+    noDecks: "还没有卡组",
+    profile: "查看主页",
+    empty: "Origins TCG 的创作者和作者将显示在这里：随着 Staff 分配角色、角色持有者填写公开主页，这个页面会逐渐充实起来。",
+    inviteTitle: "你在制作 Origins TCG 内容吗？",
+    inviteText:
+      "来申请一个角色吧。Creator：发布卡组数量不设上限，还能把锦标赛放进网站日历并使用自己的封面。作者：最多发布 {authorDecks} 个卡组。填写好公开主页后，你的卡片就会出现在这个页面上。",
+    inviteMail: "给我们写信",
+    inviteMailSubject: "申请 OriginsMeta 的 Creator 或作者角色",
+    inviteGuide: "给我们投稿攻略",
+    listName: "OriginsMeta 上的 Origins TCG 创作者与作者",
+  },
+  langNames: { en: "English", it: "Italiano", es: "Español", fr: "Français", pt: "Português", de: "Deutsch", ru: "Русский", "zh-cn": "简体中文" },
+  privacy:
+    "公开主页。您在“你的公开主页”（我的资料 › 编辑我的公开主页）中填写的简介、频道和语言是公开的：它们会显示在您的 /u 页面上；如果您拥有 Creator、作者、Pro 或 Staff 角色，还会显示在“创作者与作者”页面以及您的卡组中您的名字旁边。您可以随时修改或删除它们。对于拥有上述角色之一并填写了 Twitch 频道的人，当有人打开显示直播标志的页面时，我们的服务器最多每 90 秒向 Twitch 查询一次该频道是否正在直播 Origins TCG（频道的公开数据）；在您打开链接之前，您的浏览器不会联系 Twitch。",
+  footer: "创作者与作者",
+};
+
+export const creatorLabels: Record<Locale, CreatorLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 /** Sostituisce i segnaposto {chiave} di un'etichetta. */
 export function fillCreator(template: string, values: Readonly<Record<string, string | number>>): string {

@@ -411,7 +411,7 @@ describe("fumetti: etichette", () => {
 
   test("stesse chiavi e stessi segnaposto nelle tre lingue", () => {
     const en = L.comicLabels.en;
-    for (const locale of ["it", "es", "fr", "pt", "de", "ru"] as const) {
+    for (const locale of ["it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const) {
       const other = L.comicLabels[locale];
       assert.deepEqual(sorted(paths(other)), sorted(paths(en)), locale);
       for (const p of paths(en)) assert.deepEqual(holes(String(at(other, p))), holes(String(at(en, p))), `${locale}: ${p}`);

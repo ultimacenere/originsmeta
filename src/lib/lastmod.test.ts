@@ -54,16 +54,17 @@ describe("lastmod di un URL", () => {
     assert.equal(LOCALE_SINCE.es, "2026-09-25");
     assert.equal(LOCALE_SINCE.fr, "2026-10-07");
     assert.equal(LOCALE_SINCE.pt, "2026-10-20");
-    // dal 20/10/2026 la soglia di tutto il sito (hreflang pt) supera la nascita dello spagnolo e del francese
-    assert.equal(SITE_WIDE_CHANGE, "2026-10-20");
+    // dal 04/11/2026 la soglia di tutto il sito è l'hreflang zh-Hans (prima, dal 20/10/2026, quello pt)
+    assert.equal(SITE_WIDE_CHANGE, "2026-11-04");
     assert.equal(lastmodFor("es", ["2026-08-27"], today), SITE_WIDE_CHANGE);
     assert.equal(lastmodFor("es", [], today), SITE_WIDE_CHANGE);
     assert.equal(lastmodFor("fr", ["2026-09-25"], today), SITE_WIDE_CHANGE);
     assert.equal(lastmodFor("fr", ["2026-10-12"], today), SITE_WIDE_CHANGE);
-    assert.equal(lastmodFor("pt", ["2026-09-25"], today), "2026-10-20");
-    assert.equal(lastmodFor("pt", [], today), "2026-10-20");
-    assert.equal(lastmodFor("pt", ["2026-10-25"], today), "2026-10-25");
-    assert.equal(lastmodFor("fr", ["2026-10-25"], today), "2026-10-25");
+    assert.equal(lastmodFor("pt", ["2026-09-25"], today), SITE_WIDE_CHANGE);
+    assert.equal(lastmodFor("pt", [], today), SITE_WIDE_CHANGE);
+    assert.equal(lastmodFor("zh-cn", [], today), "2026-11-04");
+    assert.equal(lastmodFor("pt", ["2026-11-25"], today), "2026-11-25");
+    assert.equal(lastmodFor("fr", ["2026-11-25"], today), "2026-11-25");
   });
   test("la soglia comune è la nascita della lingua più recente, non un cambio di header o footer", () => {
     assert.equal(SITE_WIDE_CHANGE, latestDay(Object.values(LOCALE_SINCE)));

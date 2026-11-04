@@ -44,7 +44,8 @@ describe("404 dentro le lingue", () => {
     assert.equal(notFoundTitle("pt"), "404 · Página não encontrada · OriginsMeta");
     assert.equal(notFoundTitle("de"), "404 · Seite nicht gefunden · OriginsMeta");
     assert.equal(notFoundTitle("ru"), "404 · Страница не найдена · OriginsMeta");
-    assert.deepEqual(Object.keys(NOT_FOUND_TITLE).sort(), ["de", "en", "es", "fr", "it", "pt", "ru"]);
+    assert.equal(notFoundTitle("zh-cn"), "404 · 页面未找到 · OriginsMeta");
+    assert.deepEqual(Object.keys(NOT_FOUND_TITLE).sort(), ["de", "en", "es", "fr", "it", "pt", "ru", "zh-cn"]);
   });
   test("lingua, H1 e testo sono nell'HTML, con i link alla home e alle carte", () => {
     const html = notFoundHtml(es);
@@ -148,7 +149,7 @@ describe("sezioni senza lingua", () => {
       .map((e) => e.name);
     assert.deepEqual([...sections].sort(), dirs.sort());
   });
-  test("redirect temporanei, sezione sola e con il percorso: italiano, spagnolo (anche ca, gl, eu), francese (dal 07/10/2026), portoghese (dal 20/10/2026), tedesco e russo (dal 20/10/2026), poi inglese", () => {
+  test("redirect temporanei, sezione sola e con il percorso: italiano, spagnolo (anche ca, gl, eu), francese (dal 07/10/2026), portoghese (dal 20/10/2026), tedesco e russo (dal 20/10/2026), cinese (dal 04/11/2026), poi inglese", () => {
     assert.deepEqual(
       sectionRules.map((r) => [r.destination, r.has?.[0]?.value ?? null, r.permanent]),
       [
@@ -164,6 +165,8 @@ describe("sezioni senza lingua", () => {
         ["/de/:section/:path", "^de.*", false],
         ["/ru/:section", "^ru.*", false],
         ["/ru/:section/:path", "^ru.*", false],
+        ["/zh-cn/:section", "^zh.*", false],
+        ["/zh-cn/:section/:path", "^zh.*", false],
         ["/en/:section", null, false],
         ["/en/:section/:path", null, false],
       ],

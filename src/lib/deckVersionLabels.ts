@@ -338,4 +338,50 @@ const ru: DeckVersionLabels = {
   },
 };
 
-export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es, fr, pt, de, ru };
+const zhCn: DeckVersionLabels = {
+  edit: {
+    title: "卡组卡牌",
+    current: "版本 {n} · 补丁 {patch} · 自 {date} 起使用这些卡牌",
+    intro:
+      "新补丁上线了？在这里更换卡牌，名称、攻略、视频和链接都会保留。换了新卡牌就会开启版本 {next}：评分从零开始，上一个版本连同它的评分仍会留在卡组页面上。",
+    openBuilder: "在卡组构筑器中更换卡牌",
+    updateTo: "更新到版本 {patch}",
+    outdated: "这个卡组是为补丁 {old} 构筑的：版本 {patch} 已经上线。",
+    changedTitle: "新卡牌，尚未保存",
+    added: "加入",
+    removed: "移出",
+    legendary: "传说卡：{from} → {to}",
+    saveNotice: "保存后，卡组将成为版本 {next}（补丁 {patch}），评分重新开始。攻略不会自动更改：请检查它是否仍与新卡牌相符。",
+    discard: "保留当前卡牌",
+    same: "卡组构筑器返回的卡牌与卡组现有的相同：没有任何变化。",
+    invalid: "无法读取链接中的卡牌：卡组保留当前卡牌。",
+    unavailable: "暂时还不能更换卡牌：你仍可以编辑名称、攻略和视频。",
+  },
+  builder: {
+    banner: "你正在更新已发布卡组“{name}”的卡牌。完成后请返回保存：在此之前，攻略和评分保持不变。",
+    bannerNoName: "你正在更新一个已发布卡组的卡牌。完成后请返回保存。",
+    update: "保存到已发布的卡组",
+    cancel: "停止更新",
+  },
+  deck: {
+    version: "版本 {n}",
+    title: "此卡组的版本",
+    hint: "评分只计入当前版本。之前的版本保留各自的卡牌和评分。",
+    current: "当前",
+    option: "v{n} · {patch}",
+    optionNoPatch: "v{n}",
+    range: "{from} → {to}",
+    since: "自 {date} 起",
+    votes: "{avg} ★ · {n} 个评分",
+    oneVote: "{avg} ★ · 1 个评分",
+    noVotes: "暂无评分",
+    changes: "相对 v{n} 的变化",
+    cards: "版本 {n} 的卡牌",
+    openInBuilder: "在卡组构筑器中打开 v{n}",
+  },
+  errors: {
+    versionsUnavailable: "暂时还不能更换卡牌：请几分钟后再试，或不更换卡牌直接保存。",
+  },
+};
+
+export const deckVersionLabels: Record<Locale, DeckVersionLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };

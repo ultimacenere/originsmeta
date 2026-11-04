@@ -30,7 +30,7 @@ import {
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { crimsonPlayoffsLabels } from "./crimsonPlayoffsLabels.ts";
 
-const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru"] as const;
+const LOCALES = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const;
 const raw = JSON.parse(fs.readFileSync(new URL("./data/crimsonPlayoffsSnapshot.json", import.meta.url), "utf8"));
 const p = parsePlayoffs(raw) as Playoffs;
 

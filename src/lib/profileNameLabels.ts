@@ -317,7 +317,46 @@ const ru: ProfileNameLabels = {
     "Имя и имя пользователя. Отображаемое имя и имя пользователя вы выбираете в разделе «Имя и имя пользователя» (Мой профиль › Редактировать мою публичную страницу); они публичны: видны на вашей странице и рядом с тем, что вы публикуете. Когда вы меняете имя пользователя, мы храним старое вместе с вашим аккаунтом, чтобы старые ссылки вели на новую страницу и никто другой его не занял; оно удаляется вместе с аккаунтом. Мы также храним дату последней смены — для ограничения в одно новое имя пользователя раз в 30 дней.",
 };
 
-export const profileNameLabels: Record<Locale, ProfileNameLabels> = { en, it, es, fr, pt, de, ru };
+const zhCn: ProfileNameLabels = {
+  section: "名称与用户名",
+  intro: "显示名称会出现在你的卡组、攻略和评论旁边。用户名是你的页面和短链接的地址。",
+  displayLabel: "显示名称",
+  displayHint: "{min} 到 {max} 个字符。可以随时更改。",
+  usernameLabel: "用户名",
+  usernameHint: "{min} 到 {max} 个字符：小写拉丁字母、数字和连字符。每 {days} 天可更改一次。",
+  preview: "你的页面：{url}",
+  redirectNote: "更改后，指向旧地址的链接会跳转到你的新页面，旧名称仍归你所有：其他人无法使用。",
+  nextChange: "你可以从 {date} 起再次更改用户名。",
+  locked: "你的用户名与网站的某项功能绑定：如需更改，请给 Staff 发消息。",
+  confirmUsername: "要更改用户名吗？{days} 天后才能再次更改。",
+  save: "保存名称",
+  saving: "保存中……",
+  saved: "名称已保存。",
+  savedUsername: "名称已保存。你的页面现在是 {url}：网站的其他页面会在几分钟内更新。",
+  missing: "更改名称功能尚未开放：请稍后再来。",
+  readError: "无法读取你的资料。请刷新页面。",
+  errors: {
+    notLoggedIn: "登录后才能更改名称。",
+    disabled: "账号功能目前未开放。",
+    db: "保存失败。请稍后再试。",
+    display: {
+      invalid: "显示名称长度必须为 {min} 到 {max} 个字符，且不含不可见字符。",
+      reserved: "这个名称包含为 Staff、网站或游戏保留的词。",
+      lookalike: "这个名称与某位创作者或 Staff 的用户名相同。",
+      too_fast: "你刚刚更改过名称：请几秒后再试。",
+    },
+    username: {
+      invalid: "请使用 {min} 到 {max} 个字符：小写拉丁字母、数字和连字符；连字符不能位于开头、结尾或与另一个连字符相连。",
+      reserved: "这个用户名已被保留。",
+      taken: "这个用户名已被占用。",
+      too_soon: "你最近更改过用户名：可以从 {date} 起再次更改。",
+    },
+  },
+  privacy:
+    "名称与用户名。显示名称和用户名由您在“名称与用户名”部分（我的资料 › 编辑我的公开主页）中选择；它们是公开的：会显示在您的页面上以及您发布的内容旁边。当您更改用户名时，我们会将旧用户名与您的账号一起保存，以便旧链接跳转到新页面，且其他人无法使用；它会随账号一并删除。我们还会保存最近一次更改的日期，用于执行每 30 天只能更改一次用户名的限制。",
+};
+
+export const profileNameLabels: Record<Locale, ProfileNameLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };
 
 /** Riempie i segnaposto {chiave} di un testo. */
 export function fillName(text: string, values: Record<string, string | number>): string {

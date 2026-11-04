@@ -33,7 +33,8 @@ export const LOCALE_SINCE: Record<Locale, Day> = { en: "2026-09-15", it: "2026-0
  * modelli (`PAGE_UPDATED`). Il test la vuole uguale alla nascita della lingua più recente: se un giorno si sposta per
  * un cambio di hreflang senza lingue nuove, si aggiorna anche il test, spiegando perché.
  */
-export const SITE_WIDE_CHANGE: Day = "2026-10-20";
+// 04/11/2026: il cinese aggiunge a ogni pagina l'hreflang zh-Hans (data da spostare al giorno in cui va online, con LOCALE_SINCE)
+export const SITE_WIDE_CHANGE: Day = "2026-11-04";
 
 /** Ogni news ha una pagina propria dal 21/09/2026: prima esisteva solo la scheda nell'elenco. */
 export const NEWS_PAGES_SINCE: Day = "2026-09-21";

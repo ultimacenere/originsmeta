@@ -624,4 +624,93 @@ const ru: StreamLabels = {
   },
 };
 
-export const streamLabels: Record<Locale, StreamLabels> = { en, it, es, fr, pt, de, ru };
+// cinese semplificato (04/11/2026, docs/cinese.md): 你, «传说卡», «游戏代码», «Overlay» in inglese come per gli streamer.
+// Le scritte dell'immagine PNG (`image`, alt compresi: `imageSafe` li controlla tutti) restano in inglese: il font di
+// next/og (Geist) non ha gli ideogrammi.
+const zhCn: StreamLabels = {
+  chat: {
+    line: "卡组（作者 {author}）：{deck}",
+    legendary: "传说卡",
+    code: "游戏代码",
+    setLine: "锦标赛卡组（作者 {author}）：{set}",
+    noDecks: "{user} 在 OriginsMeta 上还没有公开卡组。",
+    noUser: "OriginsMeta 上没有名为 {user} 的用户。",
+    noDeck: "在 OriginsMeta 上找不到该卡组：请检查命令的 URL。",
+    noSet: "在 OriginsMeta 上找不到该锦标赛卡组：请检查命令的 URL。",
+    usage: "在命令的 URL 后加上 ?u=<OriginsMeta 用户名>、?deck=<卡组> 或 ?set=<锦标赛卡组>。",
+    unavailable: "OriginsMeta 暂时无法访问：请一分钟后再试。",
+  },
+  overlay: {
+    title: "卡组 Overlay",
+    legendary: "传说卡",
+    by: "作者",
+    cards: "卡牌（×2）",
+    noDeck: "找不到该卡组：请检查浏览器来源的 URL。",
+    noDecks: "{user} 还没有公开卡组：在 OriginsMeta 上发布一个，一分钟内就会显示在这里。",
+    noUser: "OriginsMeta 上没有名为 {user} 的用户。",
+    usage: "在 URL 后加上 ?u=<OriginsMeta 用户名>，或使用 /overlay/deck/<卡组>。",
+    unavailable: "OriginsMeta 暂时无法访问：Overlay 每分钟会自动重试。",
+    unofficial: "非官方粉丝网站，与 Koin Games 无关联",
+    set: "锦标赛卡组",
+    deck: "卡组 {letter}",
+    noSet: "找不到该锦标赛卡组：请检查浏览器来源的 URL。",
+  },
+  // il font delle immagini non ha gli ideogrammi: in cinese le etichette dell'immagine restano in inglese (04/11/2026)
+  image: {
+    kicker: "Origins TCG · Community deck",
+    by: "by",
+    legendary: "Legendary",
+    cards: "Cards · 2 copies each",
+    unofficial: "Unofficial fan site, not affiliated with Koin Games",
+    alt: "Deck list of {deck} by {author}, with the Legendary {legendary}: the twelve cards and their mana cost.",
+    altNoLegendary: "Deck list of {deck} by {author}: the cards and their mana cost.",
+    setKicker: "Origins TCG · Tournament deck · Conquest",
+    deck: "Deck {letter}",
+    setAlt: "Tournament deck {set} by {author}: the lists of its three Conquest decks, with the Legendaries {legendaries} and the mana cost of every card.",
+  },
+  tools: {
+    summary: "主播专用：短链接、聊天命令、OBS Overlay、图片",
+    intro: "用于直播和视频。无需安装：复制、粘贴，卡组就会出现在画面上。",
+    shortLink: "短链接",
+    shortLinkHint: "在直播中念出来或放进视频简介：它会以观众的语言打开这个卡组。",
+    chat: "此卡组的聊天命令",
+    chatHint:
+      "以频道主或管理员身份在 Twitch 聊天中输入：之后 !deck 会回复这个卡组、它的短链接和游戏代码。如果 !deck 已经存在，请把 add 改为 edit（Nightbot 用 !commands edit，StreamElements 用 !command edit）。",
+    nightbot: "Nightbot",
+    streamelements: "StreamElements",
+    overlay: "OBS Overlay",
+    overlayHint: "在 OBS 中：来源 → + → 浏览器，粘贴链接，竖版设为 {vw} × {vh}，横版设为 {hw} × {hh}。透明背景，每分钟更新。",
+    vertical: "竖版",
+    horizontal: "横版",
+    open: "预览",
+    image: "卡组图片",
+    imageHint: "可直接用于缩略图、帖子和快拍的 PNG：传说卡、十二张卡牌及其费用，以及短链接。",
+    download16x9: "下载 16:9（1280 × 720）",
+    download9x16: "下载 9:16（1080 × 1920）",
+    ownerOnly:
+      "聊天命令和 OBS Overlay 会显示卡组发布者写的文字，因此只对你自己的卡组提供。你的账号里有始终跟随你最新卡组的版本。",
+    accountLink: "你账号中的直播工具",
+    copy: "复制",
+    copied: "已复制",
+    setShortLinkHint: "在直播中念出来或放进视频简介：它会以观众的语言打开这个锦标赛卡组。",
+    setChat: "此锦标赛卡组的聊天命令",
+    setChatHint:
+      "以频道主或管理员身份在 Twitch 聊天中输入：之后 !deck 会回复这个锦标赛卡组、它的三张传说卡和短链接（游戏代码在页面上，每套卡组一个）。如果 !deck 已经存在，请把 add 改为 edit（Nightbot 用 !commands edit，StreamElements 用 !command edit）。",
+    setImage: "锦标赛卡组图片",
+    setImageHint: "可直接用于缩略图、帖子和快拍的 PNG：三套卡组及其传说卡、每套十二张卡牌及其费用，以及短链接。",
+  },
+  account: {
+    title: "直播工具",
+    intro: "聊天命令和 OBS Overlay 始终显示你最近发布的卡组：发布新卡组后，一分钟内就会切换过去。无需安装。",
+    noDecks: "发布第一个卡组后即可使用。",
+    command: "聊天命令 !deck",
+    commandHint:
+      "以频道主或管理员身份，在 Twitch 聊天中输入你所用机器人的那一行。回复内容：卡组名称、传说卡、短链接和游戏代码。如果 !deck 已经存在，请把 add 改为 edit（!commands edit、!command edit）。",
+    fossabot: "Fossabot（在控制台中创建的命令的回复）",
+    langName: "简体中文",
+    langHint: "回复语言为{lang}：如需其他语言，请修改链接末尾的 lang={code}（en、it、es、fr、pt、de、ru、zh-cn）。",
+    overlay: "显示你最新卡组的 OBS Overlay",
+  },
+};
+
+export const streamLabels: Record<Locale, StreamLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };

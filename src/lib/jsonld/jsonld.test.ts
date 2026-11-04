@@ -358,8 +358,10 @@ describe("testi del pacchetto (entityLabels.ts)", () => {
       pt: /^OriginsMeta não é afiliad[oa] à Koin Games/,
       de: /^OriginsMeta ist nicht mit Koin Games verbunden/,
       ru: /^OriginsMeta не связан с Koin Games/,
+      // docs/cinese.md: «非官方粉丝网站，与 Koin Games 无关联»
+      "zh-cn": /^OriginsMeta[^。]*与 Koin Games 无关联/,
     };
-    const permission: Record<Locale, RegExp> = { en: /19 September 2026/, it: /19 settembre 2026/, es: /19 de septiembre de 2026/, fr: /19 septembre 2026/, pt: /19 de setembro de 2026/, de: /19\. September 2026/, ru: /19 сентября 2026/ };
+    const permission: Record<Locale, RegExp> = { en: /19 September 2026/, it: /19 settembre 2026/, es: /19 de septiembre de 2026/, fr: /19 septembre 2026/, pt: /19 de setembro de 2026/, de: /19\. September 2026/, ru: /19 сентября 2026/, "zh-cn": /2026年9月19日/ };
     for (const l of locales) {
       const { disclaimer, disclaimerPermission } = entityLabels[l].about;
       for (const text of [disclaimer, disclaimerPermission]) {
@@ -374,7 +376,7 @@ describe("testi del pacchetto (entityLabels.ts)", () => {
   });
 
   test("description di /about fra 120 e 158 caratteri, con la verifica nel gioco come la pagina e senza nominare la fonte dei dati importati", () => {
-    const checked: Record<Locale, RegExp> = { en: /checked .*in the game/, it: /verificate .*nel gioco/, es: /comprobadas .*en el juego/, fr: /vérifiées .*dans le jeu/, pt: /verificad[ao]s .*no jogo/, de: /im Spiel geprüft/, ru: /проверенные в игре/ };
+    const checked: Record<Locale, RegExp> = { en: /checked .*in the game/, it: /verificate .*nel gioco/, es: /comprobadas .*en el juego/, fr: /vérifiées .*dans le jeu/, pt: /verificad[ao]s .*no jogo/, de: /im Spiel geprüft/, ru: /проверенные в игре/, "zh-cn": /在游戏中(?:核实|核对|验证)/ };
     for (const l of locales) {
       const text = entityLabels[l].about.description;
       assert.ok(text.length >= 120 && text.length <= 158, `${l}: ${text.length} caratteri`);

@@ -65,8 +65,8 @@ const datesModule: typeof import("./cardDates") = await import("./cardDates.ts")
 const { pageTitle } = pageModule;
 const { cardDates, cardLastmod, cardTextSource: src, localizedTextsRead } = datesModule;
 
-type Locale = "en" | "it" | "es" | "fr" | "pt" | "de" | "ru";
-const locales: Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru"];
+type Locale = "en" | "it" | "es" | "fr" | "pt" | "de" | "ru" | "zh-cn";
+const locales: Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"];
 /**
  * Le lingue in cui esistono già le guide (`getGuides`, letto anche da `cardLastmod`) e le etichette dei bilanciamenti
  * (`linkLabels`): il francese è entrato con `guides-fr.ts` e `linkLabels.fr`, il portoghese con `guides-pt.ts` e
@@ -136,7 +136,7 @@ describe("cardTitle", () => {
     for (const c of cards)
       for (const locale of locales) {
         const title = cardTitle(c, locale);
-        if (title.length > CARD_TITLE_MAX || !title.includes("Origins TCG") || !title.startsWith(`${c.name}${locale === "fr" ? " : " : ": "}`) || pageTitle(title).length > 60) bad.push(`${locale} ${title} (${title.length})`);
+        if (title.length > CARD_TITLE_MAX || !title.includes("Origins TCG") || !title.startsWith(`${c.name}${locale === "fr" ? " : " : locale === "zh-cn" ? "：" : ": "}`) || pageTitle(title).length > 60) bad.push(`${locale} ${title} (${title.length})`);
       }
     assert.deepEqual(bad, []);
   });
@@ -236,7 +236,7 @@ describe("cardDescription", () => {
     // Reflection: World of Origins la collega a Mulan, ma nessun testo di carta dice chi la crea
     for (const locale of locales) {
       const d = cardDescription(card("reflection"), locale, cards, src);
-      assert.doesNotMatch(d, /created by|generata da|creada por|créée par|criada por|erschaffen von|создаёт карта|создают карты/, d);
+      assert.doesNotMatch(d, /created by|generata da|creada por|créée par|criada por|erschaffen von|создаёт карта|создают карты|生成的/, d);
     }
     assert.match(cardDescription(card("alice"), "en", cards, src), /no longer in the game/);
     assert.match(cardDescription(card("alice"), "it", cards, src), /non più nel gioco/);
@@ -256,10 +256,10 @@ describe("cardDescription", () => {
   test("un testo superato da una patch non si cita: Silver Bullet (danno da 3 a 1, poi anche le barriere)", () => {
     for (const locale of locales) {
       const d = cardDescription(card("silver-bullet"), locale, cards, src);
-      assert.doesNotMatch(d, /\b3 (?:damage|danni|de daño|dégâts|de dano|Schaden)\b|\b3 (?:ед\. )?урон/, d);
+      assert.doesNotMatch(d, /\b3 (?:damage|danni|de daño|dégâts|de dano|Schaden)\b|\b3 (?:ед\. )?урон|3 点伤害/, d);
       // restano gli altri pezzi: chi la crea e le statistiche
       assert.match(d, /Van Helsing's Tools/, d);
-      assert.match(d, /^Silver Bullet, .*: 1 (?:de |ед\. )?(?:mana|maná|Mana|маны)\./, d);
+      assert.match(d, locale === "zh-cn" ? /^Silver Bullet，.*：1 费。/ : /^Silver Bullet, .*: 1 (?:de |ед\. )?(?:mana|maná|Mana|маны)\./, d);
     }
   });
 });
@@ -292,7 +292,7 @@ describe("textOutdated", () => {
     // Patch finte con gli id veri: verifica sul gioco fra la 0.6.2 e la 0.6.3
     const source: TextSource = { dates: { "0.6.1": "2026-01-01", "0.6.2": "2026-02-01", "0.6.3": "2026-03-01" }, verified: "2026-02-15" };
     type History = TitleCard["history"];
-    const note = { en: "", it: "", es: "", fr: "", pt: "", de: "", ru: "" };
+    const note = { en: "", it: "", es: "", fr: "", pt: "", de: "", ru: "", "zh-cn": "" };
     const text = (patch: "0.6.2" | "0.6.3", kind: "buff" | "deck" = "buff"): History => [{ patch, kind, note }];
     const unit = (history: History) => ({ status: "active" as const, type: "unit" as const, history });
     const token = (history: History) => ({ status: "active" as const, type: "token" as const, history });
@@ -535,7 +535,7 @@ describe("deckLead", () => {
     assert.equal(deckLead({ name: "Buff", author: "albeo", archetype: "Aggro" }, "ru"), "Колода для Origins TCG: Buff, автор albeo, архетип Aggro.");
   });
   test("la coda corta c'è nelle sette lingue e dice OriginsMeta", () => {
-    for (const locale of locales) assert.match(deckShortTail[locale], /OriginsMeta\.$/);
+    for (const locale of locales) assert.match(deckShortTail[locale], /OriginsMeta[.。]$/);
   });
 });
 
