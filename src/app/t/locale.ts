@@ -13,8 +13,11 @@ import type { Locale } from "@/lib/i18n";
  * i dizionari.
  */
 
-/** Lingue che non sono del sito ma che chi le usa legge in una del sito. */
-export const LANGUAGE_ALIASES: Readonly<Record<string, Locale>> = { ca: "es", gl: "es", eu: "es" };
+/**
+ * Lingue che non sono del sito ma che chi le usa legge in una del sito. Il cinese (04/11/2026): qui si guarda la sola lingua
+ * base ("zh" di zh-CN, zh-TW…), e il sito ha il semplificato.
+ */
+export const LANGUAGE_ALIASES: Readonly<Record<string, Locale>> = { ca: "es", gl: "es", eu: "es", zh: "zh-cn" };
 
 export function preferredLocale<L extends string>(header: string | null | undefined, supported: readonly L[], fallback: L, aliases: Readonly<Record<string, L>> = {}): L {
   const ranked = (header ?? "")

@@ -51,9 +51,11 @@
   --color-good: #46d369;
   --color-bad: #ff5c5c;
 
-  --font-display: var(--font-unbounded), "Arial Black", Impact, sans-serif;
-  --font-body: var(--font-manrope), "Segoe UI", Arial, sans-serif;
-  --font-mono: var(--font-jet), Consolas, "Courier New", monospace;
+  /* var(--font-cjk…): gli ideogrammi delle pagine cinesi (04/11/2026, dal layout); nelle altre lingue la variabile non c'è e
+     vale il nome di sistema, che per lettere e numeri non serve mai (il font latino viene prima) */
+  --font-display: var(--font-unbounded), var(--font-cjk, "PingFang SC"), "Arial Black", Impact, sans-serif;
+  --font-body: var(--font-manrope), var(--font-cjk, "PingFang SC"), "Segoe UI", Arial, sans-serif;
+  --font-mono: var(--font-jet), var(--font-cjk, "PingFang SC"), Consolas, "Courier New", monospace;
 
   --shadow-card: 0 1px 0 rgba(22, 16, 42, 0.35), 0 10px 30px -12px rgba(0, 0, 0, 0.55);
   --shadow-lift: 0 2px 0 rgba(22, 16, 42, 0.35), 0 24px 40px -18px rgba(0, 0, 0, 0.7);
@@ -626,7 +628,7 @@
     z-index: 2;
     display: inline-block;
     padding: 0.3rem 0.9rem 0.25rem 0.8rem;
-    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-hand, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-size: 1.3rem;
     font-weight: 700;
     line-height: 1.05;
@@ -894,7 +896,7 @@
     position: relative;
     display: inline-block;
     padding: 0.4rem 1.25rem 0.3rem 1.1rem;
-    font-family: var(--font-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-hand, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-size: 2.1rem;
     font-weight: 700;
     line-height: 1;
@@ -960,7 +962,7 @@
     /* il bordo inferiore lascia respiro alla sottolineatura disegnata (vedi .strip-postit-text::before) */
     padding: 0.45rem 1rem 0.9rem;
     /* grafia a penna (Reenie Beanie, --font-pen dal layout): richiesta di Pierluigi del 22/09/2026 */
-    font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-pen, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-weight: 400;
     color: var(--color-ink);
     text-align: left;
@@ -1095,7 +1097,7 @@
   .tape-note {
     display: inline-block;
     padding: 0.3rem 1.2rem 0.45rem;
-    font-family: var(--font-pen, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-family: var(--font-pen, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
     font-size: 2.9rem;
     line-height: 1;
     color: var(--color-ink);

@@ -191,7 +191,7 @@ describe("indice", () => {
     assert.equal(index[0].url, `${SITE}${HOME_SITEMAP_PATH}`);
     assert.equal(index.length, 1 + locales.length * SITEMAP_SECTIONS.length);
     for (const item of index.slice(1)) {
-      const [, l, s] = item.url.match(/^https:\/\/originsmeta\.com\/(en|it|es|fr|pt|de|ru)\/sitemap-([a-z-]+)\.xml$/) ?? [];
+      const [, l, s] = item.url.match(/^https:\/\/originsmeta\.com\/(en|it|es|fr|pt|de|ru|zh-cn)\/sitemap-([a-z-]+)\.xml$/) ?? [];
       assert.ok(l && s, item.url);
       const days = bySection(s as (typeof SITEMAP_SECTIONS)[number], l as Locale).map((e) => e.lastmod ?? "");
       assert.equal(item.lastmod, days.sort().at(-1));

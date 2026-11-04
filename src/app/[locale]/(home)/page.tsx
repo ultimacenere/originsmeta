@@ -7,7 +7,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { latestPatch, movers, patchLabel, patches } from "@/lib/data/cards";
 import { tierList, tierIds } from "@/lib/data/tierlist";
 import { getGuide, type Guide } from "@/lib/content/guides";
-import { newsPath, sortedNews, type NewsItem } from "@/lib/data/news";
+import { newsInLocale, newsPath, type NewsItem } from "@/lib/data/news";
 import { SectionHead } from "@/components/SectionHead";
 import { ChangeChip, StatDelta } from "@/components/ChangeChip";
 import { CardChipList, CardName, legendaryFirst } from "@/components/CardChip";
@@ -147,7 +147,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const economyGuide = getGuide(locale, "collector-economy");
   // News del sito e fumetti in un solo elenco, dal più recente (mergeFeed in comics.ts): tre in evidenza, con al massimo
   // un fumetto (splitHomeFeed, 19/10/2026), e sei in bacheca
-  const feed = mergeFeed(sortedNews, comicFeedCards(await listPublishedComics(9), locale, supabaseUrl, authorName));
+  const feed = mergeFeed(newsInLocale(locale), comicFeedCards(await listPublishedComics(9), locale, supabaseUrl, authorName));
   const { featured, board } = splitHomeFeed(feed);
   const C = comicLabels[locale];
   // Video dei creator sotto le news in evidenza (08/10/2026): dai feed YouTube dei profili vetrina, cache di mezz'ora

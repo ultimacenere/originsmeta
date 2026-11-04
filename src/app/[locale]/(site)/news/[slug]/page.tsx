@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Locale } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
-import { getNews, news, newsDates, newsPath, newsReadTime, sortedNews, splitDecklists } from "@/lib/data/news";
+import { getNews, hasNews, news, newsDates, newsInLocale, newsPath, newsReadTime, splitDecklists } from "@/lib/data/news";
 import { authorOfNews } from "@/lib/data/authors";
 import { patchOrder, patches } from "@/lib/data/cards";
 import { relatedNews } from "@/lib/relatedNews";
@@ -40,7 +40,7 @@ const TRANSLATED_ON: Record<Locale, string> = { en: "Translated on", it: "Tradot
 const patchNews = new Set(patchOrder.map((id) => patches[id].news).filter((s): s is string => Boolean(s)));
 
 export function generateStaticParams() {
-  return locales.flatMap((locale) => news.map((item) => ({ locale, slug: item.slug })));
+  return locales.flatMap((locale) => news.filter((item) => hasNews(item, locale)).map((item) => ({ locale, slug: item.slug })));
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -59,6 +59,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     imageAlt: item.title[locale],
     // Le copertine hanno misure diverse (1600×900, 1200×675…): si leggono dal file; le miniature remote no.
     imageSize: imageSizeOf(item.image),
+    // hreflang solo verso le lingue in cui la news è tradotta (il cinese parte dalle news recenti, 04/11/2026)
+    ...(item.untranslated ? { languages: locales.filter((l) => hasNews(item, l)) } : {}),
   });
 }
 
@@ -72,6 +74,8 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   const { locale, dict: d } = await resolveLocale(params);
   const item = getNews(slug);
   if (!item) notFound();
+  // News non ancora tradotta in questa lingua (cinese, dal 04/11/2026): si legge in inglese
+  if (!hasNews(item, locale)) redirect(href("en", newsPath(item)));
 
   const title = item.title[locale];
   const path = href(locale, newsPath(item));
@@ -88,7 +92,7 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
   const ll = linkLabels[locale];
   // News correlate (Ondata 1, 25/09/2026, NEWS-07): prima erano sempre le ultime tre uscite, uguali per ogni articolo;
   // ora guide e carte in comune, stesso tipo e vicinanza di data (`relatedNews`), completate con le più recenti.
-  const more = relatedNews(item, sortedNews, { patchNews });
+  const more = relatedNews(item, newsInLocale(locale), { patchNews });
   // Patch notes di una patch: il blocco "Cosa cambia in questa patch" con le carte toccate e il link a MetaShifting.
   // Le carte della news restano come pastiglie solo se il blocco non le elenca già tutte.
   const patch = patchOfNews(item.slug);

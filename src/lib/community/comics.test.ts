@@ -675,8 +675,8 @@ describe("fumetti: script per unire i fumetti di più lingue (scripts/merge-comi
 describe("fumetti: collegamenti", () => {
   test("proxy, privacy, /account e set-badge", () => {
     const proxy = read("../../proxy.ts");
-    assert.ok(proxy.includes('"/:locale(en|it|es|fr|pt|de|ru)/news/comics/new"'));
-    assert.ok(proxy.includes('"/:locale(en|it|es|fr|pt|de|ru)/news/comics/:slug/edit"'));
+    assert.ok(proxy.includes('"/:locale(en|it|es|fr|pt|de|ru|zh-cn)/news/comics/new"'));
+    assert.ok(proxy.includes('"/:locale(en|it|es|fr|pt|de|ru|zh-cn)/news/comics/:slug/edit"'));
     const privacy = read("../../app/[locale]/(site)/privacy/page.tsx");
     assert.match(privacy, /id="community-comics"/);
     assert.match(privacy, /comicLabels\[locale\]\.privacy/);
