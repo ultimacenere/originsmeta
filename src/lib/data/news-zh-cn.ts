@@ -7,13 +7,164 @@ import type { NewsCopy } from "./news-fr";
  * (`untranslated` in news.ts). Regole e glossario in docs/cinese.md.
  *
  * Tradotte dall'inglese il 04/11/2026: le otto news dal 20/10/2026 in poi, più le patch notes del 4/11
- * (balance-patch-1104-cyber-queen) e la correzione Cyber Queen / Dr. Frank Leggendaria nelle due news del 2 e 4/11.
- * Ancore in pinyin senza toni; i link alle news
+ * (balance-patch-1104-cyber-queen), la correzione Cyber Queen / Dr. Frank Leggendaria nelle due news del 2 e 4/11 e
+ * l'intervista a CoachCrono del 4/11 (coachcrono-crimson-cup-interview). Ancore in pinyin senza toni; i link alle news
  * più vecchie, che in cinese non ci sono, vanno all'inglese (`/en/news/…`, ammesso da `linkProblem` in newsMeta.ts).
- * Nell'intervista a SouL le etichette "**Davdas:**" e "**SouL:**" tengono i due punti latini: `markSpeakers` di
- * Markdown.tsx colora solo quelle.
+ * Nelle interviste a SouL e a CoachCrono le etichette ("**Davdas:**", "**SouL:**", "**Pierluigi:**", "**CoachCrono:**")
+ * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "coachcrono-crimson-cup-interview": {
+    title: "与 Crimson Cup 冠军 CoachCrono 聊聊：夺冠阵容和 Origins TCG 的未来",
+    metaTitle: "CoachCrono 专访：Origins TCG Crimson Cup 冠军",
+    description:
+      "Origins TCG Crimson Cup 冠军 CoachCrono 讲述他由 Pigs、Van Helsing 和 Legion of the Dead 组成的阵容，聊聊 Obliterate 和这款游戏的未来，并附上三份卡表和可以直接复制的游戏代码。",
+    summary:
+      "CoachCrono 赢得了 Origins TCG 的第一场大型锦标赛 Crimson Cup：他从败者组一路杀回，在一场全意大利人的总决赛中击败了 SouL。在这次对谈中，他聊了由 Pigs、Van Helsing 和 Legion of the Dead 组成的阵容，为什么他不会去动 Obliterate，以及他眼中这款游戏的走向。他的三份卡表现已成为一套锦标赛卡组，游戏代码可以直接复制。",
+    faq: [
+      {
+        q: "在哪里可以找到 CoachCrono 在 Crimson Cup 上用的卡表和游戏代码？",
+        a: "就在这篇文章里，以及他在 OriginsMeta 上的锦标赛卡组中：Three Not So Little Pigs、Van Helsing 和 Legion of the Dead，也就是 Koin Games 在决赛日公布的 Conquest 卡表，游戏代码可以直接复制。",
+      },
+      {
+        q: "他的阵容中哪副卡组表现最好？",
+        a: "Legion of the Dead：这是他最不喜欢的一份卡表，但它在环境中很强，也是三副中表现最好的。这套阵容针对 Three Not So Little Pigs 多于针对 Van Helsing。",
+      },
+      {
+        q: "CoachCrono 怎么看 Obliterate？",
+        a: "他认为它强度超标：它本该用在控制组合技卡组里，却因为太强、又没有克制手段，被用在了快攻和中速卡组中。不过他不会去动它：在他看来，等系列的其余卡牌推出后，问题会自然解决。尽管如此，Koin 还是在 11月4日的补丁中把它从 9 法力调到了 10 法力。",
+      },
+    ],
+    body: `CoachCrono 是 **Crimson Cup 冠军**，赢下了 Origins TCG 迄今为止规模最大的锦标赛：他从败者组杀回，在决赛日打出 9-3 的战绩，并在总决赛中击败 SouL，带走了 1/1 的 Dracula 宣传卡（[他的夺冠之路在这里](/zh-cn/news/crimson-cup-coachcrono-wins)）。他是一名主播，在 OriginsMeta 上拥有 Creator 身份：他的频道和卡组都在[他的个人主页](/zh-cn/u/coachcrono)上。
+
+我们经常聊天，最近几乎只聊 Origins，所以这与其说是一次采访，不如说是朋友之间的闲聊，一期小小的播客，录制于 [Alpha Edition Kickstarter](/zh-cn/kickstarter) 上线几天之后。提问者是 OriginsMeta 创始人 [Pierluigi Cella](/zh-cn/authors/pierluigi-cella)。
+
+他夺冠时用的三份卡表，也就是 Koin Games 在决赛日公布的那三份，现在已成为一套[锦标赛卡组](/zh-cn/decks/tournament/coachcrono-crimson-cup-lineup)：**你可以在下文找到它们，游戏代码可以直接复制**。
+
+## Origins 的第一场锦标赛 {#di-yi-chang-jin-biao-sai}
+
+**Pierluigi:** 你好 Coach，能请你来和我一起聊聊，真的很开心。我得坦白说：我们经常聊天，聊很多事情，但最近聊的总是 Origins，所以今天就更开心了。能邀请你来做客，真是太不可思议了，咱们实话实说，这与其说是一次采访，不如说是一次私下的闲聊，算是朋友之间的一期小播客。我想问你的第一个问题是：如今对你来说，参加一场锦标赛，而且是 Origins 的第一场锦标赛，意味着什么？
+
+**CoachCrono:** 嗯，这个问题很有意思，因为锦标赛一开始，我说的第一句话就是：“放轻松，兄弟们，我们打个 0-2，然后就去解说比赛。”我知道自己打这场锦标赛是为了好玩：我连直播延迟都没加，还想尽办法让它看起来像一场表演，而不是一场竞技锦标赛，当然是就我这边而言。后来，它还真成了一场竞技比赛。
+
+一开始完全是为了好玩，当然更多是以主播的身份，而不是职业选手。不过打到一半，情况变了。比赛越往后打，我连赢的轮次越多，**我小时候那种想认真打比赛的劲头就越是被重新点燃**。自从 Marvel Snap 和 The Bazaar 的那段日子以来，这股劲头一直有点沉睡，可惜这两款游戏从来都不算太有竞技性，The Bazaar 更是完全没有。
+
+## Origins 对 Coach 意味着什么 {#yi-wei-zhe-shen-me}
+
+**Pierluigi:** Origins 的根基和渊源都让人很熟悉，因为它借鉴了好几款其他作品，让我们想起很多玩过的游戏，但它有一个全新的灵魂，这让人不禁会心一笑，因为这是一个极具竞技性的灵魂，而且凭借这一整套卡牌理念，在美术上也同样引人入胜。那么：如今的 Origins 对 Coach 来说是什么？
+
+**CoachCrono:** 对我来说，现在的 Origins 是一个可以和我的社区一起放松的地方，是**我直播的主要内容**，也是我觉得最适合我、也最适合我的社区的游戏，因为作为主播，我当然也会为他们着想，而不只是为我自己。而且我觉得它真的很好玩：**早上一醒来，我就知道自己要去打几局 Origins**，好好享受一番。
+
+## 阵容：Pigs、Van Helsing 和 Legion of the Dead {#zhen-rong}
+
+> “最差的卡表毫无疑问是 Legion of the Dead。我从来不喜欢它，但它是三副中表现最好的卡组。”
+
+**Pierluigi:** 那我们就来聊聊你赢下的这场锦标赛吧。你做了不少选择，测试了很多，我们也在你的频道上一路关注：你还试过一些很疯狂的想法，把阵容这样搭一遍，又那样搭一遍，有时结果惨不忍睹，有时又令人惊艳。那最后呢？你选了什么，为什么？你完全满意吗？
+
+**CoachCrono:** 我们的选择基于我的想法，也基于很多帮我测试的伙伴们的想法。因为这是第一场锦标赛，别人会怎么选有点难以预料，所以我决定干脆带上**尽可能强、尽可能稳定的阵容**。我们也考虑过其他路线，风险要大得多，比如专门克制最强阵容的阵容，但最后，因为这是第一场锦标赛，我还是决定走简单路线。
+
+**Pierluigi:** 能给我们讲讲你带的卡表吗？你改了什么，喜欢什么？也许再说说三副里最好的和最差的：回头看，你会改动什么吗？
+
+**CoachCrono:** 最差的卡表毫无疑问是 Legion of the Dead。我从来不想玩它，也从来不喜欢它，但最后它在环境中确实很强，表现得非常非常好：**它是三副中表现最好的卡组**。
+
+[![Legion of the Dead，Coach 从来不喜欢、却在锦标赛中表现最好的那份卡表](/cards/cover/legion-of-the-dead.webp)](/zh-cn/cards/legion-of-the-dead)
+
+我觉得，解读这些阵容的关键说到底非常简单：克制正在统治环境的 Van Helsing。不过我做了一个不同的选择，目标是克制 **Three Not So Little Pigs**：对我来说，Pigs 比 Van Helsing 更烦人，而最后，我得说，结果还不错。
+
+提防它们的不只 Coach 一个：决赛中，**四套阵容里都有 Three Not So Little Pigs**，三套有 Van Helsing。决赛选手的十二份卡表都在我们的 [Crimson Cup 页面](/zh-cn/analytics/crimson-cup#finals)上。
+
+## Coach 的三份卡表 {#ka-biao}
+
+这些是 10月25日使用的卡表。此后，[11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)改动了其中的四张卡牌：Obliterate 和 Baby Bear 的费用增加 1，Guy of Gisborne 的力量减少 1，Searing Light 的费用减少 1。
+
+{{decklists}}
+
+## 对阵 SouL 的决赛 {#jue-sai}
+
+> “我从没想过自己能用 Van Helsing 赢下哪怕一场对局，可第一局，那副 Van Helsing 偏偏就赢了。”
+
+**Pierluigi:** 决赛中你的对手是另一位意大利人 SouL，他在 OriginsMeta 上给我们讲过[他的经历](/zh-cn/news/soul-crimson-cup-interview)：他对你们的比赛评价很高，说那些对局非常轻松，因为和一位熟识的朋友对战时，即使奖品很重要，你也会尊重对方的灵魂。你们在对决中甚至还互相示好，但那毕竟是决赛。从 Coach 的角度看，决赛打得怎么样？
+
+**CoachCrono:** 在我看来，这场决赛糟透了，因为我是带着这样的认知走进决赛的：前一天我们已经在季后赛里交过手了，他干脆利落地 2-0 赢了我，我几乎没怎么打，**他把我送进了败者组，我连还手的机会都没有**。所以我知道，对上他，我的阵容更吃亏：他带了一套非常非常聪明的阵容，我明显处于劣势。
+
+但在决赛里，我借助地点的帮助，**偷下了第一局，也就是 Van Helsing 的那场对局**，而且赢下它的恰恰是他不惜一切代价想要击败的那副卡组。拿下这一局之后，一切都变得容易了一些。我从没想过自己能用 Van Helsing 赢下哪怕一场对局，可第一局，那副 Van Helsing 偏偏就赢了。
+
+[![Van Helsing，Coach 用来偷下决赛第一局的卡组](/cards/cover/van-helsing.webp)](/zh-cn/cards/van-helsing)
+
+季后赛的那场 2-0 在[对阵表](/zh-cn/analytics/crimson-cup/playoffs)里：Coach 从那里掉进败者组，又一路打回了总决赛。SouL 眼中的决赛在[他的专访](/zh-cn/news/soul-crimson-cup-interview#jue-sai)里：第一局之后，系列赛打到 2-2，并在最后一局决出胜负。
+
+## 1/1 的 Dracula {#dracula}
+
+**Pierluigi:** 你赢得了一张特别的 Dracula，这张卡目前在环境中出场不多，但它有一段了不起的故事：它是这款游戏第一张编号 1/1 的卡牌，带有全金色的版本。赢下它一定是件很特别的事，我想对你来说也是。作为一名身经百战的竞技玩家，你赢下的不只是一件物品、一张卡牌、一份价值，而是一款新游戏的象征，甚至是在它正式推出之前：这是什么感觉？
+
+**CoachCrono:** 能赢下来，而且是和社区一起赢下来，这绝对是一种莫大的荣誉，也非常开心：**最重要的就是这个，有我的社区在身边**。不过也得说，赢总是让人开心的，如果还有奖品，那就更好了。
+
+[![Koin Games 为 Crimson Cup 冠军 CoachCrono 制作的官方宣传图：1/1 的 Dracula 宣传卡、两整箱补充包和 1,500 美元](/media/news-crimson-cup-winner.webp)](/zh-cn/news/crimson-cup-coachcrono-wins)
+
+## Obliterate 和环境 {#huan-jing}
+
+> “环境里的东西我一点都不会改：等克制它的卡一出来，又得再改一遍，那就成了无限循环。”
+
+**Pierluigi:** 在 OriginsMeta 上，我们也看到了大量分析数据：有些卡牌比别的卡牌用得多，有些组合技用得多得多。游戏目前的状态说明这个系列，怎么说呢，还有点“跛脚”，正处在成长的半路上：补全初始系列的卡牌都还没推出。有没有哪些情况或卡牌是你想改的？是什么让 Origins 的环境变得有点让人喘不过气？你会怎么改？
+
+**CoachCrono:** 肯定有一些卡牌强度超标了。我首先想到的是 **Obliterate**：这张卡本该用在控制组合技卡组里，结果却被直接用在快攻和中速卡组中，因为它太强了，而且没有克制手段。
+
+但我认为，等系列的其余卡牌推出后，一切都会自然而然地理顺、演变。现在我完全不觉得这是个问题：我只是觉得需要等一等，给它一些时间。所以不，**环境里的东西我一点都不会改**，因为等克制它的卡一出来，又得再改一遍，那就会陷入无限循环。
+
+[![四名决赛选手的 12 份卡表中出现最多的卡牌，来自 OriginsMeta 的 Crimson Cup 页面：Obliterate 出现在其中 6 份](/media/news-coachcrono-obliterate-zh-cn.webp)](/zh-cn/analytics/crimson-cup#finals)
+
+决赛中，Obliterate 出现在 **12 份卡表中的 6 份**里，和 Golden Egg、Mind Palace、Tin Woodman 一样多，只有 Baby Bear 更多（7 份）：Obliterate 出现在全部四份 Three Not So Little Pigs 卡表里，也出现在 Coach 的 Legion of the Dead 和 SouL 的 Merlin 里。每张卡牌的统计都在我们的 [Crimson Cup 页面](/zh-cn/analytics/crimson-cup#finals)上；天梯数据来自用 OriginsMeta Tracker 记录的对局，在 [Analytics](/zh-cn/analytics) 中。
+
+Koin 的看法不同：在 [11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)中，Obliterate 的费用从 9 变成了 10。这个补丁与这篇采访在同一天发布，而采访是在此之前录制的。
+
+## Origins 的未来 {#wei-lai}
+
+> “只要他们不在别人开出的妥协条件面前让步，并保持游戏的竞技性，就能轻松取得成功。”
+
+**Pierluigi:** 这很有意思，因为这就引出了 Coach 如今对 Origins 的看法。Origins 几天前开启了 Kickstarter 众筹，很多人开始对这款游戏产生兴趣，我们也已经有了活跃的社区：我们的主播、我们的网站和锦标赛的数据都告诉我们，它在成长，而且明显在扩张。在走向正式上线的路上，你怎么看 Origins 的近期未来？你觉得从那以后又会发生什么？
+
+**CoachCrono:** 我认为 Origins 前途远大，当然也有一些很大的未知数。但必须说，到目前为止，为了让游戏好玩、让越来越多的人能玩上，他们该做的都做了，首先当然是免费游玩（free-to-play），这是他们的招牌：**任何人都可以免费玩、免费竞技**，体验一点那种美国梦，而我赢下第一场锦标赛，其实就亲身经历了一回。
+
+[![Koin Games 的“Zero pay to win”宣传图：每位玩家都能通过赢得对局获得所有卡牌，无需花钱](/media/ls-zero-pay-to-win.webp)](/zh-cn/kickstarter)
+
+我认为这是正确的道路。大公司肯定会向他们开出各种妥协条件，**只要他们不让步**，并保持游戏的竞技性，就能轻松取得成功。他们只需要持之以恒地继续做他们正在做的事，再改进那些理所当然还欠缺的地方，比如锦标赛期间的组织体验。
+
+文中提到的 Kickstarter 就是 Alpha Edition 的那一个：奖励、概率和日期都在我们的 [Kickstarter 页面](/zh-cn/kickstarter)上。
+
+## 新手和老手为什么都值得一玩 {#xin-shou-he-lao-shou}
+
+**Pierluigi:** 你为什么会向刚接触卡牌游戏的玩家推荐 Origins？又为什么会推荐给已经熟悉这类游戏的老玩家？
+
+**CoachCrono:** 对于没玩过这类游戏的人，我绝对会推荐，主要有两个原因。第一个是它，打个引号，“没有”战斗系统：**卡牌会自己战斗**，所以你不用像在 Magic 或 Yu-Gi-Oh! 里那样，一上来就要考虑交换和连锁，这让入门变得更容易。第二个是它**免费游玩**，所以你不需要像玩实体卡牌游戏那样花钱，就能进入卡牌游戏的世界。
+
+我也会推荐给更有经验的玩家，其实理由正好相反：因为这是一款很容易上手的游戏，有很多人才刚刚起步，而对职业选手来说，这在现阶段就意味着**奖品更多，也更容易赢到**。
+
+## 童话外衣 {#tong-hua-wai-yi}
+
+**Pierluigi:** 你觉得 Origins 也为讲述自己选对了外衣吗？以童话为基础的世界观已经让很多玩家为之疯狂，却也让另一些人不以为然：它能打动卡牌游戏爱好者的心吗？
+
+**CoachCrono:** 我觉得能。你只要进入游戏，就会看到 Winnie-the-Pooh、《美女与野兽》和其他大品牌，以一种非常独特的风格被重新演绎，彻底变了样：**Winnie-the-Pooh 从一只弱小无助的小熊变成了 200 公斤的健美运动员**。这让一切都非常有趣，同时又非常熟悉，因为它终究还是 Winnie-the-Pooh，那只你小时候就认识的小熊。所以没错，我认为他们的营销选择真的非常精准：**最小的成本，最大的效果**。
+
+[![Origins TCG 版本的 Winnie-the-Pooh：童年的小熊变成了庞然大物](/cards/cover/winnie-the-pooh.webp)](/zh-cn/cards/winnie-the-pooh)
+
+## Coach 眼中的 OriginsMeta {#originsmeta}
+
+**Pierluigi:** 你从 OriginsMeta 这个项目诞生起就了解它，因为我们一直在聊它：我们还没公开之前，我就让你参与进来了，在让我们的产品成长这件事上，你一直是一位宝贵的伙伴。我们一直在扩展，不断推出新工具和可以访问的新页面，大家非常感谢我们提供的统计、数据等等，而我们也永远会感谢他们每天选择我们。我们还能做些什么来改进？怎样才能让 Origins 社区越来越乐于访问 OriginsMeta？
+
+**CoachCrono:** 我觉得 OriginsMeta 做得非常好，尤其是在易用性方面，我会沿着这条路继续走下去：**站在大家这一边**，就像你们现在做的那样，让 OriginsMeta 尽可能简单直观。必须说，在这方面你们已经做得非常出色了，但就像生活中的一切一样，总还有改进的空间。也许 Tracker 还有一点小地方要完善，但我觉得大头已经完成了，所以比起建议，我能给你们的只有满满的称赞。**我知道你们投入了多少热情和心血**，一直在倾听玩家的声音，这就是不一样的地方。
+
+这里说的 Tracker 就是 [OriginsMeta Tracker](/zh-cn/tracker)，一款能自动记录对局、为 [Analytics](/zh-cn/analytics) 提供统计数据的 Windows 应用。
+
+**Pierluigi:** 你太客气了，朋友：我们会继续尽最大努力。我邀请大家在[他的所有频道](/zh-cn/u/coachcrono)上关注 Coach：他经常直播，而且播的就是 Origins，带我们越来越深入地了解这款精彩的游戏。Coach，给你一个大大的拥抱，谢谢你。
+
+**CoachCrono:** 我也是。爱你们，兄弟们。
+
+## 关麦之后 {#guan-mai-zhi-hou}
+
+关掉麦克风之后，Coach 给我们讲了一件趣事，“如果你想拿来玩梗的话”：
+
+**CoachCrono:** 大概两个月前，也可能是两个半月，甚至三个月前，Origins 的第一个试玩版刚出来的时候，Senit 跟我说：“你看，有一款新的 TCG，我觉得很有前途。”我回他：“别再给我推荐这些破小游戏了。”两个月后，等我对 The Bazaar 没那么烦了，我又试了一次，一下子就爱上了它。现在回头看还挺好笑的：如今 Origins 最具代表性的人物，恰恰就是当初跟他说“别给我推荐这种破小游戏”的那个家伙。`,
+  },
   "balance-patch-1104-cyber-queen": {
     title: "Origins TCG 11月4日补丁说明：十张卡牌平衡调整，Cyber Queen 成为第 11 位首领",
     metaTitle: "Origins TCG 11月4日补丁：Obliterate 10 费，三熊涨价",
