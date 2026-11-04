@@ -147,6 +147,167 @@ Bei ausgeschalteten Mikros hat uns der Coach eine Anekdote geschenkt, „wenn du
       { q: "Was hält CoachCrono von Obliterate?", a: "Dass die Karte gerade overperformt: Sie ist für Control-Combo-Decks gedacht, wird aber in Aggro- und Midrange-Decks gespielt, weil sie zu stark ist und keinen Counter hat. Trotzdem würde er sie nicht anfassen: Seiner Meinung nach regelt sich das, wenn der Rest des Sets erscheint." },
     ],
   },
+  "dr-frank-boss-new-cards": {
+    title: "Dr. Frank kommt am 4. November zu Origins TCG: der neue Boss und seine acht neuen Karten",
+    metaTitle: "Dr. Frank in Origins TCG: neuer Boss und 8 neue Karten",
+    description:
+      "Dr. Frank, der neue Boss von Origins TCG, kommt am Mittwoch, 4. November, mit einem Balance-Patch und acht neuen Karten: hier sind sie, eine nach der anderen.",
+    summary:
+      "Dr. Frank, der nächste Boss von Origins TCG, kommt am Mittwoch, 4. November 2026, eine Woche früher als geplant, weil die Spieler 500 Rezensionen auf Steam erreicht haben. Er bringt acht neue Karten mit, die Koin Games über seine Creator enthüllt hat: Dr. Frank selbst ist eine Legendäre, und sechs der acht Karten sind böse. Am selben Tag kommt ein Balance-Patch.",
+    highlights: [
+      { label: "Mittwoch, 4. November", text: "Dr. Frank, der Boss von Mission 12, kommt mit neuen Karten", anchor: "ankunft" },
+      { label: "Eine Woche früher", text: "die Spieler haben die 500 Steam-Rezensionen erreicht, um die Koin gebeten hatte", anchor: "rezensionen" },
+      { label: "Acht neue Karten", text: "eine Legendäre, ein Zauber und sechs Charaktere; sechs Karten sind böse", anchor: "karten" },
+      { label: "Der Friedhof kehrt zurück", text: "Dr. Frank und It's Alive beschwören Charaktere aus deinem Friedhof", anchor: "friedhof" },
+      { label: "Ein neues Schlüsselwort", text: "Red Knight bringt Ongoing, das heute keine Karte im Spiel hat", anchor: "red-knight" },
+      { label: "Balance-Patch", text: "Koins Studio Head sagt, dass er mit Dr. Frank kommt", anchor: "balance" },
+      { label: "Jetzt ausprobieren", text: "bau in unserem Theory Craft ein Deck mit den acht Karten", anchor: "theory-craft" },
+    ],
+    body: `## Dr. Frank kommt am Mittwoch, 4. November {#ankunft}
+
+„Der nächste Boss, Dr. Frank, kommt nächste Woche zu Origins, mit einem Deck voller neuer Karten.“ Koin Games hat es am 31. Oktober 2026, an Halloween, auf Steam angekündigt, im Beitrag „Happy Halloween, Dr. Frank is coming“: Das Datum ist **Mittwoch, der 4. November**. Dr. Frank ist der Boss von Mission 12, der nächsten der Missionen gegen die KI des Spiels, und er bringt die neuen Karten mit. Als wir diesen Artikel veröffentlicht haben, hatte Koin noch nicht gesagt, um wie viel Uhr das Update kommt.
+
+## Eine Woche früher, dank der Rezensionen {#rezensionen}
+
+Dr. Frank sollte eine Woche später kommen. Am 29. Oktober hat apix von Koin den Spielern auf dem offiziellen Discord ein Angebot gemacht: Am Vortag hatten rund 10.000 Personen gespielt, aber nur 200 hatten eine Rezension auf Steam hinterlassen; mit 500 Rezensionen bis zum Ende der Woche sollte Mission 12 schon in der Woche darauf erscheinen, „früher als geplant“. Das Ziel war in weniger als zwei Tagen erreicht. Am 31. Oktober schrieb Mawr, Studio Head von Koin: „Ihr habt es geschafft! 500 Rezensionen! Der Boss kommt eine Woche früher.“ Die Grafik des Steam-Beitrags sagt dasselbe: „Weil ihr das Ziel erreicht habt, kommt Dr. Frank eine ganze Woche früher als geplant.“
+
+## Die acht neuen Karten {#karten}
+
+Am 2. November hat Koin seinen Creatorn vorab Zugang zu „allen acht neuen Karten von Origins“ gegeben, mit den offiziellen Bildern, um sie zu enthüllen: Es sind die Karten auf den Bildern unten. Sechs der acht Karten sind böse. Alle acht waren schon in unserer Datenbank, unter den aus dem Spiel entfernten Karten, mit denselben Kosten und denselben Werten.
+
+| Karte | Kosten | Werte | Typ und Schlüsselwörter |
+|---|---|---|---|
+| [Dr. Frank](/de/cards/dr-frank) | 6 | 2/2 | Legendär, Evil |
+| [It's Alive](/de/cards/its-alive) | 3 | – | Zauber |
+| [Frank's Monster](/de/cards/franks-monster) | 6 | 5/4 | Evil, Wiedergeburt |
+| [Franken Bride](/de/cards/franken-bride) | 5 | 4/4 | Evil, Wiedergeburt |
+| [Morgan le Fay](/de/cards/morgan-le-fay) | 2 | 1/3 | Evil, Beim Aufdecken |
+| [Doppelganger](/de/cards/doppelganger) | 4 | 2/2 | Evil |
+| [Necromancer](/de/cards/necromancer) | 4 | 2/2 | Evil, Beim Aufdecken |
+| [Red Knight](/de/cards/red-knight) | 2 | 4/1 | Überrennen, Ongoing |
+
+Die Bilder sind die englischen Karten von Koin; die deutschen Texte unten sind unsere Übersetzung mit dem Glossar des Spiels, und wir vergleichen sie mit dem Spiel, sobald das Update draußen ist.
+
+### Dr. Frank und It's Alive: Der Friedhof kehrt zurück {#friedhof}
+
+![Die offiziellen Karten Dr. Frank und It's Alive von Koin Games: Dr. Frank, Legendär, 6 Mana, 2/2; It's Alive, ein Zauber für 3 Mana](/media/news-dr-frank-graveyard.webp)
+
+Dr. Frank ist eine Legendäre: „Beschwöre vor dem Kampf einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.“ It's Alive ist ein Zauber für 3 Mana, der dasselbe einmal macht: „Beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.“ Koin hat nicht gesagt, ob It's Alive die Karte ist, die Dr. Frank dir zu Beginn der Partie auf die Hand gibt: ZulsoiD stellt sie in seinem Video so vor, Robip hält es für wahrscheinlich.
+
+### Frank's Monster und Franken Bride: Wiedergeburt {#wiedergeburt}
+
+![Die offiziellen Karten Frank's Monster und Franken Bride von Koin Games, böse und mit Wiedergeburt](/media/news-dr-frank-rebirth.webp)
+
+Beide haben **Wiedergeburt**, das Schlüsselwort von Mummy und Phuong Hoang, und beide tun etwas, wenn sie zurückkommen. Frank's Monster, 6 Mana für einen 5/4: „Wenn ich aus dem Friedhof ins Spiel komme, verdopple meine ⚔️.“ Franken Bride, 5 Mana für eine 4/4: „Wenn ich aus dem Friedhof ins Spiel komme, heile 4 Schaden bei deiner Barriere hier.“ In den Videos der Creator kommt das Monster als 10/1 zurück und die Bride als 4/1.
+
+### Morgan le Fay, Doppelganger und Necromancer: Abwerfen {#abwerfen}
+
+![Die offiziellen Karten Morgan le Fay, Doppelganger und Necromancer von Koin Games: drei böse Charaktere für Abwurf-Decks](/media/news-dr-frank-discard.webp)
+
+Drei Karten für Abwurf-Decks, also die Decks, die um Dracula, Koschei und Aladdin gebaut sind.
+
+- [Morgan le Fay](/de/cards/morgan-le-fay), 2 Mana für eine 1/3: „Beim Aufdecken: Wirf deine Karte ganz rechts ab. Füge deiner Hand einen zufälligen Zauber hinzu und senke seine Kosten um 2.“
+- [Doppelganger](/de/cards/doppelganger), 4 Mana für einen 2/2: „Wenn du einen Charakter abwirfst, verwandle ich mich in eine Kopie dieses Charakters.“
+- [Necromancer](/de/cards/necromancer), 4 Mana für einen 2/2: „Beim Aufdecken: Wirf eine zufällige Karte ab, um deiner Hand 2 Zombies [2⚔️/2❤️] hinzuzufügen. Wenn du eine böse Karte abgeworfen hast, beschwöre diese Zombies stattdessen.“
+
+### Red Knight bringt Ongoing {#red-knight}
+
+![Die offizielle Karte Red Knight von Koin Games: 2 Mana, 4/1, Überrennen und Ongoing](/media/news-dr-frank-red-knight.webp)
+
+[Red Knight](/de/cards/red-knight), 2 Mana für einen 4/1: „Überrennen. Ongoing: Der Charakter mir gegenüber hat Überrennen.“ **Ongoing** kennzeichnet eine Fähigkeit, die immer aktiv ist, solange die Karte im Spiel ist, und heute hat keine Karte im Spiel sie: Solange Red Knight auf dem Spielfeld steht, hat auch der Charakter ihm gegenüber Überrennen.
+
+## Ein Balance-Patch am selben Tag {#balance}
+
+„Der Balance-Patch kommt morgen, mit Dr. Frank“: Das hat Mawr am 3. November auf dem Discord geschrieben. Die Änderungen sind noch nicht öffentlich: Sobald die Patchnotes da sind, veröffentlichen wir sie, und [MetaShifting](/de/metashifting) zeigt Karte für Karte, was sich ändert. Bis dahin bleiben die Werte auf OriginsMeta die von [Patch 0.7](/de/news/patch-0-7). Die anderen Termine der Woche, vom Roadmap-AMA am Freitag, 6. November, bis zum Ende der Ranglisten-Saison 1, stehen in [unserem Artikel vom 2. November](/de/news/balance-patch-dr-frank-roadmap-ama).
+
+## Was die Creator sagen {#creator}
+
+In seinem [Video vom 3. November](https://www.youtube.com/watch?v=tU9muG1MZts) geht ZulsoiD alle acht Karten durch. Seine ersten Eindrücke, die Meinungen sind und keine Daten:
+
+- Dr. Frank und It's Alive lohnen sich für Midrange- und Control-Decks: Einen Charakter mit 4 Mana oder mehr mit einem Zauber für 3 zurückzuholen, ist schon ein Gewinn. Ein so beschworener Charakter löst seine Beim-Aufdecken-Fähigkeit nicht aus, also kommen Boogeyman und Asanbosam ohne ihren Nachteil zurück.
+- Frank's Monster ist „gerade die stärkste Karte mit Wiedergeburt“: ein 5/4, der zweimal blockt.
+- Franken Bride kann in Decks, die den Schaden bremsen wollen, den Platz von Bridge Troll einnehmen.
+- Morgan le Fay lohnt sich mehr wegen des Abwerfens als wegen des Zaubers, auch wenn ein Obliterate für 7 oder ein Rain of Arrows für 3 willkommen sind. Spiel Ugly Duckling, dann Morgan le Fay und wirf Aladdin ab: Aladdin kommt aufs Spielfeld und Ugly Duckling verwandelt sich.
+- Doppelganger will Charaktere mit 4 Mana oder mehr, vor allem Dracula und Koschei.
+- Necromancer überzeugt ihn weniger: Die Abwurf-Decks von heute spielen wenige böse Karten (King Shahryar, Dracula, Koschei), und für ein Mana mehr gibt Three Musketeers ein ähnliches Spielfeld, mit Erstschlag.
+- Red Knight ist eine Karte für Aggro-Decks, die mit jedem Buff wächst, zum Beispiel mit Glinda, aber gegen Baby Bear, Bagheera und Musketeer, die gerade viel gespielt werden, kann sie Probleme haben.
+
+Auch Robip hat die acht Karten vorgestellt, [auf Italienisch](https://www.youtube.com/watch?v=L5CfgUtIYA4).
+
+## Jetzt auf OriginsMeta ausprobieren {#theory-craft}
+
+Die acht Karten sind in der [Kartendatenbank](/de/cards) mit dem Filter „Nicht im Spiel“, und im [Theory Craft](/de/theory-craft) kannst du schon ein Deck mit ihnen bauen: Die Decks, die du veröffentlichst, landen bei den [Theory-Craft-Decks](/de/theory-craft/decks). Sobald das Update im Spiel ist, markieren wir sie als Karten des Spiels und vergleichen ihre Texte in allen sieben Sprachen; die Decks mit diesen Karten wandern dann von selbst zu den Einzeldecks.
+
+## Was wir noch nicht wissen {#noch-offen}
+
+- Um wie viel Uhr das Update am 4. November kommt.
+- Wie man Dr. Frank und seine Karten freischaltet und ob man sie ab dem ersten Tag im Ranglisten-Modus nutzen kann.
+- Ob It's Alive die Karte ist, die Dr. Frank dir zu Beginn der Partie gibt.
+- Was der Balance-Patch ändert.
+
+Quellen: der Steam-Beitrag „Happy Halloween, Dr. Frank is coming“ (31. Oktober 2026) und seine Grafik; die Nachrichten von apix (29. Oktober) und von Mawr (31. Oktober und 3. November) auf dem offiziellen Discord von Origins TCG; die Kartenbilder, die Koin Games seinen Creatorn zum Enthüllen gegeben hat (2. November); das Video von ZulsoiD (3. November). Die Zitate haben wir übersetzt. Illustrationen: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
+    faq: [
+      { q: "Wann kommt Dr. Frank zu Origins TCG?", a: "Am Mittwoch, 4. November 2026, eine Woche früher als geplant, weil die Spieler 500 Rezensionen auf Steam erreicht haben. Als wir diesen Artikel veröffentlicht haben, hatte Koin die Uhrzeit nicht angekündigt." },
+      { q: "Welche neuen Karten bringt Dr. Frank?", a: "Acht: Dr. Frank (Legendär, 6 Mana, 2/2), It's Alive (Zauber, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) und Red Knight (2, 4/1)." },
+      { q: "Gibt es mit Dr. Frank einen Balance-Patch?", a: "Ja: Mawr, Studio Head von Koin, hat geschrieben, dass der Balance-Patch am 4. November mit Dr. Frank kommt. Die Änderungen waren noch nicht veröffentlicht." },
+      { q: "Kann ich schon ein Deck mit den neuen Karten bauen?", a: "Auf OriginsMeta ja: Die acht Karten sind im Theory Craft, unserem Deckbuilder mit den Karten, die nicht im Spiel sind, bis das Update draußen ist." },
+    ],
+  },
+  "balance-patch-dr-frank-roadmap-ama": {
+    title: "Origins TCG: Balance-Patch und Dr. Frank am Mittwoch, Roadmap-AMA am Freitag",
+    metaTitle: "Origins TCG: Balance-Patch Mittwoch, Roadmap-AMA Freitag",
+    description:
+      "Origins TCG: Der erste Balance-Patch des Early Access und der Boss Dr. Frank kommen am Mittwoch, 4. November, das Roadmap-AMA ist am Freitag, 6. November.",
+    summary:
+      "Origins TCG hat diese Woche zwei Termine. Am Mittwoch, 4. November, kommt der erste Balance-Patch des Early Access, zusammen mit Dr. Frank, einem neuen Boss mit einem Deck voller neuer Karten; am Freitag, 6. November, um 22:00 Uhr deutscher Zeit hält Koin Games ein AMA zur Roadmap im offiziellen Discord. Die Patchnotes sind noch nicht erschienen.",
+    highlights: [
+      { label: "Balance-Patch am Mittwoch", text: "4. November, der erste des Early Access; Patchnotes noch nicht erschienen", anchor: "balance-patch" },
+      { label: "Dr. Frank kommt", text: "der neue Boss mit einem Deck voller neuer Karten, eine Woche früher", anchor: "dr-frank" },
+      { label: "Roadmap-AMA am Freitag", text: "6. November um 22:00 Uhr deutscher Zeit im offiziellen Discord", anchor: "roadmap-ama" },
+      { label: "Ranglisten-Saison 1", text: "endet in der Woche des 7. Dezember", anchor: "ranglisten" },
+      { label: "In Arbeit", text: "schnellere Animationen, mehr Turniere, der Collector Pass im Spiel", anchor: "in-arbeit" },
+    ],
+    body: `## Mittwoch, 4. November: der Balance-Patch {#balance-patch}
+
+Der erste Balance-Patch des Early Access von Origins TCG kommt am Mittwoch, 4. November 2026. Am Montag, 2. November, gab Moderator Senith in #the-courtyard im offiziellen Discord eine Nachricht von Mawr weiter, dem Studio Head von Koin Games: „Ich glaube, ihr werdet mit den Balance-Updates zufrieden sein, die am Mittwoch, 4. November, kommen.“ Am selben Abend schrieb apix aus dem Koin-Team auf X, dass „der erste richtige Balance-Patch vor der Tür steht“ ([sein Post](https://x.com/apixtwts/status/2117383252478456012)).
+
+Es ist die erste Änderung an den Karten seit [Patch 0.7](/de/news/patch-0-7) vom 29. September 2026: Das [Update 0.8](/de/news/origins-tcg-early-access-0-8), das am 27. Oktober den Early Access eröffnet hat, hat keine Karten verändert. Die Patchnotes sind noch nicht erschienen, deshalb wissen wir weder, welche Karten sich ändern, noch, um wie viel Uhr das Update kommt. Sobald sie veröffentlicht sind, stellen wir sie mit dem Vorher und Nachher jeder Karte vor, und die [Kartendatenbank](/de/cards), der [Deckbuilder](/de/deck-builder) und [MetaShifting](/de/metashifting) zeigen die neuen Werte.
+
+## Am selben Tag: Dr. Frank, der neue Boss {#dr-frank}
+
+Am Mittwoch kommt auch der nächste Boss, Dr. Frank. Koin hat ihn am 31. Oktober auf Steam angekündigt („[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)“): Der Boss „bekommt ein Deck voller neuer Karten“ und kommt eine Woche früher als geplant. Den Grund nennen die Grafik des Posts und der Discord: Die Community hat 500 Steam-Rezensionen erreicht, und in jener Nacht schrieb Koin in #announcements, dass „der Boss eine Woche früher kommt“. Am 2. November bestätigte apix im Discord: „neuer Boss am Mittwoch“.
+
+Die Bosse sind die Gegner der Missionen, die gegen die KI gespielt werden. Unsere Datenbank hat bereits eine Legendäre [Dr. Frank](/de/cards/dr-frank), die nicht mehr im Spiel ist: Ihre Seite zeigt die letzten bekannten Daten, nicht im Spiel überprüft, und der Boss muss nicht damit übereinstimmen. Koin hat nicht gesagt, ob die neuen Karten seines Decks auch in die Sammlung der Spieler kommen.
+
+## Freitag, 6. November: das Roadmap-AMA {#roadmap-ama}
+
+Am Freitag, 6. November, um 22:00 Uhr deutscher Zeit (21:00 UTC) veranstaltet Koin das „Super Secret Early Access Roadmap AMA“, eine Fragerunde zur Roadmap des Early Access. Es ist ein Event im offiziellen Discord, im Kanal #live-events, erstellt von apix. Tim Jooste, Gründer und CEO von Koin Games, hatte es in seiner Nachricht in #announcements vom 1. November als Erstes unter den nächsten Neuigkeiten genannt, ohne weitere Details.
+
+In derselben Nachricht kündigte er zwei weitere Dinge an, ebenfalls ohne Datum: einen „Tell Your Local TCG Shop About Origins Day“, einen Tag, an dem du deinem Kartenladen Origins vorstellst, mit Details „in Kürze“, und einen Überblick über die Turnierszene mit Turnieren, Belohnungen und Formaten. Das letzte AMA am 2. Oktober brachte die Termine der Ranglisten und die ersten Zahlen zu neuen Karten ([unser Artikel](/de/news/building-origins-ama-design-balance)); die bisher bestätigten Termine stehen in unserer [Roadmap](/de/guides/roadmap-and-dates). Über das AMA berichten wir nach dem Stream.
+
+## Die Ranglisten-Saison 1 endet in der Woche des 7. Dezember {#ranglisten}
+
+Ein weiterer Termin kam am 31. Oktober in #game-announcements: Die erste Ranglisten-Saison des Early Access endet Anfang Dezember, „in der Woche des 7. Dezember“. Koin erklärt, dass es eine Saison noch gar nicht beenden kann: Die Technik dafür kommt mit dem großen Update, das das Saisonende begleitet, deshalb kann sich der genaue Tag noch verschieben. Das Datum erscheint bald im Spiel. Wie die Rangliste und Grandmaster funktionieren, steht in unserem [Ranglisten-Guide](/de/guides/origins-tcg-ranked).
+
+## Woran Koin noch arbeitet {#in-arbeit}
+
+In seinem Post vom 2. November zählte apix die Updates auf, an denen gearbeitet wird: schnellere Animationen, mehr Turniere, der Balance-Patch, neue Karten („Karten Karten Karten“), der Collector Pass im Spiel, die nächste Ranglisten-Saison und „jede Menge Feinschliff“. Er schrieb auch, dass heute etwa 60–70 % der Karten des ersten Sets verfügbar sind. Außer dem Patch hat keine dieser Neuerungen ein Datum.
+
+## Was wir noch nicht wissen {#offen}
+
+- Welche Karten der Balance-Patch ändert und um wie viel Uhr er am Mittwoch kommt.
+- Ob die neuen Karten von Dr. Frank in die Sammlung und in den Deckbuilder kommen.
+- Worum es im Roadmap-AMA geht und ob es aufgezeichnet wird.
+- Der genaue letzte Tag der Ranglisten-Saison 1.
+
+Quellen: die Nachrichten in #the-courtyard (2. November 2026, 18:11 UTC), #announcements (31. Oktober, 01:41 UTC, und 1. November, 00:05 UTC) und #game-announcements (31. Oktober, 22:56 UTC) im offiziellen Discord von Origins TCG, das Event „Super Secret Early Access Roadmap AMA“ auf demselben Server, gelesen am 3. November, der Steam-Post vom 31. Oktober (16:41 UTC) und der Post von apix auf X vom 2. November. Die Zitate haben wir übersetzt.`,
+    faq: [
+      { q: "Wann kommt der nächste Balance-Patch von Origins TCG?", a: "Am Mittwoch, 4. November 2026, wie Mawr, Studio Head von Koin, im offiziellen Discord angekündigt hat. Es ist der erste seit Patch 0.7 vom 29. September; die Patchnotes sind noch nicht erschienen." },
+      { q: "Wann ist das Roadmap-AMA von Origins TCG?", a: "Am Freitag, 6. November 2026, um 22:00 Uhr deutscher Zeit (21:00 UTC), im Kanal #live-events des offiziellen Discord." },
+      { q: "Was ist Dr. Frank in Origins TCG?", a: "Der nächste Boss der Missionen: Er kommt am 4. November mit einem Deck voller neuer Karten, eine Woche früher, weil das Spiel 500 Steam-Rezensionen erreicht hat." },
+      { q: "Wann endet die Ranglisten-Saison 1?", a: "In der Woche des 7. Dezember 2026, laut Koin; der genaue Tag kann sich noch verschieben." },
+    ],
+  },
   "soul-crimson-cup-interview": {
     title: "Gespräch mit SouL, Finalist des Crimson Cup: die Aufstellung gegen Van Helsing und die Zukunft von Origins TCG",
     metaTitle: "SouL im Interview: Finalist des Crimson Cup von Origins TCG",
