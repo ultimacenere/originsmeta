@@ -9,6 +9,7 @@ import { PageNotes } from "@/components/PageNotes";
 import { flipOf } from "@/components/CardChip";
 import { loadCardRatings } from "@/lib/community/cardVotes";
 import { cardVoteLabels } from "@/lib/cardVoteLabels";
+import { supabaseEnabled } from "@/lib/supabase/env";
 import { votesWord } from "@/lib/cardVotes";
 import { keywordLabel, keywordLabels } from "@/lib/keywordLabels";
 import { cardFilterLabels } from "@/lib/cardFilterLabels";
@@ -53,6 +54,7 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
     // per la ricerca: il gioco è in inglese, chi ci gioca cerca "draw" o "discard" anche sulla pagina italiana
     abilityEn: locale !== "en" && c.ability && c.ability.en !== c.ability[locale] ? c.ability.en : undefined,
     removed: c.status === "removed",
+    votable: c.status === "active" && c.type !== "token",
     rating: ratingOf(c.slug),
   }));
   // Filtro "Parola chiave" (30/09/2026): i tag che le carte usano davvero, prima le parole chiave del gioco (nomi ufficiali)
@@ -103,6 +105,8 @@ export default async function CardsPage({ params }: { params: LocaleParams }) {
             rarities={(["common", "rare", "epic", "legendary"] as const).map((id) => ({ id, label: rarityLabel[id] }))}
             keywordOptions={keywordOptions}
             filterLabels={cardFilterLabels[locale]}
+            // Voto rapido al passaggio del mouse (04/11/2026): solo con la community accesa, come il widget della scheda
+            vote={supabaseEnabled ? { labels: vw, locale } : undefined}
             labels={{
               search: d.common.search,
               searchHint: d.cards.searchHint,

@@ -237,7 +237,7 @@ export default async function CardPage({ params }: { params: Params }) {
           ) : null}
           {/* Voti alle carte da 1 a 10 (06/10/2026, Pierluigi: "subito sotto la carta la possibilità del voto"): il widget
               compatto, la fascia nella tier list dei voti e il link alla pagina, nella colonna della carta */}
-          {playable ? <CardVoteBox card={card} locale={locale} data={cardVotes} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} /> : null}
+          {playable ? <CardVoteBox card={card} locale={locale} data={cardVotes} /> : null}
         </div>
         <div>
           <p className="kicker text-mint">

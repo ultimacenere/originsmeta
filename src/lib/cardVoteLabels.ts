@@ -10,14 +10,14 @@ import type { Locale } from "./i18n";
 const en = {
   page: {
     /** titolo della SERP: contiene "Origins TCG", quindi `pageTitle` lo lascia com'è (entro 60 caratteri, test) */
-    title: "Origins TCG card tier list from member votes (1–10)",
+    title: "Origins TCG card tier list from player votes (1–10)",
     titlePreview: "Origins TCG card votes tier list (preview)",
-    description: "Rate every Origins TCG card from 1 (weak) to 10 (excellent): the average of OriginsMeta members' votes builds a tier list of Legendaries and base cards.",
+    description: "Rate every Origins TCG card from 1 (weak) to 10 (excellent): the average of the votes on OriginsMeta builds a tier list of Legendaries and base cards.",
     h1: "Card votes tier list",
     h1Preview: "Card votes tier list (preview)",
     intro:
-      "Every member can rate each playable card from 1 (weak) to 10 (excellent), one vote per card, changeable at any time. A card lands in the tier of its average: S from {tierS}, A from {tierA}, B from {tierB}, C from {tierC}, D below. It is not the community tier list, which averages the full lists saved with the maker: here every single card gets its own score.",
-    sourceText: "votes from 1 to 10 given by members to each card",
+      "Anyone can rate each playable card, no account needed, from 1 (weak) to 10 (excellent), one vote per card, changeable at any time. A card lands in the tier of its average: S from {tierS}, A from {tierA}, B from {tierB}, C from {tierC}, D below. It is not the community tier list, which averages the full lists saved with the maker: here every single card gets its own score.",
+    sourceText: "votes from 1 to 10 given to each card by visitors",
     /** {votes} = "12 votes", {cards} = "9 cards" (mai il numero di persone, 12/10/2026) */
     sample: "{votes} on {cards}",
     votesOne: "1 vote",
@@ -35,7 +35,7 @@ const en = {
     disclaimer: "It is the opinion of the people who vote on this site, not a game statistic: it weighs as much as the votes behind each card.",
     howTitle: "How it works",
     how: [
-      "Sign in, open a card here or on its page and pick a score from 1 (weak) to 10 (excellent).",
+      "Open a card here or on its page, or hover over it on the cards page, and pick a score from 1 (weak) to 10 (excellent): no account needed.",
       "One vote per card: pressing another number replaces it.",
       "Tiers come from the average: S from {tierS}, A from {tierA}, B from {tierB}, C from {tierC}, D below; a card needs {min} votes to get a tier.",
       "The page refreshes within a few minutes after a vote.",
@@ -84,12 +84,12 @@ const en = {
   },
   cardPage: {
     kicker: "Card votes",
-    text: "Rate {name} from 1 (weak) to 10 (excellent): the members' average builds the card votes tier list.",
+    text: "Rate {name} from 1 (weak) to 10 (excellent): the average of the votes builds the card votes tier list.",
     tier: "Tier {tier} in the card votes tier list.",
     open: "Open the card votes tier list",
   },
   privacy:
-    "Card votes (from 6 October 2026): signed-in members can rate each card from 1 to 10 on its page or on /tier-list/votes. The vote is stored with your account (card, score, date) so you can change it; the pages show only averages, counts and the distribution of scores, never who voted what. No IP address is stored. Your votes are deleted with your account; to have them removed earlier, write to staff@originsmeta.com.",
+    "Card votes (from 6 October 2026; without an account from 4 November 2026): anyone can rate each card from 1 to 10 on its page, on /cards or on /tier-list/votes. With an account the vote is stored with it (card, score, date) so you can change it, and it is deleted with the account. Without an account, your first vote places a technical cookie (om_card_voter, one year) with a random code that lets you see and change your votes; the database keeps only a non-reversible fingerprint of that code next to your votes and, for one day, a non-reversible fingerprint of your IP address, used only to limit repeated voting. The pages show only averages, counts and the distribution of scores, never who voted what. To have your votes removed, write to staff@originsmeta.com.",
 };
 
 export type CardVoteLabels = typeof en;
@@ -98,12 +98,12 @@ const it: CardVoteLabels = {
   page: {
     title: "Tier list delle carte di Origins TCG dai voti (1–10)",
     titlePreview: "Tier list dei voti alle carte di Origins TCG (anteprima)",
-    description: "Vota ogni carta di Origins TCG da 1 (scarsa) a 10 (ottima): la media dei voti degli iscritti a OriginsMeta crea una tier list di Leggendarie e carte base.",
+    description: "Vota ogni carta di Origins TCG da 1 (scarsa) a 10 (ottima): la media dei voti su OriginsMeta crea una tier list di Leggendarie e carte base.",
     h1: "Tier list dei voti alle carte",
     h1Preview: "Tier list dei voti alle carte (anteprima)",
     intro:
-      "Ogni iscritto può votare ogni carta giocabile da 1 (scarsa) a 10 (ottima), un voto per carta, che si cambia quando si vuole. La carta finisce nella fascia della sua media: S da {tierS}, A da {tierA}, B da {tierB}, C da {tierC}, D sotto. Non è la tier list della community, che fa la media delle liste intere salvate con lo strumento: qui ogni singola carta ha il suo punteggio.",
-    sourceText: "voti da 1 a 10 dati dagli iscritti a ogni carta",
+      "Chiunque può votare ogni carta giocabile, senza bisogno di account, da 1 (scarsa) a 10 (ottima), un voto per carta, che si cambia quando si vuole. La carta finisce nella fascia della sua media: S da {tierS}, A da {tierA}, B da {tierB}, C da {tierC}, D sotto. Non è la tier list della community, che fa la media delle liste intere salvate con lo strumento: qui ogni singola carta ha il suo punteggio.",
+    sourceText: "voti da 1 a 10 dati a ogni carta da chi visita il sito",
     sample: "{votes} su {cards}",
     votesOne: "1 voto",
     votesMany: "{n} voti",
@@ -119,7 +119,7 @@ const it: CardVoteLabels = {
     disclaimer: "È l'opinione di chi vota su questo sito, non un dato del gioco: pesa quanto i voti dietro a ogni carta.",
     howTitle: "Come funziona",
     how: [
-      "Fai l'accesso, apri una carta qui o nella sua scheda e scegli un punteggio da 1 (scarsa) a 10 (ottima).",
+      "Apri una carta qui o nella sua scheda, oppure passaci sopra col mouse nella pagina carte, e scegli un punteggio da 1 (scarsa) a 10 (ottima): non serve l'account.",
       "Un voto per carta: premendo un altro numero lo sostituisci.",
       "Le fasce vengono dalla media: S da {tierS}, A da {tierA}, B da {tierB}, C da {tierC}, D sotto; una carta entra in fascia da {min} voti.",
       "La pagina si aggiorna entro pochi minuti dopo un voto.",
@@ -165,24 +165,24 @@ const it: CardVoteLabels = {
   },
   cardPage: {
     kicker: "Voti alle carte",
-    text: "Vota {name} da 1 (scarsa) a 10 (ottima): la media degli iscritti costruisce la tier list dei voti alle carte.",
+    text: "Vota {name} da 1 (scarsa) a 10 (ottima): la media dei voti costruisce la tier list dei voti alle carte.",
     tier: "Fascia {tier} nella tier list dei voti alle carte.",
     open: "Apri la tier list dei voti alle carte",
   },
   privacy:
-    "Voti alle carte (dal 6 ottobre 2026): chi ha fatto l'accesso può votare ogni carta da 1 a 10 dalla sua scheda o da /tier-list/votes. Il voto resta collegato al tuo account (carta, punteggio, data), così puoi cambiarlo; le pagine mostrano solo medie, conteggi e distribuzione dei punteggi, mai chi ha votato cosa. Nessun indirizzo IP viene salvato. I tuoi voti si cancellano con l'account; per toglierli prima scrivi a staff@originsmeta.com.",
+    "Voti alle carte (dal 6 ottobre 2026; senza account dal 4 novembre 2026): chiunque può votare ogni carta da 1 a 10 dalla sua scheda, da /cards o da /tier-list/votes. Con l'account il voto resta collegato all'account (carta, punteggio, data), così puoi cambiarlo, e si cancella con l'account. Senza account, al primo voto il sito salva un cookie tecnico (om_card_voter, un anno) con un codice casuale che ti fa vedere e cambiare i tuoi voti; il database tiene accanto ai voti solo un'impronta non reversibile di quel codice e, per un giorno, un'impronta non reversibile del tuo indirizzo IP, usata solo per limitare i voti ripetuti. Le pagine mostrano solo medie, conteggi e distribuzione dei punteggi, mai chi ha votato cosa. Per far togliere i tuoi voti scrivi a staff@originsmeta.com.",
 };
 
 const es: CardVoteLabels = {
   page: {
     title: "Tier list de cartas de Origins TCG por votos (1–10)",
     titlePreview: "Tier list de votos a cartas de Origins TCG (vista previa)",
-    description: "Vota cada carta de Origins TCG del 1 (floja) al 10 (excelente): el promedio de los miembros de OriginsMeta crea una tier list de Legendarias y cartas base.",
+    description: "Vota cada carta de Origins TCG del 1 (floja) al 10 (excelente): el promedio de los votos en OriginsMeta crea una tier list de Legendarias y cartas base.",
     h1: "Tier list de votos a las cartas",
     h1Preview: "Tier list de votos a las cartas (vista previa)",
     intro:
-      "Cada miembro puede votar cada carta jugable del 1 (floja) al 10 (excelente), un voto por carta, que se cambia cuando quieras. La carta queda en el tier de su promedio: S desde {tierS}, A desde {tierA}, B desde {tierB}, C desde {tierC}, D por debajo. No es la tier list de la comunidad, que promedia las listas completas guardadas con la herramienta: aquí cada carta tiene su propia puntuación.",
-    sourceText: "votos del 1 al 10 que los miembros dan a cada carta",
+      "Cualquiera puede votar cada carta jugable, sin necesidad de cuenta, del 1 (floja) al 10 (excelente), un voto por carta, que se cambia cuando quieras. La carta queda en el tier de su promedio: S desde {tierS}, A desde {tierA}, B desde {tierB}, C desde {tierC}, D por debajo. No es la tier list de la comunidad, que promedia las listas completas guardadas con la herramienta: aquí cada carta tiene su propia puntuación.",
+    sourceText: "votos del 1 al 10 que los visitantes dan a cada carta",
     sample: "{votes} en {cards}",
     votesOne: "1 voto",
     votesMany: "{n} votos",
@@ -198,7 +198,7 @@ const es: CardVoteLabels = {
     disclaimer: "Es la opinión de quienes votan en este sitio, no una estadística del juego: pesa tanto como los votos detrás de cada carta.",
     howTitle: "Cómo funciona",
     how: [
-      "Inicia sesión, abre una carta aquí o en su página y elige una puntuación del 1 (floja) al 10 (excelente).",
+      "Abre una carta aquí o en su página, o pasa el ratón sobre ella en la página de cartas, y elige una puntuación del 1 (floja) al 10 (excelente): no hace falta cuenta.",
       "Un voto por carta: si pulsas otro número, lo sustituyes.",
       "Los tiers salen del promedio: S desde {tierS}, A desde {tierA}, B desde {tierB}, C desde {tierC}, D por debajo; una carta entra en un tier a partir de {min} votos.",
       "La página se actualiza a los pocos minutos de un voto.",
@@ -244,12 +244,12 @@ const es: CardVoteLabels = {
   },
   cardPage: {
     kicker: "Votos a las cartas",
-    text: "Vota {name} del 1 (floja) al 10 (excelente): el promedio de los miembros crea la tier list de votos a las cartas.",
+    text: "Vota {name} del 1 (floja) al 10 (excelente): el promedio de los votos crea la tier list de votos a las cartas.",
     tier: "Tier {tier} en la tier list de votos a las cartas.",
     open: "Abre la tier list de votos a las cartas",
   },
   privacy:
-    "Votos a las cartas (desde el 6 de octubre de 2026): con la sesión iniciada puedes votar cada carta del 1 al 10 desde su página o desde /tier-list/votes. El voto queda vinculado a tu cuenta (carta, puntuación, fecha), así puedes cambiarlo; las páginas muestran solo promedios, recuentos y la distribución de las puntuaciones, nunca quién votó qué. No se guarda ninguna dirección IP. Tus votos se borran con la cuenta; para quitarlos antes, escribe a staff@originsmeta.com.",
+    "Votos a las cartas (desde el 6 de octubre de 2026; sin cuenta desde el 4 de noviembre de 2026): cualquiera puede votar cada carta del 1 al 10 desde su página, desde /cards o desde /tier-list/votes. Con cuenta, el voto queda vinculado a ella (carta, puntuación, fecha), así puedes cambiarlo, y se borra con la cuenta. Sin cuenta, tu primer voto guarda una cookie técnica (om_card_voter, un año) con un código aleatorio que te permite ver y cambiar tus votos; la base de datos guarda junto a los votos solo una huella no reversible de ese código y, durante un día, una huella no reversible de tu dirección IP, usada solo para limitar los votos repetidos. Las páginas muestran solo promedios, recuentos y la distribución de las puntuaciones, nunca quién votó qué. Para que quitemos tus votos, escribe a staff@originsmeta.com.",
 };
 
 // Francese dal 07/10/2026 (docs/francese.md): vous, "Votes des membres" per la sezione, "Votez de 1 à 10", "Votre vote",
@@ -258,12 +258,12 @@ const fr: CardVoteLabels = {
   page: {
     title: "Tier list des cartes Origins TCG par les votes (1–10)",
     titlePreview: "Tier list des votes sur les cartes Origins TCG (aperçu)",
-    description: "Notez chaque carte d'Origins TCG de 1 à 10 : la moyenne des votes des membres d'OriginsMeta forme une tier list des Légendaires et des cartes de base.",
+    description: "Notez chaque carte d'Origins TCG de 1 à 10 : la moyenne des votes sur OriginsMeta forme une tier list des Légendaires et des cartes de base.",
     h1: "Tier list des votes sur les cartes",
     h1Preview: "Tier list des votes sur les cartes (aperçu)",
     intro:
-      "Chaque membre peut noter chaque carte jouable de 1 (faible) à 10 (excellente), un vote par carte, modifiable à tout moment. Une carte rejoint le tier de sa moyenne : S à partir de {tierS}, A à partir de {tierA}, B à partir de {tierB}, C à partir de {tierC}, D en dessous. Ce n'est pas la tier list de la communauté, qui fait la moyenne des listes complètes enregistrées avec l'outil : ici, chaque carte a sa propre note.",
-    sourceText: "votes de 1 à 10 donnés par les membres à chaque carte",
+      "Tout le monde peut noter chaque carte jouable, sans compte, de 1 (faible) à 10 (excellente), un vote par carte, modifiable à tout moment. Une carte rejoint le tier de sa moyenne : S à partir de {tierS}, A à partir de {tierA}, B à partir de {tierB}, C à partir de {tierC}, D en dessous. Ce n'est pas la tier list de la communauté, qui fait la moyenne des listes complètes enregistrées avec l'outil : ici, chaque carte a sa propre note.",
+    sourceText: "votes de 1 à 10 donnés à chaque carte par les visiteurs",
     sample: "{votes} sur {cards}",
     votesOne: "1 vote",
     votesMany: "{n} votes",
@@ -279,7 +279,7 @@ const fr: CardVoteLabels = {
     disclaimer: "C'est l'avis des personnes qui votent sur ce site, pas une statistique du jeu : il pèse autant que les votes derrière chaque carte.",
     howTitle: "Comment ça marche",
     how: [
-      "Connectez-vous, ouvrez une carte ici ou sur sa page et choisissez une note de 1 (faible) à 10 (excellente).",
+      "Ouvrez une carte ici ou sur sa page, ou survolez-la sur la page des cartes, et choisissez une note de 1 (faible) à 10 (excellente) : aucun compte n'est nécessaire.",
       "Un vote par carte : appuyer sur un autre chiffre le remplace.",
       "Les tiers viennent de la moyenne : S à partir de {tierS}, A à partir de {tierA}, B à partir de {tierB}, C à partir de {tierC}, D en dessous ; une carte a besoin de {min} votes pour obtenir un tier.",
       "La page se met à jour quelques minutes après un vote.",
@@ -325,24 +325,24 @@ const fr: CardVoteLabels = {
   },
   cardPage: {
     kicker: "Votes des membres",
-    text: "Votez de 1 (faible) à 10 (excellente) pour {name} : la moyenne des membres construit la tier list des votes sur les cartes.",
+    text: "Votez de 1 (faible) à 10 (excellente) pour {name} : la moyenne des votes construit la tier list des votes sur les cartes.",
     tier: "Tier {tier} dans la tier list des votes sur les cartes.",
     open: "Ouvrir la tier list des votes sur les cartes",
   },
   privacy:
-    "Votes sur les cartes (depuis le 6 octobre 2026) : les membres connectés peuvent noter chaque carte de 1 à 10 depuis sa page ou depuis /tier-list/votes. Le vote est enregistré avec votre compte (carte, note, date) pour que vous puissiez le modifier ; les pages n'affichent que des moyennes, des décomptes et la répartition des notes, jamais qui a voté quoi. Aucune adresse IP n'est enregistrée. Vos votes sont supprimés avec votre compte ; pour les faire retirer plus tôt, écrivez à staff@originsmeta.com.",
+    "Votes sur les cartes (depuis le 6 octobre 2026 ; sans compte depuis le 4 novembre 2026) : tout le monde peut noter chaque carte de 1 à 10 depuis sa page, depuis /cards ou depuis /tier-list/votes. Avec un compte, le vote est enregistré avec lui (carte, note, date) pour que vous puissiez le modifier, et il est supprimé avec le compte. Sans compte, votre premier vote dépose un cookie technique (om_card_voter, un an) contenant un code aléatoire qui vous permet de voir et modifier vos votes ; la base de données ne garde à côté des votes qu'une empreinte non réversible de ce code et, pendant un jour, une empreinte non réversible de votre adresse IP, utilisée uniquement pour limiter les votes répétés. Les pages n'affichent que des moyennes, des décomptes et la répartition des notes, jamais qui a voté quoi. Pour faire retirer vos votes, écrivez à staff@originsmeta.com.",
 };
 
 const pt: CardVoteLabels = {
   page: {
     title: "Tier list das cartas de Origins TCG por votos (1–10)",
     titlePreview: "Tier list dos votos nas cartas de Origins TCG (prévia)",
-    description: "Dê uma nota de 1 a 10 a cada carta de Origins TCG: a média dos votos dos membros do OriginsMeta forma uma tier list das Lendárias e das cartas base.",
+    description: "Dê uma nota de 1 a 10 a cada carta de Origins TCG: a média dos votos no OriginsMeta forma uma tier list das Lendárias e das cartas base.",
     h1: "Tier list dos votos nas cartas",
     h1Preview: "Tier list dos votos nas cartas (prévia)",
     intro:
-      "Cada membro pode dar uma nota a cada carta jogável de 1 (fraca) a 10 (excelente), um voto por carta, que pode ser mudado quando quiser. A carta entra no tier da sua média: S a partir de {tierS}, A a partir de {tierA}, B a partir de {tierB}, C a partir de {tierC}, D abaixo disso. Não é a tier list da comunidade, que faz a média das listas completas salvas com a ferramenta: aqui cada carta tem a sua própria nota.",
-    sourceText: "votos de 1 a 10 dados pelos membros a cada carta",
+      "Qualquer pessoa pode dar uma nota a cada carta jogável, sem precisar de conta, de 1 (fraca) a 10 (excelente), um voto por carta, que pode ser mudado quando quiser. A carta entra no tier da sua média: S a partir de {tierS}, A a partir de {tierA}, B a partir de {tierB}, C a partir de {tierC}, D abaixo disso. Não é a tier list da comunidade, que faz a média das listas completas salvas com a ferramenta: aqui cada carta tem a sua própria nota.",
+    sourceText: "votos de 1 a 10 dados a cada carta pelos visitantes",
     sample: "{votes} em {cards}",
     votesOne: "1 voto",
     votesMany: "{n} votos",
@@ -358,7 +358,7 @@ const pt: CardVoteLabels = {
     disclaimer: "É a opinião de quem vota neste site, não uma estatística do jogo: vale tanto quanto os votos por trás de cada carta.",
     howTitle: "Como funciona",
     how: [
-      "Entre, abra uma carta aqui ou na página dela e escolha uma nota de 1 (fraca) a 10 (excelente).",
+      "Abra uma carta aqui ou na página dela, ou passe o mouse sobre ela na página de cartas, e escolha uma nota de 1 (fraca) a 10 (excelente): não precisa de conta.",
       "Um voto por carta: apertar outro número substitui o voto.",
       "Os tiers vêm da média: S a partir de {tierS}, A a partir de {tierA}, B a partir de {tierB}, C a partir de {tierC}, D abaixo disso; uma carta precisa de {min} votos para ganhar um tier.",
       "A página é atualizada poucos minutos depois de um voto.",
@@ -404,24 +404,24 @@ const pt: CardVoteLabels = {
   },
   cardPage: {
     kicker: "Votos nas cartas",
-    text: "Dê uma nota de 1 (fraca) a 10 (excelente) a {name}: a média dos membros forma a tier list dos votos nas cartas.",
+    text: "Dê uma nota de 1 (fraca) a 10 (excelente) a {name}: a média dos votos forma a tier list dos votos nas cartas.",
     tier: "Tier {tier} na tier list dos votos nas cartas.",
     open: "Abrir a tier list dos votos nas cartas",
   },
   privacy:
-    "Votos nas cartas (desde 6 de outubro de 2026): os membros com login feito podem dar uma nota de 1 a 10 a cada carta, na página dela ou em /tier-list/votes. O voto é salvo com a sua conta (carta, nota, data) para que você possa mudá-lo; as páginas mostram só médias, contagens e a distribuição das notas, nunca quem votou o quê. Nenhum endereço IP é salvo. Os seus votos são apagados junto com a sua conta; para removê-los antes, escreva para staff@originsmeta.com.",
+    "Votos nas cartas (desde 6 de outubro de 2026; sem conta desde 4 de novembro de 2026): qualquer pessoa pode dar uma nota de 1 a 10 a cada carta, na página dela, em /cards ou em /tier-list/votes. Com conta, o voto é salvo com ela (carta, nota, data) para que você possa mudá-lo, e é apagado junto com a conta. Sem conta, o seu primeiro voto salva um cookie técnico (om_card_voter, um ano) com um código aleatório que permite ver e mudar os seus votos; o banco de dados guarda ao lado dos votos só uma impressão não reversível desse código e, durante um dia, uma impressão não reversível do seu endereço IP, usada só para limitar votos repetidos. As páginas mostram só médias, contagens e a distribuição das notas, nunca quem votou o quê. Para remover os seus votos, escreva para staff@originsmeta.com.",
 };
 
 const de: CardVoteLabels = {
   page: {
     title: "Origins TCG: Tier-List der Kartenbewertungen (1–10)",
     titlePreview: "Origins TCG: Tier-List der Kartenbewertungen (Vorschau)",
-    description: "Bewerte die Karten von Origins TCG von 1 (schwach) bis 10 (exzellent): Der Schnitt der Mitglieder von OriginsMeta ergibt eine Tier-List aller Karten.",
+    description: "Bewerte die Karten von Origins TCG von 1 (schwach) bis 10 (exzellent): Der Schnitt der Bewertungen auf OriginsMeta ergibt eine Tier-List aller Karten.",
     h1: "Tier-List der Kartenbewertungen",
     h1Preview: "Tier-List der Kartenbewertungen (Vorschau)",
     intro:
-      "Jedes Mitglied kann jede spielbare Karte von 1 (schwach) bis 10 (exzellent) bewerten, eine Bewertung pro Karte, jederzeit änderbar. Eine Karte landet in der Stufe ihres Durchschnitts: S ab {tierS}, A ab {tierA}, B ab {tierB}, C ab {tierC}, D darunter. Das ist nicht die Community-Tier-List, die den Durchschnitt der kompletten, mit dem Tool gespeicherten Listen bildet: Hier bekommt jede einzelne Karte ihre eigene Note.",
-    sourceText: "Bewertungen von 1 bis 10, die Mitglieder jeder Karte geben",
+      "Jede und jeder kann ohne Konto jede spielbare Karte von 1 (schwach) bis 10 (exzellent) bewerten, eine Bewertung pro Karte, jederzeit änderbar. Eine Karte landet in der Stufe ihres Durchschnitts: S ab {tierS}, A ab {tierA}, B ab {tierB}, C ab {tierC}, D darunter. Das ist nicht die Community-Tier-List, die den Durchschnitt der kompletten, mit dem Tool gespeicherten Listen bildet: Hier bekommt jede einzelne Karte ihre eigene Note.",
+    sourceText: "Bewertungen von 1 bis 10, die Besucher jeder Karte geben",
     sample: "{votes} für {cards}",
     votesOne: "1 Bewertung",
     votesMany: "{n} Bewertungen",
@@ -437,7 +437,7 @@ const de: CardVoteLabels = {
     disclaimer: "Das ist die Meinung der Leute, die auf dieser Website bewerten, keine Spielstatistik: Sie ist so viel wert wie die Bewertungen hinter jeder Karte.",
     howTitle: "So funktioniert es",
     how: [
-      "Melde dich an, öffne eine Karte hier oder auf ihrer Seite und wähle eine Note von 1 (schwach) bis 10 (exzellent).",
+      "Öffne eine Karte hier oder auf ihrer Seite oder fahre auf der Kartenseite mit der Maus darüber und wähle eine Note von 1 (schwach) bis 10 (exzellent): Ein Konto brauchst du nicht.",
       "Eine Bewertung pro Karte: Ein Klick auf eine andere Zahl ersetzt sie.",
       "Die Stufen ergeben sich aus dem Durchschnitt: S ab {tierS}, A ab {tierA}, B ab {tierB}, C ab {tierC}, D darunter; eine Karte braucht {min} Bewertungen für eine Stufe.",
       "Die Seite aktualisiert sich wenige Minuten nach einer Bewertung.",
@@ -483,24 +483,24 @@ const de: CardVoteLabels = {
   },
   cardPage: {
     kicker: "Kartenbewertungen",
-    text: "Bewerte {name} von 1 (schwach) bis 10 (exzellent): Der Durchschnitt der Mitglieder ergibt die Tier-List der Kartenbewertungen.",
+    text: "Bewerte {name} von 1 (schwach) bis 10 (exzellent): Der Durchschnitt der Bewertungen ergibt die Tier-List der Kartenbewertungen.",
     tier: "Tier {tier} in der Tier-List der Kartenbewertungen.",
     open: "Tier-List der Kartenbewertungen öffnen",
   },
   privacy:
-    "Kartenbewertungen (seit 6. Oktober 2026): Angemeldete Mitglieder können jede Karte auf ihrer Seite oder unter /tier-list/votes mit 1 bis 10 bewerten. Die Bewertung wird mit deinem Konto gespeichert (Karte, Note, Datum), damit du sie ändern kannst; die Seiten zeigen nur Durchschnitte, Anzahlen und die Verteilung der Noten, nie, wer was bewertet hat. Es wird keine IP-Adresse gespeichert. Deine Bewertungen werden mit deinem Konto gelöscht; wenn du sie früher entfernen lassen möchtest, schreib an staff@originsmeta.com.",
+    "Kartenbewertungen (seit 6. Oktober 2026; ohne Konto seit 4. November 2026): Alle können jede Karte auf ihrer Seite, unter /cards oder unter /tier-list/votes mit 1 bis 10 bewerten. Mit Konto wird die Bewertung mit dem Konto gespeichert (Karte, Note, Datum), damit du sie ändern kannst, und mit dem Konto gelöscht. Ohne Konto setzt deine erste Bewertung ein technisches Cookie (om_card_voter, ein Jahr) mit einem Zufallscode, über den du deine Bewertungen siehst und änderst; die Datenbank speichert neben den Bewertungen nur einen nicht umkehrbaren Fingerabdruck dieses Codes und für einen Tag einen nicht umkehrbaren Fingerabdruck deiner IP-Adresse, der nur dazu dient, wiederholte Bewertungen zu begrenzen. Die Seiten zeigen nur Durchschnitte, Anzahlen und die Verteilung der Noten, nie, wer was bewertet hat. Wenn du deine Bewertungen entfernen lassen möchtest, schreib an staff@originsmeta.com.",
 };
 
 const ru: CardVoteLabels = {
   page: {
     title: "Origins TCG: тир-лист по оценкам карт (1–10)",
     titlePreview: "Origins TCG: тир-лист по оценкам карт (превью)",
-    description: "Оцените каждую карту Origins TCG от 1 (слабая) до 10 (отличная): средняя оценка участников OriginsMeta складывается в тир-лист всех карт.",
+    description: "Оцените каждую карту Origins TCG от 1 (слабая) до 10 (отличная): средняя оценка на OriginsMeta складывается в тир-лист всех карт.",
     h1: "Тир-лист по оценкам карт",
     h1Preview: "Тир-лист по оценкам карт (превью)",
     intro:
-      "Каждый участник может оценить любую карту из коллекции игры от 1 (слабая) до 10 (отличная), одна оценка на карту, её можно изменить в любой момент. Карта попадает в тир своей средней оценки: S от {tierS}, A от {tierA}, B от {tierB}, C от {tierC}, D ниже. Это не тир-лист сообщества, который усредняет целые списки, сохранённые в конструкторе тир-листов: здесь каждая карта получает собственную оценку.",
-    sourceText: "оценки от 1 до 10, которые участники дают каждой карте",
+      "Любой может без аккаунта оценить любую карту из коллекции игры от 1 (слабая) до 10 (отличная), одна оценка на карту, её можно изменить в любой момент. Карта попадает в тир своей средней оценки: S от {tierS}, A от {tierA}, B от {tierB}, C от {tierC}, D ниже. Это не тир-лист сообщества, который усредняет целые списки, сохранённые в конструкторе тир-листов: здесь каждая карта получает собственную оценку.",
+    sourceText: "оценки от 1 до 10, которые посетители дают каждой карте",
     sample: "{votes} по {cards}",
     votesOne: "1 оценка",
     votesMany: "оценок: {n}",
@@ -516,7 +516,7 @@ const ru: CardVoteLabels = {
     disclaimer: "Это мнение тех, кто ставит оценки на этом сайте, а не игровая статистика: оно весит столько, сколько оценок стоит за каждой картой.",
     howTitle: "Как это работает",
     how: [
-      "Войдите, откройте карту здесь или на её странице и выберите оценку от 1 (слабая) до 10 (отличная).",
+      "Откройте карту здесь или на её странице или наведите на неё курсор на странице карт и выберите оценку от 1 (слабая) до 10 (отличная): аккаунт не нужен.",
       "Одна оценка на карту: нажатие на другое число её заменяет.",
       "Тиры считаются по средней оценке: S от {tierS}, A от {tierA}, B от {tierB}, C от {tierC}, D ниже; чтобы получить тир, карте нужно {min} оценок.",
       "Страница обновляется в течение нескольких минут после оценки.",
@@ -562,12 +562,12 @@ const ru: CardVoteLabels = {
   },
   cardPage: {
     kicker: "Оценки карт",
-    text: "Оцените карту {name} от 1 (слабая) до 10 (отличная): средняя оценка участников складывается в тир-лист по оценкам карт.",
+    text: "Оцените карту {name} от 1 (слабая) до 10 (отличная): средняя оценка складывается в тир-лист по оценкам карт.",
     tier: "Тир {tier} в тир-листе по оценкам карт.",
     open: "Открыть тир-лист по оценкам карт",
   },
   privacy:
-    "Оценки карт (с 6 октября 2026): участники, вошедшие в аккаунт, могут оценить каждую карту от 1 до 10 на её странице или на /tier-list/votes. Оценка хранится вместе с вашим аккаунтом (карта, оценка, дата), чтобы вы могли её изменить; страницы показывают только средние значения, количества и распределение оценок, никогда — кто как оценил. IP-адрес не хранится. Ваши оценки удаляются вместе с аккаунтом; чтобы удалить их раньше, напишите на staff@originsmeta.com.",
+    "Оценки карт (с 6 октября 2026; без аккаунта с 4 ноября 2026): любой может оценить каждую карту от 1 до 10 на её странице, на /cards или на /tier-list/votes. С аккаунтом оценка хранится вместе с ним (карта, оценка, дата), чтобы вы могли её изменить, и удаляется вместе с аккаунтом. Без аккаунта первая оценка сохраняет технический cookie (om_card_voter, один год) со случайным кодом, по которому вы видите и меняете свои оценки; база данных хранит рядом с оценками только необратимый отпечаток этого кода и в течение одного дня необратимый отпечаток вашего IP-адреса, который служит только для ограничения повторных оценок. Страницы показывают только средние значения, количества и распределение оценок, никогда — кто как оценил. Чтобы удалить ваши оценки, напишите на staff@originsmeta.com.",
 };
 
 // cinese semplificato (04/11/2026): 强度榜 per tier list (docs/cinese.md), 你 nei testi del sito e 您 nell'informativa
@@ -576,12 +576,12 @@ const zhCn: CardVoteLabels = {
   page: {
     title: "Origins TCG 卡牌评分强度榜（1–10 分）",
     titlePreview: "Origins TCG 卡牌评分强度榜（预览）",
-    description: "为每一张 Origins TCG 卡牌打分，从 1（很弱）到 10（极强）：OriginsMeta 会员的平均分生成一份涵盖传说卡和基础卡的强度榜。每位会员每张卡投一票，随时可以修改，平均分决定卡牌所在的 S、A、B、C、D 梯队，票数够多的卡牌才会上榜。",
+    description: "为每一张 Origins TCG 卡牌打分，从 1（很弱）到 10（极强）：OriginsMeta 上的平均分生成一份涵盖传说卡和基础卡的强度榜。无需账户，每人每张卡投一票，随时可以修改，平均分决定卡牌所在的 S、A、B、C、D 梯队，票数够多的卡牌才会上榜。",
     h1: "卡牌评分强度榜",
     h1Preview: "卡牌评分强度榜（预览）",
     intro:
-      "每位会员都可以为每张可用卡牌打分，从 1（很弱）到 10（极强），每张卡一票，随时可以修改。卡牌按平均分进入相应梯队：{tierS} 分起为 S，{tierA} 分起为 A，{tierB} 分起为 B，{tierC} 分起为 C，更低为 D。这不是社区强度榜：社区强度榜取的是会员用强度榜制作器保存的完整榜单的平均，而这里每张卡都有自己的分数。",
-    sourceText: "会员为每张卡牌打出的 1 到 10 分",
+      "任何人无需账户都可以为每张可用卡牌打分，从 1（很弱）到 10（极强），每张卡一票，随时可以修改。卡牌按平均分进入相应梯队：{tierS} 分起为 S，{tierA} 分起为 A，{tierB} 分起为 B，{tierC} 分起为 C，更低为 D。这不是社区强度榜：社区强度榜取的是会员用强度榜制作器保存的完整榜单的平均，而这里每张卡都有自己的分数。",
+    sourceText: "访客为每张卡牌打出的 1 到 10 分",
     sample: "{cards}共 {votes}",
     votesOne: "1 票",
     votesMany: "{n} 票",
@@ -597,7 +597,7 @@ const zhCn: CardVoteLabels = {
     disclaimer: "这是在本站投票的人的看法，而不是游戏统计数据：它的分量取决于每张卡牌背后的票数。",
     howTitle: "如何运作",
     how: [
-      "登录后，在这里或卡牌页面打开一张卡牌，选择 1（很弱）到 10（极强）的分数。",
+      "在这里或卡牌页面打开一张卡牌，或在卡牌列表页将鼠标悬停在卡牌上，选择 1（很弱）到 10（极强）的分数：无需账户。",
       "每张卡一票：点击另一个数字即可替换。",
       "梯队由平均分决定：{tierS} 分起为 S，{tierA} 分起为 A，{tierB} 分起为 B，{tierC} 分起为 C，更低为 D；卡牌需要 {min} 票才能进入梯队。",
       "投票后页面会在几分钟内更新。",
@@ -643,12 +643,12 @@ const zhCn: CardVoteLabels = {
   },
   cardPage: {
     kicker: "卡牌评分",
-    text: "为 {name} 打分，从 1（很弱）到 10（极强）：会员的平均分生成卡牌评分强度榜。",
+    text: "为 {name} 打分，从 1（很弱）到 10（极强）：平均分生成卡牌评分强度榜。",
     tier: "在卡牌评分强度榜中位列 {tier} 级。",
     open: "打开卡牌评分强度榜",
   },
   privacy:
-    "卡牌评分（自 2026年10月6日起）：已登录的会员可以在卡牌页面或 /tier-list/votes 上为每张卡牌打 1 到 10 分。评分与您的账户一同保存（卡牌、分数、日期），以便您修改；页面只显示平均分、票数和分数分布，从不显示谁投了什么分。我们不保存 IP 地址。您的评分会随账户一同删除；如需提前删除，请写信至 staff@originsmeta.com。",
+    "卡牌评分（自 2026年10月6日起；自 2026年11月4日起无需账户）：任何人都可以在卡牌页面、/cards 或 /tier-list/votes 上为每张卡牌打 1 到 10 分。有账户时，评分与账户一同保存（卡牌、分数、日期），以便您修改，并随账户一同删除。没有账户时，您第一次评分会保存一个技术性 cookie（om_card_voter，一年），其中是一个随机代码，用来查看和修改您的评分；数据库在评分旁只保存该代码的不可逆指纹，并在一天内保存您 IP 地址的不可逆指纹，仅用于限制重复评分。页面只显示平均分、票数和分数分布，从不显示谁投了什么分。如需删除您的评分，请写信至 staff@originsmeta.com。",
 };
 
 export const cardVoteLabels: Record<Locale, CardVoteLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };

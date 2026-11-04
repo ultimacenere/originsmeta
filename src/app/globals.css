@@ -3696,6 +3696,110 @@
   }
 }
 
+/* Voto rapido nella griglia del database /cards (4/11/2026, CardQuickVote): al passaggio del mouse una fila di dieci
+   tasti copre il piede della carta. È sorella del link della carta nello stesso <li> (.card-qv-host), quindi qui la
+   carta resta sollevata e girata anche col mouse sopra la fila. Su touch non c'è: il tocco apre la scheda. */
+@layer components {
+  .card-qv {
+    display: none;
+  }
+  @media (hover: hover) {
+    .card-qv-host {
+      position: relative;
+    }
+    .card-qv {
+      position: absolute;
+      z-index: 4;
+      right: 3px;
+      bottom: 3px;
+      left: 3px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 7px 7px;
+      border-top: 2px solid var(--color-night-3);
+      border-radius: 0 0 11px 11px;
+      background: var(--color-night-2);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 120ms ease, transform 140ms ease, visibility 0s linear 120ms;
+    }
+    .card-qv-host:hover .card-qv {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-3px);
+      transition: opacity 120ms ease, transform 140ms ease;
+    }
+    .card-qv.is-pending {
+      opacity: 0.7;
+    }
+    .card-qv-host:hover .card-tile {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-mint);
+    }
+    /* il piede sparisce sotto la fila: se la fila è più bassa del piede il nome non spunta tagliato */
+    .card-qv-host:hover .card-tile-foot > * {
+      visibility: hidden;
+    }
+    .card-qv-host:hover .card-tile:not(.is-legendary) {
+      border-color: var(--color-mint);
+    }
+    .card-qv-host:hover .card-tile-art > img,
+    .card-qv-host:hover .card-tile-art > .card-tile-initials {
+      transform: rotateY(90deg);
+      transition: transform 160ms ease-in;
+    }
+    .card-qv-host:hover .card-tile-info {
+      visibility: visible;
+      transform: rotateY(0deg);
+      transition: transform 160ms ease-out 160ms, visibility 0s linear 160ms;
+    }
+  }
+  .card-qv-head {
+    overflow: hidden;
+    font: 600 10px/1.2 var(--font-mono);
+    letter-spacing: 0.03em;
+    color: var(--color-pale-muted);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .card-qv-head.is-ok {
+    color: var(--color-mint);
+  }
+  .card-qv-head.is-err {
+    color: var(--color-bad);
+  }
+  .card-qv-scale {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .card-qv-btn {
+    min-width: 0;
+    padding: 0.3rem 0;
+    border: 1px solid var(--color-sky);
+    border-radius: 5px;
+    background: var(--color-night);
+    font: 700 0.65rem/1 var(--font-mono);
+    color: var(--color-pale);
+    cursor: pointer;
+    transition: background-color 0.1s, color 0.1s;
+  }
+  .card-qv-btn.is-on {
+    border-color: var(--color-mint);
+    background: var(--color-mint);
+    color: var(--color-ink);
+  }
+  .card-qv-btn.is-mine {
+    border-color: var(--color-gold);
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  .card-qv-btn:disabled {
+    cursor: wait;
+  }
+}
+
 /*
   /analytics, design "Meta Snapshot v2.0" (12/10/2026, scelto da Pierluigi; prototipo in design/win-rate/01-meta-snapshot):
   la pagina come la grafica di un torneo in diretta. Fasce a tutta larghezza che si alternano, disegnate solo con la
