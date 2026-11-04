@@ -39,9 +39,10 @@ export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
  * Patch del gioco in ordine di uscita. Le versioni del playtest hanno un numero; la patch della demo
  * del 21/09/2026 non ce l'ha (il team la chiama "Demo patch notes - Sep 21 2026"), quindi ha un id nostro
  * e un'etichetta leggibile in `patches`. La seconda della demo, del 29/09/2026, torna ad avere un numero:
- * 0.7 ("Steam Demo Update #2" nell'immagine ufficiale).
+ * 0.7 ("Steam Demo Update #2" nell'immagine ufficiale). La prima patch di bilanciamento dell'Accesso anticipato, del
+ * 04/11/2026, non ha numero nelle patch notes: id nostro "ea-1104" ed etichetta in `patches`, come la demo del 21/09.
  */
-export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921", "0.7"] as const;
+export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921", "0.7", "ea-1104"] as const;
 export type PatchId = (typeof patchOrder)[number];
 export type Alignment = "good" | "evil" | "neutral";
 export type Rarity = "common" | "rare" | "epic" | "legendary";
@@ -131,6 +132,19 @@ export const patches: Record<PatchId, { date: string; at?: string; url: string; 
     url: "https://store.steampowered.com/news/app/4429430/view/1844751498235283",
     title: "A small demo update is about to land!",
     news: "patch-0-7",
+  },
+  // Prima patch di bilanciamento dell'Accesso anticipato, insieme al boss n. 11 (Cyber Queen con il mazzo Relentless e
+  // Dr. Frank Leggendaria). Patch notes di apix nel Discord ufficiale il 04/11/2026 alle 10:08 italiane, senza numero di
+  // versione: "should land at around" cinque ore dopo, senza aggiornare il client. `at` è quella stima (15:08 italiane),
+  // non un orario confermato. Il post Steam non c'è ancora: `url` è la pagina delle news del gioco su Steam, da
+  // sostituire con il post quando esce.
+  "ea-1104": {
+    date: "2026-11-04",
+    at: "2026-11-04T14:08:00Z",
+    url: "https://store.steampowered.com/news/app/4429430",
+    title: "Patch Notes (Nov 4, 2026)",
+    label: { en: "EA · 4 Nov", it: "EA · 4 nov", es: "EA · 4 nov", fr: "EA · 4 nov.", pt: "EA · 4 nov.", de: "EA · 4. Nov.", ru: "EA · 4 нояб." },
+    news: "balance-patch-1104-cyber-queen",
   },
 };
 
