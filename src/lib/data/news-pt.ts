@@ -75,14 +75,14 @@ Dorothy, uma Lendária, continua custando 4, mas passa de 1/1 para 3/3: já não
 Se seus decks usam Obliterate, os ursos ou Guy of Gisborne, revise sua curva de mana: o [MetaShifting](/pt/metashifting) mostra cada mudança patch a patch, e no [Theory craft](/pt/theory-craft) você pode refazer uma lista com os custos novos agora mesmo. A Koin pede opiniões depois de algumas partidas: demais, de menos ou, como diria Cachinhos Dourados, na medida certa.`,
   },
   "dr-frank-boss-new-cards": {
-    title: "Dr. Frank chega a Origins TCG em 4 de novembro: o novo chefe e suas oito cartas novas",
-    metaTitle: "Dr. Frank em Origins TCG: novo chefe e 8 cartas novas",
+    title: "Dr. Frank chega a Origins TCG em 4 de novembro: a Lendária do novo chefe e oito cartas novas",
+    metaTitle: "Dr. Frank em Origins TCG: Lendária e 8 cartas novas",
     description:
-      "Dr. Frank, o novo chefe de Origins TCG, chega na quarta-feira, 4 de novembro, com um patch de balanceamento e oito cartas novas: veja todas, uma por uma.",
+      "Dr. Frank, Lendária do deck Relentless do chefe Cyber Queen, chega a Origins TCG em 4 de novembro com um patch de balanceamento e oito cartas novas.",
     summary:
-      "Dr. Frank, o próximo chefe de Origins TCG, chega na quarta-feira, 4 de novembro de 2026, uma semana antes do previsto porque os jogadores chegaram às 500 avaliações no Steam. Ele traz oito cartas novas, que a Koin Games revelou por meio dos seus criadores: o próprio Dr. Frank é uma Lendária, e seis das oito são Malignas. No mesmo dia chega um patch de balanceamento.",
+      "Dr. Frank, a Lendária do deck de Cyber Queen, o novo chefe de Origins TCG, chega na quarta-feira, 4 de novembro de 2026, uma semana antes do previsto porque os jogadores chegaram às 500 avaliações no Steam. Ele traz oito cartas novas, que a Koin Games revelou por meio dos seus criadores: o próprio Dr. Frank é uma Lendária, e seis das oito são Malignas. No mesmo dia chega um patch de balanceamento.",
     highlights: [
-      { label: "Quarta-feira, 4 de novembro", text: "Dr. Frank, o chefe da missão 12, chega com cartas novas", anchor: "chegada" },
+      { label: "Quarta-feira, 4 de novembro", text: "Dr. Frank chega com cartas novas, no deck do chefe Cyber Queen", anchor: "chegada" },
       { label: "Uma semana antes", text: "os jogadores chegaram às 500 avaliações no Steam que a Koin pediu", anchor: "avaliacoes" },
       { label: "Oito cartas novas", text: "uma Lendária, um feitiço e seis personagens; seis cartas são Malignas", anchor: "cartas" },
       { label: "O cemitério volta", text: "Dr. Frank e It's Alive invocam personagens do seu cemitério", anchor: "cemiterio" },
@@ -92,7 +92,7 @@ Se seus decks usam Obliterate, os ursos ou Guy of Gisborne, revise sua curva de 
     ],
     body: `## Dr. Frank chega na quarta-feira, 4 de novembro {#chegada}
 
-"O próximo chefe, Dr. Frank, chega a Origins na semana que vem, com um deck cheio de cartas novas." A Koin Games anunciou isso no Steam em 31 de outubro de 2026, dia de Halloween, no post "Happy Halloween, Dr. Frank is coming": a data é **quarta-feira, 4 de novembro**. Dr. Frank é o chefe da missão 12, a próxima das missões contra a IA do jogo, e traz com ele as cartas novas. Quando publicamos este artigo, a Koin ainda não tinha dito a que horas chega a atualização.
+"O próximo chefe, Dr. Frank, chega a Origins na semana que vem, com um deck cheio de cartas novas." A Koin Games anunciou isso no Steam em 31 de outubro de 2026, dia de Halloween, no post "Happy Halloween, Dr. Frank is coming": a data é **quarta-feira, 4 de novembro**. Até as notas do patch, escrevemos que Dr. Frank é o chefe da missão 12, a próxima das missões contra a IA do jogo: as notas do patch de 4 de novembro deixam claro que o chefe é Cyber Queen, o chefe n.º 11, e que Dr. Frank é a Lendária do deck Relentless dela ([as notas do patch](/pt/news/balance-patch-1104-cyber-queen#cyber-queen)). Quando publicamos este artigo, a Koin ainda não tinha dito a que horas chega a atualização.
 
 ## Uma semana antes, graças às avaliações {#avaliacoes}
 
@@ -184,23 +184,25 @@ Fontes: o post no Steam "Happy Halloween, Dr. Frank is coming" (31 de outubro de
     title: "Origins TCG: patch de balanceamento e Dr. Frank na quarta, AMA sobre o roadmap na sexta",
     metaTitle: "Origins TCG: patch na quarta, AMA do roadmap na sexta",
     description:
-      "Origins TCG: o primeiro patch de balanceamento do Acesso Antecipado e o chefe Dr. Frank chegam na quarta, 4 de novembro; o AMA do roadmap é na sexta, dia 6.",
+      "Origins TCG: o primeiro patch de balanceamento do Acesso Antecipado e o novo chefe chegam na quarta, 4 de novembro; o AMA do roadmap é na sexta, dia 6.",
     summary:
-      "Origins TCG tem duas datas nesta semana. Na quarta-feira, 4 de novembro, chega o primeiro patch de balanceamento do Acesso Antecipado, junto com Dr. Frank, um chefe novo com um deck cheio de cartas novas; na sexta-feira, 6 de novembro, às 18h de Brasília, a Koin Games faz um AMA sobre o roadmap no Discord oficial. As notas do patch ainda não saíram.",
+      "Origins TCG tem duas datas nesta semana. Na quarta-feira, 4 de novembro, chega o primeiro patch de balanceamento do Acesso Antecipado, junto com um chefe novo, Cyber Queen, com um deck cheio de cartas novas e Dr. Frank como Lendária; na sexta-feira, 6 de novembro, às 18h de Brasília, a Koin Games faz um AMA sobre o roadmap no Discord oficial. As notas do patch saíram em 4 de novembro.",
     highlights: [
-      { label: "Patch de balanceamento na quarta", text: "4 de novembro, o primeiro do Acesso Antecipado; notas ainda não publicadas", anchor: "patch-balanceamento" },
-      { label: "Chega Dr. Frank", text: "o chefe novo com um deck cheio de cartas novas, uma semana antes", anchor: "dr-frank" },
+      { label: "Patch de balanceamento na quarta", text: "4 de novembro, o primeiro do Acesso Antecipado; notas publicadas no mesmo dia", anchor: "patch-balanceamento" },
+      { label: "Chega Dr. Frank", text: "a Lendária do deck do chefe novo, Cyber Queen, uma semana antes", anchor: "dr-frank" },
       { label: "AMA do roadmap na sexta", text: "6 de novembro às 18h de Brasília no Discord oficial", anchor: "ama-roadmap" },
       { label: "Temporada ranqueada 1", text: "termina na semana de 7 de dezembro", anchor: "ranqueada" },
       { label: "Em preparação", text: "animações mais rápidas, mais torneios, o Collector Pass no jogo", anchor: "a-caminho" },
     ],
-    body: `## Quarta-feira, 4 de novembro: o patch de balanceamento {#patch-balanceamento}
+    body: `**Atualização de 4 de novembro:** as notas do patch saíram ([nosso artigo](/pt/news/balance-patch-1104-cyber-queen)): dez cartas mudam, e o chefe novo é Cyber Queen, o chefe n.º 11, que pilota o deck Relentless com Dr. Frank como Lendária. Mais abaixo, onde chamamos Dr. Frank de chefe novo, leia-se: a Lendária do deck do chefe.
+
+## Quarta-feira, 4 de novembro: o patch de balanceamento {#patch-balanceamento}
 
 O primeiro patch de balanceamento do Acesso Antecipado de Origins TCG chega na quarta-feira, 4 de novembro de 2026. Na segunda-feira, 2 de novembro, em #the-courtyard no Discord oficial, o moderador Senith repassou uma mensagem de Mawr, Studio Head da Koin Games: "Acho que vocês vão gostar das atualizações de balanceamento que chegam na quarta-feira, 4 de novembro." Na mesma noite, apix, da equipe da Koin, escreveu no X que "o primeiro patch de balanceamento de verdade está logo ali" ([o post dele](https://x.com/apixtwts/status/2117383252478456012)).
 
 É a primeira mudança nas cartas desde o [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026: a [atualização 0.8](/pt/news/origins-tcg-early-access-0-8), que abriu o Acesso Antecipado em 27 de outubro, não mexeu nas cartas. As notas do patch ainda não saíram, então não sabemos quais cartas mudam nem a que horas a atualização chega. Assim que forem publicadas, vamos contar tudo com o antes e o depois de cada carta, e o [banco de dados de cartas](/pt/cards), o [deck builder](/pt/deck-builder) e o [MetaShifting](/pt/metashifting) vão mostrar os valores novos.
 
-## No mesmo dia: Dr. Frank, o chefe novo {#dr-frank}
+## No mesmo dia: Dr. Frank e o chefe novo {#dr-frank}
 
 Na quarta chega também o próximo chefe, Dr. Frank. A Koin anunciou no Steam em 31 de outubro ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): o chefe "vai ter um deck cheio de cartas novas" e chega uma semana antes do previsto. O motivo está na arte do post e no Discord: a comunidade chegou às 500 avaliações no Steam, e naquela noite a Koin escreveu em #announcements que "o chefe vem uma semana antes". Em 2 de novembro, apix confirmou no Discord: "chefe novo na quarta".
 
@@ -231,7 +233,7 @@ Fontes: as mensagens em #the-courtyard (2 de novembro de 2026, 18h11 UTC), #anno
     faq: [
       { q: "Quando sai o próximo patch de balanceamento de Origins TCG?", a: "Na quarta-feira, 4 de novembro de 2026, como anunciou no Discord oficial Mawr, Studio Head da Koin. É o primeiro desde o patch 0.7 de 29 de setembro; as notas ainda não saíram." },
       { q: "Quando é o AMA sobre o roadmap de Origins TCG?", a: "Na sexta-feira, 6 de novembro de 2026, às 18h de Brasília (21h UTC), no canal #live-events do Discord oficial." },
-      { q: "O que é Dr. Frank em Origins TCG?", a: "O próximo chefe das Missões: chega em 4 de novembro com um deck cheio de cartas novas, uma semana antes porque o jogo chegou às 500 avaliações no Steam." },
+      { q: "O que é Dr. Frank em Origins TCG?", a: "A Lendária do deck de Cyber Queen, o novo chefe das Missões: chegam em 4 de novembro com um deck cheio de cartas novas, uma semana antes porque o jogo chegou às 500 avaliações no Steam." },
       { q: "Quando termina a temporada ranqueada 1?", a: "Na semana de 7 de dezembro de 2026, segundo a Koin; o dia exato ainda pode mudar." },
     ],
   },

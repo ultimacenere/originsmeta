@@ -382,7 +382,8 @@ Si tus mazos llevan Obliterate, los osos o Guy of Gisborne, revisa tu curva de m
     ),
   },
   {
-    // Dr. Frank, il boss della missione 12, e le sue otto carte nuove (04/11/2026). Pierluigi: "nuovo boss e nuove carte
+    // Dr. Frank e le sue otto carte nuove (04/11/2026). Corretta lo stesso giorno con le patch notes: il boss n. 11 è Cyber
+    // Queen, Dr. Frank la Leggendaria del suo mazzo Relentless (prima la davamo per boss della missione 12). Pierluigi: "nuovo boss e nuove carte
     // usciranno questo weekend [video di ZulsoiD] guarda sto video, intanto cerca l'annuncio e crea una news". Fonti: il post
     // Steam "Happy Halloween, Dr. Frank is coming" (31/10/2026, 16:41 UTC, apix) con la sua grafica, che danno mercoledì 4
     // novembre (non il weekend); sul Discord ufficiale l'offerta di apix del 29/10 (500 recensioni su Steam → missione 12
@@ -405,28 +406,28 @@ Si tus mazos llevan Obliterate, los osos o Guy of Gisborne, revisa tu curva de m
     cards: ["dr-frank", "its-alive", "franks-monster", "franken-bride", "morgan-le-fay", "doppelganger", "necromancer", "red-knight"],
     date: "2026-11-04",
     title: n(
-      "Dr. Frank arrives in Origins TCG on 4 November: the new boss and his eight new cards",
-      "Dr. Frank arriva su Origins TCG il 4 novembre: il nuovo boss e le sue otto carte nuove",
-      "Dr. Frank llega a Origins TCG el 4 de noviembre: el nuevo jefe y sus ocho cartas nuevas",
+      "Dr. Frank arrives in Origins TCG on 4 November: the Legendary of the new boss and eight new cards",
+      "Dr. Frank arriva su Origins TCG il 4 novembre: la Leggendaria del nuovo boss e otto carte nuove",
+      "Dr. Frank llega a Origins TCG el 4 de noviembre: la Legendaria del nuevo jefe y ocho cartas nuevas",
     ),
     metaTitle: n(
-      "Dr. Frank in Origins TCG: new boss and 8 new cards",
-      "Dr. Frank su Origins TCG: il nuovo boss e 8 carte nuove",
-      "Dr. Frank en Origins TCG: el nuevo jefe y 8 cartas nuevas",
+      "Dr. Frank in Origins TCG: Legendary and 8 new cards",
+      "Dr. Frank su Origins TCG: Leggendaria e 8 carte nuove",
+      "Dr. Frank en Origins TCG: Legendaria y 8 cartas nuevas",
     ),
     description: n(
-      "Dr. Frank, the new Origins TCG boss, arrives on Wednesday 4 November with a balance patch and eight new cards: here they are, one by one.",
-      "Dr. Frank, il nuovo boss di Origins TCG, arriva mercoledì 4 novembre con una patch di bilanciamento e otto carte nuove: eccole una per una.",
-      "Dr. Frank, el nuevo jefe de Origins TCG, llega el miércoles 4 de noviembre con un parche de equilibrio y ocho cartas nuevas: aquí están, una a una.",
+      "Dr. Frank, Legendary of boss Cyber Queen's Relentless deck, arrives in Origins TCG on 4 November with a balance patch and eight new cards: here they are.",
+      "Dr. Frank, Leggendaria del mazzo Relentless del boss Cyber Queen, arriva su Origins TCG il 4 novembre con una patch e otto carte nuove: eccole una per una.",
+      "Dr. Frank, Legendaria del mazo Relentless del jefe Cyber Queen, llega a Origins TCG el 4 de noviembre con un parche y ocho cartas nuevas: aquí están.",
     ),
     summary: n(
-      "Dr. Frank, the next boss of Origins TCG, arrives on Wednesday 4 November 2026, a week earlier than planned because players reached 500 reviews on Steam. He brings eight new cards, which Koin Games revealed through its creators: Dr. Frank himself is a Legendary, and six of the eight are Evil. A balance patch lands the same day.",
-      "Dr. Frank, il prossimo boss di Origins TCG, arriva mercoledì 4 novembre 2026, una settimana prima del previsto perché i giocatori hanno raggiunto le 500 recensioni su Steam. Porta otto carte nuove, che Koin Games ha fatto rivelare ai suoi creator: lo stesso Dr. Frank è una Leggendaria, e sei carte su otto sono Malvagie. Lo stesso giorno arriva una patch di bilanciamento.",
-      "Dr. Frank, el próximo jefe de Origins TCG, llega el miércoles 4 de noviembre de 2026, una semana antes de lo previsto porque los jugadores alcanzaron las 500 reseñas en Steam. Trae ocho cartas nuevas, que Koin Games ha revelado a través de sus creadores: el propio Dr. Frank es una Legendaria, y seis de las ocho son Malvadas. Ese mismo día llega un parche de equilibrio.",
+      "Dr. Frank, the Legendary of the deck of Cyber Queen, Origins TCG's new boss, arrives on Wednesday 4 November 2026, a week earlier than planned because players reached 500 reviews on Steam. He brings eight new cards, which Koin Games revealed through its creators: Dr. Frank himself is a Legendary, and six of the eight are Evil. A balance patch lands the same day.",
+      "Dr. Frank, la Leggendaria del mazzo di Cyber Queen, il nuovo boss di Origins TCG, arriva mercoledì 4 novembre 2026, una settimana prima del previsto perché i giocatori hanno raggiunto le 500 recensioni su Steam. Porta otto carte nuove, che Koin Games ha fatto rivelare ai suoi creator: lo stesso Dr. Frank è una Leggendaria, e sei carte su otto sono Malvagie. Lo stesso giorno arriva una patch di bilanciamento.",
+      "Dr. Frank, la Legendaria del mazo de Cyber Queen, el nuevo jefe de Origins TCG, llega el miércoles 4 de noviembre de 2026, una semana antes de lo previsto porque los jugadores alcanzaron las 500 reseñas en Steam. Trae ocho cartas nuevas, que Koin Games ha revelado a través de sus creadores: el propio Dr. Frank es una Legendaria, y seis de las ocho son Malvadas. Ese mismo día llega un parche de equilibrio.",
     ),
     highlights: {
       en: [
-        { label: "Wednesday 4 November", text: "Dr. Frank, the boss of mission 12, arrives with new cards", anchor: "arrival" },
+        { label: "Wednesday 4 November", text: "Dr. Frank arrives with new cards, in the deck of the boss Cyber Queen", anchor: "arrival" },
         { label: "A week early", text: "players reached the 500 Steam reviews Koin asked for", anchor: "reviews" },
         { label: "Eight new cards", text: "a Legendary, a spell and six characters, six of them Evil", anchor: "cards" },
         { label: "The graveyard comes back", text: "Dr. Frank and It's Alive summon characters from your graveyard", anchor: "graveyard" },
@@ -435,7 +436,7 @@ Si tus mazos llevan Obliterate, los osos o Guy of Gisborne, revisa tu curva de m
         { label: "Try them now", text: "build a deck with the eight cards in our Theory craft", anchor: "theory-craft" },
       ],
       it: [
-        { label: "Mercoledì 4 novembre", text: "Dr. Frank, il boss della missione 12, arriva con carte nuove", anchor: "arrivo" },
+        { label: "Mercoledì 4 novembre", text: "Dr. Frank arriva con carte nuove, nel mazzo del boss Cyber Queen", anchor: "arrivo" },
         { label: "Una settimana prima", text: "i giocatori hanno raggiunto le 500 recensioni su Steam chieste da Koin", anchor: "recensioni" },
         { label: "Otto carte nuove", text: "una Leggendaria, una magia e sei personaggi, sei carte Malvagie", anchor: "carte" },
         { label: "Il cimitero torna in campo", text: "Dr. Frank e It's Alive evocano personaggi dal tuo cimitero", anchor: "cimitero" },
@@ -444,7 +445,7 @@ Si tus mazos llevan Obliterate, los osos o Guy of Gisborne, revisa tu curva de m
         { label: "Provale subito", text: "costruisci un mazzo con le otto carte nel nostro Theory craft", anchor: "theory-craft" },
       ],
       es: [
-        { label: "Miércoles 4 de noviembre", text: "Dr. Frank, el jefe de la misión 12, llega con cartas nuevas", anchor: "llegada" },
+        { label: "Miércoles 4 de noviembre", text: "Dr. Frank llega con cartas nuevas, en el mazo del jefe Cyber Queen", anchor: "llegada" },
         { label: "Una semana antes", text: "los jugadores alcanzaron las 500 reseñas en Steam que pedía Koin", anchor: "resenas" },
         { label: "Ocho cartas nuevas", text: "una Legendaria, un hechizo y seis personajes, seis cartas Malvadas", anchor: "cartas" },
         { label: "El cementerio vuelve", text: "Dr. Frank e It's Alive invocan personajes de tu cementerio", anchor: "cementerio" },
@@ -456,7 +457,7 @@ Si tus mazos llevan Obliterate, los osos o Guy of Gisborne, revisa tu curva de m
     body: n(
       `## Dr. Frank arrives on Wednesday 4 November {#arrival}
 
-"The next boss Dr. Frank is coming to Origins next week, which will feature a deck full of new cards." Koin Games announced it on Steam on 31 October 2026, Halloween, in a post titled "Happy Halloween, Dr. Frank is coming": the date is **Wednesday 4 November**. Dr. Frank is the boss of mission 12, the next of the missions against the game's AI, and he brings the new cards with him. When we published this article Koin had not yet said at what time the update arrives.
+"The next boss Dr. Frank is coming to Origins next week, which will feature a deck full of new cards." Koin Games announced it on Steam on 31 October 2026, Halloween, in a post titled "Happy Halloween, Dr. Frank is coming": the date is **Wednesday 4 November**. Until the patch notes we wrote that Dr. Frank is the boss of mission 12, the next of the missions against the game's AI: the patch notes of 4 November make it clear that the boss is Cyber Queen, boss #11, and that Dr. Frank is the Legendary of her Relentless deck ([the patch notes](/en/news/balance-patch-1104-cyber-queen#cyber-queen)). When we published this article Koin had not yet said at what time the update arrives.
 
 ## A week early, thanks to the reviews {#reviews}
 
@@ -537,7 +538,7 @@ The eight cards are in the [card database](/en/cards) with the "Not in game" fil
 Sources: the Steam post "Happy Halloween, Dr. Frank is coming" (31 October 2026) and its graphic; the messages of apix (29 October) and of Mawr (31 October and 3 November) on the official Origins TCG Discord; the card images Koin Games gave its creators to reveal the cards (2 November); ZulsoiD's video (3 November). Illustrations: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
       `## Dr. Frank arriva mercoledì 4 novembre {#arrivo}
 
-"Il prossimo boss, Dr. Frank, arriva su Origins la settimana prossima, con un mazzo pieno di carte nuove." Koin Games l'ha annunciato su Steam il 31 ottobre 2026, il giorno di Halloween, con il post "Happy Halloween, Dr. Frank is coming": la data è **mercoledì 4 novembre**. Dr. Frank è il boss della missione 12, la prossima delle missioni contro l'IA del gioco, e porta con sé le carte nuove. Quando abbiamo pubblicato questo articolo Koin non aveva ancora detto a che ora arriva l'aggiornamento.
+"Il prossimo boss, Dr. Frank, arriva su Origins la settimana prossima, con un mazzo pieno di carte nuove." Koin Games l'ha annunciato su Steam il 31 ottobre 2026, il giorno di Halloween, con il post "Happy Halloween, Dr. Frank is coming": la data è **mercoledì 4 novembre**. Fino alle patch notes abbiamo scritto che Dr. Frank è il boss della missione 12, la prossima delle missioni contro l'IA del gioco: le patch notes del 4 novembre chiariscono che il boss è Cyber Queen, il boss n. 11, e che Dr. Frank è la Leggendaria del suo mazzo Relentless ([le patch notes](/it/news/balance-patch-1104-cyber-queen#cyber-queen)). Quando abbiamo pubblicato questo articolo Koin non aveva ancora detto a che ora arriva l'aggiornamento.
 
 ## Una settimana prima, grazie alle recensioni {#recensioni}
 
@@ -620,7 +621,7 @@ Le otto carte sono nel [database carte](/it/cards) con il filtro "Non nel gioco"
 Fonti: il post Steam "Happy Halloween, Dr. Frank is coming" (31 ottobre 2026) e la sua grafica; i messaggi di apix (29 ottobre) e di Mawr (31 ottobre e 3 novembre) sul Discord ufficiale di Origins TCG; le immagini delle carte che Koin Games ha dato ai creator per rivelarle (2 novembre); il video di ZulsoiD (3 novembre). Le citazioni sono tradotte da noi. Illustrazioni: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
       `## Dr. Frank llega el miércoles 4 de noviembre {#llegada}
 
-"El próximo jefe, Dr. Frank, llega a Origins la semana que viene, con un mazo lleno de cartas nuevas." Koin Games lo anunció en Steam el 31 de octubre de 2026, el día de Halloween, con la publicación "Happy Halloween, Dr. Frank is coming": la fecha es el **miércoles 4 de noviembre**. Dr. Frank es el jefe de la misión 12, la siguiente de las misiones contra la IA del juego, y trae consigo las cartas nuevas. Cuando publicamos este artículo, Koin todavía no había dicho a qué hora llega la actualización.
+"El próximo jefe, Dr. Frank, llega a Origins la semana que viene, con un mazo lleno de cartas nuevas." Koin Games lo anunció en Steam el 31 de octubre de 2026, el día de Halloween, con la publicación "Happy Halloween, Dr. Frank is coming": la fecha es el **miércoles 4 de noviembre**. Hasta las notas del parche escribimos que Dr. Frank es el jefe de la misión 12, la siguiente de las misiones contra la IA del juego: las notas del 4 de noviembre dejan claro que el jefe es Cyber Queen, el jefe n.º 11, y que Dr. Frank es la Legendaria de su mazo Relentless ([las notas del parche](/es/news/balance-patch-1104-cyber-queen#cyber-queen)). Cuando publicamos este artículo, Koin todavía no había dicho a qué hora llega la actualización.
 
 ## Una semana antes, gracias a las reseñas {#resenas}
 
@@ -742,6 +743,7 @@ Fuentes: la publicación de Steam "Happy Halloween, Dr. Frank is coming" (31 de 
     cards: ["dr-frank"],
     guides: ["roadmap-and-dates", "origins-tcg-ranked"],
     date: "2026-11-02",
+    updated: "2026-11-04",
     title: n(
       "Origins TCG: balance patch and Dr. Frank on Wednesday, roadmap AMA on Friday",
       "Origins TCG: patch di bilanciamento e Dr. Frank mercoledì, AMA sulla roadmap venerdì",
@@ -753,46 +755,48 @@ Fuentes: la publicación de Steam "Happy Halloween, Dr. Frank is coming" (31 de 
       "Origins TCG: parche el miércoles, AMA de la hoja de ruta",
     ),
     description: n(
-      "Origins TCG: the first Early Access balance patch and the Dr. Frank boss arrive on Wednesday 4 November, the roadmap AMA is on Friday 6 November on Discord.",
-      "Origins TCG: la prima patch di bilanciamento dell'Accesso anticipato e il boss Dr. Frank arrivano mercoledì 4 novembre, l'AMA sulla roadmap è venerdì 6.",
-      "Origins TCG: el primer parche de equilibrio del Acceso anticipado y el jefe Dr. Frank llegan el miércoles 4 de noviembre, y el viernes 6, el AMA en Discord.",
+      "Origins TCG: the first Early Access balance patch and the new boss arrive on Wednesday 4 November, the roadmap AMA is on Friday 6 November on Discord.",
+      "Origins TCG: la prima patch di bilanciamento dell'Accesso anticipato e il boss nuovo arrivano mercoledì 4 novembre, l'AMA sulla roadmap è venerdì 6.",
+      "Origins TCG: el primer parche de equilibrio del Acceso anticipado y el jefe nuevo llegan el miércoles 4 de noviembre, y el viernes 6, el AMA en Discord.",
     ),
     summary: n(
-      "Origins TCG has two dates this week. On Wednesday 4 November comes the first balance patch of Early Access, together with Dr. Frank, a new boss with a deck full of new cards; on Friday 6 November at 21:00 UTC Koin Games hosts a roadmap AMA on the official Discord. The patch notes are not out yet.",
-      "Origins TCG ha due date questa settimana. Mercoledì 4 novembre arriva la prima patch di bilanciamento dell'Accesso anticipato, insieme a Dr. Frank, un boss nuovo con un mazzo pieno di carte nuove; venerdì 6 novembre alle 22:00 italiane Koin Games tiene un AMA sulla roadmap sul Discord ufficiale. Le patch notes non sono ancora uscite.",
-      "Origins TCG tiene dos fechas esta semana. El miércoles 4 de noviembre llega el primer parche de equilibrio del Acceso anticipado, junto con Dr. Frank, un jefe nuevo con un mazo lleno de cartas nuevas; el viernes 6 de noviembre a las 21:00 UTC Koin Games celebra un AMA sobre la hoja de ruta en el Discord oficial. Las notas del parche todavía no han salido.",
+      "Origins TCG has two dates this week. On Wednesday 4 November comes the first balance patch of Early Access, together with a new boss, Cyber Queen, whose deck full of new cards has Dr. Frank as its Legendary; on Friday 6 November at 21:00 UTC Koin Games hosts a roadmap AMA on the official Discord. The patch notes came out on 4 November.",
+      "Origins TCG ha due date questa settimana. Mercoledì 4 novembre arriva la prima patch di bilanciamento dell'Accesso anticipato, insieme a un boss nuovo, Cyber Queen, con un mazzo pieno di carte nuove e Dr. Frank come Leggendaria; venerdì 6 novembre alle 22:00 italiane Koin Games tiene un AMA sulla roadmap sul Discord ufficiale. Le patch notes sono uscite il 4 novembre.",
+      "Origins TCG tiene dos fechas esta semana. El miércoles 4 de noviembre llega el primer parche de equilibrio del Acceso anticipado, junto con un jefe nuevo, Cyber Queen, con un mazo lleno de cartas nuevas y Dr. Frank como Legendaria; el viernes 6 de noviembre a las 21:00 UTC Koin Games celebra un AMA sobre la hoja de ruta en el Discord oficial. Las notas del parche salieron el 4 de noviembre.",
     ),
     highlights: {
       en: [
-        { label: "Balance patch on Wednesday", text: "4 November, the first of Early Access; patch notes not out yet", anchor: "balance-patch" },
-        { label: "Dr. Frank arrives", text: "the new boss with a deck full of new cards, one week early", anchor: "dr-frank" },
+        { label: "Balance patch on Wednesday", text: "4 November, the first of Early Access; patch notes out on the day", anchor: "balance-patch" },
+        { label: "Dr. Frank arrives", text: "the Legendary of the new boss Cyber Queen's deck, one week early", anchor: "dr-frank" },
         { label: "Roadmap AMA on Friday", text: "6 November at 21:00 UTC on the official Discord", anchor: "roadmap-ama" },
         { label: "Ranked season 1", text: "ends the week of 7 December", anchor: "ranked" },
         { label: "In the works", text: "faster animations, more tournaments, the Collector Pass in the game", anchor: "next" },
       ],
       it: [
-        { label: "Patch di bilanciamento mercoledì", text: "il 4 novembre, la prima dell'Accesso anticipato; patch notes non ancora uscite", anchor: "patch-bilanciamento" },
-        { label: "Arriva Dr. Frank", text: "il boss nuovo con un mazzo pieno di carte nuove, una settimana in anticipo", anchor: "dr-frank" },
+        { label: "Patch di bilanciamento mercoledì", text: "il 4 novembre, la prima dell'Accesso anticipato; patch notes uscite il giorno stesso", anchor: "patch-bilanciamento" },
+        { label: "Arriva Dr. Frank", text: "la Leggendaria del mazzo del boss nuovo, Cyber Queen, una settimana in anticipo", anchor: "dr-frank" },
         { label: "AMA sulla roadmap venerdì", text: "il 6 novembre alle 22:00 italiane sul Discord ufficiale", anchor: "ama-roadmap" },
         { label: "Stagione classificata 1", text: "finisce nella settimana del 7 dicembre", anchor: "classificata" },
         { label: "In lavorazione", text: "animazioni più veloci, più tornei, il Collector Pass nel gioco", anchor: "in-arrivo" },
       ],
       es: [
-        { label: "Parche de equilibrio el miércoles", text: "el 4 de noviembre, el primero del Acceso anticipado; notas todavía sin publicar", anchor: "parche-equilibrio" },
-        { label: "Llega Dr. Frank", text: "el jefe nuevo con un mazo lleno de cartas nuevas, una semana antes", anchor: "dr-frank" },
+        { label: "Parche de equilibrio el miércoles", text: "el 4 de noviembre, el primero del Acceso anticipado; notas publicadas ese mismo día", anchor: "parche-equilibrio" },
+        { label: "Llega Dr. Frank", text: "la Legendaria del mazo del jefe nuevo, Cyber Queen, una semana antes", anchor: "dr-frank" },
         { label: "AMA de la hoja de ruta el viernes", text: "el 6 de noviembre a las 21:00 UTC en el Discord oficial", anchor: "ama-roadmap" },
         { label: "Temporada clasificatoria 1", text: "termina la semana del 7 de diciembre", anchor: "clasificatoria" },
         { label: "En preparación", text: "animaciones más rápidas, más torneos, el Collector Pass en el juego", anchor: "en-camino" },
       ],
     },
     body: n(
-      `## Wednesday 4 November: the balance patch {#balance-patch}
+      `**Update, 4 November:** the patch notes are out ([our article](/en/news/balance-patch-1104-cyber-queen)): ten cards change, and the new boss is Cyber Queen, boss #11, who pilots the Relentless deck with Dr. Frank as its Legendary. Below, where we call Dr. Frank the new boss, read: the Legendary of the boss's deck.
+
+## Wednesday 4 November: the balance patch {#balance-patch}
 
 The first balance patch of Origins TCG's Early Access arrives on Wednesday 4 November 2026. On Monday 2 November, in #the-courtyard on the official Discord, moderator Senith passed on a message from Mawr, Koin Games' Studio Head: "I think you'll be pleased with the balance updates coming Wednesday November 4th." That same evening apix, from the Koin team, wrote on X that "the first proper balance patch is around the corner" ([his post](https://x.com/apixtwts/status/2117383252478456012)).
 
 It is the first change to the cards since [patch 0.7](/en/news/patch-0-7) of 29 September 2026: [update 0.8](/en/news/origins-tcg-early-access-0-8), which opened Early Access on 27 October, touched no cards. The patch notes are not out yet, so we don't know which cards change or at what time the update lands. As soon as they are published we'll write them up with the before and after of every card, and the [card database](/en/cards), the [deck builder](/en/deck-builder) and [MetaShifting](/en/metashifting) will show the new values.
 
-## The same day: Dr. Frank, the new boss {#dr-frank}
+## The same day: Dr. Frank and the new boss {#dr-frank}
 
 Wednesday also brings the next boss, Dr. Frank. Koin announced it on Steam on 31 October ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): the boss "will feature a deck full of new cards" and arrives one week earlier than planned. The reason is in the post's graphic and on Discord: the community reached 500 Steam reviews, and that night Koin wrote in #announcements that "the boss is coming a week early". On 2 November apix confirmed it on Discord: "new boss on wednesday".
 
@@ -820,13 +824,15 @@ In his post of 2 November apix listed the updates in progress: faster animations
 - The exact last day of ranked season 1.
 
 Sources: the messages in #the-courtyard (2 November 2026, 18:11 UTC), #announcements (31 October, 01:41 UTC, and 1 November, 00:05 UTC) and #game-announcements (31 October, 22:56 UTC) on the official Origins TCG Discord, the "Super Secret Early Access Roadmap AMA" event on the same server, read on 3 November, the Steam post of 31 October (16:41 UTC) and apix's post on X of 2 November.`,
-      `## Mercoledì 4 novembre: la patch di bilanciamento {#patch-bilanciamento}
+      `**Aggiornamento del 4 novembre:** le patch notes sono uscite ([il nostro articolo](/it/news/balance-patch-1104-cyber-queen)): cambiano dieci carte, e il boss nuovo è Cyber Queen, il boss n. 11, che guida il mazzo Relentless con Dr. Frank come Leggendaria. Qui sotto, dove chiamiamo Dr. Frank il boss nuovo, si legga: la Leggendaria del mazzo del boss.
+
+## Mercoledì 4 novembre: la patch di bilanciamento {#patch-bilanciamento}
 
 La prima patch di bilanciamento dell'Accesso anticipato di Origins TCG arriva mercoledì 4 novembre 2026. Lunedì 2 novembre, in #the-courtyard sul Discord ufficiale, il moderatore Senith ha riportato un messaggio di Mawr, Studio Head di Koin Games: "Penso che sarete contenti degli aggiornamenti di bilanciamento in arrivo mercoledì 4 novembre." La sera stessa apix, del team di Koin, ha scritto su X che "la prima vera patch di bilanciamento è dietro l'angolo" ([il suo post](https://x.com/apixtwts/status/2117383252478456012)).
 
 È la prima modifica alle carte dalla [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026: l'[aggiornamento 0.8](/it/news/origins-tcg-early-access-0-8), che il 27 ottobre ha aperto l'Accesso anticipato, non ha toccato le carte. Le patch notes non sono ancora uscite, quindi non sappiamo quali carte cambiano né a che ora arriva l'aggiornamento. Appena escono le raccontiamo con il prima e il dopo di ogni carta, e il [database carte](/it/cards), il [deck builder](/it/deck-builder) e [MetaShifting](/it/metashifting) mostreranno i valori nuovi.
 
-## Lo stesso giorno: Dr. Frank, il boss nuovo {#dr-frank}
+## Lo stesso giorno: Dr. Frank e il boss nuovo {#dr-frank}
 
 Mercoledì arriva anche il prossimo boss, Dr. Frank. Koin l'ha annunciato su Steam il 31 ottobre ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): il boss "avrà un mazzo pieno di carte nuove" e arriva con una settimana di anticipo sul previsto. Il motivo sta nella grafica del post e sul Discord: la community ha raggiunto le 500 recensioni su Steam, e quella notte Koin ha scritto in #announcements che "il boss arriva una settimana prima". Il 2 novembre apix l'ha confermato sul Discord: "boss nuovo mercoledì".
 
@@ -854,13 +860,15 @@ Nel suo post del 2 novembre apix ha elencato gli aggiornamenti in lavorazione: a
 - L'ultimo giorno esatto della stagione classificata 1.
 
 Fonti: i messaggi in #the-courtyard (2 novembre 2026, 18:11 UTC), #announcements (31 ottobre, 01:41 UTC, e 1° novembre, 00:05 UTC) e #game-announcements (31 ottobre, 22:56 UTC) sul Discord ufficiale di Origins TCG, l'evento "Super Secret Early Access Roadmap AMA" sullo stesso server, letto il 3 novembre, il post Steam del 31 ottobre (16:41 UTC) e il post su X di apix del 2 novembre. Le citazioni sono tradotte da noi.`,
-      `## Miércoles 4 de noviembre: el parche de equilibrio {#parche-equilibrio}
+      `**Actualización del 4 de noviembre:** ya han salido las notas del parche ([nuestro artículo](/es/news/balance-patch-1104-cyber-queen)): cambian diez cartas, y el jefe nuevo es Cyber Queen, el jefe n.º 11, que pilota el mazo Relentless con Dr. Frank como Legendaria. Más abajo, donde llamamos a Dr. Frank el jefe nuevo, léase: la Legendaria del mazo del jefe.
+
+## Miércoles 4 de noviembre: el parche de equilibrio {#parche-equilibrio}
 
 El primer parche de equilibrio del Acceso anticipado de Origins TCG llega el miércoles 4 de noviembre de 2026. El lunes 2 de noviembre, en #the-courtyard del Discord oficial, el moderador Senith transmitió un mensaje de Mawr, Studio Head de Koin Games: "Creo que os gustarán las actualizaciones de equilibrio que llegan el miércoles 4 de noviembre." Esa misma noche apix, del equipo de Koin, escribió en X que "el primer parche de equilibrio de verdad está a la vuelta de la esquina" ([su publicación](https://x.com/apixtwts/status/2117383252478456012)).
 
 Es el primer cambio en las cartas desde el [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026: la [actualización 0.8](/es/news/origins-tcg-early-access-0-8), que abrió el Acceso anticipado el 27 de octubre, no tocó las cartas. Las notas del parche todavía no han salido, así que no sabemos qué cartas cambian ni a qué hora llega la actualización. En cuanto se publiquen las contaremos con el antes y el después de cada carta, y la [base de datos de cartas](/es/cards), el [deck builder](/es/deck-builder) y [MetaShifting](/es/metashifting) mostrarán los valores nuevos.
 
-## El mismo día: Dr. Frank, el jefe nuevo {#dr-frank}
+## El mismo día: Dr. Frank y el jefe nuevo {#dr-frank}
 
 El miércoles llega también el próximo jefe, Dr. Frank. Koin lo anunció en Steam el 31 de octubre ("[Happy Halloween, Dr. Frank is coming](https://store.steampowered.com/news/app/4429430/view/1847920302242676)"): el jefe "tendrá un mazo lleno de cartas nuevas" y llega una semana antes de lo previsto. El motivo está en la imagen de la publicación y en Discord: la comunidad alcanzó las 500 reseñas en Steam, y esa noche Koin escribió en #announcements que "el jefe llega una semana antes". El 2 de noviembre apix lo confirmó en Discord: "jefe nuevo el miércoles".
 
@@ -893,19 +901,19 @@ Fuentes: los mensajes en #the-courtyard (2 de noviembre de 2026, 18:11 UTC), #an
       en: [
         { q: "When is the next Origins TCG balance patch?", a: "On Wednesday 4 November 2026, as Koin's Studio Head Mawr announced on the official Discord. It is the first since patch 0.7 of 29 September; the patch notes are not out yet." },
         { q: "When is the Origins TCG roadmap AMA?", a: "On Friday 6 November 2026 at 21:00 UTC (22:00 in Central Europe), in the #live-events channel of the official Discord." },
-        { q: "What is Dr. Frank in Origins TCG?", a: "The next boss of the Missions: it arrives on 4 November with a deck full of new cards, one week early because the game reached 500 Steam reviews." },
+        { q: "What is Dr. Frank in Origins TCG?", a: "The Legendary of the deck of Cyber Queen, the new boss of the Missions: they arrive on 4 November with a deck full of new cards, one week early because the game reached 500 Steam reviews." },
         { q: "When does ranked season 1 end?", a: "The week of 7 December 2026, according to Koin; the exact day may still move." },
       ],
       it: [
         { q: "Quando esce la prossima patch di bilanciamento di Origins TCG?", a: "Mercoledì 4 novembre 2026, come ha annunciato sul Discord ufficiale Mawr, Studio Head di Koin. È la prima dalla patch 0.7 del 29 settembre; le patch notes non sono ancora uscite." },
         { q: "Quando c'è l'AMA sulla roadmap di Origins TCG?", a: "Venerdì 6 novembre 2026 alle 22:00 italiane (21:00 UTC), nel canale #live-events del Discord ufficiale." },
-        { q: "Che cos'è Dr. Frank in Origins TCG?", a: "Il prossimo boss delle Missioni: arriva il 4 novembre con un mazzo pieno di carte nuove, una settimana prima perché il gioco ha raggiunto le 500 recensioni su Steam." },
+        { q: "Che cos'è Dr. Frank in Origins TCG?", a: "La Leggendaria del mazzo di Cyber Queen, il nuovo boss delle Missioni: arrivano il 4 novembre con un mazzo pieno di carte nuove, una settimana prima perché il gioco ha raggiunto le 500 recensioni su Steam." },
         { q: "Quando finisce la stagione classificata 1?", a: "Nella settimana del 7 dicembre 2026, secondo Koin; il giorno esatto può ancora spostarsi." },
       ],
       es: [
         { q: "¿Cuándo sale el próximo parche de equilibrio de Origins TCG?", a: "El miércoles 4 de noviembre de 2026, como anunció en el Discord oficial Mawr, Studio Head de Koin. Es el primero desde el parche 0.7 del 29 de septiembre; las notas todavía no han salido." },
         { q: "¿Cuándo es el AMA sobre la hoja de ruta de Origins TCG?", a: "El viernes 6 de noviembre de 2026 a las 21:00 UTC (22:00 en la España peninsular), en el canal #live-events del Discord oficial." },
-        { q: "¿Qué es Dr. Frank en Origins TCG?", a: "El próximo jefe de las Misiones: llega el 4 de noviembre con un mazo lleno de cartas nuevas, una semana antes porque el juego alcanzó las 500 reseñas en Steam." },
+        { q: "¿Qué es Dr. Frank en Origins TCG?", a: "La Legendaria del mazo de Cyber Queen, el nuevo jefe de las Misiones: llegan el 4 de noviembre con un mazo lleno de cartas nuevas, una semana antes porque el juego alcanzó las 500 reseñas en Steam." },
         { q: "¿Cuándo termina la temporada clasificatoria 1?", a: "La semana del 7 de diciembre de 2026, según Koin; el día exacto aún puede moverse." },
       ],
     },
