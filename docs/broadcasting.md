@@ -12,6 +12,23 @@ una guida?" (guida d'uso: https://claude.ai/artifact/NW59uHpGVJefej77Dwk4pY). Il
   PC): BroadcastChannel e localStorage del prototipo non passano. Il prototipo lo dava per "atteso ma non verificato".
 - **Twitch**: chi guarda è su un altro computer; l'estensione ha bisogno dello stato su un server.
 
+## Da dove viene la partita
+
+In onda va una **registrazione** (Pierluigi, 06/11/2026: "il broadcasting è di partite registrate dagli utenti che
+condividono con chi gestisce il torneo"). Non abbiamo accesso alla partita in diretta né API del gioco: nomi, mazzi,
+punteggio e copie giocate li scrive chi fa regia. Il file lo trascina in OBS chi trasmette, sotto la fonte Browser
+(scelta di Pierluigi del 06/11: il video non passa dalla regia né dal sito; ospitarlo sul sito chiederebbe Supabase Pro,
+perché il piano Free ha 50 MB a file e 1 GB in tutto). Il replay del gioco non c'è: dalla 0.7 il gioco non lo salva
+(0 file `.replay` sul PC di Pierluigi il 06/11) e per Koin non è ancora pronto per i giocatori (AMA del 05/10). La
+modalità spettatore è una promessa di Tim per il broadcast di dicembre, l'API un'offerta per quando ci sarà il loro sito
+dei tornei.
+
+**Prova in OBS vero** (06/11/2026): OBS 32.2.2 in una copia in una cartella temporanea con `--portable` (l'OBS di
+Pierluigi non è stato toccato), scena con `ffmpeg_source` e `browser_source` sopra, `--startrecording`, diretta in
+memoria con `BROADCAST_LIVE_DEV=1`. Nella registrazione l'overlay è trasparente sopra il video, c'è l'audio del file, il
+punteggio cambiato dalla regia arriva in circa 1-2 secondi e lo sponsor si alterna. Non provati: il trascinamento del
+file a mano, Ctrl+F, i tasti sotto l'anteprima e la diretta sul sito vero (migrazione da lanciare).
+
 ## Come gira
 
 ```
