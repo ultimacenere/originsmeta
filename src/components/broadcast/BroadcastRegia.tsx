@@ -29,6 +29,7 @@ import {
   emptyState,
   encodeState,
   phaseOf,
+  sanitizeState,
   stateFromHash,
   type BroadcastBestOf,
   type BroadcastDeck,
@@ -40,6 +41,8 @@ import {
   type BroadcastSponsor,
 } from "@/lib/broadcast/state";
 import { BROADCAST_BACKGROUNDS, backgroundSrc, openChannel, readStored, writeStored } from "@/lib/broadcast/sync";
+import { resolveLiveImages } from "@/lib/broadcast/live";
+import { BroadcastLiveBox } from "./BroadcastLiveBox";
 import { BroadcastOverlay } from "./BroadcastOverlay";
 import { sponsorImage } from "./sponsorImage";
 
@@ -67,6 +70,9 @@ export function BroadcastRegia({ catalog: list, peekLabels, initialUi }: { catal
   // "Mostra lo sponsor adesso": a ogni clic l'anteprima passa subito allo sponsor (senza aspettare i secondi del punteggio)
   const [sponsorNow, setSponsorNow] = useState(0);
   const [linkCopied, setLinkCopied] = useState(false);
+  // id della diretta dal sito quando è accesa (05/11/2026): l'indirizzo per OBS diventa quello fisso della diretta
+  const [liveId, setLiveId] = useState<string | null>(null);
+  const decodeLive = useCallback((raw: unknown) => (raw && typeof raw === "object" ? sanitizeState(raw, isCard) : null), [isCard]);
   const channel = useRef<BroadcastChannel | null>(null);
 
   // primo avvio: lo stato dell'indirizzo, altrimenti l'ultimo di questo browser, altrimenti la partita di prova
@@ -159,7 +165,8 @@ export function BroadcastRegia({ catalog: list, peekLabels, initialUi }: { catal
       return { ...s, players };
     });
 
-  const liveUrl = typeof window === "undefined" ? `/broadcast/live#s=${code}` : `${window.location.origin}/broadcast/live#s=${code}`;
+  const livePath = liveId ? `/broadcast/live?id=${liveId}` : `/broadcast/live#s=${code}`;
+  const liveUrl = typeof window === "undefined" ? livePath : `${window.location.origin}${livePath}`;
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(liveUrl);
@@ -169,7 +176,7 @@ export function BroadcastRegia({ catalog: list, peekLabels, initialUi }: { catal
       window.prompt(L.copyLink, liveUrl);
     }
   };
-  const openWindow = () => window.open(`/broadcast/live#s=${code}`, "originsmeta-broadcast-live", "popup,width=1280,height=720");
+  const openWindow = () => window.open(livePath, "originsmeta-broadcast-live", "popup,width=1280,height=720");
 
   return (
     <div className="bcr">
@@ -240,9 +247,11 @@ export function BroadcastRegia({ catalog: list, peekLabels, initialUi }: { catal
 
           <SponsorsBox L={L} sponsors={state.sponsors} onChange={(sponsors) => setState((s) => ({ ...s, sponsors }))} />
 
+          <BroadcastLiveBox L={L} ui={ui} state={state} onAdopt={setState} onLiveId={setLiveId} decode={decodeLive} />
+
           <section className="bcr-box">
             <h2>{L.output}</h2>
-            <p className="bcr-note">{L.outputText}</p>
+            <p className="bcr-note">{liveId ? L.live.obsText : L.outputText}</p>
             <input className="bcr-url" readOnly value={liveUrl} onFocus={(e) => e.currentTarget.select()} aria-label={L.copyLink} />
             <div className="bcr-row">
               <button type="button" className="bcr-btn bcr-btn-primary" onClick={copyLink}>
@@ -251,7 +260,7 @@ export function BroadcastRegia({ catalog: list, peekLabels, initialUi }: { catal
               <button type="button" className="bcr-btn" onClick={openWindow}>
                 {L.openWindow}
               </button>
-              <a className="bcr-btn bcr-btn-ghost" href={`/broadcast/live?bg=${bgId || "reveals"}#s=${code}`} target="_blank" rel="noopener">
+              <a className="bcr-btn bcr-btn-ghost" href={liveId ? `/broadcast/live?id=${liveId}&bg=${bgId || "reveals"}` : `/broadcast/live?bg=${bgId || "reveals"}#s=${code}`} target="_blank" rel="noopener">
                 {L.viewerDemo} ↗
               </a>
             </div>
@@ -279,7 +288,7 @@ export function BroadcastRegia({ catalog: list, peekLabels, initialUi }: { catal
             </label>
           </div>
           <div className="bcr-stage" data-transparent={bgId ? undefined : ""}>
-            <BroadcastOverlay state={state} catalog={catalog} peekLabels={peekLabels} mode="regia" onCardClick={onCardClick} background={backgroundSrc(bgId)} sponsorNow={sponsorNow} />
+            <BroadcastOverlay state={liveId ? resolveLiveImages(state, liveId) : state} catalog={catalog} peekLabels={peekLabels} mode="regia" onCardClick={onCardClick} background={backgroundSrc(bgId)} sponsorNow={sponsorNow} />
           </div>
           <p className="bcr-note">{L.previewHint}</p>
         </div>

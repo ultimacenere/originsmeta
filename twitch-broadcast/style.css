@@ -1,0 +1,518 @@
+/*
+ * Broadcasting OM, estensione Twitch (05/11/2026): grafica del sito ("ink & mint", src/app/globals.css) e dell'overlay
+ * di OBS (src/app/broadcast/broadcast.css). Pannelli blu notte con cornice celeste piena, titoli celesti, testi grigio
+ * chiaro, menta per i tasti e il focus, giallo solo per la Leggendaria. Niente bianco né nero pieni. Le carte si
+ * mostrano intere, mai ritagliate né coperte (crediti stampati).
+ */
+:root {
+  /* niente color-scheme: dark (lezione del Deck tracker, 13/10/2026): con uno schema diverso da quello del player Chrome
+     dipinge uno sfondo pieno nell'iframe e il video sparisce. L'overlay resta trasparente. */
+  color-scheme: normal;
+  --night: #182238;
+  --night-2: #121a2c;
+  --night-3: #22304b;
+  --panel: rgba(18, 26, 44, 0.95);
+  --sky: #3fc4e8;
+  --mint: #31e3bd;
+  --mint-soft: #7ff0d6;
+  --gold: #f2d23c;
+  --pink: #ff7ab8;
+  --ink: #16102a;
+  --pale: #c8d1dd;
+  --pale-muted: #8e9bb1;
+  --chalk: #d9dfe8;
+  --good: #7ee0a1;
+  --evil: #ff8fb0;
+  --display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  color: var(--chalk);
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+
+.bo-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.bo-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.bo-root > * {
+  pointer-events: auto;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- linguetta sul bordo sinistro ---------- */
+.bo-tab {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 38px;
+  padding: 10px 0 12px;
+  border: 3px solid var(--sky);
+  border-left: 0;
+  border-radius: 0 12px 12px 0;
+  background: var(--panel);
+  box-shadow: 0 6px 18px rgba(8, 4, 20, 0.45);
+  cursor: pointer;
+}
+.bo-tab:hover,
+.bo-tab.is-open {
+  border-color: var(--mint);
+}
+.bo-tab-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--mint);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 10px;
+  font-weight: 800;
+}
+.bo-tab-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--sky);
+  letter-spacing: 0.04em;
+}
+
+/* ---------- zone sopra le targhette del video ---------- */
+.bo-hot {
+  position: absolute;
+  padding: 0;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+}
+.bo-hot:hover,
+.bo-hot:focus-visible {
+  border-color: var(--mint);
+  background: rgba(49, 227, 189, 0.08);
+  outline: none;
+}
+
+/* ---------- pannello ---------- */
+.bo-panel {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 3px solid var(--sky);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 10px 28px rgba(8, 4, 20, 0.55);
+}
+.bo-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 8px 6px;
+  background: var(--night-3);
+  border-bottom: 2px solid var(--sky);
+}
+.bo-players {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
+}
+.bo-player {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 5px 8px;
+  border: 2px solid var(--night-2);
+  border-radius: 9px;
+  background: var(--night-2);
+  text-align: left;
+  cursor: pointer;
+}
+.bo-player[aria-selected="true"] {
+  border-color: var(--sky);
+}
+.bo-player-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--sky);
+}
+.bo-player-title {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pale);
+}
+.bo-x {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid var(--night-2);
+  border-radius: 8px;
+  background: var(--night-2);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--pale);
+  cursor: pointer;
+}
+.bo-x:hover {
+  border-color: var(--mint);
+  color: var(--mint);
+}
+.bo-decks {
+  display: flex;
+  gap: 4px;
+  padding: 8px 8px 0;
+}
+.bo-deck {
+  position: relative;
+  flex: 1;
+  padding: 4px 0 5px;
+  border: 2px solid var(--sky);
+  border-radius: 8px;
+  background: var(--night-2);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--pale);
+  cursor: pointer;
+}
+.bo-deck:hover {
+  border-color: var(--mint);
+}
+.bo-deck[aria-selected="true"] {
+  background: var(--sky);
+  color: var(--ink);
+}
+/* il mazzo in campo: pallino menta sull'angolo, come nell'overlay di OBS */
+.bo-deck.is-inplay::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 0 2px var(--night);
+}
+.bo-title {
+  padding: 8px 10px 4px;
+}
+.bo-title-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--sky);
+}
+.bo-title-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pale);
+}
+.bo-title-sub > span + span::before {
+  content: "· ";
+  color: var(--pale-muted);
+}
+.bo-inplay {
+  color: var(--mint);
+}
+.bo-rows {
+  list-style: none;
+  margin: 0;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--night-3) transparent;
+}
+.bo-rows::-webkit-scrollbar {
+  width: 6px;
+}
+.bo-rows::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: var(--night-3);
+}
+/* la riga del deck builder: illustrazione sfumata sulla metà destra, magie su fondo rosa, Leggendaria in oro */
+.bo-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 27px;
+  padding: 0 8px 0 4px;
+  overflow: hidden;
+  border: 2px solid var(--night-3);
+  border-radius: 9px;
+  background: var(--night);
+  text-align: left;
+  cursor: pointer;
+}
+.bo-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 45%;
+  background-image: linear-gradient(90deg, var(--night) 0%, rgba(24, 34, 56, 0.55) 45%, rgba(24, 34, 56, 0.2) 100%), var(--art, none);
+  background-size: cover;
+  background-position: center 30%;
+  pointer-events: none;
+}
+.bo-row > * {
+  position: relative;
+}
+.bo-row.is-spell {
+  background: #2a1838;
+}
+.bo-row.is-spell::before {
+  background-image: linear-gradient(90deg, #2a1838 0%, rgba(42, 24, 56, 0.55) 45%, rgba(42, 24, 56, 0.2) 100%), var(--art, none);
+}
+.bo-row.is-legendary {
+  border-color: var(--gold);
+}
+.bo-row:hover,
+.bo-row.is-pinned {
+  border-color: var(--mint);
+}
+.bo-row.is-out {
+  opacity: 0.42;
+}
+.bo-row.is-out .bo-name {
+  text-decoration: line-through;
+}
+.bo-mana {
+  display: grid;
+  flex: none;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--mint);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+.bo-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--chalk);
+}
+.bo-star {
+  color: var(--gold);
+}
+.bo-copies {
+  flex: none;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--pale);
+}
+.bo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px 2px;
+}
+.bo-copy {
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--mint);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.bo-copy:hover {
+  background: var(--mint-soft);
+}
+.bo-copy.is-done {
+  background: var(--gold);
+}
+.bo-copy:disabled {
+  background: var(--night-3);
+  color: var(--pale-muted);
+  cursor: not-allowed;
+}
+.bo-code {
+  width: 100%;
+  padding: 6px 8px;
+  border: 2px solid var(--mint);
+  border-radius: 8px;
+  background: var(--night-2);
+  color: var(--chalk);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 11px;
+}
+.bo-foot {
+  margin: 0;
+  padding: 4px 10px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--pale-muted);
+}
+
+/* ---------- anteprima della carta ---------- */
+.bo-peek {
+  position: absolute;
+  overflow-y: auto;
+}
+.bo-peek-card {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border: 3px solid var(--sky);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 10px 28px rgba(8, 4, 20, 0.55);
+}
+.bo-peek-card.is-legendary {
+  border-color: var(--gold);
+}
+.bo-peek-img {
+  flex: none;
+  width: 44%;
+  max-width: 170px;
+  height: auto;
+  border-radius: 8px;
+}
+.bo-peek-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+.bo-peek-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.bo-peek-name {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--sky);
+}
+.bo-peek-card.is-legendary .bo-peek-name {
+  color: var(--gold);
+}
+.bo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.bo-tags > span {
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--night-3);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--pale);
+}
+.bo-tags .bo-stats {
+  color: var(--chalk);
+}
+.bo-tags .bo-align.is-good {
+  color: var(--good);
+}
+.bo-tags .bo-align.is-evil {
+  color: var(--evil);
+}
+.bo-tags .bo-leg {
+  color: var(--gold);
+}
+.bo-peek-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--chalk);
+  white-space: pre-line;
+}
+.bo-link {
+  color: var(--mint);
+  font-size: 12px;
+  font-weight: 800;
+}
+.bo-peek-x {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

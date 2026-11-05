@@ -1,13 +1,13 @@
 /**
  * Broadcasting OM (prototipo del 16/10/2026): come la regia parla con l'overlay senza database.
  *
- * - Stessa macchina e stesso browser (la regia come "dock" di OBS e l'overlay come sorgente browser di OBS, che hanno
- *   lo stesso profilo; oppure due finestre dello stesso browser): BroadcastChannel più localStorage, aggiornamento al
- *   volo a ogni clic della regia.
+ * - Stesso browser (due finestre o schede): BroadcastChannel più localStorage, aggiornamento al volo a ogni clic della
+ *   regia. Non vale fra il pannello (dock) di OBS e una sua fonte browser: OBS dà ai pannelli un profilo del browser
+ *   separato (verificato il 05/11/2026 su OBS 32.2.2).
  * - Altrove: l'indirizzo dell'overlay porta lo stato nell'hash (#s=B1.…), fotografato al momento della copia.
  *
- * Il prodotto vero leggerà lo stato dal database (una riga per partita in diretta, aggiornata dalla regia e letta in
- * tempo reale): qui non c'è, per non toccare lo schema con un prototipo.
+ * Dal 05/11/2026 c'è la diretta dal sito (live.ts, BroadcastLiveBox): la regia salva lo stato su originsmeta.com e
+ * l'overlay con ?id=… lo rilegge da lì, su qualunque PC.
  */
 export const BROADCAST_CHANNEL = "originsmeta-broadcast-v1";
 export const BROADCAST_STORAGE_KEY = "originsmeta.broadcast.v1";

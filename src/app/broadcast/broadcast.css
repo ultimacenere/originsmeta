@@ -717,6 +717,82 @@
 .bcr-notice-error {
   color: var(--color-crimson-soft);
 }
+/* "In diretta dal sito" (05/11/2026): cornice menta quando è accesa, pallino che pulsa, canali Twitch collegati */
+.bcr-live[data-on] {
+  border-color: var(--color-mint);
+}
+.bcr-live h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bcr-live-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-mint);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-mint) 30%, transparent);
+  animation: bcr-live-pulse 1.6s ease-in-out infinite;
+}
+@keyframes bcr-live-pulse {
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-mint) 10%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bcr-live-dot {
+    animation: none;
+  }
+}
+.bcr-live-twitch {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 2px solid var(--color-night-3);
+}
+.bcr-live-twitch h3 {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-sky);
+}
+.bcr-live-code {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 2px dashed var(--color-mint);
+  border-radius: 10px;
+}
+.bcr-live-code strong {
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  letter-spacing: 0.06em;
+  color: var(--color-mint);
+}
+.bcr-live-code .bcr-note {
+  margin-top: 0;
+}
+.bcr-live-channels {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bcr-live-channels li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--color-night-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-chalk);
+}
 .bcr-players {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

@@ -1,0 +1,5 @@
+# prove locali e pacchetti: mai nel repo
+*.zip
+
+# screenshot e immagini per la scheda di Twitch: si caricano nella console, non nel repo
+store/screenshot-*

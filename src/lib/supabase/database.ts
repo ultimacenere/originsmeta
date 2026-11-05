@@ -1120,6 +1120,29 @@ export type Database = {
       tracker_live_push: { Args: { p_token: string; p_state: unknown }; Returns: string | null };
       /** ultimo stato di un canale collegato (anon), per l'estensione */
       twitch_live_state: { Args: { p_channel: string }; Returns: { state: unknown; updated_at: string }[] };
+      /** Broadcasting OM in diretta (blocco BROADCASTING IN DIRETTA, 05/11/2026): la propria diretta, creata con p_create */
+      broadcast_live_info: {
+        Args: { p_create?: boolean };
+        Returns: { id: string; version: number; updated_at: string; live: boolean; channels: { id: string; login: string | null }[] }[];
+      };
+      /** salva lo stato della regia (con l'accesso fatto); restituisce id, versione e canali Twitch da avvisare */
+      broadcast_live_save: { Args: { p_state: unknown }; Returns: { id: string; version: number; channels: string[] }[] };
+      /** spegne la diretta (stato null); restituisce versione e canali da avvisare */
+      broadcast_live_clear: { Args: Record<string, never>; Returns: { id: string; version: number; channels: string[] }[] };
+      /** carica un'immagine di uno sponsor (data URL); restituisce l'impronta sha256 */
+      broadcast_image_put: { Args: { p_data: string }; Returns: string };
+      /** un'immagine di una diretta per l'overlay (anon) */
+      broadcast_image_get: { Args: { p_id: string; p_hash: string }; Returns: string | null };
+      /** lo stato di una diretta per l'overlay di OBS (anon) */
+      broadcast_live_state: { Args: { p_id: string }; Returns: { state: unknown; version: number; updated_at: string }[] };
+      /** lo stato di un canale per l'estensione Twitch di Broadcasting OM (anon) */
+      broadcast_channel_state: { Args: { p_channel: string }; Returns: { id: string; state: unknown; version: number; updated_at: string }[] };
+      /** codice per collegare un canale Twitch alla regia (con l'accesso fatto) */
+      broadcast_link_code: { Args: Record<string, never>; Returns: string };
+      /** il codice scritto nell'estensione, solo dalla rotta /api/broadcast/ext/link con il segreto del server; restituisce lo username */
+      broadcast_link_claim: { Args: { p_key: string; p_code: string; p_channel: string; p_login?: string | null }; Returns: string | null };
+      /** scollega un proprio canale; true se c'era */
+      broadcast_unlink: { Args: { p_channel: string }; Returns: boolean };
       /** un clic sul tasto di download dell'app (blocco DOWNLOAD DEL TRACKER, 15/10/2026), solo dalla rotta /api/tracker/download con il segreto del server */
       tracker_download_log: { Args: { p_key: string; p_owner: string | null; p_lang: string }; Returns: undefined };
       /** una pagina del giro del mercato di Steam (blocco MERCATO, 17/10/2026), solo dalla rotta /api/cron/market con il segreto del server; restituisce quanti oggetti ha salvato */

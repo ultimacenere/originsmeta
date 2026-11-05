@@ -236,10 +236,15 @@ export function isUploadedImage(src: string): boolean {
   return src.startsWith("data:");
 }
 
-/** Immagine di uno sponsor pulita: data URL di un'immagine raster entro il peso massimo, o indirizzo https; altrimenti "". */
+/**
+ * Immagine di uno sponsor pulita: data URL di un'immagine raster entro il peso massimo, indirizzo https o, nello stato
+ * salvato sul sito per la diretta (05/11/2026, `live.ts`), il riferimento "om:<impronta sha256>" a un'immagine
+ * caricata a parte; altrimenti "".
+ */
 export function cleanImage(raw: unknown): string {
   if (typeof raw !== "string") return "";
   if (raw.startsWith("data:")) return raw.length <= SPONSOR_DATA_MAX && DATA_IMAGE.test(raw) ? raw : "";
+  if (raw.startsWith("om:")) return /^om:[0-9a-f]{64}$/.test(raw) ? raw : "";
   return cleanUrl(raw);
 }
 

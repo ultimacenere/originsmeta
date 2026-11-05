@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" data-om-base="local">
+  <head>
+    <!-- Solo prove locali, fuori dallo zip: il finto Twitch al posto dell'helper vero, e come "video" la pagina
+         dell'overlay di OBS della diretta di prova (/broadcast/live?id=…) sopra una schermata della partita. -->
+    <script src="twitch-mock.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mock · Broadcasting OM</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&amp;family=Unbounded:wght@600;700;800&amp;display=swap" />
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+      .mock-video {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background: #0d1410;
+        display: grid;
+        place-items: center;
+      }
+      .mock-video iframe {
+        width: min(100vw, calc(100vh * 16 / 9));
+        aspect-ratio: 16 / 9;
+        border: 0;
+      }
+      .mock-band {
+        position: fixed;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: repeating-linear-gradient(45deg, rgba(255, 61, 154, 0.1) 0 10px, transparent 10px 20px);
+      }
+      .mock-band.top { top: 0; height: 70px; }
+      .mock-band.bottom { bottom: 0; height: 90px; }
+      .mock-band.right { top: 0; bottom: 0; left: auto; width: 75px; }
+      .mock-note {
+        position: fixed;
+        right: 84px;
+        bottom: 96px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #c8d1dd;
+        font: 12px system-ui;
+      }
+    </style>
+  </head>
+  <body data-view="overlay">
+    <div class="mock-video"><iframe id="mock-video" title="video" src="about:blank"></iframe></div>
+    <div class="mock-band top"></div>
+    <div class="mock-band bottom"></div>
+    <div class="mock-band right"></div>
+    <div class="mock-note" id="mock-note">Diretta di prova: apri la regia su localhost:3000/broadcast e accendi la diretta</div>
+    <script>
+      // il "video": l'overlay di OBS della diretta dell'utente finto "dev" (BROADCAST_LIVE_DEV=1)
+      Promise.all([
+        fetch("/dev/site.json", { cache: "no-store" }).then(function (r) { return r.json(); }),
+        fetch("/api/broadcast/live", { cache: "no-store" }).then(function (r) { return r.json(); })
+      ])
+        .then(function (both) {
+          var site = both[0] && both[0].site;
+          var b = both[1];
+          var id = b && b.live && b.live.id;
+          if (!id || !site) return;
+          document.getElementById("mock-video").src = site + "/broadcast/live?id=" + id + "&bg=reveals";
+          document.getElementById("mock-note").textContent = "Diretta " + id + " · le zone rosa sono le fasce dei controlli di Twitch";
+        })
+        .catch(function () {});
+    </script>
+    <script src="../common.js"></script>
+    <script src="../overlay.js"></script>
+  </body>
+</html>

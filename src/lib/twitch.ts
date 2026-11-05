@@ -62,6 +62,33 @@ async function streamsOf(creds: { id: string; secret: string }, logins: readonly
 }
 
 /**
+ * Il nome (login) di un canale Twitch dal suo id, per mostrarlo nella regia di Broadcasting OM (05/11/2026): i canali
+ * collegati all'estensione arrivano solo come id dal JWT di Twitch. null senza le chiavi o se Twitch non risponde:
+ * il collegamento vale lo stesso e la regia mostra l'id.
+ */
+export async function twitchLoginOf(channelId: string): Promise<string | null> {
+  const creds = credentials();
+  if (!creds || !/^[0-9]{1,20}$/.test(channelId)) return null;
+  try {
+    for (const fresh of [false, true]) {
+      const token = await appToken(creds, fresh);
+      const res = await fetch(`https://api.twitch.tv/helix/users?id=${channelId}`, { headers: { "Client-Id": creds.id, Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(TIMEOUT_MS) });
+      if (res.status === 401 && !fresh) {
+        cachedToken = null;
+        continue;
+      }
+      if (!res.ok) return null;
+      const json = (await res.json()) as { data?: { login?: unknown }[] };
+      const login = json.data?.[0]?.login;
+      return typeof login === "string" && /^[a-z0-9_]{1,25}$/.test(login) ? login : null;
+    }
+  } catch {
+    /* Twitch non risponde: resta l'id */
+  }
+  return null;
+}
+
+/**
  * Chi fra i profili vetrina (ruolo Creator, Autore, Pro o Staff + canale Twitch nel profilo) è in diretta su Origins TCG adesso. Senza chiavi:
  * `enabled: false` e nessuna chiamata. Un errore di Twitch o del database sale: la rotta lo trasforma in "nessuno".
  */

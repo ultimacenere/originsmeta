@@ -8227,3 +8227,281 @@ revoke all on function public.card_vote_totals() from public;
 grant execute on function public.card_vote_totals() to anon, authenticated;
 
 comment on table public.card_votes_guest is 'Voti alle carte di chi non ha l''account (04/11/2026): codice anonimo del browser (impronta), impronta della connessione per un giorno; li scrive solo il server del sito.';
+
+-- =====================================================================================================
+-- ===== 05/11/2026: BROADCASTING IN DIRETTA =====
+-- =====================================================================================================
+-- 05/11/2026 — BROADCASTING OM IN DIRETTA DAL SITO E ESTENSIONE TWITCH (Pierluigi: "Estensione Twitch", dopo il
+-- prototipo del 16/10 che teneva lo stato solo nel browser; src/lib/broadcast/live.ts, docs/broadcasting.md).
+--   Diretta: una per account (broadcast_lives), con un id pubblico di 12 caratteri che sta nell'indirizzo dell'overlay
+--   per OBS (/broadcast/live?id=…). La regia, con l'accesso fatto, salva lo stato (broadcast_live_save: un oggetto
+--   JSON fino a 8 KB, già pulito dalla rotta /api/broadcast/live con sanitizeState, al massimo ogni 400 ms) o lo
+--   spegne (broadcast_live_clear). Chiunque conosca l'id legge lo stato (broadcast_live_state, anon): è quello che va
+--   in onda; dopo 18 ore senza salvataggi non si legge più.
+--   Immagini degli sponsor caricate dalla regia (broadcast_images): data URL di PNG, JPEG o WebP fino a 200.000
+--   caratteri, con l'impronta sha256; nello stato restano solo "om:<impronta>". Al massimo 12 per account (le più
+--   vecchie si cancellano) e 12 nuove l'ora. L'overlay le legge dall'id della diretta e dall'impronta (anon).
+--   Canali Twitch (broadcast_twitch_links): la regia crea un codice monouso (broadcast_link_code: 8 caratteri, 10
+--   minuti, 5 l'ora), chi ha il canale lo scrive nella pagina di configurazione dell'estensione Broadcasting OM, che lo
+--   manda al sito con il JWT di Twitch; la rotta /api/broadcast/ext/link verifica il JWT (ruolo broadcaster, canale) e
+--   chiama broadcast_link_claim con il segreto del server (notify_key_ok, CRON_SECRET). Un canale segue una sola regia
+--   (l'ultima che lo collega), una regia fino a 10 canali (il canale ufficiale e chi fa la co-diretta). Lo stato di un
+--   canale lo legge l'estensione (broadcast_channel_state, anon). Si scollega dalla regia (broadcast_unlink).
+--   Separato dall'estensione Deck tracker (blocco TWITCH del 13/10): tabelle e funzioni sue. Nessuna lettura né
+--   scrittura diretta delle tabelle. Tutto si cancella con l'account (cascade). Idempotente.
+-- =====================================================================================================
+
+create table if not exists public.broadcast_lives (
+  owner uuid primary key references public.profiles(id) on delete cascade,
+  id text not null unique check (id ~ '^[a-z0-9]{12}$'),
+  state jsonb check (state is null or (jsonb_typeof(state) = 'object' and octet_length(state::text) <= 8192)),
+  version integer not null default 0 check (version >= 0),
+  updated_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+create table if not exists public.broadcast_images (
+  owner uuid not null references public.profiles(id) on delete cascade,
+  hash text not null check (hash ~ '^[0-9a-f]{64}$'),
+  data text not null check (char_length(data) <= 200000 and data ~ '^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$'),
+  created_at timestamptz not null default now(),
+  primary key (owner, hash)
+);
+create table if not exists public.broadcast_twitch_links (
+  channel_id text primary key check (channel_id ~ '^[0-9]{1,20}$'),
+  owner uuid not null references public.profiles(id) on delete cascade,
+  channel_login text check (channel_login is null or channel_login ~ '^[a-z0-9_]{1,25}$'),
+  linked_at timestamptz not null default now()
+);
+create index if not exists broadcast_twitch_links_owner_idx on public.broadcast_twitch_links (owner);
+create table if not exists public.broadcast_link_codes (
+  code_hash text primary key check (code_hash ~ '^[0-9a-f]{64}$'),
+  owner uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  used_at timestamptz
+);
+create index if not exists broadcast_link_codes_owner_idx on public.broadcast_link_codes (owner, created_at);
+comment on table public.broadcast_lives is 'Diretta di Broadcasting OM (05/11/2026): stato della regia per l''overlay di OBS e l''estensione Twitch, una per account.';
+comment on table public.broadcast_images is 'Immagini degli sponsor caricate dalla regia di Broadcasting OM (05/11/2026): data URL con impronta sha256.';
+comment on table public.broadcast_twitch_links is 'Canali Twitch collegati a una regia di Broadcasting OM (05/11/2026): id e nome del canale.';
+
+alter table public.broadcast_lives enable row level security;
+alter table public.broadcast_images enable row level security;
+alter table public.broadcast_twitch_links enable row level security;
+alter table public.broadcast_link_codes enable row level security;
+revoke all on public.broadcast_lives from anon, authenticated;
+revoke all on public.broadcast_images from anon, authenticated;
+revoke all on public.broadcast_twitch_links from anon, authenticated;
+revoke all on public.broadcast_link_codes from anon, authenticated;
+
+-- ---------- id pubblico di una diretta: 12 caratteri fra a-z e 0-9 ----------
+create or replace function public.broadcast_new_id()
+returns text language plpgsql volatile set search_path = public, pg_temp as $$
+declare
+  alphabet constant text := 'abcdefghijklmnopqrstuvwxyz0123456789';
+  raw bytea := uuid_send(gen_random_uuid());
+  out_id text := '';
+  i integer;
+begin
+  for i in 0..11 loop
+    out_id := out_id || substr(alphabet, (get_byte(raw, i) % 36) + 1, 1);
+  end loop;
+  return out_id;
+end $$;
+revoke all on function public.broadcast_new_id() from public, anon, authenticated;
+
+-- ---------- la diretta di chi ha fatto l'accesso (la crea se manca, con p_create) ----------
+-- Restituisce id, versione, ora dell'ultimo salvataggio, se è accesa e i canali collegati [{id, login}].
+create or replace function public.broadcast_live_info(p_create boolean default false)
+returns table (id text, version integer, updated_at timestamptz, live boolean, channels jsonb)
+language plpgsql security definer set search_path = public, pg_temp as $$
+#variable_conflict use_column
+declare
+  uid uuid := auth.uid();
+  tries integer := 0;
+begin
+  if uid is null or not exists (select 1 from public.profiles p where p.id = uid) then raise exception 'not_authenticated'; end if;
+  while p_create and not exists (select 1 from public.broadcast_lives l where l.owner = uid) loop
+    begin
+      insert into public.broadcast_lives (owner, id) values (uid, public.broadcast_new_id());
+    exception when unique_violation then
+      tries := tries + 1;
+      if tries > 5 then raise; end if;
+    end;
+  end loop;
+  return query
+    select l.id, l.version, l.updated_at, l.state is not null,
+           coalesce((select jsonb_agg(jsonb_build_object('id', t.channel_id, 'login', t.channel_login) order by t.linked_at)
+                       from public.broadcast_twitch_links t where t.owner = uid), '[]'::jsonb)
+      from public.broadcast_lives l where l.owner = uid;
+end $$;
+revoke all on function public.broadcast_live_info(boolean) from public, anon;
+grant execute on function public.broadcast_live_info(boolean) to authenticated;
+
+-- ---------- salvataggio dello stato dalla regia (con l'accesso fatto; crea la diretta se manca) ----------
+-- Stato che non è un oggetto o oltre 8 KB: 'invalid_state'. Meno di 400 ms dal salvataggio precedente: 'too_fast'.
+-- Restituisce id, versione nuova e gli id dei canali collegati (per l'Extension PubSub).
+create or replace function public.broadcast_live_save(p_state jsonb)
+returns table (id text, version integer, channels text[])
+language plpgsql security definer set search_path = public, pg_temp as $$
+#variable_conflict use_column
+declare
+  uid uuid := auth.uid();
+  v_id text;
+  v_version integer;
+begin
+  if uid is null or not exists (select 1 from public.profiles p where p.id = uid) then raise exception 'not_authenticated'; end if;
+  if jsonb_typeof(p_state) is distinct from 'object' or octet_length(p_state::text) > 8192 then raise exception 'invalid_state'; end if;
+  perform 1 from public.broadcast_live_info(true);
+  if exists (select 1 from public.broadcast_lives l where l.owner = uid and l.state is not null and l.updated_at > clock_timestamp() - interval '400 milliseconds') then
+    raise exception 'too_fast';
+  end if;
+  update public.broadcast_lives l set state = p_state, version = l.version + 1, updated_at = clock_timestamp()
+   where l.owner = uid returning l.id, l.version into v_id, v_version;
+  return query
+    select v_id, v_version, coalesce((select array_agg(t.channel_id order by t.linked_at) from public.broadcast_twitch_links t where t.owner = uid), '{}'::text[]);
+end $$;
+revoke all on function public.broadcast_live_save(jsonb) from public, anon;
+grant execute on function public.broadcast_live_save(jsonb) to authenticated;
+
+-- ---------- spegnere la diretta: lo stato si cancella (OBS e l'estensione non mostrano più niente) ----------
+create or replace function public.broadcast_live_clear()
+returns table (id text, version integer, channels text[])
+language plpgsql security definer set search_path = public, pg_temp as $$
+#variable_conflict use_column
+declare
+  uid uuid := auth.uid();
+  v_id text;
+  v_version integer;
+begin
+  if uid is null then raise exception 'not_authenticated'; end if;
+  update public.broadcast_lives l set state = null, version = l.version + 1, updated_at = clock_timestamp()
+   where l.owner = uid returning l.id, l.version into v_id, v_version;
+  if v_version is null then return; end if;
+  return query
+    select v_id, v_version, coalesce((select array_agg(t.channel_id order by t.linked_at) from public.broadcast_twitch_links t where t.owner = uid), '{}'::text[]);
+end $$;
+revoke all on function public.broadcast_live_clear() from public, anon;
+grant execute on function public.broadcast_live_clear() to authenticated;
+
+-- ---------- immagine di uno sponsor caricata dalla regia (con l'accesso fatto) ----------
+-- Data URL non valido o troppo grande: 'invalid_image'. Dodici immagini caricate nell'ultima ora: 'too_many_images'.
+-- Restituisce l'impronta sha256 (la stessa di sha256Hex in live.ts). Restano le dodici più recenti.
+create or replace function public.broadcast_image_put(p_data text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  h text;
+begin
+  if uid is null or not exists (select 1 from public.profiles p where p.id = uid) then raise exception 'not_authenticated'; end if;
+  if p_data is null or char_length(p_data) > 200000 or p_data !~ '^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$' then
+    raise exception 'invalid_image';
+  end if;
+  h := encode(sha256(convert_to(p_data, 'UTF8')), 'hex');
+  if exists (select 1 from public.broadcast_images i where i.owner = uid and i.hash = h) then return h; end if;
+  if (select count(*) from public.broadcast_images i where i.owner = uid and i.created_at > now() - interval '1 hour') >= 12 then
+    raise exception 'too_many_images';
+  end if;
+  delete from public.broadcast_images i
+   where i.owner = uid and i.hash in (select i2.hash from public.broadcast_images i2 where i2.owner = uid order by i2.created_at desc offset 11);
+  insert into public.broadcast_images (owner, hash, data) values (uid, h, p_data);
+  return h;
+end $$;
+revoke all on function public.broadcast_image_put(text) from public, anon;
+grant execute on function public.broadcast_image_put(text) to authenticated;
+
+-- ---------- un'immagine di una diretta per l'overlay (anon): dall'id della diretta e dall'impronta ----------
+create or replace function public.broadcast_image_get(p_id text, p_hash text)
+returns text language sql stable security definer set search_path = public, pg_temp as $$
+  select i.data from public.broadcast_lives l join public.broadcast_images i on i.owner = l.owner
+   where p_id ~ '^[a-z0-9]{12}$' and p_hash ~ '^[0-9a-f]{64}$' and l.id = p_id and i.hash = p_hash;
+$$;
+revoke all on function public.broadcast_image_get(text, text) from public;
+grant execute on function public.broadcast_image_get(text, text) to anon, authenticated;
+
+-- ---------- lo stato di una diretta per l'overlay di OBS (anon) ----------
+-- Una riga se la diretta esiste: stato null se è spenta o ferma da 18 ore.
+create or replace function public.broadcast_live_state(p_id text)
+returns table (state jsonb, version integer, updated_at timestamptz)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select case when l.updated_at > now() - interval '18 hours' then l.state end, l.version, l.updated_at
+    from public.broadcast_lives l where p_id ~ '^[a-z0-9]{12}$' and l.id = p_id;
+$$;
+revoke all on function public.broadcast_live_state(text) from public;
+grant execute on function public.broadcast_live_state(text) to anon, authenticated;
+
+-- ---------- lo stato di un canale per l'estensione Twitch (anon) ----------
+-- Una riga se il canale è collegato e la regia ha una diretta (con il suo id): stato null se è spenta o ferma da 18 ore.
+create or replace function public.broadcast_channel_state(p_channel text)
+returns table (id text, state jsonb, version integer, updated_at timestamptz)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select l.id, case when l.updated_at > now() - interval '18 hours' then l.state end, l.version, l.updated_at
+    from public.broadcast_twitch_links t join public.broadcast_lives l on l.owner = t.owner
+   where p_channel ~ '^[0-9]{1,20}$' and t.channel_id = p_channel;
+$$;
+revoke all on function public.broadcast_channel_state(text) from public;
+grant execute on function public.broadcast_channel_state(text) to anon, authenticated;
+
+-- ---------- codice per collegare un canale Twitch (con l'accesso fatto) ----------
+create or replace function public.broadcast_link_code()
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  alphabet constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  raw bytea := uuid_send(gen_random_uuid()) || uuid_send(gen_random_uuid());
+  code text := '';
+  i integer;
+begin
+  if uid is null or not exists (select 1 from public.profiles p where p.id = uid) then raise exception 'not_authenticated'; end if;
+  if (select count(*) from public.broadcast_link_codes c where c.owner = uid and c.created_at > now() - interval '1 hour') >= 5 then
+    raise exception 'too_many_codes';
+  end if;
+  foreach i in array array[0, 1, 2, 3, 4, 5, 16, 17] loop
+    code := code || substr(alphabet, (get_byte(raw, i) % 32) + 1, 1);
+  end loop;
+  delete from public.broadcast_link_codes c where c.expires_at < now() - interval '1 day';
+  insert into public.broadcast_link_codes (code_hash, owner, expires_at)
+  values (encode(sha256(convert_to(code, 'UTF8')), 'hex'), uid, now() + interval '10 minutes');
+  return substr(code, 1, 4) || '-' || substr(code, 5, 4);
+end $$;
+revoke all on function public.broadcast_link_code() from public, anon;
+grant execute on function public.broadcast_link_code() to authenticated;
+
+-- ---------- il codice scritto nell'estensione (solo dalla rotta del sito, con il segreto) ----------
+-- Segreto sbagliato: 'forbidden'. Canale non valido o codice sconosciuto, già usato o scaduto: 'invalid_code'.
+-- Undicesimo canale della stessa regia: 'too_many_channels'. p_login è il nome del canale (facoltativo, solo per
+-- mostrarlo nella regia). Restituisce lo username della regia collegata.
+create or replace function public.broadcast_link_claim(p_key text, p_code text, p_channel text, p_login text default null)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  norm text := upper(regexp_replace(left(coalesce(p_code, ''), 40), '[^A-Za-z0-9]', '', 'g'));
+  login text := lower(left(coalesce(p_login, ''), 25));
+  row_owner uuid;
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden'; end if;
+  if char_length(norm) <> 8 or p_channel is null or p_channel !~ '^[0-9]{1,20}$' then raise exception 'invalid_code'; end if;
+  update public.broadcast_link_codes c set used_at = now()
+   where c.code_hash = encode(sha256(convert_to(norm, 'UTF8')), 'hex') and c.used_at is null and c.expires_at > now()
+   returning c.owner into row_owner;
+  if row_owner is null then raise exception 'invalid_code'; end if;
+  if (select count(*) from public.broadcast_twitch_links t where t.owner = row_owner and t.channel_id <> p_channel) >= 10 then
+    raise exception 'too_many_channels';
+  end if;
+  insert into public.broadcast_twitch_links (channel_id, owner, channel_login, linked_at)
+  values (p_channel, row_owner, case when login ~ '^[a-z0-9_]{1,25}$' then login end, now())
+  on conflict (channel_id) do update set owner = excluded.owner, channel_login = excluded.channel_login, linked_at = excluded.linked_at;
+  return (select p.username from public.profiles p where p.id = row_owner);
+end $$;
+revoke all on function public.broadcast_link_claim(text, text, text, text) from public;
+grant execute on function public.broadcast_link_claim(text, text, text, text) to anon, authenticated;
+
+-- ---------- scollegare un proprio canale (con l'accesso fatto) ----------
+create or replace function public.broadcast_unlink(p_channel text)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if auth.uid() is null then raise exception 'not_authenticated'; end if;
+  delete from public.broadcast_twitch_links t where t.owner = auth.uid() and t.channel_id = p_channel;
+  return found;
+end $$;
+revoke all on function public.broadcast_unlink(text) from public, anon;
+grant execute on function public.broadcast_unlink(text) to authenticated;
