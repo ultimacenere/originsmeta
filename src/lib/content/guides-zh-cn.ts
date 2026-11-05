@@ -6,13 +6,13 @@ import type { GuideCopy, GuideSlug } from "./guides";
  */
 export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
   "origins-tcg-legendaries": {
-    title: "Origins TCG 的 11 张传说卡：卡牌、数据、补丁与卡组",
-    metaTitle: "Origins TCG 传说卡：全部 11 张及其卡组",
-    excerpt: "Origins TCG 全部 11 张可用传说卡一览：每张卡的费用、力量与生命值、卡牌文本、它们会生成的卡牌、历次平衡补丁的改动，以及在 OriginsMeta 上使用它们的卡组。每张卡都附有卡牌页面和卡组攻略的链接，方便你在构筑前逐一查看和比较。",
+    title: "Origins TCG 的 12 张传说卡：卡牌、数据、补丁与卡组",
+    metaTitle: "Origins TCG 传说卡：全部 12 张及其卡组",
+    excerpt: "Origins TCG 全部 12 张可用传说卡一览：每张卡的费用、力量与生命值、卡牌文本、它们会生成的卡牌、历次平衡补丁的改动，以及在 OriginsMeta 上使用它们的卡组。每张卡都附有卡牌页面和卡组攻略的链接，方便你在构筑前逐一查看和比较。",
     faq: [
       {
         q: "Origins TCG 有多少张传说卡？",
-        a: "可用的有十一张，2026年9月22日在游戏中核对（2026年10月27日的 0.8 补丁说明没有提到卡牌改动）：Dorothy、Dracula、Mulan、Queen of Hearts、Van Helsing、Wicked Stepmother、Merlin、King Arthur、Legion of the Dead、Three Not So Little Pigs 和 Robin Hood。OriginsMeta 数据库里还保留着另外九张已经不在游戏中的传说卡。",
+        a: "可用的有十二张：2026年9月22日在游戏中核对过的 Dorothy、Dracula、Mulan、Queen of Hearts、Van Helsing、Wicked Stepmother、Merlin、King Arthur、Legion of the Dead、Three Not So Little Pigs 和 Robin Hood，以及随 2026年11月4日的补丁进入游戏、尚未在游戏中核对的 Dr. Frank。OriginsMeta 数据库里还保留着另外八张已经不在游戏中的传说卡。",
       },
       {
         q: "一副卡组可以放几张传说卡？",
@@ -30,15 +30,15 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
     body: `
 ## 简而言之 {#jian-er-yan-zhi}
 
-- Origins TCG 自 2026年10月27日起在 Steam 抢先体验中免费游玩，目前共有**十一张可用传说卡**：六张费用为 4 法力，一张为 5，三张为 7，一张为 8。
-- 其中十张是单位，一张是法术，即 Legion of the Dead。五张属于 Good，三张属于 Evil，三张属于 Neutral。
+- Origins TCG 自 2026年10月27日起在 Steam 抢先体验中免费游玩，目前共有**十二张可用传说卡**：六张费用为 4 法力，一张为 5，一张为 6，三张为 7，一张为 8。第十二张是 Dr. Frank，随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏。
+- 其中十一张是单位，一张是法术，即 Legion of the Dead。五张属于 Good，四张属于 Evil，三张属于 Neutral。
 - 有四张会通过卡牌文本生成其他卡牌：Dracula、Van Helsing、Legion of the Dead 和 Three Not So Little Pigs。
-- 有七张在 2026年8月至 9月21日之间的平衡补丁中被改动过；Dracula、Van Helsing、Legion of the Dead 和 Robin Hood 没有变化。2026年9月29日的 [0.7 补丁](/zh-cn/news/patch-0-7) 没有调整这十一张中的任何一张。
-- 截至 2026年9月25日 20:00 CEST 在 OriginsMeta 上发布的 20 副卡组用到了十一张中的十张：Three Not So Little Pigs 带领四副，Van Helsing 三副，Wicked Stepmother 一副也没有。有六张传说卡拥有 OriginsMeta 为其某副卡组撰写的攻略。
+- 在 11月之前就已在游戏中的十一张里，有七张在 2026年8月至 9月21日之间的平衡补丁中被改动过；Dracula、Van Helsing、Legion of the Dead 和 Robin Hood 没有变化。2026年9月29日的 [0.7 补丁](/zh-cn/news/patch-0-7)没有调整其中任何一张，2026年11月4日的补丁则让 Dorothy 变为 3/3。
+- 截至 2026年9月25日 20:00 CEST 在 OriginsMeta 上发布的 20 副卡组，用到了当时游戏中十一张传说卡里的十张：Three Not So Little Pigs 带领四副，Van Helsing 三副，Wicked Stepmother 一副也没有。有六张传说卡拥有 OriginsMeta 为其某副卡组撰写的攻略。
 
 下面的传说卡按费用排序，费用相同时按字母顺序排列。本攻略介绍每张卡的作用，而不是它有多强：我们的 [Origins TCG 强度榜](/zh-cn/tier-list) 将根据锦标赛结果和[排位天梯](/zh-cn/guides/origins-tcg-ranked)顶端的数据为它们排名；第一版排名正在准备中。
 
-## 11 张传说卡一览 {#yi-lan}
+## 12 张传说卡一览 {#yi-lan}
 
 | 传说卡 | 费用 | 力量/生命值 | 阵营 | 卡组 |
 | --- | --- | --- | --- | --- |
@@ -49,12 +49,13 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 | [Van Helsing](/zh-cn/cards/van-helsing) | 4 | 3/4 | Good | 3 |
 | [Wicked Stepmother](/zh-cn/cards/wicked-stepmother) | 4 | 4/6 | Evil | 0 |
 | [Merlin](/zh-cn/cards/merlin) | 5 | 5/5 | Neutral | 1 |
+| [Dr. Frank](/zh-cn/cards/dr-frank) | 6 | 2/2 | Evil | 0 |
 | [King Arthur](/zh-cn/cards/king-arthur) | 7 | 7/7 | Good | 2 |
 | [Legion of the Dead](/zh-cn/cards/legion-of-the-dead) | 7 | 法术 | Neutral | 2 |
 | [Three Not So Little Pigs](/zh-cn/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 4 |
 | [Robin Hood](/zh-cn/cards/robin-hood) | 8 | 4/4 | Good | 1 |
 
-最后一列统计的是，在 2026年9月15日至 9月25日 20:00 CEST 期间于 OriginsMeta 发布的 20 副卡组中，每张传说卡带领了几副。它衡量的是在本站的人气，而不是强度或胜率；实时统计见[最常用](/zh-cn/tier-list/most-played)。
+最后一列统计的是，在 2026年9月15日至 9月25日 20:00 CEST 期间于 OriginsMeta 发布的 20 副卡组中，每张传说卡带领了几副；那时 Dr. Frank 还没有进入游戏。它衡量的是在本站的人气，而不是强度或胜率；实时统计见[最常用](/zh-cn/tier-list/most-played)。
 
 ## 传说卡在卡组中的作用 {#zai-ka-zu-zhong}
 
@@ -62,7 +63,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 - **对手看得到它。** 封闭测试的 0.6.1 补丁（2026年8月14日）加入了在调度（mulligan）阶段预览对手传说卡的功能，见[官方补丁说明](https://store.steampowered.com/news/app/4429430/view/1840944183780414)。
 - **在 Conquest 中它就是卡组的名字。** 在 Crimson Cup 中每位玩家带三副卡组，当你禁用对手的一副卡组时，你只能看到它的传说卡（[Crimson Cup 规则](/zh-cn/news/crimson-cup-format-check-in)）。公告没有说明三张传说卡是否必须不同；在 Big Bob's Playtest Battle 中是必须的。如何组合三副卡组：见我们的 [Conquest 攻略](/zh-cn/guides/origins-tcg-conquest)。
 
-下面引用的卡牌文本是 OriginsMeta 根据游戏内官方英文文本翻译的中文版本，尚未与游戏内的简体中文文本逐一核对；费用和数据于 2026年9月22日逐张核对。传说出处和每个传说的介绍由 OriginsMeta 撰写。补丁为 [MetaShifting](/zh-cn/metashifting) 中追踪的那些：试玩测试更新 0.6.1、0.6.2 和 0.6.3（2026年8月）、2026年9月21日的试玩版补丁，以及 2026年9月29日没有调整任何传说卡的 0.7 补丁；2026年10月27日的 0.8 补丁说明是抢先体验的第一份补丁说明，没有提到卡牌改动。这里不介绍传说之力：我们还没有从游戏中把它记录下来，记录之后会显示在每张卡的页面上。
+除 Dr. Frank 外，下面引用的卡牌文本都是 OriginsMeta 根据游戏内官方英文文本翻译的中文版本，尚未与游戏内的简体中文文本逐一核对。Dr. Frank 于 2026年11月4日进入游戏，我们还没有在游戏中读到他的卡牌：他的文本译自官方卡牌。费用和数据于 2026年9月22日逐张核对。传说出处和每个传说的介绍由 OriginsMeta 撰写。补丁为 [MetaShifting](/zh-cn/metashifting) 中追踪的那些：试玩测试更新 0.6.1、0.6.2 和 0.6.3（2026年8月）、2026年9月21日的试玩版补丁、2026年9月29日没有调整任何传说卡的 0.7 补丁，以及 2026年11月4日的补丁，它让 Dorothy 变为 3/3，并带来了 Dr. Frank；2026年10月27日的 0.8 补丁说明是抢先体验的第一份补丁说明，没有提到卡牌改动。这里不介绍传说之力：我们还没有从游戏中把它记录下来，记录之后会显示在每张卡的页面上。
 
 ## Dorothy {#dorothy}
 
@@ -73,7 +74,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 > 本局对局中友方每移动一次，我获得 +1⚔️/+1❤️。
 
 - **传说。** L. Frank Baum 1900 年的小说中，被龙卷风带到奥兹国的堪萨斯女孩。
-- **补丁。** 2026年9月21日的试玩版补丁：法力 5 → 4（[补丁说明](/zh-cn/news/demo-patch-notes-0921)）。
+- **补丁。** 2026年9月21日的试玩版补丁：法力 5 → 4（[补丁说明](/zh-cn/news/demo-patch-notes-0921)）；2026年11月4日的补丁：从 1/1 变为 3/3（[补丁说明](/zh-cn/news/balance-patch-1104-cyber-queen)）。
 - **OriginsMeta 上的卡组，2026年9月25日。** 两副：[Dorothy Combo](/zh-cn/decks/community/dorothy-combo-7503) 和 [Move/Combo](/zh-cn/decks/community/move-combo-075a)。
 - **攻略。** [Dorothy 卡组攻略：Dorothy Combo](/zh-cn/guides/dorothy-combo-guide)。
 - **卡牌页面。** [Dorothy，传说卡：数据与文本](/zh-cn/cards/dorothy)。
@@ -160,6 +161,20 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 - **攻略。** 暂无：[把你的攻略发给我们](/zh-cn/guides/submit)。
 - **卡牌页面。** [Merlin，传说卡：数据与文本](/zh-cn/cards/merlin)。
 
+## Dr. Frank {#dr-frank}
+
+**6 法力 · 2/2 · 单位 · Evil** · 出处：哥特恐怖
+
+> 战斗前，从你的墓地召唤一个随机角色到一个随机格位。
+
+- **最新的传说卡。** 他随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏，是第 11 位首领 Cyber Queen 所用 Relentless 卡组中的传说卡，同时到来的还有另外七张卡（[Dr. Frank 的八张新卡](/zh-cn/news/dr-frank-boss-new-cards)）。上面的文本译自官方卡牌：我们还没有在游戏中读到它。
+- **传说。** 维克多·弗兰肯斯坦，在玛丽·雪莱 1818 年的小说中拼造出活物的学生。
+- **围绕他的卡牌。** [It's Alive](/zh-cn/cards/its-alive)，一张 3 法力的法术，效果与他相同，但只生效一次；还有两张具有重生（Rebirth）的卡，[Frank's Monster](/zh-cn/cards/franks-monster) 和 [Franken Bride](/zh-cn/cards/franken-bride)。在创作者们的预览中，他的传说之力会在对局开始时把 It's Alive 放入你的手牌。
+- **补丁。** 自进入游戏以来没有改动。
+- **OriginsMeta 上的卡组，2026年9月25日。** 一副也没有：那时他还不在游戏中。现在有多少卡组使用他，见[最常用](/zh-cn/tier-list/most-played)。
+- **攻略。** 暂无：[把你的攻略发给我们](/zh-cn/guides/submit)。
+- **卡牌页面。** [Dr. Frank，传说卡：数据与文本](/zh-cn/cards/dr-frank)。
+
 ## King Arthur {#king-arthur}
 
 **7 法力 · 7/7 · 单位 · Good** · 出处：亚瑟王传说
@@ -220,11 +235,11 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 ## 已不在游戏中的传说卡 {#bu-zai-you-xi-zhong}
 
-我们的数据库还保留着九张已经不在游戏中的传说卡：[Alice](/zh-cn/cards/alice)、[Beowulf](/zh-cn/cards/beowulf)、[Cinderella](/zh-cn/cards/cinderella)、[Death](/zh-cn/cards/death)、[Dr. Frank](/zh-cn/cards/dr-frank)、[Mirror Mirror](/zh-cn/cards/mirror-mirror)、[Red](/zh-cn/cards/red)、[Winnie-the-Pooh](/zh-cn/cards/winnie-the-pooh) 和 [Wizard of Oz](/zh-cn/cards/wizard-of-oz)。它们的页面保留着最后已知的数据，这些数据未在游戏中核实。团队在 AMA 中描述过一次包含完整传说卡阵容的正式发布：我们已知的日期都在[路线图](/zh-cn/guides/roadmap-and-dates)中。
+我们的数据库还保留着八张已经不在游戏中的传说卡：[Alice](/zh-cn/cards/alice)、[Beowulf](/zh-cn/cards/beowulf)、[Cinderella](/zh-cn/cards/cinderella)、[Death](/zh-cn/cards/death)、[Mirror Mirror](/zh-cn/cards/mirror-mirror)、[Red](/zh-cn/cards/red)、[Winnie-the-Pooh](/zh-cn/cards/winnie-the-pooh) 和 [Wizard of Oz](/zh-cn/cards/wizard-of-oz)。它们的页面保留着最后已知的数据，这些数据未在游戏中核实。Dr. Frank 原本也是其中之一，直到 2026年11月4日的补丁让他进入了游戏。团队在 AMA 中描述过一次包含完整传说卡阵容的正式发布：我们已知的日期都在[路线图](/zh-cn/guides/roadmap-and-dates)中。
 
 ## 数据来源 {#shu-ju-lai-yuan}
 
-- **卡牌：** OriginsMeta [卡牌数据库](/zh-cn/cards)：可用卡牌的费用、数据和英文文本于 2026年9月22日在游戏中逐张核对，中文文本为 OriginsMeta 的翻译，尚未与游戏内文本核对。数据为 2026年9月29日 0.7 补丁的版本；2026年10月27日的 0.8 补丁说明（抢先体验）没有提到卡牌改动。
+- **卡牌：** OriginsMeta [卡牌数据库](/zh-cn/cards)：可用卡牌的费用、数据和英文文本于 2026年9月22日在游戏中逐张核对，中文文本为 OriginsMeta 的翻译，尚未与游戏内文本核对。数据为 2026年11月4日补丁的版本。Dr. Frank 的费用、数据和文本来自 Koin Games 于 2026年11月2日公布的官方卡牌，尚未在游戏中核对。
 - **补丁：** Steam 上的官方补丁说明，在 [MetaShifting](/zh-cn/metashifting) 中逐卡整理。
 - **卡组：** 2026年9月15日至 9月25日 20:00 CEST 在 OriginsMeta 发布的 20 副卡组（[所有 Origins TCG 卡组](/zh-cn/decks)）；之后的统计见[最常用](/zh-cn/tier-list/most-played)。
 
@@ -289,7 +304,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 - **Origins TCG** 自 2026年10月27日起在 [Steam](https://store.steampowered.com/app/4429430/Origins_TCG/) 抢先体验中免费游玩，排位就在其中。试玩版已经结束，其进度已转移到抢先体验：Koin 的工作室负责人在官方 Discord 上写道，试玩版可以卸载了。
 - **封闭测试**从 8月起就有排位，已于 2026年10月15日关闭。
-- 准备卡组：[卡组构筑器](/zh-cn/deck-builder)和社区发布的[所有 Origins TCG 卡组](/zh-cn/decks)，每副都附有可粘贴到 Origins 中的游戏代码（KGBLDC…）。带领这些卡组的 [11 张传说卡](/zh-cn/guides/origins-tcg-legendaries)在我们的攻略中逐一介绍。
+- 准备卡组：[卡组构筑器](/zh-cn/deck-builder)和社区发布的[所有 Origins TCG 卡组](/zh-cn/decks)，每副都附有可粘贴到 Origins 中的游戏代码（KGBLDC…）。带领这些卡组的 [12 张传说卡](/zh-cn/guides/origins-tcg-legendaries)在我们的攻略中逐一介绍。
 - 对于用三副卡组以 Conquest 赛制进行的锦标赛，比如 CoachCrono 于 2026年10月25日夺冠的 Crimson Cup：见[如何构筑三副卡组](/zh-cn/guides/origins-tcg-conquest)。
 
 ## OriginsMeta 将如何利用排位 {#originsmeta}
@@ -377,7 +392,7 @@ Koin Games 在 2026年8月28日的 [Big Bob's Playtest Battle](/zh-cn/news/big-b
 4. **“Conquest 检查”**框会显示每一对卡组相差多少张独特卡牌：达到下限及以上为绿色并带 ✓，低于下限为红色并带 ✗。鼠标悬停在数字上会列出共用的卡牌。下限为 8，即 Crimson Cup 的数值，你可以修改它（Big Bob's Playtest Battle 要求 9）。该检查还会提示两副卡组用了同一张传说卡。
 5. 当三副卡组都合法且差异足够大时，框中会显示 **OK ✓**。用“复制游戏代码”复制每副卡组，然后粘贴到 Origins 中。
 
-构筑器会在你的浏览器中随时保存这三副卡组。在 OriginsMeta 上创建的[锦标赛](/zh-cn/tournaments)也可以使用 Conquest，每位玩家 2 到 4 副卡组，下限由组织者选择，每个锦标赛的构筑器都会应用这些规则。可供选择的传说卡全部收录在[我们的 11 张传说卡攻略](/zh-cn/guides/origins-tcg-legendaries)中。
+构筑器会在你的浏览器中随时保存这三副卡组。在 OriginsMeta 上创建的[锦标赛](/zh-cn/tournaments)也可以使用 Conquest，每位玩家 2 到 4 副卡组，下限由组织者选择，每个锦标赛的构筑器都会应用这些规则。可供选择的传说卡全部收录在[我们的 12 张传说卡攻略](/zh-cn/guides/origins-tcg-legendaries)中。
 
 Crimson Cup 是 Steam Next Fest 期间的锦标赛，而排位在几天前的 10月15日刚刚开放：关于新品节的一切都在我们的 [Steam Next Fest 攻略](/zh-cn/guides/steam-next-fest-2026)中，[排位如今如何运作](/zh-cn/guides/origins-tcg-ranked)（自 2026年10月27日起处于抢先体验）则有专门的攻略。
 
@@ -542,7 +557,7 @@ OriginsMeta 目前记录了 **44 个地点**。2026年10月28日阅读的 [Steam
 | --- | --- | --- |
 | [Mulan](/zh-cn/cards/mulan) ★ | 4 | 2/4，连击；友方揭示时触发时，重复一次 |
 | [Bagheera](/zh-cn/cards/bagheera) | 2 | 1/1；在中间格位揭示时获得 +2⚔️/+2❤️ |
-| [Baby Bear](/zh-cn/cards/baby-bear) | 2 | 1/1；当敌方伤害你在此处的屏障时反击 1 点，死亡时将一只 4/4 的 Papa Bear 加入你的手牌 |
+| [Baby Bear](/zh-cn/cards/baby-bear) | 3 | 1/1；当敌方伤害你在此处的屏障时反击 1 点，死亡时将一只 4/4 的 Papa Bear 加入你的手牌 |
 | [Mary](/zh-cn/cards/mary) | 3 | 1/1；揭示时将一只 Little Lamb 加入手牌，死亡时你的 Lamb 永久获得 +3⚔️/+3❤️ |
 | [Black Knight](/zh-cn/cards/black-knight) | 3 | 2/2；揭示时对其对面的敌人造成 2 点伤害 |
 | [Frog Prince](/zh-cn/cards/frog-prince) | 3 | 2/2；揭示时，+3⚔️ 或 +3❤️，任你选择 |
@@ -1002,7 +1017,7 @@ Origins TCG 是一款由 **Koin Games** 开发的数字集换式卡牌游戏，K
 - **同时行动的回合。** 双方玩家同时行动，所以不用等待。一局对局大约七分钟。
 - **卡牌会攻击。** 与单纯“比战线点数”的游戏不同，单位之间会互相战斗：力量（Power）是你造成的伤害，生命值（Health）是你能承受的伤害。
 - **关键词。** 游戏使用揭示时（On Reveal，卡牌打出时触发）、死亡时（On Death）、先攻（First Strike）、连击（Double Attack）和死触（Deathtouch）等关键词。
-- **一张传说卡带领整副卡组。** 卡组为 25 张牌，每副卡组都围绕一张拥有标志性能力的传说卡构筑：Mulan 会重复你友方的揭示时能力，Queen of Hearts 会重复它们的死亡时能力。目前有十一张可用的传说卡：[全部 11 张传说卡，逐张介绍](/zh-cn/guides/origins-tcg-legendaries)。
+- **一张传说卡带领整副卡组。** 卡组为 25 张牌，每副卡组都围绕一张拥有标志性能力的传说卡构筑：Mulan 会重复你友方的揭示时能力，Queen of Hearts 会重复它们的死亡时能力。目前有十二张可用的传说卡：[全部 12 张传说卡，逐张介绍](/zh-cn/guides/origins-tcg-legendaries)。
 
 ## 游戏模式
 

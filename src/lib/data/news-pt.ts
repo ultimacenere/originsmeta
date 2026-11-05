@@ -230,9 +230,11 @@ Se seus decks usam Obliterate, os ursos ou Guy of Gisborne, revise sua curva de 
       { label: "O cemitério volta", text: "Dr. Frank e It's Alive invocam personagens do seu cemitério", anchor: "cemiterio" },
       { label: "Uma palavra-chave nova", text: "Red Knight traz Ongoing, que hoje nenhuma carta do jogo tem", anchor: "red-knight" },
       { label: "Patch de balanceamento", text: "o Studio Head da Koin diz que ele chega com Dr. Frank", anchor: "balanceamento" },
-      { label: "Teste agora", text: "monte um deck com as oito cartas no nosso Theory craft", anchor: "theory-craft" },
+      { label: "Monte seu deck agora", text: "as oito cartas estão no jogo e no nosso deck builder", anchor: "theory-craft" },
     ],
-    body: `## Dr. Frank chega na quarta-feira, 4 de novembro {#chegada}
+    body: `**Atualização de 5 de novembro:** as oito cartas estão no jogo desde o [patch de 4 de novembro](/pt/news/balance-patch-1104-cyber-queen), e no OriginsMeta agora são cartas do jogo: estão no [banco de dados de cartas](/pt/cards) e no [deck builder](/pt/deck-builder), e não mais no [Theory craft](/pt/theory-craft). Os decks de theory craft montados com elas, sem nenhuma outra carta fora do jogo, passaram para os [decks individuais](/pt/decks). Alinhamos quatro textos em inglês com as cartas oficiais (It's Alive, Franken Bride, Necromancer e Red Knight); ainda não lemos as oito cartas no jogo, e as páginas delas dizem isso.
+
+## Dr. Frank chega na quarta-feira, 4 de novembro {#chegada}
 
 "O próximo chefe, Dr. Frank, chega a Origins na semana que vem, com um deck cheio de cartas novas." A Koin Games anunciou isso no Steam em 31 de outubro de 2026, dia de Halloween, no post "Happy Halloween, Dr. Frank is coming": a data é **quarta-feira, 4 de novembro**. Até as notas do patch, escrevemos que Dr. Frank é o chefe da missão 12, a próxima das missões contra a IA do jogo: as notas do patch de 4 de novembro deixam claro que o chefe é Cyber Queen, o chefe n.º 11, e que Dr. Frank é a Lendária do deck Relentless dela ([as notas do patch](/pt/news/balance-patch-1104-cyber-queen#cyber-queen)). Quando publicamos este artigo, a Koin ainda não tinha dito a que horas chega a atualização.
 
@@ -255,7 +257,7 @@ Em 2 de novembro a Koin deu aos seus criadores acesso antecipado a "todas as oit
 | [Necromancer](/pt/cards/necromancer) | 4 | 2/2 | Evil, Ao revelar |
 | [Red Knight](/pt/cards/red-knight) | 2 | 4/1 | Atropelar, Ongoing |
 
-As imagens são as cartas em inglês da Koin; os textos em português abaixo são uma tradução nossa com o glossário do jogo, que vamos comparar com o jogo assim que a atualização sair.
+As imagens são as cartas em inglês da Koin; os textos em português abaixo são uma tradução nossa com o glossário do jogo, que vamos comparar com os textos do jogo assim que lermos as cartas lá.
 
 ### Dr. Frank e It's Alive: o cemitério volta ao jogo {#cemiterio}
 
@@ -287,7 +289,7 @@ Três cartas para os decks de descarte, os que são montados em torno de Dracula
 
 ## Um patch de balanceamento no mesmo dia {#balanceamento}
 
-"O patch de balanceamento chega amanhã, com Dr. Frank": foi o que Mawr escreveu no Discord em 3 de novembro. As mudanças ainda não são públicas: assim que as notas do patch saírem, vamos publicá-las, e o [MetaShifting](/pt/metashifting) vai mostrar o que muda carta por carta. Até lá, as estatísticas no OriginsMeta continuam as do [patch 0.7](/pt/news/patch-0-7). As outras datas da semana, do AMA sobre o roadmap na sexta-feira, 6 de novembro, ao fim da temporada ranqueada 1, estão no [nosso artigo de 2 de novembro](/pt/news/balance-patch-dr-frank-roadmap-ama).
+"O patch de balanceamento chega amanhã, com Dr. Frank": foi o que Mawr escreveu no Discord em 3 de novembro. As notas do patch saíram em 4 de novembro: dez cartas mudam, de Obliterate aos três ursos, e estão todas no [nosso artigo sobre as notas do patch](/pt/news/balance-patch-1104-cyber-queen); o [MetaShifting](/pt/metashifting) as mostra carta por carta, e as estatísticas no OriginsMeta já são as novas. As outras datas da semana, do AMA sobre o roadmap na sexta-feira, 6 de novembro, ao fim da temporada ranqueada 1, estão no [nosso artigo de 2 de novembro](/pt/news/balance-patch-dr-frank-roadmap-ama).
 
 ## O que dizem os criadores {#criadores}
 
@@ -305,21 +307,19 @@ Robip também apresentou as oito cartas, [em italiano](https://www.youtube.com/w
 
 ## Teste agora no OriginsMeta {#theory-craft}
 
-As oito cartas estão no [banco de dados de cartas](/pt/cards) com o filtro "Fora do jogo", e no [Theory craft](/pt/theory-craft) você já pode montar um deck com elas: os que você publicar vão para os [decks de theory craft](/pt/theory-craft/decks). Quando a atualização estiver no jogo, vamos marcá-las como cartas do jogo e comparar os textos nos sete idiomas; os decks montados com elas vão passar sozinhos para os decks individuais.
+Como a atualização já está no jogo, as oito cartas também são cartas do jogo no OriginsMeta: estão no [banco de dados de cartas](/pt/cards) e no [deck builder](/pt/deck-builder), e um deck que você publicar com elas vai para os [decks individuais](/pt/decks), com o seu código do jogo. Os decks de theory craft montados com elas antes da atualização passaram para lá sozinhos. Ainda não lemos as oito cartas no jogo: enquanto não fizermos isso, as páginas delas avisam, e os textos delas em português são uma tradução nossa com o glossário do jogo.
 
 ## O que ainda não sabemos {#o-que-nao-sabemos}
 
-- A que horas a atualização chega em 4 de novembro.
 - Como se desbloqueiam Dr. Frank e as cartas dele, e se dá para usá-las na ranqueada desde o primeiro dia.
 - Se It's Alive é a carta que Dr. Frank dá a você no início da partida.
-- O que o patch de balanceamento muda.
 
 Fontes: o post no Steam "Happy Halloween, Dr. Frank is coming" (31 de outubro de 2026) e a sua arte; as mensagens de apix (29 de outubro) e de Mawr (31 de outubro e 3 de novembro) no Discord oficial de Origins TCG; as imagens das cartas que a Koin Games deu aos seus criadores para revelá-las (2 de novembro); o vídeo de ZulsoiD (3 de novembro). As citações foram traduzidas por nós. Ilustrações: Don Flores (Dr. Frank, It's Alive, Frank's Monster, Necromancer), Alina Kapustina (Franken Bride), Lucas Machado (Doppelganger, Red Knight), Koin Team (Morgan le Fay).`,
     faq: [
-      { q: "Quando Dr. Frank chega a Origins TCG?", a: "Na quarta-feira, 4 de novembro de 2026, uma semana antes do previsto porque os jogadores chegaram às 500 avaliações no Steam. Quando publicamos este artigo, a Koin não tinha anunciado o horário." },
+      { q: "Quando Dr. Frank chega a Origins TCG?", a: "Na quarta-feira, 4 de novembro de 2026, uma semana antes do previsto porque os jogadores chegaram às 500 avaliações no Steam. A atualização chegou nesse dia, com o patch de balanceamento." },
       { q: "Quais são as cartas novas de Dr. Frank?", a: "Oito: Dr. Frank (Lendária, 6 de mana, 2/2), It's Alive (feitiço, 3), Frank's Monster (6, 5/4), Franken Bride (5, 4/4), Morgan le Fay (2, 1/3), Doppelganger (4, 2/2), Necromancer (4, 2/2) e Red Knight (2, 4/1)." },
-      { q: "Tem patch de balanceamento com Dr. Frank?", a: "Sim: Mawr, Studio Head da Koin, escreveu que o patch de balanceamento chega com Dr. Frank em 4 de novembro. As mudanças ainda não tinham sido publicadas." },
-      { q: "Já posso montar um deck com as cartas novas?", a: "No OriginsMeta, sim: as oito cartas estão no Theory craft, o nosso deck builder com as cartas que não estão no jogo, até a atualização sair." },
+      { q: "Tem patch de balanceamento com Dr. Frank?", a: "Sim: saiu com Dr. Frank em 4 de novembro e muda dez cartas, de Obliterate (10 de mana) aos três ursos; estão todas no nosso artigo sobre as notas do patch." },
+      { q: "Já posso montar um deck com as cartas novas?", a: "Sim: desde o patch de 4 de novembro as oito cartas estão no jogo, e no OriginsMeta estão no deck builder; os decks que você publicar com elas vão para os decks individuais." },
     ],
   },
   "balance-patch-dr-frank-roadmap-ama": {

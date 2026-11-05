@@ -51,8 +51,9 @@ export type TextSource = {
  * Carta della collezione: Twister Toss, rifatta dalla 0.7 del 29/09/2026 ("moves an ally to any space"), finché il testo
  * nuovo non si legge nel gioco e `cardsVerified` non passa quel giorno.
  */
-export function textOutdated(card: Pick<Card, "status" | "type" | "history">, src: TextSource): boolean {
-  const inCollection = card.status === "active" && card.type !== "token";
+export function textOutdated(card: Pick<Card, "status" | "type" | "since" | "history">, src: TextSource): boolean {
+  // come `checkedInGame` di cards.ts: una carta entrata nel gioco con una patch dopo la verifica non è stata letta nel gioco
+  const inCollection = card.status === "active" && card.type !== "token" && !(card.since && (src.dates[card.since] ?? "") > src.verified);
   return card.history.some((h) => {
     if (h.kind === "deck" || h.fix || (h.from && h.to) || h.alignment) return false;
     return inCollection ? (src.dates[h.patch] ?? "") > src.verified : true;

@@ -53,6 +53,8 @@ export function cardDates(card: Card, locale: Locale, guides: readonly Guide[] =
   const tier = tierOf(card.legendary ? "legendaries" : "cards", card.slug);
   return [
     ...card.history.map((h) => patches[h.patch].date),
+    // la patch con cui la carta è entrata nel gioco (cards.ts, `enteredGame`): da quel giorno la scheda la dice nel gioco
+    card.since ? patches[card.since].date : undefined,
     lore?.en || lore?.keywords ? cardsVerified.date : undefined,
     // italiano e spagnolo letti nel gioco il 25/09/2026; il francese non ha una lettura nel gioco (card-lore-fr.ts): nessuna data
     (locale === "it" || locale === "es") && lore?.[locale] ? localizedTextsRead[locale] : undefined,

@@ -137,13 +137,14 @@ export const patches: Record<PatchId, { date: string; at?: string; url: string; 
   // Prima patch di bilanciamento dell'Accesso anticipato, insieme al boss n. 11 (Cyber Queen con il mazzo Relentless e
   // Dr. Frank Leggendaria). Patch notes di apix nel Discord ufficiale il 04/11/2026 alle 10:08 italiane, senza numero di
   // versione: "should land at around" cinque ore dopo, senza aggiornare il client. `at` è quella stima (15:08 italiane),
-  // non un orario confermato. Il post Steam non c'è ancora: `url` è la pagina delle news del gioco su Steam, da
-  // sostituire con il post quando esce.
+  // non un orario confermato. Il post Steam è uscito la sera stessa, alle 19:11 UTC ("Origins just got a new boss!", gid
+  // letto con ISteamNews il 05/11/2026), con le stesse dieci modifiche: è l'`url` dal 05/11 (prima la pagina delle news).
+  // Con questa patch sono entrate nel gioco le otto carte di Dr. Frank (`enteredGame` qui sotto).
   "ea-1104": {
     date: "2026-11-04",
     at: "2026-11-04T14:08:00Z",
-    url: "https://store.steampowered.com/news/app/4429430",
-    title: "Patch Notes (Nov 4, 2026)",
+    url: "https://store.steampowered.com/news/app/4429430/view/1848557880480522",
+    title: "Origins just got a new boss!",
     label: { en: "EA · 4 Nov", it: "EA · 4 nov", es: "EA · 4 nov", fr: "EA · 4 nov.", pt: "EA · 4 nov.", de: "EA · 4. Nov.", ru: "EA · 4 нояб.", "zh-cn": "EA · 11月4日" },
     news: "balance-patch-1104-cyber-queen",
   },
@@ -184,6 +185,35 @@ export function patchAt(date: string): PatchId | undefined {
  * carte confrontate. Il deck builder la mostra nel disclaimer sui dati; va aggiornata a ogni nuova verifica.
  */
 export const cardsVerified = { date: "2026-09-22", count: 122 };
+
+/**
+ * Carte entrate nel gioco con una patch, quando i dati importati le danno ancora fra le rimosse (05/11/2026, Pierluigi:
+ * "hai visto le carte che son state sbloccate no? la sezione carte, deckbuilder, e mazzi son pronti per queste carte? le
+ * hai invece rimosse da theorycrafting e i deck in theory crafting devono diventare deck veri"). Con la patch indicata
+ * qui la carta è nel gioco, quindi è attiva: entra nel deck builder, nei mazzi singoli, nelle tier list, nel draft e
+ * nelle statistiche, esce dal Theory craft (theoryCraft.ts) e i mazzi theory craft che non hanno altre carte fuori dal
+ * gioco passano da soli fra i mazzi singoli, con lo stesso indirizzo.
+ *
+ * Le otto di Dr. Frank sono arrivate con la patch del 04/11/2026 (`ea-1104`), Leggendaria del mazzo Relentless del boss
+ * Cyber Queen: post Steam "Origins just got a new boss!" ("a handful of new cards") e le otto carte che Koin ha dato ai
+ * creator il 02/11 per rivelarle (Bounty Blitz). Costo, statistiche, allineamento e chiavi coincidono con i file del
+ * gioco 0.8.1 (`CardBaseData`, letti in sola lettura il 05/11/2026), dove prima della patch erano "Hidden".
+ *
+ * Diversamente dalle statistiche delle patch (`isAfterImport` qui sotto), lo stato non torna ai dati importati dopo un
+ * import nuovo: che una carta sia nel gioco lo dice la patch, non l'import. Se un giorno una di queste carte esce di
+ * nuovo dal gioco, si toglie da qui. Il campo `since` della carta ne tiene la patch: finché la verifica nella collezione
+ * (`cardsVerified`) è più vecchia di quella patch, testo e dati non si dicono letti nel gioco (`checkedInGame`).
+ */
+export const enteredGame: Readonly<Partial<Record<string, PatchId>>> = {
+  "dr-frank": "ea-1104",
+  "its-alive": "ea-1104",
+  "franks-monster": "ea-1104",
+  "franken-bride": "ea-1104",
+  "morgan-le-fay": "ea-1104",
+  doppelganger: "ea-1104",
+  necromancer: "ea-1104",
+  "red-knight": "ea-1104",
+};
 
 export type Stats = { mana?: number; power?: number; health?: number };
 
@@ -235,6 +265,11 @@ export type Card = {
   ability?: L10n;
   origin?: L10n;
   status: "active" | "removed";
+  /**
+   * patch con cui la carta è entrata nel gioco quando i dati importati la davano fra le rimosse (`enteredGame`): la carta
+   * è attiva, ma se la patch è dopo la verifica nella collezione testo e dati non sono ancora letti nel gioco
+   */
+  since?: PatchId;
   history: Change[];
 };
 
@@ -288,14 +323,17 @@ function isAfterImport(patch: PatchId): boolean {
 
 export const cards: Card[] = data.cards.map((w) => {
   const lore = cardLore[w.slug];
+  // carta entrata nel gioco con una patch che i dati importati non hanno ancora (`enteredGame`): mai le carte create
+  const entered = w.type === "token" ? undefined : enteredGame[w.slug];
   const card: Card = {
     slug: w.slug,
     name: w.name,
     type: w.type,
     saga: lore?.saga ?? "other",
-    status: w.status,
+    status: entered ? "active" : w.status,
     history: cardHistory[w.slug] ?? [],
   };
+  if (entered) card.since = entered;
   if (w.formerName) card.formerName = w.formerName;
   // La chiave di una carta creata può mancare in World of Origins: in quel caso la dà `card-lore.ts`, letta dal materiale ufficiale.
   const key = w.key ?? lore?.key;
@@ -357,6 +395,20 @@ export function getCardByKey(key: string): Card | undefined {
 
 /** Carte giocabili oggi (attive, non create da altre carte). */
 export const activeCards: Card[] = cards.filter((c) => c.status === "active" && c.type !== "token");
+
+/**
+ * La carta è nella collezione del gioco e testo e dati sono stati letti lì (`cardsVerified`)? Vero per le carte attive
+ * e non create, tranne quelle entrate nel gioco con una patch uscita dopo l'ultima verifica (`since`, `enteredGame`):
+ * per quelle il testo è quello delle carte ufficiali, ma nella collezione del gioco nessuno lo ha ancora riletto, e le
+ * pagine lo dicono. Quando la verifica si rifà (`cardsVerified.date` dopo la patch) contano anche loro, da sole.
+ */
+export function checkedInGame(card: Pick<Card, "status" | "type" | "since">): boolean {
+  if (card.status !== "active" || card.type === "token") return false;
+  return !card.since || patches[card.since].date <= cardsVerified.date;
+}
+
+/** Le carte entrate nel gioco dopo l'ultima verifica nella collezione: attive, con testo e dati non ancora letti nel gioco. */
+export const newCards: Card[] = activeCards.filter((c) => !checkedInGame(c));
 
 export function statLine(card: Pick<Card, "mana" | "power" | "health" | "type">): string {
   if (card.mana === undefined && card.power === undefined) return "";

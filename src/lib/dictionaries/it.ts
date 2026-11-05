@@ -132,7 +132,7 @@ export const it: Dictionary = {
     updated: "Aggiornato",
     stats: "Statistiche",
     unknownStats: "statistiche non ancora pubblicate",
-    asOf: "Statistiche alla patch 0.7 del 29 settembre 2026: le 122 carte giocabili sono state verificate nel gioco il 22 settembre, le note di bilanciamento vengono dalle patch notes ufficiali e le patch notes della 0.8 (27 ottobre 2026, Accesso anticipato) non citano modifiche alle carte.",
+    asOf: "Statistiche alla patch del 4 novembre 2026: le 122 carte della collezione del gioco sono state verificate nel gioco il 22 settembre, i bilanciamenti vengono dalle patch notes ufficiali e le otto carte entrate nel gioco con la patch del 4 novembre non sono ancora state verificate nel gioco.",
     alignment: "Allineamento",
     good: "Good",
     evil: "Evil",
@@ -286,7 +286,7 @@ export const it: Dictionary = {
     countRemoved: "rimosse nelle build precedenti",
     legendNote: "Le carte Leggendarie guidano il mazzo: una per mazzo, segnate con la stella. Le saghe sono una classificazione di OriginsMeta per leggenda d'origine; il gioco non le espone.",
     sourceNote:
-      "Costi, statistiche, allineamenti e testi delle carte giocabili sono stati verificati nel gioco, in inglese, italiano, spagnolo, francese, portoghese, tedesco e russo; i bilanciamenti vengono dalle patch notes ufficiali, e le patch notes della 0.8 del 27 ottobre 2026 (Accesso anticipato) non citano modifiche alle carte. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Testi delle carte © Koin Games. Saghe, note sulle origini e testi italiani, spagnoli, francesi, portoghesi, tedeschi e russi delle carte generate e rimosse sono di OriginsMeta.",
+      "Costi, statistiche, allineamenti e testi delle carte giocabili sono stati verificati nel gioco, in inglese, italiano, spagnolo, francese, portoghese, tedesco e russo, tranne le otto carte entrate nel gioco con la patch del 4 novembre 2026; i bilanciamenti vengono dalle patch notes ufficiali. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Testi delle carte © Koin Games. Saghe, note sulle origini e testi italiani, spagnoli, francesi, portoghesi, tedeschi e russi delle carte generate e rimosse, e delle otto carte del 4 novembre, sono di OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta da collezione",
     changesTitle: "Storico bilanciamenti",
@@ -745,6 +745,7 @@ export const it: Dictionary = {
     intro: "Classifica a modo tuo le carte di Origins TCG, da S a D: Leggendarie e carte base sono due liste separate. Niente account: la lista si salva in questo browser e viaggia con un link, pronta per Discord.",
     officialLink: "Vedi la tier list di OriginsMeta",
     dataNote: "Tutte le carte attive nel gioco, senza le carte generate: {legendaries} Leggendarie e {cards} carte base, verificate sul gioco il {date}.",
+    dataNoteNew: "Tutte le carte attive nel gioco, senza le carte generate: {legendaries} Leggendarie e {cards} carte base, verificate sul gioco il {date} tranne le {n} arrivate con la patch del {patchDate}.",
     tabsLabel: "Tipo di tier list",
     tabLegendaries: "Leggendarie",
     tabCards: "Carte base",
@@ -1077,6 +1078,7 @@ export const it: Dictionary = {
     dataNotice: "Carte verificate nel gioco il {date}: costi, statistiche e testi di tutte le {count} carte controllati uno per uno, compresa la patch del {patchDate}; le patch notes della 0.8 (Accesso anticipato) non citano modifiche alle carte.",
     // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
     dataNoticePatch: "Carte verificate una per una nel gioco il {date}: costi, statistiche e testi di tutte le {count} carte. La patch del {patchDate} è uscita dopo: le sue modifiche vengono dalle patch notes ufficiali, e i testi che ha cambiato non sono ancora stati verificati nel gioco.",
+    dataNoticeNew: "Carte verificate una per una nel gioco il {date}: costi, statistiche e testi di tutte le {count} carte di allora. La patch del {patchDate} è uscita dopo: le sue modifiche vengono dalle patch notes ufficiali, e i testi che ha cambiato e le {n} carte che ha portato nel gioco non sono ancora stati verificati nel gioco.",
     rulesTitle: "Regole del mazzo",
     rules: ["1 carta Leggendaria guida il mazzo.", "12 carte base diverse; la seconda copia di ciascuna la aggiunge il gioco.", "25 carte in gioco: 1 + 12 × 2."],
     rulesSource: "Fonte: AMA del team Koin Games. La modalità Conquest segue la regola della Crimson Cup annunciata il 24 settembre 2026: almeno 8 carte uniche fra due mazzi qualsiasi (ogni carta conta una volta, a prescindere dalle copie). Con Leggendarie diverse vuol dire al massimo 5 carte base in comune.",

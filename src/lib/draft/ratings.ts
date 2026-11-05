@@ -36,6 +36,10 @@ export const RATINGS: Record<string, CardRating> = {
   "queen-of-hearts": { r: 7, gives: ["evil"], wants: ["death"] },
   "king-arthur": { r: 7, gives: ["good", "power"], wants: ["good"], roles: ["finisher"] },
   dorothy: { r: 6.3, gives: ["good"], wants: ["move"] },
+  // Dr. Frank e le sue sette carte, nel gioco dalla patch del 04/11/2026 (cards.ts, `enteredGame`): voti nostri, dati prima
+  // di averle giocate, dalle prime impressioni dei creator (news dr-frank-boss-new-cards) e dal testo. Il cimitero si
+  // riempie con i personaggi che muoiono e con gli scarti: per questo vogliono "death" e "discard".
+  "dr-frank": { r: 6.6, gives: ["evil"], wants: ["death", "discard"] },
 
   // --- 0-1 mana
   "itsy-bitsy-spider": { r: 2.2, gives: ["evil"] },
@@ -78,6 +82,8 @@ export const RATINGS: Record<string, CardRating> = {
   shahrazad: { r: 5, gives: ["good", "heal"], wants: ["discard"] },
   "three-blind-mice": { r: 5, gives: ["wide", "death"] },
   "ugly-duckling": { r: 4, wants: ["discard"] },
+  "morgan-le-fay": { r: 5.3, gives: ["evil", "discard", "reveal", "spell"] },
+  "red-knight": { r: 5.4, gives: ["power"] },
 
   // --- 3 mana
   aladdin: { r: 5.6, gives: ["good"], wants: ["discard"] },
@@ -107,6 +113,7 @@ export const RATINGS: Record<string, CardRating> = {
   "shield-maiden": { r: 5, gives: ["good"] },
   "wicked-stepsisters": { r: 6, gives: ["evil"] },
   "wicked-witch-of-the-west": { r: 5.6, gives: ["evil"] },
+  "its-alive": { r: 4.8, wants: ["death", "discard"] },
 
   // --- 4 mana
   beauty: { r: 5.1, gives: ["good"], wants: ["ally", "wide"], roles: ["draw"] },
@@ -130,6 +137,8 @@ export const RATINGS: Record<string, CardRating> = {
   tweedledum: { r: 5.4, gives: ["wide", "reveal"] },
   "underworld-flare": { r: 6.5, wants: ["discard"], roles: ["removal"] },
   "white-queen": { r: 5.9, gives: ["reveal"], roles: ["removal"] },
+  doppelganger: { r: 4.8, gives: ["evil"], wants: ["discard"] },
+  necromancer: { r: 4.7, gives: ["evil", "discard", "reveal", "wide"], wants: ["evil"] },
 
   // --- 5 mana
   baloo: { r: 6.5, gives: ["good", "power"] },
@@ -145,6 +154,7 @@ export const RATINGS: Record<string, CardRating> = {
   "sorcerers-apprentice": { r: 4.6, gives: ["wide"], wants: ["spell"] },
   "the-green-knight": { r: 6, gives: ["power"] },
   "three-musketeers": { r: 6.4, gives: ["good", "wide", "reveal"] },
+  "franken-bride": { r: 5.6, gives: ["evil", "death", "heal"], roles: ["defender"] },
 
   // --- 6+ mana
   cockatrice: { r: 7, gives: ["evil", "death"], roles: ["removal", "finisher"] },
@@ -159,6 +169,7 @@ export const RATINGS: Record<string, CardRating> = {
   "ellen-trechend": { r: 5.4, gives: ["evil", "reveal"], roles: ["finisher", "barrier"] },
   "forbidden-knowledge": { r: 5, roles: ["sweeper"] },
   obliterate: { r: 5.6, roles: ["removal", "barrier", "finisher"] },
+  "franks-monster": { r: 6.2, gives: ["evil", "death"], roles: ["finisher"] },
 };
 
 /** Valore di una carta che la tabella non conosce: costo e statistiche, prudente. */

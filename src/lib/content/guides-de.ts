@@ -10,13 +10,13 @@ import type { GuideCopy, GuideSlug } from "./guides";
  */
 export const deText: Record<GuideSlug, GuideCopy> = {
   "origins-tcg-legendaries": {
-    title: "Die 11 Legendären von Origins TCG: Karten, Werte, Patches und Decks",
-    metaTitle: "Origins TCG: alle 11 Legendären und ihre Decks",
-    excerpt: "Alle 11 spielbaren Legendären Karten von Origins TCG: Kosten, Werte, Kartentext, erschaffene Karten, Patch-Änderungen und die Decks, die sie spielen.",
+    title: "Die 12 Legendären von Origins TCG: Karten, Werte, Patches und Decks",
+    metaTitle: "Origins TCG: alle 12 Legendären und ihre Decks",
+    excerpt: "Alle 12 spielbaren Legendären Karten von Origins TCG: Kosten, Werte, Kartentext, erschaffene Karten, Patch-Änderungen und die Decks, die sie spielen.",
     faq: [
       {
         q: "Wie viele Legendäre gibt es in Origins TCG?",
-        a: "Elf spielbare, Stand 25. September 2026 (die Patchnotes zu 0.8 vom 27. Oktober 2026 nennen keine Kartenänderungen): Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs und Robin Hood. Die Datenbank von OriginsMeta führt neun weitere, die nicht mehr im Spiel sind.",
+        a: "Zwölf spielbare: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs und Robin Hood, am 22. September 2026 im Spiel geprüft, und Dr. Frank, der mit dem Patch vom 4. November 2026 ins Spiel gekommen ist und im Spiel noch nicht geprüft wurde. Die Datenbank von OriginsMeta führt acht weitere, die nicht mehr im Spiel sind.",
       },
       {
         q: "Wie viele Legendäre darf ein Deck haben?",
@@ -34,15 +34,15 @@ export const deText: Record<GuideSlug, GuideCopy> = {
     body: `
 ## Kurz gesagt {#kurz-gesagt}
 
-- **Elf Legendäre** sind in Origins TCG spielbar, seit dem 27. Oktober 2026 im Early Access auf Steam: Sechs kosten 4 Mana, eine kostet 5, drei kosten 7 und eine kostet 8.
-- Zehn sind Einheiten, eine ist ein Zauber: Legion of the Dead. Fünf sind Good, drei Evil und drei Neutral.
+- **Zwölf Legendäre** sind in Origins TCG spielbar, seit dem 27. Oktober 2026 im Early Access auf Steam: Sechs kosten 4 Mana, eine 5, eine 6, drei 7 und eine 8. Die zwölfte, Dr. Frank, ist mit dem [Patch vom 4. November 2026](/de/news/balance-patch-1104-cyber-queen) ins Spiel gekommen.
+- Elf sind Einheiten, eine ist ein Zauber: Legion of the Dead. Fünf sind Good, vier Evil und drei Neutral.
 - Vier von ihnen erschaffen mit ihrem Text andere Karten: Dracula, Van Helsing, Legion of the Dead und Three Not So Little Pigs.
-- Sieben haben sich in den Balance-Patches zwischen August und dem 21. September 2026 verändert, Dracula, Van Helsing, Legion of the Dead und Robin Hood nicht. [Patch 0.7](/de/news/patch-0-7) vom 29. September 2026 hat keine der elf neu ausbalanciert, und die Patchnotes zu 0.8 vom 27. Oktober 2026 nennen keine Kartenänderungen.
-- Die 20 Decks, die bis 20:00 Uhr CEST am 25. September 2026 auf OriginsMeta veröffentlicht wurden, nutzen zehn der elf: Three Not So Little Pigs führt vier an, Van Helsing drei, Wicked Stepmother keines. Zu sechs Legendären gibt es einen OriginsMeta-Guide für eines ihrer Decks.
+- Von den elf, die vor November im Spiel waren, haben sich sieben in den Balance-Patches zwischen August und dem 21. September 2026 verändert, Dracula, Van Helsing, Legion of the Dead und Robin Hood nicht. [Patch 0.7](/de/news/patch-0-7) vom 29. September 2026 hat keine von ihnen neu ausbalanciert, die Patchnotes zu 0.8 vom 27. Oktober 2026 nennen keine Kartenänderungen, und der Patch vom 4. November 2026 hat Dorothy zu einer 3/3 gemacht.
+- Die 20 Decks, die bis 20:00 Uhr CEST am 25. September 2026 auf OriginsMeta veröffentlicht wurden, nutzen zehn der elf Legendären, die damals im Spiel waren: Three Not So Little Pigs führt vier an, Van Helsing drei, Wicked Stepmother keines. Zu sechs Legendären gibt es einen OriginsMeta-Guide für eines ihrer Decks.
 
 Die Legendären unten sind nach Kosten sortiert und bei gleichen Kosten alphabetisch. Der Guide beschreibt, was jede Karte tut, nicht wie stark sie ist: Unsere [Tier-List von Origins TCG](/de/tier-list) wird sie nach den Turnierergebnissen und der Spitze der [Ranglisten-Ladder](/de/guides/origins-tcg-ranked) einordnen; das erste Ranking ist in Vorbereitung.
 
-## Die 11 Legendären im Überblick {#ueberblick}
+## Die 12 Legendären im Überblick {#ueberblick}
 
 | Legendäre | Kosten | Kraft/Leben | Gesinnung | Decks |
 | --- | --- | --- | --- | --- |
@@ -53,12 +53,13 @@ Die Legendären unten sind nach Kosten sortiert und bei gleichen Kosten alphabet
 | [Van Helsing](/de/cards/van-helsing) | 4 | 3/4 | Good | 3 |
 | [Wicked Stepmother](/de/cards/wicked-stepmother) | 4 | 4/6 | Evil | 0 |
 | [Merlin](/de/cards/merlin) | 5 | 5/5 | Neutral | 1 |
+| [Dr. Frank](/de/cards/dr-frank) | 6 | 2/2 | Evil | 0 |
 | [King Arthur](/de/cards/king-arthur) | 7 | 7/7 | Good | 2 |
 | [Legion of the Dead](/de/cards/legion-of-the-dead) | 7 | Zauber | Neutral | 2 |
 | [Three Not So Little Pigs](/de/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 4 |
 | [Robin Hood](/de/cards/robin-hood) | 8 | 4/4 | Good | 1 |
 
-Die letzte Spalte zählt die Decks, die jede Legendäre unter den 20 anführt, die vom 15. September bis 20:00 Uhr CEST am 25. September 2026 auf OriginsMeta veröffentlicht wurden. Sie misst die Beliebtheit auf der Website, nicht Stärke oder Win-Rate; die aktuelle Zählung steht unter [Meistgespielt](/de/tier-list/most-played).
+Die letzte Spalte zählt die Decks, die jede Legendäre unter den 20 anführt, die vom 15. September bis 20:00 Uhr CEST am 25. September 2026 auf OriginsMeta veröffentlicht wurden, als Dr. Frank noch nicht im Spiel war. Sie misst die Beliebtheit auf der Website, nicht Stärke oder Win-Rate; die aktuelle Zählung steht unter [Meistgespielt](/de/tier-list/most-played).
 
 ## Was die Legendäre im Deck tut {#im-deck}
 
@@ -66,7 +67,7 @@ Die letzte Spalte zählt die Decks, die jede Legendäre unter den 20 anführt, d
 - **Dein Gegner sieht sie.** Patch 0.6.1 des geschlossenen Playtests (14. August 2026) hat während des Mulligans eine Vorschau auf die Legendäre des Gegners eingeführt, laut den [offiziellen Patchnotes](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **Im Conquest gibt sie dem Deck seinen Namen.** Bei der Crimson Cup bringt jeder Spieler drei Decks mit, und wenn du eines der Decks deines Gegners bannst, siehst du nur seine Legendäre ([Regeln der Crimson Cup](/de/news/crimson-cup-format-check-in)). Ob sich die drei Legendären unterscheiden müssen, sagen die Ankündigungen nicht; bei Big Bob's Playtest Battle mussten sie es. Wie du drei Decks zusammenstellst, erklärt unser [Conquest-Guide](/de/guides/origins-tcg-conquest).
 
-Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 im Spiel auf Deutsch gelesen; Kosten und Werte wurden am 22. September 2026 Karte für Karte geprüft. Die Sagas und die Notizen zu jeder Legende stammen von OriginsMeta. Die Patches sind die in [MetaShifting](/de/metashifting) erfassten: die Playtest-Updates 0.6.1, 0.6.2 und 0.6.3 (August 2026), der Demo-Patch vom 21. September 2026 und Patch 0.7 vom 29. September 2026, der keine Legendäre neu ausbalanciert hat; die Patchnotes zu 0.8 (27. Oktober 2026, Early Access) nennen keine Kartenänderungen. Die legendäre Kraft behandeln wir hier nicht: Wir haben sie noch nicht aus dem Spiel übertragen, und jede Kartenseite zeigt sie, sobald wir es tun.
+Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 im Spiel auf Deutsch gelesen, außer dem von Dr. Frank: Er ist am 4. November 2026 ins Spiel gekommen, und seine Karte haben wir dort noch nicht gelesen, deshalb ist sein deutscher Text unsere Übersetzung mit dem Glossar des Spiels. Kosten und Werte wurden am 22. September 2026 Karte für Karte geprüft. Die Sagas und die Notizen zu jeder Legende stammen von OriginsMeta. Die Patches sind die in [MetaShifting](/de/metashifting) erfassten: die Playtest-Updates 0.6.1, 0.6.2 und 0.6.3 (August 2026), der Demo-Patch vom 21. September 2026, Patch 0.7 vom 29. September 2026, der keine Legendäre neu ausbalanciert hat, und der Patch vom 4. November 2026, der Dorothy zu einer 3/3 gemacht und Dr. Frank ins Spiel gebracht hat; die Patchnotes zu 0.8 (27. Oktober 2026, Early Access) nennen keine Kartenänderungen. Die legendäre Kraft behandeln wir hier nicht: Wir haben sie noch nicht aus dem Spiel übertragen, und jede Kartenseite zeigt sie, sobald wir es tun.
 
 ## Dorothy {#dorothy}
 
@@ -77,7 +78,7 @@ Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 i
 > Ich habe +1⚔️/+1❤️ für jede Bewegung eines Verbündeten in diesem Spiel.
 
 - **Die Legende.** Das Mädchen aus Kansas, das in L. Frank Baums Roman von 1900 von einem Tornado nach Oz getragen wird.
-- **Patches.** Demo-Patch vom 21. September 2026: Mana 5 → 4 ([Patchnotes](/de/news/demo-patch-notes-0921)).
+- **Patches.** Demo-Patch vom 21. September 2026: Mana 5 → 4 ([Patchnotes](/de/news/demo-patch-notes-0921)); Patch vom 4. November 2026: von 1/1 auf 3/3 ([Patchnotes](/de/news/balance-patch-1104-cyber-queen)).
 - **Decks auf OriginsMeta, 25. September 2026.** Zwei: [Dorothy Combo](/de/decks/community/dorothy-combo-7503) und [Move/Combo](/de/decks/community/move-combo-075a).
 - **Guide.** [Guide zum Dorothy-Deck: Dorothy Combo](/de/guides/dorothy-combo-guide).
 - **Kartenseite.** [Dorothy, Legendäre Karte: Werte und Text](/de/cards/dorothy).
@@ -164,6 +165,20 @@ Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 i
 - **Guide.** Noch keiner: [Schick uns deinen](/de/guides/submit).
 - **Kartenseite.** [Merlin, Legendäre Karte: Werte und Text](/de/cards/merlin).
 
+## Dr. Frank {#dr-frank}
+
+**6 Mana · 2/2 · Einheit · Evil** · Saga: Gothic Horror
+
+> Beschwöre vor dem Kampf einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
+
+- **Die neueste Legendäre.** Er ist mit dem [Patch vom 4. November 2026](/de/news/balance-patch-1104-cyber-queen) ins Spiel gekommen, als Legendäre des Relentless-Decks von Cyber Queen, Boss Nr. 11, zusammen mit sieben weiteren Karten ([Dr. Franks acht Karten](/de/news/dr-frank-boss-new-cards)). Der Text oben stammt von der offiziellen Karte und ist von uns mit dem Glossar des Spiels übersetzt: Im Spiel haben wir ihn noch nicht gelesen.
+- **Die Legende.** Victor Frankenstein, der Student, der in Mary Shelleys Roman von 1818 ein lebendes Geschöpf zusammensetzt.
+- **Die Karten um ihn herum.** [It's Alive](/de/cards/its-alive), ein Zauber für 3 Mana, der dasselbe einmal tut, und die beiden Karten mit Wiedergeburt, [Frank's Monster](/de/cards/franks-monster) und [Franken Bride](/de/cards/franken-bride). In den Vorschauen der Creator gibt dir seine legendäre Kraft zu Beginn der Partie It's Alive auf die Hand.
+- **Patches.** Keine Änderungen, seit er im Spiel ist.
+- **Decks auf OriginsMeta, 25. September 2026.** Keines: Er war noch nicht im Spiel. Die Decks, die ihn jetzt spielen, werden unter [Meistgespielt](/de/tier-list/most-played) gezählt.
+- **Guide.** Noch keiner: [Schick uns deinen](/de/guides/submit).
+- **Kartenseite.** [Dr. Frank, Legendäre Karte: Werte und Text](/de/cards/dr-frank).
+
 ## King Arthur {#king-arthur}
 
 **7 Mana · 7/7 · Einheit · Good** · Saga: Artussage
@@ -224,11 +239,11 @@ Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 i
 
 ## Die Legendären, die nicht mehr im Spiel sind {#nicht-in-der-demo}
 
-Unsere Datenbank führt außerdem neun Legendäre, die nicht mehr im Spiel sind: [Alice](/de/cards/alice), [Beowulf](/de/cards/beowulf), [Cinderella](/de/cards/cinderella), [Death](/de/cards/death), [Dr. Frank](/de/cards/dr-frank), [Mirror Mirror](/de/cards/mirror-mirror), [Red](/de/cards/red), [Winnie-the-Pooh](/de/cards/winnie-the-pooh) und [Wizard of Oz](/de/cards/wizard-of-oz). Ihre Seiten zeigen die letzten bekannten Daten, die im Spiel nicht verifiziert sind. In seinen AMAs hat das Team einen vollständigen Launch mit dem kompletten Aufgebot an Legendären Karten beschrieben: Die Termine, die wir kennen, stehen in der [Roadmap](/de/guides/roadmap-and-dates).
+Unsere Datenbank führt außerdem acht Legendäre, die nicht mehr im Spiel sind: [Alice](/de/cards/alice), [Beowulf](/de/cards/beowulf), [Cinderella](/de/cards/cinderella), [Death](/de/cards/death), [Mirror Mirror](/de/cards/mirror-mirror), [Red](/de/cards/red), [Winnie-the-Pooh](/de/cards/winnie-the-pooh) und [Wizard of Oz](/de/cards/wizard-of-oz). Ihre Seiten zeigen die letzten bekannten Daten, die im Spiel nicht verifiziert sind. Dr. Frank gehörte zu ihnen, bis der Patch vom 4. November 2026 ihn ins Spiel gebracht hat. In seinen AMAs hat das Team einen vollständigen Launch mit dem kompletten Aufgebot an Legendären Karten beschrieben: Die Termine, die wir kennen, stehen in der [Roadmap](/de/guides/roadmap-and-dates).
 
 ## Woher die Zahlen kommen {#quellen}
 
-- **Karten:** die [Kartendatenbank](/de/cards) von OriginsMeta: Kosten, Werte und englische Texte der spielbaren Karten am 22. September 2026 einzeln im Spiel geprüft, italienische und spanische Texte am 25. September 2026 und deutsche am 20. Oktober 2026 im Spiel gelesen.
+- **Karten:** die [Kartendatenbank](/de/cards) von OriginsMeta: Kosten, Werte und englische Texte der spielbaren Karten am 22. September 2026 einzeln im Spiel geprüft, italienische und spanische Texte am 25. September 2026 und deutsche am 20. Oktober 2026 im Spiel gelesen. Die Werte sind die des Patches vom 4. November 2026. Kosten, Werte und Text von Dr. Frank stammen von der offiziellen Karte, die Koin Games am 2. November 2026 gezeigt hat, und sind im Spiel noch nicht geprüft.
 - **Patches:** die offiziellen Patchnotes auf Steam, Karte für Karte in [MetaShifting](/de/metashifting).
 - **Decks:** die 20 Decks, die vom 15. September bis 20:00 Uhr CEST am 25. September 2026 auf OriginsMeta veröffentlicht wurden ([alle Decks von Origins TCG](/de/decks)); die Zählung danach steht unter [Meistgespielt](/de/tier-list/most-played).
 
@@ -294,7 +309,7 @@ Im geschlossenen Playtest wurde ein Deck laut Spielern im Steam-Forum am 14. Sep
 
 - **Origins TCG** ist kostenlos auf [Steam](https://store.steampowered.com/app/4429430/Origins_TCG/) (Free To Play), seit dem 27. Oktober 2026 im Early Access, mit Ranked und der Grandmaster-Division. Die Demo gibt es nicht mehr: Laut Koin kannst du sie deinstallieren, dein Fortschritt ist übernommen.
 - **Der geschlossene Playtest** hatte Ranked schon im August; für die Zugangsanleitung verwies der Steam-Post von Koin vom 25. August 2026 auf den [offiziellen Discord](https://discord.gg/originstcg).
-- Zum Vorbereiten von Decks: der [Deckbuilder](/de/deck-builder) und [alle Decks von Origins TCG](/de/decks), die die Community veröffentlicht hat, jedes mit dem Spielcode (KGBLDC…) zum Einfügen in Origins. Die [11 Legendären](/de/guides/origins-tcg-legendaries), die sie anführen, beschreibt unser Guide eine nach der anderen.
+- Zum Vorbereiten von Decks: der [Deckbuilder](/de/deck-builder) und [alle Decks von Origins TCG](/de/decks), die die Community veröffentlicht hat, jedes mit dem Spielcode (KGBLDC…) zum Einfügen in Origins. Die [12 Legendären](/de/guides/origins-tcg-legendaries), die sie anführen, beschreibt unser Guide eine nach der anderen.
 - Für das Conquest-Format, in dem die Crimson Cup mit drei Decks gespielt wurde: [So baust du die drei Decks](/de/guides/origins-tcg-conquest).
 
 ## Was OriginsMeta mit Ranked vorhat {#originsmeta}
@@ -382,7 +397,7 @@ Wenn Koin anders zählt, zum Beispiel Kopie für Kopie, ändern sich die Zahlen:
 4. Das Feld **„Conquest-Prüfung“** zeigt für jedes Paar, wie viele einzigartige Karten sich unterscheiden: grün mit ✓ ab dem Minimum, rot mit ✗ darunter. Fährst du mit der Maus über eine Zahl, siehst du die gemeinsamen Karten. Das Minimum ist 8, der Wert der Crimson Cup, und du kannst es ändern (Big Bob's Playtest Battle verlangte 9). Die Prüfung markiert auch zwei Decks mit derselben Legendären.
 5. Wenn die drei Decks legal sind und sich genug unterscheiden, zeigt das Feld **OK ✓**. Kopiere jedes Deck mit „Spielcode kopieren“ und füge es in Origins ein.
 
-Der Deckbuilder speichert die drei Decks unterwegs in deinem Browser. [Turniere](/de/tournaments), die auf OriginsMeta erstellt werden, können ebenfalls Conquest nutzen, mit 2 bis 4 Decks pro Spieler und einem Minimum, das der Veranstalter festlegt, und der Deckbuilder jedes Turniers wendet diese Regeln an. Die Legendären, aus denen du wählen kannst, stehen alle in [unserem Guide zu den 11 Legendären](/de/guides/origins-tcg-legendaries).
+Der Deckbuilder speichert die drei Decks unterwegs in deinem Browser. [Turniere](/de/tournaments), die auf OriginsMeta erstellt werden, können ebenfalls Conquest nutzen, mit 2 bis 4 Decks pro Spieler und einem Minimum, das der Veranstalter festlegt, und der Deckbuilder jedes Turniers wendet diese Regeln an. Die Legendären, aus denen du wählen kannst, stehen alle in [unserem Guide zu den 12 Legendären](/de/guides/origins-tcg-legendaries).
 
 Die Crimson Cup war das Turnier des Steam Next Fest: Alles zum Festival steht in unserem [Guide zum Steam Next Fest](/de/guides/steam-next-fest-2026), und [was zu Ranked bekannt ist](/de/guides/origins-tcg-ranked), bis zur ersten Season des Early Access, in einem eigenen Guide.
 
@@ -544,7 +559,7 @@ Das Versprechen heißt **Free-to-Compete**: Jede Karte, die du für kompetitives
 - **Gleichzeitige Züge.** Beide Spieler handeln zur selben Zeit, also gibt es kein Warten. Eine Partie dauert etwa sieben Minuten.
 - **Karten greifen an.** Anders als in Spielen, in denen man nur Lanes auszählt, kämpfen die Einheiten gegeneinander: Kraft ist, wie viel Schaden du austeilst, Leben, wie viel du einstecken kannst.
 - **Schlüsselwörter.** Das Spiel nutzt unter anderem Beim Aufdecken (On Reveal: wird ausgelöst, wenn die Karte gespielt wird), Bei Tod (On Death), Erstschlag (First Strike), Doppelangriff (Double Attack) und Todesberührung (Deathtouch).
-- **Eine Legendäre führt das Deck an.** Decks haben 25 Karten, und jedes Deck ist um eine Legendäre Karte mit einer eigenen Signaturfähigkeit gebaut: Mulan wiederholt die Beim Aufdecken-Fähigkeiten deiner Verbündeten, die Queen of Hearts ihre Bei Tod-Fähigkeiten. Spielbar sind elf davon: [alle 11 Legendären, Karte für Karte](/de/guides/origins-tcg-legendaries).
+- **Eine Legendäre führt das Deck an.** Decks haben 25 Karten, und jedes Deck ist um eine Legendäre Karte mit einer eigenen Signaturfähigkeit gebaut: Mulan wiederholt die Beim Aufdecken-Fähigkeiten deiner Verbündeten, die Queen of Hearts ihre Bei Tod-Fähigkeiten. Spielbar sind zwölf davon: [alle 12 Legendären, Karte für Karte](/de/guides/origins-tcg-legendaries).
 
 ## Modi
 
@@ -598,7 +613,7 @@ Fünfundzwanzig Karten: die Legendäre und zwölf Karten, die je zweimal gespiel
 | --- | --- | --- |
 | [Mulan](/de/cards/mulan) ★ | 4 | 2/4, Doppelangriff; wenn ein Beim Aufdecken eines Verbündeten ausgelöst wird, wiederholt es sich |
 | [Bagheera](/de/cards/bagheera) | 2 | 1/1; Beim Aufdecken auf einem mittleren Feld erhält er +2⚔️/+2❤️ |
-| 3 || [Baby Bear](/de/cards/baby-bear) | 2 | 1/1; schlägt mit 1 Schaden zurück, wenn ein Gegner hier deiner Barriere Schaden zufügt, und fügt beim Tod deiner Hand einen 4/4-Papa Bear hinzu |
+| [Baby Bear](/de/cards/baby-bear) | 3 | 1/1; schlägt mit 1 Schaden zurück, wenn ein Gegner hier deiner Barriere Schaden zufügt, und fügt beim Tod deiner Hand einen 4/4-Papa Bear hinzu |
 | [Mary](/de/cards/mary) | 3 | 1/1; Beim Aufdecken fügt sie deiner Hand ein Little Lamb hinzu, beim Tod erhalten deine Lambs dauerhaft +3⚔️/+3❤️ |
 | [Black Knight](/de/cards/black-knight) | 3 | 2/2; Beim Aufdecken fügt er dem Gegner gegenüber 2 Schaden zu |
 | [Frog Prince](/de/cards/frog-prince) | 3 | 2/2; Beim Aufdecken +3⚔️ oder +3❤️, nach deiner Wahl |
@@ -1115,7 +1130,7 @@ Fünfundzwanzig Karten: die Legendäre plus zwölf Karten in je zwei Exemplaren.
 | Karte | Kosten | Rolle |
 | --- | --- | --- |
 | [Van Helsing](/de/cards/van-helsing) ★ | 4 | Legendär: Vor dem Kampf gibt er dir Van Helsing's Tools auf die Hand, falls du die Karte nicht hast |
-| 3 || [Baby Bear](/de/cards/baby-bear) | 2 | Fügt Gegnern Schaden zu, die deiner Barriere schaden; Bei Tod: Füge deiner Hand Papa Bear [4⚔️/4❤️] hinzu |
+| [Baby Bear](/de/cards/baby-bear) | 3 | Fügt Gegnern Schaden zu, die deiner Barriere schaden; Bei Tod: Füge deiner Hand Papa Bear [4⚔️/4❤️] hinzu |
 | [Scarecrow](/de/cards/scarecrow) | 2 | Beim Aufdecken: Ziehe eine Karte |
 | [Shahrazad](/de/cards/shahrazad) | 2 | 1/4: heilt 1 Schaden an deiner Barriere, jedes Mal wenn eine Karte auf deine Hand kommt |
 | [Ali Baba](/de/cards/ali-baba) | 3 | 2/3, der eine Karte zieht, wenn er der gegnerischen Barriere Schaden zufügt |
@@ -1123,7 +1138,7 @@ Fünfundzwanzig Karten: die Legendäre plus zwölf Karten in je zwei Exemplaren.
 | [Spellbook](/de/cards/spellbook) | 4 | Für den Rest der Partie zu Beginn jeder Runde ein zufälliger Zauber auf die Hand |
 | [Phuong Hoang](/de/cards/phuong-hoang) | 4 | Wiedergeburt, Bewegen; erhält +1/+1, jedes Mal wenn ein Verbündeter oder eine Barriere geheilt wird |
 | [Jekyll](/de/cards/jekyll) | 4 | Beim Aufdecken heilt er 3; ist er nach dem Kampf noch auf der Hand, wird er zu Hyde, einem 5/3 mit Überrennen |
-| 3 || [Searing Light](/de/cards/searing-light) | 4 | 4 Schaden an einem Gegner und 4 Heilung für deine Barriere an diesem Ort |
+| [Searing Light](/de/cards/searing-light) | 3 | 4 Schaden an einem Gegner und 4 Heilung für deine Barriere an diesem Ort |
 | [Boitata](/de/cards/boitata) | 5 | 5/5: Schaden durch Zauber und Fähigkeiten an deinen Barrieren wird stattdessen der gegnerischen Barriere zugefügt |
 | [Tin Woodman](/de/cards/tin-woodman) | 6 | Beim Aufdecken heilt er 8 an einem anderen Charakter oder einer Barriere an seinem Ort |
 | [Forbidden Knowledge](/de/cards/forbidden-knowledge) | 8 | Zerstöre ALLE Charaktere |

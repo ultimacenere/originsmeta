@@ -136,7 +136,7 @@ export const pt: Dictionary = {
     stats: "Stats",
     unknownStats: "stats ainda não publicadas",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats do patch 0.7 de 29 de setembro de 2026: as 122 cartas foram verificadas no jogo em 22 de setembro, as notas de balanceamento vêm das notas oficiais dos patches, e as do patch 0.8 (27 de outubro de 2026, Acesso Antecipado) não citam mudanças nas cartas.",
+    asOf: "Stats do patch de 4 de novembro de 2026: as 122 cartas da coleção do jogo foram verificadas no jogo em 22 de setembro, as notas de balanceamento vêm das notas oficiais dos patches, e as oito cartas que entraram no jogo com o patch de 4 de novembro ainda não foram verificadas no jogo.",
     alignment: "Alinhamento",
     good: "Good",
     evil: "Evil",
@@ -292,7 +292,7 @@ export const pt: Dictionary = {
     legendNote: "As cartas Lendárias lideram um deck: uma por deck, marcadas com a estrela. As sagas são um agrupamento do OriginsMeta pela lenda de origem; o jogo não as mostra.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Custos, stats, alinhamentos e textos das cartas jogáveis foram verificados no jogo, em inglês, italiano, espanhol, francês, português, alemão e russo; as mudanças de balanceamento vêm das notas oficiais dos patches. As cartas criadas e removidas não estão na coleção do jogo, então não foram verificadas no jogo. Texto das cartas © Koin Games. As sagas, as notas de origem e o texto em italiano, espanhol, francês, português, alemão e russo das cartas criadas e removidas são do OriginsMeta.",
+      "Custos, stats, alinhamentos e textos das cartas jogáveis foram verificados no jogo, em inglês, italiano, espanhol, francês, português, alemão e russo, exceto as oito cartas que entraram no jogo com o patch de 4 de novembro de 2026; as mudanças de balanceamento vêm das notas oficiais dos patches. As cartas criadas e removidas não estão na coleção do jogo, então não foram verificadas no jogo. Texto das cartas © Koin Games. As sagas, as notas de origem e o texto em italiano, espanhol, francês, português, alemão e russo das cartas criadas e removidas, e das oito cartas de 4 de novembro, são do OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta colecionável",
     changesTitle: "Histórico de balanceamento",
@@ -755,6 +755,7 @@ export const pt: Dictionary = {
     intro: "Classifique as cartas do jogo do seu jeito, de S a D: Lendárias e cartas base são duas listas separadas. Não precisa de conta: a sua lista fica salva neste navegador e viaja com um link, pronta para o Discord.",
     officialLink: "Ver a tier list do OriginsMeta",
     dataNote: "Todas as cartas ativas no jogo, sem as cartas criadas: {legendaries} Lendárias e {cards} cartas base, verificadas no jogo em {date}.",
+    dataNoteNew: "Todas as cartas ativas no jogo, sem as cartas criadas: {legendaries} Lendárias e {cards} cartas base, verificadas no jogo em {date}, exceto as {n} que chegaram com o patch de {patchDate}.",
     tabsLabel: "Tipo de tier list",
     tabLegendaries: "Lendárias",
     tabCards: "Cartas base",
@@ -1086,6 +1087,7 @@ export const pt: Dictionary = {
     dataNotice: "Cartas verificadas uma por uma no jogo em {date}: custos, stats e texto de todas as {count} cartas, incluindo o patch de {patchDate}.",
     // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
     dataNoticePatch: "Cartas verificadas uma por uma no jogo em {date}: custos, stats e texto de todas as {count} cartas. O patch de {patchDate} saiu depois: as mudanças dele vêm das notas oficiais do patch, e os textos que ele mudou ainda não foram verificados no jogo.",
+    dataNoticeNew: "Cartas verificadas uma por uma no jogo em {date}: custos, stats e texto das {count} cartas daquela época. O patch de {patchDate} saiu depois: as mudanças dele vêm das notas oficiais do patch, e nem os textos que ele mudou nem as {n} cartas que ele trouxe para o jogo foram verificados no jogo ainda.",
     rulesTitle: "Regras do deck",
     rules: ["1 carta Lendária lidera o deck.", "12 cartas base diferentes; o jogo adiciona a segunda cópia de cada uma automaticamente.", "25 cartas em jogo: 1 + 12 × 2."],
     rulesSource: "Fonte: AMA da equipe da Koin Games. O modo Conquest segue a regra da Crimson Cup anunciada em 24 de setembro de 2026: pelo menos 8 cartas únicas entre dois decks quaisquer (cada carta conta uma vez, independentemente das cópias). Com Lendárias diferentes, isso significa no máximo 5 cartas base em comum.",

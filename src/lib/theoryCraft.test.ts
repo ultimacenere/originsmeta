@@ -196,3 +196,40 @@ describe("etichette", () => {
     }
   });
 });
+
+describe("carte entrate nel gioco con una patch (05/11/2026)", () => {
+  // Le otto di Dr. Frank: fra le rimosse nei dati importati, nel gioco dalla patch del 04/11/2026 (cards.ts, `enteredGame`)
+  const entered = Object.keys(C.enteredGame);
+  const frank = ["its-alive", "franks-monster", "franken-bride", "morgan-le-fay", "doppelganger", "necromancer", "red-knight"];
+  test("sono carte del gioco, con la chiave del gioco, e non più del Theory craft", () => {
+    assert.deepEqual([...entered].sort(), ["dr-frank", ...frank].sort());
+    for (const slug of entered) {
+      const c = C.getCard(slug)!;
+      assert.equal(c.status, "active", slug);
+      assert.equal(c.since, "ea-1104", slug);
+      assert.equal(T.isTheoryCard(slug), false, slug);
+      assert.ok(activeCards.includes(c), slug);
+      assert.ok(c.key, slug);
+    }
+    assert.ok(activeCards.some((c) => c.slug === "dr-frank" && c.legendary));
+  });
+  test("un mazzo theory craft con le carte di Dr. Frank e carte del gioco diventa un mazzo del gioco, con il suo codice", async () => {
+    const rest = active.filter((c) => c.key && !frank.includes(c.slug)).slice(0, 5).map((c) => c.slug);
+    const d = deck("dr-frank", [...frank, ...rest]);
+    assert.equal(T.isTheoryDeck(d), false);
+    assert.equal(U.checkDeck(d).ok, true);
+    assert.equal(T.builderPathFor(d), "/deck-builder");
+    assert.deepEqual(T.splitTheory([d]), { official: [d], theory: [] });
+    assert.deepEqual(T.officialDecks([d]), [d]);
+    const code = await G.deckGameCode({ legendary: d.legendary, cards: d.cards });
+    assert.ok(code.code?.startsWith("KGBLDC"), JSON.stringify(code));
+  });
+  test("con anche una carta ancora fuori dal gioco resta theory craft, e nomina solo quella", () => {
+    const stillOut = T.theoryCards.find((c) => !c.legendary)!;
+    const d = deck("dr-frank", ["necromancer", ...active.filter((c) => !frank.includes(c.slug)).slice(0, 10).map((c) => c.slug), stillOut.slug]);
+    assert.equal(T.isTheoryDeck(d), true);
+    assert.deepEqual(T.theorySlugsOf(d), [stillOut.slug]);
+    assert.equal(U.checkDeck(d).ok, false);
+    assert.equal(U.checkDeck(d, { theory: true }).ok, true);
+  });
+});

@@ -1,5 +1,5 @@
 import { formatDate, type Locale } from "./i18n";
-import { activeCards, cardsVerified, officialTextLocales, patchLabel, patchOrder, patches, type Card, type Change, type PatchId } from "./data/cards";
+import { activeCards, cardsVerified, checkedInGame, officialTextLocales, patchLabel, patchOrder, patches, type Card, type Change, type PatchId } from "./data/cards";
 import cardArt from "./data/card-art.json";
 import type { RelCard } from "./cardSynergy";
 
@@ -43,7 +43,22 @@ export function partsText(parts: readonly Part[]): string {
 }
 
 /** I campi della carta che servono alle frasi. */
-export type LeadCard = Pick<Card, "slug" | "name" | "type" | "status" | "legendary" | "mana" | "power" | "health" | "alignment" | "formerName" | "history">;
+export type LeadCard = Pick<Card, "slug" | "name" | "type" | "status" | "since" | "legendary" | "mana" | "power" | "health" | "alignment" | "formerName" | "history">;
+
+/**
+ * La patch con cui una carta è entrata nel gioco dopo l'ultima verifica nella collezione (cards.ts, `enteredGame` e
+ * `checkedInGame`, 05/11/2026): le otto carte di Dr. Frank, arrivate con la patch del 04/11/2026. Per loro le frasi non
+ * dicono "verificata il 22 settembre" ma da quale patch sono nel gioco, e che testo e dati non sono ancora letti nel gioco.
+ */
+function newSince(card: Pick<Card, "status" | "type" | "since">): PatchId | undefined {
+  return card.since && !checkedInGame(card) ? card.since : undefined;
+}
+
+/** La patch come pezzo di frase: l'etichetta, con il link alla news che la racconta quando c'è. */
+function patchRef(id: PatchId, locale: Locale): Part {
+  const label = patchLabel(id, locale);
+  return patches[id].news ? { path: `/news/${patches[id].news}`, text: label } : label;
+}
 
 /** Conto dei mazzi pubblicati: in quanti c'è la carta (`n`) su quanti (`total`). */
 export type DeckCount = { n: number; total: number };
@@ -222,6 +237,8 @@ const en = {
   /** riga sotto le statistiche, per le carte che la collezione del gioco non mostra (CARDS-09) */
   asOfToken: "Created card: it is not in the game's collection, so its text and stats have not been checked in the game. Balance notes come from the official patch notes.",
   asOfRemoved: "No longer in the game: last known data, as of patch {patch}; it cannot be checked in the game.",
+  /** carte entrate nel gioco con una patch dopo la verifica nella collezione (cards.ts, `enteredGame`, 05/11/2026) */
+  asOfNew: "In the game since patch {patch} ({date}): its text and stats have not been checked in the game yet.",
   /** tier list della community sulla scheda (SCHEDE-11) */
   community: "Community tier list",
   communityScoreOne: "Tier {tier}: average {avg} out of 5 from 1 vote.",
@@ -284,6 +301,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     asOfToken:
       "Carta generata: non è nella collezione del gioco, quindi testo e statistiche non sono stati verificati nel gioco. Le note di bilanciamento vengono dalle patch notes ufficiali.",
     asOfRemoved: "Non più nel gioco: ultimi dati noti, alla patch {patch}; non si può verificare nel gioco.",
+    asOfNew: "Nel gioco dalla patch {patch} ({date}): testo e statistiche non sono ancora stati verificati nel gioco.",
     community: "Tier list della community",
     communityScoreOne: "Fascia {tier}: media {avg} su 5 con 1 voto.",
     communityScore: "Fascia {tier}: media {avg} su 5 con {votes} voti.",
@@ -337,6 +355,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     asOfToken:
       "Carta creada: no está en la colección del juego, así que su texto y sus estadísticas no se han verificado en el juego. Los cambios de equilibrio vienen de las notas oficiales de los parches.",
     asOfRemoved: "Ya no está en el juego: últimos datos conocidos, del parche {patch}; no se puede verificar en el juego.",
+    asOfNew: "En el juego desde el parche {patch} ({date}): su texto y sus estadísticas aún no se han verificado en el juego.",
     community: "Tier list de la comunidad",
     communityScoreOne: "Tier {tier}: promedio de {avg} sobre 5 con 1 voto.",
     communityScore: "Tier {tier}: promedio de {avg} sobre 5 con {votes} votos.",
@@ -391,6 +410,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     asOfToken:
       "Carte créée\u00a0: elle n'est pas dans la collection du jeu, donc son texte et ses statistiques n'ont pas été vérifiés dans le jeu. Les notes d'équilibrage viennent des notes de patch officielles.",
     asOfRemoved: "Retirée du jeu\u00a0: dernières données connues, au patch {patch}\u00a0; impossible à vérifier dans le jeu.",
+    asOfNew: "Dans le jeu depuis le patch {patch} ({date})\u00a0: son texte et ses statistiques n'ont pas encore été vérifiés dans le jeu.",
     community: "Tier list de la communauté",
     communityScoreOne: "Tier {tier}\u00a0: moyenne de {avg} sur 5 avec 1 vote.",
     communityScore: "Tier {tier}\u00a0: moyenne de {avg} sur 5 avec {votes} votes.",
@@ -444,6 +464,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     asOfToken:
       "Carta criada: não está na coleção do jogo, então o texto e as estatísticas dela não foram verificados no jogo. As notas de balanceamento vêm das notas de patch oficiais.",
     asOfRemoved: "Não está mais no jogo: últimos dados conhecidos, do patch {patch}; não é possível verificar no jogo.",
+    asOfNew: "No jogo desde o patch {patch} ({date}): o texto e as estatísticas ainda não foram verificados no jogo.",
     community: "Tier list da comunidade",
     communityScoreOne: "Tier {tier}: média de {avg} de 5 com 1 voto.",
     communityScore: "Tier {tier}: média de {avg} de 5 com {votes} votos.",
@@ -501,6 +522,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     asOfToken:
       "Erschaffene Karte: Sie ist nicht in der Sammlung des Spiels, deshalb wurden ihr Text und ihre Werte nicht im Spiel überprüft. Die Balance-Hinweise stammen aus den offiziellen Patchnotes.",
     asOfRemoved: "Nicht mehr im Spiel: zuletzt bekannte Daten, Stand Patch {patch}; im Spiel nicht überprüfbar.",
+    asOfNew: "Seit Patch {patch} ({date}) im Spiel: Text und Werte wurden im Spiel noch nicht überprüft.",
     community: "Tier-List der Community",
     communityScoreOne: "Tier {tier}: Durchschnitt {avg} von 5 aus 1 Stimme.",
     communityScore: "Tier {tier}: Durchschnitt {avg} von 5 aus {votes} Stimmen.",
@@ -559,6 +581,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     asOfToken:
       "Созданная карта: её нет в коллекции игры, поэтому её текст и характеристики не проверены в игре. Изменения баланса взяты из официальных патчноутов.",
     asOfRemoved: "Больше нет в игре: последние известные данные, по патчу {patch}; проверить в игре нельзя.",
+    asOfNew: "В игре с патча {patch} ({date}): текст и характеристики в игре ещё не проверены.",
     community: "Тир-лист сообщества",
     communityScoreOne: "Тир {tier}: в среднем {avg} из 5, 1 голос.",
     communityScore: "Тир {tier}: в среднем {avg} из 5, голосов: {votes}.",
@@ -613,6 +636,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     textOutdated: "之后的补丁修改了这段文本：请看下方的平衡改动历史。",
     asOfToken: "衍生卡：它不在游戏的收藏中，因此其文本和属性没有在游戏中核对。平衡改动说明来自官方补丁说明。",
     asOfRemoved: "已不在游戏中：最后已知数据，截至 {patch} 补丁；无法在游戏中核对。",
+    asOfNew: "自 {patch} 补丁（{date}）起加入游戏：文本和数值尚未在游戏中核对。",
     community: "社区强度榜",
     communityScoreOne: "{tier} 级：1 票，平均 {avg} 分（满分 5）。",
     communityScore: "{tier} 级：{votes} 票，平均 {avg} 分（满分 5）。",
@@ -1052,7 +1076,23 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
     ru: `Карта есть в коллекции (проверено в игре ${verifiedOn(locale)}).`,
     "zh-cn": `它在游戏的收藏中（${verifiedOn(locale)}在游戏中核对）。`,
   }[locale];
-  out.push(name, is, sp(statsSentence(card, locale)), sp(inGame));
+  // Entrata nel gioco con una patch dopo la verifica (le otto di Dr. Frank, 04/11/2026): da quando c'è, e che non è
+  // ancora verificata nel gioco. La patch è un link alla sua news.
+  const since = newSince(card);
+  if (since) {
+    const date = formatDate(locale, patches[since].date);
+    const [before, after] = {
+      en: [`It has been in the game since the patch of ${date} (`, "), but it has not been checked in the game yet."],
+      it: [`È nel gioco dalla patch del ${date} (`, "), ma non è ancora stata verificata nel gioco."],
+      es: [`Está en el juego desde el parche del ${date} (`, "), pero todavía no se ha verificado en el juego."],
+      fr: [`${cap(frIl(card))} est dans le jeu depuis le patch du ${date} (`, `), mais n'a pas encore été ${frMasculine(card) ? "vérifié" : "vérifiée"} dans le jeu.`],
+      pt: [`Está no jogo desde o patch de ${date} (`, `), mas ainda não foi ${ptMasculine(card) ? "verificado" : "verificada"} no jogo.`],
+      de: [`Die Karte ist seit dem Patch vom ${date} (`, ") im Spiel, wurde dort aber noch nicht überprüft."],
+      ru: [`Карта в игре с патча от ${date} (`, "), но в игре её ещё не проверяли."],
+      "zh-cn": [`它自 ${date}的补丁（`, "）起加入游戏，但尚未在游戏中核对。"],
+    }[locale];
+    out.push(name, is, sp(statsSentence(card, locale)), sp(before), patchRef(since, locale), after);
+  } else out.push(name, is, sp(statsSentence(card, locale)), sp(inGame));
   if (facts.decks) out.push(sp(deckSentence(card, facts.decks, locale)));
   out.push(sp(formerSentence(card, locale)));
   return out.filter((p) => p !== "");
@@ -1112,6 +1152,23 @@ function changeWhat(ch: Change, locale: Locale): string {
 function patchAnswer(card: LeadCard, locale: Locale): Part[] {
   const changes = cardChanges(card.history);
   const first = patchOrder[0];
+  // Entrata nel gioco con una patch dopo la verifica (le otto di Dr. Frank, 04/11/2026) e mai cambiata da allora: da quale
+  // patch c'è, con il link alla sua news, invece di "nessuna patch dalla 0.6.1" (prima di quella patch non era nel gioco)
+  const since = newSince(card);
+  if (!changes.length && since) {
+    const date = formatDate(locale, patches[since].date);
+    const [before, after] = {
+      en: ["No: it came into the game with patch ", ` of ${date}, and no patch has changed it since.`],
+      it: ["No: è entrata nel gioco con la patch ", ` del ${date}, e da allora nessuna patch l'ha cambiata.`],
+      es: ["No: llegó al juego con el parche ", ` del ${date}, y desde entonces ningún parche la ha cambiado.`],
+      fr: ["Non\u00a0: la carte est arrivée dans le jeu avec le patch ", ` du ${date}, et aucun patch ne l'a modifiée depuis.`],
+      pt: ["Não: a carta chegou ao jogo com o patch ", ` de ${date}, e desde então nenhum patch a mudou.`],
+      de: ["Nein: Die Karte kam mit Patch ", ` vom ${date} ins Spiel, und seitdem hat kein Patch sie geändert.`],
+      ru: ["Нет: карта появилась в игре с патчем ", ` от ${date}, и с тех пор ни один патч её не менял.`],
+      "zh-cn": ["没有：它随 ", ` 补丁（${date}）加入游戏，此后没有任何补丁改动过它。`],
+    }[locale];
+    return [before, patchRef(since, locale), after];
+  }
   if (!changes.length) {
     const since = `${patchLabel(first, locale)} (${formatDate(locale, patches[first].date)})`;
     const deckOnly = [...new Set(card.history.filter((h) => h.kind === "deck").map((h) => patchLabel(h.patch, locale)))];
@@ -1293,28 +1350,57 @@ export function cardBrief(card: LeadCard, facts: CardFacts, locale: Locale): Bri
           "zh-cn": `无法确定：游戏中没有任何卡牌文本会生成它，而衍生卡不在游戏的收藏中。${notInBuilder["zh-cn"]}。`,
         }[locale];
     items.push({ q: q1, a: [a] });
+  } else if (newSince(card)) {
+    // Entrata nel gioco dopo la verifica nella collezione (le otto di Dr. Frank, 04/11/2026): sì, da quella patch, con il
+    // testo non ancora letto nel gioco. Il francese dice "elle" come la domanda ("La carte … est-elle jouable").
+    const since = newSince(card)!;
+    const pdate = formatDate(locale, patches[since].date);
+    const a = card.legendary
+      ? {
+          en: `Yes: it has been in the game since the patch of ${pdate}, so it can lead a deck in the deck builder. Its text has not been checked in the game yet.`,
+          it: `Sì: è nel gioco dalla patch del ${pdate}, quindi può guidare un mazzo nel deck builder. Il suo testo non è ancora stato verificato nel gioco.`,
+          es: `Sí: está en el juego desde el parche del ${pdate}, así que puede liderar un mazo en el deck builder. Su texto todavía no se ha verificado en el juego.`,
+          fr: `Oui\u00a0: elle est dans le jeu depuis le patch du ${pdate}, donc elle peut mener un deck dans le deck builder. Son texte n'a pas encore été vérifié dans le jeu.`,
+          pt: `Sim: está no jogo desde o patch de ${pdate}, então pode liderar um deck no deck builder. O texto ainda não foi verificado no jogo.`,
+          de: `Ja: Die Karte ist seit dem Patch vom ${pdate} im Spiel und kann daher im Deckbuilder ein Deck anführen. Ihr Text wurde im Spiel noch nicht überprüft.`,
+          ru: `Да: карта в игре с патча от ${pdate}, поэтому она может возглавить колоду в конструкторе колод. Её текст в игре ещё не проверяли.`,
+          "zh-cn": `可以：它自 ${pdate}的补丁起加入游戏，因此可以在卡组构筑器中作为卡组核心。它的文本尚未在游戏中核对。`,
+        }[locale]
+      : {
+          en: `Yes: it has been in the game since the patch of ${pdate}, so you can put it in a deck in the deck builder. Its text has not been checked in the game yet.`,
+          it: `Sì: è nel gioco dalla patch del ${pdate}, quindi puoi metterla in un mazzo nel deck builder. Il suo testo non è ancora stato verificato nel gioco.`,
+          es: `Sí: está en el juego desde el parche del ${pdate}, así que puedes ponerla en un mazo en el deck builder. Su texto todavía no se ha verificado en el juego.`,
+          fr: `Oui\u00a0: elle est dans le jeu depuis le patch du ${pdate}, donc vous pouvez la mettre dans un deck dans le deck builder. Son texte n'a pas encore été vérifié dans le jeu.`,
+          pt: `Sim: está no jogo desde o patch de ${pdate}, então você pode colocá-la em um deck no deck builder. O texto ainda não foi verificado no jogo.`,
+          de: `Ja: Die Karte ist seit dem Patch vom ${pdate} im Spiel, du kannst sie also im Deckbuilder in ein Deck aufnehmen. Ihr Text wurde im Spiel noch nicht überprüft.`,
+          ru: `Да: карта в игре с патча от ${pdate}, поэтому её можно положить в колоду в конструкторе колод. Её текст в игре ещё не проверяли.`,
+          "zh-cn": `可以：它自 ${pdate}的补丁起加入游戏，因此你可以在卡组构筑器中把它放进卡组。它的文本尚未在游戏中核对。`,
+        }[locale];
+    items.push({ q: q1, a: [a] });
   } else {
+    // Dal 05/11/2026 "verificata" va con la carta, non con tutte le carte del gioco: le otto entrate con la patch del 04/11
+    // stanno nel conto ma non sono ancora state verificate nel gioco.
     const total = activeCards.length;
     const a = card.legendary
       ? {
-          en: `Yes: it is one of the ${legendaries} Legendaries in the game's collection, checked on ${date}, so it can lead a deck in the deck builder.`,
-          it: `Sì: è una delle ${legendaries} Leggendarie della collezione del gioco, verificate il ${date}, quindi può guidare un mazzo nel deck builder.`,
-          es: `Sí: es una de las ${legendaries} Legendarias de la colección del juego, verificadas el ${date}, así que puede liderar un mazo en el deck builder.`,
-          fr: `Oui\u00a0: c'est l'une des ${legendaries} Légendaires de la collection du jeu, vérifiées le ${date}, donc elle peut mener un deck dans le deck builder.`,
-          pt: `Sim: é uma das ${legendaries} Lendárias da coleção do jogo, verificadas em ${date}, então pode liderar um deck no deck builder.`,
-          de: `Ja: Die Karte ist eine der ${legendaries} Legendären aus der Sammlung des Spiels, am ${date} überprüft, und kann daher im Deckbuilder ein Deck anführen.`,
-          ru: `Да: это одна из ${legendaries} Легендарных карт коллекции игры, проверенных ${date}, поэтому она может возглавить колоду в конструкторе колод.`,
-          "zh-cn": `可以：它是游戏收藏中的 ${legendaries} 张传说卡之一（${date}核对），因此可以在卡组构筑器中作为卡组核心。`,
+          en: `Yes: it is one of the ${legendaries} Legendaries in the game and was checked in the game's collection on ${date}, so it can lead a deck in the deck builder.`,
+          it: `Sì: è una delle ${legendaries} Leggendarie del gioco, verificata nella collezione il ${date}, quindi può guidare un mazzo nel deck builder.`,
+          es: `Sí: es una de las ${legendaries} Legendarias del juego, verificada en la colección el ${date}, así que puede liderar un mazo en el deck builder.`,
+          fr: `Oui\u00a0: c'est l'une des ${legendaries} Légendaires du jeu, vérifiée dans la collection le ${date}, donc elle peut mener un deck dans le deck builder.`,
+          pt: `Sim: é uma das ${legendaries} Lendárias do jogo, verificada na coleção em ${date}, então pode liderar um deck no deck builder.`,
+          de: `Ja: Die Karte ist eine der ${legendaries} Legendären des Spiels, am ${date} in der Sammlung überprüft, und kann daher im Deckbuilder ein Deck anführen.`,
+          ru: `Да: это одна из ${legendaries} Легендарных карт игры, проверенная в коллекции ${date}, поэтому она может возглавить колоду в конструкторе колод.`,
+          "zh-cn": `可以：它是游戏中的 ${legendaries} 张传说卡之一，已于${date}在收藏中核对，因此可以在卡组构筑器中作为卡组核心。`,
         }[locale]
       : {
-          en: `Yes: it is one of the ${total} cards in the game's collection, checked on ${date}, so you can put it in a deck in the deck builder.`,
-          it: `Sì: è una delle ${total} carte della collezione del gioco, verificate il ${date}, quindi puoi metterla in un mazzo nel deck builder.`,
-          es: `Sí: es una de las ${total} cartas de la colección del juego, verificadas el ${date}, así que puedes ponerla en un mazo en el deck builder.`,
-          fr: `Oui\u00a0: c'est l'une des ${total} cartes de la collection du jeu, vérifiées le ${date}, donc vous pouvez la mettre dans un deck dans le deck builder.`,
-          pt: `Sim: é uma das ${total} cartas da coleção do jogo, verificadas em ${date}, então você pode colocá-la em um deck no deck builder.`,
-          de: `Ja: Die Karte ist eine der ${total} Karten aus der Sammlung des Spiels, am ${date} überprüft, du kannst sie also im Deckbuilder in ein Deck aufnehmen.`,
-          ru: `Да: это одна из ${total} карт коллекции игры, проверенных ${date}, поэтому её можно положить в колоду в конструкторе колод.`,
-          "zh-cn": `可以：它是游戏收藏中的 ${total} 张卡牌之一（${date}核对），因此你可以在卡组构筑器中把它放进卡组。`,
+          en: `Yes: it is one of the ${total} cards in the game and was checked in the game's collection on ${date}, so you can put it in a deck in the deck builder.`,
+          it: `Sì: è una delle ${total} carte del gioco, verificata nella collezione il ${date}, quindi puoi metterla in un mazzo nel deck builder.`,
+          es: `Sí: es una de las ${total} cartas del juego, verificada en la colección el ${date}, así que puedes ponerla en un mazo en el deck builder.`,
+          fr: `Oui\u00a0: c'est l'une des ${total} cartes du jeu, vérifiée dans la collection le ${date}, donc vous pouvez la mettre dans un deck dans le deck builder.`,
+          pt: `Sim: é uma das ${total} cartas do jogo, verificada na coleção em ${date}, então você pode colocá-la em um deck no deck builder.`,
+          de: `Ja: Die Karte ist eine der ${total} Karten des Spiels, am ${date} in der Sammlung überprüft, du kannst sie also im Deckbuilder in ein Deck aufnehmen.`,
+          ru: `Да: это одна из ${total} карт игры, проверенная в коллекции ${date}, поэтому её можно положить в колоду в конструкторе колод.`,
+          "zh-cn": `可以：它是游戏中的 ${total} 张卡牌之一，已于${date}在收藏中核对，因此你可以在卡组构筑器中把它放进卡组。`,
         }[locale];
     items.push({ q: q1, a: [a] });
   }
@@ -1417,12 +1503,13 @@ export function cardStatusLd(card: Pick<Card, "type" | "status">, facts: Pick<Ca
  * inglese (quello dei dati importati), mai le nostre traduzioni. Nessun testo se una patch successiva lo ha superato
  * (`outdated`, `textOutdated` di cardTitles.ts), né una "traduzione" uguale all'inglese (testo locale mancante).
  */
-export function cardLdTexts(card: Pick<Card, "type" | "status" | "ability">, outdated: boolean): { lang: Locale; text: string }[] {
+export function cardLdTexts(card: Pick<Card, "type" | "status" | "since" | "ability">, outdated: boolean): { lang: Locale; text: string }[] {
   if (outdated || !card.ability?.en) return [];
   const one = (s: string) => s.replace(/\s+/g, " ").trim();
   const en = one(card.ability.en);
   const out: { lang: Locale; text: string }[] = [{ lang: "en", text: en }];
-  if (card.status !== "active" || card.type === "token") return out;
+  // le carte entrate nel gioco dopo la verifica (`checkedInGame`, 05/11/2026) hanno solo l'inglese, come create e rimosse
+  if (!checkedInGame(card)) return out;
   for (const l of officialTextLocales) {
     if (l === "en") continue;
     const t = card.ability[l] ? one(card.ability[l]) : "";
@@ -1443,9 +1530,12 @@ export function cardLdTexts(card: Pick<Card, "type" | "status" | "ability">, out
  * Fino a quel giorno c'era anche `sourceNote` (la data dell'import tra parentesi nella riga della fonte in fondo alla
  * scheda): tolta insieme al nome della fonte, la riga ora è `cards.sourceNote` del dizionario.
  */
-export function asOfLine(card: Pick<Card, "type" | "status">, locale: Locale, source: { patch: string }): string | undefined {
+export function asOfLine(card: Pick<Card, "type" | "status" | "since">, locale: Locale, source: { patch: string }): string | undefined {
   const l = cardLabels[locale];
   if (card.status === "removed") return fill(l.asOfRemoved, { patch: patchName(source.patch, locale) });
+  // entrata nel gioco dopo la verifica nella collezione (le otto di Dr. Frank, 04/11/2026): da quale patch, non verificata
+  const since = newSince(card);
+  if (since) return fill(l.asOfNew, { patch: patchLabel(since, locale), date: formatDate(locale, patches[since].date) });
   if (card.type === "token") return l.asOfToken;
   return undefined;
 }

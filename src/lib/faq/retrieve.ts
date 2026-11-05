@@ -1,4 +1,4 @@
-import { cards, cardsVerified, latestPatch, patchLabel, patches, sagas, type Card } from "@/lib/data/cards";
+import { cards, cardsVerified, checkedInGame, latestPatch, patchLabel, patches, sagas, type Card } from "@/lib/data/cards";
 import { faqs, type Faq } from "@/lib/content/faq";
 import { getGuide, getGuides } from "@/lib/content/guides";
 import { events } from "@/lib/data/events";
@@ -205,6 +205,8 @@ function schedaCarta(card: Card, locale: Locale): string {
     card.alignment,
     `saga: ${sagas[card.saga][locale]}`,
     card.status === "removed" ? "rimossa: NON più nel gioco" : undefined,
+    // carte entrate nel gioco dopo la verifica nella collezione (cards.ts, `enteredGame`, 05/11/2026)
+    card.since && !checkedInGame(card) ? `nel gioco dalla patch ${patchLabel(card.since, "it")}: testo e dati NON ancora verificati nel gioco` : undefined,
     card.keywords?.length ? `parole chiave: ${card.keywords.map((k) => keywordLabel(k, locale)).join(", ")}` : undefined,
     card.ability?.[locale] ? `testo: ${card.ability[locale].replace(/\s*\n\s*/g, " ")}` : undefined,
   ].filter(Boolean);

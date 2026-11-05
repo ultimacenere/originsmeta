@@ -162,7 +162,8 @@ describe("creatorsOf", () => {
   });
   test("al plurale, e fra più fonti solo quelle nella demo", () => {
     assert.deepEqual(names("pumpkin"), ["Old MacDonald"]);
-    assert.deepEqual(names("zombie"), ["Legion of the Dead"]);
+    // Necromancer è di nuovo nel gioco dalla patch del 04/11/2026 (`enteredGame`)
+    assert.deepEqual(names("zombie"), ["Legion of the Dead", "Necromancer"]);
   });
   test("un nome dentro un nome più lungo non conta", () => {
     for (const c of creatorsOf(card("little-pig"), cards)) assert.notEqual(c.slug, "three-not-so-little-pigs");

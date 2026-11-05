@@ -234,8 +234,9 @@ describe("carte generate: chi le genera", () => {
     // related dà solo due carte rimosse; nel testo le zucche le mescola anche Old MacDonald, nella demo
     assert.deepEqual(levels(creationChain(card("pumpkin"), cards)), [["Old MacDonald"]]);
     assert.deepEqual(names(earlierCreators(card("pumpkin"), cards)).sort(), ["Headless Horseman", "Pumpkin Patch"]);
-    assert.deepEqual(levels(creationChain(card("zombie"), cards)), [["Legion of the Dead"]]);
-    assert.deepEqual(names(earlierCreators(card("zombie"), cards)), ["Necromancer"]);
+    // Necromancer, rimossa fino alla patch del 04/11/2026 (`enteredGame`), è di nuovo nel gioco: gli Zombie li generano in due
+    assert.deepEqual(levels(creationChain(card("zombie"), cards)), [["Legion of the Dead", "Necromancer"]]);
+    assert.deepEqual(names(earlierCreators(card("zombie"), cards)), []);
   });
 
   test("nessun testo le nomina: niente catena (e dal 25/09/2026 nessun legame preso dal campo `related` dell'import)", () => {

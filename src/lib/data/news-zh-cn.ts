@@ -243,12 +243,12 @@ Obliterate 是游戏中最贵的法术，现在需要 10 法力。在 Crimson Cu
       { label: "墓地回归", text: "Dr. Frank 和 It's Alive 从你的墓地召唤角色", anchor: "mu-di" },
       { label: "新关键词", text: "Red Knight 带来了持续，目前游戏中没有任何卡牌拥有它", anchor: "red-knight" },
       { label: "平衡补丁", text: "Koin 的工作室负责人说它会和 Dr. Frank 一起推出", anchor: "ping-heng" },
-      { label: "现在就试试", text: "在我们的 Theory craft 中用这八张卡组建卡组", anchor: "theory-craft" },
+      { label: "现在就用它们构筑", text: "这八张卡已经进入游戏，也加入了我们的卡组构筑器", anchor: "theory-craft" },
     ],
     faq: [
       {
         q: "Dr. Frank 什么时候登陆 Origins TCG？",
-        a: "2026年11月4日（周三），比原计划提前一周，因为玩家们在 Steam 上达到了 500 条评测。在我们发布这篇文章时，Koin 还没有公布具体时间。",
+        a: "2026年11月4日（周三），比原计划提前一周，因为玩家们在 Steam 上达到了 500 条评测。更新当天就已上线，同时推出的还有平衡补丁。",
       },
       {
         q: "Dr. Frank 的新卡有哪些？",
@@ -256,14 +256,16 @@ Obliterate 是游戏中最贵的法术，现在需要 10 法力。在 Crimson Cu
       },
       {
         q: "Dr. Frank 会和平衡补丁一起来吗？",
-        a: "会：Koin 的工作室负责人 Mawr 写道，平衡补丁将于 11月4日随 Dr. Frank 一起推出。当时改动内容尚未公布。",
+        a: "是的：它于 11月4日随 Dr. Frank 一起推出，改动了十张卡牌，从 Obliterate（10 法力）到三只熊；所有改动都在我们关于补丁说明的文章里。",
       },
       {
         q: "我现在就能用新卡组建卡组吗？",
-        a: "在 OriginsMeta 上可以：在更新上线之前，这八张卡都在 Theory craft 中，这是我们收录了游戏中尚未出现的卡牌的卡组构筑器。",
+        a: "可以：自 11月4日的补丁起，这八张卡已经进入游戏，在 OriginsMeta 上它们也在卡组构筑器中；你用它们发布的卡组会进入单个卡组。",
       },
     ],
-    body: `## Dr. Frank 于 11月4日（周三）到来 {#dao-lai}
+    body: `**11月5日更新：**自 [11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)起，这八张卡已经进入游戏，在 OriginsMeta 上它们现在也是游戏卡牌：它们已经收录在[卡牌数据库](/zh-cn/cards)和[卡组构筑器](/zh-cn/deck-builder)中，不再归入 [Theory craft](/zh-cn/theory-craft)。用它们组建、且不含其他不在游戏中的卡牌的 Theory craft 卡组，已经移到了[单个卡组](/zh-cn/decks)中。我们按官方卡牌校正了其中四张卡的英文文本（It's Alive、Franken Bride、Necromancer 和 Red Knight）；我们还没有在游戏中读到这八张卡，它们的页面上也注明了这一点。
+
+## Dr. Frank 于 11月4日（周三）到来 {#dao-lai}
 
 “下一位首领 Dr. Frank 将于下周来到 Origins，他的卡组里满是新卡。”Koin Games 于 2026年10月31日万圣节在 Steam 上发布了这条消息，帖子标题为“Happy Halloween, Dr. Frank is coming”：日期是 **11月4日（周三）**。在补丁说明发布之前，我们写的是 Dr. Frank 是第 12 个任务的首领，也就是对战游戏 AI 的任务中的下一个：11月4日的补丁说明明确指出，首领是第 11 位首领 Cyber Queen，Dr. Frank 是她的 Relentless 卡组中的传说卡（[补丁说明](/zh-cn/news/balance-patch-1104-cyber-queen#cyber-queen)）。在我们发布这篇文章时，Koin 还没有公布更新的具体时间。
 
@@ -316,7 +318,7 @@ Dr. Frank 是一张传说卡：“战斗前，从你的墓地召唤一个随机�
 
 ## 同一天的平衡补丁 {#ping-heng}
 
-“平衡补丁将在明天 Dr. Frank 到来时推出”，Mawr 于 11月3日在 Discord 上写道。改动内容尚未公开：补丁说明一发布我们就会整理出来，[MetaShifting](/zh-cn/metashifting) 也会逐张显示改动。在此之前，OriginsMeta 上的数据仍是 [0.7 补丁](/en/news/patch-0-7)的数据。本周的其他日期，从 11月6日（周五）的路线图 AMA 到排位第 1 赛季的结束，都在[我们 11月2日的文章](/zh-cn/news/balance-patch-dr-frank-roadmap-ama)里。
+“平衡补丁将在明天 Dr. Frank 到来时推出”，Mawr 于 11月3日在 Discord 上写道。补丁说明已于 11月4日发布：十张卡牌有改动，从 Obliterate 到三只熊，全部整理在[我们关于补丁说明的文章](/zh-cn/news/balance-patch-1104-cyber-queen)中；[MetaShifting](/zh-cn/metashifting) 逐张显示这些改动，OriginsMeta 上的数据也已经是新的数值。本周的其他日期，从 11月6日（周五）的路线图 AMA 到排位第 1 赛季的结束，都在[我们 11月2日的文章](/zh-cn/news/balance-patch-dr-frank-roadmap-ama)里。
 
 ## 创作者怎么说 {#chuang-zuo-zhe}
 
@@ -334,14 +336,12 @@ Robip 也[用意大利语](https://www.youtube.com/watch?v=L5CfgUtIYA4)介绍了
 
 ## 现在就在 OriginsMeta 上试试 {#theory-craft}
 
-这八张卡都在[卡牌数据库](/zh-cn/cards)中，打开“不在游戏中”筛选即可看到；在 [Theory craft](/zh-cn/theory-craft) 中你已经可以用它们组建卡组：你发布的卡组会出现在 [Theory craft 卡组](/zh-cn/theory-craft/decks)中。更新进入游戏后，我们会把它们标记为游戏卡牌，并核对它们在所有语言中的文本；用它们组建的卡组随后会自动移到单个卡组中。
+更新上线后，这八张卡在 OriginsMeta 上也成了游戏卡牌：它们已经收录在[卡牌数据库](/zh-cn/cards)和[卡组构筑器](/zh-cn/deck-builder)中，你用它们发布的卡组会进入[单个卡组](/zh-cn/decks)，并附带游戏代码。更新之前用它们组建的 Theory craft 卡组已经自动移到了那里。我们还没有在游戏中读到这八张卡：在读到之前，它们的页面会注明这一点，它们的中文文本也是我们自己的翻译。
 
 ## 我们还不知道的 {#hai-bu-zhi-dao}
 
-- 11月4日的更新具体几点上线。
 - Dr. Frank 和他的卡牌如何解锁，以及第一天能否在排位赛中使用。
 - It's Alive 是否就是 Dr. Frank 在对局开始时给你的那张卡。
-- 平衡补丁改了什么。
 
 来源：Steam 帖子“Happy Halloween, Dr. Frank is coming”（2026年10月31日）及其宣传图；apix（10月29日）和 Mawr（10月31日和 11月3日）在 Origins TCG 官方 Discord 上的消息；Koin Games 提供给创作者用于公开卡牌的卡图（11月2日）；ZulsoiD 的视频（11月3日）。插画：Don Flores（Dr. Frank、It's Alive、Frank's Monster、Necromancer），Alina Kapustina（Franken Bride），Lucas Machado（Doppelganger、Red Knight），Koin Team（Morgan le Fay）。`,
   },

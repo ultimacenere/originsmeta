@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { cardsVerified } from "@/lib/data/cards";
+import { cardsVerified, newCards, patches } from "@/lib/data/cards";
 import { tierIds, tierList } from "@/lib/data/tierlist";
 import { builderPool } from "@/lib/builderLabels";
 import { TierListMaker, type TierCard, type TierMakerLabels } from "@/components/TierListMaker";
@@ -169,10 +169,13 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
       <PageNotes>
         <p className="max-w-3xl text-chalk-muted">{m.intro}</p>
         <p className="mt-4 text-xs text-chalk-muted">
-          {m.dataNote
+          {/* dal 05/11/2026: le carte entrate nel gioco dopo la verifica (`newCards`) stanno nelle liste ma non sono verificate */}
+          {(newCards.length && newCards[0].since ? m.dataNoteNew : m.dataNote)
             .replace("{legendaries}", String(legendaries.length))
             .replace("{cards}", String(cards.length))
-            .replace("{date}", formatDate(locale, cardsVerified.date))}{" "}
+            .replace("{date}", formatDate(locale, cardsVerified.date))
+            .replace("{n}", String(newCards.length))
+            .replace("{patchDate}", newCards[0]?.since ? formatDate(locale, patches[newCards[0].since].date) : "")}{" "}
           {d.common.notAffiliated}
         </p>
       </PageNotes>

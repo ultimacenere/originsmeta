@@ -57,7 +57,7 @@ type CardFacts = import("./cardPage").CardFacts;
 type DeckCount = import("./cardPage").DeckCount;
 type BriefCompanion = import("./cardPage").BriefCompanion;
 const { cardRelations } = synergy;
-const { cards, cardSource, getCard } = cardsModule;
+const { cards, cardSource, getCard, checkedInGame, newCards } = cardsModule;
 
 type Locale = "en" | "it" | "es" | "fr" | "pt" | "de" | "ru";
 const locales: Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru"];
@@ -225,6 +225,8 @@ describe("frase d'attacco: tutte le carte", () => {
     for (const c of cards)
       for (const l of locales) {
         const playable = c.status === "active" && c.type !== "token";
+        // carte entrate nel gioco dopo la verifica nella collezione (le otto di Dr. Frank, 05/11/2026): da quale patch, non verificate
+        const fresh = playable && !checkedInGame(c);
         const text = partsText(cardLead(c, { decks: playable ? { n: 2, total: 16 } : undefined, ...cardRelations(c, cards) }, l));
         const problems = [
           !text.startsWith(c.name) && "nome in testa",
@@ -233,7 +235,11 @@ describe("frase d'attacco: tutte le carte", () => {
           /undefined|NaN|\?|\{|\}| {2}|\s[.,;]/.test(text) && "buchi",
           // "verificata nel gioco" solo sulle carte della collezione del gioco (CARDS-09)
           !playable && /checked in the game|verificat|verificad|vérifié|überprüft|проверен/.test(text) && "verificata",
-          playable && !/checked in the game|verificat|verificad|vérifié|im Spiel überprüft|проверено в игре/.test(text) && "stato",
+          playable && !fresh && !/checked in the game|verificat|verificad|vérifié|im Spiel überprüft|проверено в игре/.test(text) && "stato",
+          fresh &&
+            !/has been in the game since the patch of .+, but it has not been checked in the game yet|È nel gioco dalla patch del .+, ma non è ancora stata verificata nel gioco|Está en el juego desde el parche del .+, pero todavía no se ha verificado en el juego|est dans le jeu depuis le patch du .+, mais n'a pas encore été vérifiée? dans le jeu|Está no jogo desde o patch de .+, mas ainda não foi verificad[oa] no jogo|ist seit dem Patch vom .+ im Spiel, wurde dort aber noch nicht überprüft|в игре с патча от .+, но в игре её ещё не проверяли/.test(text) &&
+            "stato (carta nuova)",
+          fresh && /checked in the game on|verificata il|verificad[oa] el|vérifiée? le|verificad[oa] em|im Spiel überprüft\)|проверено в игре/.test(text) && "verificata (carta nuova)",
           c.status === "removed" && !/is no longer in the game|non è più nel gioco|ya no está en el juego|n'est plus dans le jeu|não está mais no jogo|ist nicht mehr im Spiel| больше нет в игре/.test(text.slice(c.name.length, c.name.length + 36)) && "prima riga",
           c.type === "token" &&
             c.status === "active" &&
@@ -345,7 +351,9 @@ describe("In breve", () => {
     const en = cardBrief(card("headless-horseman"), facts("headless-horseman"), "en");
     assert.equal(en[2].q, "Which cards did Headless Horseman create?");
     assert.equal(partsText(en[2].a), "Headless Horseman created Pumpkin (from the card texts).");
-    assert.equal(partsText(cardBrief(card("necromancer"), facts("necromancer"), "it")[2].a), "Necromancer generava Zombie (dai testi delle carte).");
+    assert.equal(partsText(cardBrief(card("pumpkin-patch"), facts("pumpkin-patch"), "it")[2].a), "Pumpkin Patch generava Pumpkin (dai testi delle carte).");
+    // Necromancer era fra le rimosse fino alla patch del 04/11/2026, che l'ha portata nel gioco (`enteredGame`): ora al presente
+    assert.equal(partsText(cardBrief(card("necromancer"), facts("necromancer"), "it")[2].a), "Necromancer genera Zombie (dai testi delle carte).");
     assert.equal(partsText(cardBrief(card("pumpkin-patch"), facts("pumpkin-patch"), "es")[2].a), "Pumpkin Patch creaba Pumpkin (según los textos de las cartas).");
     assert.equal(cardBrief(card("headless-horseman"), facts("headless-horseman"), "pt")[2].q, "Quais cartas Headless Horseman criava?");
     assert.equal(partsText(cardBrief(card("headless-horseman"), facts("headless-horseman"), "pt")[2].a), "Headless Horseman criava Pumpkin (segundo os textos das cartas).");
@@ -602,5 +610,42 @@ describe("World of Origins non si nomina nei testi pubblici", () => {
     const json = JSON.parse(raw) as Record<string, unknown>;
     assert.deepEqual(Object.keys(json).sort(), ["cards", "fetched", "patch"]);
     assert.doesNotMatch(raw, woo);
+  });
+});
+
+describe("carte entrate nel gioco dopo la verifica (05/11/2026)", () => {
+  // Le otto di Dr. Frank, nel gioco dalla patch del 04/11/2026 (cards.ts, `enteredGame`): attive, ma non lette nel gioco
+  test("sono le otto di Dr. Frank, attive e con la patch del 4 novembre", () => {
+    assert.deepEqual(
+      newCards.map((c) => c.slug).sort(),
+      ["doppelganger", "dr-frank", "franken-bride", "franks-monster", "its-alive", "morgan-le-fay", "necromancer", "red-knight"],
+    );
+    for (const c of newCards) {
+      assert.equal(c.status, "active", c.slug);
+      assert.equal(c.since, "ea-1104", c.slug);
+      assert.equal(checkedInGame(c), false, c.slug);
+    }
+    assert.equal(checkedInGame(card("merlin")), true);
+    assert.equal(checkedInGame(card("zombie")), false);
+  });
+  test("frase d'attacco, In breve e riga dei dati dicono da quale patch sono nel gioco e che non sono verificate", () => {
+    const lead = cardLead(card("dr-frank"), facts("dr-frank", { n: 1, total: 16 }), "en");
+    assert.match(partsText(lead), /It has been in the game since the patch of November 4, 2026 \(EA · 4 Nov\), but it has not been checked in the game yet\./);
+    assert.ok(lead.some((p) => typeof p !== "string" && "path" in p && p.path === "/news/balance-patch-1104-cyber-queen"));
+    assert.doesNotMatch(partsText(lead), /checked in the game on/);
+    const brief = cardBrief(card("dr-frank"), facts("dr-frank"), "it");
+    assert.equal(partsText(brief[0].a), "Sì: è nel gioco dalla patch del 4 novembre 2026, quindi può guidare un mazzo nel deck builder. Il suo testo non è ancora stato verificato nel gioco.");
+    assert.equal(partsText(brief[1].a), "No: è entrata nel gioco con la patch EA · 4 nov del 4 novembre 2026, e da allora nessuna patch l'ha cambiata.");
+    assert.match(asOfLine(card("red-knight"), "en", cardSource) ?? "", /^In the game since patch EA · 4 Nov \(November 4, 2026\): its text and stats have not been checked in the game yet\.$/);
+    for (const l of locales) assert.ok(asOfLine(card("its-alive"), l, cardSource), l);
+    // Merlin, verificata il 22/09: "verificata" va con la carta, non con tutte le Leggendarie (Dr. Frank non lo è)
+    assert.equal(
+      partsText(cardBrief(card("merlin"), facts("merlin"), "en")[0].a),
+      "Yes: it is one of the 12 Legendaries in the game and was checked in the game's collection on September 22, 2026, so it can lead a deck in the deck builder.",
+    );
+  });
+  test("nel JSON-LD solo il testo inglese, come le carte create e rimosse", () => {
+    assert.deepEqual(cardLdTexts(card("necromancer"), false).map((t) => t.lang), ["en"]);
+    assert.ok(cardLdTexts(card("merlin"), false).length > 1);
   });
 });

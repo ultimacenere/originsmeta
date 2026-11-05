@@ -93,7 +93,8 @@ describe("voti delle carte", () => {
       const v = RATINGS[c.slug].r;
       assert.ok(v >= 0 && v <= 10, `${c.slug}: ${v}`);
     }
-    assert.equal(pool.filter((c) => c.legendary).length, 11);
+    // 12 dalla patch del 04/11/2026, con Dr. Frank (cards.ts, `enteredGame`)
+    assert.equal(pool.filter((c) => c.legendary).length, 12);
   });
 });
 

@@ -343,6 +343,15 @@ describe("tutte le guide: le righe di tabella con una carta coincidono con il da
     // le tabelle delle guide dei mazzi e di quella alle Leggendarie: se il numero crolla, l'espressione non le trova più
     assert.ok(rows >= 100, `solo ${rows} righe trovate`);
   });
+  test("nessuna riga di tabella rotta da una sostituzione del costo", () => {
+    // Il 04/11/2026 la patch del 4 novembre aveva lasciato "| 3 || [Baby Bear](…) | 2 |" e "| 3 || [Searing Light](…) | 4 |"
+    // in sette lingue: righe che iniziano con un numero e una cella vuota, che l'espressione qui sopra non vede. Qui anche
+    // francese e cinese, che gli altri controlli di questo file non hanno ancora.
+    const all = [...locales, "fr", "zh-cn"] as unknown as Locale[];
+    for (const l of all)
+      for (const g of getGuides(l))
+        for (const line of g.body.split("\n")) assert.doesNotMatch(line, /^\| \d+ \|\|/, `${l} ${g.slug}: ${line.slice(0, 80)}`);
+  });
 });
 
 describe("guida al Kickstarter: le promo Alpha (30/10/2026)", () => {

@@ -1,5 +1,5 @@
 import { siteUrl } from "./i18n";
-import { cards, cardsVerified, latestPatch, patchLabel, patches, type Card, type PatchId } from "./data/cards";
+import { cards, cardsVerified, checkedInGame, latestPatch, patchLabel, patches, type Card, type PatchId } from "./data/cards";
 import { newsPath, sortedNews, type NewsItem } from "./data/news";
 import { getGuides, type Guide } from "./content/guides";
 import { authorOfGuide, authorOfNews } from "./data/authors";
@@ -176,10 +176,23 @@ export type LlmsFullData = { guides: Guide[]; news: NewsItem[]; cards: readonly 
 export const CREATED_TITLE = "Created cards, not checked in the game";
 
 /**
- * Nota sui dati delle carte dopo la fine della demo (28/10/2026): la 0.8 del 27/10/2026, prima versione dell'Accesso
- * anticipato, non cita modifiche alle carte, quindi i dati restano quelli verificati nel gioco a settembre.
+ * Le carte del gioco entrate dopo la verifica nella collezione (cards.ts, `enteredGame` e `checkedInGame`, 05/11/2026: le
+ * otto di Dr. Frank, arrivate con la patch del 04/11/2026), con la frase che lo dice. Fino al 05/11 qui c'era la nota sulla
+ * 0.8 del 27/10/2026, che non cita modifiche alle carte: dopo la patch del 04/11 non era più quella che conta.
  */
-const EARLY_ACCESS_NOTE = "the 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes";
+function notCheckedYet(list: readonly Card[], latestNamed = false): { cards: Card[]; sentence: string } {
+  const fresh = list.filter((c) => c.status === "active" && c.type !== "token" && !checkedInGame(c)).sort(byName);
+  if (!fresh.length) return { cards: fresh, sentence: "" };
+  const ids = [...new Set(fresh.map((c) => c.since).filter((p): p is PatchId => Boolean(p)))];
+  const names = fresh.length === 1 ? fresh[0].name : `${fresh.slice(0, -1).map((c) => c.name).join(", ")} and ${fresh[fresh.length - 1].name}`;
+  // "with that patch" quando la frase ha appena nominato l'ultima patch e le carte sono arrivate con quella
+  const with_ = latestNamed && ids.length === 1 && ids[0] === latestPatch ? "that patch" : ids.map((id) => `the ${patchLine(id)}`).join(" and ");
+  const sentence =
+    fresh.length === 1
+      ? `${names}, which came into the game with ${with_}, has not been checked in the game yet`
+      : `the ${fresh.length} cards that came into the game with ${with_} have not been checked in the game yet: ${names}`;
+  return { cards: fresh, sentence };
+}
 
 /** Il testo completo di llms-full.txt. Funzione pura sui dati passati: la rotta le dà quelli veri. */
 export function llmsFullText(data: LlmsFullData): string {
@@ -189,6 +202,7 @@ export function llmsFullText(data: LlmsFullData): string {
   const units = inPlay.filter((c) => !c.legendary && c.type === "unit").sort(byName);
   const spells = inPlay.filter((c) => !c.legendary && c.type === "spell").sort(byName);
   const cardSection = (title: string, list: Card[], intro?: string) => [`### ${title} (${list.length})`, "", ...(intro ? [intro, ""] : []), ...list.map(cardLine), ""];
+  const fresh = notCheckedYet(data.cards);
 
   const lines = [
     "# OriginsMeta: full text",
@@ -197,7 +211,7 @@ export function llmsFullText(data: LlmsFullData): string {
     "",
     `- Short index: ${siteUrl}/llms.txt`,
     `- Generated from the site's data at every deploy: ${data.guides.length} guides, ${data.news.length} news articles, ${inPlay.length} cards of the game's collection and ${created.length} created cards.`,
-    `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} cards of the game's collection were checked one by one in the game on ${longDate(cardsVerified.date)}, and ${EARLY_ACCESS_NOTE}. Created cards are not in the game's collection, so they have not been checked in the game.`,
+    `- Card data: latest patch (${patchLine()}); the ${cardsVerified.count} cards of the game's collection were checked one by one in the game on ${longDate(cardsVerified.date)}${fresh.sentence ? `, and ${fresh.sentence}` : ""}. Created cards are not in the game's collection, so they have not been checked in the game.`,
     "- Every guide and article is also on the site in Italian (/it/), Spanish (/es/), French (/fr/), Brazilian Portuguese (/pt/), German (/de/), Russian (/ru/) and Simplified Chinese (/zh-cn/: guides and the news from 20 October 2026 on), with the same slug.",
     "- For rules, dates and announcements the official sources win: the Steam pages of Origins TCG, Koin Games' posts and the official Discord.",
     "- Card art and card text © Koin Games.",
@@ -210,7 +224,7 @@ export function llmsFullText(data: LlmsFullData): string {
     ...data.news.flatMap((n) => [newsBlock(n), ""]),
     "## Cards",
     "",
-    `The ${inPlay.length} cards of the game's collection, checked in the game on ${longDate(cardsVerified.date)}, then the created cards. One Legendary plus twelve different base cards, each played in two copies, make a 25-card deck. Power is the damage a unit deals, Health the damage it can take.`,
+    `The ${inPlay.length} cards of the game's collection, checked in the game on ${longDate(cardsVerified.date)}${fresh.cards.length ? ` except the ${fresh.cards.length} that came in later` : ""}, then the created cards. One Legendary plus twelve different base cards, each played in two copies, make a 25-card deck. Power is the damage a unit deals, Health the damage it can take.`,
     "",
     // Fino al 27/10/2026 i tre titoli dicevano "Demo 2.0 …": dall'Accesso anticipato sono le carte giocabili.
     ...cardSection("Playable Legendaries", legendaries),
@@ -233,11 +247,17 @@ export function llmsFull(): string {
 
 /* ---------- le sezioni di public/llms.txt scritte dai dati ---------- */
 
+/** "; Dr. Frank, which came into the game with …, has not been checked in the game yet", o niente. */
+function freshLegendaries(legendaries: readonly Card[]): string {
+  const { sentence } = notCheckedYet(legendaries, true);
+  return sentence ? `; ${sentence}` : "";
+}
+
 /** Corpo di "## Legendaries": una riga per Leggendaria in gioco. */
 export function legendariesSection(list: readonly Card[] = cards): string {
   const legendaries = activeLegendaries(list);
   return [
-    `The ${legendaries.length} Legendaries in the game: every deck is led by one of them. Data of the latest patch (${patchLine()}); ${EARLY_ACCESS_NOTE}. Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…), Russian (/ru/cards/…) and Simplified Chinese (/zh-cn/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.`,
+    `The ${legendaries.length} Legendaries in the game: every deck is led by one of them. Data of the latest patch (${patchLine()})${freshLegendaries(legendaries)}. Each card page is also in Italian (/it/cards/…), Spanish (/es/cards/…), French (/fr/cards/…), Brazilian Portuguese (/pt/cards/…), German (/de/cards/…), Russian (/ru/cards/…) and Simplified Chinese (/zh-cn/cards/…) with the same slug, the official text of the game in Italian, Spanish, French, Portuguese, German and Russian, and the balance history.`,
     "",
     ...legendaries.map(cardLine),
   ].join("\n");

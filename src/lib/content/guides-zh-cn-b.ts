@@ -96,7 +96,7 @@ export const zhCnTextB: Partial<Record<GuideSlug, GuideCopy>> = {
 | 卡牌 | 费用 | 作用 |
 | --- | --- | --- |
 | [Van Helsing](/zh-cn/cards/van-helsing) ★ | 4 | 传说卡：战斗前，如果你手中没有 Van Helsing's Tools，就将其加入你的手牌 |
-| [Baby Bear](/zh-cn/cards/baby-bear) | 2 | 对伤害你屏障的敌人造成伤害；死亡时将 Papa Bear 加入你的手牌 |
+| [Baby Bear](/zh-cn/cards/baby-bear) | 3 | 对伤害你屏障的敌人造成伤害；死亡时将 Papa Bear 加入你的手牌 |
 | [Scarecrow](/zh-cn/cards/scarecrow) | 2 | 揭示时：抽一张牌 |
 | [Shahrazad](/zh-cn/cards/shahrazad) | 2 | 1/4：每当有一张牌进入你的手牌，为你的屏障治疗 1 点伤害 |
 | [Ali Baba](/zh-cn/cards/ali-baba) | 3 | 2/3，对对手的屏障造成伤害时抽一张牌 |
@@ -104,7 +104,7 @@ export const zhCnTextB: Partial<Record<GuideSlug, GuideCopy>> = {
 | [Spellbook](/zh-cn/cards/spellbook) | 4 | 本局剩余时间里，每回合开始时获得一张随机法术 |
 | [Phuong Hoang](/zh-cn/cards/phuong-hoang) | 4 | 重生、移动；每当一个友方角色或屏障被治疗，获得 +1/+1 |
 | [Jekyll](/zh-cn/cards/jekyll) | 4 | 揭示时治疗 3 点伤害；如果战斗后仍在手牌中，变为 Hyde，一个带践踏的 5/3 |
-| [Searing Light](/zh-cn/cards/searing-light) | 4 | 对一个敌人造成 4 点伤害，并为你在该地点的屏障治疗 4 点伤害 |
+| [Searing Light](/zh-cn/cards/searing-light) | 3 | 对一个敌人造成 4 点伤害，并为你在该地点的屏障治疗 4 点伤害 |
 | [Boitata](/zh-cn/cards/boitata) | 5 | 5/5：法术和能力对你的屏障造成的伤害，改为对对手的屏障造成 |
 | [Tin Woodman](/zh-cn/cards/tin-woodman) | 6 | 揭示时为其所在地点的任意另一个角色或屏障治疗 8 点伤害 |
 | [Forbidden Knowledge](/zh-cn/cards/forbidden-knowledge) | 8 | 消灭所有角色 |

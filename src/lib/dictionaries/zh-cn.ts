@@ -140,7 +140,7 @@ export const zhCn: Dictionary = {
     stats: "数据",
     unknownStats: "数据尚未公布",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "数据截至 2026年9月29日的 0.7 补丁：122 张可用卡牌已于 9月22日在游戏中核对，平衡说明来自官方补丁说明；0.8 补丁说明（2026年10月27日，抢先体验）没有列出任何卡牌改动。",
+    asOf: "数据截至 2026年11月4日的补丁：游戏收藏中的 122 张卡牌已于 9月22日在游戏中核对，平衡说明来自官方补丁说明；随 11月4日补丁加入游戏的八张卡牌尚未在游戏中核对。",
     alignment: "阵营",
     good: "Good",
     evil: "Evil",
@@ -296,7 +296,7 @@ export const zhCn: Dictionary = {
     legendNote: "传说卡是卡组的核心：每套卡组一张，以星标标记。系列是 OriginsMeta 按传说来源做的分组，游戏中并不显示。",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "可用卡牌的费用、数据、阵营和文本已在游戏中核对（英语、意大利语、西班牙语、法语、葡萄牙语、德语和俄语）；平衡改动来自官方补丁说明，2026年10月27日的 0.8 补丁说明（抢先体验）没有列出卡牌改动。衍生卡和已移除的卡牌不在游戏收藏中，因此未在游戏中核对。卡牌文本 © Koin Games。系列、来源说明、所有卡牌的简体中文文本，以及衍生卡和已移除卡牌的意大利语、西班牙语、法语、葡萄牙语、德语和俄语文本均由 OriginsMeta 编写。",
+      "可用卡牌的费用、数据、阵营和文本已在游戏中核对（英语、意大利语、西班牙语、法语、葡萄牙语、德语和俄语），随 2026年11月4日补丁加入游戏的八张卡牌除外；平衡改动来自官方补丁说明。衍生卡和已移除的卡牌不在游戏收藏中，因此未在游戏中核对。卡牌文本 © Koin Games。系列、来源说明、所有卡牌的简体中文文本，以及衍生卡、已移除卡牌和这八张新卡牌的意大利语、西班牙语、法语、葡萄牙语、德语和俄语文本均由 OriginsMeta 编写。",
     detailKicker: "卡牌",
     collectible: "可收藏卡牌",
     changesTitle: "平衡调整历史",
@@ -765,6 +765,7 @@ export const zhCn: Dictionary = {
     intro: "按你自己的想法给 Origins TCG 的卡牌排名，从 S 到 D：传说卡和基础卡是两份独立的榜单。无需账号：榜单保存在这个浏览器里，还能通过链接分享，直接贴到 Discord。",
     officialLink: "查看 OriginsMeta 强度榜",
     dataNote: "游戏中所有现行卡牌，不含衍生卡：{legendaries} 张传说卡和 {cards} 张基础卡，于 {date} 在游戏中核对。",
+    dataNoteNew: "游戏中所有现行卡牌，不含衍生卡：{legendaries} 张传说卡和 {cards} 张基础卡，于 {date} 在游戏中核对，随 {patchDate} 的补丁加入的 {n} 张除外。",
     tabsLabel: "强度榜类型",
     tabLegendaries: "传说卡",
     tabCards: "基础卡",
@@ -1098,6 +1099,7 @@ export const zhCn: Dictionary = {
     dataNotice: "卡牌于 {date} 在游戏中核对：全部 {count} 张卡牌的费用、数据和文本均逐一核对，包括 {patchDate} 的补丁；0.8 补丁说明（抢先体验）没有列出卡牌改动。",
     // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
     dataNoticePatch: "卡牌于 {date} 在游戏中逐一核对：全部 {count} 张卡牌的费用、数据和文本。{patchDate} 的补丁在此之后发布：其改动来自官方补丁说明，被改动的文本尚未在游戏中核对。",
+    dataNoticeNew: "卡牌于 {date} 在游戏中逐一核对：当时全部 {count} 张卡牌的费用、数据和文本。{patchDate} 的补丁在此之后发布：其改动来自官方补丁说明，被改动的文本和它加入游戏的 {n} 张卡牌都尚未在游戏中核对。",
     rulesTitle: "卡组规则",
     rules: ["1 张传说卡领衔卡组。", "12 张不同的基础卡；游戏会自动为每张加入第二份。", "对局中共 25 张卡：1 + 12 × 2。"],
     rulesSource: "来源：Koin Games 团队 AMA。Conquest 模式遵循 2026年9月24日公布的 Crimson Cup 规则：任意两套卡组之间至少有 8 张不同的卡（每张卡只计一次，不论份数）。传说卡不同时，意味着最多有 5 张相同的基础卡。",

@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n";
-import { officialTextLocales, type Card } from "@/lib/data/cards";
+import { checkedInGame, officialTextLocales, type Card } from "@/lib/data/cards";
 import { cardLabels } from "@/lib/cardPage";
 
 /**
@@ -19,11 +19,13 @@ import { cardLabels } from "@/lib/cardPage";
  *   il suo `lang`.
  * `outdated`: una patch successiva ha cambiato il testo (`textOutdated`), e la scheda lo dice invece di lasciarlo
  * credere attuale.
+ * - Carte entrate nel gioco dopo la verifica nella collezione (`checkedInGame`, le otto di Dr. Frank dal 04/11/2026):
+ *   sono nel gioco, ma il testo nessuno lo ha ancora letto lì, quindi hanno le etichette di create e rimosse.
  */
 export function CardText({ card, locale, outdated }: { card: Card; locale: Locale; outdated?: boolean }) {
   if (!card.ability) return null;
   const l = cardLabels[locale];
-  const inCollection = card.status === "active" && card.type !== "token";
+  const inCollection = checkedInGame(card);
   const local = card.ability[locale];
   const english = card.ability.en;
   const onlyEnglish = locale !== "en" && local === english;

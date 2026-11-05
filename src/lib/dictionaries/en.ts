@@ -134,7 +134,7 @@ export const en = {
     stats: "Stats",
     unknownStats: "stats not yet published",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats as of patch 0.7 of 29 September 2026: the 122 playable cards were checked in the game on 22 September, the balance notes come from the official patch notes, and the 0.8 patch notes (27 October 2026, Early Access) list no card changes.",
+    asOf: "Stats as of the patch of 4 November 2026: the 122 cards of the game's collection were checked in the game on 22 September, balance changes come from the official patch notes, and the eight cards that came into the game with the 4 November patch have not been checked in the game yet.",
     alignment: "Alignment",
     good: "Good",
     evil: "Evil",
@@ -290,7 +290,7 @@ export const en = {
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Costs, stats, alignments and texts of the playable cards were checked in the game, in English, Italian, Spanish, French, Portuguese, German and Russian; balance changes come from the official patch notes, and the 0.8 patch notes of 27 October 2026 (Early Access) list no card changes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian, Spanish, French, Portuguese, German and Russian text of created and removed cards are by OriginsMeta.",
+      "Costs, stats, alignments and texts of the playable cards were checked in the game, in English, Italian, Spanish, French, Portuguese, German and Russian, except the eight cards that came into the game with the patch of 4 November 2026; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian, Spanish, French, Portuguese, German and Russian text of created and removed cards, and of the eight cards of 4 November, are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",
@@ -759,6 +759,8 @@ export const en = {
     intro: "Rank the Origins TCG cards your way, from S to D: Legendaries and base cards are two separate lists. No account needed: your list saves in this browser and travels with a link, ready for Discord.",
     officialLink: "See the OriginsMeta tier list",
     dataNote: "All the cards active in the game, created cards excluded: {legendaries} Legendaries and {cards} base cards, checked in the game on {date}.",
+    // dal 05/11/2026: quando ci sono carte entrate nel gioco dopo la verifica (cards.ts, `newCards`), che non sono verificate
+    dataNoteNew: "All the cards active in the game, created cards excluded: {legendaries} Legendaries and {cards} base cards, checked in the game on {date} except the {n} that came in with the patch of {patchDate}.",
     tabsLabel: "Tier list type",
     tabLegendaries: "Legendaries",
     tabCards: "Base cards",
@@ -1092,6 +1094,8 @@ export const en = {
     dataNotice: "Cards checked in the game on {date}: costs, stats and text of all {count} cards checked one by one, including the {patchDate} patch; the 0.8 patch notes (Early Access) list no card changes.",
     // quando l'ultima patch è uscita dopo la verifica sul gioco (patch 0.7 del 29/09/2026): i suoi cambi vengono dalle patch notes
     dataNoticePatch: "Cards checked one by one in the game on {date}: costs, stats and text of all {count} cards. The {patchDate} patch came out afterwards: its changes come from the official patch notes, and the texts it changed have not been checked in the game yet.",
+    // dal 05/11/2026: come dataNoticePatch, quando la patch ha portato nel gioco carte che non sono ancora verificate (`newCards`)
+    dataNoticeNew: "Cards checked one by one in the game on {date}: costs, stats and text of all {count} cards then in the game. The {patchDate} patch came out afterwards: its changes come from the official patch notes, and neither the texts it changed nor the {n} cards it brought into the game have been checked in the game yet.",
     rulesTitle: "Deck rules",
     rules: ["1 Legendary card leads the deck.", "12 different base cards; the game adds the second copy of each automatically.", "25 cards in play: 1 + 12 × 2."],
     rulesSource: "Source: Koin Games team AMA. Conquest mode follows the Crimson Cup rule announced on 24 September 2026: at least 8 unique cards between any two decks (each card counts once, whatever its copies). With different Legendaries, that means at most 5 base cards in common.",

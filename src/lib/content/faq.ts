@@ -52,9 +52,10 @@ export type Faq = {
   keywords?: string[];
 };
 
-/** Le 11 Leggendarie del gioco (patch 0.7 del 29/09/2026; la 0.8 non cambia le carte), per le schede sotto la risposta. */
+/** Le 12 Leggendarie del gioco (patch del 04/11/2026, con Dr. Frank: cards.ts, `enteredGame`), per le schede sotto la risposta. */
 const legendaries = [
   "dorothy",
+  "dr-frank",
   "dracula",
   "king-arthur",
   "legion-of-the-dead",
@@ -160,7 +161,7 @@ const en: Faq[] = [
   {
     id: "legendaries",
     q: "Which Legendaries are in Origins TCG?",
-    a: "There are 11 in the game, with the stats of patch 0.7 of 29 September 2026 (the 0.8 patch notes of 27 October 2026 list no card changes): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other ten are units. Each has its own page in our card database, with the official text, the stats and the balance history.",
+    a: "There are 12 in the game, with the stats of the patch of 4 November 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Dr. Frank came into the game with that patch, in the Relentless deck of the boss Cyber Queen, and has not been checked in the game yet. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other eleven are units. Each has its own page in our card database, with the card text, the stats and the balance history.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Card database" }],
@@ -179,15 +180,16 @@ const en: Faq[] = [
   {
     id: "card-list",
     q: "Where can I see every Origins TCG card?",
-    a: "In our card database: the 122 cards of the game with their current stats, the official text in English, Italian, Spanish, French, Portuguese, German and Russian as it reads in the game and the balance history of each one, plus 22 created cards, the ones that exist only when another card makes them, whose texts have not been checked in the game. In the game, the collection was under My Decks → Cards when we checked it, before Early Access: turn on the “Unowned” filter to see the cards you don't own yet as well.",
+    a: "In our card database: the 130 cards of the game with their current stats and the balance history of each one; for the 122 checked in the game's collection, the official text in English, Italian, Spanish, French, Portuguese, German and Russian as it reads in the game, while the eight that came into the game with the patch of 4 November 2026 have not been checked in the game yet. Plus 22 created cards, the ones that exist only when another card makes them, whose texts have not been checked in the game. In the game, the collection was under My Decks → Cards when we checked it, before Early Access: turn on the “Unowned” filter to see the cards you don't own yet as well.",
     links: [{ path: "/cards", label: "Card database" }],
     keywords: ["card list", "list of cards", "all cards", "all the cards", "every card", "card database", "database", "collection", "unowned"],
   },
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "Costs, stats, alignments and texts of the 122 cards in the game's collection were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts, on the demo patch of 21 September 2026. Patch 0.7 of 29 September changed the cost of Bagheera, Mind Palace and Spellbook and reworked Twister Toss: the site applies those changes from the official patch notes on Steam, and the new text of Twister Toss has not been read in the game yet. The French card texts are the game's own too, read in the collection on 8 October 2026, and so are the Portuguese, German and Russian ones, read on 20 October 2026 with the texts of patch 0.7. The 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
+    a: "Costs, stats, alignments and texts of the 122 cards in the game's collection were checked one by one in the game on 22 September 2026, in English, and on 25 September in Italian and Spanish too, which are the game's own texts, on the demo patch of 21 September 2026. Patch 0.7 of 29 September changed the cost of Bagheera, Mind Palace and Spellbook and reworked Twister Toss: the site applies those changes from the official patch notes on Steam, and the new text of Twister Toss has not been read in the game yet. The French card texts are the game's own too, read in the collection on 8 October 2026, and so are the Portuguese, German and Russian ones, read on 20 October 2026 with the texts of patch 0.7. The 0.8 patch notes of 27 October 2026, the first version of Early Access, list no card changes. The patch of 4 November 2026 changed the cost or stats of ten cards, which the site applies from the official patch notes, and brought eight cards into the game, Dr. Frank's: they have not been checked in the game yet. Created and removed cards are not in the game's collection, so they have not been checked in the game. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "Patch notes of 4 November" },
       { slug: "patch-0-7", label: "Patch 0.7 notes" },
       { slug: "demo-patch-notes-0921", label: "Demo patch notes of 21 September" },
     ],
@@ -288,7 +290,7 @@ const it: Faq[] = [
   {
     id: "legendaries",
     q: "Quali Leggendarie ci sono in Origins TCG?",
-    a: "Nel gioco ce ne sono 11, con le statistiche della patch 0.7 del 29 settembre 2026 (le patch notes della 0.8 del 27 ottobre 2026 non citano modifiche alle carte): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre dieci sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo ufficiale, le statistiche e lo storico dei bilanciamenti.",
+    a: "Nel gioco ce ne sono 12, con le statistiche della patch del 4 novembre 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Dr. Frank è entrato nel gioco con quella patch, nel mazzo Relentless del boss Cyber Queen, e non è ancora stato verificato nel gioco. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre undici sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo della carta, le statistiche e lo storico dei bilanciamenti.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Database carte" }],
@@ -307,15 +309,16 @@ const it: Faq[] = [
   {
     id: "card-list",
     q: "Dove si vedono tutte le carte di Origins TCG?",
-    a: "Nel nostro database carte: le 122 carte del gioco con le statistiche attuali, il testo ufficiale in inglese, italiano, spagnolo, francese, portoghese, tedesco e russo come nel gioco e lo storico dei bilanciamenti di ognuna, più 22 carte generate, quelle che esistono solo quando un'altra carta le crea, con testi non verificati nel gioco. Nel gioco, quando l'abbiamo verificata, prima dell'Accesso anticipato, la collezione stava in I miei deck → Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
+    a: "Nel nostro database carte: le 130 carte del gioco con le statistiche attuali e lo storico dei bilanciamenti di ognuna; per le 122 verificate nella collezione del gioco, il testo ufficiale in inglese, italiano, spagnolo, francese, portoghese, tedesco e russo come nel gioco, mentre le otto entrate nel gioco con la patch del 4 novembre 2026 non sono ancora state verificate nel gioco. In più 22 carte generate, quelle che esistono solo quando un'altra carta le crea, con testi non verificati nel gioco. Nel gioco, quando l'abbiamo verificata, prima dell'Accesso anticipato, la collezione stava in I miei deck → Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
     links: [{ path: "/cards", label: "Database carte" }],
     keywords: ["lista delle carte", "lista carte", "elenco delle carte", "tutte le carte", "database", "collezione", "non posseduto"],
   },
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Costi, statistiche, allineamenti e testi delle 122 carte della collezione del gioco sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco, sulla patch della demo del 21 settembre 2026. La patch 0.7 del 29 settembre ha cambiato il costo di Bagheera, Mind Palace e Spellbook e l'effetto di Twister Toss: il sito applica queste modifiche dalle patch notes ufficiali su Steam, e il testo nuovo di Twister Toss non è ancora stato letto nel gioco. Anche i testi francesi delle carte sono quelli del gioco, letti nella collezione l'8 ottobre 2026, e così quelli portoghesi, tedeschi e russi, letti il 20 ottobre 2026 con i testi della patch 0.7. Le patch notes della 0.8 del 27 ottobre 2026, la prima versione dell'Accesso anticipato, non citano modifiche alle carte. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
+    a: "Costi, statistiche, allineamenti e testi delle 122 carte della collezione del gioco sono stati verificati uno per uno nel gioco il 22 settembre 2026, in inglese, e il 25 settembre anche in italiano e spagnolo, che sono i testi del gioco, sulla patch della demo del 21 settembre 2026. La patch 0.7 del 29 settembre ha cambiato il costo di Bagheera, Mind Palace e Spellbook e l'effetto di Twister Toss: il sito applica queste modifiche dalle patch notes ufficiali su Steam, e il testo nuovo di Twister Toss non è ancora stato letto nel gioco. Anche i testi francesi delle carte sono quelli del gioco, letti nella collezione l'8 ottobre 2026, e così quelli portoghesi, tedeschi e russi, letti il 20 ottobre 2026 con i testi della patch 0.7. Le patch notes della 0.8 del 27 ottobre 2026, la prima versione dell'Accesso anticipato, non citano modifiche alle carte. La patch del 4 novembre 2026 ha cambiato costo o statistiche di dieci carte, che il sito applica dalle patch notes ufficiali, e ha portato nel gioco otto carte, quelle di Dr. Frank: non sono ancora state verificate nel gioco. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "Patch notes del 4 novembre" },
       { slug: "patch-0-7", label: "Patch notes della 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patch notes della demo del 21 settembre" },
     ],
@@ -416,7 +419,7 @@ const es: Faq[] = [
   {
     id: "legendaries",
     q: "¿Qué Legendarias hay en Origins TCG?",
-    a: "En el juego hay 11, con las estadísticas del parche 0.7 del 29 de septiembre de 2026 (las notas del parche 0.8 del 27 de octubre de 2026 no mencionan cambios en las cartas): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras diez son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto oficial, las estadísticas y el historial de cambios.",
+    a: "En el juego hay 12, con las estadísticas del parche del 4 de noviembre de 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Dr. Frank llegó al juego con ese parche, en el mazo Relentless del jefe Cyber Queen, y todavía no se ha verificado en el juego. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras once son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto de la carta, las estadísticas y el historial de cambios.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
@@ -435,15 +438,16 @@ const es: Faq[] = [
   {
     id: "card-list",
     q: "¿Dónde puedo ver todas las cartas de Origins TCG?",
-    a: "En nuestra base de datos de cartas: las 122 cartas del juego con sus estadísticas actuales, el texto oficial en inglés, italiano, español, francés, portugués, alemán y ruso tal como aparece en el juego y el historial de cambios de cada una, además de 22 cartas creadas, las que solo existen cuando otra carta las crea, con textos sin comprobar en el juego. En el juego, cuando la comprobamos, antes del Acceso anticipado, la colección estaba en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
+    a: "En nuestra base de datos de cartas: las 130 cartas del juego con sus estadísticas actuales y el historial de cambios de cada una; para las 122 comprobadas en la colección del juego, el texto oficial en inglés, italiano, español, francés, portugués, alemán y ruso tal como aparece en el juego, mientras que las ocho que entraron en el juego con el parche del 4 de noviembre de 2026 aún no se han comprobado en el juego. Además, 22 cartas creadas, las que solo existen cuando otra carta las crea, con textos sin comprobar en el juego. En el juego, cuando la comprobamos, antes del Acceso anticipado, la colección estaba en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
     keywords: ["lista de cartas", "todas las cartas", "base de datos", "coleccion", "no poseido"],
   },
   {
     id: "where-cards",
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
-    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la colección del juego se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego, sobre el parche de la demo del 21 de septiembre de 2026. El parche 0.7 del 29 de septiembre cambió el coste de Bagheera, Mind Palace y Spellbook e hizo un rework de Twister Toss: el sitio aplica esos cambios a partir de las notas oficiales del parche en Steam, y el nuevo texto de Twister Toss todavía no se ha leído en el juego. Los textos de las cartas en francés también son los del juego, leídos en la colección el 8 de octubre de 2026, y también los de portugués, alemán y ruso, leídos el 20 de octubre de 2026, ya con los textos del parche 0.7. Las notas del parche 0.8 del 27 de octubre de 2026, la primera versión del Acceso anticipado, no mencionan cambios en las cartas. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
+    a: "Los costes, las estadísticas, los alineamientos y los textos de las 122 cartas de la colección del juego se comprobaron uno por uno en el juego el 22 de septiembre de 2026, en inglés, y el 25 de septiembre también en italiano y español, que son los textos del juego, sobre el parche de la demo del 21 de septiembre de 2026. El parche 0.7 del 29 de septiembre cambió el coste de Bagheera, Mind Palace y Spellbook e hizo un rework de Twister Toss: el sitio aplica esos cambios a partir de las notas oficiales del parche en Steam, y el nuevo texto de Twister Toss todavía no se ha leído en el juego. Los textos de las cartas en francés también son los del juego, leídos en la colección el 8 de octubre de 2026, y también los de portugués, alemán y ruso, leídos el 20 de octubre de 2026, ya con los textos del parche 0.7. Las notas del parche 0.8 del 27 de octubre de 2026, la primera versión del Acceso anticipado, no mencionan cambios en las cartas. El parche del 4 de noviembre de 2026 cambió el coste o las estadísticas de diez cartas, que el sitio aplica a partir de las notas oficiales del parche, y trajo al juego ocho cartas, las de Dr. Frank: todavía no se han comprobado en el juego. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "Notas del parche del 4 de noviembre" },
       { slug: "patch-0-7", label: "Notas del parche 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas del parche de la demo del 21 de septiembre" },
     ],
@@ -544,7 +548,7 @@ const fr: Faq[] = [
   {
     id: "legendaries",
     q: "Quelles Légendaires y a-t-il dans Origins TCG ?",
-    a: "Il y en a 11 dans le jeu, avec les statistiques du patch 0.7 du 29 septembre 2026 (les notes du patch 0.8 du 27 octobre 2026 ne citent aucun changement de cartes) : Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing et Wicked Stepmother. Chaque deck est mené par exactement l'une d'elles ; Legion of the Dead est le seul sort, les dix autres sont des unités. Chacune a sa page dans notre base de données des cartes, avec le texte officiel, les statistiques et l'historique des équilibrages.",
+    a: "Il y en a 12 dans le jeu, avec les statistiques du patch du 4 novembre 2026 : Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing et Wicked Stepmother. Dr. Frank est arrivé dans le jeu avec ce patch, dans le deck Relentless du boss Cyber Queen, et n'a pas encore été vérifié dans le jeu. Chaque deck est mené par exactement l'une d'elles ; Legion of the Dead est le seul sort, les onze autres sont des unités. Chacune a sa page dans notre base de données des cartes, avec le texte de la carte, les statistiques et l'historique des équilibrages.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Base de données des cartes" }],
@@ -563,15 +567,16 @@ const fr: Faq[] = [
   {
     id: "card-list",
     q: "Où voir toutes les cartes d'Origins TCG ?",
-    a: "Dans notre base de données des cartes : les 122 cartes du jeu avec leurs statistiques actuelles, le texte officiel en français, en anglais, en italien, en espagnol, en portugais, en allemand et en russe tel qu'il se lit dans le jeu et l'historique des équilibrages de chacune, plus 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée, dont les textes n'ont pas été vérifiés dans le jeu. Dans le jeu, quand nous l'avons vérifiée, avant l'Accès anticipé, la collection se trouvait dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées (« Unowned » en anglais) pour voir aussi celles que vous n'avez pas encore.",
+    a: "Dans notre base de données des cartes : les 130 cartes du jeu avec leurs statistiques actuelles et l'historique des équilibrages de chacune ; pour les 122 vérifiées dans la collection du jeu, le texte officiel en français, en anglais, en italien, en espagnol, en portugais, en allemand et en russe tel qu'il se lit dans le jeu, tandis que les huit cartes entrées dans le jeu avec le patch du 4 novembre 2026 n'ont pas encore été vérifiées dans le jeu. S'y ajoutent 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée, dont les textes n'ont pas été vérifiés dans le jeu. Dans le jeu, quand nous l'avons vérifiée, avant l'Accès anticipé, la collection se trouvait dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées (« Unowned » en anglais) pour voir aussi celles que vous n'avez pas encore.",
     links: [{ path: "/cards", label: "Base de données des cartes" }],
     keywords: ["liste des cartes", "toutes les cartes", "base de donnees", "collection", "non possedees", "unowned"],
   },
   {
     id: "where-cards",
     q: "D'où viennent les statistiques des cartes de ce site ?",
-    a: "Les coûts, les statistiques, les alignements et les textes des 122 cartes de la collection du jeu ont été vérifiés un par un dans le jeu le 22 septembre 2026, en anglais, puis le 25 septembre aussi en italien et en espagnol, qui sont les textes du jeu, sur le patch de la démo du 21 septembre 2026 ; les textes français ont été lus dans le jeu le 8 octobre 2026, les textes portugais, allemands et russes le 20 octobre 2026, sur le patch 0.7. Le patch 0.7 du 29 septembre a changé le coût de Bagheera, Mind Palace et Spellbook et retravaillé Twister Toss : le site applique ces changements d'après les notes de patch officielles sur Steam, et le nouveau texte de Twister Toss n'a pas encore été lu dans le jeu. Les notes du patch 0.8 du 27 octobre 2026, la première version de l'Accès anticipé, ne citent aucun changement de cartes. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
+    a: "Les coûts, les statistiques, les alignements et les textes des 122 cartes de la collection du jeu ont été vérifiés un par un dans le jeu le 22 septembre 2026, en anglais, puis le 25 septembre aussi en italien et en espagnol, qui sont les textes du jeu, sur le patch de la démo du 21 septembre 2026 ; les textes français ont été lus dans le jeu le 8 octobre 2026, les textes portugais, allemands et russes le 20 octobre 2026, sur le patch 0.7. Le patch 0.7 du 29 septembre a changé le coût de Bagheera, Mind Palace et Spellbook et retravaillé Twister Toss : le site applique ces changements d'après les notes de patch officielles sur Steam, et le nouveau texte de Twister Toss n'a pas encore été lu dans le jeu. Les notes du patch 0.8 du 27 octobre 2026, la première version de l'Accès anticipé, ne citent aucun changement de cartes. Le patch du 4 novembre 2026 a changé le coût ou les statistiques de dix cartes, que le site applique d'après les notes de patch officielles, et a ajouté au jeu huit cartes, celles de Dr. Frank : elles n'ont pas encore été vérifiées dans le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "Notes du patch du 4 novembre" },
       { slug: "patch-0-7", label: "Notes du patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notes de patch de la démo du 21 septembre" },
     ],
@@ -674,7 +679,7 @@ const pt: Faq[] = [
   {
     id: "legendaries",
     q: "Quais são as Lendárias de Origins TCG?",
-    a: "Há 11 no jogo, com as estatísticas do patch 0.7 de 29 de setembro de 2026 (as notas do patch 0.8 de 27 de outubro de 2026 não citam mudanças nas cartas): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Cada deck é liderado por exatamente uma delas; Legion of the Dead é o único feitiço, as outras dez são personagens. Cada uma tem a sua página no nosso banco de dados de cartas, com o texto oficial, as estatísticas e o histórico de balanceamento.",
+    a: "Há 12 no jogo, com as estatísticas do patch de 4 de novembro de 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Dr. Frank entrou no jogo com esse patch, no deck Relentless do chefe Cyber Queen, e ainda não foi verificado no jogo. Cada deck é liderado por exatamente uma delas; Legion of the Dead é o único feitiço, as outras onze são personagens. Cada uma tem a sua página no nosso banco de dados de cartas, com o texto da carta, as estatísticas e o histórico de balanceamento.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Banco de dados de cartas" }],
@@ -693,15 +698,16 @@ const pt: Faq[] = [
   {
     id: "card-list",
     q: "Onde posso ver todas as cartas de Origins TCG?",
-    a: "No nosso banco de dados de cartas: as 122 cartas do jogo com as estatísticas atuais, o texto oficial em inglês, italiano, espanhol, francês, português, alemão e russo como aparece no jogo e o histórico de balanceamento de cada uma, mais 22 cartas criadas, as que só existem quando outra carta as gera, cujos textos não foram verificados no jogo. No jogo, quando a verificamos, antes do Acesso Antecipado, a coleção ficava em Os meus decks → Cartas: ative o filtro “Não obtidas” para ver também as cartas que você ainda não tem.",
+    a: "No nosso banco de dados de cartas: as 130 cartas do jogo com as estatísticas atuais e o histórico de balanceamento de cada uma; para as 122 verificadas na coleção do jogo, o texto oficial em inglês, italiano, espanhol, francês, português, alemão e russo como aparece no jogo, enquanto as oito que entraram no jogo com o patch de 4 de novembro de 2026 ainda não foram verificadas no jogo. Mais 22 cartas criadas, as que só existem quando outra carta as gera, cujos textos não foram verificados no jogo. No jogo, quando a verificamos, antes do Acesso Antecipado, a coleção ficava em Os meus decks → Cartas: ative o filtro “Não obtidas” para ver também as cartas que você ainda não tem.",
     links: [{ path: "/cards", label: "Banco de dados de cartas" }],
     keywords: ["lista de cartas", "lista das cartas", "todas as cartas", "banco de dados", "database", "colecao", "nao obtidas"],
   },
   {
     id: "where-cards",
     q: "De onde vêm as estatísticas das cartas deste site?",
-    a: "Os custos, as estatísticas, os alinhamentos e os textos das 122 cartas da coleção do jogo foram verificados um a um no jogo em 22 de setembro de 2026, em inglês, e em 25 de setembro também em italiano e espanhol, que são os textos do jogo, no patch da demo de 21 de setembro de 2026. Os textos em francês também são os do jogo, lidos na coleção em 8 de outubro de 2026, e os em português, em alemão e em russo também, lidos em 20 de outubro de 2026, já com os textos do patch 0.7. O patch 0.7 de 29 de setembro mudou o custo de Bagheera, Mind Palace e Spellbook e reformulou Twister Toss: o site aplica essas mudanças a partir das notas oficiais do patch na Steam, e o novo texto de Twister Toss foi lido no jogo em português, mas ainda não em inglês. As notas do patch 0.8 de 27 de outubro de 2026, a primeira versão do Acesso Antecipado, não citam mudanças nas cartas. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
+    a: "Os custos, as estatísticas, os alinhamentos e os textos das 122 cartas da coleção do jogo foram verificados um a um no jogo em 22 de setembro de 2026, em inglês, e em 25 de setembro também em italiano e espanhol, que são os textos do jogo, no patch da demo de 21 de setembro de 2026. Os textos em francês também são os do jogo, lidos na coleção em 8 de outubro de 2026, e os em português, em alemão e em russo também, lidos em 20 de outubro de 2026, já com os textos do patch 0.7. O patch 0.7 de 29 de setembro mudou o custo de Bagheera, Mind Palace e Spellbook e reformulou Twister Toss: o site aplica essas mudanças a partir das notas oficiais do patch na Steam, e o novo texto de Twister Toss foi lido no jogo em português, mas ainda não em inglês. As notas do patch 0.8 de 27 de outubro de 2026, a primeira versão do Acesso Antecipado, não citam mudanças nas cartas. O patch de 4 de novembro de 2026 mudou o custo ou as estatísticas de dez cartas, que o site aplica a partir das notas oficiais do patch, e trouxe para o jogo oito cartas, as de Dr. Frank: elas ainda não foram verificadas no jogo. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "Notas do patch de 4 de novembro" },
       { slug: "patch-0-7", label: "Notas do patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas do patch da demo de 21 de setembro" },
     ],
@@ -804,7 +810,7 @@ const de: Faq[] = [
   {
     id: "legendaries",
     q: "Welche Legendären gibt es in Origins TCG?",
-    a: "Im Spiel sind es 11, mit den Werten von Patch 0.7 vom 29. September 2026 (die Patchnotes zu 0.8 vom 27. Oktober 2026 nennen keine Kartenänderungen): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing und Wicked Stepmother. Jedes Deck wird von genau einer davon angeführt; Legion of the Dead ist der einzige Zauber, die anderen zehn sind Charaktere. Jede hat ihre eigene Seite in unserer Kartendatenbank, mit dem Kartentext des Spiels, den Werten und der Balance-Historie.",
+    a: "Im Spiel sind es 12, mit den Werten des Patches vom 4. November 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing und Wicked Stepmother. Dr. Frank kam mit diesem Patch ins Spiel, im Relentless-Deck des Bosses Cyber Queen, und wurde noch nicht im Spiel geprüft. Jedes Deck wird von genau einer davon angeführt; Legion of the Dead ist der einzige Zauber, die anderen elf sind Charaktere. Jede hat ihre eigene Seite in unserer Kartendatenbank, mit dem Kartentext, den Werten und der Balance-Historie.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Kartendatenbank" }],
@@ -823,15 +829,16 @@ const de: Faq[] = [
   {
     id: "card-list",
     q: "Wo sehe ich alle Karten von Origins TCG?",
-    a: "In unserer Kartendatenbank: die 122 Karten des Spiels mit ihren aktuellen Werten, dem offiziellen Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch, wie er im Spiel steht, und der Balance-Historie jeder Karte, dazu 22 erschaffene Karten, die nur entstehen, wenn eine andere Karte sie erschafft, und deren Texte nicht im Spiel geprüft wurden. Im Spiel lag die Sammlung, als wir sie vor dem Early Access geprüft haben, unter My Decks → Cards: Schalte den Filter „Unowned“ ein, um auch die Karten zu sehen, die du noch nicht besitzt.",
+    a: "In unserer Kartendatenbank: die 130 Karten des Spiels mit ihren aktuellen Werten und der Balance-Historie jeder Karte; für die 122 in der Sammlung geprüften der offizielle Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch, wie er im Spiel steht, während die acht Karten, die mit dem Patch vom 4. November 2026 ins Spiel kamen, noch nicht im Spiel geprüft sind. Dazu 22 erschaffene Karten, die nur entstehen, wenn eine andere Karte sie erschafft, und deren Texte nicht im Spiel geprüft wurden. Im Spiel lag die Sammlung, als wir sie vor dem Early Access geprüft haben, unter My Decks → Cards: Schalte den Filter „Unowned“ ein, um auch die Karten zu sehen, die du noch nicht besitzt.",
     links: [{ path: "/cards", label: "Kartendatenbank" }],
     keywords: ["kartenliste", "liste der karten", "alle karten", "jede karte", "kartendatenbank", "datenbank", "database", "sammlung", "unowned"],
   },
   {
     id: "where-cards",
     q: "Woher stammen die Kartenwerte auf dieser Website?",
-    a: "Kosten, Werte, Gesinnungen und Texte der 122 Karten der Sammlung des Spiels wurden am 22. September 2026 einzeln im Spiel geprüft, auf Englisch, und am 25. September auch auf Italienisch und Spanisch, die die Texte des Spiels sind, auf dem Demo-Patch vom 21. September 2026; die französischen Texte haben wir am 8. Oktober 2026 und die portugiesischen, deutschen und russischen am 20. Oktober 2026 im Spiel gelesen, auf Patch 0.7. Patch 0.7 vom 29. September hat die Kosten von Bagheera, Mind Palace und Spellbook geändert und Twister Toss überarbeitet: Die Website übernimmt diese Änderungen aus den offiziellen Patchnotes auf Steam, und der neue Text von Twister Toss wurde im Spiel auf Portugiesisch, Deutsch und Russisch gelesen, auf Englisch noch nicht. Die Patchnotes zu 0.8 vom 27. Oktober 2026, der ersten Version des Early Access, nennen keine Kartenänderungen. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
+    a: "Kosten, Werte, Gesinnungen und Texte der 122 Karten der Sammlung des Spiels wurden am 22. September 2026 einzeln im Spiel geprüft, auf Englisch, und am 25. September auch auf Italienisch und Spanisch, die die Texte des Spiels sind, auf dem Demo-Patch vom 21. September 2026; die französischen Texte haben wir am 8. Oktober 2026 und die portugiesischen, deutschen und russischen am 20. Oktober 2026 im Spiel gelesen, auf Patch 0.7. Patch 0.7 vom 29. September hat die Kosten von Bagheera, Mind Palace und Spellbook geändert und Twister Toss überarbeitet: Die Website übernimmt diese Änderungen aus den offiziellen Patchnotes auf Steam, und der neue Text von Twister Toss wurde im Spiel auf Portugiesisch, Deutsch und Russisch gelesen, auf Englisch noch nicht. Die Patchnotes zu 0.8 vom 27. Oktober 2026, der ersten Version des Early Access, nennen keine Kartenänderungen. Der Patch vom 4. November 2026 hat Kosten oder Werte von zehn Karten geändert, die die Website aus den offiziellen Patchnotes übernimmt, und acht Karten ins Spiel gebracht, die von Dr. Frank: Sie wurden noch nicht im Spiel geprüft. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "Patchnotes vom 4. November" },
       { slug: "patch-0-7", label: "Patchnotes zu 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patchnotes der Demo vom 21. September" },
     ],
@@ -934,7 +941,7 @@ const ru: Faq[] = [
   {
     id: "legendaries",
     q: "Какие Легендарные карты есть в Origins TCG?",
-    a: "В игре их 11, с характеристиками патча 0.7 от 29 сентября 2026 (в патчноутах 0.8 от 27 октября 2026 изменений карт нет): Dorothy, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing и Wicked Stepmother. Каждую колоду возглавляет ровно одна из них; Legion of the Dead — единственное заклинание, остальные десять — персонажи. У каждой есть своя страница в нашей базе карт: с текстом карты, характеристиками и историей балансных изменений.",
+    a: "В игре их 12, с характеристиками патча от 4 ноября 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing и Wicked Stepmother. Карта Dr. Frank появилась в игре с этим патчем, в колоде Relentless босса Cyber Queen, и в игре ещё не проверена. Каждую колоду возглавляет ровно одна из них; Legion of the Dead — единственное заклинание, остальные одиннадцать — персонажи. У каждой есть своя страница в нашей базе карт: с текстом карты, характеристиками и историей балансных изменений.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "База карт" }],
@@ -953,15 +960,16 @@ const ru: Faq[] = [
   {
     id: "card-list",
     q: "Где посмотреть все карты Origins TCG?",
-    a: "В нашей базе карт: 122 карты игры с актуальными характеристиками, текстом и историей балансных изменений каждой, плюс 22 созданные карты — те, что появляются, только когда их создаёт другая карта, и чьи тексты не проверены в игре. Тексты карт на английском, итальянском, испанском, французском, португальском, немецком и русском — такие, как в игре. Когда мы проверяли игру до раннего доступа, коллекция находилась в разделе My Decks → Cards: включите фильтр «Unowned», чтобы видеть и карты, которых у вас ещё нет.",
+    a: "В нашей базе карт: 130 карт игры с актуальными характеристиками, текстом и историей балансных изменений каждой, плюс 22 созданные карты — те, что появляются, только когда их создаёт другая карта, и чьи тексты не проверены в игре. Тексты 122 карт коллекции на английском, итальянском, испанском, французском, португальском, немецком и русском — такие, как в игре; восемь карт, появившихся в игре с патчем от 4 ноября 2026, в игре ещё не проверены. Когда мы проверяли игру до раннего доступа, коллекция находилась в разделе My Decks → Cards: включите фильтр «Unowned», чтобы видеть и карты, которых у вас ещё нет.",
     links: [{ path: "/cards", label: "База карт" }],
     keywords: ["список карт", "все карты", "каждую карту", "база карт", "база данных", "коллекция", "коллекции", "unowned"],
   },
   {
     id: "where-cards",
     q: "Откуда берутся характеристики карт на этом сайте?",
-    a: "Стоимость, характеристики, мировоззрения и тексты 122 карт коллекции игры были проверены в игре по одной 22 сентября 2026 на английском, а 25 сентября — также на итальянском и испанском, это игровые тексты, на патче демоверсии от 21 сентября 2026; французские тексты мы прочитали в игре 8 октября 2026, а португальские, немецкие и русские — 20 октября 2026, на патче 0.7. Патч 0.7 от 29 сентября изменил стоимость Bagheera, Mind Palace и Spellbook и переработал Twister Toss: сайт применяет эти изменения по официальным патчноутам в Steam, а новый текст Twister Toss прочитан в игре на португальском, немецком и русском, но ещё не на английском. В патчноутах 0.8 от 27 октября 2026, первой версии раннего доступа, изменений карт нет. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
+    a: "Стоимость, характеристики, мировоззрения и тексты 122 карт коллекции игры были проверены в игре по одной 22 сентября 2026 на английском, а 25 сентября — также на итальянском и испанском, это игровые тексты, на патче демоверсии от 21 сентября 2026; французские тексты мы прочитали в игре 8 октября 2026, а португальские, немецкие и русские — 20 октября 2026, на патче 0.7. Патч 0.7 от 29 сентября изменил стоимость Bagheera, Mind Palace и Spellbook и переработал Twister Toss: сайт применяет эти изменения по официальным патчноутам в Steam, а новый текст Twister Toss прочитан в игре на португальском, немецком и русском, но ещё не на английском. В патчноутах 0.8 от 27 октября 2026, первой версии раннего доступа, изменений карт нет. Патч от 4 ноября 2026 изменил стоимость или характеристики десяти карт — сайт применяет их по официальным патчноутам — и добавил в игру восемь карт Dr. Frank: в игре они ещё не проверены. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "Патчноуты от 4 ноября" },
       { slug: "patch-0-7", label: "Патчноуты 0.7" },
       { slug: "demo-patch-notes-0921", label: "Патчноуты демоверсии от 21 сентября" },
     ],
@@ -1066,7 +1074,7 @@ const zhCn: Faq[] = [
   {
     id: "legendaries",
     q: "Origins TCG 有哪些传说卡？",
-    a: "游戏中共有 11 张，数值为 2026年9月29日 0.7 补丁的数值（2026年10月27日的 0.8 补丁说明没有列出卡牌改动）：Dorothy、Dracula、King Arthur、Legion of the Dead、Merlin、Mulan、Queen of Hearts、Robin Hood、Three Not So Little Pigs、Van Helsing 和 Wicked Stepmother。每副卡组都恰好由其中一张领衔；Legion of the Dead 是唯一的法术，其余十张都是角色。每张传说卡在我们的卡牌数据库中都有自己的页面，包括卡牌文本（中文为我们的翻译）、数值和平衡改动记录。",
+    a: "游戏中共有 12 张，数值为 2026年11月4日补丁的数值：Dorothy、Dr. Frank、Dracula、King Arthur、Legion of the Dead、Merlin、Mulan、Queen of Hearts、Robin Hood、Three Not So Little Pigs、Van Helsing 和 Wicked Stepmother。Dr. Frank 随该补丁加入游戏，是首领 Cyber Queen 的 Relentless 卡组的传说卡，尚未在游戏中核对。每副卡组都恰好由其中一张领衔；Legion of the Dead 是唯一的法术，其余十一张都是角色。每张传说卡在我们的卡牌数据库中都有自己的页面，包括卡牌文本（中文为我们的翻译）、数值和平衡改动记录。",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "卡牌数据库" }],
@@ -1085,15 +1093,16 @@ const zhCn: Faq[] = [
   {
     id: "card-list",
     q: "在哪里可以看到 Origins TCG 的全部卡牌？",
-    a: "在我们的卡牌数据库里：游戏中的 122 张卡牌，附有当前数值、游戏内显示的英语、意大利语、西班牙语、法语、葡萄牙语、德语和俄语官方文本（中文文本是我们的翻译）以及每张卡的平衡改动记录；另外还有 22 张衍生卡牌，也就是只有在其他卡牌生成它们时才会出现的卡，它们的文本未在游戏中核实。在游戏里，我们查看时（抢先体验之前）收藏位于 My Decks → Cards：打开“Unowned”筛选，就能同时看到你还没有的卡牌。",
+    a: "在我们的卡牌数据库里：游戏中的 130 张卡牌，附有当前数值以及每张卡的平衡改动记录；其中在游戏收藏中核对过的 122 张附有游戏内显示的英语、意大利语、西班牙语、法语、葡萄牙语、德语和俄语官方文本（中文文本是我们的翻译），随 2026年11月4日补丁加入游戏的八张卡牌尚未在游戏中核实。另外还有 22 张衍生卡牌，也就是只有在其他卡牌生成它们时才会出现的卡，它们的文本未在游戏中核实。在游戏里，我们查看时（抢先体验之前）收藏位于 My Decks → Cards：打开“Unowned”筛选，就能同时看到你还没有的卡牌。",
     links: [{ path: "/cards", label: "卡牌数据库" }],
     keywords: ["卡牌列表", "全部卡牌", "卡牌数据库", "数据库", "图鉴", "收藏", "unowned"],
   },
   {
     id: "where-cards",
     q: "本站的卡牌数据从哪里来？",
-    a: "游戏收藏中 122 张卡牌的费用、数值、阵营和文本，于 2026年9月22日在游戏中逐张核对（英语），9月25日又核对了意大利语和西班牙语，这些都是游戏自己的文本，基于 2026年9月21日的试玩版补丁。9月29日的 0.7 补丁改变了 Bagheera、Mind Palace 和 Spellbook 的费用，并重做了 Twister Toss：本站根据 Steam 上的官方补丁说明应用了这些改动，Twister Toss 的新文本还没有在游戏中读取。法语卡牌文本同样是游戏自己的，于 2026年10月8日在收藏中读取；葡萄牙语、德语和俄语文本也是，于 2026年10月20日连同 0.7 补丁的文本一起读取。中文卡牌文本是我们自己的翻译。2026年10月27日的 0.8 补丁说明（抢先体验的第一个版本）没有列出卡牌改动。衍生卡牌和已移除的卡牌不在游戏收藏中，因此未在游戏中核实。卡图是 Koin Games 的官方插画；系列和每个传说的介绍由我们撰写。",
+    a: "游戏收藏中 122 张卡牌的费用、数值、阵营和文本，于 2026年9月22日在游戏中逐张核对（英语），9月25日又核对了意大利语和西班牙语，这些都是游戏自己的文本，基于 2026年9月21日的试玩版补丁。9月29日的 0.7 补丁改变了 Bagheera、Mind Palace 和 Spellbook 的费用，并重做了 Twister Toss：本站根据 Steam 上的官方补丁说明应用了这些改动，Twister Toss 的新文本还没有在游戏中读取。法语卡牌文本同样是游戏自己的，于 2026年10月8日在收藏中读取；葡萄牙语、德语和俄语文本也是，于 2026年10月20日连同 0.7 补丁的文本一起读取。中文卡牌文本是我们自己的翻译。2026年10月27日的 0.8 补丁说明（抢先体验的第一个版本）没有列出卡牌改动。2026年11月4日的补丁修改了十张卡牌的费用或数值，本站根据官方补丁说明应用了这些改动；该补丁还把 Dr. Frank 的八张卡牌加入了游戏，它们尚未在游戏中核实。衍生卡牌和已移除的卡牌不在游戏收藏中，因此未在游戏中核实。卡图是 Koin Games 的官方插画；系列和每个传说的介绍由我们撰写。",
     news: [
+      { slug: "balance-patch-1104-cyber-queen", label: "11月4日补丁说明" },
       { slug: "patch-0-7", label: "0.7 补丁说明" },
       { slug: "demo-patch-notes-0921", label: "9月21日的试玩版补丁说明" },
     ],

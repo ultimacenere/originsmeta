@@ -3,7 +3,7 @@ import Link from "next/link";
 import { formatDate, href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { RULES } from "@/lib/deckrules";
-import { cardsVerified, latestPatch, patches } from "@/lib/data/cards";
+import { cardsVerified, latestPatch, newCards, patches } from "@/lib/data/cards";
 import { fill } from "@/lib/tournament/types";
 import { builderLabels, builderPool } from "@/lib/builderLabels";
 import { DeckBuilder } from "@/components/DeckBuilder";
@@ -25,6 +25,8 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
   const { locale, dict: d } = await resolveLocale(params);
   const pool = builderPool(locale, d);
   const b = d.builder;
+  // carte entrate nel gioco con l'ultima patch e non ancora verificate (cards.ts, `newCards`): la nota sui dati le conta
+  const arrivedWithPatch = newCards.filter((c) => c.since === latestPatch).length;
   const path = href(locale, "/deck-builder");
   // Dati strutturati (Ondata 2: TOOL-05, COMP-11, GEO-13): lo strumento gratuito del sito, con le regole vere del mazzo
   // e di Conquest (RULES, la stessa regola della Crimson Cup) e solo le funzioni che il builder ha davvero.
@@ -78,10 +80,13 @@ export default async function DeckBuilderPage({ params }: { params: LocaleParams
           <span>
             {/* Se l'ultima patch è uscita dopo la verifica sul gioco (la 0.7 del 29/09/2026 rispetto al 22/09), la nota non
                 può dire che è stata verificata: dice che i suoi cambi vengono dalle patch notes. */}
-            {fill(patches[latestPatch].date > cardsVerified.date ? b.dataNoticePatch : b.dataNotice, {
+            {/* Dal 05/11/2026: se la patch ha portato nel gioco carte non ancora verificate (le otto di Dr. Frank, `newCards`),
+                la nota lo dice e le conta. */}
+            {fill(patches[latestPatch].date > cardsVerified.date ? (arrivedWithPatch ? b.dataNoticeNew : b.dataNoticePatch) : b.dataNotice, {
               date: formatDate(locale, cardsVerified.date),
               count: String(cardsVerified.count),
               patchDate: formatDate(locale, patches[latestPatch].date),
+              n: String(arrivedWithPatch),
             })}
           </span>
           {patches[latestPatch].news ? (
