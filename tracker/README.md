@@ -20,6 +20,11 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
   "OCR senza PowerShell"): i ritagli della schermata VS (bot e classificata) li legge l'OCR di Windows attraverso
   `originsmeta-tracker-ocr.exe`, un programma nostro compilato da `build.mjs` con il csc.exe di Windows e messo da
   `package.mjs` in `resources\`. Prima passava da PowerShell con `-EncodedCommand`, e Norton bloccava l'app come infetta.
+- **Cimiteri nei pannelli** (0.5.2, 05/11/2026, `graveyardStep` di `src/shared/reconstruct.ts`, ruoli delle carte in
+  `src/shared/graveRoles.ts`; dettagli in docs/tracker.md, "Cimiteri nei pannelli e round dopo il nono"): con "Mostra i
+  cimiteri" in Setup › Overlay il pannello del mio mazzo e quello dell'avversario mostrano in fondo i personaggi morti
+  (e, per me, scartati), meno quelli tornati in campo con Dr. Frank, It's Alive o la Rinascita, che non contano più come
+  giocate. Dalla stessa versione i round dopo il nono (mana fermo a 10) si contano dalle pianificazioni (`splitByPhase`).
 - Icona accanto all'orologio; clic = finestra. La X della finestra chiude tutta l'app, overlay e Deck tracker compresi
   (dal 10/10/2026; prima la nascondeva). Avviata con Windows resta solo nell'icona e registra finché non si sceglie "Esci".
 - Riconosce la fine di ogni partita (statistiche del profilo), aspetta il replay (fino a 15 secondi) e salva la partita:

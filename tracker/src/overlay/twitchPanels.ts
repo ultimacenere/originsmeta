@@ -47,6 +47,8 @@ export function viewFromState(s: LiveState, table: CardTable): DeckTrackerView {
             legendary: live.opp.legendary ? deckCard(table, live.opp.legendary, 1, 1, 1) : null,
             seen: live.opp.seen.map(([k, n]) => deckCard(table, k, n, n, n)),
           },
+          // i cimiteri (05/11/2026) non arrivano ancora all'estensione: lo stato dal vivo non li porta
+          graveyard: { me: [], opp: [] },
         }
       : null,
     custom: s.ui?.custom ?? null,

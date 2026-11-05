@@ -28,6 +28,7 @@ const api: TrackerApi & { rendered(): void } = {
   setPanelCustom: (custom) => ipcRenderer.invoke("tracker:panel-custom", custom),
   setPanelsOnlyInMatch: (on) => ipcRenderer.invoke("tracker:panels-in-match", on),
   setPanelsHideFromStream: (on) => ipcRenderer.invoke("tracker:panels-hide-stream", on),
+  setPanelsGraveyard: (on) => ipcRenderer.invoke("tracker:panels-graveyard", on),
   setScanner: (on) => ipcRenderer.invoke("tracker:scanner", on),
   quitApp: () => ipcRenderer.invoke("tracker:quit"),
   dismissScannerNotice: () => ipcRenderer.invoke("tracker:scanner-notice"),

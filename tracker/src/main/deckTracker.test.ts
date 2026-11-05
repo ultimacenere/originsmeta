@@ -58,6 +58,8 @@ const scan: ScannedMatch = {
   mana: { me: { current: 1, max: 5 }, opp: { current: 0, max: 5 } },
   direction: "right",
   oppDrawn: 9,
+  // i cimiteri: una voce per copia, nell'ordine in cui ci sono finite (05/11/2026)
+  graveyard: { me: ["B", "A", "B"], opp: ["X"] },
 };
 
 test("mazzo scelto: Leggendaria a parte, carte per costo, due copie, record del mazzo", () => {
@@ -102,6 +104,15 @@ test("carte pescate, mazzo rimasto e vita (overlay di Davdas, 11/10/2026)", () =
   const noHand = deckTrackerView({ activeDeck: deck, matches: [], live: { scan: { ...scan, drawn: {} }, inMatch: true }, scanner: true, card, now: 0 });
   assert.equal(noHand.deck!.cards.find((c) => c.name === "Billy")!.drawn, 2);
   assert.equal(noHand.deck!.cards.find((c) => c.name === "Mary")!.drawn, 1);
+});
+
+test("cimiteri (05/11/2026): una voce per carta con le copie, nell'ordine in cui ci sono finite", () => {
+  const v = deckTrackerView({ activeDeck: deck, matches: [], live: { scan, inMatch: true }, scanner: true, card, now: 0 });
+  assert.deepEqual(v.live?.graveyard.me.map((c) => `${c.name} x${c.copies}`), ["Billy x2", "Mary x1"]);
+  assert.deepEqual(v.live?.graveyard.opp.map((c) => `${c.name} x${c.copies}`), ["Huck Finn x1"]);
+  assert.equal(v.live?.graveyard.me[0].slug, "billy");
+  // senza partita niente cimiteri
+  assert.equal(deckTrackerView({ activeDeck: deck, matches: [], live: null, scanner: true, card, now: 0 }).live, null);
 });
 
 test("niente nomi, rank o bot: solo carte", () => {

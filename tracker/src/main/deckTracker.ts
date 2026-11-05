@@ -5,8 +5,8 @@
  *
  * Il mazzo arriva dai file del gioco (watcher.ts, cambia appena il giocatore lo sceglie); durante la partita lo scanner
  * (frames.ts) dice round, carte giocate e carte rivelate dall'avversario e, dall'11/10/2026 (overlay di Davdas), carte
- * pescate, carte rimaste nel mazzo e vita dei due eroi. Le carte sono ordinate come nella schermata
- * del mazzo del gioco: per costo, poi per nome.
+ * pescate, carte rimaste nel mazzo e vita dei due eroi e, dal 05/11/2026, i due cimiteri. Le carte sono ordinate come
+ * nella schermata del mazzo del gioco: per costo, poi per nome.
  */
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 import type { ScannedMatch } from "../shared/reconstruct";
@@ -54,6 +54,12 @@ export function deckTrackerView(input: {
   }
 
   const opp = live?.scan;
+  /** Un cimitero (05/11/2026): una voce per carta con le copie, nell'ordine in cui ci sono finite. */
+  const graveList = (keys: readonly string[]): DeckCard[] => {
+    const n = new Map<string, number>();
+    for (const k of keys) n.set(k, (n.get(k) ?? 0) + 1);
+    return [...n].map(([k, c]) => ({ ...entry(k, 0), copies: c, played: c, drawn: c }));
+  };
   return {
     deck,
     record,
@@ -77,6 +83,7 @@ export function deckTrackerView(input: {
               return { ...e, copies: n, played: n, drawn: n };
             }),
           },
+          graveyard: { me: graveList(opp.graveyard.me), opp: graveList(opp.graveyard.opp) },
         }
       : null,
     updatedAt: new Date(input.now ?? Date.now()).toISOString(),
