@@ -143,12 +143,19 @@
  *                         dello zip intero, pagina /for-creators (30/10/2026)    symbolTransparent | badge | panel), placement
  *                         Le righe copiate dalle guide di /for-creators sono stream_tool_copy con placement=for_creators
  *                         e tool = <strumento>_<passo> o <strumento>_<bot> (per esempio overlay_2, chat_nightbot).
+ *     tournament_promo_view  il popup di un torneo si apre da solo (05/11/2026,     tournament (il tag, OM-XXXX)
+ *                         TournamentPromo.tsx, src/lib/tournamentPromo.ts): una volta per browser
+ *     tournament_promo_click clic su "Iscriviti al torneo" del popup, verso la     tournament
+ *                         scheda del torneo (l'iscrizione vera è tournament_join)
+ *     tournament_promo_close popup chiuso senza andare al torneo                   tournament, method (close: la × |
+ *                                                                                 later: "Non ora" | esc: Esc o il tasto
+ *                                                                                 Indietro del telefono | backdrop: clic fuori)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
  *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars, score,
  *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, comic_lang, provider,
- *     host, tool, format, category;
+ *     host, tool, format, category, tournament;
  *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources, cards.
  * `lang` va a GA4 con ogni evento (dal percorso); `locale` è il parametro dei tre eventi nati con a9400e8 e resta per
  * non rompere i rapporti già impostati: hanno lo stesso valore.
@@ -274,6 +281,9 @@ export type EventParams = {
   kickstarter_landing_open: { placement: "slider" | "site_bar" | "home_bar" | "guide" | "card" };
   creator_apply_click: { placement: string };
   creator_kit_download: { file: string; placement: string };
+  tournament_promo_view: { tournament: string };
+  tournament_promo_click: { tournament: string };
+  tournament_promo_close: { tournament: string; method: "close" | "later" | "esc" | "backdrop" };
 };
 export type EventName = keyof EventParams;
 
@@ -334,6 +344,9 @@ export const VERCEL_PROPS = {
   kickstarter_landing_open: ["placement"],
   creator_apply_click: ["placement"],
   creator_kit_download: ["file", "placement"],
+  tournament_promo_view: ["tournament"],
+  tournament_promo_click: ["tournament"],
+  tournament_promo_close: ["method", "tournament"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

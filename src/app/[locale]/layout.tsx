@@ -16,6 +16,9 @@ import { newsFeedLabels, newsFeedPath } from "@/lib/newsFeedMeta";
 import { KickstarterBar } from "@/components/KickstarterBar";
 import { kickstarterPromoActive } from "@/lib/kickstarter";
 import { kickstarterLabels } from "@/lib/kickstarterLabels";
+import { TournamentPromoDialog } from "@/components/TournamentPromo";
+import { TOURNAMENT_PROMO, promoActive } from "@/lib/tournamentPromo";
+import { tournamentPromoText } from "@/lib/tournamentPromoLabels";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
@@ -89,6 +92,9 @@ export default async function LocaleLayout({ children, params }: Props) {
   if (!isLocale(locale)) notFound();
   const l: Locale = locale;
   const d = getDictionary(l);
+  // Popup di un torneo (05/11/2026): qui solo i dati (e niente popup nelle build dopo la fine); ora esatta, banner dei
+  // cookie e pagina li decide il browser
+  const promo = TOURNAMENT_PROMO && promoActive(new Date().getTime(), TOURNAMENT_PROMO) ? TOURNAMENT_PROMO : null;
   return (
     <html
       lang={htmlLang[l]}
@@ -122,6 +128,26 @@ export default async function LocaleLayout({ children, params }: Props) {
         <Footer locale={l} dict={d} />
         {/* Segnalazioni e suggerimenti dei visitatori: su ogni pagina, fuori dal <main>, prima del banner dei cookie */}
         <FeedbackWidget locale={l} labels={feedbackLabels(d)} />
+        {/* Popup di un torneo della community (05/11/2026): src/lib/tournamentPromo.ts. Porta al riquadro dell'iscrizione. */}
+        {promo ? (
+          <TournamentPromoDialog
+            promo={{
+              slug: promo.slug,
+              tag: promo.tag,
+              name: promo.name,
+              organizer: promo.organizer,
+              startsAt: promo.startsAt,
+              until: promo.until,
+              cover: promo.cover,
+              decks: promo.decks,
+              bestOf: promo.bestOf,
+              prize: promo.prize,
+            }}
+            lang={htmlLang[l]}
+            href={`${href(l, `/tournaments/${promo.slug}`)}#join`}
+            labels={tournamentPromoText(l, d.tournaments, promo)}
+          />
+        ) : null}
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
         {/* Il grafo del sito su ogni pagina (Ondata 2, GEO-08): il sito nella lingua, OriginsMeta con i fondatori, Koin
             Games come entità propria e il gioco, che la usa per @id come sviluppatore ed editore */}

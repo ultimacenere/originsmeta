@@ -8,6 +8,7 @@ import { CONSENT_EVENT, PREFERENCES_EVENT, getConsent, type Consent } from "@/li
 import { turnstileEnabled } from "@/lib/turnstile";
 import { Turnstile } from "@/components/Turnstile";
 import { trackEvent } from "@/lib/analytics";
+import { isBusy, otherPanelOpen, setPanelOpen } from "@/lib/autoOpen";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { navLabelsFor } from "@/lib/inboxNavLabels";
 import { useInboxStatus } from "@/components/inbox/InboxIndicator";
@@ -33,10 +34,11 @@ import {
  *   il banner dei cookie non c'è più, e si ricorda per la scheda (sessionStorage). Sparisce anche finché il banner
  *   dei cookie è aperto (starebbero nello stesso angolo) e, sotto i 1024 px, sulle pagine del deck builder, dove in
  *   basso c'è la barra del mazzo.
- * - All'apertura del sito il pannello si apre da solo UNA VOLTA per visitatore (ricordato in localStorage),
- *   qualche secondo dopo la chiusura del banner dei cookie; mai mentre qualcuno scrive in un campo, naviga con la
- *   tastiera (un elemento ha il focus visibile) o ha la scheda in secondo piano, mai sul builder dal telefono (si
- *   aspetta la pagina dopo), e solo se il servizio risponde "attivo".
+ * - Il pannello si apre da solo UNA VOLTA per visitatore (ricordato in localStorage), un minuto dopo la chiusura del
+ *   banner dei cookie (dal 05/11/2026; prima 5 secondi); mai mentre qualcuno scrive in un campo, naviga con la
+ *   tastiera (un elemento ha il focus visibile) o ha la scheda in secondo piano, mai insieme al popup di un torneo
+ *   (src/lib/autoOpen.ts), mai sul builder dal telefono (si aspetta la pagina dopo), e solo se il servizio risponde
+ *   "attivo".
  * - Il messaggio va a `/api/feedback`, che lo gira al canale Discord privato dello staff. Se la rotta risulta
  *   spenta al momento dell'invio lo diciamo apertamente, con l'email dello staff come alternativa: niente finti
  *   "grazie". Il Discord ufficiale del gioco NON è un'alternativa: è il server di Koin Games, non il nostro.
@@ -57,8 +59,19 @@ import {
  */
 
 const SEEN_KEY = "originsmeta.feedback.v1";
-/** Attesa prima dell'apertura automatica, contata da quando il banner dei cookie non c'è più. */
-const AUTO_DELAY_MS = 5000;
+/**
+ * Attesa prima dell'apertura automatica, contata da quando il banner dei cookie non c'è più: un minuto dal 05/11/2026
+ * (Pierluigi: "il riquadro dei feedback fallo uscire dopo un minuto"; prima 5 secondi). Il tempo corre anche cambiando
+ * pagina (il widget sta nel layout).
+ */
+const AUTO_DELAY_MS = 60_000;
+/**
+ * Passato il minuto, se la scheda è nascosta, si sta scrivendo o è aperto un altro riquadro che si apre da solo (il popup
+ * di un torneo, src/lib/autoOpen.ts) si riprova dopo questo tempo.
+ */
+const RETRY_MS = 5000;
+/** Nome del riquadro fra quelli che si aprono da soli (src/lib/autoOpen.ts). */
+const PANEL_ID = "feedback";
 /** Sotto questa larghezza il deck builder ha la barra del mazzo fissa in basso (`lg:hidden` nel builder). */
 const SMALL_SCREEN = "(max-width: 1023.98px)";
 /**
@@ -101,21 +114,8 @@ function subscribeConsent(cb: () => void) {
 }
 const consentOnServer = (): typeof UNKNOWN => UNKNOWN;
 
-/**
- * Chi sta scrivendo in un campo (ricerca, deck builder, modulo) o sta navigando con la tastiera (un elemento ha il
- * focus visibile, per esempio una carta in mano nella tier list personalizzabile) non va interrotto. Il focus
- * lasciato su un link o un bottone da un clic del mouse non conta: lì `:focus-visible` è falso.
- */
-function isBusy(): boolean {
-  const el = document.activeElement;
-  if (!(el instanceof HTMLElement) || el === document.body) return false;
-  if (el.isContentEditable || /^(?:INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return true;
-  try {
-    return el.matches(":focus-visible");
-  } catch {
-    return true;
-  }
-}
+// Chi sta scrivendo o navigando con la tastiera non va interrotto: `isBusy` sta in src/lib/autoOpen.ts dal 05/11/2026,
+// condiviso con il popup dei tornei.
 
 type Errore = keyof FeedbackLabels["errors"];
 type Servizio = "unknown" | "on" | "off";
@@ -288,12 +288,14 @@ function Widget({ locale, labels }: Props) {
       if (cancelled) return;
       // sul builder dal telefono il pannello coprirebbe la barra del mazzo: si riprova alla prossima pagina
       if (onBuilder && window.matchMedia(SMALL_SCREEN).matches) return;
-      if (document.hidden || isBusy()) {
-        timer = window.setTimeout(tryOpen, AUTO_DELAY_MS);
+      if (document.hidden || isBusy() || otherPanelOpen(PANEL_ID)) {
+        timer = window.setTimeout(tryOpen, RETRY_MS);
         return;
       }
       const on = await checkService();
-      if (!cancelled && on && !alreadySeen()) openPanel("auto");
+      if (cancelled || !on || alreadySeen()) return;
+      if (otherPanelOpen(PANEL_ID)) timer = window.setTimeout(tryOpen, RETRY_MS);
+      else openPanel("auto");
     };
     timer = window.setTimeout(tryOpen, AUTO_DELAY_MS);
     return () => {
@@ -301,6 +303,12 @@ function Widget({ locale, labels }: Props) {
       window.clearTimeout(timer);
     };
   }, [bannerOpen, open, onBuilder, checkService, openPanel]);
+
+  // Aperto (da solo o dal bottone), il popup di un torneo aspetta: un riquadro alla volta (src/lib/autoOpen.ts).
+  useEffect(() => {
+    setPanelOpen(PANEL_ID, open);
+    return () => setPanelOpen(PANEL_ID, false);
+  }, [open]);
 
   // Focus all'apertura, solo se l'ha chiesta la persona (bottone): va sul campo di testo. Aperto da solo, il
   // pannello non prende il focus: niente cambio di contesto e niente tastiera del telefono che si apre.

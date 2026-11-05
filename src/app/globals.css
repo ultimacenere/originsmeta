@@ -6988,3 +6988,102 @@
     color: #fff;
   }
 }
+
+/*
+  Popup di un torneo (05/11/2026, TournamentPromo.tsx, src/lib/tournamentPromo.ts): scheda blu notte al centro da 640 px,
+  con la copertina intera (16:9, nessun ritaglio); sotto, un foglio dal basso senza copertina, alto quanto il suo testo,
+  che lascia vedere la pagina (l'analisi dal telefono del 29/09 aveva bocciato un riquadro al 90% dello schermo). Il
+  <dialog> è solo la cornice, trasparente e senza margini interni: il clic sullo sfondo arriva a lui, quello sulla scheda no.
+*/
+@layer components {
+  .promo-dialog {
+    width: min(28rem, calc(100% - 2rem));
+    max-width: none;
+    max-height: none;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-pale);
+    overflow: visible;
+  }
+  .promo-dialog::backdrop {
+    background: rgb(14 7 31 / 0.72);
+  }
+  .promo-card {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .promo-cover {
+    position: relative;
+    border-bottom: 3px solid var(--color-sky);
+  }
+  .promo-close {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid var(--color-sky);
+    border-radius: 999px;
+    background: var(--color-night-3);
+    color: var(--color-chalk);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .promo-close:hover {
+    border-color: var(--color-mint);
+    color: var(--color-mint);
+  }
+  .promo-dialog[open] {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity 200ms ease-out,
+      translate 200ms ease-out;
+  }
+  .promo-dialog[open]::backdrop {
+    transition: background-color 200ms ease-out;
+  }
+  @starting-style {
+    .promo-dialog[open] {
+      opacity: 0;
+      translate: 0 0.75rem;
+    }
+    .promo-dialog[open]::backdrop {
+      background-color: rgb(14 7 31 / 0);
+    }
+  }
+  @media (max-width: 639.98px) {
+    .promo-dialog {
+      width: 100%;
+      margin: auto 0 0;
+    }
+    .promo-card {
+      max-height: 88dvh;
+      border-bottom: 0;
+      border-radius: 18px 18px 0 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .promo-cover {
+      display: none;
+    }
+  }
+  /* schermi bassi (portatili con la finestra stretta in altezza): senza copertina la scheda resta tutta nello schermo */
+  @media (max-height: 719.98px) {
+    .promo-cover {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .promo-dialog[open],
+    .promo-dialog[open]::backdrop {
+      transition: none;
+    }
+  }
+}

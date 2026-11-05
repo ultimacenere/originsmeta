@@ -317,7 +317,8 @@ export default async function TournamentPage({ params, searchParams }: { params:
             </div>
           ) : null}
 
-          <div className="mt-6 rounded-xl border-2 border-sky bg-night-2/80 p-5">
+          {/* #join: ci porta il popup di un torneo (TournamentPromo, 05/11/2026) */}
+          <div id="join" className="mt-6 scroll-mt-24 rounded-xl border-2 border-sky bg-night-2/80 p-5">
             <JoinTournament
               id={t.id}
               slug={t.slug}
