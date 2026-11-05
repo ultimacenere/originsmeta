@@ -991,3 +991,57 @@ dipende.
   classificata. Il lanciatore dell'aggiornamento resta un VBScript con wscript (`launcherScript`). A chi ha avuto
   l'avviso di Norton può servire ripristinare l'app dalla quarantena o metterla fra le eccezioni, e scaricare la 0.5.1
   a mano se l'aggiornamento automatico non parte.
+
+## Cimiteri nei pannelli e round dopo il nono (0.5.2, 05/11/2026)
+
+- **Richiesta** (Pierluigi, 05/11/2026: "dobbiamo aggiungere l'opzione di mostrare il graveyard del proprio deck e quello
+  avversario, il nuovo mazzo gioca su quello"): con la patch del 4/11 il boss Cyber Queen gioca il mazzo Relentless, con
+  Dr. Frank come Leggendaria, che riporta in campo personaggi dal cimitero.
+- **Regole del gioco** (lette il 05/11/2026 nelle tabelle dei testi del gioco completo, inglese e italiano, dentro
+  `localization-string-tables-*.bundle`, solo lettura): Rinascita = "The first time this is destroyed, return it to play
+  with 1 health"; Dr. Frank = "Before combat, summon a random character from your graveyard on a random space"; It's
+  Alive = la stessa cosa una volta; Koschei e Aladdin dopo la morte tornano in mano; Dracula torna dal cimitero in mano
+  quando il suo proprietario scarta; un'altra carta "Remove all characters in graveyards from the game". Il cimitero è
+  di personaggi: le magie non si mostrano. Le carte create (token) che muoiono contano come gli altri personaggi: i
+  testi non dicono il contrario. La X rossa che il gioco mette su una carta non è la morte: è il luogo "Cripta
+  antimagia" (le carte lì perdono le abilità).
+- **Opzione** "Mostra i cimiteri" in Setup › Overlay (`graveyard` in panel-template.json, spenta all'inizio): il mio
+  cimitero in fondo al pannello del mio mazzo, quello dell'avversario in fondo al suo, in tutti i template e nella
+  sorgente per OBS (`showGraveyard` nella vista). Intestazione con la lapide e il numero di carte, poi le carte piccole e
+  un po' spente con le copie in alto al centro (il credito dell'illustratore resta scoperto); in "solo nomi" le righe del
+  personalizzato (`graveSection` di deckRender.ts, stili `.grave` in deck.css). L'estensione Twitch per ora non li
+  riceve: lo stato dal vivo del sito (`liveStateOf`) non li porta.
+- **Calcolo** (`graveyardStep` di reconstruct.ts, ruoli delle carte in `src/shared/graveRoles.ts` scritti in cards.json
+  da `scripts/cards.mjs`, test in `graveyard.test.ts`), round per round:
+  1. **scarti**, solo i miei (la mano dell'avversario è coperta): una carta in mano prima della fine della
+     pianificazione, non giocata, che non compare mai nella mano della pianificazione dopo. La conferma serve perché
+     durante il combattimento la lettura della mano a volte perde quasi tutte le carte per qualche secondo (partita del
+     11/10 alle 18:16: per 5 secondi solo "Mowgli"); una carta piazzata prima della prima lettura della mano conta come
+     giocata. Se scarto, Dracula esce dal cimitero;
+  2. **carte tornate dal cimitero**: un arrivo sul tabellone di una carta che sta nel cimitero di quel lato, se nel round
+     c'è qualcosa che la riporta (Dr. Frank in campo, uno per round; It's Alive giocata; la Rinascita di una carta morta
+     alla fine del round prima, che ricompare prima della pianificazione) o se le sue copie sono già state giocate tutte.
+     Le mie contano solo fuori dalla pianificazione. **Non sono giocate**: prima un personaggio riportato da Dr. Frank
+     contava come una seconda copia giocata e pescata, e il Deck tracker scalava le carte nel mazzo;
+  3. **morti**: le copie che erano sul tabellone e alla fine del round non ci sono più, tranne Koschei e Aladdin, le mie
+     carte che ricompaiono nella mia mano (White Queen, Stroke of Midnight) e le carte che si trasformano (al loro posto
+     un'altra carta). Mai più copie di quelle di un mazzo (1 la Leggendaria, 2 le altre).
+  Dal vivo una carta in campo dal round prima è morta dopo 8 secondi che manca (`LIVE_DEATH_MS`), una arrivata nel round
+  in corso a fine round, e durante la pianificazione nessuno muore (si guarda il tabellone di prima). Il round per il
+  cimitero finisce allo stendardo di fine partita: dopo, il tabellone si svuota senza morti. **Limiti**: una carta
+  dell'avversario rimandata in mano per il tracker è morta; i suoi scarti non si vedono; una carta morta e rigiocata nello
+  stesso round, dopo la morte, non si vede.
+- **Tabellone del round prima solo con carte vere**: `before` (il tabellone alla fine del round, da cui si contano le
+  giocate del round dopo) tiene solo le copie stabili nel round. Una mia carta letta per un fotogramma dal lato
+  dell'avversario mentre attacca, negli ultimi fotogrammi del round, sembrava una carta morta nel round dopo e, prima,
+  nascondeva una giocata vera (sulle partite salvate tornano Robin Hood, Golden Egg, una Wicked Stepsisters, un Piglet).
+- **Round dopo il nono** (`splitByPhase`): dal round 9 il mana massimo resta 10 e i round dopo finivano tutti nel nono
+  (la partita del 12/10 alle 00:39 è arrivata al round 12). Un round di mana si divide dove comincia una nuova
+  pianificazione: tre fotogrammi "PRONTO" (`PHASE_FRAMES`) dopo tre di rivelazione, a loro volta dopo una pianificazione;
+  mai fino al numero del round di mana dopo. Sulle partite salvate: 11, 10 e 10 round invece di 9; le giocate dei round
+  10–12 hanno il loro round.
+- **Prove**: le 4 sessioni del 10–12/10 rilette con il riconoscitore di oggi (8 partite): cimiteri coerenti con le carte
+  giocate e con quelle rimaste in campo alla fine, nessuno scarto falso (in quei mazzi non si scarta), dal vivo un solo
+  calo in 8 partite (una carta per mezzo minuto). Le carte del mazzo Relentless non c'erano ancora: Dr. Frank, It's
+  Alive, Rinascita, Koschei, trasformazioni e scarti sono provati con partite finte nei test. Da guardare alla prima
+  partita vera contro Cyber Queen o con Dr. Frank.

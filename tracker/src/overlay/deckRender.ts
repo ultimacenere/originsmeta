@@ -41,6 +41,9 @@ export const LABELS = {
     close: "Close",
     legendary: "Legendary",
     brand: "Tracker · not affiliated with Koin Games",
+    graveyard: "Graveyard",
+    graveTip: "Estimate: your characters the tracker saw die or be discarded this match",
+    graveTipOpp: "Estimate: the opponent's characters the tracker saw die this match (cards they discard don't show)",
   },
   it: {
     choose: "Scegli un mazzo nel gioco",
@@ -64,6 +67,9 @@ export const LABELS = {
     close: "Chiudi",
     legendary: "Leggendaria",
     brand: "Tracker · non affiliato a Koin Games",
+    graveyard: "Cimitero",
+    graveTip: "Stima: i tuoi personaggi che il tracker ha visto morire o scartare in questa partita",
+    graveTipOpp: "Stima: i personaggi dell'avversario che il tracker ha visto morire in questa partita (le carte che scarta non si vedono)",
   },
   es: {
     choose: "Elige un mazo en el juego",
@@ -87,6 +93,9 @@ export const LABELS = {
     close: "Cerrar",
     legendary: "Legendaria",
     brand: "Tracker · sin afiliación con Koin Games",
+    graveyard: "Cementerio",
+    graveTip: "Estimación: tus personajes que el tracker vio morir o descartar en esta partida",
+    graveTipOpp: "Estimación: los personajes del rival que el tracker vio morir en esta partida (las cartas que descarta no se ven)",
   },
 } as const;
 
@@ -155,6 +164,25 @@ export function createDeckRenderer(opts: { view: PanelSide; lang: Lang; inWindow
   /** Una carta rivelata dall'avversario, con le copie viste se più di una. */
   const seenCard = (c: DeckCard) => `<li class="gc" title="${esc(c.name)}"${keyAttr(c)}>${cardImg(c)}${c.copies > 1 ? `<span class="left">×${c.copies}</span>` : ""}</li>`;
 
+  /** La lapide dell'intestazione del cimitero. */
+  const graveIcon = `<svg class="gicon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 15V7.5a4.5 4.5 0 0 1 9 0V15z" /><path class="gcross" d="M8 5.5v5M6 7.5h4" /></svg>`;
+
+  /**
+   * Il cimitero del pannello (05/11/2026, opzione "Mostra i cimiteri" di Setup › Overlay): il mio nel pannello del mio
+   * mazzo, quello dell'avversario nel suo. Un'intestazione con la lapide e il numero di carte, poi le carte piccole e un
+   * po' spente, con le copie se più di una (o i nomi in riga, "solo nomi" del personalizzato). Solo durante la partita;
+   * vuoto resta l'intestazione con lo zero. In fondo al pannello, così il resto non si sposta.
+   */
+  function graveSection(v: DeckTrackerView, names = false) {
+    if (!v.showGraveyard || !v.live) return "";
+    const list = v.live.graveyard[view];
+    const total = list.reduce((n, c) => n + c.copies, 0);
+    const items = names
+      ? `<ul class="nlist">${list.map((c) => nameRow(c, false, true)).join("")}</ul>`
+      : `<ul class="ggrid">${list.map((c) => `<li class="gc gcard" title="${esc(c.name)}"${keyAttr(c)}>${cardImg(c)}${c.copies > 1 ? `<span class="gx">×${c.copies}</span>` : ""}</li>`).join("")}</ul>`;
+    return `<section class="grave" title="${esc(view === "opp" ? L.graveTipOpp : L.graveTip)}"><div class="ghead">${graveIcon}<span>${esc(L.graveyard)}</span><b>${total}</b></div>${list.length ? items : ""}</section>`;
+  }
+
   /**
    * Il marchio di OriginsMeta nei template (indispensabile sul tracker: note del 12/10). Dal 28/10/2026 una scritta, il
    * rombo menta e "OriginsMeta", come la linguetta dell'estensione Twitch: il logo in immagine, alto 11–14 px, non si
@@ -188,7 +216,7 @@ export function createDeckRenderer(opts: { view: PanelSide; lang: Lang; inWindow
       view === "opp" ? `${oppCards(v)}${seen ? "" : `<li class="swait">${esc(L.oppWaiting)}</li>`}`
       : v.deck ? myCards(v, zoom)
       : `<li class="swait">${esc(L.choose)}</li>`;
-    return `<div class="tab stab">${tabContent()}</div><ul class="srow">${row}</ul>${fine}${grip}`;
+    return `<div class="tab stab">${tabContent()}</div><ul class="srow">${row}</ul>${graveSection(v)}${fine}${grip}`;
   }
 
   /** La Leggendaria a fascia, come le righe del deck builder del sito (illustrazione da `--row-art`, vedi `paint`). */
@@ -214,7 +242,7 @@ export function createDeckRenderer(opts: { view: PanelSide; lang: Lang; inWindow
       const total = (v.deck.legendary?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0);
       body = `${v.deck.legendary ? legBand(v.deck.legendary, true, Boolean(live), zoom) : ""}<ul class="cgrid">${v.deck.cards.map((c) => myCard(c, Boolean(live))).join("")}</ul>${deckLeftStat(live?.deckLeft ?? null, total)}`;
     } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
-    return `<div class="tab ctab">${tabContent()}</div>${body}${fine}${grip}`;
+    return `<div class="tab ctab">${tabContent()}</div>${body}${graveSection(v)}${fine}${grip}`;
   }
 
   /** Una carta in riga, "solo nomi" del personalizzato: gemma del mana, nome, copie rimaste (le mie) o viste (dell'avversario). */
@@ -258,7 +286,7 @@ export function createDeckRenderer(opts: { view: PanelSide; lang: Lang; inWindow
       if (c.me.life) stats.push(stat(lifePips(live ? live.life.me : null), L.life));
     } else waiting = `<p class="muted pad">${esc(L.choose)}</p>`;
     const list = items.length ? `<ul class="${names ? "nlist" : "cgrid"} ccards">${items.join("")}</ul>` : "";
-    return `<div class="chead">${miniLogo}${close}</div><div class="cust or-${c.orientation === "horizontal" ? "h" : "v"}"><div class="cmain">${list}${waiting}</div>${stats.length ? `<div class="cstats">${stats.join("")}</div>` : ""}</div>${fine}${grip}`;
+    return `<div class="chead">${miniLogo}${close}</div><div class="cust or-${c.orientation === "horizontal" ? "h" : "v"}"><div class="cmain">${list}${waiting}${graveSection(v, names)}</div>${stats.length ? `<div class="cstats">${stats.join("")}</div>` : ""}</div>${fine}${grip}`;
   }
 
   /**

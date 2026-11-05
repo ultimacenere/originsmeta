@@ -13,9 +13,11 @@
  * create dal gioco (tipo "token") non sono giocate e restano fuori.
  *
  * Il round è il mana massimo meno uno (`roundOf` di recognize.ts), portato avanti nei fotogrammi in cui il pannello non
- * si legge.
+ * si legge. Dal 05/11/2026 i round dopo il nono, che hanno tutti il mana massimo a 10, si dividono dove comincia una
+ * nuova pianificazione (`splitByPhase`), e la partita porta anche i due cimiteri (`graveyard`, `graveyardStep`).
  */
 import { BOARD_SLOTS, isSpellKey, roundOf, type Side } from "./recognize";
+import type { GraveRole } from "./graveRoles";
 import type { TrackedMatch } from "../../../src/lib/tracker/match";
 
 export type ScanFrame = {
@@ -85,6 +87,13 @@ export type ScannedMatch = {
    * comincia a partita in corso le pescate di prima mancano. Null senza letture.
    */
   oppDrawn: number | null;
+  /**
+   * I due cimiteri (05/11/2026): per lato, i personaggi (carte create comprese) che lo scanner ha visto morire sul
+   * tabellone e, per me, quelli scartati dalla mano, meno quelli tornati in campo dal cimitero (Rinascita, Dr. Frank,
+   * It's Alive) o in mano (Koschei, Aladdin, Dracula). Una voce per copia, nell'ordine in cui ci sono finiti. Le carte
+   * scartate dall'avversario non si vedono (la sua mano è coperta). Vedi `graveyardStep`.
+   */
+  graveyard: { me: string[]; opp: string[] };
 };
 
 /** Fotogrammi con lo stesso esito per crederci (una dissolvenza può somigliare allo stendardo per un fotogramma). */
@@ -92,8 +101,14 @@ export const RESULT_FRAMES = 2;
 
 /**
  * `myDeck`: le carte del mazzo scelto, se si sanno (13/10/2026): una magia che non c'è non può essere mia (`spellPlays`).
+ * `grave`: il ruolo di una carta per il cimitero (src/shared/graveRoles.ts, 05/11/2026); senza, nessuna carta speciale.
  */
-export type CardInfo = { token: (key: string) => boolean; legendary: (key: string) => boolean; myDeck?: () => readonly string[] | null };
+export type CardInfo = {
+  token: (key: string) => boolean;
+  legendary: (key: string) => boolean;
+  myDeck?: () => readonly string[] | null;
+  grave?: (key: string) => GraveRole | null;
+};
 
 export const STABLE_FRAMES = 2;
 export const END_FRAMES = 5;
@@ -299,6 +314,297 @@ export function lastActivity(piece: readonly ScanFrame[]): number | null {
   return last;
 }
 
+/** Fotogrammi di fila con la stessa fase del round per crederci (tasto in basso a destra, `readPhase`). */
+export const PHASE_FRAMES = 3;
+
+/**
+ * Un round di mana diviso dove comincia una nuova pianificazione (05/11/2026). Dal round 9 il mana massimo resta 10 e
+ * tutti i round dopo il nono finivano nel nono (la partita del 12/10 alle 00:39 è arrivata al round 12): giocate dei
+ * round 10–12 contate nel 9 e, peggio per il cimitero, una carta morta e rigiocata nella stessa finestra invisibile.
+ * Una nuova pianificazione è una fila di `PHASE_FRAMES` fotogrammi "PRONTO" dopo una fila di altrettanti fotogrammi di
+ * rivelazione o combattimento, a loro volta dopo una pianificazione; i fotogrammi senza fase (mana coperto) non
+ * contano. Il pezzo nuovo comincia dal primo fotogramma della pianificazione. Chi chiama decide se il round si divide
+ * davvero (`reconstruct`: mai fino al numero del round di mana dopo).
+ */
+export function splitByPhase(frames: readonly ScanFrame[]): ScanFrame[][] {
+  const runs: { phase: "plan" | "reveal"; from: number; n: number }[] = [];
+  frames.forEach((f, i) => {
+    if (!f.phase) return;
+    const last = runs[runs.length - 1];
+    if (last && last.phase === f.phase) last.n++;
+    else runs.push({ phase: f.phase, from: i, n: 1 });
+  });
+  const cuts: number[] = [];
+  let planned = false;
+  let revealed = false;
+  for (const r of runs) {
+    if (r.n < PHASE_FRAMES) continue;
+    if (r.phase === "plan") {
+      if (planned && revealed) cuts.push(r.from);
+      planned = true;
+      revealed = false;
+    } else if (planned) revealed = true;
+  }
+  const out: ScanFrame[][] = [];
+  let prev = 0;
+  for (const c of cuts) {
+    out.push(frames.slice(prev, c));
+    prev = c;
+  }
+  out.push(frames.slice(prev));
+  return out;
+}
+
+/** Copie di una carta in un mazzo: la Leggendaria 1, le carte base 2 (regole del deck builder del sito). */
+const maxCopies = (legendary: boolean) => (legendary ? 1 : 2);
+
+/** Le copie stabili di ogni id ("me|C…") in questi fotogrammi: il numero più alto visto in almeno `STABLE_FRAMES` fotogrammi. */
+function stableCounts(per: readonly Map<string, number>[]): Map<string, number> {
+  const ids = new Set(per.flatMap((m) => [...m.keys()]));
+  const out = new Map<string, number>();
+  for (const id of ids) {
+    const seen = per.map((m) => m.get(id) ?? 0).sort((a, b) => b - a);
+    const n = seen[STABLE_FRAMES - 1] ?? 0;
+    if (n > 0) out.set(id, n);
+  }
+  return out;
+}
+
+/** Le copie più alte di ogni id in questi fotogrammi. */
+function maxCounts(per: readonly Map<string, number>[]): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const m of per) for (const [id, c] of m) out.set(id, Math.max(out.get(id) ?? 0, c));
+  return out;
+}
+
+/** Il tabellone alla fine di un pezzo di round: il massimo degli ultimi `END_FRAMES` fotogrammi (regge le sparizioni momentanee). */
+const endCounts = (per: readonly Map<string, number>[]) => maxCounts(per.slice(-END_FRAMES));
+
+/**
+ * Le copie di ogni carta nella mia mano in questi fotogrammi: `max`, il massimo delle copie stabili per
+ * `STABLE_FRAMES` fotogrammi; `last`, l'ultima lettura, se le ultime `STABLE_FRAMES` sono uguali. Null senza letture
+ * (o, per `last`, se la mano sta cambiando proprio adesso).
+ */
+function handSummary(frames: readonly ScanFrame[], pick: "max" | "last"): Map<string, number> | null {
+  const read = frames.filter((f) => f.hand !== undefined);
+  if (read.length < STABLE_FRAMES) return null;
+  const out = new Map<string, number>();
+  if (pick === "last") {
+    const tail = read.slice(-STABLE_FRAMES).map((f) => [...f.hand!].sort().join(","));
+    if (!tail.every((h) => h === tail[0])) return null;
+    for (const k of read[read.length - 1].hand!) out.set(k, (out.get(k) ?? 0) + 1);
+    return out;
+  }
+  for (const k of new Set(read.flatMap((f) => f.hand!))) {
+    const stable = handCounts(read, k);
+    const n = stable.length ? Math.max(...stable) : 0;
+    if (n > 0) out.set(k, n);
+  }
+  return out;
+}
+
+/** La mia mano in un round, per gli scarti: le copie più alte prima della fine della pianificazione e quelle uscite per giocarle. */
+type GraveHand = { plan: Map<string, number>; used: Map<string, number> };
+
+/** Dopo l'ultimo "PRONTO" letto, per tanto il round in corso si considera ancora in pianificazione (nessuno muore). */
+export const PLAN_HOLD_MS = 5000;
+/**
+ * Nel round in corso una carta è morta solo se manca da tanto (05/11/2026): dal vivo un'anteprima o un'animazione la
+ * coprono per qualche secondo, e senza questa attesa il pannello la metteva nel cimitero e poi la toglieva (partita del
+ * 12/10 alle 00:39 rigiocata: Three Blind Mice e Little John per mezzo minuto nel cimitero, vivi).
+ */
+export const LIVE_DEATH_MS = 8000;
+
+/** Quello che `graveyardStep` sa di un round e delle sue carte arrivate sul tabellone. */
+type GraveRound = {
+  frames: readonly ScanFrame[];
+  per: readonly Map<string, number>[];
+  /** il tabellone alla fine del round prima */
+  before: ReadonlyMap<string, number>;
+  /** le copie arrivate in questo round per id ("me|C…"), carte create comprese */
+  arrivals: ReadonlyMap<string, number>;
+  /** le magie giocate in questo round (`spellPlays`) */
+  spells: readonly ScannedPlay[];
+  /** le giocate dei round prima */
+  plays: readonly ScannedPlay[];
+  /** i cimiteri fino al round prima: `graveyardStep` li aggiorna */
+  grave: { me: string[]; opp: string[] };
+  /** le carte con Rinascita morte nel round prima, per lato: possono tornare in campo in questo */
+  reborn: Record<Side, Map<string, number>>;
+  /** la mia mano nel round prima (`GraveHand`): i suoi scarti si confermano qui */
+  prevHand: GraveHand | null;
+  /** l'ultimo round letto (dal vivo può essere ancora in pianificazione) */
+  ongoing: boolean;
+  cards: CardInfo;
+};
+
+type GraveStep = { back: Map<string, number>; reborn: Record<Side, Map<string, number>>; hand: GraveHand | null };
+
+/**
+ * Il cimitero di un round (05/11/2026), con le regole del gioco completo (graveRoles.ts). In quest'ordine:
+ * 1. **scarti** (solo i miei: la mano dell'avversario è coperta): le copie di una carta nella mia mano prima della fine
+ *    della pianificazione, meno quelle che ho giocato, meno quelle ancora in mano dopo (rivelazione e combattimento);
+ *    vanno nel cimitero i personaggi, e se ho scartato qualcosa Dracula torna dal cimitero in mano;
+ * 2. **carte tornate dal cimitero**: un arrivo sul tabellone di una carta che sta nel cimitero di quel lato, se c'è
+ *    qualcosa che la riporta in campo nel round: Dr. Frank in campo (uno per round), It's Alive giocata (uno), la
+ *    Rinascita di una carta morta proprio alla fine del round prima (ricompare prima della pianificazione: di solito
+ *    muore e torna nello stesso round, e allora non cambia niente), o le copie già tutte giocate (una carta base non
+ *    entra una terza volta dalla mano). Per me conta solo un arrivo fuori dalla pianificazione: quelle che piazzo io
+ *    vengono dalla mano. Queste carte escono dal cimitero e **non sono giocate** (`back`);
+ * 3. **morti**: le copie che erano sul tabellone (alla fine del round prima, più quelle arrivate) e alla fine del round
+ *    non ci sono più. Non muoiono: Koschei e Aladdin (tornano in mano), le mie carte che ricompaiono nella mia mano
+ *    (rimandate in mano da White Queen o Stroke of Midnight) e le carte che si trasformano (Ugly Duckling, Doppelganger:
+ *    al loro posto c'è un'altra carta). Durante la pianificazione nessuno muore: nel round in corso, finché si pianifica,
+ *    una carta che sparisce è coperta da un'anteprima.
+ * Il round per il cimitero finisce allo stendardo di fine partita (dopo, il tabellone si svuota senza morti). Limiti:
+ * una carta dell'avversario rimandata in mano per il tracker è morta; una carta morta e rigiocata nello stesso round,
+ * dopo la morte, non si vede (come la giocata).
+ */
+function graveyardStep(g: GraveRound): GraveStep {
+  const { before, arrivals, spells, plays, grave, cards } = g;
+  const role = (k: string) => cards.grave?.(k) ?? null;
+  const inGrave = (side: Side, k: string) => grave[side].filter((x) => x === k).length;
+  const take = (side: Side, k: string) => {
+    const i = grave[side].lastIndexOf(k);
+    if (i >= 0) grave[side].splice(i, 1);
+  };
+  // mai più copie di quelle che un mazzo può avere (la Leggendaria 1, le carte base 2; le carte create senza limite):
+  // di più vuol dire una lettura sbagliata
+  const bury = (side: Side, k: string) => {
+    if (!cards.token(k) && inGrave(side, k) >= maxCopies(cards.legendary(k))) return false;
+    grave[side].push(k);
+    return true;
+  };
+  const back = new Map<string, number>();
+  const reborn: Record<Side, Map<string, number>> = { me: new Map(), opp: new Map() };
+
+  // il round per il cimitero: fino allo stendardo di fine partita, senza i fotogrammi finali col tabellone vuoto e senza mana
+  let stop = g.frames.findIndex((f) => f.result === "W" || f.result === "L");
+  // la partita è ancora in corso (dal vivo): le morti aspettano `LIVE_DEATH_MS`
+  const live = g.ongoing && stop < 0;
+  if (stop < 0) stop = g.frames.length;
+  while (stop > 0 && g.frames[stop - 1].maxMana === null && !g.frames[stop - 1].board.some(Boolean)) stop--;
+  const fs = g.frames.slice(0, stop);
+  const per = g.per.slice(0, stop);
+  let planIdx = -1;
+  fs.forEach((f, i) => {
+    if (f.phase === "plan") planIdx = i;
+  });
+  const lastPhase = [...fs].reverse().find((f) => f.phase)?.phase;
+  // il round in corso è ancora in pianificazione (dal vivo): né scarti né morti finché non si rivela
+  const planning = g.ongoing && lastPhase === "plan" && fs[fs.length - 1].ms - fs[planIdx].ms <= PLAN_HOLD_MS;
+  const firstPlan = fs.findIndex((f) => f.phase === "plan");
+  const firstSeen = (side: Side, key: string) => fs.findIndex((f) => f.board.some((k, s) => k === key && sideOf(s) === side));
+
+  // le mie carte piazzate nella pianificazione (dalla mano): le copie stabili nei fotogrammi "PRONTO" più quelle uscite
+  // dalla mano; senza fasi lette, tutte (come le giocate)
+  const planStable = stableCounts(per.filter((_, i) => i <= planIdx && fs[i].phase === "plan"));
+  const planned = (key: string) => {
+    const id = `me|${key}`;
+    const n = arrivals.get(id) ?? 0;
+    if (planIdx < 0) return n;
+    return Math.min(n, Math.max(0, (planStable.get(id) ?? 0) - (before.get(id) ?? 0), leftHand(g.frames, key)));
+  };
+
+  // 1. scarti del round prima, confermati dalla mia mano in questa pianificazione: una carta è scartata se non compare
+  // mai nella mano di questa pianificazione. Durante il combattimento la lettura della mano a volte perde quasi tutte
+  // le carte per qualche secondo (partita del 11/10 alle 18:16, round 1: solo "Mowgli" per 5 secondi), e anche una
+  // lettura sola all'inizio della pianificazione può perderne una: le carte sembravano scartate
+  const handPlan = planIdx >= 0 ? handSummary(fs.slice(0, planIdx + 1), "max") : null;
+  const handEnd = planIdx >= 0 && !planning ? handSummary(fs.slice(planIdx + 1), "last") : null;
+  const planHand = handSummary(fs.filter((f, i) => i <= planIdx && f.phase === "plan"), "max");
+  // le carte che gioco in questo round erano ancora in mano, anche se le piazzo prima che la mano si legga (partita
+  // del 11/10 alle 00:35: Robin Hood sul tabellone già alla prima lettura della pianificazione)
+  const playedNow = (k: string) => (isSpellKey(k) ? spells.filter((p) => p.me && p.card === k).length : (arrivals.get(`me|${k}`) ?? 0));
+  if (g.prevHand && planHand) {
+    let discarded = 0;
+    for (const [k, n] of g.prevHand.plan) {
+      const d = Math.max(0, n - (g.prevHand.used.get(k) ?? 0) - (planHand.get(k) ?? 0) - playedNow(k));
+      discarded += d;
+      if (!isSpellKey(k)) for (let i = 0; i < d; i++) bury("me", k);
+    }
+    if (discarded > 0) for (const k of new Set(grave.me)) if (role(k) === "recall") take("me", k);
+  }
+  // la mano di questo round, per gli scarti che si confermano nel round dopo: le copie uscite dalla mano sono quelle
+  // arrivate sul mio tabellone (anche fuori dalla pianificazione: Aladdin scartato si evoca da solo) e le mie magie
+  const hand: GraveHand | null = handPlan ? { plan: handPlan, used: new Map([...handPlan.keys()].map((k) => [k, playedNow(k)] as [string, number])) } : null;
+
+  // 2. carte tornate in campo dal cimitero: le fonti del round (Dr. Frank in campo, It's Alive giocata)
+  const present = stableCounts(per);
+  const sources: Record<Side, number> = { me: 0, opp: 0 };
+  for (const id of new Set([...present.keys(), ...before.keys()])) {
+    const [side, key] = id.split("|") as [Side, string];
+    if (role(key) === "reviver") sources[side] += Math.max(present.get(id) ?? 0, before.get(id) ?? 0);
+  }
+  for (const p of spells) if (role(p.card) === "revive") sources[p.me ? "me" : "opp"]++;
+  for (const [id, n] of arrivals) {
+    const [side, key] = id.split("|") as [Side, string];
+    const fresh = side === "me" ? n - planned(key) : n;
+    let left = Math.min(fresh, inGrave(side, key));
+    if (left <= 0) continue;
+    let k = 0;
+    // le copie già tutte giocate: non viene dalla mano
+    if (!cards.token(key)) {
+      const earlier = plays.filter((p) => p.me === (side === "me") && p.card === key).length;
+      const excess = Math.max(0, earlier + n - maxCopies(cards.legendary(key)));
+      const e = Math.min(left, excess);
+      k += e;
+      left -= e;
+    }
+    // Rinascita a cavallo fra due round: la carta ricompare prima della pianificazione di questo
+    const seen = firstSeen(side, key);
+    if (firstPlan > 0 && seen >= 0 && seen < firstPlan) {
+      const r = Math.min(left, g.reborn[side].get(key) ?? 0);
+      k += r;
+      left -= r;
+    }
+    const fromSource = Math.min(left, sources[side]);
+    sources[side] -= fromSource;
+    k += fromSource;
+    if (!k) continue;
+    back.set(id, k);
+    for (let i = 0; i < k; i++) take(side, key);
+  }
+
+  // 3. morti. Durante la pianificazione nessuno muore (una carta che sparisce lì è coperta da un'anteprima): nel round
+  // in corso che sta pianificando si guarda il tabellone di prima della pianificazione (dal round 10 il round di mana
+  // contiene anche i round prima, finché `splitByPhase` non vede tre fotogrammi "PRONTO": senza, le carte morte nel
+  // round 9 uscivano dal cimitero per qualche secondo, Robin Hood nella partita del 11/10 alle 00:35)
+  let cut = per.length;
+  if (planning) {
+    for (let i = planIdx; i >= 0 && fs[i].phase !== "reveal"; i--) if (fs[i].phase === "plan") cut = i;
+  }
+  if (cut <= 0) return { back, reborn, hand };
+  const dfs = fs.slice(0, cut);
+  const dper = per.slice(0, cut);
+  // il tabellone alla fine del round; dal vivo, il massimo degli ultimi `LIVE_DEATH_MS` (e, se il round è appena
+  // cominciato, anche quello alla fine del round prima: una carta è morta solo se manca da tanto)
+  const lastMs = dfs[dfs.length - 1].ms;
+  const end = live ? maxCounts([...dper.filter((_, i) => dfs[i].ms >= lastMs - LIVE_DEATH_MS), ...dper.slice(-END_FRAMES), ...(lastMs - dfs[0].ms < LIVE_DEATH_MS ? [new Map(before)] : [])]) : endCounts(dper);
+  const tail = dfs.slice(-END_FRAMES);
+  for (const id of new Set([...before.keys(), ...present.keys()])) {
+    const [side, key] = id.split("|") as [Side, string];
+    // dal vivo muore solo una carta che era in campo dal round prima: una arrivata in questo round può essere una mia
+    // carta trascinata e poi rimessa in mano mentre il mana è coperto (partita del 12/10 alle 00:39, Little John al
+    // round 10); quelle morte nel round in cui sono arrivate entrano a fine round
+    let d = live ? Math.max(0, (before.get(id) ?? 0) - (end.get(id) ?? 0)) : (before.get(id) ?? 0) + (arrivals.get(id) ?? 0) - (end.get(id) ?? 0);
+    if (d <= 0 || role(key) === "hand") continue;
+    // una mia carta rimandata in mano (White Queen, Stroke of Midnight) ricompare nella mia mano: le copie in mano dopo
+    // la pianificazione più di quelle che ci erano rimaste
+    if (side === "me" && handPlan && handEnd) d -= Math.min(d, Math.max(0, (handEnd.get(key) ?? 0) - Math.max(0, (handPlan.get(key) ?? 0) - planned(key))));
+    // una carta che si trasforma lascia il suo spazio a un'altra carta
+    if (d > 0 && role(key) === "transform") {
+      let slot = -1;
+      for (let i = dfs.length - 1; i >= 0 && slot < 0; i--) slot = dfs[i].board.findIndex((k, s) => k === key && sideOf(s) === side);
+      if (slot >= 0 && tail.some((f) => f.board[slot] !== null && f.board[slot] !== key)) d--;
+    }
+    let buried = 0;
+    for (let i = 0; i < d; i++) if (bury(side, key)) buried++;
+    if (buried > 0 && role(key) === "rebirth") reborn[side].set(key, (reborn[side].get(key) ?? 0) + buried);
+  }
+  return { back, reborn, hand };
+}
+
 /** Il valore più frequente (a pari merito il primo incontrato), o null. */
 function mode<T>(list: readonly T[]): T | null {
   const n = new Map<T, number>();
@@ -336,6 +642,7 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
       max = 2;
     }
   }
+  const manaRounds = new Map<number, ScanFrame[]>();
   const byRound = new Map<number, ScanFrame[]>();
   for (const [i, f] of frames.entries()) {
     if (i < from || from < 0) continue;
@@ -343,33 +650,60 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
     if (max === null) continue;
     const r = roundOf(max);
     if (r < 1) continue;
-    if (!byRound.has(r)) byRound.set(r, []);
-    byRound.get(r)!.push(f);
+    if (!manaRounds.has(r)) manaRounds.set(r, []);
+    manaRounds.get(r)!.push(f);
   }
+  // i round dopo il nono hanno tutti il mana massimo a 10: si dividono dove comincia una nuova pianificazione
+  // (`splitByPhase`, 05/11/2026), mai fino al numero del round di mana dopo (allora la divisione sarebbe sbagliata)
+  const sortedMana = [...manaRounds.keys()].sort((a, b) => a - b);
+  sortedMana.forEach((r, i) => {
+    const fs = manaRounds.get(r)!;
+    const parts = splitByPhase(fs);
+    const next = sortedMana[i + 1] ?? Infinity;
+    if (parts.length > 1 && r + parts.length - 1 < next) parts.forEach((p, j) => byRound.set(r + j, p));
+    else byRound.set(r, fs);
+  });
   const rounds = [...byRound.keys()].sort((a, b) => a - b);
 
   const plays: ScannedPlay[] = [];
   const drawn: Record<string, number> = {};
+  const graveyard: { me: string[]; opp: string[] } = { me: [], opp: [] };
+  let reborn: Record<Side, Map<string, number>> = { me: new Map(), opp: new Map() };
+  let prevHand: GraveHand | null = null;
   let before = new Map<string, number>();
   for (const r of rounds) {
     const fs = byRound.get(r)!;
     const per = fs.map(counts);
     const ids = new Set(per.flatMap((m) => [...m.keys()]));
+    // le copie arrivate sul tabellone (carte create comprese, che servono al cimitero) e dove compaiono
+    const arrivals = new Map<string, number>();
+    const lanes = new Map<string, number>();
     for (const id of ids) {
       const [side, key] = id.split("|") as [Side, string];
-      if (cards.token(key)) continue;
       // copie stabili: il numero più alto raggiunto in almeno STABLE_FRAMES fotogrammi
       const seen = per.map((m) => m.get(id) ?? 0).sort((a, b) => b - a);
       const stable = seen[STABLE_FRAMES - 1] ?? 0;
       const fresh = stable - (before.get(id) ?? 0);
       if (fresh <= 0) continue;
+      arrivals.set(id, fresh);
       // il luogo: dove compare la prima volta in questo round
       const first = fs.findIndex((f) => f.board.some((k, i) => k === key && sideOf(i) === side));
       const slot = first >= 0 ? fs[first].board.findIndex((k, i) => k === key && sideOf(i) === side) : -1;
-      for (let c = 0; c < fresh; c++) plays.push({ turn: r, me: side === "me", card: key, lane: slot >= 0 ? BOARD_SLOTS[slot].lane : 0 });
+      lanes.set(id, slot >= 0 ? BOARD_SLOTS[slot].lane : 0);
     }
     // le magie, che non restano sul tabellone: dal riquadro in alto a sinistra (13/10/2026)
-    plays.push(...spellPlays(fs, r, cards));
+    const spells = spellPlays(fs, r, cards);
+    // il cimitero (05/11/2026): le carte tornate in campo dal cimitero non sono giocate
+    const step = graveyardStep({ frames: fs, per, before, arrivals, spells, plays, grave: graveyard, reborn, prevHand, ongoing: r === rounds[rounds.length - 1], cards });
+    reborn = step.reborn;
+    prevHand = step.hand;
+    for (const [id, fresh] of arrivals) {
+      const [side, key] = id.split("|") as [Side, string];
+      if (cards.token(key)) continue;
+      const n = fresh - (step.back.get(id) ?? 0);
+      for (let c = 0; c < n; c++) plays.push({ turn: r, me: side === "me", card: key, lane: lanes.get(id) ?? 0 });
+    }
+    plays.push(...spells);
     // carte pescate: in mano adesso più le giocate nei round prima (copie in mano stabili per STABLE_FRAMES fotogrammi)
     const handSeen = new Map<string, number[]>();
     for (const f of fs) {
@@ -383,10 +717,11 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
       const before = plays.filter((p) => p.me && p.card === k && p.turn < r).length;
       drawn[k] = Math.max(drawn[k] ?? 0, stable + before);
     }
-    // il tabellone alla fine del round: il massimo degli ultimi END_FRAMES fotogrammi
-    const end = new Map<string, number>();
-    for (const m of per.slice(-END_FRAMES)) for (const [id, c] of m) end.set(id, Math.max(end.get(id) ?? 0, c));
-    before = end;
+    // il tabellone alla fine del round: il massimo degli ultimi END_FRAMES fotogrammi, ma solo con le copie viste davvero
+    // nel round (stabili): una lettura sbagliata in uno degli ultimi fotogrammi (una mia carta letta per un attimo dal
+    // lato dell'avversario mentre attacca) sembrava una carta morta nel round dopo (05/11/2026, cimiteri)
+    const stableNow = stableCounts(per);
+    before = new Map([...endCounts(per)].map(([id, n]) => [id, Math.min(n, stableNow.get(id) ?? 0)] as [string, number]).filter(([, n]) => n > 0));
   }
 
   const vs = frames.filter((f) => f.vs);
@@ -413,6 +748,7 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
     mana: { me: stableLast(frames, (f) => f.mana?.me ?? null), opp: stableLast(frames, (f) => f.mana?.opp ?? null) },
     direction: stableLast(frames, (f) => f.direction ?? null),
     oppDrawn: oppDrawnOf(frames),
+    graveyard,
   };
 }
 

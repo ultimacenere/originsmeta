@@ -73,6 +73,7 @@ import { justUpdated, updateNotice, type UpdateNotice } from "./updateRules";
 import { deckTrackerView } from "./deckTracker";
 import { pickGameWindow } from "../shared/frames";
 import { applyScan, type ScanFrame } from "../shared/reconstruct";
+import { GRAVE_ROLES, type GraveRole } from "../shared/graveRoles";
 import { buildMatch } from "../../../src/lib/tracker/match";
 import { matchQueue } from "../../../src/lib/tracker/queue";
 import type { AccessView, AccountState, ActiveDeck, AppState, DeckTrackerView, LinkResult, OverlayView, PanelCustom, PanelTemplate, TrackedMatch } from "../shared/types";
@@ -160,8 +161,13 @@ let checking = false;
 let lastCheckAt: number | null = null;
 let lastCheckFailed = false;
 
-type CardRow = { n: string; s: string; l: 0 | 1; t?: string; m?: number | null };
+type CardRow = { n: string; s: string; l: 0 | 1; t?: string; m?: number | null; g?: string };
 const CARDS = cardsTable as Record<string, CardRow>;
+/** Il ruolo di una carta per il cimitero (05/11/2026, scripts/cards.mjs e src/shared/graveRoles.ts). */
+const graveRole = (k: string): GraveRole | null => {
+  const g = CARDS[k]?.g;
+  return GRAVE_ROLES.includes(g as GraveRole) ? (g as GraveRole) : null;
+};
 const card: CardLookup = (key) => {
   const c = CARDS[key];
   return c ? { name: c.n, legendary: c.l === 1, slug: c.s, mana: c.m ?? null, type: c.t } : undefined;
@@ -309,8 +315,9 @@ function currentView(): OverlayView {
 
 function currentDeckView(): DeckTrackerView {
   const view = deckTrackerView({ activeDeck, matches: store.matches, live: frames?.running ? frames.live() : null, scanner: Boolean(frames?.running), card });
-  // le opzioni del personalizzato viaggiano con i dati: le leggono la finestra e la sorgente per OBS (0.4.1)
-  return { ...view, custom: panelTemplate === "custom" ? panelCustom : null, hidden: !panelsWanted() };
+  // le opzioni del personalizzato viaggiano con i dati: le leggono la finestra e la sorgente per OBS (0.4.1); come i
+  // cimiteri da mostrare (05/11/2026)
+  return { ...view, custom: panelTemplate === "custom" ? panelCustom : null, hidden: !panelsWanted(), showGraveyard: panelsGraveyard };
 }
 
 /* ---------- partite che solo lo schermo vede (11/10/2026) ---------- */
@@ -457,6 +464,7 @@ function state(): AppState {
       custom: panelCustom,
       onlyInMatch: panelsOnlyInMatch,
       hideFromStream: panelsHideFromStream,
+      graveyard: panelsGraveyard,
       deckObsUrl: overlayServer ? `${overlayServer.url}deck?lang=${lang()}${obsLayout()}` : null,
       oppWindow: panelOpen("opp"),
       oppObsUrl: overlayServer ? `${overlayServer.url}deck?view=opp&lang=${lang()}${obsLayout()}` : null,
@@ -589,6 +597,20 @@ function setPanelsOnlyInMatch(on: boolean): boolean {
   push();
   return on;
 }
+/**
+ * I cimiteri nei pannelli (05/11/2026, Pierluigi: "dobbiamo aggiungere l'opzione di mostrare il graveyard del proprio
+ * deck e quello avversario, il nuovo mazzo gioca su quello"): il mio nel pannello del mio mazzo, quello dell'avversario
+ * nel suo, in tutti i template e nella sorgente per OBS. Spenta all'inizio (i pannelli restano piccoli). I cimiteri li
+ * calcola lo scanner (reconstruct.ts, `graveyard`).
+ */
+let panelsGraveyard = false;
+function setPanelsGraveyard(on: boolean): boolean {
+  panelsGraveyard = on;
+  savePanelTemplate();
+  pushDeckNow();
+  push();
+  return on;
+}
 const TEMPLATE_FILE = "panel-template.json";
 // `keep`: chiusa dall'app che si blocca (access.ts), non dal giocatore: la preferenza "aperta" resta e si riapre allo sblocco
 // `bottom`: la finestra è partita attaccata al bordo basso dello schermo (fascia in basso, posizione di partenza): alla
@@ -637,18 +659,19 @@ function loadPanelPrefs() {
     }
   }
   try {
-    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown; onlyInMatch?: unknown; hideFromStream?: unknown };
+    const saved = JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), "utf8")) as { template?: unknown; custom?: unknown; onlyInMatch?: unknown; hideFromStream?: unknown; graveyard?: unknown };
     panelTemplate = readTemplate(saved.template);
     panelCustom = readCustom(saved.custom);
     panelsOnlyInMatch = saved.onlyInMatch === true;
     panelsHideFromStream = saved.hideFromStream === true;
+    panelsGraveyard = saved.graveyard === true;
   } catch {
     // prima volta: classico
   }
 }
 function savePanelTemplate() {
   try {
-    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom, onlyInMatch: panelsOnlyInMatch, hideFromStream: panelsHideFromStream }));
+    fs.writeFileSync(path.join(app.getPath("userData"), TEMPLATE_FILE), JSON.stringify({ template: panelTemplate, custom: panelCustom, onlyInMatch: panelsOnlyInMatch, hideFromStream: panelsHideFromStream, graveyard: panelsGraveyard }));
   } catch {
     // non essenziale
   }
@@ -1242,6 +1265,7 @@ function registerIpc() {
   ipcMain.handle("tracker:panel-custom", (e, c: unknown) => (fromOpenApp(e) ? setPanelCustom(c) : panelCustom));
   ipcMain.handle("tracker:panels-in-match", (e, on: unknown) => (fromOpenApp(e) ? setPanelsOnlyInMatch(on === true) : panelsOnlyInMatch));
   ipcMain.handle("tracker:panels-hide-stream", (e, on: unknown) => (fromOpenApp(e) ? setPanelsHideFromStream(on === true) : panelsHideFromStream));
+  ipcMain.handle("tracker:panels-graveyard", (e, on: unknown) => (fromOpenApp(e) ? setPanelsGraveyard(on === true) : panelsGraveyard));
   ipcMain.handle("deck:view", (e) => (fromDeck(e) && engineOn ? currentDeckView() : null));
   // la finestra del pannello alta come il suo contenuto (11/10/2026, Davdas: niente scorrimento); la larghezza la sceglie il giocatore
   ipcMain.on("deck:close", (e) => {
@@ -1421,7 +1445,8 @@ async function boot() {
     tray.on("click", showWindow);
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
     // il mazzo scelto: una magia che non c'è è dell'avversario (13/10/2026, `spellPlays` di reconstruct.ts)
-    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1, myDeck: () => activeDeck?.cards ?? null };
+    // e il ruolo delle carte per i cimiteri (05/11/2026: Dr. Frank, It's Alive, Rinascita, Koschei…)
+    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1, myDeck: () => activeDeck?.cards ?? null, grave: graveRole };
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
     // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)

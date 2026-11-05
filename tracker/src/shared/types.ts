@@ -125,6 +125,8 @@ export type OverlayState = {
   onlyInMatch: boolean;
   /** i pannelli non finiscono nelle riprese dello schermo (OBS): li mostra l'estensione Twitch (0.4.3, 14/10/2026) */
   hideFromStream: boolean;
+  /** i pannelli mostrano i cimiteri, il mio e quello dell'avversario (05/11/2026, serve lo scanner acceso) */
+  graveyard: boolean;
   /** la finestra sopra il gioco è aperta */
   window: boolean;
   /** la finestra lascia passare i clic al gioco */
@@ -204,6 +206,8 @@ export type TrackerApi = {
   setPanelsOnlyInMatch(on: boolean): Promise<boolean>;
   /** Pannelli esclusi dalle riprese dello schermo (true) o no; restituisce la scelta in uso. */
   setPanelsHideFromStream(on: boolean): Promise<boolean>;
+  /** I pannelli mostrano i cimiteri (true) o no (05/11/2026); restituisce la scelta in uso. */
+  setPanelsGraveyard(on: boolean): Promise<boolean>;
   /** Chiude l'app, con overlay, pannelli e scanner (11/10/2026). */
   quitApp(): Promise<void>;
   /** Accende o spegne lo scanner dello schermo; restituisce lo stato vero. */
@@ -277,9 +281,16 @@ export type DeckTrackerView = {
     direction: "left" | "right" | null;
     /** `deckLeft`: carte ancora nel mazzo dell'avversario, stimate dalla sua mano (12/10/2026; null se non si sa) */
     opponent: { deckLeft: number | null; legendary: DeckCard | null; seen: DeckCard[] };
+    /**
+     * I due cimiteri (05/11/2026, reconstruct.ts `graveyard`): i personaggi morti o scartati, una voce per carta con le
+     * copie in `copies`, nell'ordine in cui ci sono finiti. Dell'avversario solo quelli morti sul tabellone.
+     */
+    graveyard: { me: DeckCard[]; opp: DeckCard[] };
   } | null;
   /** le opzioni del template personalizzato quando è quello in uso (0.4.1), così le ricevono anche la finestra e OBS */
   custom?: PanelCustom | null;
+  /** i pannelli mostrano i cimiteri (05/11/2026, opzione di Setup › Overlay) */
+  showGraveyard?: boolean;
   /** fuori partita con "solo durante la partita" acceso: la sorgente per OBS resta vuota (le finestre si nascondono) */
   hidden?: boolean;
   updatedAt: string;
