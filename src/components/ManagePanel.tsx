@@ -128,6 +128,8 @@ export function ManagePanel(props: Props) {
   const cw = checkinWindow(startsAt);
   const phase = now === null ? null : checkinPhase(startsAt, now);
   const queueText = (kind: QueueKind) => fill(m.queueKinds[kind], { n: kind === "bothAbsent" ? (noShowMinutes ?? 0) : kind === "staleReport" ? STALE_REPORT_MINUTES : LONG_MATCH_MINUTES });
+  // a torneo in corso prima coda e turni, poi gli elenchi (06/11/2026): con 64 giocatori i turni stavano 2.500 px più in basso
+  const later = status === "running" ? "order-1" : "";
 
   return (
     <div className="grid gap-6">
@@ -158,9 +160,17 @@ export function ManagePanel(props: Props) {
                     {nameOf.get(q.match.player_a ?? "") ?? "?"} – {nameOf.get(q.match.player_b ?? "") ?? "?"}
                   </span>
                   <span className={`font-semibold ${q.kind === "disputed" || q.kind === "bothAbsent" ? "text-bad" : "text-gold"}`}>{queueText(q.kind)}</span>
-                  <Link href={`${tournamentHref}/match/${q.match.id}`} className="ml-auto btn btn-ink !px-2 !py-0.5 text-[11px]">
-                    {m.openMatch}
-                  </Link>
+                  {q.kind === "disputed" && q.match.note ? <span className="font-mono text-[11px] text-pale-muted">{q.match.note}</span> : null}
+                  <span className="ml-auto flex gap-1">
+                    {q.kind === "staleReport" && q.match.score_a != null && q.match.score_b != null ? (
+                      <button type="button" disabled={pending} onClick={() => run(() => setMatchResult(q.match.id, slug, q.match.score_a as number, q.match.score_b as number, false))} className="btn btn-primary !px-2 !py-0.5 text-[11px]">
+                        {fill(m.confirmReported, { a: q.match.score_a, b: q.match.score_b })}
+                      </button>
+                    ) : null}
+                    <Link href={`${tournamentHref}/match/${q.match.id}`} className="btn btn-ink !px-2 !py-0.5 text-[11px]">
+                      {m.openMatch}
+                    </Link>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -192,7 +202,7 @@ export function ManagePanel(props: Props) {
       ) : null}
 
       {/* Iscritti */}
-      <section className="card-night p-5">
+      <section className={`card-night p-5 ${later}`}>
         <h2 className="t-section">
           {m.players} <span className="font-mono text-sm font-normal text-pale-muted">{registered.length}/{size}</span>
           {waitlist.length ? <span className="ml-2 font-mono text-sm font-normal text-gold">+{waitlist.length}</span> : null}
@@ -238,7 +248,7 @@ export function ManagePanel(props: Props) {
 
       {/* Arbitri (organizzatore e admin) */}
       {canAdmin && (status === "open" || status === "running") ? (
-        <section className="card-night p-5">
+        <section className={`card-night p-5 ${later}`}>
           <h2 className="t-section">{m.judgesTitle}</h2>
           <p className="mt-1 text-sm text-pale-muted">{m.judgesHint}</p>
           <form
@@ -281,7 +291,7 @@ export function ManagePanel(props: Props) {
 
       {/* Inviti (tornei privati; per i pubblici il link è solo comodo da condividere) */}
       {canAdmin && (status === "open" || status === "running") ? (
-        <section className="card-night p-5">
+        <section className={`card-night p-5 ${later}`}>
           <h2 className="t-section">
             {m.inviteTitle} <span className="ml-2 stat-pill bg-night-3 text-[11px] font-semibold uppercase text-pale">{x.visibilities[visibility as keyof typeof x.visibilities] ?? visibility}</span>
           </h2>
@@ -404,7 +414,8 @@ export function ManagePanel(props: Props) {
                   {list
                     .sort((a, b) => a.position - b.position)
                     .map((mt) => (
-                      <MatchEditor key={mt.id} mt={mt} nameOf={nameOf} need={need} labels={x} disabled={pending} matchHref={`${tournamentHref}/match/${mt.id}`} onSave={(a, b, forfeit) => run(() => setMatchResult(mt.id, slug, a, b, forfeit))} />
+                      // la chiave cambia con il punteggio: le caselle ripartono dal referto appena arrivato, non da 0–0
+                      <MatchEditor key={`${mt.id}:${mt.status}:${mt.score_a}:${mt.score_b}`} mt={mt} nameOf={nameOf} need={need} labels={x} disabled={pending} matchHref={`${tournamentHref}/match/${mt.id}`} onSave={(a, b, forfeit) => run(() => setMatchResult(mt.id, slug, a, b, forfeit))} />
                     ))}
                 </ul>
               </details>
@@ -426,7 +437,7 @@ export function ManagePanel(props: Props) {
       ) : null}
 
       {canAdmin && (status === "open" || status === "running") ? (
-        <section className="flex justify-end">
+        <section className={`flex justify-end ${status === "running" ? "order-2" : ""}`}>
           <button
             type="button"
             disabled={pending}

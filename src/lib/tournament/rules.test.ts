@@ -18,6 +18,7 @@ import {
   matchNeed,
   noShowAt,
   seatPlan,
+  submittedPlayerIds,
   staffQueue,
   validNeedScore,
   waitlistPosition,
@@ -155,5 +156,27 @@ describe("posti all'avvio con il check-in", () => {
     assert.equal(waitlistPosition(players, "w1"), 1);
     assert.equal(waitlistPosition(players, "w3"), 3);
     assert.equal(waitlistPosition(players, "r1"), null);
+  });
+});
+
+describe("giorno del torneo (06/11/2026, prova di EndGame First Blood)", () => {
+  test("chi è in lista d'attesa e ha consegnato i mazzi può fare il check-in", () => {
+    const row = (user_id: string, status: string, decks_submitted: boolean) => ({ user_id, status, decks_submitted });
+    assert.deepEqual(submittedPlayerIds([row("a", "registered", true), row("b", "registered", false), row("c", "waitlist", true), row("d", "waitlist", false), row("e", "dropped", true)]), ["a", "c"]);
+  });
+
+  test("referto e coda dello staff hanno i segnaposto in tutte le lingue", () => {
+    for (const lang of ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"]) {
+      const dict = readFileSync(new URL(`../dictionaries/${lang}.ts`, import.meta.url), "utf8");
+      const line = (key: string) => new RegExp(`^\\s+${key}: "(.*)",\\r?$`, "m").exec(dict)?.[1] ?? "";
+      for (const part of ["{name}", "{score}"]) {
+        assert.ok(line("confirmReport").includes(part), `${lang}: confirmReport senza ${part}`);
+        assert.ok(line("reportPreview").includes(part), `${lang}: reportPreview senza ${part}`);
+      }
+      for (const part of ["{a}", "{b}"]) assert.ok(line("confirmReported").includes(part), `${lang}: confirmReported senza ${part}`);
+      assert.ok(line("tournamentHintRules").includes("{max}"), `${lang}: tournamentHintRules senza {max}`);
+      // il testo non chiede più di riscrivere il punteggio: nelle caselle "tue" e "sue" chi lo copiava contestava la partita
+      assert.ok(!line("statusReportedByThem").includes("{a}"), `${lang}: statusReportedByThem`);
+    }
   });
 });

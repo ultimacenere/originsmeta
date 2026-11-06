@@ -118,6 +118,8 @@ export type BuilderLabels = {
   /* Conquest */
   tournamentTitle: string;
   tournamentHint: string;
+  /** lo stesso senza "Tre mazzi": in un torneo (preset) i mazzi li decide l'organizzatore, e possono essere 2 o 4 */
+  tournamentHintRules: string;
   minDifferent: string;
   distinctLegendaries: string;
   diffTable: string;
@@ -1048,7 +1050,7 @@ export function DeckBuilder({
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {locked ? (
-              <span className="rounded-full border-2 border-sky px-3 py-1 font-display text-xs font-bold text-sky">{mode === "single" ? labels.modeSingle : labels.modeTournament}</span>
+              mode === "single" ? <span className="rounded-full border-2 border-sky px-3 py-1 font-display text-xs font-bold text-sky">{labels.modeSingle}</span> : null
             ) : (
               <div className="flex gap-1 rounded-full border-2 border-sky p-0.5">
                 {(["single", "tournament"] as const).map((m) => (
@@ -1070,7 +1072,7 @@ export function DeckBuilder({
           {mode === "tournament" ? (
             <div className="mt-3 rounded-lg border-2 border-sky p-4">
               <h3 className="text-base font-bold text-chalk">{labels.tournamentTitle}</h3>
-              <p className="mt-1 text-xs text-pale-muted">{fmt(labels.tournamentHint, { max: maxShared })}</p>
+              <p className="mt-1 text-xs text-pale-muted">{fmt(locked ? labels.tournamentHintRules : labels.tournamentHint, { max: maxShared })}</p>
               <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-pale-muted">
                 <label className="flex items-center gap-2">
                   {labels.minDifferent}

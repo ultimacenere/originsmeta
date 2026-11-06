@@ -6,12 +6,16 @@
 // Dentro una transazione now() non cambia: gli orari che contano (iscrizione, check-in, partita pronta) si spostano a
 // mano con degli update.
 // Uso, dalla radice del repo (checkout principale o worktree aggiornato): node scripts/tournament-dry-run.mjs
+//      node scripts/tournament-dry-run.mjs --no-schema → prova le funzioni che sono GIÀ in produzione, senza applicare lo
+//      schema del repo e senza i blocchi che prende (06/11/2026, il giorno prima di EndGame First Blood): si può lanciare
+//      con il sito acceso e prima di un torneo vero, fa sempre rollback
 // Legge .env.local della cartella corrente, altrimenti quello del checkout principale (i worktree non lo hanno).
 import { existsSync, readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import pg from "pg";
 import { schemaProblems, splitSchema } from "./schema-guard.mjs";
 
+const NO_SCHEMA = process.argv.includes("--no-schema");
 const sql = readFileSync("supabase/schema.sql", "utf8");
 const problems = schemaProblems(sql);
 if (problems.length) {
@@ -81,7 +85,7 @@ try {
   // è fermata lì (elenco vecchio del blocco FUMETTI contro gli avvisi dei mazzi torneo)
   const kindsNow = await attempt(`select kind, count(*)::int as n from public.notifications group by kind order by kind`);
   if (kindsNow.rows) console.log(`avvisi nel database per tipo: ${kindsNow.rows.map((r) => `${r.kind} ${r.n}`).join(", ") || "nessuno"}`);
-  for (const part of splitSchema(sql)) {
+  for (const part of NO_SCHEMA ? [] : splitSchema(sql)) {
     const r = await attempt(part.sql);
     check(`schema: ${part.name.slice(0, 70)}`, !r.error, r.error ?? "");
   }
@@ -338,5 +342,5 @@ try {
   await db.query("rollback");
   await db.end();
 }
-console.log(failures ? `\n${failures} controlli NON passati, ${passed} passati (rollback fatto: il database non è cambiato)` : `\nTutti i ${passed} controlli passati (rollback fatto: il database non è cambiato). Si può lanciare node scripts/db-migrate.mjs`);
+console.log(failures ? `\n${failures} controlli NON passati, ${passed} passati (rollback fatto: il database non è cambiato)` : `\nTutti i ${passed} controlli passati (rollback fatto: il database non è cambiato).${NO_SCHEMA ? "" : " Si può lanciare node scripts/db-migrate.mjs"}`);
 process.exit(failures ? 1 : 0);

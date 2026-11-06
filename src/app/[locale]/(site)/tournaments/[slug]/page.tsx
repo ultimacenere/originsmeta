@@ -7,7 +7,7 @@ import { currentUser, supabaseServer } from "@/lib/supabase/server";
 import { getInviteCode, getTournament, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
 import { roundLabel } from "@/lib/tournament/bracket";
 import { bestOfSummary, fill, totalRounds, tournamentInviteLink, tournamentShortLink, type TournamentMatch, type TournamentPlayer } from "@/lib/tournament/types";
-import { seatPlan, waitlistPosition } from "@/lib/tournament/rules";
+import { seatPlan, submittedPlayerIds, waitlistPosition } from "@/lib/tournament/rules";
 import { MatchReadyWatcher, type WatchedMatch } from "@/components/MatchReadyWatcher";
 import { Bracket } from "@/components/Bracket";
 import { authorHandle, authorName } from "@/lib/community/util";
@@ -100,7 +100,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const active = players.filter((p) => p.status === "registered");
   const waitlist = players.filter((p) => p.status === "waitlist");
   const registeredIds = active.map((p) => p.user_id);
-  const submittedIds = active.filter((p) => p.decks_submitted).map((p) => p.user_id);
+  const submittedIds = submittedPlayerIds(players);
   const nameOf = new Map(players.map((p) => [p.user_id, authorName(p.profile)]));
   const organizer = authorName(t.profile);
   const handle = authorHandle(t.profile);
@@ -194,6 +194,23 @@ export default async function TournamentPage({ params, searchParams }: { params:
         }
       : null;
   const crumbs = breadcrumbs([{ name: "OriginsMeta", path: href(locale) }, { name: d.events.title, path: href(locale, "/tournaments") }, { name: t.name, path }]);
+
+  // a torneo partito il tabellone viene subito dopo l'iscrizione (06/11/2026): sotto i 76 iscritti, sul telefono, stava 5.000 px più giù
+  const bracketFirst = t.status !== "open" && matches.length > 0;
+  // ancora #bracket: la usano i messaggi Discord del tabellone (src/lib/tournament/notify.ts)
+  const bracketSection = (
+    <section id="bracket" className="mt-8 scroll-mt-24">
+      <h2 className="t-section">{x.bracket}</h2>
+      {t.status === "open" || !matches.length ? (
+        <p className="mt-2 text-sm text-pale-muted">{t.checkin ? x.checkin.bracketSoon : x.bracketSoon}</p>
+      ) : (
+        <div className="mt-3">
+          {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito) */}
+          <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
+        </div>
+      )}
+    </section>
+  );
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -341,6 +358,8 @@ export default async function TournamentPage({ params, searchParams }: { params:
             />
           </div>
 
+          {bracketFirst ? bracketSection : null}
+
           {t.description ? (
             <section className="mt-8">
               <h2 className="kicker text-mint">{x.about}</h2>
@@ -387,18 +406,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
             ) : null}
           </section>
 
-          {/* ancora #bracket: la usano i messaggi Discord del tabellone (src/lib/tournament/notify.ts) */}
-          <section id="bracket" className="mt-8 scroll-mt-24">
-            <h2 className="t-section">{x.bracket}</h2>
-            {t.status === "open" || !matches.length ? (
-              <p className="mt-2 text-sm text-pale-muted">{t.checkin ? x.checkin.bracketSoon : x.bracketSoon}</p>
-            ) : (
-              <div className="mt-3">
-                {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito) */}
-                <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
-              </div>
-            )}
-          </section>
+          {bracketFirst ? null : bracketSection}
 
           <section className="mt-8">
             <h2 className="t-section">{t.status === "running" && t.hidden_decklists ? x.top4Decklists : x.decklists}</h2>

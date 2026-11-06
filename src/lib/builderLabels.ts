@@ -92,6 +92,7 @@ export function builderLabels(d: Dictionary): BuilderLabels {
     // Conquest
     tournamentTitle: b.tournamentTitle,
     tournamentHint: b.tournamentHint,
+    tournamentHintRules: b.tournamentHintRules,
     minDifferent: b.minDifferent,
     distinctLegendaries: b.distinctLegendaries,
     diffTable: b.diffTable,

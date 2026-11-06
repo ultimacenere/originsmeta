@@ -76,13 +76,19 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
   const seenByMe = live ? Boolean(mine === "a" ? live.seen_a : live.seen_b) : false;
   const opponent = live ? (mine === "a" ? live.player_b : live.player_a) : null;
 
-  // titolo della scheda: "🔔" finché la partita è pronta e chi gioca non è ancora entrato nella stanza
+  // titolo della scheda: "🔔" finché la partita è pronta e chi gioca non è ancora entrato nella stanza. Si rimette ogni 2
+  // secondi (06/11/2026): Next scrive il titolo della pagina dopo l'idratazione e a ogni aggiornamento, e cancellava il segno
   useEffect(() => {
     if (!ready || seenByMe) return;
-    const base = document.title;
-    document.title = `🔔 ${b.tabTitle} · ${base}`;
+    const mark = `🔔 ${b.tabTitle} · `;
+    const put = () => {
+      if (!document.title.startsWith(mark)) document.title = mark + document.title;
+    };
+    put();
+    const timer = setInterval(put, 2000);
     return () => {
-      document.title = base;
+      clearInterval(timer);
+      document.title = document.title.replace(mark, "");
     };
   }, [ready, seenByMe, b.tabTitle]);
 

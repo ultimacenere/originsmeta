@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { claimNoShow, markMatchSeen, reportMatchResult, sendMessage } from "@/lib/tournament/actions";
+import { claimNoShow, markMatchSeen, reportMatchResult, sendMessage, setMatchResult } from "@/lib/tournament/actions";
 import { SCREENSHOT_BUCKET, SCREENSHOTS_PER_PLAYER, fill, type TournamentMatch, type TournamentMessage } from "@/lib/tournament/types";
-import { formatCountdown, noShowAt } from "@/lib/tournament/rules";
+import { formatCountdown, noShowAt, validNeedScore } from "@/lib/tournament/rules";
 import { shrinkImage } from "@/lib/shrinkImage";
 import { useNow } from "@/lib/useNow";
 
@@ -28,6 +29,8 @@ type Props = {
   initialMessages: TournamentMessage[];
   /** URL firmati degli screenshot dei due giocatori (generati sul server) */
   screens: Screens;
+  /** scheda del torneo: a partita chiusa il tasto per tornarci, è lì che si vede la partita dopo */
+  tournamentHref: string;
   labels: Dictionary["tournaments"];
 };
 
@@ -43,7 +46,7 @@ type Live = Pick<TournamentMatch, "status" | "seen_a" | "seen_b" | "ready_at" | 
  * screenshot caricati dal browser nel bucket privato (percorso <partita>/<utente>/<n>.webp; le policy
  * fanno da guardia). Dopo referto o upload la pagina (dinamica) si ricarica.
  */
-export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowMinutes, running, initialMessages, screens, labels }: Props) {
+export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowMinutes, running, initialMessages, screens, tournamentHref, labels }: Props) {
   const x = labels;
   const l = x.match;
   const router = useRouter();
@@ -66,8 +69,13 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
   const opponentId = side === "a" ? match.player_b : side === "b" ? match.player_a : null;
   const myName = side === "a" ? names.a : side === "b" ? names.b : null;
   const theirName = side === "a" ? names.b : side === "b" ? names.a : null;
-  const [mine, setMine] = useState<number>(need);
+  // da 0–0 (06/11/2026): con "2–0 per me" già scritto chi ha perso e inviava senza guardare si dava la vittoria
+  const [mine, setMine] = useState<number>(0);
   const [theirs, setTheirs] = useState<number>(0);
+  // risultato imposto dallo staff dalla stanza, dopo aver letto chat e screenshot
+  const [staffA, setStaffA] = useState<number>(match.score_a ?? 0);
+  const [staffB, setStaffB] = useState<number>(match.score_b ?? 0);
+  const [staffForfeit, setStaffForfeit] = useState(false);
   const [uploading, setUploading] = useState(false);
   const myScreens = side === "a" ? screens.a : side === "b" ? screens.b : [];
   const theirScreens = side === "a" ? screens.b : side === "b" ? screens.a : [];
@@ -186,6 +194,31 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
       router.refresh();
     });
 
+  // Conferma con un tasto (06/11/2026): si manda il punteggio dell'avversario così com'è. Le caselle sono "le tue" e "le
+  // sue", il referto è nell'ordine del tabellone: chi riscriveva "lo stesso punteggio" lo rovesciava e contestava la partita.
+  const confirm = () =>
+    start(async () => {
+      setError(null);
+      if (match.score_a === null || match.score_b === null) return;
+      const r = await reportMatchResult(matchId, slug, match.score_a, match.score_b);
+      if (r.error) {
+        setError(errText(r.error));
+        return;
+      }
+      router.refresh();
+    });
+
+  const saveStaffResult = () =>
+    start(async () => {
+      setError(null);
+      const r = await setMatchResult(matchId, slug, staffA, staffB, staffForfeit);
+      if (r.error) {
+        setError(errText(r.error));
+        return;
+      }
+      router.refresh();
+    });
+
   const upload = async (file: File | undefined) => {
     if (!file || !side) return;
     setError(null);
@@ -212,6 +245,10 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
   const scoreLine = match.score_a !== null && match.score_b !== null ? `${names.a} ${match.score_a} – ${match.score_b} ${names.b}` : null;
   const canReport = running && side !== null && Boolean(match.player_a && match.player_b) && (match.status === "pending" || match.status === "reported" || match.status === "disputed");
   const validScore = mine !== theirs && Math.max(mine, theirs) === need && Math.min(mine, theirs) < need;
+  const scoreText = (a: number, b: number) => `${Math.max(a, b)}–${Math.min(a, b)}`;
+  const reportedWinner = match.score_a !== null && match.score_b !== null ? (match.score_a > match.score_b ? names.a : names.b) : null;
+  const staffCan = side === null && running && Boolean(match.player_a && match.player_b) && match.status !== "bye";
+  const staffValid = validNeedScore(need, staffA, staffB) && (!staffForfeit || Math.min(staffA, staffB) === 0);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
@@ -254,6 +291,16 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
             )}
           </div>
         ) : null}
+        {side !== null && match.status === "confirmed" ? (
+          <Link href={tournamentHref} className="btn btn-primary mt-3 text-xs">
+            {l.back}
+          </Link>
+        ) : null}
+        {canReport && reportedByThem && reportedWinner !== null ? (
+          <button type="button" disabled={pending} onClick={confirm} className="btn btn-primary mt-3 text-xs">
+            {fill(l.confirmReport, { name: reportedWinner, score: scoreText(match.score_a ?? 0, match.score_b ?? 0) })}
+          </button>
+        ) : null}
         {canReport ? (
           <div className="mt-4 border-t border-sky/40 pt-4">
             <p className="text-xs text-pale-muted">{l.reportHint}</p>
@@ -268,13 +315,32 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
                 <span className="mt-1 block text-xs text-pale-muted">{theirName}</span>
                 <input type="number" min={0} max={need} value={theirs} onChange={(e) => setTheirs(Number(e.target.value))} className="mt-1 w-20 rounded-lg border border-sky bg-night px-3 py-2 font-mono text-pale" />
               </label>
-              <button type="button" disabled={pending || !validScore} onClick={report} className="btn btn-primary text-xs">
+              <button type="button" disabled={pending || !validScore} onClick={report} className={`btn text-xs ${reportedByThem ? "btn-ink" : "btn-primary"}`}>
                 {l.submitReport}
               </button>
             </div>
+            {validScore ? <p className="mt-2 text-sm font-semibold text-pale">{fill(l.reportPreview, { name: (mine > theirs ? myName : theirName) ?? "?", score: scoreText(mine, theirs) })}</p> : null}
           </div>
         ) : null}
         {side === null ? <p className="mt-3 text-xs text-pale-muted">{l.organizerView}</p> : null}
+        {staffCan ? (
+          <div className="mt-3 flex flex-wrap items-end gap-3 border-t border-sky/40 pt-3 text-xs">
+            <label className="text-sm">
+              <span className="block text-xs text-pale-muted">{names.a}</span>
+              <input type="number" min={0} max={need} value={staffA} onChange={(e) => setStaffA(Number(e.target.value))} className="mt-1 w-20 rounded-lg border border-sky bg-night px-3 py-2 font-mono text-pale" />
+            </label>
+            <label className="text-sm">
+              <span className="block text-xs text-pale-muted">{names.b}</span>
+              <input type="number" min={0} max={need} value={staffB} onChange={(e) => setStaffB(Number(e.target.value))} className="mt-1 w-20 rounded-lg border border-sky bg-night px-3 py-2 font-mono text-pale" />
+            </label>
+            <label className="flex items-center gap-1 text-pale-muted">
+              <input type="checkbox" checked={staffForfeit} onChange={(e) => setStaffForfeit(e.target.checked)} className="accent-mint" /> {x.manage.forfeit}
+            </label>
+            <button type="button" disabled={pending || !staffValid} onClick={saveStaffResult} className="btn btn-primary text-xs">
+              {x.manage.setResult}
+            </button>
+          </div>
+        ) : null}
 
         <h3 className="mt-6 font-display text-lg font-bold text-chalk">{l.screenshotsTitle}</h3>
         <p className="mt-1 text-xs text-pale-muted">{l.screenshotsHint}</p>

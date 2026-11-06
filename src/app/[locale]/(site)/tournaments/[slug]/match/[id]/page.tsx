@@ -155,6 +155,7 @@ export default async function MatchPage({ params, searchParams }: { params: Para
           running={t.status === "running"}
           initialMessages={messages}
           screens={{ a: screensA, b: screensB }}
+          tournamentHref={back}
           labels={x}
         />
       </div>

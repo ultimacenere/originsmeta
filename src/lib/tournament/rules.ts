@@ -17,7 +17,7 @@ export const NO_SHOW_RANGE = { min: 5, max: 60, default: 15 } as const;
 /** Arbitri per torneo al massimo (add_judge). */
 export const MAX_JUDGES = 10;
 /** Un referto senza conferma da più di tanti minuti finisce nella coda "Da sistemare". */
-export const STALE_REPORT_MINUTES = 10;
+export const STALE_REPORT_MINUTES = 5;
 /** Una partita pronta da più di tanti minuti senza risultato finisce nella coda (un turno dura circa un'ora). */
 export const LONG_MATCH_MINUTES = 75;
 
@@ -88,6 +88,10 @@ export type QueueMatch = {
   seen_a?: string | null;
   seen_b?: string | null;
   reported_at?: string | null;
+  /** punteggio refertato e nota della contestata: la coda li mostra per decidere senza aprire la stanza */
+  score_a?: number | null;
+  score_b?: number | null;
+  note?: string | null;
 };
 
 export type QueueKind = "disputed" | "bothAbsent" | "staleReport" | "long";
@@ -153,6 +157,14 @@ export function seatPlan(players: SeatPlayer[], size: number): SeatPlan {
     .map((p) => p.user_id);
   const free = Math.max(0, size - registeredIn.length);
   return { registeredIn, registeredOut, waitlistQueue, free, waitlistIn: waitlistQueue.slice(0, free) };
+}
+
+/**
+ * Chi ha consegnato i mazzi, fra gli iscritti e la lista d'attesa (06/11/2026). Il riquadro del check-in lo legge per
+ * mostrare il tasto: contando solo gli iscritti, chi era in lista risultava senza mazzi e non poteva fare il check-in.
+ */
+export function submittedPlayerIds(players: Pick<SeatPlayer, "user_id" | "status" | "decks_submitted">[]): string[] {
+  return players.filter((p) => (p.status === "registered" || p.status === "waitlist") && p.decks_submitted).map((p) => p.user_id);
 }
 
 /** Posizione (1, 2, …) di un giocatore nella lista d'attesa, in ordine di iscrizione; null se non c'è. */
