@@ -1374,7 +1374,6 @@ export const it: Dictionary = {
       profilePage: {
         title: "Modifica la mia pagina pubblica",
         intro: "Tutto quello che si vede sulla tua pagina pubblica: bio, canali e lingue, foto profilo e, per i ruoli Creator, Autore, Pro e Staff, la vetrina e i suoi numeri.",
-        back: "Il mio profilo",
         jump: "In questa pagina",
         sections: { profile: "Profilo pubblico", avatar: "Foto profilo", showcase: "Vetrina", stats: "Numeri" },
       },

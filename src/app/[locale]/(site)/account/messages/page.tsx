@@ -12,6 +12,7 @@ import { InboxSectionView, UnreadLine, UserConversationList } from "@/components
 import { InboxUnavailable } from "@/components/inbox/InboxUnavailable";
 import { NotificationsJump, NotificationsSection } from "@/components/follow/NotificationsSection";
 import { MarkInboxSeen } from "@/components/inbox/MarkRead";
+import { AccountTabs } from "@/components/AccountTabs";
 import { CREATOR_TOPIC, creatorApplyPath } from "@/lib/forCreators";
 import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
 
@@ -50,16 +51,14 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
   const seen = new Date().toISOString();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
       {/* entrare nella casella spegne la busta: messaggi e avvisi letti, anche senza aprirli (22/10/2026) */}
       <MarkInboxSeen seen={seen} view="user" />
-      <p className="text-sm">
-        <Link href={href(locale, "/account")} prefetch={false} className="link-mint font-bold">
-          ← {L.thread.back}
-        </Link>
-      </p>
+      <AccountTabs locale={locale} active="messages" />
+      {/* il testo resta largo come prima, le schede stanno allo stesso punto delle altre pagine dell'account */}
+      <div className="max-w-3xl">
       {page === 1 ? (
-        <div className="mt-6">
+        <div>
           <InboxSectionView
             locale={locale}
             list={list}
@@ -71,7 +70,7 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
         </div>
       ) : (
         <>
-      <p className="kicker mt-6 text-mint">{L.section.title}</p>
+      <p className="kicker text-mint">{L.section.title}</p>
       <h1 className="t-page mt-2">{L.section.allTitle}</h1>
 
       {!list.ok ? (
@@ -109,6 +108,7 @@ export default async function UserInboxPage({ params, searchParams }: { params: 
       )}
       {/* Notifiche dei profili seguiti (pacchetto SEGUI, 27/09/2026), solo sulla prima pagina; ancora #notifications */}
       {page === 1 ? <NotificationsSection locale={locale} supabase={supabase} userId={user.id} /> : null}
+      </div>
     </div>
   );
 }

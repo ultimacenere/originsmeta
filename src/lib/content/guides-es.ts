@@ -1706,7 +1706,7 @@ OriginsMeta tiene herramientas gratis para quien hace directos o videos de Origi
 ## Antes de empezar
 
 1. Entra en OriginsMeta (Discord o correo, sin contraseña) y publica un mazo desde el [deck builder](/es/deck-builder).
-2. Abre [tu cuenta](/es/account#stream-tools): el panel "Herramientas para directos" tiene los enlaces del overlay y el comando del chat, ya con tu nombre de usuario.
+2. Abre [la página Twitch de tu cuenta](/es/account/twitch#stream-tools): la sección "Herramientas para directos" tiene los enlaces del overlay y el comando del chat, ya con tu nombre de usuario.
 
 Los enlaces de tu cuenta siguen siempre **el último mazo que publicaste**: publicas uno nuevo y el overlay y el comando pasan a ese en menos de un minuto. Para mostrar un mazo concreto, abre su página y usa el menú "Para directos": en tus mazos tiene el overlay y el comando solo para ese mazo.
 

@@ -60,7 +60,7 @@ cosa è un bot, mai nomi o rank di giocatori.
 > 2. The extension needs the streamer's OriginsMeta Tracker desktop app (Windows) running while they play Origins TCG. The review channel below has it set up and linked: open it while it is live with the game.
 > 3. As a viewer: hover the cards on the board or in the streamer's hand to read them; the preview opens on the side of the video. Use the "Hide the panels" button at the top left to hide or show the panels. Drag a panel by its logo tab to move it; double-click the tab to put it back.
 > 4. The deck panel lists the streamer's cards with the copies left; the strip at the top shows the opponent's Legendary and the cards they revealed.
-> 5. The configuration page (streamer only) has three steps: install the app, create a code on originsmeta.com/account/tracker, paste the code and press "Link". It also lets the streamer choose the app's panels or the "Tab" view.
+> 5. The configuration page (streamer only) has three steps: install the app, create a code on originsmeta.com/account/twitch, paste the code and press "Link". It also lets the streamer choose the app's panels or the "Tab" view.
 > 6. The only external link is "Card page on originsmeta.com ↗" in the card preview; it opens in a new tab.
 >
 > If the review channel is offline, please contact staff@originsmeta.com and we will go live for you.

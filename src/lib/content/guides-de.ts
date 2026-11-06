@@ -1712,7 +1712,7 @@ OriginsMeta hat kostenlose Tools für alle, die Origins TCG streamen oder Videos
 ## Bevor du anfängst
 
 1. Melde dich bei OriginsMeta an (Discord oder E-Mail, ohne Passwort) und veröffentliche ein Deck aus dem [Deckbuilder](/de/deck-builder).
-2. Öffne [dein Konto](/de/account#stream-tools): Der Bereich „Stream-Tools“ enthält die Overlay-Links und den Chat-Befehl, schon mit deinem Benutzernamen ausgefüllt.
+2. Öffne [die Twitch-Seite deines Kontos](/de/account/twitch#stream-tools): Der Bereich „Für Streamer“ enthält die Overlay-Links und den Chat-Befehl, schon mit deinem Benutzernamen ausgefüllt.
 
 Die Links in deinem Konto folgen immer **dem Deck, das du zuletzt veröffentlicht hast**: Veröffentliche ein neues, und Overlay und Befehl wechseln innerhalb einer Minute dazu. Um ein bestimmtes Deck zu zeigen, öffne seine Seite und nutze das Menü „Für Streamer“: Bei deinen eigenen Decks enthält es Overlay und Befehl nur für dieses Deck.
 

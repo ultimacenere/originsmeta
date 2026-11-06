@@ -1383,7 +1383,6 @@ export const pt: Dictionary = {
       profilePage: {
         title: "Editar minha página pública",
         intro: "Tudo o que as pessoas veem na sua página pública: bio, canais e idiomas, foto de perfil e, para as funções Creator, Autor, Pro e Staff, a vitrine e os seus números.",
-        back: "Meu perfil",
         jump: "Nesta página",
         sections: { profile: "Perfil público", avatar: "Foto de perfil", showcase: "Vitrine", stats: "Números" },
       },

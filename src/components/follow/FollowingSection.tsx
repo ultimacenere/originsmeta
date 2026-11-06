@@ -25,7 +25,7 @@ export async function FollowingSection({ locale, supabase, userId }: { locale: L
   const list = res.ok ? res.data : [];
 
   return (
-    <section id="following" className="mt-10 scroll-mt-24">
+    <section id="following" className="mt-12 scroll-mt-24">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h2 className="t-section">{L.title}</h2>
         <Link href={href(locale, "/creators")} className="btn btn-ink text-xs">
@@ -39,9 +39,7 @@ export async function FollowingSection({ locale, supabase, userId }: { locale: L
           <p className="text-pale-muted">{L.unavailable}</p>
         </div>
       ) : list.length === 0 ? (
-        <div className="card-night mt-4 p-6">
-          <p className="text-pale-muted">{L.empty}</p>
-        </div>
+        <p className="mt-3 text-sm text-pale-muted">{L.empty}</p>
       ) : (
         <>
           <p className="mt-3 font-mono text-xs text-pale-muted">

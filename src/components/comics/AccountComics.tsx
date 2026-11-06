@@ -31,9 +31,7 @@ export async function AccountComics({ locale, supabase, userId }: { locale: Loca
       </div>
       <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{L.account.intro}</p>
       {comics.length === 0 ? (
-        <div className="card-night mt-4 p-6">
-          <p className="text-pale-muted">{L.account.none}</p>
-        </div>
+        <p className="mt-3 text-sm text-pale-muted">{L.account.none}</p>
       ) : (
         <ul className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
           {comics.map((c) => (

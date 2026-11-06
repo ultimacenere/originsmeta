@@ -1726,7 +1726,7 @@ OriginsMeta has free tools for anyone who streams or makes videos about Origins 
 ## Before you start
 
 1. Sign in to OriginsMeta (Discord or email, no password) and publish a deck from the [deck builder](/en/deck-builder).
-2. Open [your account](/en/account#stream-tools): the "Stream tools" panel has the overlay links and the chat command, already filled in with your username.
+2. Open [the Twitch page of your account](/en/account/twitch#stream-tools): the "Stream tools" section has the overlay links and the chat command, already filled in with your username.
 
 The links in your account always follow **the deck you published most recently**: publish a new one and the overlay and the command switch to it within a minute. To show one deck in particular, open its page and use the "For streamers" menu: on your own decks it has the overlay and the command for that deck only.
 
@@ -3363,7 +3363,7 @@ OriginsMeta ha strumenti gratuiti per chi fa dirette o video su Origins TCG. Fun
 ## Prima di cominciare
 
 1. Accedi a OriginsMeta (Discord o email, senza password) e pubblica un mazzo dal [deck builder](/it/deck-builder).
-2. Apri [il tuo account](/it/account#stream-tools): il riquadro "Strumenti per le dirette" ha i link dell'overlay e il comando di chat, già con il tuo nome utente.
+2. Apri [la pagina Twitch del tuo account](/it/account/twitch#stream-tools): la sezione "Strumenti per le dirette" ha i link dell'overlay e il comando di chat, già con il tuo nome utente.
 
 I link del tuo account seguono sempre **l'ultimo mazzo che hai pubblicato**: ne pubblichi uno nuovo e overlay e comando passano a quello entro un minuto. Per mostrare un mazzo preciso, apri la sua pagina e usa il menu "Per le dirette": sui tuoi mazzi ci sono l'overlay e il comando solo per quel mazzo.
 

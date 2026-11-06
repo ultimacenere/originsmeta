@@ -1,16 +1,9 @@
 import type { Locale } from "./i18n";
-import { ANALYTICS_PUBLIC } from "./community/badges";
 
 /**
- * Il riquadro "OriginsMeta Tracker" di /account a tutti: segue `ANALYTICS_PUBLIC` di badges.ts, l'interruttore unico
- * dell'apertura (spento: in prova dal 10/10/2026, Pierluigi: "visibile solo ai creators e top players"). Finché è spento
- * il riquadro, con il link al download, lo vedono solo Creator, Autore, Pro, Staff e admin (`canSeeAnalytics`).
- */
-export const TRACKER_ACCOUNT_LINK_PUBLIC = ANALYTICS_PUBLIC;
-
-/**
- * Testi del tracker sul sito (tracker/overlay, Fase 3, 30/09/2026): la pagina privata /account/tracker, il riquadro in
- * /account e il paragrafo dell'informativa (/privacy#tracker). Un modulo solo, nelle tre lingue insieme, come
+ * Testi del tracker sul sito (tracker/overlay, Fase 3, 30/09/2026): la pagina privata /account/tracker e il paragrafo
+ * dell'informativa (/privacy#tracker). Quelli dell'estensione Twitch stanno in twitchAccountLabels.ts dal 06/11/2026,
+ * con la loro pagina /account/twitch. Un modulo solo, nelle tre lingue insieme, come
  * `deckStatsLabels.ts`: l'inglese è il tipo di riferimento. Spagnolo neutro col tú (docs/spagnolo.md: ronda, rival,
  * clasificatoria). Segnaposto fra graffe, riempiti da `fillTracker`.
  *
@@ -23,14 +16,15 @@ const en = {
     title: "OriginsMeta Tracker",
     description: "Link the OriginsMeta Tracker app to your account, see the matches it recorded and your stats, unlink your PCs and delete your data.",
   },
-  back: "Account",
-  kicker: "Tracker",
   h1: "OriginsMeta Tracker",
   intro:
     "The Windows app that records your Origins TCG matches on its own: result, deck, cards played round by round. Here you link the app to your account and see your stats.",
   /** al posto del vecchio testo "in prova" (10/10/2026): verso la guida all'installazione di /tracker */
   install: "Don't have the app yet?",
   installLink: "Download it and follow the installation guide",
+  /** in cima alla pagina: chi arriva qui per Twitch (l'estensione pubblicata porta ancora qui) */
+  twitchNotice: "Looking for the Twitch extension?",
+  twitchNoticeLink: "Its code and instructions are on the Twitch page",
   unavailable: "OriginsMeta Tracker isn't available yet. Please try again later.",
   link: {
     title: "Link a PC",
@@ -42,9 +36,11 @@ const en = {
     consent:
       "When you link the app, your matches always go into the site's anonymous stats too (win rates of Legendaries, decks and cards): only aggregate numbers, never who played. If you don't want that, don't use the app: it works only linked to your account.",
     consentLink: "Details in the privacy policy",
-    create: "Create a code",
+    another: "Link another PC",
+    create: "Create a code for the app",
     creating: "Creating…",
-    yourCode: "Your code",
+    yourCode: "Your code for the app",
+    note: "This code goes in the app on your PC. The Twitch extension has its own code.",
     /** {time} = ora di scadenza */
     expires: "Valid until {time}, once.",
     expired: "This code has expired: create a new one.",
@@ -56,39 +52,6 @@ const en = {
       not_authenticated: "Sign in again to create a code.",
       error: "Couldn't create the code. Please try again.",
     },
-  },
-  twitch: {
-    title: "Twitch extension",
-    intro: "With the OriginsMeta Deck tracker extension, your viewers open your deck on top of the stream and read the cards live: your list with the copies left, and the opponent's Legendary and revealed cards.",
-    steps: [
-      "Install the “OriginsMeta Deck tracker” extension on your channel and activate it as an overlay.",
-      "Create a code below: it's valid for 10 minutes and works once.",
-      "In the extension's configuration page on Twitch, type the code and press “Link”.",
-      "Play with OriginsMeta Tracker on: during the match the app sends the site what the Deck tracker shows, and the extension shows it to your viewers.",
-    ],
-    privacy: "Only what you already show on stream with the Deck tracker goes to your viewers: your deck, the round, the opponent's Legendary and the cards they reveal. Never names, ranks or match identifiers.",
-    privacyLink: "Details in the privacy policy",
-    create: "Create a code for Twitch",
-    creating: "Creating…",
-    yourCode: "Your code for Twitch",
-    /** {time} = ora di scadenza */
-    expires: "Valid until {time}, once.",
-    expired: "This code has expired: create a new one.",
-    copy: "Copy",
-    copied: "Copied",
-    errors: {
-      too_many_codes: "You've created too many codes in the last hour: try again in a while.",
-      unavailable: "The Twitch extension isn't available yet. Please try again later.",
-      not_authenticated: "Sign in again to create a code.",
-      error: "Couldn't create the code. Please try again.",
-    },
-    /** {id} = id del canale Twitch; seguito da data e ora */
-    linked: "Linked Twitch channel (id {id}) since",
-    none: "No Twitch channel linked.",
-    unlink: "Unlink the channel",
-    confirm: "Unlink the Twitch channel? The extension will stop showing your deck.",
-    done: "Twitch channel unlinked.",
-    error: "Couldn't unlink the channel. Please try again.",
   },
   devices: {
     title: "Linked PCs",
@@ -146,12 +109,6 @@ const en = {
     error: "Couldn't delete the matches. Please try again.",
     privacy: "Privacy policy: OriginsMeta Tracker",
   },
-  account: {
-    title: "OriginsMeta Tracker",
-    intro: "The Windows app that records your Origins TCG matches: link it to your account, see your stats, manage your PCs and data.",
-    open: "Open OriginsMeta Tracker",
-    download: "Download the app",
-  },
 };
 
 export type TrackerLabels = typeof en;
@@ -163,13 +120,13 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       title: "OriginsMeta Tracker",
       description: "Collega l'app OriginsMeta Tracker al tuo account, guarda le partite registrate e le tue statistiche, scollega i PC e cancella i tuoi dati.",
     },
-    back: "Account",
-    kicker: "Tracker",
     h1: "OriginsMeta Tracker",
     intro:
       "L'app per Windows che registra da sola le tue partite di Origins TCG: esito, mazzo, carte giocate round per round. Qui colleghi l'app al tuo account e vedi le tue statistiche.",
     install: "Non hai ancora l'app?",
     installLink: "Scaricala e segui la guida all'installazione",
+    twitchNotice: "Cerchi l'estensione Twitch?",
+    twitchNoticeLink: "Codice e istruzioni stanno nella pagina Twitch",
     unavailable: "OriginsMeta Tracker non è ancora disponibile. Riprova più tardi.",
     link: {
       title: "Collega un PC",
@@ -181,9 +138,11 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       consent:
         "Collegando l'app, le tue partite entrano sempre anche nelle statistiche anonime del sito (win rate di Leggendarie, mazzi e carte): solo numeri aggregati, mai chi ha giocato. Se non vuoi, non usare l'app: funziona solo collegata al tuo account.",
       consentLink: "Dettagli nell'informativa privacy",
-      create: "Crea un codice",
+      another: "Collega un altro PC",
+      create: "Crea un codice per l'app",
       creating: "Creo il codice…",
-      yourCode: "Il tuo codice",
+      yourCode: "Il tuo codice per l'app",
+      note: "Questo codice va nell'app sul tuo PC. L'estensione Twitch ha un codice suo.",
       expires: "Vale fino alle {time}, una volta.",
       expired: "Questo codice è scaduto: creane uno nuovo.",
       copy: "Copia",
@@ -194,39 +153,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         not_authenticated: "Accedi di nuovo per creare un codice.",
         error: "Non è stato possibile creare il codice. Riprova.",
       },
-    },
-    twitch: {
-      title: "Estensione Twitch",
-      intro: "Con l'estensione OriginsMeta Deck tracker chi guarda la tua diretta apre il tuo mazzo sopra il video e legge le carte dal vivo: la tua lista con le copie rimaste, la Leggendaria e le carte rivelate dall'avversario.",
-      steps: [
-        "Installa l'estensione “OriginsMeta Deck tracker” sul tuo canale e attivala come overlay.",
-        "Crea un codice qui sotto: vale 10 minuti e si usa una volta.",
-        "Nella pagina di configurazione dell'estensione su Twitch scrivi il codice e premi “Collega”.",
-        "Gioca con OriginsMeta Tracker acceso: durante la partita l'app manda al sito quello che mostra il Deck tracker e l'estensione lo mostra a chi guarda.",
-      ],
-      privacy: "A chi guarda arriva solo quello che mostri già in diretta con il Deck tracker: il tuo mazzo, il round, la Leggendaria dell'avversario e le carte che rivela. Mai nomi, rank o identificativi delle partite.",
-      privacyLink: "Dettagli nell'informativa privacy",
-      create: "Crea un codice per Twitch",
-      creating: "Creo il codice…",
-      yourCode: "Il tuo codice per Twitch",
-      /** {time} = ora di scadenza */
-      expires: "Vale fino alle {time}, una volta.",
-      expired: "Il codice è scaduto: creane uno nuovo.",
-      copy: "Copia",
-      copied: "Copiato",
-      errors: {
-        too_many_codes: "Hai creato troppi codici nell'ultima ora: riprova fra un po'.",
-        unavailable: "L'estensione Twitch non è ancora disponibile. Riprova più tardi.",
-        not_authenticated: "Rifai l'accesso per creare un codice.",
-        error: "Non è stato possibile creare il codice. Riprova.",
-      },
-      /** {id} = id del canale Twitch; seguito da data e ora */
-      linked: "Canale Twitch collegato (id {id}) dal",
-      none: "Nessun canale Twitch collegato.",
-      unlink: "Scollega il canale",
-      confirm: "Scollegare il canale Twitch? L'estensione smetterà di mostrare il tuo mazzo.",
-      done: "Canale Twitch scollegato.",
-      error: "Non è stato possibile scollegare il canale. Riprova.",
     },
     devices: {
       title: "PC collegati",
@@ -279,25 +205,19 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       error: "Non è stato possibile cancellare le partite. Riprova.",
       privacy: "Informativa privacy: OriginsMeta Tracker",
     },
-    account: {
-      title: "OriginsMeta Tracker",
-      intro: "L'app per Windows che registra le tue partite di Origins TCG: collegala al tuo account, guarda le tue statistiche, gestisci i PC e i dati.",
-      open: "Apri OriginsMeta Tracker",
-      download: "Scarica l'app",
-    },
   },
   es: {
     meta: {
       title: "OriginsMeta Tracker",
       description: "Vincula la app OriginsMeta Tracker a tu cuenta, mira las partidas registradas y tus estadísticas, desvincula tus PC y borra tus datos.",
     },
-    back: "Cuenta",
-    kicker: "Tracker",
     h1: "OriginsMeta Tracker",
     intro:
       "La app para Windows que registra sola tus partidas de Origins TCG: resultado, mazo, cartas jugadas ronda a ronda. Aquí vinculas la app a tu cuenta y ves tus estadísticas.",
     install: "¿Todavía no tienes la app?",
     installLink: "Descárgala y sigue la guía de instalación",
+    twitchNotice: "¿Buscas la extensión de Twitch?",
+    twitchNoticeLink: "Su código y sus instrucciones están en la página Twitch",
     unavailable: "OriginsMeta Tracker todavía no está disponible. Vuelve a intentarlo más tarde.",
     link: {
       title: "Vincula un PC",
@@ -309,9 +229,11 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       consent:
         "Al vincular la app, tus partidas entran siempre también en las estadísticas anónimas del sitio (win rate de Legendarias, mazos y cartas): solo números agregados, nunca quién jugó. Si no quieres, no uses la app: solo funciona vinculada a tu cuenta.",
       consentLink: "Detalles en la política de privacidad",
-      create: "Crear un código",
+      another: "Vincula otro PC",
+      create: "Crear un código para la app",
       creating: "Creando el código…",
-      yourCode: "Tu código",
+      yourCode: "Tu código para la app",
+      note: "Este código va en la app de tu PC. La extensión de Twitch tiene su propio código.",
       expires: "Vale hasta las {time}, una sola vez.",
       expired: "Este código caducó: crea uno nuevo.",
       copy: "Copiar",
@@ -322,39 +244,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         not_authenticated: "Vuelve a iniciar sesión para crear un código.",
         error: "No se pudo crear el código. Vuelve a intentarlo.",
       },
-    },
-    twitch: {
-      title: "Extensión de Twitch",
-      intro: "Con la extensión OriginsMeta Deck tracker, quien ve tu directo abre tu mazo sobre el vídeo y lee las cartas en vivo: tu lista con las copias que quedan, la Legendaria del rival y las cartas que revela.",
-      steps: [
-        "Instala la extensión “OriginsMeta Deck tracker” en tu canal y actívala como superposición.",
-        "Crea un código aquí abajo: vale 10 minutos y se usa una vez.",
-        "En la página de configuración de la extensión en Twitch, escribe el código y pulsa “Vincular”.",
-        "Juega con OriginsMeta Tracker encendido: durante la partida la app envía al sitio lo que muestra el Deck tracker y la extensión se lo muestra a tu público.",
-      ],
-      privacy: "A tu público solo le llega lo que ya muestras en directo con el Deck tracker: tu mazo, la ronda, la Legendaria del rival y las cartas que revela. Nunca nombres, rangos ni identificadores de partidas.",
-      privacyLink: "Detalles en la política de privacidad",
-      create: "Crear un código para Twitch",
-      creating: "Creando…",
-      yourCode: "Tu código para Twitch",
-      /** {time} = ora di scadenza */
-      expires: "Vale hasta las {time}, una vez.",
-      expired: "El código ha caducado: crea uno nuevo.",
-      copy: "Copiar",
-      copied: "Copiado",
-      errors: {
-        too_many_codes: "Has creado demasiados códigos en la última hora: vuelve a intentarlo dentro de un rato.",
-        unavailable: "La extensión de Twitch todavía no está disponible. Vuelve a intentarlo más tarde.",
-        not_authenticated: "Vuelve a iniciar sesión para crear un código.",
-        error: "No se ha podido crear el código. Vuelve a intentarlo.",
-      },
-      /** {id} = id del canale Twitch; seguito da data e ora */
-      linked: "Canal de Twitch vinculado (id {id}) desde el",
-      none: "Ningún canal de Twitch vinculado.",
-      unlink: "Desvincular el canal",
-      confirm: "¿Desvincular el canal de Twitch? La extensión dejará de mostrar tu mazo.",
-      done: "Canal de Twitch desvinculado.",
-      error: "No se ha podido desvincular el canal. Vuelve a intentarlo.",
     },
     devices: {
       title: "PC vinculados",
@@ -407,12 +296,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       error: "No se pudieron borrar las partidas. Vuelve a intentarlo.",
       privacy: "Política de privacidad: OriginsMeta Tracker",
     },
-    account: {
-      title: "OriginsMeta Tracker",
-      intro: "La app para Windows que registra tus partidas de Origins TCG: vincúlala a tu cuenta, mira tus estadísticas y gestiona tus PC y tus datos.",
-      open: "Abrir OriginsMeta Tracker",
-      download: "Descarga la app",
-    },
   },
   // Francese dal 07/10/2026 (docs/francese.md): vous; "associer / dissocier un PC" per link/unlink, "manche" per round,
   // "file d'attente classée" per la coda classificata; "OriginsMeta Tracker" e "win rate" restano.
@@ -421,13 +304,13 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       title: "OriginsMeta Tracker",
       description: "Associez l'application OriginsMeta Tracker à votre compte, consultez les parties enregistrées et vos statistiques, dissociez vos PC et supprimez vos données.",
     },
-    back: "Compte",
-    kicker: "Tracker",
     h1: "OriginsMeta Tracker",
     intro:
       "L'application Windows qui enregistre seule vos parties d'Origins TCG : résultat, deck, cartes jouées manche par manche. Ici, vous associez l'application à votre compte et consultez vos statistiques.",
     install: "Vous n'avez pas encore l'application ?",
     installLink: "Téléchargez-la et suivez le guide d'installation",
+    twitchNotice: "Vous cherchez l'extension Twitch ?",
+    twitchNoticeLink: "Son code et ses instructions sont sur la page Twitch",
     unavailable: "OriginsMeta Tracker n'est pas encore disponible. Réessayez plus tard.",
     link: {
       title: "Associer un PC",
@@ -439,9 +322,11 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       consent:
         "En associant l'application, vos parties entrent toujours aussi dans les statistiques anonymes du site (win rate des Légendaires, des decks et des cartes) : uniquement des chiffres agrégés, jamais qui a joué. Si vous ne le souhaitez pas, n'utilisez pas l'application : elle fonctionne uniquement associée à votre compte.",
       consentLink: "Détails dans la politique de confidentialité",
-      create: "Créer un code",
+      another: "Associer un autre PC",
+      create: "Créer un code pour l'application",
       creating: "Création…",
-      yourCode: "Votre code",
+      yourCode: "Votre code pour l'application",
+      note: "Ce code se saisit dans l'application sur votre PC. L'extension Twitch a son propre code.",
       expires: "Valable jusqu'à {time}, une seule fois.",
       expired: "Ce code a expiré : créez-en un nouveau.",
       copy: "Copier",
@@ -452,39 +337,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         not_authenticated: "Reconnectez-vous pour créer un code.",
         error: "Impossible de créer le code. Réessayez.",
       },
-    },
-    twitch: {
-      title: "Extension Twitch",
-      intro: "Avec l'extension OriginsMeta Deck tracker, les personnes qui regardent votre live ouvrent votre deck par-dessus la vidéo et lisent les cartes en direct : votre liste avec les copies restantes, la Légendaire de l'adversaire et les cartes qu'il révèle.",
-      steps: [
-        "Installez l'extension « OriginsMeta Deck tracker » sur votre chaîne et activez-la en superposition.",
-        "Créez un code ci-dessous : il est valable 10 minutes et une seule fois.",
-        "Dans la page de configuration de l'extension sur Twitch, saisissez le code et appuyez sur « Associer ».",
-        "Jouez avec OriginsMeta Tracker allumé : pendant la partie, l'application envoie au site ce qu'affiche le Deck tracker, et l'extension le montre à votre public.",
-      ],
-      privacy: "Votre public ne reçoit que ce que vous montrez déjà en live avec le Deck tracker : votre deck, la manche, la Légendaire de l'adversaire et les cartes qu'il révèle. Jamais de noms, de rangs ni d'identifiants de parties.",
-      privacyLink: "Détails dans la politique de confidentialité",
-      create: "Créer un code pour Twitch",
-      creating: "Création…",
-      yourCode: "Votre code pour Twitch",
-      /** {time} = ora di scadenza */
-      expires: "Valable jusqu'à {time}, une seule fois.",
-      expired: "Ce code a expiré : créez-en un nouveau.",
-      copy: "Copier",
-      copied: "Copié",
-      errors: {
-        too_many_codes: "Vous avez créé trop de codes au cours de la dernière heure : réessayez dans un moment.",
-        unavailable: "L'extension Twitch n'est pas encore disponible. Réessayez plus tard.",
-        not_authenticated: "Reconnectez-vous pour créer un code.",
-        error: "Impossible de créer le code. Réessayez.",
-      },
-      /** {id} = id del canale Twitch; seguito da data e ora */
-      linked: "Chaîne Twitch associée (id {id}) depuis le",
-      none: "Aucune chaîne Twitch associée.",
-      unlink: "Dissocier la chaîne",
-      confirm: "Dissocier la chaîne Twitch ? L'extension n'affichera plus votre deck.",
-      done: "Chaîne Twitch dissociée.",
-      error: "Impossible de dissocier la chaîne. Réessayez.",
     },
     devices: {
       title: "PC associés",
@@ -537,25 +389,19 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       error: "Impossible de supprimer les parties. Réessayez.",
       privacy: "Politique de confidentialité : OriginsMeta Tracker",
     },
-    account: {
-      title: "OriginsMeta Tracker",
-      intro: "L'application Windows qui enregistre vos parties d'Origins TCG : associez-la à votre compte, consultez vos statistiques, gérez vos PC et vos données.",
-      open: "Ouvrir OriginsMeta Tracker",
-      download: "Télécharger l'application",
-    },
   },
   pt: {
     meta: {
       title: "OriginsMeta Tracker",
       description: "Vincule o app OriginsMeta Tracker à sua conta, veja as partidas registradas e as suas estatísticas, desvincule os seus PCs e apague os seus dados.",
     },
-    back: "Conta",
-    kicker: "Tracker",
     h1: "OriginsMeta Tracker",
     intro:
       "O app para Windows que registra sozinho as suas partidas de Origins TCG: resultado, deck, cartas jogadas rodada a rodada. Aqui você vincula o app à sua conta e vê as suas estatísticas.",
     install: "Ainda não tem o app?",
     installLink: "Baixe e siga o guia de instalação",
+    twitchNotice: "Procurando a extensão da Twitch?",
+    twitchNoticeLink: "O código e as instruções estão na página Twitch",
     unavailable: "O OriginsMeta Tracker ainda não está disponível. Tente de novo mais tarde.",
     link: {
       title: "Vincular um PC",
@@ -567,9 +413,11 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       consent:
         "Quando você vincula o app, as suas partidas sempre entram também nas estatísticas anônimas do site (win rates de Lendárias, decks e cartas): só números agregados, nunca quem jogou. Se não quiser isso, não use o app: ele só funciona vinculado à sua conta.",
       consentLink: "Detalhes na política de privacidade",
-      create: "Criar um código",
+      another: "Vincular outro PC",
+      create: "Criar um código para o app",
       creating: "Criando…",
-      yourCode: "Seu código",
+      yourCode: "Seu código para o app",
+      note: "Este código vai no app do seu PC. A extensão da Twitch tem um código próprio.",
       expires: "Vale até {time}, uma vez só.",
       expired: "Este código expirou: crie um novo.",
       copy: "Copiar",
@@ -580,37 +428,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         not_authenticated: "Entre de novo para criar um código.",
         error: "Não foi possível criar o código. Tente de novo.",
       },
-    },
-    twitch: {
-      title: "Extensão da Twitch",
-      intro: "Com a extensão OriginsMeta Deck tracker, quem assiste à sua live abre o seu deck por cima da transmissão e lê as cartas ao vivo: a sua lista com as cópias que faltam, a Lendária do oponente e as cartas que ele revelou.",
-      steps: [
-        "Instale a extensão “OriginsMeta Deck tracker” no seu canal e ative como overlay.",
-        "Crie um código abaixo: ele vale 10 minutos e funciona uma vez só.",
-        "Na página de configuração da extensão na Twitch, digite o código e aperte “Link”.",
-        "Jogue com o OriginsMeta Tracker ligado: durante a partida, o app manda para o site o que o Deck tracker mostra, e a extensão mostra isso para o seu público.",
-      ],
-      privacy: "O seu público recebe só o que você já mostra na live com o Deck tracker: o seu deck, a rodada, a Lendária do oponente e as cartas que ele revela. Nunca nomes, ranks ou identificadores de partidas.",
-      privacyLink: "Detalhes na política de privacidade",
-      create: "Criar um código para a Twitch",
-      creating: "Criando…",
-      yourCode: "Seu código para a Twitch",
-      expires: "Vale até {time}, uma vez só.",
-      expired: "Este código expirou: crie um novo.",
-      copy: "Copiar",
-      copied: "Copiado",
-      errors: {
-        too_many_codes: "Você criou códigos demais na última hora: tente de novo daqui a pouco.",
-        unavailable: "A extensão da Twitch ainda não está disponível. Tente de novo mais tarde.",
-        not_authenticated: "Entre de novo para criar um código.",
-        error: "Não foi possível criar o código. Tente de novo.",
-      },
-      linked: "Canal da Twitch vinculado (id {id}) desde",
-      none: "Nenhum canal da Twitch vinculado.",
-      unlink: "Desvincular o canal",
-      confirm: "Desvincular o canal da Twitch? A extensão vai parar de mostrar o seu deck.",
-      done: "Canal da Twitch desvinculado.",
-      error: "Não foi possível desvincular o canal. Tente de novo.",
     },
     devices: {
       title: "PCs vinculados",
@@ -663,25 +480,19 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       error: "Não foi possível apagar as partidas. Tente de novo.",
       privacy: "Política de privacidade: OriginsMeta Tracker",
     },
-    account: {
-      title: "OriginsMeta Tracker",
-      intro: "O app para Windows que registra as suas partidas de Origins TCG: vincule à sua conta, veja as suas estatísticas, gerencie os seus PCs e dados.",
-      open: "Abrir o OriginsMeta Tracker",
-      download: "Baixar o app",
-    },
   },
   de: {
     meta: {
       title: "OriginsMeta Tracker",
       description: "Verknüpfe die App OriginsMeta Tracker mit deinem Konto, sieh dir die erfassten Matches und deine Statistiken an, trenne deine PCs und lösche deine Daten.",
     },
-    back: "Konto",
-    kicker: "Tracker",
     h1: "OriginsMeta Tracker",
     intro:
       "Die Windows-App, die deine Matches in Origins TCG von selbst erfasst: Ergebnis, Deck, gespielte Karten Runde für Runde. Hier verknüpfst du die App mit deinem Konto und siehst deine Statistiken.",
     install: "Du hast die App noch nicht?",
     installLink: "Lade sie herunter und folge der Installationsanleitung",
+    twitchNotice: "Suchst du die Twitch-Erweiterung?",
+    twitchNoticeLink: "Code und Anleitung stehen auf der Twitch-Seite",
     unavailable: "OriginsMeta Tracker ist noch nicht verfügbar. Versuch es später noch einmal.",
     link: {
       title: "Einen PC verknüpfen",
@@ -693,9 +504,11 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       consent:
         "Wenn du die App verknüpfst, fließen deine Matches immer auch in die anonymen Statistiken der Website ein (Win-Rates von Legendären, Decks und Karten): nur zusammengefasste Zahlen, nie, wer gespielt hat. Wenn du das nicht möchtest, verwende die App nicht: Sie funktioniert nur mit deinem Konto verknüpft.",
       consentLink: "Details in der Datenschutzerklärung",
-      create: "Code erstellen",
+      another: "Weiteren PC verknüpfen",
+      create: "Code für die App erstellen",
       creating: "Wird erstellt …",
-      yourCode: "Dein Code",
+      yourCode: "Dein Code für die App",
+      note: "Dieser Code gehört in die App auf deinem PC. Die Twitch-Erweiterung hat einen eigenen Code.",
       expires: "Gültig bis {time}, einmal.",
       expired: "Dieser Code ist abgelaufen: Erstelle einen neuen.",
       copy: "Kopieren",
@@ -706,37 +519,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         not_authenticated: "Melde dich erneut an, um einen Code zu erstellen.",
         error: "Der Code konnte nicht erstellt werden. Versuch es noch einmal.",
       },
-    },
-    twitch: {
-      title: "Twitch-Erweiterung",
-      intro: "Mit der Erweiterung OriginsMeta Deck tracker öffnen deine Zuschauer dein Deck über dem Stream und lesen die Karten live mit: deine Liste mit den verbleibenden Kopien, die Legendäre des Gegners und seine aufgedeckten Karten.",
-      steps: [
-        "Installiere die Erweiterung „OriginsMeta Deck tracker“ auf deinem Kanal und aktiviere sie als Overlay.",
-        "Erstelle unten einen Code: Er ist 10 Minuten gültig und funktioniert einmal.",
-        "Gib den Code auf der Konfigurationsseite der Erweiterung auf Twitch ein und drück auf „Link“.",
-        "Spiel mit eingeschaltetem OriginsMeta Tracker: Während des Matches schickt die App der Website, was der Deck tracker zeigt, und die Erweiterung zeigt es deinen Zuschauern.",
-      ],
-      privacy: "Deine Zuschauer bekommen nur, was du mit dem Deck tracker ohnehin im Stream zeigst: dein Deck, die Runde, die Legendäre des Gegners und die Karten, die er aufdeckt. Nie Namen, Ränge oder Kennungen von Matches.",
-      privacyLink: "Details in der Datenschutzerklärung",
-      create: "Code für Twitch erstellen",
-      creating: "Wird erstellt …",
-      yourCode: "Dein Code für Twitch",
-      expires: "Gültig bis {time}, einmal.",
-      expired: "Dieser Code ist abgelaufen: Erstelle einen neuen.",
-      copy: "Kopieren",
-      copied: "Kopiert",
-      errors: {
-        too_many_codes: "Du hast in der letzten Stunde zu viele Codes erstellt: Versuch es später noch einmal.",
-        unavailable: "Die Twitch-Erweiterung ist noch nicht verfügbar. Versuch es später noch einmal.",
-        not_authenticated: "Melde dich erneut an, um einen Code zu erstellen.",
-        error: "Der Code konnte nicht erstellt werden. Versuch es noch einmal.",
-      },
-      linked: "Verknüpfter Twitch-Kanal (ID {id}) seit",
-      none: "Kein Twitch-Kanal verknüpft.",
-      unlink: "Kanal trennen",
-      confirm: "Twitch-Kanal trennen? Die Erweiterung zeigt dein Deck dann nicht mehr an.",
-      done: "Twitch-Kanal getrennt.",
-      error: "Der Kanal konnte nicht getrennt werden. Versuch es noch einmal.",
     },
     devices: {
       title: "Verknüpfte PCs",
@@ -789,25 +571,19 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       error: "Die Matches konnten nicht gelöscht werden. Versuch es noch einmal.",
       privacy: "Datenschutzerklärung: OriginsMeta Tracker",
     },
-    account: {
-      title: "OriginsMeta Tracker",
-      intro: "Die Windows-App, die deine Matches in Origins TCG erfasst: Verknüpfe sie mit deinem Konto, sieh dir deine Statistiken an, verwalte deine PCs und Daten.",
-      open: "OriginsMeta Tracker öffnen",
-      download: "App herunterladen",
-    },
   },
   ru: {
     meta: {
       title: "OriginsMeta Tracker",
       description: "Привяжите приложение OriginsMeta Tracker к своему аккаунту, смотрите записанные партии и свою статистику, отвязывайте ПК и удаляйте свои данные.",
     },
-    back: "Аккаунт",
-    kicker: "Tracker",
     h1: "OriginsMeta Tracker",
     intro:
       "Приложение для Windows, которое само записывает ваши партии в Origins TCG: результат, колоду, сыгранные карты раунд за раундом. Здесь вы привязываете приложение к своему аккаунту и смотрите свою статистику.",
     install: "Ещё нет приложения?",
     installLink: "Скачайте его и следуйте руководству по установке",
+    twitchNotice: "Ищете расширение для Twitch?",
+    twitchNoticeLink: "Код и инструкция — на странице Twitch",
     unavailable: "OriginsMeta Tracker пока недоступен. Попробуйте позже.",
     link: {
       title: "Привязать ПК",
@@ -819,9 +595,11 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       consent:
         "Когда вы привязываете приложение, ваши партии всегда попадают и в анонимную статистику сайта (винрейт Легендарных карт, колод и карт): только сводные числа, никогда — кто играл. Если вы этого не хотите, не пользуйтесь приложением: оно работает только в связке с вашим аккаунтом.",
       consentLink: "Подробности в политике конфиденциальности",
-      create: "Создать код",
+      another: "Привязать ещё один ПК",
+      create: "Создать код для приложения",
       creating: "Создаём…",
-      yourCode: "Ваш код",
+      yourCode: "Ваш код для приложения",
+      note: "Этот код вводится в приложении на вашем ПК. У расширения для Twitch свой код.",
       expires: "Действует до {time}, один раз.",
       expired: "Срок действия этого кода истёк: создайте новый.",
       copy: "Копировать",
@@ -832,37 +610,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         not_authenticated: "Войдите снова, чтобы создать код.",
         error: "Не удалось создать код. Попробуйте ещё раз.",
       },
-    },
-    twitch: {
-      title: "Расширение для Twitch",
-      intro: "С расширением OriginsMeta Deck tracker ваши зрители открывают вашу колоду поверх трансляции и следят за картами в прямом эфире: ваш список с оставшимися копиями, Легендарная карта соперника и раскрытые им карты.",
-      steps: [
-        "Установите расширение «OriginsMeta Deck tracker» на свой канал и включите его как оверлей.",
-        "Создайте код ниже: он действует 10 минут и срабатывает один раз.",
-        "На странице настроек расширения в Twitch введите код и нажмите «Link».",
-        "Играйте с включённым OriginsMeta Tracker: во время партии приложение отправляет сайту то, что показывает Deck tracker, а расширение показывает это вашим зрителям.",
-      ],
-      privacy: "Вашим зрителям уходит только то, что вы и так показываете на трансляции с Deck tracker: ваша колода, раунд, Легендарная карта соперника и раскрытые им карты. Никогда — имена, ранги или идентификаторы партий.",
-      privacyLink: "Подробности в политике конфиденциальности",
-      create: "Создать код для Twitch",
-      creating: "Создаём…",
-      yourCode: "Ваш код для Twitch",
-      expires: "Действует до {time}, один раз.",
-      expired: "Срок действия этого кода истёк: создайте новый.",
-      copy: "Копировать",
-      copied: "Скопировано",
-      errors: {
-        too_many_codes: "За последний час вы создали слишком много кодов: попробуйте немного позже.",
-        unavailable: "Расширение для Twitch пока недоступно. Попробуйте позже.",
-        not_authenticated: "Войдите снова, чтобы создать код.",
-        error: "Не удалось создать код. Попробуйте ещё раз.",
-      },
-      linked: "Канал Twitch (id {id}) привязан с",
-      none: "Канал Twitch не привязан.",
-      unlink: "Отвязать канал",
-      confirm: "Отвязать канал Twitch? Расширение перестанет показывать вашу колоду.",
-      done: "Канал Twitch отвязан.",
-      error: "Не удалось отвязать канал. Попробуйте ещё раз.",
     },
     devices: {
       title: "Привязанные ПК",
@@ -915,25 +662,19 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       error: "Не удалось удалить партии. Попробуйте ещё раз.",
       privacy: "Политика конфиденциальности: OriginsMeta Tracker",
     },
-    account: {
-      title: "OriginsMeta Tracker",
-      intro: "Приложение для Windows, которое записывает ваши партии в Origins TCG: привяжите его к аккаунту, смотрите статистику, управляйте своими ПК и данными.",
-      open: "Открыть OriginsMeta Tracker",
-      download: "Скачать приложение",
-    },
   },
   "zh-cn": {
     meta: {
       title: "OriginsMeta Tracker",
       description: "将 OriginsMeta Tracker 应用关联到你的账号，查看它记录的对局和你的数据，解除关联电脑并删除你的数据。",
     },
-    back: "账号",
-    kicker: "Tracker",
     h1: "OriginsMeta Tracker",
     intro:
       "一款自动记录你 Origins TCG 对局的 Windows 应用：结果、卡组、逐回合打出的卡牌。你可以在这里把应用关联到账号并查看你的数据。",
     install: "还没有这个应用？",
     installLink: "下载并按照安装指南操作",
+    twitchNotice: "在找 Twitch 扩展？",
+    twitchNoticeLink: "代码和说明在 Twitch 页面",
     unavailable: "OriginsMeta Tracker 暂不可用。请稍后再试。",
     link: {
       title: "关联电脑",
@@ -945,9 +686,11 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       consent:
         "关联应用后，你的对局也会始终计入网站的匿名统计（传说卡、卡组和卡牌的胜率）：只有汇总数字，从不显示是谁打的。如果你不希望这样，请不要使用这个应用：它只能在关联账号后使用。",
       consentLink: "详情见隐私政策",
-      create: "生成代码",
+      another: "关联另一台电脑",
+      create: "生成应用代码",
       creating: "正在生成……",
-      yourCode: "你的代码",
+      yourCode: "你的应用代码",
+      note: "此代码在你电脑上的应用中输入。Twitch 扩展有单独的代码。",
       expires: "有效期至 {time}，仅限一次。",
       expired: "此代码已过期：请重新生成。",
       copy: "复制",
@@ -958,37 +701,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
         not_authenticated: "请重新登录以生成代码。",
         error: "无法生成代码。请再试一次。",
       },
-    },
-    twitch: {
-      title: "Twitch 扩展",
-      intro: "使用 OriginsMeta Deck tracker 扩展，你的观众可以在直播画面上打开你的卡组并实时查看卡牌：你的卡表及剩余张数，以及对手的传说卡和已揭示的卡牌。",
-      steps: [
-        "在你的频道安装“OriginsMeta Deck tracker”扩展，并将其启用为叠加层。",
-        "在下方生成一个代码：有效期 10 分钟，只能使用一次。",
-        "在 Twitch 上扩展的配置页面中输入代码并点击“关联”。",
-        "开启 OriginsMeta Tracker 进行游戏：对局中应用会把 Deck tracker 显示的内容发送给网站，扩展再展示给你的观众。",
-      ],
-      privacy: "只有你在直播中已经通过 Deck tracker 展示的内容才会发给观众：你的卡组、当前回合、对手的传说卡以及对手揭示的卡牌。绝不包括名字、段位或对局标识符。",
-      privacyLink: "详情见隐私政策",
-      create: "生成 Twitch 代码",
-      creating: "正在生成……",
-      yourCode: "你的 Twitch 代码",
-      expires: "有效期至 {time}，仅限一次。",
-      expired: "此代码已过期：请重新生成。",
-      copy: "复制",
-      copied: "已复制",
-      errors: {
-        too_many_codes: "你在过去一小时内生成的代码太多了：请稍后再试。",
-        unavailable: "Twitch 扩展暂不可用。请稍后再试。",
-        not_authenticated: "请重新登录以生成代码。",
-        error: "无法生成代码。请再试一次。",
-      },
-      linked: "已关联的 Twitch 频道（id {id}），关联时间",
-      none: "未关联 Twitch 频道。",
-      unlink: "解除频道关联",
-      confirm: "解除 Twitch 频道关联？扩展将不再显示你的卡组。",
-      done: "已解除 Twitch 频道关联。",
-      error: "无法解除频道关联。请再试一次。",
     },
     devices: {
       title: "已关联的电脑",
@@ -1041,12 +753,6 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
       error: "无法删除对局。请再试一次。",
       privacy: "隐私政策：OriginsMeta Tracker",
     },
-    account: {
-      title: "OriginsMeta Tracker",
-      intro: "记录你 Origins TCG 对局的 Windows 应用：关联到你的账号，查看你的数据，管理你的电脑和数据。",
-      open: "打开 OriginsMeta Tracker",
-      download: "下载应用",
-    },
   },
 };
 
@@ -1058,15 +764,15 @@ export const trackerLabels: Record<Locale, TrackerLabels> = {
  * immagine inviata, al sito solo gli id delle carte; si spegne dall'app.
  */
 export const trackerPrivacy: Record<Locale, string> = {
-  en: "OriginsMeta Tracker: the Windows app only reads the files Origins TCG saves on your PC (profile stats, deck inventory and, when the game saves one, the replay of the last match) and never touches the game. Screen scanner: while the game is open, the app captures only the game's window, never other windows, and recognizes on your PC the cards on the board, the Legendaries on the opening screen and the mana; the images stay in memory on your PC and are never sent. Of what it sees, only the identifiers of the cards reach the site (the cards played by you and by your opponent, the opponent's Legendary), never names of players. On the opening screen it also reads the opponent's name, only on your PC and only to recognize matches against bots, which are not recorded: the name is never saved and never leaves your PCYou can switch the scanner off in the app. To show the cards, it loads their images from originsmeta.com. The app works only linked to an OriginsMeta account (with a one-time code created in /account/tracker): without the link it doesn't work. It checks the link when it starts and every 4 hours, sending only its token, no other data; if the site doesn't answer, it keeps working for 7 days from the last successful check. The matches it records are also kept on your PC, in the app's data folder. For each match it sends the site: a fingerprint of the match computed on the PC (never the game's identifier), end time, result, queue (ranked or normal), your deck (name, cards, game code), your rank, the rounds and the cards played round by round; of the opponent, only their Legendary and the cards they played. It never sends names or identifiers of players or matches, the opponent's rank, their full deck, or whether the opponent is a bot or a person. The site adds the patch in force and the deck's archetype. Matches are stored on Supabase (Ireland, EU) and only you can see them, in /account/tracker, together with the name of your linked PCs and the time of their last sync; for the link, the database keeps only a fingerprint of the token, which on the PC is encrypted with Windows data protection. The app's requests go through the servers of the site (Vercel) and of Supabase, which keep the usual technical logs (IP address included) for a short time. Anonymous stats: the matches of everyone who links the app always go into the site's stats (win rates of Legendaries, decks, archetypes and cards, Legendary matchups), which show only aggregate numbers per patch: never single matches or who played them. Linking the app, which is required to use it, means accepting this; if you don't want it, don't use the app. You can unlink a PC and delete all your matches from /account/tracker at any time: they also leave the stats at once, because they are computed on the fly. Download: when you click the download button on /tracker, the site records the click with your account (if you are signed in), the language of the page and the time, to know how many people download the app; never the IP address. If you delete your account the click stays without a name. Twitch extension (optional): if you link a Twitch channel in /account/tracker, during the match the app also sends the site what the Deck tracker shows (your deck with the copies drawn and played, the round, the opponent's Legendary and the cards they revealed, including spells); the site keeps only the latest version and passes it, through Twitch, to the viewers of your channel. Of the channel, the site keeps only its identifier. Never names, ranks or identifiers of players or matches. You can unlink the channel in /account/tracker. Deleting your account deletes everything else.",
-  it: "OriginsMeta Tracker: l'app per Windows legge in sola lettura i file che Origins TCG salva sul tuo PC (statistiche del profilo, mazzi dell'inventario e, quando il gioco lo salva, il replay dell'ultima partita) e non tocca mai il gioco. Scanner dello schermo: quando il gioco è aperto, l'app riprende solo la finestra del gioco, mai altre finestre, e riconosce sul tuo PC le carte sul tabellone, le Leggendarie della schermata iniziale e il mana; le immagini restano in memoria sul PC e non vengono mai inviate. Di quello che vede, al sito arrivano solo gli identificativi delle carte (le carte giocate da te e dall'avversario, la Leggendaria dell'avversario), mai nomi di giocatori. Nella schermata iniziale legge anche il nome dell'avversario, solo sul PC e solo per riconoscere le partite contro i bot, che non vengono registrate: il nome non si salva e non esce dal PCLo scanner si può spegnere dall'app. Per mostrare le carte ne carica le immagini da originsmeta.com. L'app funziona solo collegata a un account OriginsMeta (con un codice monouso creato in /account/tracker): senza collegamento non funziona. Controlla il collegamento all'avvio e ogni 4 ore, mandando al sito solo il suo token, nessun altro dato; se il sito non risponde, continua a funzionare per 7 giorni dall'ultimo controllo riuscito. Le partite registrate restano anche sul PC, nella cartella dei dati dell'app. Per ogni partita manda al sito: un'impronta della partita calcolata sul PC (mai l'identificativo del gioco), ora di fine, esito, coda (classificata o normale), il tuo mazzo (nome, carte, codice del gioco), il tuo rank, i round e le carte giocate round per round; dell'avversario solo la Leggendaria e le carte che ha giocato. Non manda mai nomi né identificativi di giocatori o partite, il rank dell'avversario, il suo mazzo completo né se l'avversario è un bot o una persona. Il sito aggiunge la patch in vigore e l'archetipo del mazzo. Le partite si salvano su Supabase (Irlanda, UE) e le vedi solo tu, in /account/tracker, insieme al nome dei PC collegati e all'ora del loro ultimo invio; del collegamento il database tiene solo un'impronta del token, che sul PC è cifrato con la protezione dei dati di Windows. Le richieste dell'app passano dai server del sito (Vercel) e di Supabase, che conservano per poco i normali log tecnici (indirizzo IP compreso). Statistiche anonime: le partite di chi collega l'app entrano sempre nelle statistiche del sito (win rate di Leggendarie, mazzi, archetipi e carte, scontri fra Leggendarie), che mostrano solo numeri aggregati per patch: mai le singole partite né chi le ha giocate. Collegare l'app, che serve per usarla, vuol dire accettarlo; se non vuoi, non usare l'app. Puoi scollegare un PC e cancellare tutte le tue partite da /account/tracker in qualsiasi momento: escono subito anche dalle statistiche, perché si calcolano al momento. Download: quando clicchi il tasto di download di /tracker, il sito registra il clic con il tuo account (se hai fatto l'accesso), la lingua della pagina e l'ora, per sapere quante persone scaricano l'app; mai l'indirizzo IP. Se cancelli l'account il clic resta senza nome. Estensione Twitch (facoltativa): se colleghi un canale Twitch da /account/tracker, durante la partita l'app manda al sito anche quello che mostra il Deck tracker (il tuo mazzo con le copie pescate e giocate, il round, la Leggendaria dell'avversario e le carte che ha rivelato, magie comprese); il sito ne tiene solo l'ultima versione e la passa, attraverso Twitch, a chi guarda il tuo canale. Del canale il sito tiene solo l'identificativo. Mai nomi, rank o identificativi di giocatori o partite. Il canale si scollega da /account/tracker. Cancellando l'account si cancella tutto il resto.",
-  es: "OriginsMeta Tracker: la app para Windows solo lee los archivos que Origins TCG guarda en tu PC (estadísticas del perfil, mazos del inventario y, cuando el juego la guarda, la repetición de la última partida) y nunca toca el juego. Escáner de pantalla: cuando el juego está abierto, la app captura solo la ventana del juego, nunca otras ventanas, y reconoce en tu PC las cartas del tablero, las Legendarias de la pantalla inicial y el maná; las imágenes se quedan en la memoria de tu PC y nunca se envían. De lo que ve, al sitio solo llegan los identificadores de las cartas (las cartas que jugaron tú y tu rival, la Legendaria del rival), nunca nombres de jugadores. En la pantalla inicial también lee el nombre del rival, solo en tu PC y solo para reconocer las partidas contra bots, que no se registran: el nombre nunca se guarda ni sale de tu PCPuedes apagar el escáner desde la app. Para mostrar las cartas, carga sus imágenes desde originsmeta.com. La app solo funciona vinculada a una cuenta de OriginsMeta (con un código de un solo uso creado en /account/tracker): sin la vinculación no funciona. Comprueba la vinculación al arrancar y cada 4 horas, enviando al sitio solo su token, ningún otro dato; si el sitio no responde, sigue funcionando durante 7 días desde la última comprobación correcta. Las partidas registradas también se guardan en tu PC, en la carpeta de datos de la app. Por cada partida envía al sitio: una huella de la partida calculada en el PC (nunca el identificador del juego), hora de fin, resultado, cola (clasificatoria o normal), tu mazo (nombre, cartas, código del juego), tu rango, las rondas y las cartas jugadas ronda a ronda; del rival, solo su Legendaria y las cartas que jugó. Nunca envía nombres ni identificadores de jugadores o partidas, el rango del rival, su mazo completo ni si el rival es un bot o una persona. El sitio añade el parche vigente y el arquetipo del mazo. Las partidas se guardan en Supabase (Irlanda, UE) y solo las ves tú, en /account/tracker, junto con el nombre de tus PC vinculados y la hora de su último envío; de la vinculación, la base de datos guarda solo una huella del token, que en el PC está cifrado con la protección de datos de Windows. Las solicitudes de la app pasan por los servidores del sitio (Vercel) y de Supabase, que conservan por poco tiempo los registros técnicos habituales (dirección IP incluida). Estadísticas anónimas: las partidas de quien vincula la app entran siempre en las estadísticas del sitio (win rate de Legendarias, mazos, arquetipos y cartas, enfrentamientos entre Legendarias), que muestran solo números agregados por parche: nunca partidas sueltas ni quién las jugó. Vincular la app, que es necesario para usarla, significa aceptarlo; si no quieres, no uses la app. Puedes desvincular un PC y borrar todas tus partidas desde /account/tracker en cualquier momento: también salen enseguida de las estadísticas, porque se calculan en el momento. Descarga: cuando haces clic en el botón de descarga de /tracker, el sitio registra el clic con tu cuenta (si has iniciado sesión), el idioma de la página y la hora, para saber cuántas personas descargan la app; nunca la dirección IP. Si borras tu cuenta, el clic se queda sin nombre. Extensión de Twitch (opcional): si vinculas un canal de Twitch en /account/tracker, durante la partida la app también envía al sitio lo que muestra el Deck tracker (tu mazo con las copias robadas y jugadas, la ronda, la Legendaria del rival y las cartas que reveló, hechizos incluidos); el sitio guarda solo la última versión y la pasa, a través de Twitch, a quien ve tu canal. Del canal, el sitio guarda solo su identificador. Nunca nombres, rangos ni identificadores de jugadores o partidas. Puedes desvincular el canal en /account/tracker. Si borras tu cuenta, se borra todo lo demás.",
-  fr: "OriginsMeta Tracker : l'application Windows lit uniquement les fichiers qu'Origins TCG enregistre sur votre PC (statistiques du profil, decks de l'inventaire et, quand le jeu en enregistre un, le replay de la dernière partie) et ne touche jamais au jeu. Scanner d'écran : quand le jeu est ouvert, l'application capture uniquement la fenêtre du jeu, jamais d'autres fenêtres, et reconnaît sur votre PC les cartes du plateau, les Légendaires de l'écran d'ouverture et le mana ; les images restent en mémoire sur votre PC et ne sont jamais envoyées. De ce qu'elle voit, seuls les identifiants des cartes arrivent sur le site (les cartes jouées par vous et par votre adversaire, la Légendaire de l'adversaire), jamais de noms de joueurs. Sur l'écran d'ouverture, elle lit aussi le nom de l'adversaire, uniquement sur votre PC et seulement pour reconnaître les parties contre des bots, qui ne sont pas enregistrées : le nom n'est jamais conservé et ne quitte jamais votre PCVous pouvez désactiver le scanner dans l'application. Pour afficher les cartes, elle charge leurs images depuis originsmeta.com. L'application fonctionne uniquement associée à un compte OriginsMeta (avec un code à usage unique créé dans /account/tracker) : sans association, elle ne fonctionne pas. Elle vérifie l'association au démarrage et toutes les 4 heures, en n'envoyant au site que son jeton, aucune autre donnée ; si le site ne répond pas, elle continue de fonctionner pendant 7 jours après la dernière vérification réussie. Les parties enregistrées sont aussi conservées sur votre PC, dans le dossier de données de l'application. Pour chaque partie, elle envoie au site : une empreinte de la partie calculée sur le PC (jamais l'identifiant du jeu), l'heure de fin, le résultat, la file d'attente (classée ou normale), votre deck (nom, cartes, code du jeu), votre rang, les manches et les cartes jouées manche par manche ; de l'adversaire, uniquement sa Légendaire et les cartes qu'il a jouées. Elle n'envoie jamais de noms ni d'identifiants de joueurs ou de parties, ni le rang de l'adversaire, ni son deck complet, ni si l'adversaire est un bot ou une personne. Le site ajoute le patch en vigueur et l'archétype du deck. Les parties sont stockées sur Supabase (Irlande, UE) et vous êtes la seule personne à pouvoir les voir, dans /account/tracker, avec le nom de vos PC associés et l'heure de leur dernier envoi ; de l'association, la base de données ne garde qu'une empreinte du jeton, qui est chiffré sur le PC avec la protection des données de Windows. Les requêtes de l'application passent par les serveurs du site (Vercel) et de Supabase, qui conservent brièvement les journaux techniques habituels (adresse IP comprise). Statistiques anonymes : les parties de toute personne qui associe l'application entrent toujours dans les statistiques du site (win rate des Légendaires, des decks, des archétypes et des cartes, confrontations entre Légendaires), qui n'affichent que des chiffres agrégés par patch : jamais de parties isolées ni qui les a jouées. Associer l'application, ce qui est nécessaire pour l'utiliser, c'est l'accepter ; si vous ne le souhaitez pas, n'utilisez pas l'application. Vous pouvez dissocier un PC et supprimer toutes vos parties depuis /account/tracker à tout moment : elles sortent aussitôt des statistiques, parce qu'elles sont calculées à la volée. Téléchargement : quand vous cliquez sur le bouton de téléchargement de /tracker, le site enregistre le clic avec votre compte (si vous avez ouvert une session), la langue de la page et l'heure, pour savoir combien de personnes téléchargent l'application ; jamais l'adresse IP. Si vous supprimez votre compte, le clic reste sans nom. Extension Twitch (facultative) : si vous associez une chaîne Twitch dans /account/tracker, pendant la partie l'application envoie aussi au site ce qu'affiche le Deck tracker (votre deck avec les copies piochées et jouées, la manche, la Légendaire de l'adversaire et les cartes qu'il a révélées, sorts compris) ; le site n'en garde que la dernière version et la transmet, via Twitch, aux personnes qui regardent votre chaîne. De la chaîne, le site ne garde que son identifiant. Jamais de noms, de rangs ni d'identifiants de joueurs ou de parties. Vous pouvez dissocier la chaîne dans /account/tracker. Supprimer votre compte supprime tout le reste.",
-  pt: "OriginsMeta Tracker: o app para Windows só lê os arquivos que o Origins TCG salva no seu PC (estatísticas do perfil, decks do inventário e, quando o jogo salva um, o replay da última partida) e nunca mexe no jogo. Scanner de tela: quando o jogo está aberto, o app captura só a janela do jogo, nunca outras janelas, e reconhece no seu PC as cartas do tabuleiro, as Lendárias da tela de abertura e o mana; as imagens ficam na memória do seu PC e nunca são enviadas. Do que ele vê, só os identificadores das cartas chegam ao site (as cartas jogadas por você e pelo oponente, a Lendária do oponente), nunca nomes de jogadores. Na tela de abertura ele também lê o nome do oponente, só no seu PC e só para reconhecer as partidas contra bots, que não são registradas: o nome nunca é salvo e nunca sai do seu PC. Você pode desligar o scanner no app. Para mostrar as cartas, ele carrega as imagens delas de originsmeta.com. O app só funciona vinculado a uma conta do OriginsMeta (com um código de uso único criado em /account/tracker): sem a vinculação, ele não funciona. Ele confere a vinculação ao iniciar e a cada 4 horas, mandando ao site só o seu token, nenhum outro dado; se o site não responder, continua funcionando por 7 dias desde a última verificação bem-sucedida. As partidas registradas também ficam guardadas no seu PC, na pasta de dados do app. Para cada partida, ele manda ao site: uma impressão digital da partida calculada no PC (nunca o identificador do jogo), a hora do fim, o resultado, a fila (ranqueada ou normal), o seu deck (nome, cartas, código do jogo), o seu rank, as rodadas e as cartas jogadas rodada a rodada; do oponente, só a Lendária e as cartas que ele jogou. Nunca manda nomes nem identificadores de jogadores ou partidas, o rank do oponente, o deck completo dele nem se o oponente é um bot ou uma pessoa. O site acrescenta o patch em vigor e o arquétipo do deck. As partidas ficam salvas no Supabase (Irlanda, UE) e só você pode vê-las, em /account/tracker, junto com o nome dos seus PCs vinculados e a hora do último envio de cada um; da vinculação, o banco de dados guarda só uma impressão digital do token, que no PC é criptografado com a proteção de dados do Windows. As solicitações do app passam pelos servidores do site (Vercel) e do Supabase, que guardam por pouco tempo os registros técnicos habituais (endereço IP incluído). Estatísticas anônimas: as partidas de quem vincula o app sempre entram nas estatísticas do site (win rates de Lendárias, decks, arquétipos e cartas, confrontos entre Lendárias), que mostram só números agregados por patch: nunca partidas individuais nem quem as jogou. Vincular o app, que é necessário para usá-lo, significa aceitar isso; se você não quiser, não use o app. Você pode desvincular um PC e apagar todas as suas partidas em /account/tracker a qualquer momento: elas também saem na hora das estatísticas, porque são calculadas na hora. Download: quando você clica no botão de download de /tracker, o site registra o clique com a sua conta (se você tiver entrado), o idioma da página e a hora, para saber quantas pessoas baixam o app; nunca o endereço IP. Se você excluir a sua conta, o clique fica sem nome. Extensão da Twitch (opcional): se você vincular um canal da Twitch em /account/tracker, durante a partida o app também manda ao site o que o Deck tracker mostra (o seu deck com as cópias compradas e jogadas, a rodada, a Lendária do oponente e as cartas que ele revelou, feitiços incluídos); o site guarda só a última versão e a repassa, pela Twitch, para quem assiste ao seu canal. Do canal, o site guarda só o identificador. Nunca nomes, ranks ou identificadores de jogadores ou partidas. Você pode desvincular o canal em /account/tracker. Excluir a sua conta apaga todo o resto.",
-  de: "OriginsMeta Tracker: Die Windows-App liest nur die Dateien, die Origins TCG auf deinem PC speichert (Profilstatistiken, Decks im Inventar und, wenn das Spiel eines speichert, das Replay des letzten Matches), und greift nie in das Spiel ein. Bildschirm-Scanner: Wenn das Spiel geöffnet ist, nimmt die App nur das Fenster des Spiels auf, nie andere Fenster, und erkennt auf deinem PC die Karten auf dem Spielfeld, die Legendären auf dem Startbildschirm und das Mana; die Bilder bleiben im Speicher deines PCs und werden nie gesendet. Von dem, was sie sieht, erreichen nur die Kennungen der Karten die Website (die von dir und deinem Gegner gespielten Karten, die Legendäre des Gegners), nie Namen von Spielern. Auf dem Startbildschirm liest sie außerdem den Namen des Gegners, nur auf deinem PC und nur, um Matches gegen Bots zu erkennen, die nicht erfasst werden: Der Name wird nie gespeichert und verlässt nie deinen PC. Du kannst den Scanner in der App ausschalten. Um die Karten anzuzeigen, lädt sie deren Bilder von originsmeta.com. Die App funktioniert nur, wenn sie mit einem OriginsMeta-Konto verknüpft ist (mit einem Einmalcode, der unter /account/tracker erstellt wird): Ohne Verknüpfung funktioniert sie nicht. Sie prüft die Verknüpfung beim Start und alle 4 Stunden und sendet dabei nur ihr Token, keine anderen Daten; wenn die Website nicht antwortet, funktioniert sie ab der letzten erfolgreichen Prüfung noch 7 Tage weiter. Die erfassten Matches bleiben auch auf deinem PC, im Datenordner der App. Für jedes Match sendet sie an die Website: einen auf dem PC berechneten Fingerabdruck des Matches (nie die Kennung des Spiels), Endzeit, Ergebnis, Warteschlange (Ranked oder normal), dein Deck (Name, Karten, Spielcode), deinen Rang, die Runden und die Runde für Runde gespielten Karten; vom Gegner nur seine Legendäre und die Karten, die er gespielt hat. Sie sendet nie Namen oder Kennungen von Spielern oder Matches, den Rang des Gegners, sein vollständiges Deck oder ob der Gegner ein Bot oder ein Mensch ist. Die Website ergänzt den gültigen Patch und den Archetyp des Decks. Die Matches werden bei Supabase (Irland, EU) gespeichert und nur du kannst sie sehen, unter /account/tracker, zusammen mit dem Namen deiner verknüpften PCs und der Zeit ihrer letzten Synchronisierung; von der Verknüpfung speichert die Datenbank nur einen Fingerabdruck des Tokens, das auf dem PC mit dem Datenschutz von Windows verschlüsselt ist. Die Anfragen der App laufen über die Server der Website (Vercel) und von Supabase, die die üblichen technischen Logs (einschließlich IP-Adresse) für kurze Zeit aufbewahren. Anonyme Statistiken: Die Matches aller, die die App verknüpfen, fließen immer in die Statistiken der Website ein (Win-Rates von Legendären, Decks, Archetypen und Karten, Duelle zwischen Legendären), die nur zusammengefasste Zahlen pro Patch zeigen: nie einzelne Matches oder wer sie gespielt hat. Wer die App verknüpft, was für ihre Nutzung nötig ist, akzeptiert das; wenn du das nicht möchtest, verwende die App nicht. Du kannst jederzeit unter /account/tracker einen PC trennen und alle deine Matches löschen: Sie verschwinden dann sofort auch aus den Statistiken, weil diese laufend berechnet werden. Download: Wenn du auf /tracker auf die Download-Schaltfläche klickst, erfasst die Website den Klick mit deinem Konto (wenn du angemeldet bist), der Sprache der Seite und der Uhrzeit, um zu wissen, wie viele Personen die App herunterladen; nie die IP-Adresse. Wenn du dein Konto löschst, bleibt der Klick ohne Namen. Twitch-Erweiterung (optional): Wenn du unter /account/tracker einen Twitch-Kanal verknüpfst, sendet die App während des Matches der Website auch, was der Deck tracker zeigt (dein Deck mit den gezogenen und gespielten Kopien, die Runde, die Legendäre des Gegners und die Karten, die er aufgedeckt hat, Zauber eingeschlossen); die Website speichert nur die letzte Fassung und gibt sie über Twitch an die Zuschauer deines Kanals weiter. Vom Kanal speichert die Website nur seine Kennung. Nie Namen, Ränge oder Kennungen von Spielern oder Matches. Den Kanal kannst du unter /account/tracker trennen. Wenn du dein Konto löschst, wird alles andere gelöscht.",
-  ru: "OriginsMeta Tracker: приложение для Windows только читает файлы, которые Origins TCG сохраняет на вашем ПК (статистику профиля, колоды из инвентаря и, если игра его сохраняет, реплей последней партии), и никогда не вмешивается в игру. Сканер экрана: пока игра открыта, приложение захватывает только окно игры, никогда другие окна, и прямо на вашем ПК распознаёт карты на поле, Легендарные карты на стартовом экране и ману; изображения остаются в памяти вашего ПК и никогда не отправляются. Из того, что оно видит, на сайт попадают только идентификаторы карт (карты, сыгранные вами и соперником, Легендарная карта соперника), никогда имена игроков. На стартовом экране оно также читает имя соперника, только на вашем ПК и только чтобы распознавать партии против ботов, которые не записываются: имя никогда не сохраняется и не покидает ваш ПК. Сканер можно выключить в приложении. Чтобы показывать карты, приложение загружает их изображения с originsmeta.com. Приложение работает только в связке с аккаунтом OriginsMeta (через одноразовый код, созданный в /account/tracker): без привязки оно не работает. Оно проверяет привязку при запуске и каждые 4 часа, отправляя сайту только свой токен и никаких других данных; если сайт не отвечает, оно продолжает работать 7 дней с последней успешной проверки. Записанные партии хранятся и на вашем ПК, в папке данных приложения. О каждой партии оно отправляет сайту: отпечаток партии, вычисленный на ПК (никогда не идентификатор игры), время окончания, результат, очередь (рейтинговая или обычная), вашу колоду (название, карты, код игры), ваш ранг, раунды и карты, сыгранные раунд за раундом; о сопернике — только его Легендарную карту и сыгранные им карты. Оно никогда не отправляет имена или идентификаторы игроков и партий, ранг соперника, его полную колоду и сведения о том, бот соперник или человек. Сайт добавляет действующий патч и архетип колоды. Партии хранятся в Supabase (Ирландия, ЕС), и видите их только вы — в /account/tracker, вместе с названиями привязанных ПК и временем их последней синхронизации; для привязки база данных хранит только отпечаток токена, который на ПК зашифрован средствами защиты данных Windows. Запросы приложения проходят через серверы сайта (Vercel) и Supabase, которые недолго хранят обычные технические журналы (включая IP-адрес). Анонимная статистика: партии всех, кто привязывает приложение, всегда попадают в статистику сайта (винрейт Легендарных карт, колод, архетипов и карт, противостояния Легендарных карт), которая показывает только сводные числа по патчу: никогда отдельные партии и никогда — кто их играл. Привязать приложение, без чего им нельзя пользоваться, значит согласиться с этим; если вы не хотите, не пользуйтесь приложением. Вы можете в любой момент отвязать ПК и удалить все свои партии в /account/tracker: они сразу уходят и из статистики, потому что она считается на лету. Скачивание: когда вы нажимаете кнопку скачивания на /tracker, сайт записывает нажатие вместе с вашим аккаунтом (если вы вошли), языком страницы и временем, чтобы знать, сколько людей скачивают приложение; никогда IP-адрес. Если вы удалите аккаунт, нажатие останется без имени. Расширение для Twitch (по желанию): если вы привяжете канал Twitch в /account/tracker, во время партии приложение отправляет сайту и то, что показывает Deck tracker (вашу колоду со взятыми и сыгранными копиями, раунд, Легендарную карту соперника и раскрытые им карты, включая заклинания); сайт хранит только последнюю версию и передаёт её через Twitch зрителям вашего канала. О канале сайт хранит только его идентификатор. Никогда имена, ранги или идентификаторы игроков и партий. Канал можно отвязать в /account/tracker. Удаление аккаунта удаляет всё остальное.",
+  en: "OriginsMeta Tracker: the Windows app only reads the files Origins TCG saves on your PC (profile stats, deck inventory and, when the game saves one, the replay of the last match) and never touches the game. Screen scanner: while the game is open, the app captures only the game's window, never other windows, and recognizes on your PC the cards on the board, the Legendaries on the opening screen and the mana; the images stay in memory on your PC and are never sent. Of what it sees, only the identifiers of the cards reach the site (the cards played by you and by your opponent, the opponent's Legendary), never names of players. On the opening screen it also reads the opponent's name, only on your PC and only to recognize matches against bots, which are not recorded: the name is never saved and never leaves your PC. You can switch the scanner off in the app. To show the cards, it loads their images from originsmeta.com. The app works only linked to an OriginsMeta account (with a one-time code created in /account/tracker): without the link it doesn't work. It checks the link when it starts and every 4 hours, sending only its token, no other data; if the site doesn't answer, it keeps working for 7 days from the last successful check. The matches it records are also kept on your PC, in the app's data folder. For each match it sends the site: a fingerprint of the match computed on the PC (never the game's identifier), end time, result, queue (ranked or normal), your deck (name, cards, game code), your rank, the rounds and the cards played round by round; of the opponent, only their Legendary and the cards they played. It never sends names or identifiers of players or matches, the opponent's rank, their full deck, or whether the opponent is a bot or a person. The site adds the patch in force and the deck's archetype. Matches are stored on Supabase (Ireland, EU) and only you can see them, in /account/tracker, together with the name of your linked PCs and the time of their last sync; for the link, the database keeps only a fingerprint of the token, which on the PC is encrypted with Windows data protection. The app's requests go through the servers of the site (Vercel) and of Supabase, which keep the usual technical logs (IP address included) for a short time. Anonymous stats: the matches of everyone who links the app always go into the site's stats (win rates of Legendaries, decks, archetypes and cards, Legendary matchups), which show only aggregate numbers per patch: never single matches or who played them. Linking the app, which is required to use it, means accepting this; if you don't want it, don't use the app. You can unlink a PC and delete all your matches from /account/tracker at any time: they also leave the stats at once, because they are computed on the fly. Download: when you click the download button on /tracker, the site records the click with your account (if you are signed in), the language of the page and the time, to know how many people download the app; never the IP address. If you delete your account the click stays without a name. Twitch extension (optional): if you link a Twitch channel in /account/twitch, during the match the app also sends the site what the Deck tracker shows (your deck with the copies drawn and played, the round, the opponent's Legendary and the cards they revealed, including spells); the site keeps only the latest version and passes it, through Twitch, to the viewers of your channel. Of the channel, the site keeps only its identifier. Never names, ranks or identifiers of players or matches. You can unlink the channel in /account/twitch. Deleting your account deletes everything else.",
+  it: "OriginsMeta Tracker: l'app per Windows legge in sola lettura i file che Origins TCG salva sul tuo PC (statistiche del profilo, mazzi dell'inventario e, quando il gioco lo salva, il replay dell'ultima partita) e non tocca mai il gioco. Scanner dello schermo: quando il gioco è aperto, l'app riprende solo la finestra del gioco, mai altre finestre, e riconosce sul tuo PC le carte sul tabellone, le Leggendarie della schermata iniziale e il mana; le immagini restano in memoria sul PC e non vengono mai inviate. Di quello che vede, al sito arrivano solo gli identificativi delle carte (le carte giocate da te e dall'avversario, la Leggendaria dell'avversario), mai nomi di giocatori. Nella schermata iniziale legge anche il nome dell'avversario, solo sul PC e solo per riconoscere le partite contro i bot, che non vengono registrate: il nome non si salva e non esce dal PC. Lo scanner si può spegnere dall'app. Per mostrare le carte ne carica le immagini da originsmeta.com. L'app funziona solo collegata a un account OriginsMeta (con un codice monouso creato in /account/tracker): senza collegamento non funziona. Controlla il collegamento all'avvio e ogni 4 ore, mandando al sito solo il suo token, nessun altro dato; se il sito non risponde, continua a funzionare per 7 giorni dall'ultimo controllo riuscito. Le partite registrate restano anche sul PC, nella cartella dei dati dell'app. Per ogni partita manda al sito: un'impronta della partita calcolata sul PC (mai l'identificativo del gioco), ora di fine, esito, coda (classificata o normale), il tuo mazzo (nome, carte, codice del gioco), il tuo rank, i round e le carte giocate round per round; dell'avversario solo la Leggendaria e le carte che ha giocato. Non manda mai nomi né identificativi di giocatori o partite, il rank dell'avversario, il suo mazzo completo né se l'avversario è un bot o una persona. Il sito aggiunge la patch in vigore e l'archetipo del mazzo. Le partite si salvano su Supabase (Irlanda, UE) e le vedi solo tu, in /account/tracker, insieme al nome dei PC collegati e all'ora del loro ultimo invio; del collegamento il database tiene solo un'impronta del token, che sul PC è cifrato con la protezione dei dati di Windows. Le richieste dell'app passano dai server del sito (Vercel) e di Supabase, che conservano per poco i normali log tecnici (indirizzo IP compreso). Statistiche anonime: le partite di chi collega l'app entrano sempre nelle statistiche del sito (win rate di Leggendarie, mazzi, archetipi e carte, scontri fra Leggendarie), che mostrano solo numeri aggregati per patch: mai le singole partite né chi le ha giocate. Collegare l'app, che serve per usarla, vuol dire accettarlo; se non vuoi, non usare l'app. Puoi scollegare un PC e cancellare tutte le tue partite da /account/tracker in qualsiasi momento: escono subito anche dalle statistiche, perché si calcolano al momento. Download: quando clicchi il tasto di download di /tracker, il sito registra il clic con il tuo account (se hai fatto l'accesso), la lingua della pagina e l'ora, per sapere quante persone scaricano l'app; mai l'indirizzo IP. Se cancelli l'account il clic resta senza nome. Estensione Twitch (facoltativa): se colleghi un canale Twitch da /account/twitch, durante la partita l'app manda al sito anche quello che mostra il Deck tracker (il tuo mazzo con le copie pescate e giocate, il round, la Leggendaria dell'avversario e le carte che ha rivelato, magie comprese); il sito ne tiene solo l'ultima versione e la passa, attraverso Twitch, a chi guarda il tuo canale. Del canale il sito tiene solo l'identificativo. Mai nomi, rank o identificativi di giocatori o partite. Il canale si scollega da /account/twitch. Cancellando l'account si cancella tutto il resto.",
+  es: "OriginsMeta Tracker: la app para Windows solo lee los archivos que Origins TCG guarda en tu PC (estadísticas del perfil, mazos del inventario y, cuando el juego la guarda, la repetición de la última partida) y nunca toca el juego. Escáner de pantalla: cuando el juego está abierto, la app captura solo la ventana del juego, nunca otras ventanas, y reconoce en tu PC las cartas del tablero, las Legendarias de la pantalla inicial y el maná; las imágenes se quedan en la memoria de tu PC y nunca se envían. De lo que ve, al sitio solo llegan los identificadores de las cartas (las cartas que jugaron tú y tu rival, la Legendaria del rival), nunca nombres de jugadores. En la pantalla inicial también lee el nombre del rival, solo en tu PC y solo para reconocer las partidas contra bots, que no se registran: el nombre nunca se guarda ni sale de tu PC. Puedes apagar el escáner desde la app. Para mostrar las cartas, carga sus imágenes desde originsmeta.com. La app solo funciona vinculada a una cuenta de OriginsMeta (con un código de un solo uso creado en /account/tracker): sin la vinculación no funciona. Comprueba la vinculación al arrancar y cada 4 horas, enviando al sitio solo su token, ningún otro dato; si el sitio no responde, sigue funcionando durante 7 días desde la última comprobación correcta. Las partidas registradas también se guardan en tu PC, en la carpeta de datos de la app. Por cada partida envía al sitio: una huella de la partida calculada en el PC (nunca el identificador del juego), hora de fin, resultado, cola (clasificatoria o normal), tu mazo (nombre, cartas, código del juego), tu rango, las rondas y las cartas jugadas ronda a ronda; del rival, solo su Legendaria y las cartas que jugó. Nunca envía nombres ni identificadores de jugadores o partidas, el rango del rival, su mazo completo ni si el rival es un bot o una persona. El sitio añade el parche vigente y el arquetipo del mazo. Las partidas se guardan en Supabase (Irlanda, UE) y solo las ves tú, en /account/tracker, junto con el nombre de tus PC vinculados y la hora de su último envío; de la vinculación, la base de datos guarda solo una huella del token, que en el PC está cifrado con la protección de datos de Windows. Las solicitudes de la app pasan por los servidores del sitio (Vercel) y de Supabase, que conservan por poco tiempo los registros técnicos habituales (dirección IP incluida). Estadísticas anónimas: las partidas de quien vincula la app entran siempre en las estadísticas del sitio (win rate de Legendarias, mazos, arquetipos y cartas, enfrentamientos entre Legendarias), que muestran solo números agregados por parche: nunca partidas sueltas ni quién las jugó. Vincular la app, que es necesario para usarla, significa aceptarlo; si no quieres, no uses la app. Puedes desvincular un PC y borrar todas tus partidas desde /account/tracker en cualquier momento: también salen enseguida de las estadísticas, porque se calculan en el momento. Descarga: cuando haces clic en el botón de descarga de /tracker, el sitio registra el clic con tu cuenta (si has iniciado sesión), el idioma de la página y la hora, para saber cuántas personas descargan la app; nunca la dirección IP. Si borras tu cuenta, el clic se queda sin nombre. Extensión de Twitch (opcional): si vinculas un canal de Twitch en /account/twitch, durante la partida la app también envía al sitio lo que muestra el Deck tracker (tu mazo con las copias robadas y jugadas, la ronda, la Legendaria del rival y las cartas que reveló, hechizos incluidos); el sitio guarda solo la última versión y la pasa, a través de Twitch, a quien ve tu canal. Del canal, el sitio guarda solo su identificador. Nunca nombres, rangos ni identificadores de jugadores o partidas. Puedes desvincular el canal en /account/twitch. Si borras tu cuenta, se borra todo lo demás.",
+  fr: "OriginsMeta Tracker : l'application Windows lit uniquement les fichiers qu'Origins TCG enregistre sur votre PC (statistiques du profil, decks de l'inventaire et, quand le jeu en enregistre un, le replay de la dernière partie) et ne touche jamais au jeu. Scanner d'écran : quand le jeu est ouvert, l'application capture uniquement la fenêtre du jeu, jamais d'autres fenêtres, et reconnaît sur votre PC les cartes du plateau, les Légendaires de l'écran d'ouverture et le mana ; les images restent en mémoire sur votre PC et ne sont jamais envoyées. De ce qu'elle voit, seuls les identifiants des cartes arrivent sur le site (les cartes jouées par vous et par votre adversaire, la Légendaire de l'adversaire), jamais de noms de joueurs. Sur l'écran d'ouverture, elle lit aussi le nom de l'adversaire, uniquement sur votre PC et seulement pour reconnaître les parties contre des bots, qui ne sont pas enregistrées : le nom n'est jamais conservé et ne quitte jamais votre PC. Vous pouvez désactiver le scanner dans l'application. Pour afficher les cartes, elle charge leurs images depuis originsmeta.com. L'application fonctionne uniquement associée à un compte OriginsMeta (avec un code à usage unique créé dans /account/tracker) : sans association, elle ne fonctionne pas. Elle vérifie l'association au démarrage et toutes les 4 heures, en n'envoyant au site que son jeton, aucune autre donnée ; si le site ne répond pas, elle continue de fonctionner pendant 7 jours après la dernière vérification réussie. Les parties enregistrées sont aussi conservées sur votre PC, dans le dossier de données de l'application. Pour chaque partie, elle envoie au site : une empreinte de la partie calculée sur le PC (jamais l'identifiant du jeu), l'heure de fin, le résultat, la file d'attente (classée ou normale), votre deck (nom, cartes, code du jeu), votre rang, les manches et les cartes jouées manche par manche ; de l'adversaire, uniquement sa Légendaire et les cartes qu'il a jouées. Elle n'envoie jamais de noms ni d'identifiants de joueurs ou de parties, ni le rang de l'adversaire, ni son deck complet, ni si l'adversaire est un bot ou une personne. Le site ajoute le patch en vigueur et l'archétype du deck. Les parties sont stockées sur Supabase (Irlande, UE) et vous êtes la seule personne à pouvoir les voir, dans /account/tracker, avec le nom de vos PC associés et l'heure de leur dernier envoi ; de l'association, la base de données ne garde qu'une empreinte du jeton, qui est chiffré sur le PC avec la protection des données de Windows. Les requêtes de l'application passent par les serveurs du site (Vercel) et de Supabase, qui conservent brièvement les journaux techniques habituels (adresse IP comprise). Statistiques anonymes : les parties de toute personne qui associe l'application entrent toujours dans les statistiques du site (win rate des Légendaires, des decks, des archétypes et des cartes, confrontations entre Légendaires), qui n'affichent que des chiffres agrégés par patch : jamais de parties isolées ni qui les a jouées. Associer l'application, ce qui est nécessaire pour l'utiliser, c'est l'accepter ; si vous ne le souhaitez pas, n'utilisez pas l'application. Vous pouvez dissocier un PC et supprimer toutes vos parties depuis /account/tracker à tout moment : elles sortent aussitôt des statistiques, parce qu'elles sont calculées à la volée. Téléchargement : quand vous cliquez sur le bouton de téléchargement de /tracker, le site enregistre le clic avec votre compte (si vous avez ouvert une session), la langue de la page et l'heure, pour savoir combien de personnes téléchargent l'application ; jamais l'adresse IP. Si vous supprimez votre compte, le clic reste sans nom. Extension Twitch (facultative) : si vous associez une chaîne Twitch dans /account/twitch, pendant la partie l'application envoie aussi au site ce qu'affiche le Deck tracker (votre deck avec les copies piochées et jouées, la manche, la Légendaire de l'adversaire et les cartes qu'il a révélées, sorts compris) ; le site n'en garde que la dernière version et la transmet, via Twitch, aux personnes qui regardent votre chaîne. De la chaîne, le site ne garde que son identifiant. Jamais de noms, de rangs ni d'identifiants de joueurs ou de parties. Vous pouvez dissocier la chaîne dans /account/twitch. Supprimer votre compte supprime tout le reste.",
+  pt: "OriginsMeta Tracker: o app para Windows só lê os arquivos que o Origins TCG salva no seu PC (estatísticas do perfil, decks do inventário e, quando o jogo salva um, o replay da última partida) e nunca mexe no jogo. Scanner de tela: quando o jogo está aberto, o app captura só a janela do jogo, nunca outras janelas, e reconhece no seu PC as cartas do tabuleiro, as Lendárias da tela de abertura e o mana; as imagens ficam na memória do seu PC e nunca são enviadas. Do que ele vê, só os identificadores das cartas chegam ao site (as cartas jogadas por você e pelo oponente, a Lendária do oponente), nunca nomes de jogadores. Na tela de abertura ele também lê o nome do oponente, só no seu PC e só para reconhecer as partidas contra bots, que não são registradas: o nome nunca é salvo e nunca sai do seu PC. Você pode desligar o scanner no app. Para mostrar as cartas, ele carrega as imagens delas de originsmeta.com. O app só funciona vinculado a uma conta do OriginsMeta (com um código de uso único criado em /account/tracker): sem a vinculação, ele não funciona. Ele confere a vinculação ao iniciar e a cada 4 horas, mandando ao site só o seu token, nenhum outro dado; se o site não responder, continua funcionando por 7 dias desde a última verificação bem-sucedida. As partidas registradas também ficam guardadas no seu PC, na pasta de dados do app. Para cada partida, ele manda ao site: uma impressão digital da partida calculada no PC (nunca o identificador do jogo), a hora do fim, o resultado, a fila (ranqueada ou normal), o seu deck (nome, cartas, código do jogo), o seu rank, as rodadas e as cartas jogadas rodada a rodada; do oponente, só a Lendária e as cartas que ele jogou. Nunca manda nomes nem identificadores de jogadores ou partidas, o rank do oponente, o deck completo dele nem se o oponente é um bot ou uma pessoa. O site acrescenta o patch em vigor e o arquétipo do deck. As partidas ficam salvas no Supabase (Irlanda, UE) e só você pode vê-las, em /account/tracker, junto com o nome dos seus PCs vinculados e a hora do último envio de cada um; da vinculação, o banco de dados guarda só uma impressão digital do token, que no PC é criptografado com a proteção de dados do Windows. As solicitações do app passam pelos servidores do site (Vercel) e do Supabase, que guardam por pouco tempo os registros técnicos habituais (endereço IP incluído). Estatísticas anônimas: as partidas de quem vincula o app sempre entram nas estatísticas do site (win rates de Lendárias, decks, arquétipos e cartas, confrontos entre Lendárias), que mostram só números agregados por patch: nunca partidas individuais nem quem as jogou. Vincular o app, que é necessário para usá-lo, significa aceitar isso; se você não quiser, não use o app. Você pode desvincular um PC e apagar todas as suas partidas em /account/tracker a qualquer momento: elas também saem na hora das estatísticas, porque são calculadas na hora. Download: quando você clica no botão de download de /tracker, o site registra o clique com a sua conta (se você tiver entrado), o idioma da página e a hora, para saber quantas pessoas baixam o app; nunca o endereço IP. Se você excluir a sua conta, o clique fica sem nome. Extensão da Twitch (opcional): se você vincular um canal da Twitch em /account/twitch, durante a partida o app também manda ao site o que o Deck tracker mostra (o seu deck com as cópias compradas e jogadas, a rodada, a Lendária do oponente e as cartas que ele revelou, feitiços incluídos); o site guarda só a última versão e a repassa, pela Twitch, para quem assiste ao seu canal. Do canal, o site guarda só o identificador. Nunca nomes, ranks ou identificadores de jogadores ou partidas. Você pode desvincular o canal em /account/twitch. Excluir a sua conta apaga todo o resto.",
+  de: "OriginsMeta Tracker: Die Windows-App liest nur die Dateien, die Origins TCG auf deinem PC speichert (Profilstatistiken, Decks im Inventar und, wenn das Spiel eines speichert, das Replay des letzten Matches), und greift nie in das Spiel ein. Bildschirm-Scanner: Wenn das Spiel geöffnet ist, nimmt die App nur das Fenster des Spiels auf, nie andere Fenster, und erkennt auf deinem PC die Karten auf dem Spielfeld, die Legendären auf dem Startbildschirm und das Mana; die Bilder bleiben im Speicher deines PCs und werden nie gesendet. Von dem, was sie sieht, erreichen nur die Kennungen der Karten die Website (die von dir und deinem Gegner gespielten Karten, die Legendäre des Gegners), nie Namen von Spielern. Auf dem Startbildschirm liest sie außerdem den Namen des Gegners, nur auf deinem PC und nur, um Matches gegen Bots zu erkennen, die nicht erfasst werden: Der Name wird nie gespeichert und verlässt nie deinen PC. Du kannst den Scanner in der App ausschalten. Um die Karten anzuzeigen, lädt sie deren Bilder von originsmeta.com. Die App funktioniert nur, wenn sie mit einem OriginsMeta-Konto verknüpft ist (mit einem Einmalcode, der unter /account/tracker erstellt wird): Ohne Verknüpfung funktioniert sie nicht. Sie prüft die Verknüpfung beim Start und alle 4 Stunden und sendet dabei nur ihr Token, keine anderen Daten; wenn die Website nicht antwortet, funktioniert sie ab der letzten erfolgreichen Prüfung noch 7 Tage weiter. Die erfassten Matches bleiben auch auf deinem PC, im Datenordner der App. Für jedes Match sendet sie an die Website: einen auf dem PC berechneten Fingerabdruck des Matches (nie die Kennung des Spiels), Endzeit, Ergebnis, Warteschlange (Ranked oder normal), dein Deck (Name, Karten, Spielcode), deinen Rang, die Runden und die Runde für Runde gespielten Karten; vom Gegner nur seine Legendäre und die Karten, die er gespielt hat. Sie sendet nie Namen oder Kennungen von Spielern oder Matches, den Rang des Gegners, sein vollständiges Deck oder ob der Gegner ein Bot oder ein Mensch ist. Die Website ergänzt den gültigen Patch und den Archetyp des Decks. Die Matches werden bei Supabase (Irland, EU) gespeichert und nur du kannst sie sehen, unter /account/tracker, zusammen mit dem Namen deiner verknüpften PCs und der Zeit ihrer letzten Synchronisierung; von der Verknüpfung speichert die Datenbank nur einen Fingerabdruck des Tokens, das auf dem PC mit dem Datenschutz von Windows verschlüsselt ist. Die Anfragen der App laufen über die Server der Website (Vercel) und von Supabase, die die üblichen technischen Logs (einschließlich IP-Adresse) für kurze Zeit aufbewahren. Anonyme Statistiken: Die Matches aller, die die App verknüpfen, fließen immer in die Statistiken der Website ein (Win-Rates von Legendären, Decks, Archetypen und Karten, Duelle zwischen Legendären), die nur zusammengefasste Zahlen pro Patch zeigen: nie einzelne Matches oder wer sie gespielt hat. Wer die App verknüpft, was für ihre Nutzung nötig ist, akzeptiert das; wenn du das nicht möchtest, verwende die App nicht. Du kannst jederzeit unter /account/tracker einen PC trennen und alle deine Matches löschen: Sie verschwinden dann sofort auch aus den Statistiken, weil diese laufend berechnet werden. Download: Wenn du auf /tracker auf die Download-Schaltfläche klickst, erfasst die Website den Klick mit deinem Konto (wenn du angemeldet bist), der Sprache der Seite und der Uhrzeit, um zu wissen, wie viele Personen die App herunterladen; nie die IP-Adresse. Wenn du dein Konto löschst, bleibt der Klick ohne Namen. Twitch-Erweiterung (optional): Wenn du unter /account/twitch einen Twitch-Kanal verknüpfst, sendet die App während des Matches der Website auch, was der Deck tracker zeigt (dein Deck mit den gezogenen und gespielten Kopien, die Runde, die Legendäre des Gegners und die Karten, die er aufgedeckt hat, Zauber eingeschlossen); die Website speichert nur die letzte Fassung und gibt sie über Twitch an die Zuschauer deines Kanals weiter. Vom Kanal speichert die Website nur seine Kennung. Nie Namen, Ränge oder Kennungen von Spielern oder Matches. Den Kanal kannst du unter /account/twitch trennen. Wenn du dein Konto löschst, wird alles andere gelöscht.",
+  ru: "OriginsMeta Tracker: приложение для Windows только читает файлы, которые Origins TCG сохраняет на вашем ПК (статистику профиля, колоды из инвентаря и, если игра его сохраняет, реплей последней партии), и никогда не вмешивается в игру. Сканер экрана: пока игра открыта, приложение захватывает только окно игры, никогда другие окна, и прямо на вашем ПК распознаёт карты на поле, Легендарные карты на стартовом экране и ману; изображения остаются в памяти вашего ПК и никогда не отправляются. Из того, что оно видит, на сайт попадают только идентификаторы карт (карты, сыгранные вами и соперником, Легендарная карта соперника), никогда имена игроков. На стартовом экране оно также читает имя соперника, только на вашем ПК и только чтобы распознавать партии против ботов, которые не записываются: имя никогда не сохраняется и не покидает ваш ПК. Сканер можно выключить в приложении. Чтобы показывать карты, приложение загружает их изображения с originsmeta.com. Приложение работает только в связке с аккаунтом OriginsMeta (через одноразовый код, созданный в /account/tracker): без привязки оно не работает. Оно проверяет привязку при запуске и каждые 4 часа, отправляя сайту только свой токен и никаких других данных; если сайт не отвечает, оно продолжает работать 7 дней с последней успешной проверки. Записанные партии хранятся и на вашем ПК, в папке данных приложения. О каждой партии оно отправляет сайту: отпечаток партии, вычисленный на ПК (никогда не идентификатор игры), время окончания, результат, очередь (рейтинговая или обычная), вашу колоду (название, карты, код игры), ваш ранг, раунды и карты, сыгранные раунд за раундом; о сопернике — только его Легендарную карту и сыгранные им карты. Оно никогда не отправляет имена или идентификаторы игроков и партий, ранг соперника, его полную колоду и сведения о том, бот соперник или человек. Сайт добавляет действующий патч и архетип колоды. Партии хранятся в Supabase (Ирландия, ЕС), и видите их только вы — в /account/tracker, вместе с названиями привязанных ПК и временем их последней синхронизации; для привязки база данных хранит только отпечаток токена, который на ПК зашифрован средствами защиты данных Windows. Запросы приложения проходят через серверы сайта (Vercel) и Supabase, которые недолго хранят обычные технические журналы (включая IP-адрес). Анонимная статистика: партии всех, кто привязывает приложение, всегда попадают в статистику сайта (винрейт Легендарных карт, колод, архетипов и карт, противостояния Легендарных карт), которая показывает только сводные числа по патчу: никогда отдельные партии и никогда — кто их играл. Привязать приложение, без чего им нельзя пользоваться, значит согласиться с этим; если вы не хотите, не пользуйтесь приложением. Вы можете в любой момент отвязать ПК и удалить все свои партии в /account/tracker: они сразу уходят и из статистики, потому что она считается на лету. Скачивание: когда вы нажимаете кнопку скачивания на /tracker, сайт записывает нажатие вместе с вашим аккаунтом (если вы вошли), языком страницы и временем, чтобы знать, сколько людей скачивают приложение; никогда IP-адрес. Если вы удалите аккаунт, нажатие останется без имени. Расширение для Twitch (по желанию): если вы привяжете канал Twitch в /account/twitch, во время партии приложение отправляет сайту и то, что показывает Deck tracker (вашу колоду со взятыми и сыгранными копиями, раунд, Легендарную карту соперника и раскрытые им карты, включая заклинания); сайт хранит только последнюю версию и передаёт её через Twitch зрителям вашего канала. О канале сайт хранит только его идентификатор. Никогда имена, ранги или идентификаторы игроков и партий. Канал можно отвязать в /account/twitch. Удаление аккаунта удаляет всё остальное.",
   // pagina legale: 您 (docs/cinese.md)
-  "zh-cn": "OriginsMeta Tracker：这款 Windows 应用只读取 Origins TCG 保存在您电脑上的文件（个人资料统计、库存中的卡组，以及游戏保存时的上一局回放），从不干预游戏。屏幕扫描：游戏打开时，应用只截取游戏窗口，从不截取其他窗口，并在您的电脑上识别棋盘上的卡牌、开局画面中的传说卡和法力；图像只保存在您电脑的内存中，从不发送。在它看到的内容中，只有卡牌的标识符会发送到网站（您和对手打出的卡牌、对手的传说卡），绝不包括玩家名字。在开局画面中，它还会读取对手的名字，仅在您的电脑上进行，且仅用于识别与机器人的对局（这类对局不会被记录）：名字从不保存，也从不离开您的电脑。您可以在应用中关闭扫描功能。为了显示卡牌，应用会从 originsmeta.com 加载卡牌图片。应用只能在关联 OriginsMeta 账号后使用（通过在 /account/tracker 生成的一次性代码）：未关联则无法使用。它在启动时和每 4 小时检查一次关联状态，只向网站发送其令牌，不发送其他数据；如果网站没有响应，它会在上次成功检查后继续工作 7 天。记录的对局也会保存在您的电脑上，位于应用的数据文件夹中。对于每场对局，它向网站发送：在电脑上计算的对局指纹（绝非游戏的标识符）、结束时间、结果、队列（排位或普通）、您的卡组（名称、卡牌、游戏卡组代码）、您的段位、各回合以及逐回合打出的卡牌；关于对手，只有其传说卡和其打出的卡牌。它从不发送玩家或对局的名字或标识符、对手的段位、对手的完整卡组，也不发送对手是机器人还是真人。网站会补充当时生效的补丁和卡组流派。对局存储在 Supabase（爱尔兰，欧盟），只有您能在 /account/tracker 中看到，同时显示您已关联电脑的名称及其上次同步时间；关于关联，数据库只保存令牌的指纹，令牌在电脑上使用 Windows 数据保护加密。应用的请求会经过网站（Vercel）和 Supabase 的服务器，它们会短期保存常规技术日志（包括 IP 地址）。匿名统计：所有关联应用的用户的对局都会计入网站统计（传说卡、卡组、流派和卡牌的胜率，传说卡之间的对阵），这些统计只按补丁显示汇总数字：绝不显示单场对局或对局玩家。关联应用是使用应用的前提，关联即表示您接受这一点；如果您不希望如此，请不要使用该应用。您可以随时在 /account/tracker 解除电脑关联并删除您的所有对局：它们也会立即从统计中移除，因为统计是实时计算的。下载：当您点击 /tracker 上的下载按钮时，网站会记录这次点击以及您的账号（如果您已登录）、页面语言和时间，以了解有多少人下载了应用；绝不记录 IP 地址。如果您删除账号，这次点击将不再关联任何名字。Twitch 扩展（可选）：如果您在 /account/tracker 关联了 Twitch 频道，对局期间应用还会向网站发送 Deck tracker 显示的内容（您的卡组及已抽到和已打出的张数、当前回合、对手的传说卡以及对手揭示的卡牌，包括法术）；网站只保留最新版本，并通过 Twitch 传递给观看您频道的观众。关于频道，网站只保存其标识符。绝不包括玩家或对局的名字、段位或标识符。您可以在 /account/tracker 解除频道关联。删除账号会删除其余所有数据。",
+  "zh-cn": "OriginsMeta Tracker：这款 Windows 应用只读取 Origins TCG 保存在您电脑上的文件（个人资料统计、库存中的卡组，以及游戏保存时的上一局回放），从不干预游戏。屏幕扫描：游戏打开时，应用只截取游戏窗口，从不截取其他窗口，并在您的电脑上识别棋盘上的卡牌、开局画面中的传说卡和法力；图像只保存在您电脑的内存中，从不发送。在它看到的内容中，只有卡牌的标识符会发送到网站（您和对手打出的卡牌、对手的传说卡），绝不包括玩家名字。在开局画面中，它还会读取对手的名字，仅在您的电脑上进行，且仅用于识别与机器人的对局（这类对局不会被记录）：名字从不保存，也从不离开您的电脑。您可以在应用中关闭扫描功能。为了显示卡牌，应用会从 originsmeta.com 加载卡牌图片。应用只能在关联 OriginsMeta 账号后使用（通过在 /account/tracker 生成的一次性代码）：未关联则无法使用。它在启动时和每 4 小时检查一次关联状态，只向网站发送其令牌，不发送其他数据；如果网站没有响应，它会在上次成功检查后继续工作 7 天。记录的对局也会保存在您的电脑上，位于应用的数据文件夹中。对于每场对局，它向网站发送：在电脑上计算的对局指纹（绝非游戏的标识符）、结束时间、结果、队列（排位或普通）、您的卡组（名称、卡牌、游戏卡组代码）、您的段位、各回合以及逐回合打出的卡牌；关于对手，只有其传说卡和其打出的卡牌。它从不发送玩家或对局的名字或标识符、对手的段位、对手的完整卡组，也不发送对手是机器人还是真人。网站会补充当时生效的补丁和卡组流派。对局存储在 Supabase（爱尔兰，欧盟），只有您能在 /account/tracker 中看到，同时显示您已关联电脑的名称及其上次同步时间；关于关联，数据库只保存令牌的指纹，令牌在电脑上使用 Windows 数据保护加密。应用的请求会经过网站（Vercel）和 Supabase 的服务器，它们会短期保存常规技术日志（包括 IP 地址）。匿名统计：所有关联应用的用户的对局都会计入网站统计（传说卡、卡组、流派和卡牌的胜率，传说卡之间的对阵），这些统计只按补丁显示汇总数字：绝不显示单场对局或对局玩家。关联应用是使用应用的前提，关联即表示您接受这一点；如果您不希望如此，请不要使用该应用。您可以随时在 /account/tracker 解除电脑关联并删除您的所有对局：它们也会立即从统计中移除，因为统计是实时计算的。下载：当您点击 /tracker 上的下载按钮时，网站会记录这次点击以及您的账号（如果您已登录）、页面语言和时间，以了解有多少人下载了应用；绝不记录 IP 地址。如果您删除账号，这次点击将不再关联任何名字。Twitch 扩展（可选）：如果您在 /account/twitch 关联了 Twitch 频道，对局期间应用还会向网站发送 Deck tracker 显示的内容（您的卡组及已抽到和已打出的张数、当前回合、对手的传说卡以及对手揭示的卡牌，包括法术）；网站只保留最新版本，并通过 Twitch 传递给观看您频道的观众。关于频道，网站只保存其标识符。绝不包括玩家或对局的名字、段位或标识符。您可以在 /account/twitch 解除频道关联。删除账号会删除其余所有数据。",
 };
 
 /** Riempie i segnaposto `{nome}` (senza interpretare i `$` di `replace`). */

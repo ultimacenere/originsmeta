@@ -10,7 +10,7 @@ import { extConfig, extCors } from "@/lib/twitchExt/server";
  *
  * POST {code} con "Authorization: Bearer <JWT dell'estensione>" dalla pagina di configurazione → {username}. Il JWT lo
  * firma Twitch con il secret dell'estensione: si accetta solo con il ruolo "broadcaster", e il canale è il suo
- * channel_id. Il codice lo crea il sito in /account/tracker (twitch_link_code); twitch_link_claim lo scambia solo con
+ * channel_id. Il codice lo crea il sito in /account/twitch (twitch_link_code); twitch_link_claim lo scambia solo con
  * il segreto del server (CRON_SECRET), così nessuno può collegare un canale senza averlo dimostrato a Twitch.
  * Solo dall'origine dell'estensione (CORS). Errori: {error} con forbidden 401, invalid_code 400, unavailable 503.
  */

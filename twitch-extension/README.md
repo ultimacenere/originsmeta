@@ -71,7 +71,7 @@ Files → Upload Version Assets.
 ## Come funziona
 
 1. Lo streamer collega OriginsMeta Tracker al suo account, crea un codice su
-   `https://originsmeta.com/<lingua>/account/tracker` (riquadro "Estensione Twitch", 10 minuti, una volta) e lo scrive
+   `https://originsmeta.com/<lingua>/account/twitch` (dal 06/11/2026; 10 minuti, una volta) e lo scrive
    nella pagina di configurazione dell'estensione: `config.js` lo manda a `POST /api/twitch/link` con il token di
    `Twitch.ext.onAuthorized` (il sito accetta solo il ruolo "broadcaster").
 2. Durante la partita l'app manda al sito lo stato del Deck tracker; il sito lo salva e lo inoltra con l'Extension

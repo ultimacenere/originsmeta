@@ -27,6 +27,7 @@ function localeOf(fd: FormData): Locale {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const trackerPath = (locale: Locale, query: string, anchor: string) => `/${locale}/account/tracker?${query}#${anchor}`;
+const twitchPath = (locale: Locale, query: string) => `/${locale}/account/twitch?${query}#extension`;
 
 /** Per `useActionState`: lo stato di prima non serve, ogni clic crea un codice nuovo. */
 export async function createTrackerCode(): Promise<TrackerCodeState> {
@@ -67,8 +68,9 @@ export async function forgetTrackerMatches(formData: FormData): Promise<void> {
 }
 
 /**
- * Codice per collegare il canale Twitch all'estensione "Deck tracker" (13/10/2026, docs/twitch.md): stesso riquadro e
- * stesse regole del codice dell'app (10 minuti, una volta, 5 l'ora), funzione twitch_link_code del blocco TWITCH.
+ * Codice per collegare il canale Twitch all'estensione "Deck tracker" (13/10/2026, docs/twitch.md; dal 06/11/2026 nella
+ * pagina /account/twitch): stesso riquadro e stesse regole del codice dell'app (10 minuti, una volta, 5 l'ora), funzione
+ * twitch_link_code del blocco TWITCH.
  */
 export async function createTwitchCode(): Promise<TrackerCodeState> {
   const { supabase, user } = await currentUser();
@@ -92,5 +94,5 @@ export async function unlinkTwitch(formData: FormData): Promise<void> {
   if (!supabase || !user) redirect(`/${locale}/login`);
   const { error } = await supabase.rpc("twitch_unlink");
   if (error) console.error("[twitch-ext] scollegamento:", error.message);
-  redirect(trackerPath(locale, error ? "error=twitch" : "done=twitch", "twitch"));
+  redirect(twitchPath(locale, error ? "error=twitch" : "done=twitch"));
 }

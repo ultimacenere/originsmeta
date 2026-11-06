@@ -1704,7 +1704,7 @@ OriginsMeta a des outils gratuits pour quiconque streame ou fait des vidéos sur
 ## Avant de commencer
 
 1. Connectez-vous à OriginsMeta (Discord ou e-mail, sans mot de passe) et publiez un deck depuis le [Deck builder](/fr/deck-builder).
-2. Ouvrez [votre compte](/fr/account#stream-tools) : le panneau « Outils pour le stream » a les liens de l'overlay et la commande de chat, déjà remplis avec votre nom d'utilisateur.
+2. Ouvrez [la page Twitch de votre compte](/fr/account/twitch#stream-tools) : la section « Outils de streaming » a les liens de l'overlay et la commande de chat, déjà remplis avec votre nom d'utilisateur.
 
 Les liens de votre compte suivent toujours **le deck que vous avez publié le plus récemment** : publiez-en un nouveau et l'overlay et la commande passent dessus en moins d'une minute. Pour afficher un deck en particulier, ouvrez sa page et utilisez le menu « Pour les streamers » : sur vos propres decks, il a l'overlay et la commande pour ce deck seulement.
 

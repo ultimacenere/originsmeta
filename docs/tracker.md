@@ -454,8 +454,8 @@ Twitch chiesta dagli streamer (docs/twitch.md).
   (`TrackerCodeBox`), PC collegati con "Scollega", statistiche personali (totali, mazzi per lista esatta, contro le
   Leggendarie, ultime 20 partite con la patch), "Cancella tutte le mie partite". Azioni in
   `src/lib/community/trackerActions.ts`, letture in `trackerQueries.ts`, testi EN/IT/ES in `src/lib/trackerLabels.ts`.
-- **In /account** il riquadro "OriginsMeta Tracker" si vede solo a Staff e admin finché l'app non si scarica
-  (`TRACKER_ACCOUNT_LINK_PUBLIC` in `trackerLabels.ts`, da accendere al lancio insieme al testo `beta`).
+- **Scheda dell'area account** (`AccountTabs`, dal 06/11/2026 al posto del riquadro in /account): la vede chi può aprire
+  la pagina (`analyticsAccess`). L'estensione Twitch ha la sua pagina `/account/twitch` (docs/twitch.md).
 - **Privacy**: paragrafo `#tracker` (EN/IT/ES, `trackerPrivacy`): cosa legge l'app, cosa manda e cosa mai, dove sta,
   chi lo vede, statistiche anonime sempre e come uscirne (non collegare, cancellare), token cifrato.
 - **Database**: blocco `-- ===== 30/09/2026: TRACKER =====` in fondo a `supabase/schema.sql` (tabelle
@@ -882,7 +882,6 @@ dipende.
 
 - Win rate anche sulle schede carta e in home (punti 3 e 4 qui sopra); quando togliere il noindex e mettere la pagina in
   sitemap.
-- Quando mostrare il riquadro in `/account` a tutti (`TRACKER_ACCOUNT_LINK_PUBLIC`) e togliere il testo "in prova".
 - Soglia delle "prime stime" (100 partite) e quando passare alle sole classificate (dalla 0.4.9 la coda è vera, vedi
   "Coda").
 - Firma e distribuzione dell'app (certificato annuale o Microsoft Store), pagina per scaricarla, aggiornamenti.

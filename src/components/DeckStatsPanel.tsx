@@ -39,6 +39,8 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
   const per = summarizeDecks(ids, own.rows, own.votes, today);
   const all = combineSummaries([...per.values()]);
   const showLinks = all.link.total > 0;
+  // finché non c'è un numero, tessere e tabelle a zero allungano /account e basta (06/11/2026): resta la riga "Ancora nessun dato"
+  const hasNumbers = Boolean(all.firstDay) || all.votes.total > 0;
   const nf = new Intl.NumberFormat(locale);
   const n = (v: number) => nf.format(v);
   const avg = (stars: number, votes: number) => {
@@ -63,6 +65,8 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
         <>
           <p className="mt-2 font-mono text-xs text-pale-muted">{all.firstDay ? fillStats(L.since, { date: formatDate(locale, all.firstDay) }) : L.noData}</p>
 
+          {hasNumbers ? (
+            <>
           {/* Tutti i mazzi insieme: 30 giorni in grande, 7 giorni e totale sotto */}
           <h3 className="kicker mt-5 text-pale-muted">{L.allDecks}</h3>
           <ul className={`mt-2 grid grid-cols-2 gap-3 ${showLinks ? "sm:grid-cols-3 lg:grid-cols-5" : "lg:grid-cols-4"}`}>
@@ -75,7 +79,12 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
 
           <DailyBars summary={all} today={today} locale={locale} L={L} n={n} />
 
-          <ul className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* con tanti mazzi le tabelle allungherebbero la pagina di qualche schermata: si aprono a richiesta */}
+          <details className="mt-5" open={decks.length <= 2}>
+            <summary className="cursor-pointer text-sm font-bold text-mint">
+              {L.perDeck} ({n(decks.length)})
+            </summary>
+          <ul className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             {ordered.map((deck) => {
               const s = per.get(deck.id);
               if (!s) return null;
@@ -141,6 +150,9 @@ export async function DeckStatsPanel({ supabase, userId, decks, locale }: Props)
               );
             })}
           </ul>
+          </details>
+            </>
+          ) : null}
         </>
       ) : null}
 

@@ -64,6 +64,8 @@ export async function ComicStatsPanel({ supabase, userId, locale }: Props) {
         <>
           <p className="mt-2 font-mono text-xs text-pale-muted">{all.firstDay ? fillStats(L.since, { date: formatDate(locale, all.firstDay) }) : L.noData}</p>
 
+          {all.firstDay ? (
+            <>
           {/* Tutti i fumetti insieme: 30 giorni in grande, 7 giorni e totale sotto */}
           <h3 className="kicker mt-5 text-pale-muted">{L.allComics}</h3>
           <ul className="mt-2 grid grid-cols-2 gap-3">
@@ -80,13 +82,21 @@ export async function ComicStatsPanel({ supabase, userId, locale }: Props) {
             </div>
           </figure>
 
-          <ul className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* come i mazzi: con tanti fumetti le tabelle si aprono a richiesta (06/11/2026) */}
+          <details className="mt-5" open={comics.length <= 2}>
+            <summary className="cursor-pointer text-sm font-bold text-mint">
+              {L.perComic} ({n(comics.length)})
+            </summary>
+          <ul className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             {ordered.map((comic) => {
               const s = per.get(comic.id);
               if (!s) return null;
               return <ComicCard key={comic.id} comic={comic} summary={s} locale={locale} L={L} n={n} pct={pct} name={langName} />;
             })}
           </ul>
+          </details>
+            </>
+          ) : null}
         </>
       ) : null}
 

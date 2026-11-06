@@ -1302,7 +1302,6 @@ export const de: Dictionary = {
       profilePage: {
         title: "Meine öffentliche Seite bearbeiten",
         intro: "Alles, was die Leute auf deiner öffentlichen Seite sehen: Bio, Kanäle und Sprachen, Profilbild und, für die Rollen Creator, Autor, Pro und Staff, das Schaufenster und seine Zahlen.",
-        back: "Mein Profil",
         jump: "Auf dieser Seite",
         sections: { profile: "Öffentliches Profil", avatar: "Profilbild", showcase: "Schaufenster", stats: "Zahlen" },
       },

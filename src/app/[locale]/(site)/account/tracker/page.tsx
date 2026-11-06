@@ -7,13 +7,16 @@ import { currentUser } from "@/lib/supabase/server";
 import { fillTracker, trackerLabels } from "@/lib/trackerLabels";
 import { trackerInstallHref } from "@/lib/analyticsLabels";
 import { analyticsAccess } from "@/lib/community/analyticsAccess";
-import { readOwnMatches, readTrackerDevices, readTwitchLink } from "@/lib/community/trackerQueries";
-import { createTwitchCode, forgetTrackerMatches, revokeTrackerDevice, unlinkTwitch } from "@/lib/community/trackerActions";
+import { readOwnMatches, readTrackerDevices } from "@/lib/community/trackerQueries";
+import { forgetTrackerMatches, revokeTrackerDevice } from "@/lib/community/trackerActions";
 import { personalStats, recentMatches, type OwnMatch, type Record3 } from "@/lib/tracker/personal";
 import { percent } from "@/lib/tracker/stats";
 import { getCardByKey, patchLabel, patchOrder, type PatchId } from "@/lib/data/cards";
 import { CardName } from "@/components/CardChip";
+import { AccountHashRedirect } from "@/components/AccountHashRedirect";
+import { AccountTabs } from "@/components/AccountTabs";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { StepCards } from "@/components/StepCards";
 import { TrackerCodeBox } from "@/components/tracker/TrackerCodeBox";
 import { TrackerTime } from "@/components/tracker/TrackerTime";
 
@@ -22,6 +25,11 @@ import { TrackerTime } from "@/components/tracker/TrackerTime";
  * noindex, fuori da sitemap e hreflang. Codice per collegare l'app, PC collegati (scollega), statistiche personali delle
  * partite arrivate dall'app, cancellazione di tutte le partite. Chi non ha fatto l'accesso va alla pagina di accesso e
  * poi torna qui. Regole del tracker: niente bot o persone, niente rank dell'avversario, niente coda partita per partita.
+ *
+ * Dal 06/11/2026 solo l'app (Pierluigi: "dobbiamo dividere bene istruzioni e codici per il tracker e le istruzioni per il
+ * layover di twitch"): l'estensione Twitch ha la pagina /account/twitch, e in cima qui un rimando, perché la versione
+ * dell'estensione già su Twitch porta ancora a questo indirizzo. Senza PC collegati la pagina comincia dai passi con il
+ * codice; con un PC collegato comincia da PC e partite, e i passi stanno chiusi sotto "Collega un altro PC".
  */
 export const dynamic = "force-dynamic";
 
@@ -73,7 +81,7 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
   // in prova dal 10/10/2026 (ANALYTICS_PUBLIC spento): solo Creator, Autore, Pro, Staff e admin, gli altri ricevono un 404
   if (!(await analyticsAccess())) notFound();
 
-  const [devices, matches, twitch] = await Promise.all([readTrackerDevices(supabase), readOwnMatches(supabase, user.id), readTwitchLink(supabase)]);
+  const [devices, matches] = await Promise.all([readTrackerDevices(supabase), readOwnMatches(supabase, user.id)]);
   const unavailable = devices.status !== "ok" || matches.status !== "ok";
   const own: OwnMatch[] = matches.status === "ok" ? matches.data : [];
   const stats = personalStats(own);
@@ -82,24 +90,51 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
   const wl = (r: Record3) => `${r.wins}–${r.losses}`;
   const forgot = Number(one(sp.forgot));
   const privacyHref = `${href(locale, "/privacy")}#tracker`;
+  const twitchHref = href(locale, "/account/twitch");
+  const pcs = devices.status === "ok" ? devices.data : [];
+  const revoked = one(sp.done) === "revoke" || one(sp.error) === "revoke";
+  // i passi per collegare l'app: dentro c'è il riquadro del codice, così istruzione e codice stanno nello stesso punto
+  const linkSteps = (
+    <>
+      <StepCards
+        steps={[
+          <>
+            {L.install}{" "}
+            <Link href={trackerInstallHref(locale)} prefetch={false} className="link-mint font-bold">
+              {L.installLink} →
+            </Link>
+          </>,
+          <>
+            {L.link.steps[0]}
+            <TrackerCodeBox labels={L.link} locale={locale} />
+          </>,
+          L.link.steps[1],
+          L.link.steps[2],
+        ]}
+      />
+      <p className="mt-3 max-w-2xl text-xs text-pale-muted">
+        {L.link.consent}{" "}
+        <Link href={privacyHref} prefetch={false} className="link-mint">
+          {L.link.consentLink}
+        </Link>
+        .
+      </p>
+    </>
+  );
   const th = "kicker px-3 py-2 text-left text-chalk-muted";
   const td = "border-t border-night-3 px-3 py-2 align-middle";
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <p className="text-sm">
-        <Link href={href(locale, "/account")} prefetch={false} className="link-mint font-bold">
-          ← {L.back}
-        </Link>
-      </p>
-      <p className="kicker mt-6 text-mint">{L.kicker}</p>
-      <h1 className="t-page mt-2">{L.h1}</h1>
-      <p className="mt-4 max-w-2xl text-chalk-muted">{L.intro}</p>
-      {/* Al posto del vecchio "l'app è in prova" (10/10/2026): chi non ha ancora l'app va al download e alla guida */}
+      <AccountTabs locale={locale} active="tracker" />
+      {/* il vecchio riquadro dell'estensione (#twitch) sta nella sua pagina */}
+      <AccountHashRedirect moved={{ "#twitch": `${twitchHref}#extension` }} />
+      <h1 className="t-page">{L.h1}</h1>
+      <p className="mt-2 max-w-2xl text-chalk-muted">{L.intro}</p>
       <p className="mt-2 max-w-2xl text-sm text-pale-muted">
-        {L.install}{" "}
-        <Link href={trackerInstallHref(locale)} prefetch={false} className="link-mint font-bold">
-          {L.installLink} →
+        {L.twitchNotice}{" "}
+        <Link href={twitchHref} prefetch={false} className="link-mint font-bold">
+          {L.twitchNoticeLink} →
         </Link>
       </p>
 
@@ -107,30 +142,22 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
         <p className="card-night mt-8 p-6 text-pale-muted">{L.unavailable}</p>
       ) : (
         <>
-          <section id="link" className="mt-10 scroll-mt-24">
-            <h2 className="t-section">{L.link.title}</h2>
-            <ol className="mt-3 max-w-2xl list-decimal space-y-1 pl-5 text-sm text-pale">
-              {L.link.steps.map((s) => (
-                <li key={s}>{s}</li>
-              ))}
-            </ol>
-            <p className="mt-3 max-w-2xl text-sm text-chalk-muted">
-              {L.link.consent}{" "}
-              <Link href={privacyHref} prefetch={false} className="link-mint">
-                {L.link.consentLink}
-              </Link>
-              .
-            </p>
-            <TrackerCodeBox labels={L.link} locale={locale} />
-          </section>
+          {pcs.length === 0 ? (
+            <section id="link" className="mt-10 scroll-mt-24">
+              <h2 className="t-section">{L.link.title}</h2>
+              {linkSteps}
+            </section>
+          ) : null}
 
-          <section id="devices" className="mt-12 scroll-mt-24">
+          {/* senza PC la sezione serve solo a dire che lo scollegamento è andato: i passi qui sopra dicono già tutto */}
+          {pcs.length || revoked ? (
+          <section id="devices" className="mt-10 scroll-mt-24">
             <h2 className="t-section">{L.devices.title}</h2>
             {one(sp.done) === "revoke" ? <p className="mt-3 text-sm text-good">{L.devices.done}</p> : null}
             {one(sp.error) === "revoke" ? <p className="mt-3 text-sm text-bad">{L.devices.error}</p> : null}
-            {devices.status === "ok" && devices.data.length ? (
+            {pcs.length ? (
               <ul className="mt-4 grid grid-cols-1 gap-3">
-                {devices.data.map((dev) => (
+                {pcs.map((dev) => (
                   <li key={dev.id} className="card-night flex flex-wrap items-center justify-between gap-3 p-4">
                     <div className="min-w-0">
                       <p className="break-words font-semibold text-pale">{dev.name}</p>
@@ -154,55 +181,22 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
                 ))}
               </ul>
             ) : (
-              <div className="card-night mt-4 p-6">
-                <p className="text-pale-muted">{L.devices.empty}</p>
-              </div>
+              <p className="mt-3 text-sm text-pale-muted">{L.devices.empty}</p>
             )}
+            {/* con un PC collegato i passi servono solo per aggiungerne un altro: restano chiusi */}
+            {pcs.length ? (
+              <details id="link" className="mt-4 scroll-mt-24">
+                <summary className="cursor-pointer text-sm font-bold text-mint">{L.link.another}</summary>
+                {linkSteps}
+              </details>
+            ) : null}
           </section>
-
-          {/* Estensione Twitch "Deck tracker" (13/10/2026, docs/twitch.md): codice per collegare il canale e scollegamento.
-              Prima della migrazione del blocco TWITCH la sezione non si mostra. */}
-          {twitch.status !== "missing" ? (
-            <section id="twitch" className="mt-12 scroll-mt-24">
-              <h2 className="t-section">{L.twitch.title}</h2>
-              <p className="mt-3 max-w-2xl text-sm text-chalk-muted">{L.twitch.intro}</p>
-              <ol className="mt-3 max-w-2xl list-decimal space-y-1 pl-5 text-sm text-pale">
-                {L.twitch.steps.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ol>
-              <p className="mt-3 max-w-2xl text-sm text-chalk-muted">
-                {L.twitch.privacy}{" "}
-                <Link href={privacyHref} prefetch={false} className="link-mint">
-                  {L.twitch.privacyLink}
-                </Link>
-                .
-              </p>
-              {one(sp.done) === "twitch" ? <p className="mt-3 text-sm text-good">{L.twitch.done}</p> : null}
-              {one(sp.error) === "twitch" ? <p className="mt-3 text-sm text-bad">{L.twitch.error}</p> : null}
-              {twitch.status === "ok" && twitch.data ? (
-                <div className="card-night mt-4 flex flex-wrap items-center justify-between gap-3 p-4">
-                  <p className="font-mono text-xs text-pale-muted">
-                    {fillTracker(L.twitch.linked, { id: twitch.data.channel_id })} <TrackerTime iso={twitch.data.linked_at} locale={locale} />
-                  </p>
-                  <form action={unlinkTwitch}>
-                    <input type="hidden" name="locale" value={locale} />
-                    <ConfirmButton label={L.twitch.unlink} confirm={L.twitch.confirm} className="btn btn-ink text-xs" />
-                  </form>
-                </div>
-              ) : (
-                <p className="mt-4 text-sm text-pale-muted">{L.twitch.none}</p>
-              )}
-              <TrackerCodeBox labels={L.twitch} locale={locale} create={createTwitchCode} />
-            </section>
           ) : null}
 
           <section id="stats" className="mt-12 scroll-mt-24">
             <h2 className="t-section">{S.title}</h2>
             {own.length === 0 ? (
-              <div className="card-night mt-4 p-6">
-                <p className="text-pale-muted">{S.empty}</p>
-              </div>
+              <p className="mt-3 text-sm text-pale-muted">{S.empty}</p>
             ) : (
               <>
                 <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -229,7 +223,7 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
                   <div className="card-night mt-6 p-5">
                     <h3 className="t-item">{S.decksTitle}</h3>
                     <p className="mt-1 text-xs text-pale-muted">{S.decksNote}</p>
-                    <div className="mt-3 overflow-x-auto">
+                    <div className="relative mt-3 overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr>
@@ -265,7 +259,7 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
                   <div className="card-night mt-6 p-5">
                     <h3 className="t-item">{S.opponentsTitle}</h3>
                     <p className="mt-1 text-xs text-pale-muted">{S.opponentsNote}</p>
-                    <div className="mt-3 overflow-x-auto">
+                    <div className="relative mt-3 overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr>
@@ -296,7 +290,7 @@ export default async function TrackerAccountPage({ params, searchParams }: { par
 
                 <div className="card-night mt-6 p-5">
                   <h3 className="t-item">{S.recentTitle}</h3>
-                  <div className="mt-3 overflow-x-auto">
+                  <div className="relative mt-3 overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr>

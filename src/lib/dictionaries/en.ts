@@ -1391,7 +1391,6 @@ export const en = {
       profilePage: {
         title: "Edit my public page",
         intro: "Everything people see on your public page: bio, channels and languages, profile photo and, for the Creator, Author, Pro and Staff roles, the showcase and its numbers.",
-        back: "My profile",
         jump: "On this page",
         sections: { profile: "Public profile", avatar: "Profile photo", showcase: "Showcase", stats: "Numbers" },
       },

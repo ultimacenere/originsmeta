@@ -23,9 +23,9 @@ import { CopyButton } from "@/components/CopyButton";
 
 /**
  * Strumenti per le dirette nell'interfaccia (pacchetto STREAM, 26/09/2026): il menu "Per le dirette" della scheda di
- * un mazzo (`DeckStreamTools`) e le istruzioni del pannello /account (`AccountStreamGuide`). Tutto in un <details>
+ * un mazzo (`DeckStreamTools`) e le istruzioni di /account/twitch (`AccountStreamGuide`). Il menu è un <details>
  * chiuso, così la scheda del mazzo non si riempie di comandi per chi non fa dirette; si apre da solo per il
- * proprietario del mazzo (sessione letta nel browser: la scheda è ISR) e in /account per chi ha già un mazzo pubblicato.
+ * proprietario del mazzo (sessione letta nel browser: la scheda è ISR).
  * Il contenuto si disegna solo alla prima apertura: nell'HTML della scheda (ISR, indicizzata) resta il solo titolo,
  * niente testo ripetuto su ogni mazzo né link verso l'overlay e le immagini da far seguire a Googlebot (quelli che
  * compaiono dopo hanno comunque nofollow, e robots.txt chiude /overlay/ e i download).
@@ -110,7 +110,7 @@ function Block({ title, hint, children }: { title: string; hint?: string; childr
 }
 
 /**
- * Il <details> dei due pannelli: conta l'apertura fatta a mano (non quella automatica) e disegna il contenuto solo
+ * Il <details> del menu del mazzo: conta l'apertura fatta a mano (non quella automatica) e disegna il contenuto solo
  * dalla prima apertura in poi (poi resta, così chiudere e riaprire non rifà niente).
  */
 function StreamDetails({
@@ -119,15 +119,12 @@ function StreamDetails({
   autoOpen,
   className,
   children,
-  id,
 }: {
   summary: ReactNode;
   placement: Placement;
   autoOpen: boolean;
   className: string;
   children: ReactNode;
-  /** ancora del pannello (/account#stream-tools, 30/09/2026: ci porta la guida pubblica all'overlay) */
-  id?: string;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const automatic = useRef(false);
@@ -143,7 +140,6 @@ function StreamDetails({
   return (
     <details
       ref={ref}
-      id={id}
       className={className}
       onToggle={(e) => {
         if (!e.currentTarget.open) return;
@@ -275,7 +271,7 @@ export function DeckStreamTools({
         {isOwner ? null : (
           <p className="max-w-2xl text-xs text-pale-muted">
             {labels.ownerOnly}{" "}
-            <a href={`/${locale}/account`} className="font-semibold text-mint underline-offset-2 hover:underline">
+            <a href={`/${locale}/account/twitch#stream-tools`} className="font-semibold text-mint underline-offset-2 hover:underline">
               {labels.accountLink}
             </a>
           </p>
@@ -286,9 +282,9 @@ export function DeckStreamTools({
 }
 
 /**
- * Istruzioni per le dirette nel pannello privato /account: il comando !deck per Nightbot, StreamElements e Fossabot e
- * l'overlay per OBS, sempre sull'ultimo mazzo pubblicato dell'utente (?u=<nome utente>). Lingua della risposta: quella
- * della pagina (lang=…), con la frase che spiega come cambiarla.
+ * Istruzioni per le dirette nella pagina privata /account/twitch (in /account fino al 06/11/2026): il comando !deck per
+ * Nightbot, StreamElements e Fossabot e l'overlay per OBS, sempre sull'ultimo mazzo pubblicato dell'utente (?u=<nome
+ * utente>). Lingua della risposta: quella della pagina (lang=…), con la frase che spiega come cambiarla.
  */
 export function AccountStreamGuide({
   username,
@@ -310,20 +306,11 @@ export function AccountStreamGuide({
   const bots = botCommands(chatEndpoint(origin, { user: username }, locale));
   const row = { placement, copy: tools.copy, copied: tools.copied };
   return (
-    <StreamDetails
-      placement={placement}
-      autoOpen={hasDecks}
-      id="stream-tools"
-      className="card-night mt-12 scroll-mt-24 p-5 sm:p-6"
-      summary={
-        <summary className="cursor-pointer">
-          <h2 className="t-section inline">{labels.title}</h2>
-        </summary>
-      }
-    >
-      <div className="mt-3 space-y-6">
-        <p className="max-w-2xl text-sm text-chalk-muted">{labels.intro}</p>
-        {hasDecks ? null : <p className="rounded-lg border-2 border-gold bg-gold/10 p-3 text-xs text-pale">{labels.noDecks}</p>}
+    <section id="stream-tools" className="mt-12 scroll-mt-24">
+      <h2 className="t-section">{labels.title}</h2>
+      <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{labels.intro}</p>
+      {hasDecks ? null : <p className="mt-3 rounded-lg border-2 border-gold bg-gold/10 p-3 text-xs text-pale">{labels.noDecks}</p>}
+      <div className="card-night mt-4 space-y-6 p-5 sm:p-6">
         <Block title={labels.command} hint={labels.commandHint}>
           <CopyRow {...row} label={tools.nightbot} value={bots.nightbot} tool="chat_nightbot" />
           <CopyRow {...row} label={tools.streamelements} value={bots.streamelements} tool="chat_streamelements" />
@@ -337,6 +324,6 @@ export function AccountStreamGuide({
           })}
         </Block>
       </div>
-    </StreamDetails>
+    </section>
   );
 }

@@ -1714,7 +1714,7 @@ O OriginsMeta tem ferramentas grátis para quem faz live ou vídeos sobre Origin
 ## Antes de começar
 
 1. Entre no OriginsMeta (Discord ou e-mail, sem senha) e publique um deck pelo [Deck builder](/pt/deck-builder).
-2. Abra [a sua conta](/pt/account#stream-tools): o painel "Ferramentas para lives" tem os links do overlay e o comando de chat, já preenchidos com o seu nome de usuário.
+2. Abra [a página Twitch da sua conta](/pt/account/twitch#stream-tools): a seção "Ferramentas para lives" tem os links do overlay e o comando de chat, já preenchidos com o seu nome de usuário.
 
 Os links da sua conta sempre seguem **o deck que você publicou por último**: publique um novo e o overlay e o comando passam para ele em menos de um minuto. Para mostrar um deck específico, abra a página dele e use o menu "Para streamers": nos seus próprios decks, ele tem o overlay e o comando só daquele deck.
 

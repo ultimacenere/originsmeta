@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { formatDate, href, siteUrl } from "@/lib/i18n";
+import { formatDate, href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { getCard, latestPatch, patchAt, patchLabel, patchOrder } from "@/lib/data/cards";
@@ -25,16 +25,16 @@ import { TournamentCard } from "@/components/TournamentCard";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { AccountDeckSets } from "@/components/AccountDeckSets";
 import { AccountHashRedirect } from "@/components/AccountHashRedirect";
-import { AccountStreamGuide } from "@/components/stream/StreamTools";
-import { streamLabels } from "@/lib/streamLabels";
+import { AccountTabs } from "@/components/AccountTabs";
+import { accountLabels } from "@/lib/accountLabels";
+import { deckSetLabels } from "@/lib/deckSetLabels";
 import { DeckStatsPanel } from "@/components/DeckStatsPanel";
 import { Suspense } from "react";
 import { AccountGuides } from "@/components/guides/AccountGuides";
 import { AccountComics } from "@/components/comics/AccountComics";
 import { ComicStatsPanel } from "@/components/comics/ComicStatsPanel";
-import { TRACKER_ACCOUNT_LINK_PUBLIC, trackerLabels } from "@/lib/trackerLabels";
-import { trackerInstallHref } from "@/lib/analyticsLabels";
-import { canSeeAnalytics } from "@/lib/community/badges";
+import { canPublishComics, canPublishGuides } from "@/lib/community/badges";
+import { canSeeAllStats } from "@/lib/community/deckStats";
 
 export const dynamic = "force-dynamic";
 
@@ -76,23 +76,36 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
     listSavedDecks(supabase, user.id),
   ]);
   const profile = (profileRow as (Profile & { role: string; badge: string | null; created_at: string }) | null) ?? null;
-  // il tracker in /account: a tutti quando si apre (TRACKER_ACCOUNT_LINK_PUBLIC = ANALYTICS_PUBLIC); in prova dal 10/10/2026
-  // solo Creator, Autore, Pro, Staff e admin (canSeeAnalytics di badges.ts), con il link al download
-  const showTracker = TRACKER_ACCOUNT_LINK_PUBLIC || canSeeAnalytics(profile?.badge, profile?.role);
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
   const FL = favoriteLabels[locale];
   // I mazzi privati ("Salva privato" del deck builder, stato 'draft') hanno la loro sezione: niente voti né scheda pubblica.
   const decks = allDecks.filter((deck) => deck.status !== "draft");
   const drafts = allDecks.filter((deck) => deck.status === "draft");
   const x = d.tournaments;
+  const A = accountLabels[locale].index;
+  const profileHref = href(locale, "/account/profile");
+  // l'indice fisso (06/11/2026, Pierluigi: "dobbiamo sistemare un po di pagine, i profili personali"): le sezioni che ci sono
+  // per questo profilo, nell'ordine della pagina. Guide e fumetti restano anche per chi ha perso il ruolo, ma senza voce qui.
+  const index = [
+    { id: "decks", label: d.nav.decks },
+    { id: "tournament-decks", label: deckSetLabels[locale].nav.tournament },
+    { id: "private", label: A.private },
+    ...(saved ? [{ id: "saved", label: A.saved }] : []),
+    ...(decks.length || canSeeAllStats(profile) ? [{ id: "stats", label: A.stats }] : []),
+    { id: "tierlists", label: d.nav.tierList },
+    ...(canPublishGuides(profile?.badge, profile?.role) ? [{ id: "guides", label: d.nav.guides }] : []),
+    ...(canPublishComics(profile?.badge, profile?.role) ? [{ id: "comics", label: d.nav.comics }] : []),
+    { id: "tournaments", label: A.tournaments },
+    { id: "following", label: A.following },
+  ];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <p className="kicker text-mint">{d.nav.account}</p>
-      <h1 className="t-page mt-2">{c.account.title}</h1>
-      <p className="mt-4 max-w-2xl text-chalk-muted">{c.account.intro}</p>
+      <AccountTabs locale={locale} active="profile" />
+      <h1 className="t-page">{c.account.title}</h1>
+      <p className="mt-2 max-w-2xl text-chalk-muted">{c.account.intro}</p>
 
-      <section className="card-night mt-8 flex flex-wrap items-center gap-4 p-6">
+      <section className="card-night mt-6 flex flex-wrap items-center gap-4 p-6">
         <Avatar profile={profile} name={name} size={56} />
         <div className="min-w-0 flex-1">
           <p className="kicker text-pale-muted">{c.account.signedInAs}</p>
@@ -120,17 +133,32 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           <SignOutButton locale={locale} label={d.nav.logout} className="btn btn-ink text-xs" />
         </div>
       </section>
-      <AccountHashRedirect target={href(locale, "/account/profile")} />
+      {/* Ancore vecchie: profilo e vetrina stanno in /account/profile dal 01/10/2026, Tracker e dirette nelle loro pagine dal 06/11/2026 */}
+      <AccountHashRedirect
+        moved={{
+          "#profile": `${profileHref}#profile`,
+          "#avatar": `${profileHref}#avatar`,
+          "#showcase": `${profileHref}#showcase`,
+          "#showcase-stats": `${profileHref}#showcase-stats`,
+          "#stream-tools": `${href(locale, "/account/twitch")}#stream-tools`,
+          "#tracker": href(locale, "/account/tracker"),
+        }}
+      />
+
+      <nav aria-label={c.account.profilePage.jump} className="tier-onpage">
+        {index.map((j) => (
+          <a key={j.id} href={`#${j.id}`}>
+            {j.label}
+          </a>
+        ))}
+      </nav>
+
+      {/* le sezioni si fermano sotto l'indice fisso, non sotto l'header */}
+      <div className="[&_[id]]:scroll-mt-32">
 
       {/* La casella messaggi non sta qui: vive tutta in /account/messages, dove porta la busta dell'header (Pierluigi, 27/09/2026:
           "questo modulo deve stare sotto messaggi e non sotto profilo") */}
-      {/* Chi segui (pacchetto SEGUI, 27/09/2026): profili seguiti e "Smetti di seguire"; ancora #following */}
-      {/* dentro <Suspense> (17/10/2026): la pagina non aspetta questa lettura, la sezione arriva quando è pronta */}
-      <Suspense fallback={null}>
-        <FollowingSection locale={locale} supabase={supabase} userId={user.id} />
-      </Suspense>
-
-      <section className="mt-10">
+      <section id="decks" className="mt-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="t-section">{c.account.myDecks}</h2>
           <Link href={href(locale, "/deck-builder")} className="btn btn-primary text-xs">
@@ -145,14 +173,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             : c.account.deckQuotaUnlimited.replace("{used}", String(deckLimit.used))}
         </p>
         {decks.length === 0 ? (
-          <div className="card-night mt-4 p-6">
-            <p className="text-pale-muted">{c.account.noDecks}</p>
-            <p className="mt-3">
-              <Link href={href(locale, "/deck-builder")} className="btn btn-ink text-xs">
-                {c.account.noDecksCta}
-              </Link>
-            </p>
-          </div>
+          <p className="mt-3 text-sm text-pale-muted">{c.account.noDecks}</p>
         ) : (
           <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {decks.map((deck) => {
@@ -215,21 +236,14 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
         <AccountDeckSets locale={locale} supabase={supabase} userId={user.id} dict={d} />
       </Suspense>
 
-      {/* Le tue statistiche (pacchetto STATS, 26/09/2026): numeri dei mazzi pubblicati; per lo staff anche la classifica.
-          Dentro <Suspense>: il resto della pagina non aspetta le sue letture. */}
-      <Suspense fallback={null}>
-        <DeckStatsPanel supabase={supabase} userId={user.id} decks={decks} locale={locale} />
-      </Suspense>
-      
       {/* Mazzi privati: "Salva privato" del deck builder (21/09/2026). Il salvataggio porta qui (#private). */}
       <section id="private" className="mt-12 scroll-mt-24">
         <h2 className="t-section">{c.account.privateTitle}</h2>
-        <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{c.account.privateIntro}</p>
         {drafts.length === 0 ? (
-          <div className="card-night mt-4 p-6">
-            <p className="text-pale-muted">{c.account.noPrivate}</p>
-          </div>
+          <p className="mt-2 text-sm text-pale-muted">{c.account.noPrivate}</p>
         ) : (
+          <>
+          <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{c.account.privateIntro}</p>
           <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {drafts.map((deck) => {
               const code = deck.code_om ?? encodeOmCode({ name: deck.name, legendary: deck.legendary, cards: deck.cards, customCards: deck.custom_cards });
@@ -263,6 +277,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
               );
             })}
           </ul>
+          </>
         )}
       </section>
 
@@ -270,12 +285,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
       {saved ? (
         <section id="saved" className="mt-12 scroll-mt-24">
           <h2 className="t-section">{FL.account.title}</h2>
-          <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{FL.account.hint}</p>
           {saved.length === 0 ? (
-            <div className="card-night mt-4 p-6">
-              <p className="text-pale-muted">{FL.account.empty}</p>
-            </div>
+            <p className="mt-2 text-sm text-pale-muted">{FL.account.empty}</p>
           ) : (
+            <>
+            <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{FL.account.hint}</p>
             <ul className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
               {saved.map((s) => {
                 const live = s.deck && s.deck.status === "published" ? s.deck : null;
@@ -306,9 +320,16 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
                 );
               })}
             </ul>
+            </>
           )}
         </section>
       ) : null}
+
+      {/* Le tue statistiche (pacchetto STATS, 26/09/2026): numeri dei mazzi pubblicati; per lo staff anche la classifica.
+          Dentro <Suspense>: il resto della pagina non aspetta le sue letture. */}
+      <Suspense fallback={null}>
+        <DeckStatsPanel supabase={supabase} userId={user.id} decks={decks} locale={locale} />
+      </Suspense>
 
       {/*
         Le mie tier list (23/09/2026, §1 punto 27.5 della KB: "mazzi e tier list create visibili nel profilo di chi
@@ -322,12 +343,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
             {c.account.newTierList} →
           </Link>
         </div>
-        <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{c.account.tierListsIntro}</p>
         {tierLists.length === 0 ? (
-          <div className="card-night mt-4 p-6">
-            <p className="text-pale-muted">{c.account.noTierLists}</p>
-          </div>
+          <p className="mt-2 text-sm text-pale-muted">{c.account.noTierLists}</p>
         ) : (
+          <>
+          <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{c.account.tierListsIntro}</p>
           <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {tierLists.map((tl) => (
               <li key={tl.id} className="card-night flex flex-col p-5">
@@ -363,6 +383,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
               </li>
             ))}
           </ul>
+          </>
         )}
       </section>
 
@@ -379,31 +400,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
         <ComicStatsPanel locale={locale} supabase={supabase} userId={user.id} />
       </Suspense>
 
-      {/* Strumenti per le dirette (pacchetto STREAM): comando !deck e overlay per OBS sull'ultimo mazzo pubblicato */}
-      {profile?.username ? (
-        <AccountStreamGuide username={profile.username} locale={locale} site={siteUrl} hasDecks={decks.some((deck) => deck.status === "published")} labels={streamLabels[locale].account} tools={streamLabels[locale].tools} />
-      ) : null}
-
-      {/* OriginsMeta Tracker (tracker/overlay, Fase 3, 30/09/2026): l'app per Windows si collega e si gestisce da /account/tracker */}
-      {showTracker ? (
-        <section id="tracker" className="mt-12 scroll-mt-24">
-          <h2 className="t-section">{trackerLabels[locale].account.title}</h2>
-          <p className="mt-2 max-w-2xl text-sm text-chalk-muted">{trackerLabels[locale].account.intro}</p>
-          <p className="mt-4">
-            <Link href={href(locale, "/account/tracker")} prefetch={false} className="btn btn-ink text-xs">
-              {trackerLabels[locale].account.open} →
-            </Link>
-          </p>
-          <p className="mt-3 text-sm">
-            <Link href={trackerInstallHref(locale)} prefetch={false} className="link-mint font-bold">
-              {trackerLabels[locale].account.download} →
-            </Link>
-          </p>
-        </section>
-      ) : null}
-
       {/* Tournament Organizer: tornei organizzati e giocati */}
-      <section className="mt-12">
+      <section id="tournaments" className="mt-12">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="t-section">{x.account.title}</h2>
           <Link href={href(locale, "/tournaments/new")} className="btn btn-primary text-xs">
@@ -423,9 +421,7 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </>
         ) : null}
         {tournaments.organized.length === 0 && tournaments.playing.length === 0 && tournaments.invited.length === 0 ? (
-          <div className="card-night mt-4 p-6">
-            <p className="text-pale-muted">{x.account.none}</p>
-          </div>
+          <p className="mt-3 text-sm text-pale-muted">{x.account.none}</p>
         ) : (
           <>
             {tournaments.organized.length ? (
@@ -462,6 +458,13 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           </>
         )}
       </section>
+
+      {/* Chi segui (pacchetto SEGUI, 27/09/2026): profili seguiti e "Smetti di seguire"; ancora #following */}
+      {/* dentro <Suspense> (17/10/2026): la pagina non aspetta questa lettura, la sezione arriva quando è pronta */}
+      <Suspense fallback={null}>
+        <FollowingSection locale={locale} supabase={supabase} userId={user.id} />
+      </Suspense>
+      </div>
     </div>
   );
 }

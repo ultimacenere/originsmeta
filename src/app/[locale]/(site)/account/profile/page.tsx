@@ -6,6 +6,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { isShowcaseBadge } from "@/lib/community/badges";
 import type { Profile } from "@/lib/community/types";
+import { AccountTabs } from "@/components/AccountTabs";
 import { ProfileEditor } from "@/components/ProfileEditor";
 import { ProfileNameEditor } from "@/components/ProfileNameEditor";
 import { profileNameLabels } from "@/lib/profileNameLabels";
@@ -55,12 +56,8 @@ export default async function AccountProfilePage({ params }: { params: LocalePar
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <p className="text-sm">
-        <Link href={href(locale, "/account")} prefetch={false} className="link-mint font-bold">
-          ← {P.back}
-        </Link>
-      </p>
-      <h1 className="t-page mt-6">{P.title}</h1>
+      <AccountTabs locale={locale} active="public" />
+      <h1 className="t-page">{P.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{P.intro}</p>
       <div className="mt-6 flex flex-wrap items-center gap-2">
         {profile?.username ? (

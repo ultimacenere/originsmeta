@@ -32,14 +32,7 @@ export async function AccountDeckSets({ locale, supabase, userId, dict }: { loca
         <p className="mt-1 font-mono text-xs text-pale-muted">{fillLabel(S.account.limit, { used: String(limit.used), cap: String(limit.cap) })}</p>
       ) : null}
       {sets.length === 0 ? (
-        <div className="card-night mt-4 p-6">
-          <p className="text-pale-muted">{S.account.empty}</p>
-          <p className="mt-3">
-            <Link href={`${href(locale, "/deck-builder")}?mode=tournament`} className="btn btn-ink text-xs">
-              {S.account.cta}
-            </Link>
-          </p>
-        </div>
+        <p className="mt-3 text-sm text-pale-muted">{S.account.empty}</p>
       ) : (
         <ul className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           {sets.map((set) => {

@@ -1395,7 +1395,6 @@ export const zhCn: Dictionary = {
       profilePage: {
         title: "编辑我的公开主页",
         intro: "大家在你公开主页上看到的一切：简介、频道和语言、头像，以及 Creator、作者、Pro 和 Staff 角色的展示区和数据。",
-        back: "我的资料",
         jump: "本页内容",
         sections: { profile: "公开资料", avatar: "头像", showcase: "展示区", stats: "数据" },
       },

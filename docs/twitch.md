@@ -38,17 +38,18 @@ Pagina di configurazione dell'estensione (streamer)
 - **JWT**: `src/lib/twitchExt/jwt.ts` (HS256 con il secret dell'estensione, niente librerie). Il sito verifica quello
   della pagina di configurazione (ruolo broadcaster, `channel_id`) e firma i token "external" per PubSub
   (`src/lib/twitchExt/server.ts`, 2 minuti).
-- **Collegamento del canale**: lo streamer crea un codice su `/account/tracker`, riquadro "Estensione Twitch" (10
-  minuti, una volta, 5 l'ora, come il codice dell'app), e lo scrive nella pagina di configurazione dell'estensione;
+- **Collegamento del canale**: lo streamer crea un codice su `/account/twitch` (dal 06/11/2026; prima stava in
+  `/account/tracker`, che ora ci rimanda; 10 minuti, una volta, 5 l'ora, come il codice dell'app), e lo scrive nella pagina
+  di configurazione dell'estensione;
   `/api/twitch/link` verifica il JWT e chiama `twitch_link_claim` con il segreto del server (`CRON_SECRET`): senza il
   segreto nessuno può legare un canale che non ha dimostrato di avere a Twitch. Un canale sta con un solo account e un
-  account con un solo canale; si scollega da `/account/tracker`.
+  account con un solo canale; si scollega da `/account/twitch`.
 - **Database** (blocco `-- ===== 13/10/2026: TWITCH =====` in fondo a `supabase/schema.sql`): `twitch_links`
   (proprietario, id del canale; il proprietario legge solo `channel_id` e `linked_at`), `twitch_link_codes` (impronte),
   `tracker_live` (ultimo stato, 4 KB al massimo, solo per chi ha un canale). Funzioni `twitch_link_code`,
   `twitch_link_claim` (segreto), `twitch_unlink`, `tracker_live_push` (token dell'app, al massimo due invii al
   secondo), `twitch_live_state` (anon, stato degli ultimi 6 ore). Nessuna lettura né scrittura diretta. Il sito regge
-  senza migrazione: il riquadro di `/account/tracker` non compare, le rotte rispondono "unavailable" o stato vuoto.
+  senza migrazione: la sezione di `/account/twitch` non compare, le rotte rispondono "unavailable" o stato vuoto.
 - **Informativa**: `#tracker` (testo in `trackerPrivacy` di `src/lib/trackerLabels.ts`, quattro lingue).
 
 ## Modalità "come l'app" (14/10/2026)

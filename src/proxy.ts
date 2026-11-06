@@ -73,6 +73,8 @@ export const config = {
     "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/account/staff/messages/:id",
     // tracker/overlay (30/09/2026): collegamento dell'app, PC e partite, pagina renderizzata sul server
     "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/account/tracker",
+    // estensione Twitch, overlay per OBS e comando !deck (06/11/2026), pagina renderizzata sul server
+    "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/account/twitch",
     // OriginsMeta Tracker in prova (10–11/10/2026) aveva qui la pagina dell'app e quella dei win rate, che leggevano la
     // sessione per decidere chi le vedeva; aperte a tutti il 12/10/2026 (ANALYTICS_PUBLIC acceso), sono di nuovo statiche e
     // ISR. Per richiudere: ANALYTICS_PUBLIC = false e due righe per le pagine di oggi, "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/analytics"

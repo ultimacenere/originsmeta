@@ -1,7 +1,7 @@
 /*
  * OriginsMeta Deck tracker, estensione Twitch: pagina di configurazione dello streamer (config.html, usata anche come
- * Live Config). Tre passi e il collegamento del canale: il codice creato su originsmeta.com/<lingua>/account/tracker
- * (riquadro "Estensione Twitch", vale 10 minuti, una volta) va a POST https://originsmeta.com/api/twitch/link con il
+ * Live Config). Tre passi e il collegamento del canale: il codice creato su originsmeta.com/<lingua>/account/twitch
+ * (dal 06/11/2026; vale 10 minuti, una volta) va a POST https://originsmeta.com/api/twitch/link con il
  * token che Twitch dà all'estensione (onAuthorized). Il sito accetta solo il ruolo "broadcaster" del canale.
  *
  * Dal 14/10/2026 anche la scelta di come gli spettatori vedono il mazzo (Pierluigi: "sì procedi, con la scelta nella
@@ -21,7 +21,7 @@
   // ---------- struttura ----------
   var step2 = el("li", null, [
     t("cfgStep2a"),
-    OM.siteLink("/account/tracker", "originsmeta.com/" + OM.lang + "/account/tracker", "om-link om-link--inline"),
+    OM.siteLink("/account/twitch", "originsmeta.com/" + OM.lang + "/account/twitch", "om-link om-link--inline"),
     t("cfgStep2b")
   ]);
 

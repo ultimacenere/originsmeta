@@ -8,9 +8,11 @@ import { fillTracker, type TrackerLabels } from "@/lib/trackerLabels";
  * "Crea un codice" di /account/tracker (tracker/overlay, Fase 3, 30/09/2026): il codice monouso da scrivere nell'app
  * per collegarla all'account. Vale 10 minuti e una volta (tracker_link_code); scaduto, il riquadro lo dice. Il codice
  * vive solo in questo riquadro: non finisce nell'indirizzo della pagina né nella cronologia del browser. Dal 13/10/2026 lo
- * stesso riquadro crea anche il codice per l'estensione Twitch (`create` = createTwitchCode, testi di `twitch`).
+ * stesso riquadro crea anche il codice per l'estensione Twitch (`create` = createTwitchCode), dal 06/11/2026 nella sua
+ * pagina /account/twitch: i due codici hanno la stessa forma, quindi `note` dice sempre dove va quello che si sta creando.
+ * Sta dentro il passo delle istruzioni (StepCards), senza una cornice sua.
  */
-type CodeLabels = Pick<TrackerLabels["link"], "create" | "creating" | "yourCode" | "expires" | "expired" | "copy" | "copied" | "errors">;
+type CodeLabels = Pick<TrackerLabels["link"], "create" | "creating" | "yourCode" | "note" | "expires" | "expired" | "copy" | "copied" | "errors">;
 
 export function TrackerCodeBox({ labels, locale, create = createTrackerCode }: { labels: CodeLabels; locale: string; create?: () => Promise<TrackerCodeState> }) {
   const [state, action, pending] = useActionState<TrackerCodeState>(create, {});
@@ -30,12 +32,13 @@ export function TrackerCodeBox({ labels, locale, create = createTrackerCode }: {
   const until = state.expiresAt ? new Date(state.expiresAt).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" }) : "";
 
   return (
-    <div className="card-night mt-4 p-5">
+    <div className="mt-3">
       <form action={action}>
         <button type="submit" disabled={pending} className="btn btn-primary text-xs disabled:opacity-60">
           {pending ? labels.creating : labels.create}
         </button>
       </form>
+      <p className="mt-2 text-xs text-pale-muted">{labels.note}</p>
       <div aria-live="polite">
         {state.code && !expired ? (
           <div className="mt-5">
