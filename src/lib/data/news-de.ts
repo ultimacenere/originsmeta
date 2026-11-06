@@ -9,13 +9,144 @@ import type { NewsCopy } from "./news-fr";
  * docs/tedesco.md; controlli in newsMeta.test.ts (lunghezze, link con /de/, ancore, paragrafo "Update vom …").
  */
 export const deText: Record<string, NewsCopy> = {
+  "origins-tcg-roadmap-ama-recap": {
+    title: "Roadmap-AMA von Origins TCG, der vollständige Bericht: Prestige, Seltenheiten, Turniere und neue Mechaniken",
+    metaTitle: "Roadmap-AMA von Origins TCG: der vollständige Bericht",
+    description:
+      "Der vollständige Bericht zum AMA von Origins TCG: Prestige und Collector Pass, Seltenheiten und Preise, Turniere, Läden, neue Mechaniken und Verbesserungen.",
+    summary:
+      "Zwei Stunden AMA auf dem offiziellen Discord mit der gesamten Roadmap des Early Access: wie Collector Pass und Prestige funktionieren, Seltenheiten und Preise der Packs, Turniere bis zur Weltmeisterschaft, das Programm für Läden, neue Mechaniken wie Essen und verdeckte Karten sowie die kommenden Verbesserungen.",
+    highlights: [
+      { label: "Wo das Spiel steht", text: "bis zu 9.800 Spieler pro Tag, Kickstarter nahe 1 Million Dollar", anchor: "stand" },
+      { label: "Der Sechs-Wochen-Rhythmus", text: "Saisons, Bosse, Patches, das komplette Set im Februar", anchor: "rhythmus" },
+      { label: "Collector Pass und Prestige", text: "die wöchentliche Wahl, Prestige Points, Kapseln und die 48 Karten", anchor: "prestige" },
+      { label: "Packs, Displays und Cases", text: "die Chancen von 1 zu 12 bis 1 zu 1.200 und die Preise", anchor: "packs" },
+      { label: "Turniere", text: "monatliche Events, das Open, danach Weeklies bis zur WM", anchor: "turniere" },
+      { label: "Läden", text: "über 100 interessiert, QR-Check-in und Promos vor Ort", anchor: "laeden" },
+      { label: "Neue Mechaniken", text: "Essen, verdeckte Karten, First Reveal, Barrieren mit Schild", anchor: "mechaniken" },
+      { label: "Sherwood Forest und Marker", text: "der Ort wird vorerst selten, Marker bleiben im Friedhof", anchor: "sherwood" },
+      { label: "Verbesserungen", text: "Battle Energy, Drag and Drop, Kampflog, Rückgängig", anchor: "verbesserungen" },
+      { label: "Ranglisten, Bots und Cheating", text: "Elo im Hintergrund, Titel am 2. Dezember", anchor: "ranglisten" },
+      { label: "Creator und Community", text: "Origins Drops, Co-Streaming, Empfehlungen", anchor: "creator" },
+    ],
+    body: `Koin Games hat am 6. November auf dem offiziellen Discord rund zwei Stunden lang das „Super Secret Early Access Roadmap AMA“ abgehalten. Auf der Bühne waren Gründer und CEO Tim Jooste, Studio Head Mike „Mawr“ Marr, Mitgründer und Chief Product Officer Kevin sowie Alex für die Turniere. Das ist der vollständige Bericht; die kurze Fassung steht in unserer [AMA Preview](/de/news/origins-tcg-roadmap-ama-preview). Preise und Chancen sind die live genannten, mehrere davon mit einem „ich glaube“.
+
+## Wo das Spiel steht {#stand}
+
+Tim begann mit den Zahlen. Origins ist seit fast fünf Jahren in Entwicklung, die Demo kam vor etwa drei Monaten heraus, mit einer Community von gut hundert Leuten. Vor dem Next Fest lag das Spiel bei rund 20.000 Downloads. Das Next Fest selbst lief schlechter als erhofft: Laut Tim haben KI-Werkzeuge fast 4.000 zusätzliche Spiele in die Oktober-Ausgabe gebracht.
+
+Die Wende kam mit der Turnierwoche: rund 2.100 Anmeldungen von fast 1.800 verschiedenen Spielern, ein Höchststand von 610 gleichzeitigen Spielern am Samstag, 317 Streams, in der Spitze 5.500 Zuschauer und im Schnitt etwa 1.000 an jenem Samstag. Drei der ersten vier kamen aus Italien, der vierte aus Zypern. Im Early Access sind jetzt etwa 7.000 bis 9.800 Spieler pro Tag unterwegs.
+
+Zum Kickstarter, der nahe 1 Million Dollar liegt, sagte Tim, das Team habe vor einem Monat einen Lizenz- und Publishing-Vertrag mit einem großen Unternehmen abgelehnt, um beim kostenlosen Wettbewerb und beim echten Besitz zu bleiben. Koin hat heute mehr als 40 Mitarbeitende.
+
+## Der Sechs-Wochen-Rhythmus {#rhythmus}
+
+- **Dienstag, 10. November:** ein Update zu Verbindungsabbrüchen und Cheating, ohne Balance-Änderungen.
+- **Dienstag, 17. November:** Balance-Patch.
+- **2. Dezember:** Die Saison endet und das erste große Update kommt, mit den Sammelsystemen, neuen Orten und Titeln.
+- **Februar:** das komplette Set Myths and Legends, etwa 218 Karten, mit allen Kickstarter-Belohnungen.
+
+Eine Saison dauert sechs Wochen, mit einem Boss am Anfang und einem in der dritten Woche, wie Dr. Frank. Jeder Boss bringt ein neues Deck mit etwa zehn neuen Karten. Nach Dezember gibt es eine Saison bis Mitte Januar und eine von Mitte Januar bis Februar. Balance-Updates kommen etwa alle zwei Wochen, dazu Hotfixes bei Bedarf. Mawr teilte die Arbeit auf: ein Gameplay-Team für Karten und Orte, ein Feature-Team für die großen Systeme und dazwischen ein ständiger Strom an Verbesserungen.
+
+Ebenfalls in Arbeit sind Mobile, das laut Mawr jetzt startet, und der Draft-Modus, parallel, weil andere Entwickler daran sitzen. Beides hat keinen Termin. Der Playtest-Server öffnet im Dezember wieder für Unterstützer mit hohem Rang, mit allen Karten. Im Hintergrund arbeitet Koin an Slabs und an Spielbrettern, die man besitzen kann.
+
+## Collector Pass, Prestige und Kapseln {#prestige}
+
+Der **Collector Pass** ist ein einmaliges Konto-Upgrade auf Lebenszeit. Unterstützer jeder Kickstarter-Stufe bekommen ihn am 2. Dezember; danach gibt es ihn auf Steam, laut Tim für 15 oder 20 $. Pro Konto gibt es einen, und er ist nicht handelbar. Du brauchst ihn nicht für den Marktplatz, nicht für Turniere und im Early Access auch nicht für die Rangliste.
+
+Mit dem Pass öffnest du in jeder Woche, in der du ein Mindestmaß an XP erreichst, eine Truhe und **wählst eines von drei Dingen**, wie in Counter-Strike: einen Wurf auf die 48 Prestige-Karten, eine Kapsel oder einen dritten Gegenstand, etwa ein Emote.
+
+Der **Prestige Pass**, den Koin vielleicht umbenennt, weil zwei Pässe verwirren (womöglich „Prestige Point Card“), ist ein Verbrauchsgut: etwa 5 $ pro Stück, bis zu fünf gleichzeitig, also höchstens etwa 25 $ pro Woche. Er füllt sich beim Spielen und gibt Prestige Points für den Prestige-Shop: zusätzliche Würfe, Kapseln, Emotes und einzelne Packs. Ein Pass gibt 20 Punkte, fünf geben 100. Tim betonte, dass sich das noch ändern kann.
+
+**Prestige-Karten** nutzen das Basis-Artwork mit besonderen Behandlungen, in vier Stufen:
+
+1. Monochrom, etwa zwanzig Karten
+2. Schwarz-weiß, etwa zwölf
+3. Cyberpunk, drei bis fünf
+4. Artist Proof, eine oder zwei
+
+Diese Behandlungen gibt es nie in Packs. Der erste Pool trägt ein Early-Access-Abzeichen und verschwindet noch vor Februar für immer. Eine Cyberpunk-Karte wie Van Helsing wäre nach Tims Schätzung ein Wurf von etwa 1 %. Pools rotieren alle paar Monate, ebenso die **Kapseln**: zuerst Death, mit dem Death-Avatar, und Goldilocks. Eine Kapsel lässt sich öffnen oder versiegelt behalten und auf dem Steam-Marktplatz verkaufen. Im neuen Jahr kommt ein **Trade-up-System**: Genug Karten der Stufe 1 ergeben einen Wurf der Stufe 2, genug der Stufe 2 einen Wurf der Stufe 3.
+
+Mawr zeigte außerdem eine frühe Fassung im Unity-Editor mit Platzhaltergrafik sowie die **Honor Crests**, ähnlich den Service Medals in Counter-Strike, die viel Zeit brauchen.
+
+## Packs, Displays und Cases {#packs}
+
+Ein Pack hat fünf Karten: drei aufgewertete Basiskarten und zwei Hits am Ende. Die Basiskarten in Packs behalten das kostenlose Artwork, aber mit schwarzem Rahmen, Figur über den Rahmen hinaus, 3D-Parallaxe, größerem Namensfeld und einer rund 30 % größeren Figur. Sie sind gegradet und handelbar. Die Grading-Hüllen lassen sich wechseln. Die Alpha-Edition gibt es nur im Kickstarter; die Standard-Edition ohne Alpha-Kennzeichen kommt im Februar in die Läden.
+
+| Seltenheit | Chance |
+| --- | --- |
+| Alt Art | 1 von 11 oder 12 Packs |
+| Alt Art Plus | 1 von 28 |
+| Alt Art Spell | 1 von 50 |
+| Secret Alt | 1 von 150 |
+| Special Alt (fünf Figuren im Anime-Stil) | 1 von 450 |
+| Storybook | 1 von 1.200 |
+
+Alternate Arts gibt es nur aus Packs: etwa 70 im ersten Set. Storybooks bleiben verborgen, bis sie im Februar geöffnet werden. Im Handel kostet ein Pack 4 $, ein Booster-Display mit 24 Packs 96 $ und ein Case mit sechs Displays, also 144 Packs, 576 $.
+
+**Displays und Cases gibt es nie im Spiel zu kaufen.** Sie werden vorbestellt, in Läden und direkt bei Koin, in einem dreiwöchigen Fenster vor jedem Set. Dieses Fenster legt die Auflage fest: Koin verdoppelt sie, und von den übrigen Einzelpacks gehen etwa 45 % ins Spiel, zum Kauf mit Prestige Points, der Rest ist für Verlosungen und Creator. Was am Saisonende im Spiel übrig bleibt, wird verbrannt. Koin verspricht außerdem Populationsdaten im Spiel für Karten, versiegelte Packs und Cases.
+
+## Turniere {#turniere}
+
+Im Early Access gibt es ab November **ein Turnier pro Monat** im Conquest-Format mit etwa 400 Plätzen. Die Preise sind Promo-Karten, die nicht wiederkommen, und eine gute Platzierung qualifiziert automatisch für das **Myths and Legends Open** am Ende des Early Access, das Alex als Crimson Cup 2.0 beschrieb. Die Details zum ersten Turnier folgen nächste Woche.
+
+Nach dem Early Access orientiert sich der Plan an physischen Spielen: Weeklies, Monthlies, Quarterlies und Weltmeisterschaft, mit einem offenen Event in derselben Woche. Große Events bekommen „Best of“-Preise, die an das gespielte Deck gebunden sind, um Vielfalt zu fördern. Ein eigenes AMA zu Turnieren folgt näher am Launch.
+
+Kevin erklärte, dass das Spiel zwei Ort-Pools hat, einen für die Ranglisten und einen für Wettbewerbe. Die Wettbewerbsliste wird vorab veröffentlicht, ohne die Orte, die Partien aus dem Gleichgewicht bringen. Auch Co-Streaming der Turniere ist unterwegs.
+
+## Läden {#laeden}
+
+Über 100 Läden haben in den letzten zwei Wochen geantwortet, eine Zahl, die Tim erst zum Launch erhofft hatte. Läden können Turniere ausrichten, bei denen du dich per QR-Code mit dem Handy eincheckst, sobald Mobile fertig ist, ein Bracket spielst und Promos gewinnst, die es im Spiel nicht gibt. Außerdem können sie Vorbestellungen von Displays und Cases verkaufen und einen Teil des Umsatzes behalten, und ein Laden kann auch nur das tun. Jeder Laden entscheidet selbst, wie oft er Events anbietet. Tim nannte Duke City Games in New Mexico mit sieben Filialen und einen Laden in Grand Rapids mit 1.200 Plätzen. Ein „Tell Your LGS About Origins Day“ ist geplant.
+
+## Neue Mechaniken {#mechaniken}
+
+Kevin zeigte, was in den nächsten Monaten kommt:
+
+- **Essen:** ein Marker auf einem Feld, der der Figur, die ihn berührt, +2/+2 gibt. Später wird daraus **Gegenstände**, die du aus der Hand legst. Winnie the Pooh startet mit einem Essen auf dem Brett und verdoppelt jede Verstärkung, die er bekommt.
+- **Verdeckte Karten:** Wizard of Oz startet mit Behind the Curtain auf der Hand, das eine Figur verdeckt. Schadenszauber können sie nicht anvisieren, und sie dreht sich nach allen Aufdeckungen wieder um und löst ihren Aufdeckeffekt erneut aus.
+- **Karten, die nicht im Deck begonnen haben:** ein neues Thema mit Geppetto. Diese Karten kosten 2 weniger.
+- **First Reveal (Set 2):** eine Karte, die sich zuerst aufdeckt, egal wer an der Reihe ist. Das ist als Antwort auf Zauber wie Obliterate gedacht.
+- **Barrieren mit Schild:** kommen später und wurden versehentlich verraten.
+
+## Sherwood Forest, Marker und Werte {#sherwood}
+
+Die Merry Men von Sherwood Forest verstopfen Friedhofs-Decks. Es gibt weniger als die Hälfte der endgültigen Orte und nur wenige gewöhnliche, darum taucht Sherwood etwa in jeder dritten Partie auf; zum Launch wird es über 50 gewöhnliche Orte geben. Das nächste Balance-Update macht den Ort wahrscheinlich vorerst selten. Marker gehen weiter in den Friedhof: Koin will keine eigene Regel dafür einführen.
+
+Bei dauerhaften Verstärkungen bleiben Werteänderungen auf der Karte, auch im Friedhof, auf der Hand oder im Deck, weil Archetypen sie nutzen. Fähigkeiten wie Schild und Double Strike werden gelöscht. Sollten die Werte in Dr.-Frank-Decks zum Problem werden, würde Koin einzelne Karten anpassen und nicht die Regel.
+
+## Verbesserungen {#verbesserungen}
+
+Sie kommen mit dem nächsten großen Build:
+
+- **Battle Energy:** eine neu gebaute Kampfphase. Die Felder eines Orts werden gemeinsam abgewickelt, das ist viel schneller und bringt zusätzliche Effekte.
+- **Drag and Drop** im Deck Builder.
+- Der **Spielverlauf** zeigt die Legendäre des Gegners.
+- Tippe **new** in die Suche der Sammlung, um deine neuen Karten zu sehen.
+- Die **Rückgängig**-Taste wandert neben Ready.
+- **Kampflog:** Zug für Zug, mit gespielten und zerstörten Karten. Der Reiter für zerstörte Karten dient als vorläufige Friedhofsansicht, bis die richtige kommt, der größte Punkt auf Kevins Liste.
+
+## Ranglisten, Bots und Cheating {#ranglisten}
+
+Elo läuft im Matchmaking schon im Hintergrund. Ein +10/-15-System in der Grandmaster-Rangliste wird diskutiert, ist aber nicht entschieden, und im Dezember sind keine großen Änderungen zu erwarten. Den Pity-Bot gibt es in Grandmaster nicht mehr, und der neue Bot schlägt den alten in etwa 70 % der Fälle. Künftig könnte die Grandmaster-Rangliste den lebenslangen Zugang für 15 $ voraussetzen, als Schutz gegen Bots, aber nicht im Early Access. Koin ist gegen Rank Camping und arbeitet nach eigenen Worten an einer Lösung; gegen Cheater setzt das Studio auch Shadow Bans ein. Titel kommen am 2. Dezember, Erfolge später. Einen Zuschauermodus gibt es in einer Entwicklerversion, und API- und Log-Zugriff ist nach der Friedhofsansicht geplant: „wann, nicht ob“.
+
+## Creator und Community {#creator}
+
+Nächste Woche gibt es ein AMA für Creator zu den **Origins Drops**, Koins Version der Twitch Drops, offizielle Twitch Drops folgen später. Details stehen im Creator-Discord. Tim zählte 173 Leute, die Videos oder Streams über das Spiel gemacht haben. Das aktuelle Empfehlungsprogramm, bei dem beide Spieler ein Myths-and-Legends-Pack freischalten, endet in wenigen Wochen und ändert sich dann.
+
+## Was wir noch nicht wissen {#offen}
+
+- Das genaue Datum und die Regeln des November-Turniers.
+- Den endgültigen Preis des Collector Pass und den endgültigen Namen des Prestige Pass.
+- Die Termine für Mobile, Draft und die Friedhofsansicht.
+- Welche Änderung Sherwood Forest am 17. November bekommt: „wahrscheinlich“ selten, vorerst.`,
+  },
   "origins-tcg-roadmap-ama-preview": {
     title: "AMA Preview: Die Sammelsysteme von Origins TCG kommen am 2. Dezember, das komplette Set im Februar",
     metaTitle: "Origins TCG AMA Preview: 2. Dezember und das Februar-Set",
     description:
       "AMA Preview zu Origins TCG: Prestige und Kapseln am 2. Dezember, das komplette Set im Februar, monatliche Turniere und was am 10. und 17. November kommt.",
     summary:
-      "Koin Games hat in einem AMA auf Discord die Roadmap des Early Access vorgestellt: Server-Update am 10. November, Balance-Patch am 17., Sammelsysteme am 2. Dezember und das komplette Set im Februar. Das ist die Vorschau mit den größten Neuigkeiten; der vollständige Bericht folgt.",
+      "Koin Games hat in einem AMA auf Discord die Roadmap des Early Access vorgestellt: Server-Update am 10. November, Balance-Patch am 17., Sammelsysteme am 2. Dezember und das komplette Set im Februar. Das ist die Vorschau mit den größten Neuigkeiten; der vollständige Bericht ist erschienen.",
     highlights: [
       { label: "Der Kalender", text: "10. und 17. November, 2. Dezember, das komplette Set im Februar", anchor: "kalender" },
       { label: "2. Dezember", text: "Collector Pass, wöchentliche Drops, Prestige und Kapseln", anchor: "2-dezember" },
@@ -25,7 +156,9 @@ export const deText: Record<string, NewsCopy> = {
       { label: "Mobile und Draft", text: "in Arbeit, ohne Termin", anchor: "danach" },
       { label: "Die Zahlen", text: "7.000 bis 9.800 Spieler pro Tag", anchor: "zahlen" },
     ],
-    body: `**Das ist eine Vorschau.** Koin Games hat am Abend des 6. November auf dem offiziellen Discord das AMA zur Roadmap des Early Access abgehalten, rund zwei Stunden lang, mit Gründer und CEO Tim Jooste und Studio Head Mawr. Hier stehen die größten Punkte; der vollständige Bericht mit den Gameplay-Neuheiten und den Fragen und Antworten folgt.
+    body: `**Update vom 7. November:** Der [vollständige Bericht](/de/news/origins-tcg-roadmap-ama-recap) ist erschienen.
+
+**Das ist eine Vorschau.** Koin Games hat am Abend des 6. November auf dem offiziellen Discord das AMA zur Roadmap des Early Access abgehalten, rund zwei Stunden lang, mit Gründer und CEO Tim Jooste und Studio Head Mawr. Hier stehen die größten Punkte; der vollständige Bericht mit den Gameplay-Neuheiten und den Fragen und Antworten ist erschienen.
 
 ## Der Kalender {#kalender}
 

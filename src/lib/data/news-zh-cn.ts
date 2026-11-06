@@ -14,13 +14,144 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "origins-tcg-roadmap-ama-recap": {
+    title: "Origins TCG 路线图 AMA 完整回顾：Prestige、稀有度、锦标赛和新机制",
+    metaTitle: "Origins TCG 路线图 AMA：完整回顾",
+    description:
+      "Origins TCG 路线图 AMA 完整回顾：Collector Pass 和 Prestige 如何运作，卡包稀有度和价格，从每月赛事到世界赛的锦标赛计划，实体店项目，食物和翻面卡等新机制，以及下一版本的改进。这里汇总了两小时直播的全部要点。",
+    summary:
+      "在官方 Discord 上进行了两小时的 AMA，公布了完整的抢先体验路线图：Collector Pass 和 Prestige 如何运作，卡包的稀有度和价格，直到世界赛的锦标赛，实体店项目，食物和翻面卡等新机制，以及即将到来的改进。",
+    highlights: [
+      { label: "游戏现状", text: "每天最多 9,800 名玩家，Kickstarter 接近 100 万美元", anchor: "xian-zhuang" },
+      { label: "六周节奏", text: "赛季、首领、补丁，2 月推出完整系列", anchor: "jie-zou" },
+      { label: "Collector Pass 和 Prestige", text: "每周选择、Prestige Points、胶囊和 48 张卡", anchor: "prestige" },
+      { label: "卡包、卡盒和整箱", text: "从 12 包出 1 张到 1,200 包出 1 张的概率，以及价格", anchor: "ka-bao" },
+      { label: "锦标赛", text: "每月赛事、Open，之后是直到世界赛的周赛", anchor: "jin-biao-sai" },
+      { label: "实体店", text: "100 多家有意向，二维码签到和线下宣传卡", anchor: "shi-ti-dian" },
+      { label: "新机制", text: "食物、翻面卡、First Reveal、带护盾的屏障", anchor: "xin-ji-zhi" },
+      { label: "Sherwood Forest 和衍生物", text: "该地点暂时改为稀有，衍生物仍进入墓地", anchor: "sherwood" },
+      { label: "体验改进", text: "Battle Energy、拖放、战斗日志、撤销", anchor: "gai-jin" },
+      { label: "排位、机器人和作弊", text: "后台 Elo，12月2日推出称号", anchor: "pai-wei" },
+      { label: "创作者和社区", text: "Origins Drops、联合直播、推荐计划", anchor: "chuang-zuo-zhe" },
+    ],
+    body: `Koin Games 于 11月6日在官方 Discord 举行了“Super Secret Early Access Roadmap AMA”，时长约两小时。出席的有创始人兼 CEO Tim Jooste、Studio Head Mike“Mawr”Marr、联合创始人兼首席产品官 Kevin，以及负责锦标赛的 Alex。这是完整回顾；简短版本见我们的 [AMA Preview](/zh-cn/news/origins-tcg-roadmap-ama-preview)。价格和概率都是直播中给出的，其中不少带有“我记得”的说法。
+
+## 游戏现状 {#xian-zhuang}
+
+Tim 先公布了数据。Origins 已开发近五年，试玩版约三个月前推出，当时社区只有一百多人。Next Fest 之前下载量约为 20,000。Next Fest 本身不如预期：Tim 说，AI 工具让 10 月这一届多出了近 4,000 款游戏。
+
+真正改变局面的是锦标赛那一周：约 2,100 份报名，来自近 1,800 名不同的玩家，周六同时在线峰值 610 人，317 场直播，观众峰值 5,500 人，当天平均约 1,000 人。前四名中有三名是意大利人，第四名来自塞浦路斯。现在抢先体验每天约有 7,000 至 9,800 名玩家。
+
+关于接近 100 万美元的 Kickstarter，Tim 说团队一个月前拒绝了与一家大公司的授权和发行协议，以坚持免费竞技和真正拥有物品的方向。Koin 现在有 40 多人。
+
+## 六周节奏 {#jie-zou}
+
+- **11月10日（周二）：** 针对掉线和作弊的更新，不含平衡调整。
+- **11月17日（周二）：** 平衡补丁。
+- **12月2日：** 赛季结束，第一次大型更新上线，带来收藏系统、新地点和称号。
+- **2 月：** 完整的 Myths and Legends 系列，约 218 张卡，同时发放所有 Kickstarter 奖励。
+
+一个赛季持续六周，开始时有一个首领，第三周再来一个，比如 Dr. Frank。每个首领带来一副新卡组，约有十张新卡。12 月之后有一个赛季持续到 1 月中旬，另一个从 1 月中旬到 2 月。平衡更新大约每两周一次，必要时有热修复。Mawr 把工作分为负责卡牌和地点的玩法团队、负责大型系统的功能团队，以及穿插其间的持续改进。
+
+同样在开发中的还有移动版（Mawr 说现在开始）和轮抽模式，后者由其他开发者同步推进。两者都没有日期。测试服务器将在 12 月为高段位的支持者重新开放，所有卡都可用。后台还在开发 slab 和可拥有的游戏棋盘。
+
+## Collector Pass、Prestige 和胶囊 {#prestige}
+
+**Collector Pass** 是一次性的终身账号升级。任何档位的 Kickstarter 支持者都会在 12月2日收到；之后它将在 Steam 上出售，Tim 说价格是 15 或 20 美元。每个账号一个，不可交易。使用市场、参加锦标赛，以及抢先体验期间参与排行榜都不需要它。
+
+有了通行证，每周达到最低经验值后可以打开一个宝箱，并**从三样中选一样**，和 Counter-Strike 一样：在 48 张 Prestige 卡上抽一次、一个胶囊，或第三种物品，比如表情。
+
+**Prestige Pass** 是消耗品，Koin 可能会改名，因为两个通行证容易混淆（也许叫“Prestige Point Card”）：每张约 5 美元，最多同时五张，因此每周最多约 25 美元。它通过游戏填满，提供 Prestige Points，可在 Prestige 商店使用：额外抽取、胶囊、表情和散包。一张给 20 点，五张给 100 点。Tim 提醒这可能会变。
+
+**Prestige 卡**使用基础卡面加上特殊处理，分四个等级：
+
+1. 单色，约二十张
+2. 黑白，约十二张
+3. 赛博朋克，三到五张
+4. Artist proof，一到两张
+
+这些处理永远不会出现在卡包里。第一组带有 Early Access 徽章，会在 2 月前永久退出。按 Tim 的估计，像 Van Helsing 这样的赛博朋克卡抽中概率约为 1%。卡池每几个月轮换一次，**胶囊**也一样：最先是 Death（含 Death 头像）和 Goldilocks。胶囊可以打开，也可以保持密封并在 Steam 市场出售。新的一年将加入 **trade-up 系统**：足够的 1 级卡可换一次 2 级抽取，足够的 2 级卡可换一次 3 级抽取。
+
+Mawr 还在 Unity 编辑器中展示了使用占位美术的早期版本，以及类似 Counter-Strike 服役勋章的 **honor crest**，需要很长时间才能获得。
+
+## 卡包、卡盒和整箱 {#ka-bao}
+
+一包有五张卡：三张强化基础卡，最后是两张好卡。卡包中的基础卡沿用免费卡面，但有黑色边框、破框效果、3D 视差、更大的名牌，角色大约放大 30%。它们带评级，可以交易。评级外壳可以更换。Alpha 版只在 Kickstarter 上提供；没有 Alpha 标记的标准版 2 月进入实体店。
+
+| 稀有度 | 概率 |
+| --- | --- |
+| Alt art | 每 11 或 12 包 1 张 |
+| Alt art plus | 每 28 包 1 张 |
+| Alt art spell | 每 50 包 1 张 |
+| Secret alt | 每 150 包 1 张 |
+| Special alt（五个动漫风格角色） | 每 450 包 1 张 |
+| Storybook | 每 1,200 包 1 张 |
+
+Alternate art 只来自卡包：第一个系列约 70 张。Storybook 在 2 月开包之前都不公开。零售价方面，一包 4 美元，24 包的补充盒 96 美元，六盒 144 包的整箱 576 美元。
+
+**补充盒和整箱永远不会在游戏内出售。** 它们只能在每个系列之前三周的窗口内，通过实体店或直接向 Koin 预购。这个窗口决定印量：Koin 会将其翻倍，剩下的散包中约 45% 进入游戏，可用 Prestige Points 购买，其余用于赠送和创作者。赛季结束时游戏内剩余的部分会被销毁。Koin 还承诺在游戏内提供卡、密封卡包和整箱的数量数据。
+
+## 锦标赛 {#jin-biao-sai}
+
+抢先体验期间从 11 月开始**每月一场锦标赛**，采用 Conquest 赛制，约 400 个名额。奖品是不会再出现的宣传卡，取得名次可自动晋级抢先体验结束时的 **Myths and Legends Open**，Alex 称之为 Crimson Cup 2.0。第一场的细节下周公布。
+
+抢先体验之后，计划向实体卡牌游戏看齐：周赛、月赛、季赛和世界赛，同一周还有一场公开赛。大型赛事将设“best of”奖励，与使用的卡组挂钩，以鼓励多样性。临近正式推出时还会有一场专门讲锦标赛的 AMA。
+
+Kevin 解释说，游戏有两组地点，一组用于排位，一组用于比赛。比赛名单会提前公布，不包含会破坏对局的地点。锦标赛的联合直播也在路上。
+
+## 实体店 {#shi-ti-dian}
+
+过去两周有 100 多家实体店回复，Tim 原本希望到正式推出时才达到这个数字。实体店可以举办锦标赛：移动版就绪后用手机扫二维码签到，打一轮对阵，赢取游戏里没有的宣传卡。它们也可以销售补充盒和整箱的预购并获得部分收入，实体店也可以只做这一项。每家店自行决定举办赛事的频率。Tim 提到了新墨西哥州有七家门店的 Duke City Games，以及 Grand Rapids 一家有 1,200 个座位的店。还计划举办“Tell Your LGS About Origins Day”。
+
+## 新机制 {#xin-ji-zhi}
+
+Kevin 预告了接下来几个月的内容：
+
+- **食物：** 放在格子上的标记，碰到它的角色获得 +2/+2。之后会扩展为可以从手牌放置的**物品**。Winnie the Pooh 开局棋盘上有一个食物，并且他受到的所有增益都翻倍。
+- **翻面卡：** Wizard of Oz 开局手牌中有 Behind the Curtain，可以把一个角色翻成背面。伤害法术无法以其为目标，所有揭示结束后它会翻回正面，并再次触发揭示效果。
+- **不在初始卡组中的卡：** 新主题，代表卡是 Geppetto。这些卡的费用减 2。
+- **First Reveal（第二系列）：** 无论回合顺序如何都最先揭示的卡，用来应对 Obliterate 这样的法术。
+- **带护盾的屏障：** 之后推出，这次是不小心说漏了嘴。
+
+## Sherwood Forest、衍生物和属性 {#sherwood}
+
+Sherwood Forest 的 Merry Men 堵塞了墓地卡组。现有地点不到最终数量的一半，普通地点也很少，所以 Sherwood 大约每三局出现一次；正式推出时普通地点将超过 50 个。下一次平衡更新可能会暂时把它改为稀有。衍生物仍然进入墓地：Koin 不想额外教玩家一条规则。
+
+关于持续增益，属性变化即使在墓地、手牌或卡组中也会保留，因为有些流派要用到。护盾和 double strike 这样的能力会被清除。如果属性在 Dr. Frank 卡组中成为问题，Koin 会调整单张卡，而不是改规则。
+
+## 体验改进 {#gai-jin}
+
+这些将在下一个大版本中推出：
+
+- **Battle Energy：** 重做的战斗阶段。一个地点的格子同时结算，速度快得多，还增加了效果。
+- 卡组构筑器支持**拖放**。
+- **对战历史**显示对手的传说卡。
+- 在收藏搜索中输入 **new** 可查看新卡。
+- **撤销**按钮移到 Ready 旁边。
+- **战斗日志：** 逐回合显示打出和被摧毁的卡。被摧毁标签页可暂时充当墓地查看器，真正的查看器是 Kevin 清单上最大的一项。
+
+## 排位、机器人和作弊 {#pai-wei}
+
+Elo 已在后台用于匹配。Grandmaster 排行榜采用 +10/-15 的方案仍在讨论，尚未决定，12 月预计不会有大改动。Grandmaster 中已经没有保底机器人，新机器人对旧机器人的胜率约 70%。将来 Grandmaster 排行榜可能需要 15 美元的终身权限，用来防止机器人，但抢先体验期间不会。Koin 反对 rank camping，表示解决方案正在开发；对作弊者也使用影子封禁。称号 12月2日推出，成就要更晚。观战模式已有开发者版本，API 和日志访问排在墓地查看器之后：“是何时的问题，不是会不会的问题”。
+
+## 创作者和社区 {#chuang-zuo-zhe}
+
+下周将为创作者举行一场 AMA，介绍 **Origins Drops**，这是 Koin 版的 Twitch Drops，官方 Twitch Drops 之后推出。详情见创作者 Discord。Tim 统计有 173 人制作过关于游戏的视频或直播。当前的推荐计划让双方都解锁一个 Myths and Legends 卡包，将在几周后结束，之后会调整。
+
+## 我们还不知道的 {#wei-zhi}
+
+- 11 月锦标赛的确切日期和规则。
+- Collector Pass 的最终价格和 Prestige Pass 的最终名称。
+- 移动版、轮抽和墓地查看器的日期。
+- Sherwood Forest 在 11月17日会有什么变化：“可能”暂时改为稀有。`,
+  },
   "origins-tcg-roadmap-ama-preview": {
     title: "AMA Preview：Origins TCG 的收藏系统 12月2日上线，完整系列 2 月推出",
     metaTitle: "Origins TCG AMA Preview：12月2日与 2 月的完整系列",
     description:
-      "Origins TCG AMA Preview：12月2日上线 Prestige 和胶囊，2 月推出完整系列，每月举办锦标赛，以及 11月10日和 17 日的变化。这里是路线图 AMA 中最重要的消息，涵盖日期、卡包、稀有度、锦标赛和实体店计划。完整回顾随后发布。",
+      "Origins TCG AMA Preview：12月2日上线 Prestige 和胶囊，2 月推出完整系列，每月举办锦标赛，以及 11月10日和 17 日的变化。这里是路线图 AMA 中最重要的消息，涵盖日期、卡包、稀有度、锦标赛和实体店计划。完整回顾已发布。",
     summary:
-      "Koin Games 在 Discord 的 AMA 中公布了抢先体验路线图：11月10日更新服务器，11月17日推出平衡补丁，12月2日上线收藏系统，2 月推出完整系列。这是最重要消息的预览，完整回顾随后发布。",
+      "Koin Games 在 Discord 的 AMA 中公布了抢先体验路线图：11月10日更新服务器，11月17日推出平衡补丁，12月2日上线收藏系统，2 月推出完整系列。这是最重要消息的预览，完整回顾已发布。",
     highlights: [
       { label: "日程", text: "11月10日和 17 日、12月2日，2 月推出完整系列", anchor: "ri-cheng" },
       { label: "12月2日", text: "Collector Pass、每周掉落、Prestige 和胶囊", anchor: "12-yue-2-ri" },
@@ -30,7 +161,9 @@ export const zhCnText: Record<string, NewsCopy> = {
       { label: "移动版与轮抽", text: "正在开发，暂无日期", anchor: "hou-xu" },
       { label: "数据", text: "每天 7,000 至 9,800 名玩家", anchor: "shu-ju" },
     ],
-    body: `**这是一篇预览。** Koin Games 于 11月6日晚在官方 Discord 举行了抢先体验路线图 AMA，时长约两小时，由创始人兼 CEO Tim Jooste 和 Studio Head Mawr 主持。下面是最重要的几点；包含玩法新内容和问答的完整回顾随后发布。
+    body: `**11月7日更新：** [完整回顾](/zh-cn/news/origins-tcg-roadmap-ama-recap)已发布。
+
+**这是一篇预览。** Koin Games 于 11月6日晚在官方 Discord 举行了抢先体验路线图 AMA，时长约两小时，由创始人兼 CEO Tim Jooste 和 Studio Head Mawr 主持。下面是最重要的几点；包含玩法新内容和问答的完整回顾已发布。
 
 ## 日程 {#ri-cheng}
 
