@@ -20,6 +20,61 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "origins-tcg-roadmap-ama-preview": {
+    title: "AMA Preview : les systèmes de collection d'Origins TCG arrivent le 2 décembre, le set complet en février",
+    metaTitle: "AMA Preview d'Origins TCG : 2 décembre et set de février",
+    description:
+      "AMA Preview d'Origins TCG : Prestige et capsules le 2 décembre, le set complet en février, tournois mensuels et ce qui change les 10 et 17 novembre.",
+    summary:
+      "Koin Games a présenté la feuille de route de l'Accès anticipé dans un AMA sur Discord : mise à jour des serveurs le 10 novembre, patch d'équilibrage le 17, systèmes de collection le 2 décembre et set complet en février. Voici l'aperçu avec les plus grosses nouveautés ; le compte rendu complet arrive ensuite.",
+    highlights: [
+      { label: "Le calendrier", text: "10 et 17 novembre, 2 décembre, le set complet en février", anchor: "calendrier" },
+      { label: "2 décembre", text: "Collector Pass, drops hebdomadaires, Prestige et capsules", anchor: "2-decembre" },
+      { label: "Boosters et raretés", text: "alternate arts uniquement dans les boosters, Storybook 1 sur 1 200", anchor: "boosters" },
+      { label: "Tournois", text: "événements mensuels en Conquest, puis le Myths and Legends Open", anchor: "tournois" },
+      { label: "Boutiques", text: "plus de 100 se sont manifestées", anchor: "boutiques" },
+      { label: "Mobile et draft", text: "en développement, sans date", anchor: "ensuite" },
+      { label: "Les chiffres", text: "de 7 000 à 9 800 joueurs par jour", anchor: "chiffres" },
+    ],
+    body: `**Ceci est un aperçu.** Koin Games a tenu son AMA sur la feuille de route de l'Accès anticipé sur le Discord officiel le soir du 6 novembre, pendant environ deux heures, avec le fondateur et CEO Tim Jooste et le Studio Head Mawr. Voici les plus gros points ; le compte rendu complet, avec les nouveautés de jeu et les questions-réponses, arrive ensuite.
+
+## Le calendrier {#calendrier}
+
+- **Mardi 10 novembre :** une mise à jour contre les déconnexions et la triche. Pas d'équilibrage : il n'y avait pas la place.
+- **Mardi 17 novembre :** patch d'équilibrage, avec un changement attendu sur Sherwood Forest.
+- **2 décembre :** fin de la saison classée en cours et arrivée de la grande mise à jour, avec les systèmes de collection et de nouveaux lieux. C'est avant la « semaine du 7 décembre » annoncée en octobre.
+- **Février :** le set complet, avec toutes les récompenses du Kickstarter. Mawr a parlé d'environ 218 cartes (« ne me prenez pas au mot »), plus Big Bob.
+
+Désormais, Koin travaille par blocs de six semaines : une saison classée dure six semaines, avec un boss au début et un autre à mi-parcours, comme Dr. Frank. Les patchs d'équilibrage arrivent à peu près toutes les deux semaines. Après décembre, il y a une saison jusqu'à la mi-janvier et une autre de la mi-janvier à février.
+
+## 2 décembre : les systèmes de collection {#2-decembre}
+
+Les contributeurs du Kickstarter reçoivent leur Collector Pass le 2 décembre ; il sera ensuite en vente sur Steam à un prix plus élevé. Avec le pass arrive un **drop hebdomadaire**, comme dans Counter-Strike : on choisit un objet de collection parmi trois.
+
+Le **Prestige Pass** fait gagner des Prestige Points, à dépenser dans la boutique Prestige en boosters et en **capsules**, comme celles de Death et de Goldilocks, que l'on peut ouvrir ou garder scellées et échanger. On peut aussi tirer dans un groupe de 48 cartes Prestige réparties en quatre niveaux, du plus courant au plus rare : monochrome, noir et blanc, cyberpunk et artist proof. Les artist proofs ne sont jamais dans les boosters. Les cartes Prestige tournent : quand un groupe se termine, ces cartes ne reviennent pas.
+
+Jusqu'au 2 décembre, on peut encore gagner les récompenses de la démo, qui deviennent échangeables après cette date. Pendant l'Accès anticipé, le Collector Pass n'est pas nécessaire pour concourir au classement. Plus tard, Koin pourrait réserver le classement Grandmaster à l'accès à vie à 15 $, contre les bots, mais pas pendant l'Accès anticipé.
+
+## Boosters et raretés {#boosters}
+
+Les boosters ont dix niveaux de rareté et **les alternate arts ne se trouvent que là**, jamais dans le système Prestige : environ 70 dans le premier set. La carte la plus rare est la **Storybook**, 1 booster sur 1 200. Les boosters Alpha ne s'obtiennent qu'avec le Kickstarter. Un système de trade-up pour les cartes en double, comme celui de Counter-Strike, arrive dans la nouvelle année.
+
+## Tournois {#tournois}
+
+L'Accès anticipé aura des tournois mensuels au format Conquest, d'environ 400 places chacun, avec des cartes promo en récompense. Les meilleurs se qualifient pour le **Myths and Legends Open**, à la fin de l'Accès anticipé. Les détails du tournoi de novembre arrivent la semaine prochaine.
+
+## Boutiques {#boutiques}
+
+Plus de 100 boutiques dans le monde se sont manifestées ces deux dernières semaines. Le programme a deux volets : accueillir des tournois en personne, avec des promos exclusives, et proposer les précommandes des sets. Les boîtes de boosters et les caisses ne seront jamais vendues dans le jeu : elles sont uniquement en précommande.
+
+## Mobile, draft et le reste {#ensuite}
+
+Le travail sur mobile commence maintenant et le mode draft avance en parallèle, avec des développeurs différents. Aucun des deux n'a de date. Le serveur de playtest rouvre en décembre pour les contributeurs ayant un rang élevé, avec toutes les cartes. L'Elo tourne déjà en coulisses dans le matchmaking ; un système +10/-15 au classement Grandmaster est en discussion, mais pas décidé. Le pity bot n'est plus en Grandmaster.
+
+## Les chiffres {#chiffres}
+
+Tim Jooste a donné les chiffres de la semaine de la Crimson Cup : environ 2 100 inscriptions de près de 1 800 joueurs différents, un pic de 610 joueurs simultanés, 317 streams et un pic de 5 500 spectateurs. Trois des quatre premiers étaient italiens. Depuis l'ouverture de l'Accès anticipé, le jeu compte entre environ 7 000 et 9 800 joueurs par jour.`,
+  },
   "coachcrono-crimson-cup-interview": {
     title: "Discussion avec CoachCrono, champion de la Crimson Cup : la line-up gagnante et l'avenir d'Origins TCG",
     metaTitle: "Interview de CoachCrono, champion Crimson Cup d'Origins TCG",

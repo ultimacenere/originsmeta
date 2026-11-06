@@ -200,6 +200,185 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // AMA Preview (06/11/2026). Pierluigi: "incominciamo a buttare fuori il recap tipo AMA Preview", "e poi facciamo uscire
+    // l ama totale". Fonte: "Super Secret Early Access Roadmap AMA", Discord ufficiale, #live-events, 6/11 dalle 21:00 UTC,
+    // registrazione audio di Pierluigi trascritta con Whisper e confrontata con le note di Granola. La news ufficiale con il
+    // video su YouTube non c'era ancora all'uscita: quando c'è, si aggiunge il link. Solo i punti più grossi: il resto va
+    // nell'articolo completo. Niente valore futuro delle carte né consigli d'acquisto (l'aneddoto delle vendite resta fuori).
+    // Copertina: la copertina di Death, come la capsula annunciata nell'AMA.
+    slug: "origins-tcg-roadmap-ama-preview",
+    image: "/cards/cover/death.webp",
+    url: "https://discord.gg/originstcg",
+    source: "press",
+    guides: ["roadmap-and-dates", "collector-economy", "origins-tcg-ranked"],
+    date: "2026-11-06",
+    title: n(
+      "AMA Preview: Origins TCG's collector systems arrive on 2 December, the full set in February",
+      "AMA Preview: i sistemi da collezione di Origins TCG arrivano il 2 dicembre, il set completo a febbraio",
+      "AMA Preview: los sistemas de colección de Origins TCG llegan el 2 de diciembre, el set completo en febrero",
+    ),
+    metaTitle: n(
+      "Origins TCG AMA Preview: 2 December and the February set",
+      "AMA Preview di Origins TCG: 2 dicembre e set di febbraio",
+      "AMA Preview de Origins TCG: 2 de diciembre y set de febrero",
+    ),
+    description: n(
+      "Origins TCG AMA Preview: Prestige and capsules on 2 December, the full set in February, monthly tournaments and what changes on 10 and 17 November.",
+      "AMA Preview di Origins TCG: Prestige e capsule il 2 dicembre, il set completo a febbraio, tornei mensili e cosa cambia il 10 e il 17 novembre.",
+      "AMA Preview de Origins TCG: Prestige y cápsulas el 2 de diciembre, el set completo en febrero, torneos mensuales y qué cambia el 10 y el 17 de noviembre.",
+    ),
+    summary: n(
+      "Koin Games has laid out the Early Access roadmap in an AMA on Discord: a server update on 10 November, a balance patch on 17 November, the collector systems on 2 December and the full set in February. This is the preview with the biggest news; the full recap comes next.",
+      "Koin Games ha presentato la roadmap dell'Accesso anticipato in un AMA su Discord: aggiornamento dei server il 10 novembre, patch di bilanciamento il 17, sistemi da collezione il 2 dicembre e set completo a febbraio. Questa è l'anteprima con le novità più grosse; il resoconto completo arriva a seguire.",
+      "Koin Games ha presentado la hoja de ruta del Acceso anticipado en un AMA en Discord: actualización de los servidores el 10 de noviembre, parche de equilibrio el 17, sistemas de colección el 2 de diciembre y set completo en febrero. Este es el avance con las novedades más grandes; el resumen completo llega a continuación.",
+    ),
+    highlights: {
+      en: [
+        { label: "The calendar", text: "10 and 17 November, 2 December, the full set in February", anchor: "calendar" },
+        { label: "2 December", text: "Collector Pass, weekly drops, Prestige and capsules", anchor: "december-2" },
+        { label: "Packs and rarities", text: "alternate arts only in packs, Storybooks at 1 in 1,200", anchor: "packs" },
+        { label: "Tournaments", text: "monthly Conquest events, then the Myths and Legends Open", anchor: "tournaments" },
+        { label: "Local game shops", text: "over 100 have shown interest", anchor: "shops" },
+        { label: "Mobile and draft", text: "both in the works, no date yet", anchor: "next" },
+        { label: "The numbers", text: "7,000 to 9,800 players a day", anchor: "numbers" },
+      ],
+      it: [
+        { label: "Il calendario", text: "10 e 17 novembre, 2 dicembre, il set completo a febbraio", anchor: "calendario" },
+        { label: "2 dicembre", text: "Collector Pass, drop settimanali, Prestige e capsule", anchor: "2-dicembre" },
+        { label: "Pacchetti e rarità", text: "alternate art solo nei pacchetti, Storybook 1 ogni 1.200", anchor: "pacchetti" },
+        { label: "Tornei", text: "eventi mensili in Conquest, poi il Myths and Legends Open", anchor: "tornei" },
+        { label: "Negozi", text: "oltre 100 si sono fatti avanti", anchor: "negozi" },
+        { label: "Mobile e draft", text: "in lavorazione, senza data", anchor: "dopo" },
+        { label: "I numeri", text: "da 7.000 a 9.800 giocatori al giorno", anchor: "numeri" },
+      ],
+      es: [
+        { label: "El calendario", text: "10 y 17 de noviembre, 2 de diciembre, el set completo en febrero", anchor: "calendario" },
+        { label: "2 de diciembre", text: "Collector Pass, drops semanales, Prestige y cápsulas", anchor: "2-diciembre" },
+        { label: "Sobres y rarezas", text: "alternate art solo en sobres, Storybook 1 de cada 1.200", anchor: "sobres" },
+        { label: "Torneos", text: "eventos mensuales de Conquest y después el Myths and Legends Open", anchor: "torneos" },
+        { label: "Tiendas", text: "más de 100 han mostrado interés", anchor: "tiendas" },
+        { label: "Móvil y draft", text: "en desarrollo, sin fecha", anchor: "despues" },
+        { label: "Las cifras", text: "de 7.000 a 9.800 jugadores al día", anchor: "cifras" },
+      ],
+    },
+    body: n(
+      `**This is a preview.** Koin Games held its Early Access roadmap AMA on the official Discord on the evening of 6 November, for about two hours, with founder and CEO Tim Jooste and Studio Head Mawr. Below are the biggest points; the full recap, with the gameplay news and the questions and answers, comes next.
+
+## The calendar {#calendar}
+
+- **Tuesday 10 November:** an update against disconnects and cheating. No balance changes: "we couldn't fit any" into it.
+- **Tuesday 17 November:** a balance patch, with a change to Sherwood Forest expected.
+- **2 December:** the current ladder season ends and the big update arrives, with the collector systems and new locations. It is earlier than the "week of 7 December" given in October.
+- **February:** the full set, with all the Kickstarter rewards. Mawr put it at about 218 cards ("don't hold me to this"), plus Big Bob.
+
+From now on Koin works in six-week batches: a ladder season lasts six weeks, with a boss at the start and another at the halfway point, like Dr. Frank. Balance patches come about every other week. After December there is one season to mid-January and one from mid-January to February.
+
+## 2 December: the collector systems {#december-2}
+
+Kickstarter backers receive their Collector Pass on 2 December; after that it goes on sale on Steam at a higher price. With the pass comes a **weekly drop**, as in Counter-Strike: you choose one of three collector items.
+
+The **Prestige Pass** earns Prestige Points, to spend in the Prestige shop on packs and **capsules**, like the Death and Goldilocks ones, which you can open or keep sealed and trade. You can also roll on a pool of 48 Prestige cards in four tiers, from the most common: monochromatic, black and white, cyberpunk and artist proof. Artist proofs are never in packs. Prestige cards rotate: when a pool ends, those cards are gone.
+
+Until 2 December you can still earn the demo rewards, which become tradable after that date. During Early Access you do not need the Collector Pass to compete on the leaderboard. Koin may later put the Grandmaster leaderboard behind the $15 lifetime access, as a deterrent against bots, but not during Early Access.
+
+## Packs and rarities {#packs}
+
+Packs have ten levels of rarity and **alternate arts are found only there**, never in the Prestige system: about 70 in the first set. The rarest card is the **Storybook**, 1 in every 1,200 packs. The Alpha packs can only be had through the Kickstarter. A trade-up system for bulk cards, like the one in Counter-Strike, comes in the new year.
+
+## Tournaments {#tournaments}
+
+Early Access will have monthly tournaments in Conquest format, with about 400 seats each and promo cards as prizes. The top finishers qualify for the **Myths and Legends Open**, at the end of Early Access. Details of the November tournament come next week.
+
+## Local game shops {#shops}
+
+Over 100 shops around the world have come forward in the last two weeks. The programme has two sides: hosting in-person tournaments, with exclusive promos, and offering pre-orders of the sets. Booster boxes and cases will never be sold in the game: they are pre-order only.
+
+## Mobile, draft and the rest {#next}
+
+Work on mobile is starting now and draft mode runs in parallel, on different developers. Neither has a date. The playtest server reopens in December for backers with a high rank, with all the cards. Elo already runs behind the scenes in matchmaking; a +10/-15 system on the Grandmaster leaderboard is being discussed but not decided. The pity bot is gone from Grandmaster.
+
+## The numbers {#numbers}
+
+Tim Jooste gave figures for the Crimson Cup week: about 2,100 applications from close to 1,800 unique players, 610 concurrent players at the peak, 317 streams and 5,500 viewers at the peak. Three of the top four were Italian. Since Early Access opened, the game has had between about 7,000 and 9,800 players a day.`,
+      `**Questa è un'anteprima.** Koin Games ha tenuto l'AMA sulla roadmap dell'Accesso anticipato sul Discord ufficiale la sera del 6 novembre, per circa due ore, con il fondatore e CEO Tim Jooste e lo Studio Head Mawr. Qui sotto trovi i punti più grossi; il resoconto completo, con le novità di gioco e le domande e risposte, arriva a seguire.
+
+## Il calendario {#calendario}
+
+- **Martedì 10 novembre:** un aggiornamento contro disconnessioni e cheat. Niente bilanciamento: non ci stava.
+- **Martedì 17 novembre:** patch di bilanciamento, con una modifica attesa a Sherwood Forest.
+- **2 dicembre:** finisce la stagione classificata in corso e arriva il grande aggiornamento, con i sistemi da collezione e i luoghi nuovi. È prima della "settimana del 7 dicembre" indicata a ottobre.
+- **Febbraio:** il set completo, con tutte le ricompense del Kickstarter. Mawr ha parlato di circa 218 carte ("non prendetemi in parola"), più Big Bob.
+
+Da adesso Koin lavora a blocchi di sei settimane: una stagione classificata dura sei settimane, con un boss all'inizio e uno a metà, come Dr. Frank. Le patch di bilanciamento arrivano più o meno ogni due settimane. Dopo dicembre c'è una stagione fino a metà gennaio e una da metà gennaio a febbraio.
+
+## 2 dicembre: i sistemi da collezione {#2-dicembre}
+
+Chi ha sostenuto il Kickstarter riceve il Collector Pass il 2 dicembre; dopo sarà in vendita su Steam a un prezzo più alto. Con il pass arriva un **drop settimanale**, come in Counter-Strike: scegli un oggetto da collezione fra tre.
+
+Il **Prestige Pass** fa guadagnare i Prestige Points, da spendere nel negozio Prestige in pacchetti e **capsule**, come quelle di Death e Goldilocks, che si possono aprire oppure tenere sigillate e scambiare. Si può anche tirare su un gruppo di 48 carte Prestige in quattro livelli, dal più comune: monocromatico, bianco e nero, cyberpunk e artist proof. Gli artist proof non si trovano mai nei pacchetti. Le carte Prestige ruotano: finito un gruppo, quelle carte non tornano.
+
+Fino al 2 dicembre si possono ancora guadagnare le ricompense della demo, che dopo quella data diventano scambiabili. Durante l'Accesso anticipato il Collector Pass non serve per competere in classifica. Più avanti Koin potrebbe mettere la classifica Grandmaster dietro l'accesso a vita da 15 $, contro i bot, ma non durante l'Accesso anticipato.
+
+## Pacchetti e rarità {#pacchetti}
+
+I pacchetti hanno dieci livelli di rarità e **le alternate art si trovano solo lì**, mai nel sistema Prestige: circa 70 nel primo set. La carta più rara è la **Storybook**, 1 ogni 1.200 pacchetti. I pacchetti Alpha si hanno solo con il Kickstarter. Nel nuovo anno arriva un sistema di trade-up per le carte doppie, come quello di Counter-Strike.
+
+## Tornei {#tornei}
+
+Nell'Accesso anticipato ci saranno tornei mensili in formato Conquest, da circa 400 posti ciascuno, con carte promo in premio. I migliori si qualificano per il **Myths and Legends Open**, a fine Accesso anticipato. I dettagli del torneo di novembre arrivano la prossima settimana.
+
+## Negozi {#negozi}
+
+Oltre 100 negozi nel mondo si sono fatti avanti nelle ultime due settimane. Il programma ha due parti: ospitare tornei dal vivo, con promo esclusive, e offrire i preordini dei set. Booster box e casse non si venderanno mai nel gioco: si possono solo preordinare.
+
+## Mobile, draft e il resto {#dopo}
+
+Il lavoro su mobile parte adesso e la modalità draft va in parallelo, con sviluppatori diversi. Nessuna delle due ha una data. Il server di playtest riapre a dicembre per i sostenitori con un rango alto, con tutte le carte. L'Elo gira già dietro le quinte nel matchmaking; un sistema +10/-15 nella classifica Grandmaster è in discussione ma non deciso. Il pity bot non c'è più in Grandmaster.
+
+## I numeri {#numeri}
+
+Tim Jooste ha dato le cifre della settimana della Crimson Cup: circa 2.100 iscrizioni da quasi 1.800 giocatori diversi, picco di 610 giocatori contemporanei, 317 stream e picco di 5.500 spettatori. Tre dei primi quattro erano italiani. Dall'apertura dell'Accesso anticipato il gioco ha fra circa 7.000 e 9.800 giocatori al giorno.`,
+      `**Esto es un avance.** Koin Games celebró el AMA sobre la hoja de ruta del Acceso anticipado en el Discord oficial la noche del 6 de noviembre, durante unas dos horas, con el fundador y CEO Tim Jooste y el Studio Head Mawr. Aquí están los puntos más grandes; el resumen completo, con las novedades de juego y las preguntas y respuestas, llega a continuación.
+
+## El calendario {#calendario}
+
+- **Martes 10 de noviembre:** una actualización contra las desconexiones y las trampas. Sin cambios de equilibrio: no cabían.
+- **Martes 17 de noviembre:** parche de equilibrio, con un cambio previsto en Sherwood Forest.
+- **2 de diciembre:** termina la temporada clasificatoria en curso y llega la gran actualización, con los sistemas de colección y ubicaciones nuevas. Es antes de la "semana del 7 de diciembre" indicada en octubre.
+- **Febrero:** el set completo, con todas las recompensas del Kickstarter. Mawr habló de unas 218 cartas ("no me lo tengáis en cuenta"), más Big Bob.
+
+A partir de ahora Koin trabaja en bloques de seis semanas: una temporada clasificatoria dura seis semanas, con un jefe al principio y otro a la mitad, como Dr. Frank. Los parches de equilibrio llegan más o menos cada dos semanas. Después de diciembre hay una temporada hasta mediados de enero y otra de mediados de enero a febrero.
+
+## 2 de diciembre: los sistemas de colección {#2-diciembre}
+
+Quienes apoyaron el Kickstarter reciben el Collector Pass el 2 de diciembre; después estará a la venta en Steam a un precio más alto. Con el pase llega un **drop semanal**, como en Counter-Strike: eliges un objeto de colección entre tres.
+
+El **Prestige Pass** permite ganar Prestige Points, para gastar en la tienda Prestige en sobres y **cápsulas**, como las de Death y Goldilocks, que se pueden abrir o guardar selladas e intercambiar. También se puede tirar sobre un grupo de 48 cartas Prestige en cuatro niveles, del más común: monocromático, blanco y negro, cyberpunk y artist proof. Los artist proof nunca están en los sobres. Las cartas Prestige rotan: cuando termina un grupo, esas cartas no vuelven.
+
+Hasta el 2 de diciembre aún se pueden ganar las recompensas de la demo, que después de esa fecha pasan a ser intercambiables. Durante el Acceso anticipado no hace falta el Collector Pass para competir en el ranking. Más adelante Koin podría poner el ranking Grandmaster detrás del acceso de por vida de 15 dólares, contra los bots, pero no durante el Acceso anticipado.
+
+## Sobres y rarezas {#sobres}
+
+Los sobres tienen diez niveles de rareza y **las alternate art solo están ahí**, nunca en el sistema Prestige: unas 70 en el primer set. La carta más rara es la **Storybook**, 1 de cada 1.200 sobres. Los sobres Alpha solo se consiguen con el Kickstarter. En el año nuevo llega un sistema de trade-up para las cartas repetidas, como el de Counter-Strike.
+
+## Torneos {#torneos}
+
+En el Acceso anticipado habrá torneos mensuales en formato Conquest, de unas 400 plazas cada uno, con cartas promo como premio. Los mejores se clasifican para el **Myths and Legends Open**, al final del Acceso anticipado. Los detalles del torneo de noviembre llegan la semana que viene.
+
+## Tiendas {#tiendas}
+
+Más de 100 tiendas de todo el mundo han mostrado interés en las últimas dos semanas. El programa tiene dos partes: organizar torneos presenciales, con promos exclusivas, y ofrecer las reservas de los sets. Las cajas de sobres y las cajas master nunca se venderán en el juego: solo se pueden reservar.
+
+## Móvil, draft y el resto {#despues}
+
+El trabajo en móvil empieza ahora y el modo draft avanza en paralelo, con desarrolladores distintos. Ninguno de los dos tiene fecha. El servidor de playtest reabre en diciembre para quienes apoyaron el proyecto y tienen un rango alto, con todas las cartas. El Elo ya funciona entre bastidores en el emparejamiento; un sistema +10/-15 en el ranking Grandmaster está en debate, pero no decidido. El pity bot ya no está en Grandmaster.
+
+## Las cifras {#cifras}
+
+Tim Jooste dio las cifras de la semana de la Crimson Cup: unas 2.100 inscripciones de casi 1.800 jugadores distintos, un pico de 610 jugadores simultáneos, 317 directos y un pico de 5.500 espectadores. Tres de los cuatro primeros eran italianos. Desde la apertura del Acceso anticipado el juego tiene entre unos 7.000 y 9.800 jugadores al día.`,
+    ),
+  },
+  {
     // Intervista a CoachCrono, campione della Crimson Cup (04/11/2026). Pierluigi: "intervista del coach", poi i codici del
     // gioco dei tre mazzi ("deck 1/2/3") e la foto del Coach. Testo: la trascrizione mandata da Pierluigi (le domande sono
     // di Davdas, che firma: "l'intervistatore è davdas non io"), ritoccata solo per la lettura, con i nomi delle carte in

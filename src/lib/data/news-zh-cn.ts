@@ -14,6 +14,61 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "origins-tcg-roadmap-ama-preview": {
+    title: "AMA Preview：Origins TCG 的收藏系统 12月2日上线，完整系列 2 月推出",
+    metaTitle: "Origins TCG AMA Preview：12月2日与 2 月的完整系列",
+    description:
+      "Origins TCG AMA Preview：12月2日上线 Prestige 和胶囊，2 月推出完整系列，每月举办锦标赛，以及 11月10日和 17 日的变化。这里是路线图 AMA 中最重要的消息，涵盖日期、卡包、稀有度、锦标赛和实体店计划。完整回顾随后发布。",
+    summary:
+      "Koin Games 在 Discord 的 AMA 中公布了抢先体验路线图：11月10日更新服务器，11月17日推出平衡补丁，12月2日上线收藏系统，2 月推出完整系列。这是最重要消息的预览，完整回顾随后发布。",
+    highlights: [
+      { label: "日程", text: "11月10日和 17 日、12月2日，2 月推出完整系列", anchor: "ri-cheng" },
+      { label: "12月2日", text: "Collector Pass、每周掉落、Prestige 和胶囊", anchor: "12-yue-2-ri" },
+      { label: "卡包与稀有度", text: "alternate art 只在卡包中，Storybook 为 1,200 包出 1 张", anchor: "ka-bao" },
+      { label: "锦标赛", text: "每月的 Conquest 赛事，之后是 Myths and Legends Open", anchor: "jin-biao-sai" },
+      { label: "实体店", text: "已有 100 多家表示兴趣", anchor: "shi-ti-dian" },
+      { label: "移动版与轮抽", text: "正在开发，暂无日期", anchor: "hou-xu" },
+      { label: "数据", text: "每天 7,000 至 9,800 名玩家", anchor: "shu-ju" },
+    ],
+    body: `**这是一篇预览。** Koin Games 于 11月6日晚在官方 Discord 举行了抢先体验路线图 AMA，时长约两小时，由创始人兼 CEO Tim Jooste 和 Studio Head Mawr 主持。下面是最重要的几点；包含玩法新内容和问答的完整回顾随后发布。
+
+## 日程 {#ri-cheng}
+
+- **11月10日（周二）：** 针对掉线和作弊的更新。这次不含平衡调整。
+- **11月17日（周二）：** 平衡补丁，预计会调整 Sherwood Forest。
+- **12月2日：** 当前排位赛季结束，大型更新上线，带来收藏系统和新地点。这比 10 月公布的“12月7日那一周”更早。
+- **2 月：** 完整系列推出，同时发放所有 Kickstarter 奖励。Mawr 说大约有 218 张卡（“别把这个数字当成承诺”），外加 Big Bob。
+
+今后 Koin 以六周为一个周期：一个排位赛季持续六周，开始时有一个首领，中途再来一个，比如 Dr. Frank。平衡补丁大约每两周一次。12 月之后有一个赛季持续到 1 月中旬，另一个从 1 月中旬到 2 月。
+
+## 12月2日：收藏系统 {#12-yue-2-ri}
+
+Kickstarter 支持者将在 12月2日收到 Collector Pass；之后它会在 Steam 上以更高的价格出售。通行证带来**每周掉落**，和 Counter-Strike 一样：从三件收藏品中选一件。
+
+**Prestige Pass** 可以赚取 Prestige Points，用于在 Prestige 商店购买卡包和**胶囊**，比如 Death 和 Goldilocks 胶囊，胶囊可以打开，也可以保持密封并交易。你还可以在 48 张 Prestige 卡的卡池中抽取，共分四个等级，从最常见开始依次是：单色、黑白、赛博朋克和 artist proof。Artist proof 永远不会出现在卡包里。Prestige 卡会轮换：一个卡池结束后，这些卡不再回归。
+
+在 12月2日之前仍可赚取试玩版奖励，此后它们将可以交易。抢先体验期间，参与排行榜竞争不需要 Collector Pass。以后 Koin 可能会把 Grandmaster 排行榜放在 15 美元的终身权限之后，用来防止机器人，但抢先体验期间不会这样做。
+
+## 卡包与稀有度 {#ka-bao}
+
+卡包有十个稀有度等级，**alternate art 只在卡包中出现**，绝不会进入 Prestige 系统：第一个系列约有 70 张。最稀有的卡是 **Storybook**，1,200 包出 1 张。Alpha 卡包只能通过 Kickstarter 获得。新的一年将加入 trade-up 系统，可以用多余的卡升级，类似 Counter-Strike。
+
+## 锦标赛 {#jin-biao-sai}
+
+抢先体验期间每月都有 Conquest 赛制的锦标赛，每场约 400 个名额，奖品是宣传卡。成绩最好的玩家将晋级抢先体验结束时的 **Myths and Legends Open**。11 月锦标赛的细节下周公布。
+
+## 实体店 {#shi-ti-dian}
+
+过去两周，全球已有 100 多家实体店表示兴趣。计划分两部分：举办线下锦标赛并提供独家宣传卡，以及提供系列预购。补充盒和整箱永远不会在游戏内出售，只能预购。
+
+## 移动版、轮抽和其他 {#hou-xu}
+
+移动版的开发现在开始，轮抽模式由其他开发者同步推进。两者都没有日期。测试服务器将在 12 月为高段位的支持者重新开放，所有卡都可用。Elo 已在后台用于匹配；Grandmaster 排行榜采用 +10/-15 的方案仍在讨论，尚未决定。Grandmaster 中已经没有保底机器人。
+
+## 数据 {#shu-ju}
+
+Tim Jooste 公布了 Crimson Cup 那一周的数据：约 2,100 份报名，来自近 1,800 名不同的玩家，同时在线峰值 610 人，317 场直播，观众峰值 5,500 人。前四名中有三名是意大利人。抢先体验开放以来，游戏每天有约 7,000 至 9,800 名玩家。`,
+  },
   "coachcrono-crimson-cup-interview": {
     title: "与 Crimson Cup 冠军 CoachCrono 聊聊：夺冠阵容和 Origins TCG 的未来",
     metaTitle: "CoachCrono 专访：Origins TCG Crimson Cup 冠军",

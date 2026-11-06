@@ -10,6 +10,61 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "origins-tcg-roadmap-ama-preview": {
+    title: "AMA Preview: os sistemas de coleção de Origins TCG chegam em 2 de dezembro, o set completo em fevereiro",
+    metaTitle: "AMA Preview de Origins TCG: 2 de dezembro e set de fevereiro",
+    description:
+      "AMA Preview de Origins TCG: Prestige e cápsulas em 2 de dezembro, o set completo em fevereiro, torneios mensais e o que muda em 10 e 17 de novembro.",
+    summary:
+      "A Koin Games apresentou o roadmap do Acesso Antecipado em um AMA no Discord: atualização dos servidores em 10 de novembro, patch de balanceamento no dia 17, sistemas de coleção em 2 de dezembro e set completo em fevereiro. Esta é a prévia com as maiores novidades; o resumo completo vem em seguida.",
+    highlights: [
+      { label: "O calendário", text: "10 e 17 de novembro, 2 de dezembro, o set completo em fevereiro", anchor: "calendario" },
+      { label: "2 de dezembro", text: "Collector Pass, drops semanais, Prestige e cápsulas", anchor: "2-dezembro" },
+      { label: "Pacotes e raridades", text: "alternate arts só nos pacotes, Storybook 1 a cada 1.200", anchor: "pacotes" },
+      { label: "Torneios", text: "eventos mensais de Conquest e depois o Myths and Legends Open", anchor: "torneios" },
+      { label: "Lojas", text: "mais de 100 demonstraram interesse", anchor: "lojas" },
+      { label: "Mobile e draft", text: "em desenvolvimento, sem data", anchor: "depois" },
+      { label: "Os números", text: "de 7.000 a 9.800 jogadores por dia", anchor: "numeros" },
+    ],
+    body: `**Isto é uma prévia.** A Koin Games fez o AMA sobre o roadmap do Acesso Antecipado no Discord oficial na noite de 6 de novembro, por cerca de duas horas, com o fundador e CEO Tim Jooste e o Studio Head Mawr. Aqui estão os pontos maiores; o resumo completo, com as novidades de jogo e as perguntas e respostas, vem em seguida.
+
+## O calendário {#calendario}
+
+- **Terça, 10 de novembro:** uma atualização contra desconexões e trapaças. Sem mudanças de balanceamento: não couberam.
+- **Terça, 17 de novembro:** patch de balanceamento, com uma mudança esperada em Sherwood Forest.
+- **2 de dezembro:** termina a temporada ranqueada atual e chega a grande atualização, com os sistemas de coleção e locais novos. É antes da "semana de 7 de dezembro" indicada em outubro.
+- **Fevereiro:** o set completo, com todas as recompensas do Kickstarter. Mawr falou em cerca de 218 cartas ("não me cobrem por isso"), mais Big Bob.
+
+A partir de agora a Koin trabalha em blocos de seis semanas: uma temporada ranqueada dura seis semanas, com um chefe no início e outro na metade, como Dr. Frank. Os patches de balanceamento chegam mais ou menos a cada duas semanas. Depois de dezembro há uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.
+
+## 2 de dezembro: os sistemas de coleção {#2-dezembro}
+
+Quem apoiou o Kickstarter recebe o Collector Pass em 2 de dezembro; depois ele estará à venda na Steam por um preço mais alto. Com o passe vem um **drop semanal**, como em Counter-Strike: você escolhe um item de coleção entre três.
+
+O **Prestige Pass** rende Prestige Points, para gastar na loja Prestige em pacotes e **cápsulas**, como as de Death e Goldilocks, que podem ser abertas ou guardadas lacradas e trocadas. Também dá para rolar em um grupo de 48 cartas Prestige em quatro níveis, do mais comum: monocromático, preto e branco, cyberpunk e artist proof. Os artist proofs nunca estão nos pacotes. As cartas Prestige rodam: quando um grupo termina, essas cartas não voltam.
+
+Até 2 de dezembro ainda dá para ganhar as recompensas da demo, que depois dessa data se tornam trocáveis. Durante o Acesso Antecipado o Collector Pass não é necessário para competir na classificação. Mais adiante a Koin pode colocar a classificação Grandmaster atrás do acesso vitalício de US$ 15, contra bots, mas não durante o Acesso Antecipado.
+
+## Pacotes e raridades {#pacotes}
+
+Os pacotes têm dez níveis de raridade e **as alternate arts só existem ali**, nunca no sistema Prestige: cerca de 70 no primeiro set. A carta mais rara é a **Storybook**, 1 a cada 1.200 pacotes. Os pacotes Alpha só se conseguem pelo Kickstarter. No ano novo chega um sistema de trade-up para as cartas repetidas, como o de Counter-Strike.
+
+## Torneios {#torneios}
+
+O Acesso Antecipado terá torneios mensais no formato Conquest, com cerca de 400 vagas cada, e cartas promo como prêmio. Os melhores se classificam para o **Myths and Legends Open**, no fim do Acesso Antecipado. Os detalhes do torneio de novembro saem na semana que vem.
+
+## Lojas {#lojas}
+
+Mais de 100 lojas pelo mundo demonstraram interesse nas últimas duas semanas. O programa tem duas partes: receber torneios presenciais, com promos exclusivas, e oferecer as pré-vendas dos sets. Caixas de boosters e cases nunca serão vendidas no jogo: são só em pré-venda.
+
+## Mobile, draft e o resto {#depois}
+
+O trabalho no mobile começa agora e o modo draft anda em paralelo, com desenvolvedores diferentes. Nenhum dos dois tem data. O servidor de playtest reabre em dezembro para apoiadores com rank alto, com todas as cartas. O Elo já funciona nos bastidores no matchmaking; um sistema +10/-15 na classificação Grandmaster está em discussão, mas não foi decidido. O pity bot não está mais no Grandmaster.
+
+## Os números {#numeros}
+
+Tim Jooste deu os números da semana da Crimson Cup: cerca de 2.100 inscrições de quase 1.800 jogadores diferentes, pico de 610 jogadores simultâneos, 317 transmissões e pico de 5.500 espectadores. Três dos quatro primeiros eram italianos. Desde a abertura do Acesso Antecipado o jogo tem entre cerca de 7.000 e 9.800 jogadores por dia.`,
+  },
   "coachcrono-crimson-cup-interview": {
     title: "Uma conversa com CoachCrono, campeão da Crimson Cup: a lineup vencedora e o futuro de Origins TCG",
     metaTitle: "Entrevista: CoachCrono, campeão Crimson Cup de Origins TCG",

@@ -9,6 +9,61 @@ import type { NewsCopy } from "./news-fr";
  * docs/tedesco.md; controlli in newsMeta.test.ts (lunghezze, link con /de/, ancore, paragrafo "Update vom …").
  */
 export const deText: Record<string, NewsCopy> = {
+  "origins-tcg-roadmap-ama-preview": {
+    title: "AMA Preview: Die Sammelsysteme von Origins TCG kommen am 2. Dezember, das komplette Set im Februar",
+    metaTitle: "Origins TCG AMA Preview: 2. Dezember und das Februar-Set",
+    description:
+      "AMA Preview zu Origins TCG: Prestige und Kapseln am 2. Dezember, das komplette Set im Februar, monatliche Turniere und was am 10. und 17. November kommt.",
+    summary:
+      "Koin Games hat in einem AMA auf Discord die Roadmap des Early Access vorgestellt: Server-Update am 10. November, Balance-Patch am 17., Sammelsysteme am 2. Dezember und das komplette Set im Februar. Das ist die Vorschau mit den größten Neuigkeiten; der vollständige Bericht folgt.",
+    highlights: [
+      { label: "Der Kalender", text: "10. und 17. November, 2. Dezember, das komplette Set im Februar", anchor: "kalender" },
+      { label: "2. Dezember", text: "Collector Pass, wöchentliche Drops, Prestige und Kapseln", anchor: "2-dezember" },
+      { label: "Packs und Seltenheiten", text: "Alternate Arts nur in Packs, Storybook 1 von 1.200", anchor: "packs" },
+      { label: "Turniere", text: "monatliche Conquest-Events, danach das Myths and Legends Open", anchor: "turniere" },
+      { label: "Läden", text: "über 100 haben Interesse gezeigt", anchor: "laeden" },
+      { label: "Mobile und Draft", text: "in Arbeit, ohne Termin", anchor: "danach" },
+      { label: "Die Zahlen", text: "7.000 bis 9.800 Spieler pro Tag", anchor: "zahlen" },
+    ],
+    body: `**Das ist eine Vorschau.** Koin Games hat am Abend des 6. November auf dem offiziellen Discord das AMA zur Roadmap des Early Access abgehalten, rund zwei Stunden lang, mit Gründer und CEO Tim Jooste und Studio Head Mawr. Hier stehen die größten Punkte; der vollständige Bericht mit den Gameplay-Neuheiten und den Fragen und Antworten folgt.
+
+## Der Kalender {#kalender}
+
+- **Dienstag, 10. November:** ein Update gegen Verbindungsabbrüche und Cheating. Keine Balance-Änderungen: Dafür war kein Platz.
+- **Dienstag, 17. November:** Balance-Patch, mit einer erwarteten Änderung an Sherwood Forest.
+- **2. Dezember:** Die laufende Ranglisten-Saison endet und das große Update kommt, mit den Sammelsystemen und neuen Orten. Das ist früher als die im Oktober genannte „Woche des 7. Dezember“.
+- **Februar:** das komplette Set mit allen Kickstarter-Belohnungen. Mawr sprach von etwa 218 Karten („nagelt mich nicht darauf fest“), dazu Big Bob.
+
+Ab jetzt arbeitet Koin in Blöcken von sechs Wochen: Eine Ranglisten-Saison dauert sechs Wochen, mit einem Boss am Anfang und einem zur Halbzeit, wie Dr. Frank. Balance-Patches kommen etwa alle zwei Wochen. Nach Dezember gibt es eine Saison bis Mitte Januar und eine von Mitte Januar bis Februar.
+
+## 2. Dezember: die Sammelsysteme {#2-dezember}
+
+Wer den Kickstarter unterstützt hat, bekommt den Collector Pass am 2. Dezember; danach ist er auf Steam zu einem höheren Preis erhältlich. Mit dem Pass kommt ein **wöchentlicher Drop** wie in Counter-Strike: Du wählst einen von drei Sammelgegenständen.
+
+Der **Prestige Pass** bringt Prestige Points, die du im Prestige-Shop für Packs und **Kapseln** ausgibst, etwa die von Death und Goldilocks. Kapseln lassen sich öffnen oder versiegelt behalten und tauschen. Außerdem kannst du aus einem Pool von 48 Prestige-Karten in vier Stufen ziehen, von der häufigsten an: monochrom, schwarz-weiß, Cyberpunk und Artist Proof. Artist Proofs gibt es nie in Packs. Prestige-Karten rotieren: Endet ein Pool, kommen diese Karten nicht wieder.
+
+Bis zum 2. Dezember lassen sich die Demo-Belohnungen noch verdienen, danach werden sie handelbar. Im Early Access brauchst du den Collector Pass nicht, um in der Rangliste anzutreten. Später könnte Koin die Grandmaster-Rangliste an den lebenslangen Zugang für 15 $ binden, als Schutz gegen Bots, aber nicht während des Early Access.
+
+## Packs und Seltenheiten {#packs}
+
+Packs haben zehn Seltenheitsstufen, und **Alternate Arts gibt es nur dort**, nie im Prestige-System: etwa 70 im ersten Set. Die seltenste Karte ist die **Storybook**, 1 von 1.200 Packs. Alpha-Packs gibt es nur über den Kickstarter. Im neuen Jahr kommt ein Trade-up-System für doppelte Karten, wie in Counter-Strike.
+
+## Turniere {#turniere}
+
+Im Early Access gibt es monatliche Turniere im Conquest-Format mit jeweils rund 400 Plätzen und Promo-Karten als Preis. Die Besten qualifizieren sich für das **Myths and Legends Open** am Ende des Early Access. Die Details zum November-Turnier folgen nächste Woche.
+
+## Läden {#laeden}
+
+Über 100 Läden weltweit haben in den letzten zwei Wochen Interesse gezeigt. Das Programm hat zwei Teile: Turniere vor Ort mit exklusiven Promos ausrichten und Vorbestellungen der Sets anbieten. Booster-Displays und Cases gibt es nie im Spiel zu kaufen: Sie sind nur vorbestellbar.
+
+## Mobile, Draft und der Rest {#danach}
+
+Die Arbeit an Mobile beginnt jetzt, der Draft-Modus läuft parallel mit anderen Entwicklern. Beides hat keinen Termin. Der Playtest-Server öffnet im Dezember wieder für Unterstützer mit hohem Rang, mit allen Karten. Elo läuft im Matchmaking schon im Hintergrund; ein +10/-15-System in der Grandmaster-Rangliste wird diskutiert, ist aber nicht entschieden. Den Pity-Bot gibt es in Grandmaster nicht mehr.
+
+## Die Zahlen {#zahlen}
+
+Tim Jooste nannte Zahlen zur Woche des Crimson Cup: rund 2.100 Anmeldungen von fast 1.800 verschiedenen Spielern, ein Höchststand von 610 gleichzeitigen Spielern, 317 Streams und in der Spitze 5.500 Zuschauer. Drei der ersten vier kamen aus Italien. Seit dem Start des Early Access hat das Spiel etwa 7.000 bis 9.800 Spieler pro Tag.`,
+  },
   "coachcrono-crimson-cup-interview": {
     title: "Gespräch mit CoachCrono, Champion des Crimson Cup: die Siegeraufstellung und die Zukunft von Origins TCG",
     metaTitle: "CoachCrono im Interview: Crimson-Cup-Sieger von Origins TCG",
