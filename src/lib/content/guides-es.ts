@@ -1620,15 +1620,22 @@ Origins TCG está en Acceso anticipado desde el 27 de octubre de 2026, con la ve
 | 19–26 de octubre | Steam Next Fest: más de 20.000 listas de deseados y 30.000 descargas de la demo, según Koin Games |
 | 19–25 de octubre | La Crimson Cup, el torneo del Steam Next Fest, con premios por un valor de 10.000 dólares: la gana CoachCrono el 25 |
 | 27 de octubre | [Fin de la demo y Acceso anticipado en Steam](https://store.steampowered.com/news/app/4429430/view/1847286114049982) con la versión 0.8: Grandmaster Division abierta, gradación visible en las cartas, cartas coleccionables en el Mercado de Steam. Ese mismo día abre el Kickstarter de la Alpha Edition |
+| 4 de noviembre | [Notas del parche](/es/news/balance-patch-1104-cyber-queen): diez cartas reequilibradas, Cyber Queen es el jefe n.º 11 |
+| 6 de noviembre | [AMA de la hoja de ruta](/es/news/origins-tcg-roadmap-ama-recap) en el Discord oficial: el plan del Acceso anticipado hasta febrero |
 
 ## Lo que viene
 
 - **Kickstarter de la Alpha Edition.** Abierto desde el 27 de octubre de 2026: el Alpha Set "Myths & Legends", exclusivo del Kickstarter, tiene 218 cartas que Koin irá publicando a lo largo del Acceso anticipado. Todo lo que hay que saber, en nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
-- **Principios de diciembre de 2026.** Fin previsto de la temporada 1 de la clasificatoria ("sometime in early December": es un plan, y puede cambiar), con recompensas de edición limitada para quienes terminen en los rangos más altos.
+- **10 de noviembre de 2026.** Una actualización contra las desconexiones y las trampas, sin cambios de equilibrio.
+- **17 de noviembre de 2026.** Parche de equilibrio, con un cambio previsto en Sherwood Forest.
+- **Noviembre de 2026.** El primer torneo mensual del Acceso anticipado, en formato Conquest con unas 400 plazas; Koin da los detalles la semana del 9 de noviembre.
+- **2 de diciembre de 2026.** Fin de la temporada clasificatoria en curso y primera gran actualización: Collector Pass, Prestige, cápsulas, ubicaciones nuevas y títulos. Sigue una temporada hasta mediados de enero y otra de mediados de enero a febrero.
+- **Febrero de 2027.** El set completo Myths and Legends, unas 218 cartas, con todas las recompensas del Kickstarter; la edición estándar llega a las tiendas.
+- **Final del Acceso anticipado.** El Myths and Legends Open, para quienes se clasifiquen con los torneos mensuales.
 - **Hacia el 17 de marzo de 2027.** Versión 1.0 y fin del Acceso anticipado, según la página de Steam ("roughly March 17th, 2027"): una fecha indicativa, que puede cambiar.
-- **2027.** Versión móvil y apertura de sobres desde el teléfono. En los AMA, el equipo ha descrito un lanzamiento completo con el elenco entero de cartas Legendarias, entre ellas King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein y Sherlock Holmes.
+- **2027.** Versión móvil y apertura de sobres desde el teléfono. En el AMA del 6 de noviembre Koin dijo que el trabajo en móvil empieza ahora, sin fecha. En los AMA, el equipo ha descrito un lanzamiento completo con el elenco entero de cartas Legendarias, entre ellas King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein y Sherlock Holmes.
 
-Las fechas proceden de las publicaciones oficiales en Steam, de la página de Steam del juego (consultada el 28 de octubre de 2026), del Discord del estudio y, para la fecha del Kickstarter, de la publicación del CEO de Koin Games. Actualizamos esta página cuando cambian.
+Las fechas proceden de las publicaciones oficiales en Steam, de la página de Steam del juego (consultada el 28 de octubre de 2026), del Discord del estudio y, para la fecha del Kickstarter, de la publicación del CEO de Koin Games. Las fechas desde noviembre de 2026 vienen del [AMA de la hoja de ruta del 6 de noviembre](/es/news/origins-tcg-roadmap-ama-recap) y pueden cambiar. Actualizamos esta página cuando cambian.
 `,
   },
   "collector-economy": {

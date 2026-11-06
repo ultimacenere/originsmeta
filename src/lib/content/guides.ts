@@ -1319,7 +1319,7 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
     metaTitle: "Origins TCG roadmap and release dates",
     excerpt: "Every confirmed Origins TCG date, from the first Steam post to the demo, the Crimson Cup and Early Access on 27 October 2026, plus what comes next.",
     readTime: 4,
-    updated: "2026-10-28",
+    updated: "2026-11-07",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "When did Origins TCG launch on Steam?", a: "In Early Access on 27 October 2026, with update 0.8, as a free-to-play game. Koin Games aims to leave Early Access with version 1.0 \"roughly\" on 17 March 2027, according to the Steam page: a date that may change." },
@@ -1362,15 +1362,22 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
 | 19–26 October | Steam Next Fest: more than 20,000 wishlists, 30,000 demo downloads and over 300 people streaming the game, according to [Koin Games](https://store.steampowered.com/news/app/4429430/view/1847286114049639) |
 | 19–25 October | The Crimson Cup, the Steam Next Fest tournament: five regional qualifiers, playoffs on the 24th and finals on the 25th, won by CoachCrono; prizes worth $10,000 and a peak of over 5,000 viewers on Twitch |
 | 27 October | [End of the demo and Early Access with update 0.8](https://store.steampowered.com/news/app/4429430/view/1847286114049982): Grandmaster Division open, graded cards, collectible cards on the Steam Market; the same day the Kickstarter for the Alpha Edition opens |
+| 4 November | [Patch notes](/en/news/balance-patch-1104-cyber-queen): ten cards rebalanced, Cyber Queen is boss #11 |
+| 6 November | [Roadmap AMA](/en/news/origins-tcg-roadmap-ama-recap) on the official Discord: the Early Access plan up to February |
 
 ## What comes next
 
 - **Now.** Origins TCG is free on Steam in Early Access, and the Kickstarter for the Alpha Edition, whose date Koin Games' CEO gave on 17 September, is running: everything about it in our [Kickstarter guide](/en/guides/origins-tcg-kickstarter).
-- **Early December 2026.** End of ranked season 1, the first of Early Access, according to Koin's current plan, which may change.
+- **10 November 2026.** An update against disconnects and cheating, with no balance changes.
+- **17 November 2026.** A balance patch, with a change to Sherwood Forest expected.
+- **November 2026.** The first monthly tournament of Early Access, in Conquest format with about 400 seats; Koin gives the details the week of 9 November.
+- **2 December 2026.** End of the current ladder season and the first big update: Collector Pass, Prestige, capsules, new locations and titles. One season follows to mid-January and one from mid-January to February.
+- **February 2027.** The full Myths and Legends set, about 218 cards, with all the Kickstarter rewards; the standard edition reaches shops.
+- **End of Early Access.** The Myths and Legends Open, for those who qualify through the monthly tournaments.
 - **Around 17 March 2027.** Version 1.0: the Steam page says Koin aims to leave Early Access "roughly March 17th, 2027", a date that may change.
-- **2027.** Mobile version and pack opening on phone. In the AMAs the team has described a full launch with the complete roster of Legendary cards, including King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein and Sherlock Holmes.
+- **2027.** Mobile version and pack opening on phone. In the AMA of 6 November Koin said work on mobile is starting now, with no date. In the AMAs the team has described a full launch with the complete roster of Legendary cards, including King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein and Sherlock Holmes.
 
-Dates come from the official Steam posts and the Steam page of the game (read on 28 October 2026), the studio's Discord and, for the Kickstarter date, the post of Koin Games' CEO. We update this page when they change.
+Dates come from the official Steam posts and the Steam page of the game (read on 28 October 2026), the studio's Discord and, for the Kickstarter date, the post of Koin Games' CEO. The dates from November 2026 on come from the [roadmap AMA of 6 November](/en/news/origins-tcg-roadmap-ama-recap) and may change. We update this page when they change.
 `,
   },
   "collector-economy": {
@@ -2962,7 +2969,7 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
     metaTitle: "Origins TCG: roadmap e date di uscita",
     excerpt: "Tutte le date confermate di Origins TCG, dal primo post su Steam alla demo, alla Crimson Cup e all'Accesso anticipato del 27 ottobre 2026, e cosa viene dopo.",
     readTime: 4,
-    updated: "2026-10-28",
+    updated: "2026-11-07",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "Quando è uscito Origins TCG su Steam?", a: "In Accesso anticipato il 27 ottobre 2026, con l'aggiornamento 0.8, come gioco free-to-play. Koin Games punta a uscire dall'Accesso anticipato con la versione 1.0 intorno al 17 marzo 2027 (\"roughly\", dice la pagina Steam): una data che può cambiare." },
@@ -3005,15 +3012,22 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
 | 19–26 ottobre | Steam Next Fest: oltre 20.000 wishlist, 30.000 download della demo e più di 300 persone che hanno trasmesso il gioco, secondo [Koin Games](https://store.steampowered.com/news/app/4429430/view/1847286114049639) |
 | 19–25 ottobre | La Crimson Cup, il torneo dello Steam Next Fest: cinque qualificazioni regionali, playoff il 24 e finali il 25, vinte da CoachCrono; premi per 10.000 $ e un picco di oltre 5.000 spettatori su Twitch |
 | 27 ottobre | [Fine della demo e Accesso anticipato con l'aggiornamento 0.8](https://store.steampowered.com/news/app/4429430/view/1847286114049982): divisione Grandmaster aperta, carte con il grado, carte da collezione sul Mercato di Steam; lo stesso giorno parte il Kickstarter dell'Alpha Edition |
+| 4 novembre | [Patch notes](/it/news/balance-patch-1104-cyber-queen): dieci carte ribilanciate, Cyber Queen è il boss n. 11 |
+| 6 novembre | [AMA sulla roadmap](/it/news/origins-tcg-roadmap-ama-recap) sul Discord ufficiale: il piano dell'Accesso anticipato fino a febbraio |
 
 ## Cosa viene dopo
 
 - **Adesso.** Origins TCG è gratuito su Steam in Accesso anticipato, ed è in corso il Kickstarter dell'Alpha Edition, la cui data era stata annunciata dal CEO di Koin Games il 17 settembre: tutto quello che c'è da sapere nella nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter).
-- **Inizio dicembre 2026.** Fine della stagione classificata 1, la prima dell'Accesso anticipato, secondo il piano attuale di Koin, che può cambiare.
+- **10 novembre 2026.** Un aggiornamento contro disconnessioni e cheat, senza bilanciamento.
+- **17 novembre 2026.** Patch di bilanciamento, con una modifica attesa a Sherwood Forest.
+- **Novembre 2026.** Il primo torneo mensile dell'Accesso anticipato, in formato Conquest con circa 400 posti; Koin dà i dettagli nella settimana del 9 novembre.
+- **2 dicembre 2026.** Fine della stagione classificata in corso e primo grande aggiornamento: Collector Pass, Prestige, capsule, luoghi nuovi e titoli. Segue una stagione fino a metà gennaio e una da metà gennaio a febbraio.
+- **Febbraio 2027.** Il set completo Myths and Legends, circa 218 carte, con tutte le ricompense del Kickstarter; l'edizione standard arriva nei negozi.
+- **Fine dell'Accesso anticipato.** Il Myths and Legends Open, per chi si qualifica con i tornei mensili.
 - **Intorno al 17 marzo 2027.** Versione 1.0: la pagina Steam dice che Koin punta a uscire dall'Accesso anticipato "roughly March 17th, 2027", una data che può cambiare.
-- **2027.** Versione mobile e apertura dei pacchetti da telefono. Negli AMA il team ha descritto un lancio completo con tutte le Leggendarie, tra cui King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein e Sherlock Holmes.
+- **2027.** Versione mobile e apertura dei pacchetti da telefono. Nell'AMA del 6 novembre Koin ha detto che il lavoro sul mobile parte adesso, senza una data. Negli AMA il team ha descritto un lancio completo con tutte le Leggendarie, tra cui King Arthur, Dracula, Winnie-the-Pooh, Alice, Beowulf, Cinderella, Sweeney Todd, Frankenstein e Sherlock Holmes.
 
-Le date vengono dai post ufficiali su Steam e dalla pagina Steam del gioco (letta il 28 ottobre 2026), dal Discord dello studio e, per la data del Kickstarter, dal post del CEO di Koin Games. Aggiorniamo questa pagina quando cambiano.
+Le date vengono dai post ufficiali su Steam e dalla pagina Steam del gioco (letta il 28 ottobre 2026), dal Discord dello studio e, per la data del Kickstarter, dal post del CEO di Koin Games. Le date da novembre 2026 in poi vengono dall'[AMA sulla roadmap del 6 novembre](/it/news/origins-tcg-roadmap-ama-recap) e possono cambiare. Aggiorniamo questa pagina quando cambiano.
 `,
   },
   "collector-economy": {

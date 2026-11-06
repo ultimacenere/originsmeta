@@ -263,15 +263,22 @@ export const zhCnTextB: Partial<Record<GuideSlug, GuideCopy>> = {
 | 10月19–26日 | Steam Next Fest：据 [Koin Games](https://store.steampowered.com/news/app/4429430/view/1847286114049639) 公布，愿望单超过 20,000 个，试玩版下载 30,000 次，超过 300 人直播本作 |
 | 10月19–25日 | Crimson Cup，Steam Next Fest 的锦标赛：五场地区资格赛，24日季后赛，25日决赛，CoachCrono 夺冠；奖品总价值 10,000 美元，Twitch 观看人数峰值超过 5,000 |
 | 10月27日 | [试玩版结束，随 0.8 更新开启抢先体验](https://store.steampowered.com/news/app/4429430/view/1847286114049982)：Grandmaster 段位开放，卡牌评级，收藏卡登陆 Steam 市场；同一天，Alpha Edition 的 Kickstarter 开启 |
+| 11月4日 | [补丁说明](/zh-cn/news/balance-patch-1104-cyber-queen)：十张卡调整，Cyber Queen 成为第 11 号首领 |
+| 11月6日 | 官方 Discord 上的[路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap)：直到 2 月的抢先体验计划 |
 
 ## 接下来
 
 - **现在。** Origins TCG 已在 Steam 免费开启抢先体验，而 Alpha Edition 的 Kickstarter 正在进行中，日期由 Koin Games 的 CEO 于 9月17日公布：详情见我们的 [Kickstarter 攻略](/zh-cn/guides/origins-tcg-kickstarter)。
-- **2026年12月初。** 根据 Koin 目前的计划（可能会变），排位第 1 赛季结束，这也是抢先体验的第一个赛季。
+- **2026年11月10日。** 针对掉线和作弊的更新，不含平衡调整。
+- **2026年11月17日。** 平衡补丁，预计会调整 Sherwood Forest。
+- **2026年11月。** 抢先体验的第一场月度锦标赛，采用 Conquest 赛制，约 400 个名额；Koin 将在 11月9日那一周公布细节。
+- **2026年12月2日。** 当前排位赛季结束，第一次大型更新上线：Collector Pass、Prestige、胶囊、新地点和称号。之后一个赛季持续到 1 月中旬，另一个从 1 月中旬到 2 月。
+- **2027年2月。** 完整的 Myths and Legends 系列，约 218 张卡，同时发放所有 Kickstarter 奖励；标准版进入实体店。
+- **抢先体验结束时。** Myths and Legends Open，面向通过月度锦标赛晋级的玩家。
 - **2027年3月17日前后。** 1.0 版本：Steam 页面写道，Koin 的目标是“大约在 2027年3月17日”结束抢先体验，这个日期可能会变。
-- **2027年。** 手机版和手机开包。在 AMA 中，团队描述了一次完整发布，届时将推出完整的传说卡阵容，包括 King Arthur、Dracula、Winnie-the-Pooh、Alice、Beowulf、Cinderella、Sweeney Todd、Frankenstein 和 Sherlock Holmes。
+- **2027年。** 手机版和手机开包。在 11月6日的 AMA 中，Koin 表示移动版的开发现在开始，暂无日期。在 AMA 中，团队描述了一次完整发布，届时将推出完整的传说卡阵容，包括 King Arthur、Dracula、Winnie-the-Pooh、Alice、Beowulf、Cinderella、Sweeney Todd、Frankenstein 和 Sherlock Holmes。
 
-日期来自官方 Steam 公告和游戏的 Steam 页面（于 2026年10月28日查阅）、工作室的 Discord，Kickstarter 的日期则来自 Koin Games CEO 的帖子。日期有变时，我们会更新本页。
+日期来自官方 Steam 公告和游戏的 Steam 页面（于 2026年10月28日查阅）、工作室的 Discord，Kickstarter 的日期则来自 Koin Games CEO 的帖子。2026年11月之后的日期来自 [11月6日的路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap)，可能会变。日期有变时，我们会更新本页。
 `,
   },
   "collector-economy": {
