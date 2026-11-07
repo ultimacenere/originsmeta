@@ -1541,7 +1541,7 @@ Because collector versions are cosmetic, a tier list only has to judge the card,
     metaTitle: "How to play Origins TCG on Steam",
     excerpt: "Play Origins TCG free on Steam in Early Access: requirements, download, language, first matches, what update 0.8 brings and what became of the demo.",
     readTime: 5,
-    updated: "2026-10-28",
+    updated: "2026-11-07",
     image: "/media/ss-legendary-mulan.webp",
     faq: [
       { q: "Is Origins TCG free?", a: "Yes. It is Free To Play on Steam, in Early Access since 27 October 2026, for Windows and macOS. Koin Games says the game will remain free-to-play and free-to-compete forever, although Early Access will feature \"some premium paid features\"." },
@@ -1578,7 +1578,7 @@ Languages: since [patch 0.7](/en/news/patch-0-7) of 29 September 2026 the game s
 Update 0.8 of 27 October 2026 is the first of Early Access. According to Koin Games' patch notes:
 
 - **Your progress carries over.** "Your account, collection, progression, and everything else now live in the Early Access version of Origins." On the official Discord the studio head added that the demo can be uninstalled.
-- **Grandmaster is open.** Players can advance into the Grandmaster Division, and the Grandmaster Leaderboard ranks them worldwide. The first ranked season of Early Access should end "sometime in early December", with limited-edition rewards for those who finish at the highest ranks: everything in our [ranked guide](/en/guides/origins-tcg-ranked).
+- **Grandmaster is open.** Players can advance into the Grandmaster Division, and the Grandmaster Leaderboard ranks them worldwide. The first ranked season of Early Access ends on 2 December 2026, with limited-edition rewards for those who finish at the highest ranks: everything in our [ranked guide](/en/guides/origins-tcg-ranked).
 - **Graded cards.** Collectible cards have a grade from 1 to 10, which now shows on the card through imperfections and effects: "very much a first pass", in Koin's words.
 - **Trading on the Steam Market.** Collectible cards can be bought, sold and listed on the Steam Market, and starter gameplay cards remain yours to play with forever. Collectible cosmetics that are not cards are not tradeable yet: they will be in a future update. How it all fits together: [how the Origins economy works](/en/guides/collector-economy).
 - **The road to 1.0.** "0.8 isn't the finish line": the Steam page says Koin aims to leave Early Access "roughly March 17th, 2027", a date that may change.
@@ -3191,7 +3191,7 @@ Siccome le versioni da collezione sono cosmetiche, una tier list deve giudicare 
     metaTitle: "Come giocare a Origins TCG su Steam",
     excerpt: "Origins TCG gratis su Steam in Accesso anticipato: requisiti, download, lingua italiana, prime partite, cosa porta la 0.8 e che fine ha fatto la demo.",
     readTime: 5,
-    updated: "2026-10-28",
+    updated: "2026-11-07",
     image: "/media/ss-legendary-mulan.webp",
     faq: [
       { q: "Origins TCG è gratuito?", a: "Sì. È Free To Play su Steam, in Accesso anticipato dal 27 ottobre 2026, per Windows e macOS. Koin Games dice che il gioco resterà free-to-play e free-to-compete per sempre, anche se l'Accesso anticipato avrà \"alcune funzioni premium a pagamento\"." },
@@ -3228,7 +3228,7 @@ Lingue: dalla [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026 il gioco sup
 L'aggiornamento 0.8 del 27 ottobre 2026 è il primo dell'Accesso anticipato. Secondo le patch notes di Koin Games:
 
 - **I progressi restano.** "Il tuo account, la tua collezione, i tuoi progressi e tutto il resto ora stanno nella versione in Accesso anticipato di Origins." Sul Discord ufficiale il capo dello studio ha aggiunto che la demo si può disinstallare.
-- **Si apre il Grandmaster.** Si può salire nella divisione Grandmaster, e la classifica Grandmaster mette in fila i giocatori di tutto il mondo. La prima stagione classificata dell'Accesso anticipato dovrebbe chiudersi "a inizio dicembre", con ricompense in edizione limitata per chi la chiude ai ranghi più alti: tutto nella nostra [guida alla classificata](/it/guides/origins-tcg-ranked).
+- **Si apre il Grandmaster.** Si può salire nella divisione Grandmaster, e la classifica Grandmaster mette in fila i giocatori di tutto il mondo. La prima stagione classificata dell'Accesso anticipato finisce il 2 dicembre 2026, con ricompense in edizione limitata per chi la chiude ai ranghi più alti: tutto nella nostra [guida alla classificata](/it/guides/origins-tcg-ranked).
 - **Carte con il grado.** Le carte da collezione hanno un grado da 1 a 10, che ora si vede sulla carta con imperfezioni ed effetti: un "primo passo" ("very much a first pass"), nelle parole di Koin.
 - **Scambi sul Mercato di Steam.** Le carte da collezione si comprano, si vendono e si mettono in vendita sul Mercato di Steam, e le carte iniziali di gioco restano tue per sempre. I cosmetici da collezione che non sono carte non si possono ancora scambiare: lo saranno con un aggiornamento futuro. Come sta insieme il tutto: [come funziona l'economia di Origins](/it/guides/collector-economy).
 - **La strada verso la 1.0.** "La 0.8 non è il traguardo": la pagina Steam dice che Koin punta a uscire dall'Accesso anticipato intorno al 17 marzo 2027 ("roughly March 17th, 2027"), una data che può cambiare.

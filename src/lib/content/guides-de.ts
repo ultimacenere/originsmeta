@@ -573,7 +573,7 @@ Das Spiel hat ein Tutorial, Missionen gegen Bosse mit eigener KI und Online-Part
 
 ## Wohin sich das Spiel entwickelt
 
-Origins TCG ist seit dem 27. Oktober 2026 im Early Access (Version 0.8); laut Steam-Seite will Koin Games ihn etwa am 17. März 2027 mit Version 1.0 verlassen, ein Datum, das sich ändern kann. „0.8 isn't the finish line“, schreibt das Team. Die erste Ranglisten-Season des Early Access soll Anfang Dezember enden, und die 218 Karten des Alpha Sets „Myths & Legends“ kommen laut Koin nach und nach ins Spiel; der Kickstarter dazu ist seit dem 27. Oktober online. Davor kamen das erste große Update am 21. September 2026, Patch 0.7 am 29. September, Ranked am 15. Oktober und die Crimson Cup vom 19. bis 25. Oktober. Mehr dazu in der [Roadmap](/de/guides/roadmap-and-dates) und in unserem [Kickstarter-Guide](/de/guides/origins-tcg-kickstarter).
+Origins TCG ist seit dem 27. Oktober 2026 im Early Access (Version 0.8); laut Steam-Seite will Koin Games ihn etwa am 17. März 2027 mit Version 1.0 verlassen, ein Datum, das sich ändern kann. „0.8 isn't the finish line“, schreibt das Team. Die erste Ranglisten-Season des Early Access endet am 2. Dezember, und die 218 Karten des Alpha Sets „Myths & Legends“ kommen laut Koin nach und nach ins Spiel; der Kickstarter dazu ist seit dem 27. Oktober online. Davor kamen das erste große Update am 21. September 2026, Patch 0.7 am 29. September, Ranked am 15. Oktober und die Crimson Cup vom 19. bis 25. Oktober. Mehr dazu in der [Roadmap](/de/guides/roadmap-and-dates) und in unserem [Kickstarter-Guide](/de/guides/origins-tcg-kickstarter).
 `,
   },
   "on-reveal-midrange-guide": {
@@ -1550,7 +1550,7 @@ Sprachen: Seit [Patch 0.7](/de/news/patch-0-7) vom 29. September 2026 unterstüt
 Mit Version 0.8 vom 27. Oktober 2026 endete die Demo, und Origins TCG ging in den Early Access, für Koin „our final stretch toward 1.0“. Was die [Patchnotes](https://store.steampowered.com/news/app/4429430/view/1847286114049982) nennen:
 
 - **Dein Fortschritt zieht mit um.** Account, Sammlung, Fortschritt und alles andere leben laut Koin jetzt in der Early-Access-Version; die Demo kannst du deinstallieren.
-- **Grandmaster-Division.** Sie ist geöffnet, mit einer weltweiten Grandmaster-Bestenliste. Wer die erste Ranglisten-Season des Early Access auf den höchsten Rängen beendet, bekommt Belohnungen in limitierter Auflage; die Season soll „irgendwann Anfang Dezember“ enden, ein Plan, der sich ändern kann.
+- **Grandmaster-Division.** Sie ist geöffnet, mit einer weltweiten Grandmaster-Bestenliste. Wer die erste Ranglisten-Season des Early Access auf den höchsten Rängen beendet, bekommt Belohnungen in limitierter Auflage; die Season endet am 2. Dezember 2026.
 - **Noten auf den Karten.** Sammelkarten haben eine Note von 1 bis 10, die jetzt auf der Karte zu sehen ist; Koin nennt das System „very much a first pass“.
 - **Handel auf Steam.** Sammelkarten kannst du auf dem Steam-Marktplatz kaufen, verkaufen und zum Verkauf anbieten. Die Startkarten des Spiels bleiben für immer deine; Sammel-Kosmetik, die keine Karte ist, ist noch nicht handelbar und soll es mit einem späteren Update werden.
 - **Keine Kartenänderungen.** Die Patchnotes zu 0.8 nennen keine Änderungen an Werten oder Texten der Karten.

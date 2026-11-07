@@ -1548,7 +1548,7 @@ Idiomas: desde o [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026, o jo
 ## O que o Acesso Antecipado traz
 
 - **O seu progresso.** A conta, a coleção, o progresso e todo o resto de quem jogava a demo passaram para o Acesso Antecipado.
-- **A Divisão Grandmaster.** A versão 0.8 abriu a divisão mais alta da ranqueada, com o ranking Grandmaster mundial. A primeira temporada ranqueada do Acesso Antecipado deve terminar no início de dezembro de 2026 (um plano, que pode mudar), com recompensas de edição limitada para quem terminar nos ranks mais altos: tudo no nosso [guia da ranqueada](/pt/guides/origins-tcg-ranked).
+- **A Divisão Grandmaster.** A versão 0.8 abriu a divisão mais alta da ranqueada, com o ranking Grandmaster mundial. A primeira temporada ranqueada do Acesso Antecipado termina em 2 de dezembro de 2026, com recompensas de edição limitada para quem terminar nos ranks mais altos: tudo no nosso [guia da ranqueada](/pt/guides/origins-tcg-ranked).
 - **Cartas gradadas.** As cartas colecionáveis têm uma nota de 1 a 10, que agora aparece na carta: uma primeira versão do sistema, nas palavras da Koin.
 - **O Mercado do Steam.** As cartas colecionáveis podem ser compradas, vendidas e colocadas à venda no Mercado da Comunidade Steam. As cartas iniciais de jogo continuam suas para sempre; os cosméticos colecionáveis que não são cartas ainda não podem ser trocados e vão poder num próximo update. Veja [como funciona a economia de Origins](/pt/guides/collector-economy).
 
