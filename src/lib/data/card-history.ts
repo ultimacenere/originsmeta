@@ -700,4 +700,15 @@ export const cardHistory: Record<string, Change[]> = {
       note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
     },
   ],
+  // Cambiata senza patch notes: 1 mana nei dati del gioco del 03/10/2026, 2 in quelli del 05/11/2026 (build 0.8.1), letti il
+  // 07/11/2026 dopo la segnalazione di MagicOfHands. Il giorno esatto non si conosce: sta sotto ea-1104, l'ultima patch uscita.
+  "trash-for-treasure": [
+    {
+      patch: "ea-1104",
+      kind: "nerf",
+      from: { mana: 1 },
+      to: { mana: 2 },
+      note: { en: "Costs 1 more. Not in the patch notes: read in the game on 7 November.", it: "Costa 1 in più. Non è nelle patch notes: letto nel gioco il 7 novembre.", es: "Cuesta 1 más. No está en las notas del parche: leído en el juego el 7 de noviembre.", fr: "Coûte 1 de plus. Absent des patch notes : relevé dans le jeu le 7 novembre.", pt: "Custa 1 a mais. Não está nas notas da atualização: lido no jogo em 7 de novembro.", de: "Kostet 1 mehr. Steht nicht in den Patchnotes: am 7. November im Spiel abgelesen.", ru: "Стоит на 1 больше. В патч-ноутах этого нет: прочитано в игре 7 ноября.", "zh-cn": "费用增加 1。补丁说明未提及：11月7日在游戏中读取。" },
+    },
+  ],
 };
