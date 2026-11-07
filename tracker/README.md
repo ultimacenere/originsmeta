@@ -20,6 +20,8 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
   "OCR senza PowerShell"): i ritagli della schermata VS (bot e classificata) li legge l'OCR di Windows attraverso
   `originsmeta-tracker-ocr.exe`, un programma nostro compilato da `build.mjs` con il csc.exe di Windows e messo da
   `package.mjs` in `resources\`. Prima passava da PowerShell con `-EncodedCommand`, e Norton bloccava l'app come infetta.
+- **Tabella carte aggiornata** (0.5.3, 07/11/2026): Trash for Treasure a 2 mana, come nel gioco (cambiata senza patch notes,
+  segnalata da MagicOfHands). `src/cards.json` sta dentro l'app: un costo corretto sul sito arriva qui solo con una release.
 - **Cimiteri nei pannelli** (0.5.2, 05/11/2026, `graveyardStep` di `src/shared/reconstruct.ts`, ruoli delle carte in
   `src/shared/graveRoles.ts`; dettagli in docs/tracker.md, "Cimiteri nei pannelli e round dopo il nono"): con "Mostra i
   cimiteri" in Setup › Overlay il pannello del mio mazzo e quello dell'avversario mostrano in fondo i personaggi morti
