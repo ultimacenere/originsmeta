@@ -253,7 +253,7 @@ Wir aktualisieren diesen Guide, sobald ein Patch eine Legendäre verändert oder
   "origins-tcg-ranked": {
     title: "Ranked in Origins TCG: Ladder, Grandmaster und die erste Season im Early Access",
     metaTitle: "Origins TCG Ranked: Grandmaster, Season und VP",
-    excerpt: "Ranked im Early Access von Origins TCG: Seit 0.8 ist die Grandmaster-Division mit weltweiter Bestenliste offen, die erste Season soll Anfang Dezember enden.",
+    excerpt: "Ranked im Early Access von Origins TCG: Seit 0.8 ist die Grandmaster-Division mit weltweiter Bestenliste offen, die erste Season endet am 2. Dezember.",
     faq: [
       {
         q: "Seit wann gibt es Ranked in Origins TCG?",
@@ -269,7 +269,7 @@ Wir aktualisieren diesen Guide, sobald ein Patch eine Legendäre verändert oder
       },
       {
         q: "Wann endet die erste Season?",
-        a: "Laut den Patchnotes zu 0.8 „irgendwann Anfang Dezember“ („sometime in early December“). Das ist der Plan von Koin Games, und er kann sich noch ändern.",
+        a: "Am 2. Dezember 2026, laut dem Roadmap-AMA vom 6. November.",
       },
     ],
     body: `
@@ -277,7 +277,7 @@ Wir aktualisieren diesen Guide, sobald ein Patch eine Legendäre verändert oder
 
 - Origins TCG ist seit dem **27. Oktober 2026** im Early Access auf Steam (Version 0.8), und Ranked läuft dort weiter: Laut Koin Games leben Account, Sammlung und Fortschritt aus der Demo jetzt in der Early-Access-Version.
 - Mit 0.8 ist die **Grandmaster-Division** geöffnet, mit einer weltweiten **Grandmaster-Bestenliste**.
-- Die **erste Ranglisten-Season des Early Access** soll „irgendwann Anfang Dezember“ enden (ein Plan, der sich ändern kann); wer sie auf den höchsten Rängen beendet, bekommt Belohnungen in limitierter Auflage.
+- Die **erste Ranglisten-Season des Early Access** endet am 2. Dezember 2026, laut dem [Roadmap-AMA vom 6. November](/de/news/origins-tcg-roadmap-ama-recap), danach dauern Seasons sechs Wochen; wer sie auf den höchsten Rängen beendet, bekommt Belohnungen in limitierter Auflage.
 - Ranked selbst ist älter: Der geschlossene Playtest hatte seit Patch 0.6.1 vom 14. August 2026 eine Ranglisten-Ladder, Koin hatte den Modus am 21. September für den Start des Steam Next Fest angekündigt, und laut dem Steam-Post „Ranked is here!“ kam er am 15. Oktober 2026.
 - Was die Patchnotes des Playtests bestätigt hatten: Divisionen, **Grandmaster** als oberste Division und **Victory Points** (VP), die du in Ranglisten-Partien gewinnst und verlierst, dort mit einer Änderung um +10 und −10; seit Patch 0.6.2 bringen Raum-Partien keine VP mehr.
 

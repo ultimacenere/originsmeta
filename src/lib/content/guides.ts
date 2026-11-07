@@ -360,12 +360,12 @@ We will update this guide whenever a patch changes a Legendary or a new one arri
     metaTitle: "Origins TCG ranked: Grandmaster, season 1 and VP",
     excerpt: "Ranked in Origins TCG, in Early Access since 27 October 2026: the Grandmaster Division and its world leaderboard, season 1, rewards and Victory Points.",
     readTime: 5,
-    updated: "2026-10-28",
+    updated: "2026-11-07",
     image: "/media/keyart-puss-in-boots.webp",
     faq: [
       { q: "When did ranked open in Origins TCG?", a: "On 15 October 2026, with the update Koin Games called \"Ranked is here!\" on Steam, four days before Steam Next Fest; on 21 September the team had said it would arrive with the start of the festival. Since 27 October 2026 ranked has been played in the Early Access version of the game, update 0.8." },
       { q: "What is the highest rank in Origins TCG?", a: "Grandmaster, the top division of the ladder. Update 0.8 of 27 October 2026 opened the Grandmaster Division and switched on the Grandmaster Leaderboard, where every Grandmaster player competes for a worldwide rank." },
-      { q: "What are the ranked rewards?", a: "For the first ranked season of Early Access, Koin Games announced limited-edition rewards for players who finish it at the highest ranks, including rewards that commemorate their placement. The team plans to end season 1 \"sometime in early December\" 2026, a date that may change." },
+      { q: "What are the ranked rewards?", a: "For the first ranked season of Early Access, Koin Games announced limited-edition rewards for players who finish it at the highest ranks, including rewards that commemorate their placement. Season 1 ends on 2 December 2026, according to the roadmap AMA of 6 November." },
       { q: "Does my demo progress carry over to Early Access?", a: "Yes. Koin Games' post of 27 October 2026 says that your account, collection, progression \"and everything else now live in the Early Access version of Origins\"; on the official Discord the studio head added that the demo can be uninstalled." },
     ],
     body: `
@@ -373,7 +373,7 @@ We will update this guide whenever a patch changes a Legendary or a new one arri
 
 - Ranked mode opened on **15 October 2026**, four days before Steam Next Fest, with the update Koin Games called "Ranked is here!". Since **27 October 2026** it has been played in the Early Access version of Origins TCG, free on Steam (update 0.8).
 - Update 0.8 opens the **Grandmaster Division** and switches on the **Grandmaster Leaderboard**, where every Grandmaster player competes for a worldwide rank: until then the ladder stopped at Grandmaster's doors.
-- The **first ranked season** of Early Access should end "sometime in early December", a plan that may change; players who finish it at the highest ranks get limited-edition rewards.
+- The **first ranked season** of Early Access ends on 2 December 2026, according to the [roadmap AMA of 6 November](/en/news/origins-tcg-roadmap-ama-recap), and seasons then last six weeks; players who finish it at the highest ranks get limited-edition rewards.
 - What the official patch notes of the closed playtest confirmed in August: divisions, Grandmaster as the top one, and **Victory Points** (VP) won and lost in ranked matches: the notes speak of a +10 and −10 change, and since patch 0.6.2 room battles no longer award VP.
 
 We will update this guide with every new announcement about ranked.
@@ -384,7 +384,7 @@ On 21 September 2026, in the post about the [first big update to the demo](https
 
 Ranked arrived four days early: on 15 October 2026 the update ["Ranked is here!"](https://store.steampowered.com/news/app/4429430/view/1846651706679257) switched it on, with the ladder stopping at Grandmaster for the time being. [Steam Next Fest](https://store.steampowered.com/sale/nextfest) then ran from 19 to 26 October, together with the Crimson Cup: everything about the festival is in our [Steam Next Fest guide](/en/guides/steam-next-fest-2026).
 
-On 27 October 2026 the demo ended and Origins TCG moved to Early Access with update 0.8 ([Koin's post](https://store.steampowered.com/news/app/4429430/view/1847286114049982)). "The top of the Ranked ladder is finally open", the team writes: players can now advance into the Grandmaster Division, and the Grandmaster Leaderboard is enabled. For the first season of Early Access there are limited-edition rewards for players who finish at the highest ranks, including rewards that commemorate their placement; the current plan is to end season 1 "sometime in early December".
+On 27 October 2026 the demo ended and Origins TCG moved to Early Access with update 0.8 ([Koin's post](https://store.steampowered.com/news/app/4429430/view/1847286114049982)). "The top of the Ranked ladder is finally open", the team writes: players can now advance into the Grandmaster Division, and the Grandmaster Leaderboard is enabled. For the first season of Early Access there are limited-edition rewards for players who finish at the highest ranks, including rewards that commemorate their placement; season 1 ends on 2 December.
 
 ## What the playtest ladder tells us {#playtest-ladder}
 
@@ -416,7 +416,7 @@ The Crimson Cup finals were played on 25 October 2026, and the first OriginsMeta
 - Which ranks exactly earn the limited-edition rewards of season 1, and what they are.
 - How many divisions there are, and their names below Grandmaster: the official notes don't list them.
 - Whether a win and a loss are always worth +10 and −10 VP, as in the playtest notes, in every division.
-- The exact end date of season 1, and what happens to ranks when the next one starts.
+- What happens to ranks when the next season starts.
 - Whether ranked progress carries over to version 1.0, which Koin aims to release around 17 March 2027 according to the Steam page (a date that may change).
 
 ## Sources {#sources}
@@ -2010,12 +2010,12 @@ Aggiorneremo questa guida ogni volta che una patch cambia una Leggendaria o ne a
     metaTitle: "Classificata di Origins TCG: Grandmaster e stagione 1",
     excerpt: "La classificata di Origins TCG, in Accesso anticipato dal 27 ottobre 2026: divisione e classifica Grandmaster, stagione 1, ricompense e Punti Vittoria.",
     readTime: 5,
-    updated: "2026-10-28",
+    updated: "2026-11-07",
     image: "/media/keyart-puss-in-boots.webp",
     faq: [
       { q: "Quando è partita la classificata di Origins TCG?", a: "Il 15 ottobre 2026, con l'aggiornamento che Koin Games ha intitolato \"Ranked is here!\" su Steam, quattro giorni prima dello Steam Next Fest; il 21 settembre il team aveva detto che sarebbe arrivata con l'inizio del festival. Dal 27 ottobre 2026 la classificata si gioca nella versione in Accesso anticipato del gioco, l'aggiornamento 0.8." },
       { q: "Qual è il grado più alto della classificata di Origins TCG?", a: "Grandmaster, la divisione più alta della scalata. L'aggiornamento 0.8 del 27 ottobre 2026 ha aperto la divisione Grandmaster e acceso la classifica Grandmaster, dove ogni giocatore Grandmaster si contende un posto nella classifica mondiale." },
-      { q: "Quali sono le ricompense della classificata?", a: "Per la prima stagione classificata dell'Accesso anticipato Koin Games ha annunciato ricompense in edizione limitata per chi la chiude ai ranghi più alti, comprese ricompense che ricordano il piazzamento. Il team conta di chiudere la stagione 1 \"a inizio dicembre\" 2026, una data che può cambiare." },
+      { q: "Quali sono le ricompense della classificata?", a: "Per la prima stagione classificata dell'Accesso anticipato Koin Games ha annunciato ricompense in edizione limitata per chi la chiude ai ranghi più alti, comprese ricompense che ricordano il piazzamento. La stagione 1 finisce il 2 dicembre 2026, secondo l'AMA sulla roadmap del 6 novembre." },
       { q: "I progressi della demo passano all'Accesso anticipato?", a: "Sì. Il post di Koin Games del 27 ottobre 2026 dice che account, collezione, progressi \"e tutto il resto\" ora stanno nella versione in Accesso anticipato di Origins; sul Discord ufficiale il capo dello studio ha aggiunto che la demo si può disinstallare." },
     ],
     body: `
@@ -2023,7 +2023,7 @@ Aggiorneremo questa guida ogni volta che una patch cambia una Leggendaria o ne a
 
 - La classificata è partita il **15 ottobre 2026**, quattro giorni prima dello Steam Next Fest, con l'aggiornamento che Koin Games ha intitolato "Ranked is here!". Dal **27 ottobre 2026** si gioca nella versione in Accesso anticipato di Origins TCG, gratuita su Steam (aggiornamento 0.8).
 - L'aggiornamento 0.8 apre la **divisione Grandmaster** e accende la **classifica Grandmaster**, dove ogni giocatore Grandmaster si contende un posto nella classifica mondiale: fino ad allora la scalata si fermava alle porte del Grandmaster.
-- La **prima stagione classificata** dell'Accesso anticipato dovrebbe chiudersi "a inizio dicembre", un piano che può cambiare; chi la chiude ai ranghi più alti riceve ricompense in edizione limitata.
+- La **prima stagione classificata** dell'Accesso anticipato finisce il 2 dicembre 2026, secondo l'[AMA sulla roadmap del 6 novembre](/it/news/origins-tcg-roadmap-ama-recap), e poi le stagioni durano sei settimane; chi la chiude ai ranghi più alti riceve ricompense in edizione limitata.
 - Cosa avevano confermato ad agosto le patch notes ufficiali del playtest chiuso: le divisioni, Grandmaster come la più alta e i **Punti Vittoria** (VP) che si vincono e si perdono nelle partite classificate: le note parlano di una variazione di +10 e −10, e dalla patch 0.6.2 le partite in stanza non danno VP.
 
 Aggiorneremo questa guida a ogni nuovo annuncio sulla classificata.
@@ -2034,7 +2034,7 @@ Il 21 settembre 2026, nel post sul [primo grande aggiornamento della demo](https
 
 La classificata è arrivata quattro giorni prima: il 15 ottobre 2026 l'aggiornamento ["Ranked is here!"](https://store.steampowered.com/news/app/4429430/view/1846651706679257) l'ha accesa, con la scalata che per il momento si fermava al Grandmaster. Lo [Steam Next Fest](https://store.steampowered.com/sale/nextfest) si è poi svolto dal 19 al 26 ottobre, insieme alla Crimson Cup: tutto sul festival è nella nostra [guida allo Steam Next Fest](/it/guides/steam-next-fest-2026).
 
-Il 27 ottobre 2026 la demo è finita e Origins TCG è passato all'Accesso anticipato con l'aggiornamento 0.8 ([il post di Koin](https://store.steampowered.com/news/app/4429430/view/1847286114049982)). "La cima della scalata classificata è finalmente aperta", scrive il team: ora si può salire nella divisione Grandmaster e la classifica Grandmaster è attiva. Per la prima stagione dell'Accesso anticipato ci sono ricompense in edizione limitata per chi la chiude ai ranghi più alti, comprese ricompense che ricordano il piazzamento; il piano attuale è chiudere la stagione 1 "a inizio dicembre".
+Il 27 ottobre 2026 la demo è finita e Origins TCG è passato all'Accesso anticipato con l'aggiornamento 0.8 ([il post di Koin](https://store.steampowered.com/news/app/4429430/view/1847286114049982)). "La cima della scalata classificata è finalmente aperta", scrive il team: ora si può salire nella divisione Grandmaster e la classifica Grandmaster è attiva. Per la prima stagione dell'Accesso anticipato ci sono ricompense in edizione limitata per chi la chiude ai ranghi più alti, comprese ricompense che ricordano il piazzamento; la stagione 1 finisce il 2 dicembre.
 
 ## Cosa ci dice la ladder del playtest {#ladder-del-playtest}
 
@@ -2066,7 +2066,7 @@ Le finali della Crimson Cup si sono giocate il 25 ottobre 2026 e la prima [tier 
 - Quali ranghi esattamente danno le ricompense in edizione limitata della stagione 1, e che cosa sono.
 - Quante sono le divisioni e come si chiamano quelle sotto Grandmaster: le note ufficiali non le elencano.
 - Se una vittoria e una sconfitta valgono sempre +10 e −10 VP, come nelle note del playtest, in ogni divisione.
-- La data esatta della fine della stagione 1, e che cosa succede ai gradi quando partirà la successiva.
+- Che cosa succede ai gradi quando partirà la stagione successiva.
 - Se i progressi in classificata passeranno alla versione 1.0, che Koin conta di far uscire intorno al 17 marzo 2027 secondo la pagina Steam (una data che può cambiare).
 
 ## Fonti {#fonti}

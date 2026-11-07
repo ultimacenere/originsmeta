@@ -261,7 +261,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
       },
       {
         q: "排位赛有什么奖励？",
-        a: "对于抢先体验的第一个排位赛季，Koin Games 宣布将为以最高段位结束赛季的玩家提供限定奖励，其中包括纪念其排名的奖励。团队计划在 2026年“12月初的某个时候”结束第一赛季，日期可能会变。",
+        a: "对于抢先体验的第一个排位赛季，Koin Games 宣布将为以最高段位结束赛季的玩家提供限定奖励，其中包括纪念其排名的奖励。根据 11月6日的路线图 AMA，第一赛季于 2026年12月2日结束。",
       },
       {
         q: "试玩版的进度会转移到抢先体验吗？",
@@ -273,7 +273,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 - 排位模式于 **2026年10月15日** 开放，比 Steam Next Fest 早四天，Koin Games 将这次更新命名为“Ranked is here!”。自 **2026年10月27日** 起，排位在 Origins TCG 的抢先体验版本中进行，游戏在 Steam 上免费（0.8 更新）。
 - 0.8 更新开放了 **Grandmaster 段位**，并启用了 **Grandmaster 排行榜**，所有 Grandmaster 玩家在榜上争夺全球排名：在此之前，天梯止步于 Grandmaster 门前。
-- 抢先体验的**第一个排位赛季**预计在“12月初的某个时候”结束，计划可能会变；以最高段位结束赛季的玩家将获得限定奖励。
+- 抢先体验的**第一个排位赛季**根据 [11月6日的路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap) 于 2026年12月2日结束，之后每个赛季持续六周；以最高段位结束赛季的玩家将获得限定奖励。
 - 封闭测试的官方补丁说明在 8月确认了：段位、Grandmaster 为最高段位，以及在排位对局中赢得和失去的**胜利点数**（VP）：说明中提到 +10 和 −10 的变化，而自 0.6.2 补丁起，房间对战不再给予 VP。
 
 每当有关于排位的新公告，我们都会更新本攻略。
@@ -284,7 +284,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 排位提前四天到来：2026年10月15日，[“Ranked is here!”](https://store.steampowered.com/news/app/4429430/view/1846651706679257)更新开启了排位，天梯暂时止步于 Grandmaster。随后 [Steam Next Fest](https://store.steampowered.com/sale/nextfest) 于 10月19日至 26日举行，Crimson Cup 也同期进行：关于新品节的一切都在我们的 [Steam Next Fest 攻略](/zh-cn/guides/steam-next-fest-2026)中。
 
-2026年10月27日，试玩版结束，Origins TCG 通过 0.8 更新进入抢先体验（[Koin 的公告](https://store.steampowered.com/news/app/4429430/view/1847286114049982)）。团队写道：“排位天梯的顶端终于开放了”：玩家现在可以晋升到 Grandmaster 段位，Grandmaster 排行榜也已启用。抢先体验第一赛季为以最高段位结束的玩家准备了限定奖励，其中包括纪念其排名的奖励；目前的计划是在“12月初的某个时候”结束第一赛季。
+2026年10月27日，试玩版结束，Origins TCG 通过 0.8 更新进入抢先体验（[Koin 的公告](https://store.steampowered.com/news/app/4429430/view/1847286114049982)）。团队写道：“排位天梯的顶端终于开放了”：玩家现在可以晋升到 Grandmaster 段位，Grandmaster 排行榜也已启用。抢先体验第一赛季为以最高段位结束的玩家准备了限定奖励，其中包括纪念其排名的奖励；第一赛季将于 12月2日结束。
 
 ## 测试期天梯告诉我们什么 {#ce-shi-qi-tian-ti}
 
@@ -316,7 +316,7 @@ Crimson Cup 决赛已于 2026年10月25日举行，OriginsMeta 的第一版[强�
 - 具体哪些排名能获得第一赛季的限定奖励，以及奖励是什么。
 - 一共有多少个段位，以及 Grandmaster 以下各段位的名称：官方说明没有列出。
 - 在每个段位中，胜负是否总是像测试期说明那样 +10 和 −10 VP。
-- 第一赛季的确切结束日期，以及下一赛季开始时段位会如何变化。
+- 下一赛季开始时段位会如何变化。
 - 排位进度是否会延续到 1.0 版本；根据 Steam 页面，Koin 计划在 2027年3月17日左右发布 1.0（日期可能会变）。
 
 ## 来源 {#lai-yuan}

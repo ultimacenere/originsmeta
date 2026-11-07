@@ -253,7 +253,7 @@ Vamos atualizar este guia sempre que um patch mudar uma Lendária ou o jogo adic
   "origins-tcg-ranked": {
     title: "A ranqueada de Origins TCG: Grandmaster, temporada 1 e o que sabemos da ladder",
     metaTitle: "Ranqueada de Origins TCG: Grandmaster e temporada 1",
-    excerpt: "A ranqueada de Origins TCG no Acesso Antecipado: a Divisão Grandmaster com ranking mundial, a temporada 1 até o início de dezembro, VP e recompensas.",
+    excerpt: "A ranqueada de Origins TCG no Acesso Antecipado: a Divisão Grandmaster com ranking mundial, a temporada 1 até 2 de dezembro, VP e recompensas.",
     faq: [
       {
         q: "Quando a ranqueada de Origins TCG abriu?",
@@ -265,7 +265,7 @@ Vamos atualizar este guia sempre que um patch mudar uma Lendária ou o jogo adic
       },
       {
         q: "Quais são as recompensas da ranqueada?",
-        a: "Segundo as notas do patch 0.8, quem terminar a primeira temporada ranqueada do Acesso Antecipado nos ranks mais altos recebe recompensas de edição limitada. A Koin Games quer encerrar a temporada 1 \"sometime in early December\", no início de dezembro de 2026, uma data que pode mudar.",
+        a: "Segundo as notas do patch 0.8, quem terminar a primeira temporada ranqueada do Acesso Antecipado nos ranks mais altos recebe recompensas de edição limitada. A temporada 1 termina em 2 de dezembro de 2026, segundo o AMA do roadmap de 6 de novembro.",
       },
       {
         q: "O meu progresso da demo passa para o Acesso Antecipado?",
@@ -277,7 +277,7 @@ Vamos atualizar este guia sempre que um patch mudar uma Lendária ou o jogo adic
 
 - A ranqueada chegou à demo em **15 de outubro de 2026** (["Ranked is here!"](https://store.steampowered.com/news/app/4429430/view/1846651706679257), post da Koin Games no Steam), quatro dias antes do Steam Next Fest. Desde **27 de outubro de 2026** Origins TCG está em **Acesso Antecipado** no Steam (versão 0.8), e a ranqueada continua lá, com as contas e o progresso da demo.
 - O patch 0.8 abriu a **Divisão Grandmaster**, a mais alta, com um **ranking Grandmaster** mundial.
-- A **primeira temporada ranqueada do Acesso Antecipado** deve terminar no início de dezembro de 2026 (um plano, que pode mudar), e quem terminar nos ranks mais altos recebe **recompensas de edição limitada**.
+- A **primeira temporada ranqueada do Acesso Antecipado** termina em 2 de dezembro de 2026, segundo o [AMA do roadmap de 6 de novembro](/pt/news/origins-tcg-roadmap-ama-recap), e depois as temporadas duram seis semanas; quem terminar nos ranks mais altos recebe **recompensas de edição limitada**.
 - O que as notas do playtest de agosto já diziam: divisões, o Grandmaster no topo e **Pontos de Vitória** (VP) ganhos e perdidos nas partidas ranqueadas, com uma variação de +10 e −10; desde o patch 0.6.2 as batalhas em sala não dão mais VP.
 - O que a Koin ainda não disse: a lista completa das divisões, quais são as recompensas e a partir de que rank, e se os VP funcionam como no playtest.
 
@@ -319,7 +319,7 @@ As finais da Crimson Cup foram disputadas em 25 de outubro de 2026, e a primeira
 - Quais são as recompensas de edição limitada da temporada 1 e a partir de que rank elas são dadas.
 - Quantas divisões existem, e os nomes delas abaixo do Grandmaster.
 - Se uma vitória e uma derrota valem sempre +10 e −10 VP, como nas notas do playtest, em todas as divisões.
-- A data exata do fim da temporada 1 (o "início de dezembro" é um plano) e o que acontece com o rank depois dela.
+- O que acontece com o rank depois da temporada 1.
 - Se o progresso da ranqueada passa para a versão 1.0, prevista por volta de março de 2027.
 
 ## Fontes {#fontes}

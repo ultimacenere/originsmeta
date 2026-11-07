@@ -267,7 +267,7 @@ Actualizaremos esta guía cada vez que un parche cambie una Legendaria o el jueg
       },
       {
         q: "¿Cuándo termina la temporada 1?",
-        a: "Koin Games prevé terminarla \"sometime in early December\", a principios de diciembre de 2026. Es un plan y puede cambiar (notas de la versión 0.8 del 27 de octubre de 2026).",
+        a: "El 2 de diciembre de 2026, según el AMA de la hoja de ruta del 6 de noviembre.",
       },
     ],
     body: `
@@ -275,7 +275,7 @@ Actualizaremos esta guía cada vez que un parche cambie una Legendaria o el jueg
 
 - La clasificatoria llegó a la demo de Origins TCG el **15 de octubre de 2026**, con la actualización "Ranked is here!", cuatro días antes del Steam Next Fest. Desde el 27 de octubre de 2026 se juega en el **Acceso anticipado**, con la versión 0.8.
 - La versión 0.8 abre la **Grandmaster Division**, la división más alta, con la **clasificación Grandmaster** mundial.
-- Quienes terminen en los rangos más altos la **primera temporada clasificatoria del Acceso anticipado** recibirán recompensas de edición limitada. La temporada 1 debería terminar "sometime in early December", a principios de diciembre de 2026: es un plan, y puede cambiar.
+- Quienes terminen en los rangos más altos la **primera temporada clasificatoria del Acceso anticipado** recibirán recompensas de edición limitada. La temporada 1 termina el 2 de diciembre de 2026, según el [AMA de la hoja de ruta del 6 de noviembre](/es/news/origins-tcg-roadmap-ama-recap), y después las temporadas duran seis semanas.
 - Lo que ya describían las notas oficiales del playtest de agosto: las divisiones, Grandmaster como la más alta y los **Puntos de Victoria** (VP) que se ganan y se pierden en las partidas clasificatorias, con un cambio de +10 y −10; desde el parche 0.6.2 las partidas en sala no dan VP.
 - Lo que Koin todavía no ha dicho: la lista completa de divisiones, si los +10/−10 VP del playtest valen en todas las divisiones y en qué consisten las recompensas.
 
@@ -318,7 +318,7 @@ Las finales de la Crimson Cup se jugaron el 25 de octubre de 2026, y la primera 
 - En qué consisten las recompensas de edición limitada de la primera temporada y a partir de qué rango se consiguen.
 - Cuántas divisiones hay y cómo se llaman las que están por debajo de Grandmaster.
 - Si una victoria y una derrota valen siempre +10 y −10 VP, como en las notas del playtest, en todas las divisiones.
-- El día exacto en que termina la temporada 1: Koin dice "sometime in early December", y el plan puede cambiar.
+- Qué pasa con los rangos cuando empieza la temporada siguiente.
 - Qué pasa con las divisiones y la clasificación cuando termina una temporada.
 
 ## Fuentes {#fuentes}

@@ -269,7 +269,7 @@ Nous mettrons ce guide à jour chaque fois qu'un patch changera une Légendaire 
       },
       {
         q: "Quand se termine la première saison classée ?",
-        a: "« Sometime in early December », d'après les patch notes de la 0.8 du 27 octobre 2026 : c'est un plan, qui peut changer, et Koin n'a pas donné de date précise.",
+        a: "Le 2 décembre 2026, d'après l'AMA sur la feuille de route du 6 novembre.",
       },
     ],
     body: `
@@ -277,9 +277,9 @@ Nous mettrons ce guide à jour chaque fois qu'un patch changera une Légendaire 
 
 - Le mode classé est ouvert depuis la mise à jour 0.7.1 du **15 octobre 2026** (post Steam « Ranked is here! »), quatre jours avant le Steam Next Fest. Depuis le **27 octobre 2026**, il fait partie de l'**Accès anticipé** d'Origins TCG, version 0.8, gratuit sur Steam.
 - Avec la 0.8, la **division Grandmaster** est ouverte, avec le **classement Grandmaster** mondial : pendant la démo, l'échelle s'arrêtait à ses portes.
-- La **première saison classée** de l'Accès anticipé devrait se terminer « sometime in early December », un plan qui peut changer ; les joueurs qui la terminent aux rangs les plus élevés recevront des **récompenses en édition limitée**.
+- La **première saison classée** de l'Accès anticipé se termine le 2 décembre 2026, d'après l'[AMA sur la feuille de route du 6 novembre](/fr/news/origins-tcg-roadmap-ama-recap), et les saisons durent ensuite six semaines ; les joueurs qui la terminent aux rangs les plus élevés recevront des **récompenses en édition limitée**.
 - Ce que décrivaient déjà les notes de patch du playtest fermé (août 2026) : des divisions, Grandmaster comme division supérieure, et des **Points de Victoire** (VP) gagnés et perdus dans les parties classées, avec une variation de +10 et −10 ; depuis le patch 0.6.2, les parties en salon ne rapportent plus de VP.
-- Ce que Koin n'a pas encore dit : la liste complète des divisions, si les +10/−10 VP du playtest valent encore dans chaque division, la date exacte de la fin de la saison et en quoi consistent les récompenses.
+- Ce que Koin n'a pas encore dit : la liste complète des divisions, si les +10/−10 VP du playtest valent encore dans chaque division et en quoi consistent les récompenses.
 
 Nous mettrons ce guide à jour quand Koin précisera les récompenses et la fin de la saison.
 
@@ -319,7 +319,7 @@ Les finales de la Crimson Cup se sont jouées le 25 octobre 2026, et la premièr
 - En quoi consistent les récompenses en édition limitée de la première saison, et à partir de quel rang on les obtient.
 - Combien il y a de divisions, et leurs noms sous Grandmaster.
 - Si une victoire et une défaite valent toujours +10 et −10 VP, comme dans les notes du playtest, dans chaque division.
-- La date exacte de la fin de la saison 1, prévue « sometime in early December », et ce qui se passe au changement de saison.
+- Ce qui se passe au changement de saison.
 - Si le mode classé changera d'ici la version 1.0, que Koin vise vers le 17 mars 2027 (date indicative de la page Steam).
 
 ## Sources {#sources}
