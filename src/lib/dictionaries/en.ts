@@ -1018,7 +1018,7 @@ export const en = {
     accounts:
       "If you create an account (Discord sign-in or email link), we store on Supabase (servers in Ireland, EU) your email, username, avatar and Discord ID, plus the decks you publish and the ratings you give. Decks and ratings are public under your username; your email is not. A session cookie keeps you signed in. Write to staff@originsmeta.com to delete your account and everything attached to it.",
     cookies:
-      "Cookies: the site sets only technical cookies, and only after you sign in (the Supabase session, names starting with sb-, kept for the duration of the session and refreshed while you use the site). Your cookie choice is saved in your browser's local storage. The same storage remembers whether you have already seen or closed a panel that opens on its own (“Feedback”, the pop-up for a tournament), so that it does not open again. When you create an account, your browser also saves the time it was created in the same local storage, only so that our statistics do not count it twice; it is never sent anywhere. Vercel Web Analytics measures visits and a few actions on the site (for example copying a deck code, clicking through to Steam or searching the cards, including the search text) without cookies and without identifying you. YouTube and Twitch videos on deck pages and in guides, and Twitch live streams on the live streams page, load only when you press play: until then the page contacts neither service (details below, “YouTube and Twitch videos”). If you choose “Accept all”, Google Analytics 4 (Google Ireland Ltd) also runs: it sets cookies starting with _ga for up to 2 years to count visits, pages and the same actions, with IP anonymization and no advertising features; Google may process this data in the United States under its standard contractual clauses. With “Only necessary” nothing from Google loads; if you withdraw your consent, Google Analytics stops at once and the _ga cookies are deleted. No advertising or profiling cookies, no other third-party trackers unless you start a video. You can change your choice at any time from “Cookie preferences” in the footer.",
+      "Cookies: the site sets only technical cookies, and only after you sign in (the Supabase session, names starting with sb-, kept for the duration of the session and refreshed while you use the site). Your cookie choice is saved in your browser's local storage. The same storage remembers whether you have already seen or closed a panel that opens on its own (“Feedback”, the pop-up for a tournament), so that it does not open again. If you turn on the match alerts of a tournament, the same storage keeps that choice (notifications and sound); the notification comes from your browser and nothing is sent to us. When you create an account, your browser also saves the time it was created in the same local storage, only so that our statistics do not count it twice; it is never sent anywhere. Vercel Web Analytics measures visits and a few actions on the site (for example copying a deck code, clicking through to Steam or searching the cards, including the search text) without cookies and without identifying you. YouTube and Twitch videos on deck pages and in guides, and Twitch live streams on the live streams page, load only when you press play: until then the page contacts neither service (details below, “YouTube and Twitch videos”). If you choose “Accept all”, Google Analytics 4 (Google Ireland Ltd) also runs: it sets cookies starting with _ga for up to 2 years to count visits, pages and the same actions, with IP anonymization and no advertising features; Google may process this data in the United States under its standard contractual clauses. With “Only necessary” nothing from Google loads; if you withdraw your consent, Google Analytics stops at once and the _ga cookies are deleted. No advertising or profiling cookies, no other third-party trackers unless you start a video. You can change your choice at any time from “Cookie preferences” in the footer.",
     feedback:
       "Feedback: if you use the “Feedback” box, we receive your message, your name or nickname and your email address if you choose to add them (both optional), the page you were on and the site language. They reach a private channel on the staff's Discord server through a webhook, so they are processed by Discord Inc. (United States), and only the OriginsMeta staff can read them. We use them to fix problems and improve the site during its first weeks online, the only period in which the box stays active; the name tells us who wrote to us and is never published without asking you first; the email is used only to reply to you, never for newsletters or anything else. Your IP address is used only to limit spam: it stays briefly in the server's memory and is never sent with the message. The anti-bot check, when active, is provided by Cloudflare (Turnstile). To have a message deleted, write to staff@originsmeta.com.",
     guides:
@@ -1524,6 +1524,15 @@ export const en = {
       tabTitle: "Your match is ready",
       enterWithin: "Open the match room within {time}, or your opponent can claim the win by forfeit.",
       enterLate: "Time is up: open the match room now, your opponent can already claim the win by forfeit.",
+      alertsEnable: "Notify me when my match is ready",
+      alertsOn: "Notifications on",
+      alertsOff: "Turn off",
+      alertsSound: "Sound",
+      alertsBlocked: "Notifications are blocked: allow them in your browser's settings for this site.",
+      alertsUnsupported: "This browser can't show notifications from a web page: use the sound.",
+      alertsHint: "Keep this page open, even in another tab. A full-screen game can hide the notification: turn the sound on too.",
+      alertsTest: "You'll get one like this when your match is ready.",
+      notifyBody: "Your opponent: {name}. Open the match room.",
     },
     howTo: {
       title: "How it works",
@@ -1732,6 +1741,9 @@ export const en = {
       screenshotsTitle: "Screenshots",
       screenshotsHint: "Up to 3 images each (max 2 MB, resized in the browser). Visible only to the two players, the organizer and the staff.",
       upload: "Upload a screenshot",
+      pasteHint: "Or paste it with Ctrl+V (⌘V on Mac), anywhere on this page.",
+      pasteBadType: "You can only paste JPG, PNG or WebP images.",
+      pasteFull: "You have already uploaded {n} screenshots, the maximum.",
       uploading: "Uploading…",
       none: "No screenshots yet.",
       yours: "Yours",

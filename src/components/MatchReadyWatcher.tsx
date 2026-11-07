@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { fill } from "@/lib/tournament/types";
 import { formatCountdown, noShowAt } from "@/lib/tournament/rules";
+import { playChime, readyMatchId, shouldAlert, showNotification } from "@/lib/tournament/matchAlerts";
+import { useMatchAlerts } from "@/lib/tournament/useMatchAlerts";
 import { useNow } from "@/lib/useNow";
 
 export type WatchedMatch = { id: string; round: number; player_a: string | null; player_b: string | null; status: string; ready_at: string | null; seen_a: string | null; seen_b: string | null };
@@ -31,7 +33,8 @@ const ACTIVE = new Set(["pending", "reported", "disputed"]);
  * partita parte quando sono finite le due prima), quindi il giocatore non sa quando tocca a lui: il riquadro rilegge
  * ogni 20 secondi la sua partita più avanzata (una query piccola, sotto RLS), mostra il conto alla rovescia del tempo
  * di assenza finché non entra nella stanza e cambia il titolo della scheda del browser, così si vede anche da un'altra
- * scheda. Quando la partita cambia, ricarica la pagina (tabellone e iscritti).
+ * scheda. Quando la partita cambia, ricarica la pagina (tabellone e iscritti). Dal 07/11/2026, su consenso di chi gioca,
+ * la stessa lettura fa partire anche una notifica del browser e un suono (matchAlerts.ts): nessuna richiesta in più.
  */
 export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roundNames, matchHrefBase, noShowMinutes, labels }: Props) {
   const x = labels;
@@ -40,6 +43,9 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
   const [match, setMatch] = useState<WatchedMatch | null>(initial);
   const firstId = useRef(initial?.id ?? null);
   const now = useNow(1000, Boolean(match && noShowMinutes));
+  const alerts = useMatchAlerts();
+  // chi apre la pagina con la partita già pronta ha il riquadro davanti: si avvisa solo quando lo diventa dopo
+  const alerted = useRef(readyMatchId(initial));
 
   useEffect(() => {
     const sb = supabaseBrowser();
@@ -92,6 +98,26 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
     };
   }, [ready, seenByMe, b.tabTitle]);
 
+  // Avviso: una volta per partita, solo finché chi gioca non è entrato; entrando nella stanza la notifica si chiude.
+  // Il suono parte sempre, la notifica solo se chi gioca non ha già davanti questa scheda
+  const readyId = ready ? (live?.id ?? null) : null;
+  const opponentName = opponent ? (names[opponent] ?? "?") : "?";
+  const fireAlert = useEffectEvent((id: string) => {
+    if (alerts.prefs.sound) void playChime();
+    if (!alerts.prefs.notify || document.hasFocus()) return null;
+    const room = `${matchHrefBase}${id}`;
+    return showNotification(b.tabTitle, { body: fill(b.notifyBody, { name: opponentName }), icon: "/favicon.ico", tag: `om-match-${id}`, requireInteraction: true }, () => {
+      window.focus();
+      router.push(room);
+    });
+  });
+  useEffect(() => {
+    if (!readyId || !shouldAlert(readyId, seenByMe, alerted.current)) return;
+    alerted.current = readyId;
+    const note = fireAlert(readyId);
+    return () => note?.close();
+  }, [readyId, seenByMe]);
+
   if (!live) return null;
   const deadline = ready ? noShowAt(live.ready_at, noShowMinutes) : null;
   const left = deadline !== null && now !== null ? deadline - now : null;
@@ -113,6 +139,39 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
           {b.cta}
         </Link>
       ) : null}
+      <AlertControls alerts={alerts} labels={b} />
     </section>
+  );
+}
+
+/** Il consenso parte solo da questo tasto: il browser lo chiede alla persona, mai all'apertura della pagina. */
+function AlertControls({ alerts, labels: b }: { alerts: ReturnType<typeof useMatchAlerts>; labels: Dictionary["tournaments"]["liveBanner"] }) {
+  const { prefs, permission, enable, disable, setSound } = alerts;
+  if (permission === null) return null;
+  return (
+    <div className="w-full border-t border-sky/40 pt-3">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-pale">
+        {permission === "unsupported" ? (
+          <p className="text-xs text-pale-muted">{b.alertsUnsupported}</p>
+        ) : permission === "denied" ? (
+          <p className="text-xs text-pale-muted">{b.alertsBlocked}</p>
+        ) : permission === "granted" && prefs.notify ? (
+          <>
+            <p className="text-good">✓ {b.alertsOn}</p>
+            <button type="button" onClick={disable} className="btn btn-ink text-xs">
+              {b.alertsOff}
+            </button>
+          </>
+        ) : (
+          <button type="button" onClick={() => enable(b.alertsOn, b.alertsTest)} className="btn btn-ink text-xs">
+            🔔 {b.alertsEnable}
+          </button>
+        )}
+        <label className="flex items-center gap-1">
+          <input type="checkbox" checked={prefs.sound} onChange={(e) => setSound(e.target.checked)} className="accent-mint" /> {b.alertsSound}
+        </label>
+      </div>
+      <p className="mt-2 text-xs text-pale-muted">{b.alertsHint}</p>
+    </div>
   );
 }

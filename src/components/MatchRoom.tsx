@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useEffectEvent, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
@@ -8,6 +8,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { claimNoShow, markMatchSeen, reportMatchResult, sendMessage, setMatchResult } from "@/lib/tournament/actions";
 import { SCREENSHOT_BUCKET, SCREENSHOTS_PER_PLAYER, fill, type TournamentMatch, type TournamentMessage } from "@/lib/tournament/types";
 import { formatCountdown, noShowAt, validNeedScore } from "@/lib/tournament/rules";
+import { SCREENSHOT_ACCEPT, pastedScreenshot } from "@/lib/tournament/screenshotPaste";
 import { shrinkImage } from "@/lib/shrinkImage";
 import { useNow } from "@/lib/useNow";
 
@@ -44,7 +45,7 @@ type Live = Pick<TournamentMatch, "status" | "seen_a" | "seen_b" | "ready_at" | 
 /**
  * Stanza della partita: chat tra le parti (polling ogni 5 s sotto RLS), referto con doppia conferma e
  * screenshot caricati dal browser nel bucket privato (percorso <partita>/<utente>/<n>.webp; le policy
- * fanno da guardia). Dopo referto o upload la pagina (dinamica) si ricarica.
+ * fanno da guardia), col selettore file o incollati con Ctrl+V. Dopo referto o upload la pagina (dinamica) si ricarica.
  */
 export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowMinutes, running, initialMessages, screens, tournamentHref, labels }: Props) {
   const x = labels;
@@ -77,6 +78,8 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
   const [staffB, setStaffB] = useState<number>(match.score_b ?? 0);
   const [staffForfeit, setStaffForfeit] = useState(false);
   const [uploading, setUploading] = useState(false);
+  // l'ultimo numero caricato: col Ctrl+V il secondo arriva prima che la pagina si rilegga e sovrascriverebbe il primo
+  const lastSent = useRef(0);
   const myScreens = side === "a" ? screens.a : side === "b" ? screens.b : [];
   const theirScreens = side === "a" ? screens.b : side === "b" ? screens.a : [];
 
@@ -228,10 +231,11 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
       if (!sb) throw new Error("disabled");
       const blob = await shrinkImage(file, 1600, 0.8);
       if (blob.size > MAX_UPLOAD) throw new Error("too_big");
-      const n = Math.min(SCREENSHOTS_PER_PLAYER, myScreens.length + 1);
+      const n = Math.min(SCREENSHOTS_PER_PLAYER, Math.max(myScreens.length, lastSent.current) + 1);
       const path = `${matchId}/${me}/${n}.webp`;
       const { error: upErr } = await sb.storage.from(SCREENSHOT_BUCKET).upload(path, blob, { contentType: "image/webp", upsert: true });
       if (upErr) throw upErr;
+      lastSent.current = n;
       router.refresh();
     } catch {
       setError(x.errors.uploadFailed);
@@ -239,6 +243,29 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
       setUploading(false);
     }
   };
+
+  // Ctrl+V (07/11/2026, richiesta di Gami): su tutta la pagina, così funziona anche senza aver cliccato nel riquadro.
+  // Stesso percorso del selettore file; qui si controlla solo il tipo, che il selettore limita con `accept`
+  const onPaste = useEffectEvent((event: ClipboardEvent) => {
+    const clip = event.clipboardData;
+    if (!clip) return;
+    const target = event.target;
+    const inTextField = target instanceof HTMLElement && (target.matches("input, textarea") || target.isContentEditable);
+    const pasted = pastedScreenshot(Array.from(clip.files), clip.types.includes("text/plain"), inTextField);
+    if (pasted.kind === "none") return;
+    event.preventDefault();
+    if (uploading) return;
+    if (pasted.kind === "bad") setError(l.pasteBadType);
+    else if (Math.max(myScreens.length, lastSent.current) >= SCREENSHOTS_PER_PLAYER) setError(fill(l.pasteFull, { n: SCREENSHOTS_PER_PLAYER }));
+    else upload(pasted.file);
+  });
+  const canPaste = running && side !== null;
+  useEffect(() => {
+    if (!canPaste) return;
+    const listener = (event: ClipboardEvent) => onPaste(event);
+    document.addEventListener("paste", listener);
+    return () => document.removeEventListener("paste", listener);
+  }, [canPaste]);
 
   const reportedByMe = match.status === "reported" && match.reported_by === me;
   const reportedByThem = match.status === "reported" && match.reported_by !== me;
@@ -349,10 +376,13 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
             <p className="kicker text-pale-muted">{l.yours}</p>
             <ScreenList urls={myScreens} empty={l.none} />
             {running && myScreens.length < SCREENSHOTS_PER_PLAYER ? (
-              <label className="mt-2 block text-sm text-pale">
-                <span className="btn btn-ink text-xs">{uploading ? l.uploading : l.upload}</span>
-                <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={uploading} onChange={(e) => upload(e.target.files?.[0])} />
-              </label>
+              <>
+                <label className="mt-2 block text-sm text-pale">
+                  <span className="btn btn-ink text-xs">{uploading ? l.uploading : l.upload}</span>
+                  <input type="file" accept={SCREENSHOT_ACCEPT} className="sr-only" disabled={uploading} onChange={(e) => upload(e.target.files?.[0])} />
+                </label>
+                <p className="mt-1 hidden text-xs text-pale-muted md:block">{l.pasteHint}</p>
+              </>
             ) : null}
             <p className="mt-3 kicker text-pale-muted">{l.theirs}</p>
             <ScreenList urls={theirScreens} empty={l.none} />
