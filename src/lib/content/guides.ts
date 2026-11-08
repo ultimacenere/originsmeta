@@ -143,7 +143,7 @@ const en: Record<GuideSlug, Guide> = {
 - Of the eleven in the game before November, seven changed in the balance patches between August and 21 September 2026; Dracula, Van Helsing, Legion of the Dead and Robin Hood did not. [Patch 0.7](/en/news/patch-0-7) of 29 September 2026 did not rebalance any of them, and the patch of 4 November 2026 made Dorothy a 3/3.
 - The 20 decks published on OriginsMeta by 20:00 CEST on 25 September 2026 use ten of the eleven Legendaries in the game at the time: Three Not So Little Pigs leads four, Van Helsing three, Wicked Stepmother none. Six Legendaries have an OriginsMeta guide to one of their decks.
 
-The Legendaries below are in order of cost and, at the same cost, in alphabetical order. The guide describes what each card does, not how strong it is: our [Origins TCG tier list](/en/tier-list) will rank them from tournament results and the top of the [ranked ladder](/en/guides/origins-tcg-ranked); the first ranking is in preparation.
+The Legendaries below are in order of cost and, at the same cost, in alphabetical order. The guide describes what each card does, not how strong it is: for that, the [win rates by Legendary in Analytics](/en/analytics) count the games recorded with OriginsMeta Tracker, and our [Origins TCG tier list](/en/tier-list) gathers the live rankings. OriginsMeta tiers will come only from tournament results and the top of the [ranked ladder](/en/guides/origins-tcg-ranked).
 
 ## The 12 Legendaries at a glance {#at-a-glance}
 
@@ -409,7 +409,7 @@ In the closed playtest, according to players on the Steam forum on 14 September 
 
 ## What OriginsMeta will do with ranked {#originsmeta}
 
-The Crimson Cup finals were played on 25 October 2026, and the first OriginsMeta [tier list](/en/tier-list), built on tournament results and on the top of the ranked ladder, is in preparation. Until then the tier list page shows the top-rated community decks and the most played cards, declared as previews.
+The Crimson Cup finals were played on 25 October 2026. OriginsMeta tiers come only from tournament results and the top of the ranked ladder; as of 9 November 2026 the [tier list](/en/tier-list) page gathers the live rankings: the win rates by Legendary in [Analytics](/en/analytics), the community tier list, card votes and the most played cards.
 
 ## What we don't know yet {#unknowns}
 
@@ -1595,11 +1595,11 @@ Sources: the Origins TCG page on Steam (read on 28 October 2026), the official S
   "origins-tcg-kickstarter": {
     slug: "origins-tcg-kickstarter",
     category: "economy",
-    title: "Origins TCG Kickstarter: date, pre-registration, Alpha Edition and what we know",
-    metaTitle: "Origins TCG Kickstarter: date, pre-registration, Alpha",
-    excerpt: "The Origins TCG Kickstarter for the Alpha Edition opened on 27 October 2026: what is in it, the VIP pre-registration, the preorder-only boxes, the dates.",
+    title: "Origins TCG Kickstarter: Alpha Edition tiers, promos, numbers and dates",
+    metaTitle: "Origins TCG Kickstarter: Alpha Edition tiers and promos",
+    excerpt: "The Origins TCG Alpha Edition Kickstarter runs until 2 December 2026: $1,018,433 from 2,872 backers on 9 November, plus the tiers, promos and dates.",
     readTime: 5,
-    updated: "2026-10-30",
+    updated: "2026-11-09",
     image: "/media/ls-collector-pack.webp",
     faq: [
       { q: "When did the Origins TCG Kickstarter start?", a: "On 27 October 2026: Koin Games announced it on Steam that day at 17:02 UTC, with the post “The Origins Kickstarter is LIVE”. The CEO, Tim Jooste, had given the date on X on 17 September 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), and the demo's main menu had shown the Kickstarter as “Coming soon – Oct 27”, next to “Preregister for 15% off”." },
@@ -1615,9 +1615,23 @@ The Kickstarter for the **Myths & Legends Alpha Edition** opened on **27 October
 
 The date had come from Koin Games' CEO, **Tim Jooste**, who wrote "back the Alpha Edition Kickstarter (Oct 27th)" in a [post on X of 17 September 2026](https://x.com/TimothyJooste/status/2100700207285445011), which the studio's account shared. On **25 September 2026** the main menu of the demo also showed the Kickstarter box with **"Coming soon – Oct 27"** and **"Preregister for 15% off"**, while the loading screen advertised the Alpha Edition.
 
+*Update of 9 November 2026: added [the campaign in numbers](/en/guides/origins-tcg-kickstarter#numbers), read on the campaign page: $1,018,433 from 2,872 backers.*
+
 *Update of 30 October 2026: added [the Alpha promos and the stretch goals](/en/guides/origins-tcg-kickstarter#alpha-promos), with Koin's official images, and the closing date of the campaign, 2 December 2026.*
 
 *Update of 28 October 2026: the campaign has been live since 27 October, the day the demo ended and Origins TCG moved to Early Access. The update of 28 September had confirmed the date given by Koin Games' CEO; the one of 25 September had added the date shown in the demo, the topics of the AMA from the official announcement and the corrected timeline.*
+
+## The campaign in numbers {#numbers}
+
+| Figure | 9 November 2026 |
+| --- | --- |
+| Pledged | $1,018,433 |
+| Backers | 2,872 |
+| Stretch goals passed | all up to $1,000,000 (mobile launches sooner) |
+| Next promo | Dracula, at $1,250,000 |
+| Closes | 2 December 2026, 08:01 UTC |
+
+These are the figures on the [campaign page](https://www.kickstarter.com/projects/koingames/origins-trading-card-game-alpha-edition) on 9 November 2026 at 00:19 Italian time (23:19 UTC on 8 November), and they change every day. The stretch goals are in the [table further down](/en/guides/origins-tcg-kickstarter#alpha-promos).
 
 ## What has been announced
 
@@ -1793,7 +1807,7 @@ const it: Record<GuideSlug, Guide> = {
 - Delle undici nel gioco prima di novembre, sette sono cambiate nelle patch di bilanciamento fra agosto e il 21 settembre 2026; Dracula, Van Helsing, Legion of the Dead e Robin Hood no. La [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026 non ne ha ribilanciata nessuna, e la patch del 4 novembre 2026 ha fatto di Dorothy una 3/3.
 - I 20 mazzi pubblicati su OriginsMeta entro le 20:00 del 25 settembre 2026 usano dieci delle undici Leggendarie allora nel gioco: Three Not So Little Pigs ne guida quattro, Van Helsing tre, Wicked Stepmother nessuno. Sei Leggendarie hanno una guida di OriginsMeta a uno dei loro mazzi.
 
-Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordine alfabetico. La guida descrive che cosa fa ogni carta, non quanto è forte: le classificherà la nostra [tier list di Origins TCG](/it/tier-list) sui risultati dei tornei e sulla cima della [classificata](/it/guides/origins-tcg-ranked); la prima classifica è in preparazione.
+Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordine alfabetico. La guida descrive che cosa fa ogni carta, non quanto è forte: per quello ci sono i [win rate per Leggendaria di Analytics](/it/analytics), dalle partite registrate con OriginsMeta Tracker, e la nostra [tier list di Origins TCG](/it/tier-list), che raccoglie le classifiche vive. Le fasce di OriginsMeta nasceranno solo dai risultati dei tornei e dalla cima della [classificata](/it/guides/origins-tcg-ranked).
 
 ## Le 12 Leggendarie in una tabella {#tabella}
 
@@ -2059,7 +2073,7 @@ Nel playtest chiuso, secondo i giocatori sul forum di Steam il 14 settembre 2026
 
 ## Cosa farà OriginsMeta con la classificata {#originsmeta}
 
-Le finali della Crimson Cup si sono giocate il 25 ottobre 2026 e la prima [tier list](/it/tier-list) di OriginsMeta, costruita sui risultati dei tornei e sulla cima della classificata, è in preparazione. Fino ad allora la pagina della tier list mostra i mazzi della community più votati e le carte più giocate, dichiarati come anteprime.
+Le finali della Crimson Cup si sono giocate il 25 ottobre 2026. Le fasce di OriginsMeta nascono solo dai risultati dei tornei e dalla cima della classificata; al 9 novembre 2026 la pagina della [tier list](/it/tier-list) raccoglie le classifiche vive: i win rate per Leggendaria di [Analytics](/it/analytics), la tier list della community, i voti alle carte e le carte più giocate.
 
 ## Cosa non sappiamo ancora {#da-sapere}
 
@@ -3245,11 +3259,11 @@ Fonti: la pagina Steam di Origins TCG (letta il 28 ottobre 2026), i post ufficia
   "origins-tcg-kickstarter": {
     slug: "origins-tcg-kickstarter",
     category: "economy",
-    title: "Kickstarter di Origins TCG: data, pre-registrazione, Alpha Edition e cosa sappiamo",
-    metaTitle: "Kickstarter di Origins TCG: data, pre-registrazione, Alpha",
-    excerpt: "Il Kickstarter dell'Alpha Edition di Origins TCG è partito il 27 ottobre 2026: cosa contiene, la pre-registrazione VIP, i box in preordine e le date.",
+    title: "Kickstarter di Origins TCG: livelli, promo, numeri e date dell'Alpha Edition",
+    metaTitle: "Kickstarter di Origins TCG: livelli e promo dell'Alpha",
+    excerpt: "Il Kickstarter dell'Alpha Edition di Origins TCG è aperto fino al 2 dicembre 2026: 1.018.433 dollari da 2.872 sostenitori il 9 novembre, livelli e promo.",
     readTime: 5,
-    updated: "2026-10-30",
+    updated: "2026-11-09",
     image: "/media/ls-collector-pack.webp",
     faq: [
       { q: "Quando è partito il Kickstarter di Origins TCG?", a: "Il 27 ottobre 2026: Koin Games lo ha annunciato su Steam quel giorno alle 17:02 UTC, con il post “The Origins Kickstarter is LIVE”. Il CEO, Tim Jooste, aveva dato la data su X il 17 settembre 2026 (“back the Alpha Edition Kickstarter (Oct 27th)”), e il menu principale della demo aveva mostrato il Kickstarter come “Coming soon – Oct 27”, accanto a “Preregister for 15% off”." },
@@ -3265,9 +3279,23 @@ Il Kickstarter della **Myths & Legends Alpha Edition** è partito il **27 ottobr
 
 La data era arrivata dal CEO di Koin Games, **Tim Jooste**, che aveva scritto "back the Alpha Edition Kickstarter (Oct 27th)" in un [post su X del 17 settembre 2026](https://x.com/TimothyJooste/status/2100700207285445011), rilanciato dall'account dello studio. Il **25 settembre 2026** anche il menu principale della demo mostrava il riquadro del Kickstarter con **"Coming soon – Oct 27"** e **"Preregister for 15% off"**, mentre la schermata di caricamento pubblicizzava l'Alpha Edition.
 
+*Aggiornamento del 9 novembre 2026: aggiunta [la campagna in numeri](/it/guides/origins-tcg-kickstarter#numeri), letta sulla pagina della campagna: 1.018.433 dollari da 2.872 sostenitori.*
+
 *Aggiornamento del 30 ottobre 2026: aggiunte [le promo Alpha e gli stretch goal](/it/guides/origins-tcg-kickstarter#promo-alpha), con le immagini ufficiali di Koin, e la data di chiusura della campagna, il 2 dicembre 2026.*
 
 *Aggiornamento del 28 ottobre 2026: la campagna è aperta dal 27 ottobre, il giorno in cui la demo è finita e Origins TCG è passato all'Accesso anticipato. L'aggiornamento del 28 settembre aveva confermato la data annunciata dal CEO di Koin Games; quello del 25 settembre aveva aggiunto la data mostrata nella demo, i temi dell'AMA dall'annuncio ufficiale e le date corrette.*
+
+## La campagna in numeri {#numeri}
+
+| Dato | 9 novembre 2026 |
+| --- | --- |
+| Raccolti | 1.018.433 dollari |
+| Sostenitori | 2.872 |
+| Stretch goal superati | tutti fino a 1.000.000 di dollari (la versione mobile arriva prima) |
+| Prossima promo | Dracula, a 1.250.000 dollari |
+| Chiusura | 2 dicembre 2026, 9:01 ora italiana |
+
+Sono i numeri della [pagina della campagna](https://www.kickstarter.com/projects/koingames/origins-trading-card-game-alpha-edition) il 9 novembre 2026 alle 00:19 ora italiana (23:19 UTC dell'8 novembre) e cambiano ogni giorno. Gli stretch goal sono nella [tabella più sotto](/it/guides/origins-tcg-kickstarter#promo-alpha).
 
 ## Cosa è stato annunciato
 

@@ -207,11 +207,14 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/tier-list/community", section: "pages", route: "/tier-list/community", dates: [data.tierLists.latest] },
     // Tier list dei voti alle carte (06/10/2026): cambia a ogni voto (l'ora dell'ultimo voto, da card_vote_totals).
     { path: "/tier-list/votes", section: "pages", route: "/tier-list/votes", dates: [data.cardVotes?.latest] },
-    // Analytics, le statistiche (dal 12/10/2026 in /analytics; prima /tier-list/win-rate, ora un 308): solo quando la pagina
-    // si indicizza (almeno 100 partite nella patch mostrata); sotto è noindex e fuori da hreflang. I numeri cambiano a ogni
-    // partita: le date sono quelle del modello. Mai in sitemap finché ANALYTICS_PUBLIC è spento, né finché è riservata agli
-    // iscritti (03/11/2026): il crawler troverebbe la pagina sfocata, che è noindex.
-    ...(ANALYTICS_PUBLIC && !ANALYTICS_MEMBERS_ONLY && data.winrateGames && !isEarly(data.winrateGames)
+    // Analytics, le statistiche (dal 12/10/2026 in /analytics; prima /tier-list/win-rate, ora un 308), stabile in tutte le
+    // lingue dal 09/11/2026 (difesa SEO/GEO: è la fonte dei win rate che altri siti ripubblicano). Con la sezione riservata
+    // agli iscritti (03/11/2026) il crawler trova la pagina della fonte (che cosa sono i numeri, come citarli, Dataset),
+    // indicizzabile; a sezione aperta, la pagina vera, fuori solo sotto le 100 partite della patch (`isEarly`, la regola del
+    // suo noindex). Prima la pagina usciva dalla sitemap anche quando il database non rispondeva durante la build
+    // (`winrateGames` null), mentre la pagina restava indicizzabile: entrava e usciva (problema T3 del 02/11/2026).
+    // I numeri cambiano a ogni partita: le date sono quelle del modello. Mai in sitemap finché ANALYTICS_PUBLIC è spento.
+    ...(ANALYTICS_PUBLIC && (ANALYTICS_MEMBERS_ONLY || data.winrateGames == null || !isEarly(data.winrateGames))
       ? [{ path: "/analytics", section: "pages", route: "/analytics", dates: [] } satisfies SitemapPage]
       : []),
     // Crimson Cup (20/10/2026): i numeri ufficiali di Koin, statici; la data è quella dell'ultima lettura delle tabelle.

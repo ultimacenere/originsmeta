@@ -1,5 +1,6 @@
 import { resolveLocale, type LocaleParams } from "@/lib/page";
 import { EventTicker } from "@/components/EventTicker";
+import { CopyNudge } from "@/components/CopyNudge";
 
 /**
  * Tutte le pagine tranne la home: striscia del calendario subito sotto l'header, poi il contenuto.
@@ -13,6 +14,8 @@ export default async function SiteLayout({ children, params }: { children: React
       <main id="main" className="flex-1">
         {children}
       </main>
+      {/* invito dopo la copia del codice del gioco (09/11/2026): client, nessun dato, compare solo dopo una copia */}
+      <CopyNudge locale={locale} />
     </>
   );
 }

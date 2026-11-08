@@ -14,9 +14,9 @@ export const ru: Dictionary = {
     siteName: "OriginsMeta",
     tagline: "Мета — на столе.",
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "тир-лист", "колоды" e "карты" sono delle loro pagine */
-    homeTitle: "Origins TCG, карточная игра Koin Games · OriginsMeta",
+    homeTitle: "Origins TCG от Koin Games: ранний доступ · OriginsMeta",
     description:
-      "Origins TCG — карточная игра free-to-compete от Koin Games. Неофициальный фан-сайт на восьми языках: карты, колоды, конструктор колод, гайды и новости.",
+      "Origins TCG — карточная игра Koin Games, бесплатно в Steam в раннем доступе с 27 октября 2026 года. Неофициальный фан-сайт: колоды, карты, гайды, новости.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Неофициальный фан-сайт об игре Origins TCG, карточной игре Koin Games, на английском, итальянском, испанском, французском, португальском, немецком и русском: карты, колоды, конструктор колод, тир-лист, гайды и новости.",
@@ -203,7 +203,7 @@ export const ru: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Колоды, Легендарные, базовые карты",
-    tierStatus: "Рейтинг OriginsMeta готовится. А пока: карты, которые чаще всего играют.",
+    tierStatus: "Актуальные рейтинги: винрейт, сообщество, оценки карт. Здесь — самые популярные карты.",
     tierSoon: "Чаще всего играют",
     tierInvite: {
       intro: "Тир-лист сообщества: среднее по спискам, которые сохраняют участники (нужно не меньше {min} человек).",
@@ -278,7 +278,7 @@ export const ru: Dictionary = {
   },
   decks: {
     title: "Колоды Origins TCG от сообщества",
-    metaTitle: "Колоды Origins TCG: деклисты и гайды сообщества",
+    metaTitle: "Лучшие колоды Origins TCG: деклисты и гайды",
     intro: "У каждой колоды есть теги: Легендарная, архетип, тип колоды и роль автора публикации, а искать можно по карте. Списки публикует сообщество из конструктора колод, с гайдом и оценками звёздами.",
     description: "Колоды сообщества для Origins TCG, карточной игры Koin Games: гайды, оценки звёздами и игровые коды. Фильтры по Легендарной, архетипу и карте.",
     conquestTitle: "Формат Conquest простыми словами",
@@ -334,9 +334,9 @@ export const ru: Dictionary = {
   tier: {
     title: "Тир-лист Origins TCG",
     metaTitle: "Тир-лист и мета Origins TCG",
-    intro: "Колоды, Легендарные и базовые карты. Наш рейтинг строится на результатах турниров, а не на ощущениях, и первый уже готовится. А пока — карты, которые чаще всего играют, и тир-лист сообщества.",
-    description: "Тир-лист и мета Origins TCG (Koin Games): наш рейтинг по результатам турниров готовится. А пока — колоды сообщества с лучшими оценками и популярные карты.",
-    mainText: "Наш рейтинг по результатам турниров, уже в работе:",
+    intro: "Колоды, Легендарные и базовые карты. Тиры OriginsMeta строятся только на результатах турниров, а не на ощущениях. На 9 ноября 2026 года актуальные рейтинги — это винрейт по Легендарным в Analytics, тир-лист сообщества, оценки карт и карты, которые чаще всего играют.",
+    description: "Тир-лист и мета Origins TCG (Koin Games) на 9 ноября 2026: винрейт по Легендарным, тир-лист сообщества, оценки карт и карты, которые чаще всего играют.",
+    mainText: "Все актуальные рейтинги:",
     mainAnchor: "тир-лист Origins TCG",
     decksText: "Полные деклисты:",
     decksAnchor: "все колоды Origins TCG",
@@ -366,7 +366,7 @@ export const ru: Dictionary = {
     makerCta: "Составить свой тир-лист",
     sourcesLabel: "Источники тир-листа",
     sourceOfficial: "OriginsMeta",
-    sourceOfficialSoon: "готовится",
+    sourceOfficialSoon: "актуальные рейтинги",
     sourceOfficialUpdated: "обновлено {date}",
     sourceCommunity: "Community",
     sourceCommunityNone: "списков пока нет",
@@ -389,8 +389,8 @@ export const ru: Dictionary = {
     lineStatus: "Статус",
     lineMeasure: "Что измеряем",
     officialSourceText: "официальные результаты турниров и списки с вершины рейтинга",
-    officialStatusText: "первый рейтинг готовится",
-    officialEmpty: "Рейтинг OriginsMeta по результатам турниров готовится: никаких тиров на глаз.",
+    officialStatusText: "актуальные рейтинги на 9.11.2026; тиры — только по результатам турниров",
+    officialEmpty: "Тиры OriginsMeta строятся только на результатах турниров. На 9 ноября 2026 года актуальные рейтинги такие:",
     meanwhileDecks: "А пока: колоды сообщества с лучшими оценками",
     meanwhileLegendaries: "А пока: Легендарные из самых публикуемых колод",
     meanwhileCards: "А пока: базовые карты из самых публикуемых колод",
@@ -679,7 +679,7 @@ export const ru: Dictionary = {
       votesMany: "голосов: {n}",
       distribution: "Голоса по тирам",
       notRanked: "Её ещё никто не оценил.",
-      officialPending: "Пока без места: первый рейтинг OriginsMeta готовится.",
+      officialPending: "Без тира OriginsMeta: тиры строятся только на результатах турниров.",
       inDecks: "В {n} из {total} опубликованных колод ({pct}%)",
       decksTitle: "В опубликованных колодах",
       noDecks: "Ни в одной опубликованной колоде.",

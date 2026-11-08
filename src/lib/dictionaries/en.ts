@@ -3,9 +3,9 @@ export const en = {
     siteName: "OriginsMeta",
     tagline: "The meta, on the table.",
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "decks" e "cards" sono delle loro pagine */
-    homeTitle: "Origins TCG, Koin Games' digital card game · OriginsMeta",
+    homeTitle: "Origins TCG by Koin Games: free Early Access · OriginsMeta",
     description:
-      "Origins TCG is Koin Games' free-to-compete card game. Unofficial fan site in eight languages: cards, decks, deck builder, guides, news.",
+      "Origins TCG is Koin Games' card game, free on Steam in Early Access since 27 October 2026. Unofficial fan site in eight languages: decks, cards, guides, news.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Unofficial fan site for Origins TCG, the Koin Games card game, in English, Italian, Spanish, French, Portuguese, German and Russian: cards, decks, deck builder, tier list, guides and news.",
@@ -215,7 +215,7 @@ export const en = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Legendaries, base cards",
-    tierStatus: "OriginsMeta ranking in preparation. Meanwhile: the most played cards.",
+    tierStatus: "Live rankings: win rates, community, card votes. Here: the most played cards.",
     tierSoon: "Most played",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -303,7 +303,7 @@ export const en = {
     /* title = H1 (e briciole); metaTitle = titolo in SERP con "decklists" e "guides" (piano SEO del 25/09/2026). "codes"
        è uscito dal titolo con la revisione dell'Ondata 1: il primario di "deck code" è /deck-builder; resta nella description */
     title: "Origins TCG decks from the community",
-    metaTitle: "Origins TCG decks: community decklists and guides",
+    metaTitle: "Origins TCG decks: best community decklists and guides",
     intro: "Every deck is tagged by Legendary, archetype, deck type and the publisher's role, and searchable by card. Lists are published by the community from the deck builder, with a guide and star ratings.",
     description: "Community decklists for Origins TCG, the Koin Games card game: deck guides, star ratings and in-game deck codes. Filter by Legendary, archetype or card.",
     conquestTitle: "Conquest format, explained",
@@ -371,11 +371,11 @@ export const en = {
        del 25/09/2026), senza "decks" e "cards", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Origins TCG tier list",
     metaTitle: "Origins TCG tier list and meta",
-    intro: "Decks, Legendaries and base cards. Our ranking is built on tournament results, never on gut feeling, and the first one is in preparation. Until then: the most played cards and the community tier list.",
-    description: "Origins TCG (Koin Games) tier list and meta: our tournament-based ranking is in preparation. Meanwhile, top-rated community decks and most played cards.",
+    intro: "Decks, Legendaries and base cards. OriginsMeta tiers come only from tournament results, never from gut feeling. Updated 9 November 2026: the live rankings are the win rates by Legendary in Analytics, the community tier list, the card votes and the most played cards.",
+    description: "Origins TCG tier list and meta (Koin Games), 9 Nov 2026: win rates by Legendary, the community tier list, card votes and the most played cards, all live.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "Our ranking from tournament results, in preparation:",
+    mainText: "All the live rankings:",
     mainAnchor: "Origins TCG tier list",
     decksText: "For the full decklists:",
     decksAnchor: "all the Origins TCG decks",
@@ -406,7 +406,7 @@ export const en = {
     /* Section header (redesign of 24/09/2026): the three sources always in view, no dropdown */
     sourcesLabel: "Tier list sources",
     sourceOfficial: "OriginsMeta",
-    sourceOfficialSoon: "in preparation",
+    sourceOfficialSoon: "live rankings",
     sourceOfficialUpdated: "updated {date}",
     sourceCommunity: "Community",
     sourceCommunityNone: "no lists yet",
@@ -434,8 +434,8 @@ export const en = {
     lineStatus: "Status",
     lineMeasure: "Measure",
     officialSourceText: "official tournament results and top-ranked lists",
-    officialStatusText: "first ranking in preparation",
-    officialEmpty: "The OriginsMeta ranking from tournament results is in preparation: no tiers on gut feeling.",
+    officialStatusText: "live rankings as of 9 Nov 2026; tiers only from tournament results",
+    officialEmpty: "OriginsMeta tiers come only from tournament results. As of 9 November 2026, the live rankings are:",
     meanwhileDecks: "Meanwhile: the community's best-rated decks",
     meanwhileLegendaries: "Meanwhile: the Legendaries in the most published decks",
     meanwhileCards: "Meanwhile: the base cards in the most published decks",
@@ -739,7 +739,7 @@ export const en = {
       votesMany: "{n} votes",
       distribution: "Votes by tier",
       notRanked: "Nobody has ranked it yet.",
-      officialPending: "Not ranked yet: the first OriginsMeta ranking is in preparation.",
+      officialPending: "No OriginsMeta tier: tiers come only from tournament results.",
       inDecks: "In {n} of {total} published decks ({pct}%)",
       decksTitle: "In the published decks",
       noDecks: "In no published deck.",

@@ -531,9 +531,9 @@ Origins 把大多数数字卡牌游戏混在一起的两件事分开了：
 `,
   },
   "origins-tcg-kickstarter": {
-    title: "Origins TCG Kickstarter：日期、预注册、Alpha Edition 及已知信息",
-    metaTitle: "Origins TCG Kickstarter：日期、预注册与 Alpha",
-    excerpt: "Origins TCG 的 Alpha Edition Kickstarter 众筹已于 2026年10月27日开启：众筹内容与八档回报、1 美元 VIP 预注册享 15% 折扣、仅限预购的补充包盒与箱、Alpha 异画宣传卡和延伸目标，以及从试玩版到 1.0 的时间线。",
+    title: "Origins TCG Kickstarter：Alpha Edition 回报档位、宣传卡、数据与日期",
+    metaTitle: "Origins TCG Kickstarter：Alpha Edition 档位与宣传卡",
+    excerpt: "Origins TCG 的 Alpha Edition Kickstarter 众筹开放至 2026年12月2日：截至 11月9日，2,872 名支持者已筹得 1,018,433 美元。本攻略整理八档回报、Alpha 异画宣传卡、延伸目标、卡牌交易方式与关键日期，并说明支持众筹为什么不会影响排位赛的公平竞技。",
     faq: [
       {
         q: "Origins TCG 的 Kickstarter 是什么时候开始的？",
@@ -566,9 +566,23 @@ Origins 把大多数数字卡牌游戏混在一起的两件事分开了：
 
 这个日期最早来自 Koin Games 的 CEO **Tim Jooste**：他在 [2026年9月17日的一条 X 帖子](https://x.com/TimothyJooste/status/2100700207285445011)中写道“back the Alpha Edition Kickstarter (Oct 27th)”，工作室的账号转发了这条帖子。**2026年9月25日**，试玩版的主菜单也显示了 Kickstarter 方框，上面写着 **“Coming soon – Oct 27”** 和 **“Preregister for 15% off”**，而加载画面在宣传 Alpha Edition。
 
+*2026年11月9日更新：新增[众筹数据](/zh-cn/guides/origins-tcg-kickstarter#shu-ju)，读取自众筹页面：2,872 名支持者筹得 1,018,433 美元。*
+
 *2026年10月30日更新：新增 [Alpha 宣传卡与延伸目标](/zh-cn/guides/origins-tcg-kickstarter#alpha-xuan-chuan-ka)，附 Koin 的官方图片，以及众筹的结束日期 2026年12月2日。*
 
 *2026年10月28日更新：众筹自 10月27日起已经上线，那天试玩版结束，Origins TCG 转入抢先体验。9月28日的更新确认了 Koin Games CEO 公布的日期；9月25日的更新加入了试玩版中显示的日期、官方公告中的 AMA 话题以及更正后的时间线。*
+
+## 众筹数据 {#shu-ju}
+
+| 项目 | 2026年11月9日 |
+| --- | --- |
+| 已筹金额 | 1,018,433 美元 |
+| 支持者 | 2,872 名 |
+| 已达成的延伸目标 | 100 万美元及以下的全部目标（手机版提前上线） |
+| 下一张宣传卡 | Dracula，125 万美元 |
+| 结束时间 | 2026年12月2日 08:01 UTC |
+
+以上是 2026年11月9日意大利时间 00:19（11月8日 23:19 UTC）[众筹页面](https://www.kickstarter.com/projects/koingames/origins-trading-card-game-alpha-edition)上的数据，每天都在变化。延伸目标见[下方表格](/zh-cn/guides/origins-tcg-kickstarter#alpha-xuan-chuan-ka)。
 
 ## 已公布的内容
 

@@ -196,7 +196,9 @@ export default async function DeckSetPage({ params }: { params: Params }) {
             {handle ? <span className="font-mono text-xs"> {handle}</span> : null}
           </span>
           <AuthorChannels ownerId={set.owner} username={set.profile?.username} name={author} badge={set.profile?.badge} badgeLabel={c.badges[normalizeBadge(set.profile?.badge)]} locale={locale} />
-          <FollowButton profileId={set.owner} name={author} badge={set.profile?.badge} locale={locale} placement="deck_page" compact />
+          <span data-follow-author className="contents">
+            <FollowButton profileId={set.owner} name={author} badge={set.profile?.badge} locale={locale} placement="deck_page" compact />
+          </span>
         </p>
 
         {/* le tre Leggendarie, nell'ordine dei mazzi: portano alle schede delle carte */}

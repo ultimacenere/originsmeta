@@ -222,3 +222,17 @@ describe("route", () => {
     assert.ok(!existsSync(new URL("sitemap.ts", root)));
   });
 });
+
+// /analytics è la fonte dei win rate che altri siti ripubblicano (difesa SEO/GEO del 09/11/2026): sta in sitemap in tutte
+// le lingue anche quando il database non risponde durante la build (prima usciva ed entrava: problema T3 del 02/11/2026)
+describe("/analytics nella sitemap", () => {
+  test("c'è in tutte e otto le lingue, anche senza il numero delle partite", () => {
+    for (const data of [EMPTY_COMMUNITY, { ...EMPTY_COMMUNITY, winrateGames: null }]) {
+      const all = sitemapPages(data);
+      for (const l of locales) {
+        const urls = sectionEntries(all, "pages", l, TODAY).map((e) => e.url);
+        assert.ok(urls.includes(`${SITE}/${l}/analytics`), `${l}: /analytics fuori dalla sitemap`);
+      }
+    }
+  });
+});

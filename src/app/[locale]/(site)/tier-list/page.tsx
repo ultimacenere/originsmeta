@@ -120,6 +120,12 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   const counts = { decks: data.decks.length, legendaries: legendaries.length, cards: base.length };
   const listed = sectionIds.map((id) => ({ name: t.sections[id].title, path: `${href(locale, "/tier-list")}#${id}` }));
 
+  const liveRankings = [
+    { path: "/analytics", label: d.nav.analytics },
+    { path: "/tier-list/community", label: t.sourceCommunity },
+    { path: "/tier-list/votes", label: t.sourceVotes },
+    { path: "/tier-list/most-played", label: t.sourcePlayed },
+  ];
   const emptyLine = (
     <p className="tier-empty-line">
       <span className="tier-dots" aria-hidden="true">
@@ -129,7 +135,18 @@ export default async function TierListPage({ params }: { params: LocaleParams })
           </span>
         ))}
       </span>
-      <span className="min-w-0 flex-1 basis-60">{t.officialEmpty}</span>
+      <span className="min-w-0 flex-1 basis-60">
+        {t.officialEmpty}{" "}
+        {/* le classifiche già vive (09/11/2026, difesa SEO/GEO): al posto di "in preparazione", i link alle fonti con i numeri */}
+        {liveRankings.map((r, i) => (
+          <Fragment key={r.path}>
+            {i ? " · " : null}
+            <Link href={href(locale, r.path)} prefetch={false} className="link-mint font-bold">
+              {r.label}
+            </Link>
+          </Fragment>
+        ))}
+      </span>
     </p>
   );
 

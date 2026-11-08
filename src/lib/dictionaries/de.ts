@@ -13,9 +13,9 @@ export const de: Dictionary = {
     siteName: "OriginsMeta",
     tagline: "Das Meta, auf dem Tisch.",
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "decks" e "Karten" sono delle loro pagine */
-    homeTitle: "Origins TCG, das Kartenspiel von Koin Games · OriginsMeta",
+    homeTitle: "Origins TCG von Koin Games: Early Access · OriginsMeta",
     description:
-      "Origins TCG ist das Free-to-Compete-Kartenspiel von Koin Games. Inoffizielle Fanseite auf Deutsch: Karten, Decks, Deckbuilder, Guides und News.",
+      "Origins TCG ist das Kartenspiel von Koin Games, seit dem 27. Oktober 2026 kostenlos auf Steam im Early Access. Inoffizielle Fanseite: Decks, Karten, Guides.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Inoffizielle Fanseite zu Origins TCG, dem Kartenspiel von Koin Games, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch: Karten, Decks, Deckbuilder, Tier-List, Guides und News.",
@@ -202,7 +202,7 @@ export const de: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Legendäre, Basiskarten",
-    tierStatus: "OriginsMeta-Ranking in Vorbereitung. Bis dahin: die meistgespielten Karten.",
+    tierStatus: "Live: Win-Rates, Community, Kartenbewertungen. Hier: die meistgespielten Karten.",
     tierSoon: "Meistgespielt",
     tierInvite: {
       intro: "Community-Tier-List: der Durchschnitt der Listen, die Mitglieder speichern (sie braucht mindestens {min} Personen).",
@@ -277,7 +277,7 @@ export const de: Dictionary = {
   },
   decks: {
     title: "Origins TCG Decks aus der Community",
-    metaTitle: "Origins TCG Decks: Decklists und Guides der Community",
+    metaTitle: "Beste Origins TCG Decks: Decklists und Guides",
     intro: "Jedes Deck ist nach Legendärer, Archetyp, Decktyp und Rolle der veröffentlichenden Person markiert und nach Karte durchsuchbar. Die Listen veröffentlicht die Community aus dem Deck builder, mit Guide und Sternebewertungen.",
     description: "Community-Decklists für Origins TCG von Koin Games: Deck-Guides, Sternebewertungen und Spielcodes. Filter nach Legendärer, Archetyp oder Karte.",
     conquestTitle: "Das Conquest-Format, erklärt",
@@ -333,9 +333,9 @@ export const de: Dictionary = {
   tier: {
     title: "Origins TCG Tier-List",
     metaTitle: "Origins TCG Tier-List und Meta",
-    intro: "Decks, Legendäre und Basiskarten. Unser Ranking stützt sich auf Turnierergebnisse, nie aufs Bauchgefühl, und das erste ist in Vorbereitung. Bis dahin: die meistgespielten Karten und die Tier-List der Community.",
-    description: "Tier-List und Meta von Origins TCG (Koin Games): Unser Turnier-Ranking ist in Vorbereitung, bis dahin die besten Community-Decks und meistgespielten Karten.",
-    mainText: "Unser Ranking aus Turnierergebnissen, in Vorbereitung:",
+    intro: "Decks, Legendäre und Basiskarten. Die Tiers von OriginsMeta entstehen nur aus Turnierergebnissen, nie aus dem Bauchgefühl. Stand 9. November 2026: Die Live-Rankings sind die Win-Rates nach Legendärer in Analytics, die Tier-List der Community, die Kartenbewertungen und die meistgespielten Karten.",
+    description: "Tier-List und Meta von Origins TCG (Koin Games), Stand 9.11.2026: Win-Rates nach Legendärer, Community-Tier-List, Kartenbewertungen, meistgespielte Karten.",
+    mainText: "Alle Live-Rankings:",
     mainAnchor: "Origins TCG Tier-List",
     decksText: "Für die vollständigen Decklists:",
     decksAnchor: "alle Origins TCG Decks",
@@ -365,7 +365,7 @@ export const de: Dictionary = {
     makerCta: "Erstelle deine Tier-List",
     sourcesLabel: "Quellen der Tier-List",
     sourceOfficial: "OriginsMeta",
-    sourceOfficialSoon: "in Vorbereitung",
+    sourceOfficialSoon: "live",
     sourceOfficialUpdated: "aktualisiert am {date}",
     sourceCommunity: "Community",
     sourceCommunityNone: "noch keine Listen",
@@ -388,8 +388,8 @@ export const de: Dictionary = {
     lineStatus: "Status",
     lineMeasure: "Messgröße",
     officialSourceText: "offizielle Turnierergebnisse und Listen von der Spitze des Rankings",
-    officialStatusText: "erstes Ranking in Vorbereitung",
-    officialEmpty: "Das OriginsMeta-Ranking aus Turnierergebnissen ist in Vorbereitung: keine Tiers aus dem Bauch heraus.",
+    officialStatusText: "Live-Rankings, Stand 9.11.2026; Tiers nur aus Turnierergebnissen",
+    officialEmpty: "Die Tiers von OriginsMeta entstehen nur aus Turnierergebnissen. Stand 9. November 2026 sind das die Live-Rankings:",
     meanwhileDecks: "Bis dahin: die am besten bewerteten Decks der Community",
     meanwhileLegendaries: "Bis dahin: die Legendären in den meisten veröffentlichten Decks",
     meanwhileCards: "Bis dahin: die Basiskarten in den meisten veröffentlichten Decks",
@@ -678,7 +678,7 @@ export const de: Dictionary = {
       votesMany: "{n} Stimmen",
       distribution: "Stimmen nach Tier",
       notRanked: "Noch hat sie niemand eingestuft.",
-      officialPending: "Noch nicht eingestuft: Das erste OriginsMeta-Ranking ist in Vorbereitung.",
+      officialPending: "Kein OriginsMeta-Tier: Tiers entstehen nur aus Turnierergebnissen.",
       inDecks: "In {n} von {total} veröffentlichten Decks ({pct} %)",
       decksTitle: "In den veröffentlichten Decks",
       noDecks: "In keinem veröffentlichten Deck.",

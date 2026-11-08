@@ -10,9 +10,9 @@ export const fr: Dictionary = {
     siteName: "OriginsMeta",
     tagline: "La meta, sur la table.",
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "decks" e "cartes" sono delle loro pagine */
-    homeTitle: "Origins TCG, le jeu de cartes de Koin Games · OriginsMeta",
+    homeTitle: "Origins TCG de Koin Games : Accès anticipé · OriginsMeta",
     description:
-      "Origins TCG est le jeu de cartes free-to-compete de Koin Games. Site de fans non officiel en français : cartes, decks, deck builder, guides, actus.",
+      "Origins TCG est le jeu de cartes de Koin Games, gratuit sur Steam en Accès anticipé depuis le 27 octobre 2026. Site de fans non officiel en huit langues.",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Site de fans non officiel sur Origins TCG, le jeu de cartes de Koin Games, en anglais, italien, espagnol, français, portugais, allemand et russe : cartes, decks, deck builder, tier list, guides et actus.",
@@ -219,7 +219,7 @@ export const fr: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Légendaires, cartes de base",
-    tierStatus: "Classement d'OriginsMeta en préparation. En attendant : les cartes les plus jouées.",
+    tierStatus: "En direct : win rate, communauté, votes des cartes. Ici : les plus jouées.",
     tierSoon: "Les plus jouées",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -307,7 +307,7 @@ export const fr: Dictionary = {
     /* title = H1 (e briciole); metaTitle = titolo in SERP con "listes" e "guides" (piano SEO del 25/09/2026). "codes"
        è uscito dal titolo con la revisione dell'Ondata 1: il primario di "code de deck" è /deck-builder; resta nella description */
     title: "Decks Origins TCG de la communauté",
-    metaTitle: "Decks Origins TCG : listes et guides de la communauté",
+    metaTitle: "Meilleurs decks Origins TCG : listes et guides",
     intro: "Chaque deck porte sa Légendaire, son archétype, son type et le rôle de qui l'a publié, et se cherche par carte. Les listes sont publiées par la communauté depuis le deck builder, avec un guide et des notes en étoiles.",
     description: "Decks Origins TCG (Koin Games) publiés par la communauté : guide du deck, notes en étoiles et code du jeu. Filtrez par Légendaire, archétype ou carte.",
     conquestTitle: "Le format Conquest, expliqué",
@@ -373,11 +373,11 @@ export const fr: Dictionary = {
        del 25/09/2026), senza "decks" e "cartes", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list Origins TCG",
     metaTitle: "Tier list et meta d'Origins TCG",
-    intro: "Decks, Légendaires et cartes de base. Notre classement repose sur les résultats des tournois, jamais sur l'intuition, et le premier est en préparation. D'ici là : les cartes les plus jouées et la tier list de la communauté.",
-    description: "Tier list et meta d'Origins TCG (Koin Games) : notre classement est en préparation. D'ici là, decks les mieux notés et cartes les plus jouées.",
+    intro: "Decks, Légendaires et cartes de base. Les tiers d'OriginsMeta viennent uniquement des résultats des tournois, jamais de l'intuition. Mis à jour le 9 novembre 2026 : les classements en direct sont le win rate par Légendaire d'Analytics, la tier list de la communauté, les votes des cartes et les cartes les plus jouées.",
+    description: "Tier list et meta d'Origins TCG (Koin Games), 9 nov. 2026 : win rate par Légendaire, tier list de la communauté, votes des cartes, cartes les plus jouées.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "Notre classement d'après les résultats des tournois, en préparation :",
+    mainText: "Tous les classements en direct :",
     mainAnchor: "tier list Origins TCG",
     decksText: "Pour les listes complètes :",
     decksAnchor: "tous les decks Origins TCG",
@@ -408,7 +408,7 @@ export const fr: Dictionary = {
     /* testata della sezione (riprogettazione del 24/09/2026): le tre fonti sempre in vista, niente tendina */
     sourcesLabel: "Sources de la tier list",
     sourceOfficial: "OriginsMeta",
-    sourceOfficialSoon: "en préparation",
+    sourceOfficialSoon: "en direct",
     sourceOfficialUpdated: "mise à jour le {date}",
     sourceCommunity: "Communauté",
     sourceCommunityNone: "aucune liste pour l'instant",
@@ -436,8 +436,8 @@ export const fr: Dictionary = {
     lineStatus: "État",
     lineMeasure: "Mesure",
     officialSourceText: "résultats des tournois officiels et listes du haut du classement",
-    officialStatusText: "premier classement en préparation",
-    officialEmpty: "Le classement d'OriginsMeta d'après les résultats des tournois est en préparation : pas de tiers à l'intuition.",
+    officialStatusText: "classements en direct au 9 nov. 2026 ; tiers uniquement d'après les tournois",
+    officialEmpty: "Les tiers d'OriginsMeta viennent uniquement des résultats des tournois. Au 9 novembre 2026, les classements en direct sont :",
     meanwhileDecks: "En attendant : les decks les mieux notés par la communauté",
     meanwhileLegendaries: "En attendant : les Légendaires présentes dans le plus de decks publiés",
     meanwhileCards: "En attendant : les cartes de base présentes dans le plus de decks publiés",
@@ -735,7 +735,7 @@ export const fr: Dictionary = {
       votesMany: "{n} votes",
       distribution: "Votes par tier",
       notRanked: "Personne ne l'a encore classée.",
-      officialPending: "Pas encore classée : le premier classement d'OriginsMeta est en préparation.",
+      officialPending: "Pas de tier d'OriginsMeta : les tiers viennent uniquement des résultats des tournois.",
       inDecks: "Dans {n} des {total} decks publiés ({pct} %)",
       decksTitle: "Dans les decks publiés",
       noDecks: "Dans aucun deck publié.",

@@ -6,11 +6,18 @@ import { pageMeta, resolveLocale } from "@/lib/page";
 import { dropHreflang } from "@/lib/community/deckQuality";
 import { MEMBERS_ONLY_SECTIONS, membersOnlyPath, type MembersOnlySection } from "@/lib/membersOnly";
 import { membersOnlyLabels } from "@/lib/membersOnlyLabels";
+import { latestPatch, patchLabel } from "@/lib/data/cards";
+import { analyticsDataset } from "@/lib/analyticsSource";
+import { AnalyticsSource } from "@/components/analytics/AnalyticsSource";
+import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
 /*
   Pagina sfocata delle sezioni riservate agli iscritti (03/11/2026, src/lib/membersOnly.ts): src/proxy.ts la mostra al
   posto di /market e /analytics a chi non ha fatto l'accesso, senza cambiare indirizzo. Sotto l'invito c'è solo una sagoma
-  sfocata (riquadri e righe finte), mai i dati veri: chi non è iscritto non li riceve nemmeno nell'HTML. Statica, noindex.
+  sfocata (riquadri e righe finte), mai i dati veri: chi non è iscritto non li riceve nemmeno nell'HTML. Statica.
+  Il Mercato è noindex. Analytics dal 09/11/2026 no (difesa SEO/GEO): è l'indirizzo che altri siti citano come fonte dei
+  win rate, e Googlebot vede questa pagina. Quindi title e description della pagina vera, hreflang, H1 della fonte, la
+  sezione "Fonte e come citarla" e il nodo Dataset, sempre senza un numero vero (solo la patch in corso).
 */
 type Params = Promise<{ locale: string; section: string }>;
 
@@ -26,6 +33,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { locale, dict } = await resolveLocale(params);
   const section = asSection((await params).section);
   if (!section) notFound();
+  if (section === "analytics") return pageMeta(locale, "/analytics", dict.tier.winrate.title, dict.tier.winrate.description);
   return dropHreflang(pageMeta(locale, membersOnlyPath[section], dict.nav[section], membersOnlyLabels[locale].metaDescription, undefined, { noindex: true }));
 }
 
@@ -77,9 +85,22 @@ export default async function MembersOnlyPage({ params }: { params: Params }) {
   if (!section) notFound();
   const l = membersOnlyLabels[locale];
   const login = `${href(locale, "/login")}?next=${encodeURIComponent(href(locale, membersOnlyPath[section]))}`;
+  const analytics = section === "analytics";
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <h1 className="t-page">{dict.nav[section]}</h1>
+      {analytics ? (
+        <JsonLd
+          data={[
+            breadcrumbs([
+              { name: "OriginsMeta", path: href(locale) },
+              { name: dict.tier.winrate.h1, path: href(locale, "/analytics") },
+            ]),
+            analyticsDataset(locale),
+          ]}
+        />
+      ) : null}
+      {analytics ? <p className="kicker text-mint">{dict.nav.analytics}</p> : null}
+      <h1 className={analytics ? "t-page mt-2" : "t-page"}>{analytics ? dict.tier.winrate.h1 : dict.nav[section]}</h1>
       <div className="relative mt-8">
         <Silhouette />
         <div className="absolute inset-0 flex items-start justify-center pt-10 sm:pt-16">
@@ -101,6 +122,17 @@ export default async function MembersOnlyPage({ params }: { params: Params }) {
           </section>
         </div>
       </div>
+      {analytics ? (
+        <>
+          <AnalyticsSource locale={locale} patch={patchLabel(latestPatch, locale)} members className="mt-12" />
+          <p className="mt-6 text-sm">
+            {dict.tier.winrate.app.notesText}{" "}
+            <Link href={href(locale, "/tracker")} className="link-mint font-bold">
+              {dict.tier.winrate.app.notesAnchor} →
+            </Link>
+          </p>
+        </>
+      ) : null}
     </div>
   );
 }

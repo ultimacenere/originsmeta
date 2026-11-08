@@ -766,6 +766,8 @@ I primi quattro (online con a9400e8) hanno tenuto nome e parametri quando è arr
 | `login_error` | errore mostrato dal pannello di accesso (quello arrivato con `?error=` solo all'arrivo, non a un ricaricamento) | `kind`, `method` |
 | `deck_complete` | il mazzo del builder arriva a 25 carte (una volta per casella e per scheda) | `placement` |
 | ★ `game_code_copy` | copia riuscita del codice del gioco (KGBLDC…) | `placement` (builder, tournament_builder, deck_page, decks_list) |
+| `copy_nudge_view` | dopo una copia del codice, il riquadro "entra nel Discord / segui l'autore" (`CopyNudge`, 09/11/2026; al massimo una volta al giorno per browser, mai dopo il clic sul Discord) | `placement` (quello della copia) |
+| `copy_nudge_click` | clic nel riquadro; il Discord manda anche `discord_click` con placement `copy_nudge` | `target` (discord, follow, close), `placement` |
 | `deck_share` | link, lista in testo o "Condividi con…" dal builder | `method`, `placement` |
 | `deck_open_builder` | "Apri nel deck builder" dalla scheda di un mazzo | `placement` |
 | `deck_original_open` | dalla guida tradotta di un mazzo all'originale | `guide_lang` |

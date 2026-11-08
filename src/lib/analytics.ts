@@ -37,6 +37,11 @@
  *                         casella e per scheda (di nuovo solo dopo "Svuota mazzo")
  *   ★ game_code_copy      copia RIUSCITA del codice del gioco (KGBLDC…)           placement (builder | tournament_builder |
  *                                                                                 deck_page | deck_header | decks_list)
+ *     copy_nudge_view     dopo una copia del codice del gioco, il riquadro "entra   placement (dove si è copiato: quello di
+ *                         nel Discord / segui l'autore" (CopyNudge, 09/11/2026;     game_code_copy)
+ *                         al massimo una volta al giorno per browser)
+ *     copy_nudge_click    clic nel riquadro; il Discord manda anche discord_click   target (discord | follow | close), placement
+ *                         con placement copy_nudge
  *     deck_share          link, lista in testo o "Condividi con…" dal builder      method (link | text | native), placement
  *     deck_open_builder   "Apri nel deck builder" dalla scheda di un mazzo (attributi) placement
  *     deck_original_open  dalla guida tradotta di un mazzo all'originale (attributi) guide_lang
@@ -234,6 +239,8 @@ export type EventParams = {
   deck_created: { locale: string; legendary: string; cards: number; placement: string };
   deck_complete: { placement: string };
   game_code_copy: { placement: string };
+  copy_nudge_view: { placement: string };
+  copy_nudge_click: { target: "discord" | "follow" | "close"; placement: string };
   deck_share: { method: "link" | "text" | "native"; placement: string };
   deck_open_builder: { placement: string };
   deck_original_open: { guide_lang: string };
@@ -297,6 +304,8 @@ export const VERCEL_PROPS = {
   deck_created: ["legendary", "placement"],
   deck_complete: ["placement"],
   game_code_copy: ["placement"],
+  copy_nudge_view: ["placement"],
+  copy_nudge_click: ["target", "placement"],
   deck_share: ["method", "placement"],
   deck_open_builder: ["placement"],
   deck_original_open: ["guide_lang"],

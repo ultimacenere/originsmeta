@@ -9,9 +9,9 @@ export const zhCn: Dictionary = {
     siteName: "OriginsMeta",
     tagline: "环境，尽在桌上。",
     /* Home sul marchio e su Koin Games (piano SEO del 25/09/2026): "tier list", "decks" e "cards" sono delle loro pagine */
-    homeTitle: "Origins TCG，Koin Games 的数字卡牌游戏 · OriginsMeta",
+    homeTitle: "Origins TCG：Koin Games 卡牌游戏抢先体验 · OriginsMeta",
     description:
-      "Origins TCG 是 Koin Games 推出的免费竞技（free-to-compete）数字卡牌游戏。OriginsMeta 是非官方粉丝网站，提供八种语言版本：卡牌数据库、卡组、卡组构筑器、新手与进阶攻略、最新新闻和赛事日程，帮你更快上手、看懂当前环境。",
+      "Origins TCG 是 Koin Games 推出的数字卡牌游戏，自 2026年10月27日起在 Steam 免费开启抢先体验。OriginsMeta 是非官方粉丝网站，提供八种语言版本：卡牌数据库、卡组、卡组构筑器、新手与进阶攻略、最新新闻和赛事日程，帮你更快上手、看懂当前环境。",
     /* descrizione del sito per il nodo WebSite dei dati strutturati: parla del sito, la description della home parte dal gioco */
     siteDescription:
       "Origins TCG（Koin Games 推出的卡牌游戏）的非官方粉丝网站，提供英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文版本：卡牌、卡组、卡组构筑器、强度榜、攻略和新闻。",
@@ -221,7 +221,7 @@ export const zhCn: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "卡组、传说卡、基础卡",
-    tierStatus: "OriginsMeta 排名准备中。先看看：使用率最高的卡牌。",
+    tierStatus: "实时榜单：胜率、社区、卡牌评分。这里：使用率最高的卡牌。",
     tierSoon: "最常用",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -309,7 +309,7 @@ export const zhCn: Dictionary = {
     /* title = H1 (e briciole); metaTitle = titolo in SERP con "decklists" e "guides" (piano SEO del 25/09/2026). "codes"
        è uscito dal titolo con la revisione dell'Ondata 1: il primario di "deck code" è /deck-builder; resta nella description */
     title: "Origins TCG 社区卡组",
-    metaTitle: "Origins TCG 卡组：社区卡表与卡组攻略",
+    metaTitle: "Origins TCG 最强卡组：社区卡表与卡组攻略",
     intro: "每套卡组都按传说卡、流派、卡组类型和发布者的角色打上标签，也可以按卡牌搜索。卡表由社区通过卡组构筑器发布，附带攻略和星级评分。",
     description: "Origins TCG（Koin Games 推出的卡牌游戏）社区卡表合集：附有卡组攻略、思路、调度建议、星级评分和可直接导入游戏的卡组代码。可按传说卡、流派、卡组类型或单张卡牌筛选，快速找到适合天梯、竞技或娱乐的卡组，也可以发布你自己的卡组。",
     conquestTitle: "Conquest 赛制详解",
@@ -377,11 +377,11 @@ export const zhCn: Dictionary = {
        del 25/09/2026), senza "decks" e "cards", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Origins TCG 强度榜",
     metaTitle: "Origins TCG 强度榜与当前 Meta 环境",
-    intro: "卡组、传说卡和基础卡。我们的排名以锦标赛成绩为依据，绝不凭感觉，第一版正在准备中。在此之前，先看看使用率最高的卡牌和社区强度榜。",
-    description: "Origins TCG（Koin Games）强度榜与当前环境：我们基于锦标赛成绩的排名正在准备中，绝不凭感觉划分档位。在此之前，你可以先看看社区评分最高的卡组、使用率最高的卡牌，以及社区成员共同投票得出的强度榜，数据随新卡组和投票自动更新。",
+    intro: "卡组、传说卡和基础卡。OriginsMeta 的档位只依据锦标赛成绩，绝不凭感觉。截至 2026年11月9日，实时榜单包括：Analytics 中按传说卡统计的胜率、社区强度榜、卡牌评分和使用率最高的卡牌。",
+    description: "Origins TCG（Koin Games）强度榜与当前环境，更新于 2026年11月9日：按传说卡统计的胜率、社区强度榜、玩家卡牌评分和使用率最高的卡牌，全部实时更新。OriginsMeta 的档位只依据锦标赛成绩，绝不凭感觉划分；在此之前，这些实时榜单帮你看清当前环境里哪些传说卡和卡牌最强、最常用。",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "我们基于锦标赛成绩的排名，准备中：",
+    mainText: "全部实时榜单：",
     mainAnchor: "Origins TCG 强度榜",
     decksText: "完整卡表请看：",
     decksAnchor: "所有 Origins TCG 卡组",
@@ -412,7 +412,7 @@ export const zhCn: Dictionary = {
     /* Section header (redesign of 24/09/2026): the three sources always in view, no dropdown */
     sourcesLabel: "强度榜来源",
     sourceOfficial: "OriginsMeta",
-    sourceOfficialSoon: "准备中",
+    sourceOfficialSoon: "实时榜单",
     sourceOfficialUpdated: "更新于 {date}",
     sourceCommunity: "社区",
     sourceCommunityNone: "暂无榜单",
@@ -440,8 +440,8 @@ export const zhCn: Dictionary = {
     lineStatus: "状态",
     lineMeasure: "衡量",
     officialSourceText: "官方锦标赛成绩和高排名卡表",
-    officialStatusText: "第一版排名准备中",
-    officialEmpty: "基于锦标赛成绩的 OriginsMeta 排名正在准备中：我们不凭感觉划分档位。",
+    officialStatusText: "实时榜单，更新于 2026年11月9日；档位只依据锦标赛成绩",
+    officialEmpty: "OriginsMeta 的档位只依据锦标赛成绩。截至 2026年11月9日，实时榜单包括：",
     meanwhileDecks: "在此之前：社区评分最高的卡组",
     meanwhileLegendaries: "在此之前：发布最多的卡组中的传说卡",
     meanwhileCards: "在此之前：发布最多的卡组中的基础卡",
@@ -745,7 +745,7 @@ export const zhCn: Dictionary = {
       votesMany: "{n} 票",
       distribution: "各档位票数",
       notRanked: "还没有人给它排名。",
-      officialPending: "尚未排名：第一版 OriginsMeta 排名正在准备中。",
+      officialPending: "暂无 OriginsMeta 档位：档位只依据锦标赛成绩。",
       inDecks: "出现在 {total} 套已发布卡组中的 {n} 套（{pct}%）",
       decksTitle: "所在的已发布卡组",
       noDecks: "未出现在任何已发布卡组中。",

@@ -51,6 +51,8 @@ import {
 import { archetypeOfKeys } from "@/lib/tracker/enrich";
 import { TierSectionNotes, TierSourceLine } from "@/components/TierListHeader";
 import { PageNotes } from "@/components/PageNotes";
+import { AnalyticsSource } from "@/components/analytics/AnalyticsSource";
+import { analyticsDataset } from "@/lib/analyticsSource";
 import { CardName } from "@/components/CardChip";
 import { ArchetypeIcon } from "@/components/ArchetypeIcon";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
@@ -464,6 +466,8 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
             { name: "OriginsMeta", path: href(locale) },
             { name: w.h1, path: href(locale, "/analytics") },
           ]),
+          // fonte dei win rate (09/11/2026, difesa SEO/GEO): lo stesso nodo della pagina che vede chi non ha l'accesso
+          analyticsDataset(locale),
         ]}
       />
       {/* testata: solo titolo e tasti (i testi stanno in fondo, come nelle altre pagine dei dati) */}
@@ -1092,6 +1096,7 @@ export default async function AnalyticsPage({ params }: { params: LocaleParams }
               </span>
             </p>
           </section>
+          <AnalyticsSource locale={locale} patch={patchName} className="mt-10" />
         </PageNotes>
       </div>
       <AnalyticsReveal />
