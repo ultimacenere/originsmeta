@@ -4,9 +4,13 @@ import { notFound, redirect } from "next/navigation";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
-import { getMatch, getTournament, listLegendaries, listMatches, listMessages, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { getMatch, getStageOptions, getTournament, listLegendaries, listMatchBans, listMatches, listMessages, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
 import { SCREENSHOT_BUCKET, bestOfLabel, fill, totalRounds } from "@/lib/tournament/types";
 import { matchBestOf, matchNeed } from "@/lib/tournament/rules";
+import { banApplies, banState, holdRound, isHeld, planOf } from "@/lib/tournament/stages";
+import { stageLabels } from "@/lib/tournament/stageLabels";
+import { stageMatchName } from "@/lib/tournament/stageNames";
+import { BanPanel, type BanDeck } from "@/components/BanPanel";
 import { authorName } from "@/lib/community/util";
 import { decodeOmCode } from "@/lib/deckcode";
 import { getCard } from "@/lib/data/cards";
@@ -58,7 +62,7 @@ export default async function MatchPage({ params, searchParams }: { params: Para
   // chi non gioca la partita torna alla scheda, con il segnale dell'accesso se arriva dal login (lo conta la scheda)
   if (side === null && staff !== true) redirect(withCarriedParams(back, await searchParams));
 
-  const [players, decks, legendaries, allMatches, messages, screensA, screensB] = await Promise.all([
+  const [players, decks, legendaries, allMatches, messages, screensA, screensB, stages, bans] = await Promise.all([
     listPlayers(t.id, supabase),
     listVisibleDecks(t.id, supabase),
     listLegendaries(t.id, supabase),
@@ -66,13 +70,38 @@ export default async function MatchPage({ params, searchParams }: { params: Para
     listMessages(match.id, supabase),
     signedScreens(supabase, match.id, match.player_a),
     signedScreens(supabase, match.id, match.player_b),
+    // 08/11/2026: fase finale in pausa e ban (letture che reggono il database non ancora migrato)
+    getStageOptions(supabase, t.id),
+    listMatchBans(supabase, match.id),
   ]);
+  const sl = stageLabels[locale];
+  const plan = planOf(allMatches, stages.top_cut);
+  const held = isHeld(match, holdRound(stages, plan));
   const nameOf = new Map(players.map((p) => [p.user_id, authorName(p.profile)]));
   const names = { a: match.player_a ? nameOf.get(match.player_a) ?? "?" : l.tbd, b: match.player_b ? nameOf.get(match.player_b) ?? "?" : match.status === "bye" ? "bye" : l.tbd };
 
   const rounds = totalRounds(allMatches);
   const need = matchNeed(t.best_of, t.final_best_of, match.round, rounds);
   const isFinal = Boolean(t.final_best_of) && match.round === rounds;
+  const stageName = plan.topRound !== null ? stageMatchName(locale, x, plan, match.round, match.position) : fill(l.round, { n: match.round });
+
+  // Ban (08/11/2026): mazzi dei due giocatori nell'ordine di consegna, con la Leggendaria (dalla lista se si vede, se no
+  // dalle Leggendarie che il database mostra all'avversario)
+  const withBan = Boolean(stages.deck_ban) && t.deck_mode === "conquest";
+  const banHere = banApplies({ deck_ban: stages.deck_ban, deck_mode: t.deck_mode, conquest_decks: t.conquest_decks }, need);
+  const decksOf = (uid: string | null): BanDeck[] => {
+    if (!uid) return [];
+    const row = decks.find((r) => r.user_id === uid);
+    const slugs: (string | null)[] = row ? row.codes.map((c) => decodeOmCode(c)?.legendary ?? null) : (legendaries.get(uid) ?? []);
+    return Array.from({ length: t.conquest_decks }, (_, i) => {
+      const card = slugs[i] ? getCard(slugs[i] as string) : undefined;
+      return { idx: i, name: card?.name ?? fill(sl.deckN, { n: i + 1 }), thumb: card?.thumb ?? card?.image ?? null };
+    });
+  };
+  const bothPlayers = Boolean(match.player_a && match.player_b);
+  const bansDone = banState(bans, match.player_a ?? "", match.player_b).done;
+  const reportLock = banHere && bothPlayers && !bansDone ? sl.banReportFirst : null;
+  const extraErrors: Record<string, string> = { ...sl.errors };
 
   const deckBlock = (uid: string | null, title: string) => {
     if (!uid) return null;
@@ -127,7 +156,7 @@ export default async function MatchPage({ params, searchParams }: { params: Para
         </Link>
       </p>
       <p className="mt-6 kicker text-mint">
-        {x.kicker} · {t.tag} · {fill(l.round, { n: match.round })}
+        {x.kicker} · {t.tag} · {stageName}
       </p>
       <h1 className="t-page mt-2">
         {names.a} <span className="text-pale-muted">{l.vs}</span> {names.b}
@@ -141,6 +170,28 @@ export default async function MatchPage({ params, searchParams }: { params: Para
         {deckBlock(match.player_a, side === "a" ? l.yourDecks : side === "b" ? l.opponentDecks : names.a)}
         {deckBlock(match.player_b, side === "b" ? l.yourDecks : side === "a" ? l.opponentDecks : names.b)}
       </div>
+
+      {withBan && bothPlayers && match.status !== "bye" ? (
+        <div className="mt-6">
+          {banHere ? (
+            <BanPanel
+              matchId={match.id}
+              side={side}
+              playerA={match.player_a as string}
+              playerB={match.player_b as string}
+              names={names}
+              decksA={decksOf(match.player_a)}
+              decksB={decksOf(match.player_b)}
+              initialBans={bans}
+              open={t.status === "running" && match.status === "pending" && !held}
+              labels={sl}
+              errors={{ ...x.errors, ...extraErrors }}
+            />
+          ) : (
+            <p className="card-night p-4 text-sm text-pale-muted">{sl.banNone}</p>
+          )}
+        </div>
+      ) : null}
 
       <div className="mt-6">
         <MatchRoom
@@ -157,6 +208,10 @@ export default async function MatchPage({ params, searchParams }: { params: Para
           screens={{ a: screensA, b: screensB }}
           tournamentHref={back}
           labels={x}
+          held={held}
+          heldText={held ? fill(sl.holdRoom, { n: plan.topCut ?? 0 }) : null}
+          reportLock={reportLock}
+          extraErrors={extraErrors}
         />
       </div>
     </div>

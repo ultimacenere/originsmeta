@@ -9,6 +9,9 @@
 //      node scripts/tournament-dry-run.mjs --no-schema → prova le funzioni che sono GIÀ in produzione, senza applicare lo
 //      schema del repo e senza i blocchi che prende (06/11/2026, il giorno prima di EndGame First Blood): si può lanciare
 //      con il sito acceso e prima di un torneo vero, fa sempre rollback
+// Dall'08/11/2026 anche il blocco "BRACKET E TOP CUT": un torneo da 256 (256 utenti finti in più) in 16 bracket con la
+// Top 16 in pausa e il ban di un mazzo, giocato fino in fondo; con --no-schema la sezione si salta finché il database
+// non ha il blocco.
 // Legge .env.local della cartella corrente, altrimenti quello del checkout principale (i worktree non lo hanno).
 import { existsSync, readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
@@ -28,7 +31,7 @@ const env = Object.fromEntries(
     .filter((l) => l && !l.startsWith("#") && l.includes("="))
     .map((l) => [l.slice(0, l.indexOf("=")).trim(), l.slice(l.indexOf("=") + 1).trim()]),
 );
-const db = new pg.Client({ host: env.SUPABASE_DB_HOST, port: Number(env.SUPABASE_DB_PORT || 5432), user: env.SUPABASE_DB_USER, password: env.SUPABASE_DB_PASSWORD, database: "postgres", ssl: { rejectUnauthorized: false }, connectionTimeoutMillis: 15000 });
+const db = new pg.Client({ host: env.SUPABASE_DB_HOST, port: Number(env.SUPABASE_DB_PORT || 5432), user: env.SUPABASE_DB_USER, password: env.SUPABASE_DB_PASSWORD, database: "postgres", ssl: env.SUPABASE_DB_SSL === "off" ? false : { rejectUnauthorized: false }, connectionTimeoutMillis: 15000 });
 
 let failures = 0;
 let passed = 0;
@@ -338,6 +341,127 @@ try {
   await as(mm.player_a);
   check("tavolino spento in un torneo senza il tempo", /no_show_off/.test(err(await attempt(`select public.claim_no_show($1)`, [mm.id]))));
   check("bo1: 1-0 valido", !(await play(mm, 1, 0)).error);
+
+  // ---------- 08/11/2026: torneo da 256 in 16 bracket + Top 16, pausa prima della Top e ban (blocco BRACKET E TOP CUT) ----------
+  await as("postgres");
+  if (!(await one(`select to_regproc('public.release_top_cut') is not null as ok`))?.ok) {
+    console.log("nota: il database non ha il blocco BRACKET E TOP CUT (con --no-schema prima della migrazione): sezione saltata");
+  } else {
+    await as(O);
+    check("ban senza Conquest: rifiutato", /deck_ban_check/.test(err(await attempt(`insert into public.tournaments (slug, organizer, name, starts_at, size, deck_ban) values ('zzdry-noban', $1, 'Nope', now() + interval '1 day', 8, true)`, [O]))));
+    check("fase finale grande quanto i posti: rifiutata", /top_cut_check/.test(err(await attempt(`insert into public.tournaments (slug, organizer, name, starts_at, size, top_cut) values ('zzdry-nocut', $1, 'Nope', now() + interval '1 day', 16, 16)`, [O]))));
+    const ins3 = await attempt(
+      `insert into public.tournaments (slug, organizer, name, starts_at, size, deck_mode, conquest_decks, conquest_min_different, best_of, hidden_decklists, no_show_minutes, top_cut, top_cut_hold, deck_ban)
+       values ('zzdry-256', $1, 'Prova 256', now() + interval '1 day', 256, 'conquest', 3, 8, 3, true, 15, 16, true, true)`,
+      [O],
+    );
+    check("torneo da 256 con la Top 16, la pausa e il ban", !ins3.error, err(ins3));
+    const T3 = (await one(`select id from public.tournaments where slug = 'zzdry-256'`))?.id;
+    check("arbitro del torneo da 256", !(await attempt(`select public.add_judge($1, 'zzdry-judge')`, [T3])).error);
+    await as("postgres");
+    const Q = [];
+    for (let i = 0; i < 256; i++) Q.push(await mkUser(`q${i}`));
+    let joinErrors = 0;
+    for (let i = 0; i < 256; i++) {
+      await as(Q[i]);
+      if ((await attempt(`select public.join_tournament($1)`, [T3])).error) joinErrors++;
+      if ((await attempt(`select public.submit_tournament_decks($1, $2::jsonb)`, [T3, trio(i)])).error) joinErrors++;
+    }
+    check("256 iscrizioni e mazzi consegnati con le RPC", joinErrors === 0, String(joinErrors));
+    await as("postgres");
+    const st3 = await one(`select status from public.tournaments where id = $1`, [T3]);
+    const all3 = (await db.query(`select * from public.tournament_matches where tournament_id = $1 order by round, position`, [T3])).rows;
+    check("pieno: il tabellone da 256 parte da solo con 255 partite", st3?.status === "running" && all3.length === 255, `${st3?.status} ${all3.length}`);
+    const r1b = all3.filter((m) => m.round === 1);
+    check("primo turno: 128 partite pronte, nessun bye", r1b.length === 128 && r1b.every((m) => m.player_a && m.player_b && m.ready_at && m.status === "pending"));
+    check("la fase finale comincia al turno 5", (await one(`select public.tm_top_round($1) as r`, [T3]))?.r === 5);
+    const a0 = r1b[0];
+    await as(a0.player_a);
+    check("prima dei due ban non si referta", /bans_pending/.test(err(await attempt(`select public.report_match_result($1, 2, 0)`, [a0.id]))));
+    check("ban fuori dai mazzi: bad_ban", /bad_ban/.test(err(await attempt(`select public.ban_deck($1, 3)`, [a0.id]))));
+    check("ban del mazzo 2", !(await attempt(`select public.ban_deck($1, 1)`, [a0.id])).error);
+    check("…cambiato nel mazzo 3 finché l'avversario non banna", !(await attempt(`select public.ban_deck($1, 2)`, [a0.id])).error);
+    await as(a0.player_b);
+    const seenByB = (await attempt(`select * from public.match_bans($1)`, [a0.id])).rows ?? [];
+    check("l'avversario sa che ho bannato ma non quale mazzo", seenByB.length === 1 && seenByB[0].deck === null && seenByB[0].legendary === null, JSON.stringify(seenByB));
+    check("ban dell'avversario", !(await attempt(`select public.ban_deck($1, 0)`, [a0.id])).error);
+    const both = (await attempt(`select * from public.match_bans($1)`, [a0.id])).rows ?? [];
+    check("con i due ban si vedono tutti e due", both.length === 2 && both.every((b) => b.deck !== null));
+    await as(a0.player_a);
+    check("con i due ban la scelta è chiusa", /ban_closed/.test(err(await attempt(`select public.ban_deck($1, 1)`, [a0.id]))));
+    await as(STRANGER);
+    check("un estraneo non vede i ban", ((await attempt(`select * from public.match_bans($1)`, [a0.id])).rows ?? []).length === 0);
+    await as(null);
+    check("l'anonimo non vede i ban a torneo in corso", ((await attempt(`select * from public.match_bans($1)`, [a0.id])).rows ?? []).length === 0);
+    check("l'anonimo non scrive ban", Boolean(err(await attempt(`select public.ban_deck($1, 0)`, [a0.id]))));
+    check("nessuno legge la tabella dei ban", Boolean(err(await attempt(`select * from public.tournament_bans`))));
+    await as("postgres");
+    check("il ban salva la Leggendaria del mazzo bannato", (await one(`select legendary from public.tournament_bans where match_id = $1 and user_id = $2`, [a0.id, a0.player_a]))?.legendary === "mulan");
+    check("dopo i ban si referta e si conferma", !(await play(a0, 2, 1)).error && (await statusM(a0.id)) === "confirmed");
+
+    // la qualificazione fino in fondo come bot-play: due ban, risultato, tm_propagate
+    const closeDirect = async (m) => {
+      for (const [who, target] of [[m.player_a, m.player_b], [m.player_b, m.player_a]]) await db.query(`insert into public.tournament_bans (match_id, user_id, target, deck, legendary) values ($1, $2, $3, 1, 'king-arthur') on conflict do nothing`, [m.id, who, target]);
+      const need = (await one(`select public.tm_need($1, $2) as n`, [T3, m.round])).n;
+      await db.query(`update public.tournament_matches set winner = player_a, status = 'confirmed', score_a = $2, score_b = 0 where id = $1`, [m.id, need]);
+      await db.query(`select public.tm_propagate($1)`, [m.id]);
+    };
+    await as("postgres");
+    for (let round = 1; round <= 4; round++) {
+      const ms = (await db.query(`select * from public.tournament_matches where tournament_id = $1 and round = $2 and status = 'pending' order by position`, [T3, round])).rows;
+      for (const m of ms) await closeDirect(m);
+    }
+    const r5 = (await db.query(`select * from public.tournament_matches where tournament_id = $1 and round = 5 order by position`, [T3])).rows;
+    check("16 bracket finiti: 8 partite della Top 16 con i due giocatori", r5.length === 8 && r5.every((m) => m.player_a && m.player_b));
+    check("Top 16 in pausa: nessuna partita pronta", r5.every((m) => !m.ready_at && m.status === "pending"));
+    const ids5 = r5.map((m) => m.id);
+    const notes5 = async () => (await one(`select count(*)::int as n from public.notifications where kind = 'match_ready' and target = any (select '/tournaments/zzdry-256/match/' || x from unnest($1::uuid[]) x)`, [ids5]))?.n;
+    check("…e nessun avviso 'partita pronta'", (await notes5()) === 0);
+    const t5 = r5[0];
+    await as(t5.player_a);
+    check("in pausa: niente referto", /top_cut_on_hold/.test(err(await attempt(`select public.report_match_result($1, 2, 0)`, [t5.id]))));
+    check("in pausa: niente ban", /top_cut_on_hold/.test(err(await attempt(`select public.ban_deck($1, 0)`, [t5.id]))));
+    check("in pausa: la presenza non si segna", (await one(`select public.mark_match_seen($1) as v`, [t5.id]))?.v === false);
+    check("in pausa: niente tavolino", Boolean(err(await attempt(`select public.claim_no_show($1)`, [t5.id]))));
+    check("un giocatore non avvia la Top 16", /forbidden/.test(err(await attempt(`select public.release_top_cut($1)`, [T3]))));
+    await as(J);
+    const swapHeld = await attempt(`select public.swap_players($1, $2, $3)`, [T3, r5[0].player_b, r5[1].player_b]);
+    check("in pausa lo staff scambia due giocatori della Top 16", !swapHeld.error, err(swapHeld));
+    await as("postgres");
+    check("…e le partite restano in pausa", ((await db.query(`select ready_at from public.tournament_matches where id = any($1::uuid[])`, [[r5[0].id, r5[1].id]])).rows).every((m) => !m.ready_at));
+    await as(J);
+    const rel = await attempt(`select public.release_top_cut($1) as n`, [T3]);
+    check("l'arbitro avvia la Top 16: 8 partite pronte", rel.rows?.[0]?.n === 8, err(rel) || String(rel.rows?.[0]?.n));
+    check("una seconda volta: already_released", /already_released/.test(err(await attempt(`select public.release_top_cut($1)`, [T3]))));
+    await as("postgres");
+    check("dopo l'avvio: pronte e con 16 avvisi", ((await db.query(`select ready_at from public.tournament_matches where id = any($1::uuid[])`, [ids5])).rows).every((m) => m.ready_at) && (await notes5()) === 16);
+    await as(J);
+    const stats = (await attempt(`select * from public.tournament_ban_stats($1)`, [T3])).rows ?? [];
+    check("statistiche dei ban per lo staff", stats.length > 0 && stats.some((s) => s.legendary === "king-arthur" && s.bans > 0 && s.chances >= s.bans), JSON.stringify(stats.slice(0, 3)));
+    check("ban fatti per partita per lo staff", ((await attempt(`select * from public.tournament_ban_progress($1)`, [T3])).rows ?? []).length >= 240);
+    await as(null);
+    check("l'anonimo non vede le statistiche a torneo in corso", ((await attempt(`select * from public.tournament_ban_stats($1)`, [T3])).rows ?? []).length === 0);
+    const t5b = (await one(`select * from public.tournament_matches where id = $1`, [r5[2].id]));
+    await as(t5b.player_a);
+    check("dopo l'avvio si banna nella Top 16", !(await attempt(`select public.ban_deck($1, 0)`, [t5b.id])).error);
+    await as(J);
+    check("uno scambio cancella i ban delle due partite", !(await attempt(`select public.swap_players($1, $2, $3)`, [T3, t5b.player_b, r5[3].player_b])).error);
+    await as("postgres");
+    check("…cancellati", (await one(`select count(*)::int as n from public.tournament_bans where match_id = $1`, [t5b.id]))?.n === 0);
+    await db.query(`update public.tournaments set final_best_of = 5 where id = $1`, [T3]);
+    check("con la finale al meglio delle 5 il ban non vale in finale, nella Top 16 sì", (await one(`select public.tm_ban_applies($1, 8) as f, public.tm_ban_applies($1, 5) as t`, [T3]))?.f === false && (await one(`select public.tm_ban_applies($1, 5) as t`, [T3]))?.t === true);
+    await as("postgres");
+    for (let round = 5; round <= 8; round++) {
+      const ms = (await db.query(`select * from public.tournament_matches where tournament_id = $1 and round = $2 and status = 'pending' order by position`, [T3, round])).rows;
+      for (const m of ms) await closeDirect(m);
+    }
+    await as(J);
+    check("il torneo da 256 si chiude", !(await attempt(`select public.finish_tournament($1, 'GG')`, [T3])).error);
+    await as(null);
+    const pub = (await attempt(`select * from public.match_bans($1)`, [a0.id])).rows ?? [];
+    check("a torneo finito i ban sono pubblici", pub.length === 2 && pub.every((b) => b.deck !== null));
+    check("…e le statistiche anche", ((await attempt(`select * from public.tournament_ban_stats($1)`, [T3])).rows ?? []).length > 0);
+  }
 } finally {
   await db.query("rollback");
   await db.end();

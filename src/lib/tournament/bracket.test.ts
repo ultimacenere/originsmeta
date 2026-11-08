@@ -99,8 +99,8 @@ function simulate(n: number, max = 128): { size: number; matches: MatchLike[] } 
 }
 
 describe("BRACKET_SIZES", () => {
-  test("sono le potenze di 2 da 4 a 128", () => {
-    assert.deepEqual([...BRACKET_SIZES], [4, 8, 16, 32, 64, 128]);
+  test("sono le potenze di 2 da 4 a 256", () => {
+    assert.deepEqual([...BRACKET_SIZES], [4, 8, 16, 32, 64, 128, 256]);
     for (const size of BRACKET_SIZES) assert.ok(isPowerOfTwo(size));
   });
 });

@@ -4,11 +4,12 @@ import { RULES } from "@/lib/deckrules";
 import { newSlug } from "@/lib/community/util";
 import type { TournamentInsert } from "@/lib/supabase/database";
 import { NO_SHOW_RANGE } from "./rules";
+import { TOP_CUTS } from "./stages";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DECK_MODES, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, canListTournaments, type DeckMode, type Visibility } from "./types";
 
 /** Validazione lato server del modulo "Organizza un torneo" (creazione e modifica). Solo testo semplice, niente HTML. */
 
-export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "finalBestOf" | "noShow" | "lang" | "discord" | "cover" | "listing" | "visibility";
+export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "finalBestOf" | "noShow" | "lang" | "discord" | "cover" | "listing" | "visibility" | "topCut" | "deckBan";
 
 const LIMITS = { nameMin: 3, nameMax: 60, textMax: 2000 };
 const DISCORD_HOSTS = ["discord.gg", "discord.com", "discordapp.com"];
@@ -103,6 +104,12 @@ export function parseTournamentForm(
     const v = fd.get(key);
     return v === "on" || v === "true";
   };
+  // 08/11/2026 (blocco BRACKET E TOP CUT): fase finale a bracket, pausa prima della fase finale, ban di un mazzo
+  const topCutRaw = String(fd.get("top_cut") ?? "").trim();
+  const topCut = topCutRaw ? Number(topCutRaw) : null;
+  if (topCut !== null && (!(TOP_CUTS as readonly number[]).includes(topCut) || topCut >= size)) return { ok: false, error: "topCut" };
+  const deckBan = on("deck_ban");
+  if (deckBan && !conquest) return { ok: false, error: "deckBan" };
 
   const lang = String(fd.get("lang") ?? "");
   if (!isLocale(lang)) return { ok: false, error: "lang" };
@@ -141,11 +148,35 @@ export function parseTournamentForm(
       checkin: on("checkin"),
       hidden_decklists: on("hidden_decklists"),
       no_show_minutes: noShow,
+      top_cut: topCut,
+      top_cut_hold: topCut !== null && on("top_cut_hold"),
+      deck_ban: deckBan,
       discord_url: discord.value,
       listed,
       visibility,
     },
   };
+}
+
+/** Campi del blocco BRACKET E TOP CUT (08/11/2026) nella riga del torneo. */
+const STAGE_KEYS = ["top_cut", "top_cut_hold", "deck_ban"] as const;
+
+/** La riga usa almeno una delle opzioni del blocco BRACKET E TOP CUT. */
+export function usesStageOptions(row: object): boolean {
+  const r = row as { top_cut?: number | null; top_cut_hold?: boolean; deck_ban?: boolean };
+  return r.top_cut != null || Boolean(r.top_cut_hold) || Boolean(r.deck_ban);
+}
+
+/** La riga senza i campi del blocco BRACKET E TOP CUT: per scrivere su un database non ancora migrato. */
+export function withoutStageOptions<T extends Record<string, unknown>>(row: T): T {
+  const out: Record<string, unknown> = { ...row };
+  for (const k of STAGE_KEYS) delete out[k];
+  return out as T;
+}
+
+/** Errore di PostgREST o di Postgres per una colonna che il database non ha ancora (migrazione non fatta). */
+export function isMissingColumn(e: { code?: string; message?: string } | null | undefined): boolean {
+  return Boolean(e && (e.code === "PGRST204" || e.code === "42703" || /column .* does not exist|Could not find the '.*' column/i.test(e.message ?? "")));
 }
 
 /** Codici mazzo incollati in un'area di testo: uno per riga, vuoti e spazi ignorati. */

@@ -7,17 +7,19 @@
 //                                                                 check-in, 05/10/2026: senza, all'avvio restano fuori)
 //      node scripts/seed-bots.mjs --remove               → elimina tutti i bot (profili, iscrizioni, mazzi, inviti)
 // Per far giocare le partite fra bot durante una prova: node scripts/bot-play.mjs <TAG>
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import pg from "pg";
 
+// .env.local della cartella dello script, altrimenti quello del checkout principale (i worktree non lo hanno)
+const envFile = existsSync(new URL("../.env.local", import.meta.url)) ? new URL("../.env.local", import.meta.url) : "C:/Users/User/Desktop/originsmeta/.env.local";
 const env = Object.fromEntries(
-  readFileSync(new URL("../.env.local", import.meta.url), "utf8")
+  readFileSync(envFile, "utf8")
     .split(/\r?\n/)
     .filter((l) => l && !l.startsWith("#") && l.includes("="))
     .map((l) => [l.slice(0, l.indexOf("=")).trim(), l.slice(l.indexOf("=") + 1).trim()]),
 );
-const db = new pg.Client({ host: env.SUPABASE_DB_HOST, port: Number(env.SUPABASE_DB_PORT || 5432), user: env.SUPABASE_DB_USER, password: env.SUPABASE_DB_PASSWORD, database: "postgres", ssl: { rejectUnauthorized: false } });
+const db = new pg.Client({ host: env.SUPABASE_DB_HOST, port: Number(env.SUPABASE_DB_PORT || 5432), user: env.SUPABASE_DB_USER, password: env.SUPABASE_DB_PASSWORD, database: "postgres", ssl: env.SUPABASE_DB_SSL === "off" ? false : { rejectUnauthorized: false } });
 await db.connect();
 
 const BOT_DOMAIN = "bots.originsmeta.local";
@@ -38,7 +40,8 @@ if (!arg) {
 }
 
 const tag = arg.toUpperCase().startsWith("OM-") ? arg.toUpperCase() : `OM-${arg.toUpperCase()}`;
-const n = Math.max(1, Math.min(128, Number(countArg || 7)));
+// fino a 256 dall'08/11/2026 (torneo a bracket con la Top 16)
+const n = Math.max(1, Math.min(256, Number(countArg || 7)));
 const { rows: trows } = await db.query("select id, name, size, deck_mode, conquest_decks, status from public.tournaments where tag = $1", [tag]);
 if (!trows.length) {
   console.error(`Nessun torneo con tag ${tag}`);

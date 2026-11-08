@@ -7,7 +7,9 @@ import type { Dictionary } from "@/lib/i18n";
 import { bracketSize, roundsOf } from "@/lib/tournament/bracket";
 import { fill, type TournamentMatch, type TournamentStatus } from "@/lib/tournament/types";
 import { LONG_MATCH_MINUTES, STALE_REPORT_MINUTES, checkinPhase, checkinWindow, formatCountdown, matchNeed, seatPlan, staffQueue, validNeedScore, type QueueKind } from "@/lib/tournament/rules";
-import { addJudge, cancelTournament, dropPlayer, finishTournament, invitePlayer, removeJudge, revokeInvite, rotateInviteCode, setMatchResult, staffCheckIn, startTournament } from "@/lib/tournament/actions";
+import { addJudge, cancelTournament, dropPlayer, finishTournament, invitePlayer, releaseTopCut, removeJudge, revokeInvite, rotateInviteCode, setMatchResult, staffCheckIn, startTournament } from "@/lib/tournament/actions";
+import { BAN_WAIT_MINUTES } from "@/lib/tournament/stages";
+import type { StageLabels } from "@/lib/tournament/stageLabels";
 import { useNow } from "@/lib/useNow";
 import { CopyButton } from "./CopyButton";
 import { LocalTime } from "./LocalTime";
@@ -39,6 +41,23 @@ type Props = {
   /** organizzatore o admin: inviti, arbitri, annullamento. Gli arbitri gestiscono tutto il resto. */
   canAdmin: boolean;
   judges: ManagedJudge[];
+  /** 08/11/2026 (blocco BRACKET E TOP CUT): nomi delle partite e dei turni, ban fatti, avvio della fase finale */
+  stage?: ManagedStage | null;
+};
+
+export type ManagedStage = {
+  /** partita → "Bracket C · Turno 2" */
+  names: Record<string, string>;
+  /** turno → "Turno 4 · Finale del bracket", "Top 16 · Quarti di finale" */
+  roundTitles: Record<number, string>;
+  /** ban fatti per partita e turni in cui il ban vale (coda "Da sistemare") */
+  banCounts: Record<string, number>;
+  banRounds: number[];
+  /** fase finale in pausa: posti della fase finale, partite pronte a partire, bracket ancora in gioco; null se non c'è o è già partita */
+  release: { cut: number; ready: number; podsRunning: number } | null;
+  /** la fase finale è stata avviata (per dirlo nella sezione) */
+  releasedCut: number | null;
+  labels: StageLabels;
 };
 
 type Result = { error?: string; ok?: boolean };
@@ -63,7 +82,8 @@ function shuffle<T>(list: T[]): T[] {
  * rilegge da sola ogni 20 secondi.
  */
 export function ManagePanel(props: Props) {
-  const { id, slug, status, size, bestOf, finalBestOf, noShowMinutes, checkin, startsAt, locale, players, matches, tournamentHref, labels, visibility, inviteLink, invites, canAdmin, judges } = props;
+  const { id, slug, status, size, bestOf, finalBestOf, noShowMinutes, checkin, startsAt, locale, players, matches, tournamentHref, labels, visibility, inviteLink, invites, canAdmin, judges, stage = null } = props;
+  const sl = stage?.labels ?? null;
   const x = labels;
   const m = x.manage;
   const router = useRouter();
@@ -99,7 +119,7 @@ export function ManagePanel(props: Props) {
       setNotice(null);
       const r = await fn();
       if (r.error) {
-        setError(x.errors[r.error as keyof typeof x.errors] ?? x.errors.db);
+        setError(x.errors[r.error as keyof typeof x.errors] ?? sl?.errors[r.error as keyof StageLabels["errors"]] ?? x.errors.db);
         return;
       }
       setNotice(m.done);
@@ -123,11 +143,17 @@ export function ManagePanel(props: Props) {
   const final = total ? matches.find((mt) => mt.round === total && mt.position === 0) : undefined;
   const finalDone = Boolean(final && final.winner && (final.status === "confirmed" || final.status === "bye"));
   const [report, setReport] = useState("");
-  const queue = status === "running" && now !== null ? staffQueue(matches, { now, noShowMinutes }) : [];
+  const banCounts = useMemo(() => new Map(Object.entries(stage?.banCounts ?? {})), [stage?.banCounts]);
+  const queue =
+    status === "running" && now !== null
+      ? staffQueue(matches, { now, noShowMinutes, bans: stage?.banRounds.length ? { counts: banCounts, applies: (r) => stage.banRounds.includes(r), waitMinutes: BAN_WAIT_MINUTES } : undefined })
+      : [];
+  const matchName = (mt: { id: string; round: number }) => stage?.names[mt.id] ?? fill(m.roundTitle, { n: mt.round });
   const actionable = (mt: TournamentMatch) => Boolean(mt.player_a && mt.player_b) && (mt.status === "pending" || mt.status === "reported" || mt.status === "disputed");
   const cw = checkinWindow(startsAt);
   const phase = now === null ? null : checkinPhase(startsAt, now);
-  const queueText = (kind: QueueKind) => fill(m.queueKinds[kind], { n: kind === "bothAbsent" ? (noShowMinutes ?? 0) : kind === "staleReport" ? STALE_REPORT_MINUTES : LONG_MATCH_MINUTES });
+  const queueText = (kind: QueueKind) =>
+    kind === "banPending" ? fill(sl?.queueBanPending ?? "", { n: BAN_WAIT_MINUTES }) : fill(m.queueKinds[kind], { n: kind === "bothAbsent" ? (noShowMinutes ?? 0) : kind === "staleReport" ? STALE_REPORT_MINUTES : LONG_MATCH_MINUTES });
   // a torneo in corso prima coda e turni, poi gli elenchi (06/11/2026): con 64 giocatori i turni stavano 2.500 px più in basso
   const later = status === "running" ? "order-1" : "";
 
@@ -155,7 +181,7 @@ export function ManagePanel(props: Props) {
             <ul className="mt-3 grid gap-2">
               {queue.map((q) => (
                 <li key={q.match.id} className={`flex flex-wrap items-center gap-2 rounded-lg border-2 bg-night-2/70 px-3 py-2 text-sm ${q.kind === "disputed" || q.kind === "bothAbsent" ? "border-bad" : "border-gold"}`}>
-                  <span className="font-mono text-[11px] uppercase text-pale-muted">{fill(m.roundTitle, { n: q.match.round })}</span>
+                  <span className="font-mono text-[11px] uppercase text-pale-muted">{matchName(q.match)}</span>
                   <span className="min-w-0 truncate text-pale">
                     {nameOf.get(q.match.player_a ?? "") ?? "?"} – {nameOf.get(q.match.player_b ?? "") ?? "?"}
                   </span>
@@ -178,6 +204,28 @@ export function ManagePanel(props: Props) {
             <p className="mt-2 text-sm text-pale-muted">{m.queueEmpty}</p>
           )}
         </section>
+      ) : null}
+
+      {/* Avvio della fase finale in pausa (08/11/2026, blocco BRACKET E TOP CUT) */}
+      {status === "running" && sl && stage?.release ? (
+        <section className="card-night border-gold p-5">
+          <h2 className="t-section">{fill(sl.releaseTitle, { n: stage.release.cut })}</h2>
+          <p className="mt-1 max-w-3xl text-sm text-pale-muted">{fill(sl.releaseHint, { n: stage.release.cut })}</p>
+          <p className="mt-2 font-mono text-sm text-pale">{fill(sl.releaseReady, { n: stage.release.ready })}</p>
+          {stage.release.podsRunning ? <p className="mt-1 text-sm text-gold">{fill(sl.releaseRunning, { n: stage.release.podsRunning })}</p> : null}
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => {
+              if (window.confirm(fill(sl.releaseConfirm, { n: stage.release?.cut ?? 0 }))) run(() => releaseTopCut(id, slug));
+            }}
+            className="btn btn-gold mt-3 text-xs"
+          >
+            {fill(sl.releaseButton, { n: stage.release.cut })}
+          </button>
+        </section>
+      ) : status === "running" && sl && stage?.releasedCut ? (
+        <p className="text-sm text-good">✓ {fill(sl.released, { n: stage.releasedCut })}</p>
       ) : null}
 
       {/* Check-in (torneo aperto con il check-in) */}
@@ -401,7 +449,7 @@ export function ManagePanel(props: Props) {
               <details key={round} open={open} className="card-night group p-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
                   <h2 className="t-section">
-                    {fill(m.roundTitle, { n: round })}
+                    {stage?.roundTitles[round] ?? fill(m.roundTitle, { n: round })}
                     <span className="ml-2 font-mono text-sm font-normal text-pale-muted">
                       {list.filter((mt) => mt.status === "confirmed" || mt.status === "bye").length}/{list.length}
                     </span>
@@ -415,7 +463,7 @@ export function ManagePanel(props: Props) {
                     .sort((a, b) => a.position - b.position)
                     .map((mt) => (
                       // la chiave cambia con il punteggio: le caselle ripartono dal referto appena arrivato, non da 0–0
-                      <MatchEditor key={`${mt.id}:${mt.status}:${mt.score_a}:${mt.score_b}`} mt={mt} nameOf={nameOf} need={need} labels={x} disabled={pending} matchHref={`${tournamentHref}/match/${mt.id}`} onSave={(a, b, forfeit) => run(() => setMatchResult(mt.id, slug, a, b, forfeit))} />
+                      <MatchEditor key={`${mt.id}:${mt.status}:${mt.score_a}:${mt.score_b}`} mt={mt} nameOf={nameOf} need={need} labels={x} disabled={pending} matchHref={`${tournamentHref}/match/${mt.id}`} stageName={stage?.names[mt.id]} onSave={(a, b, forfeit) => run(() => setMatchResult(mt.id, slug, a, b, forfeit))} />
                     ))}
                 </ul>
               </details>
@@ -454,7 +502,7 @@ export function ManagePanel(props: Props) {
   );
 }
 
-function MatchEditor({ mt, nameOf, need, labels, disabled, matchHref, onSave }: { mt: TournamentMatch; nameOf: Map<string, string>; need: number; labels: Dictionary["tournaments"]; disabled: boolean; matchHref: string; onSave: (a: number, b: number, forfeit: boolean) => void }) {
+function MatchEditor({ mt, nameOf, need, labels, disabled, matchHref, stageName, onSave }: { mt: TournamentMatch; nameOf: Map<string, string>; need: number; labels: Dictionary["tournaments"]; disabled: boolean; matchHref: string; stageName?: string; onSave: (a: number, b: number, forfeit: boolean) => void }) {
   const m = labels.manage;
   const [a, setA] = useState<number>(mt.score_a ?? 0);
   const [b, setB] = useState<number>(mt.score_b ?? 0);
@@ -466,6 +514,7 @@ function MatchEditor({ mt, nameOf, need, labels, disabled, matchHref, onSave }: 
   const note = mt.note === "no_show" ? m.noteNoShow : mt.note === "drop" ? m.noteDrop : mt.note;
   return (
     <li className={`rounded-lg border-2 bg-night-2/70 p-3 ${tone}`}>
+      {stageName ? <p className="mb-1 font-mono text-[10px] uppercase text-mint">{stageName}</p> : null}
       <p className="flex items-center justify-between text-sm">
         <span className={mt.winner && mt.winner === mt.player_a ? "font-bold text-good" : "text-pale"}>
           {names[0]}

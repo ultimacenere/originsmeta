@@ -4,6 +4,7 @@ import type { Database } from "@/lib/supabase/database";
 import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { siteUrl, type Locale } from "@/lib/i18n";
 import { roundLabel, standings } from "./bracket";
+import { stagePlan } from "./stages";
 import { tournamentShortLink } from "./types";
 import { discordUtm } from "@/lib/analytics";
 import { DISCORD_AVATAR_URL, DISCORD_USERNAME } from "@/lib/discordWebhook";
@@ -204,6 +205,13 @@ async function createdMessage(sb: Client, tid: string): Promise<string | null> {
   ].join("\n");
 }
 
+/** Fase finale del torneo (blocco BRACKET E TOP CUT, 08/11/2026); null se non c'è o se il database non ha ancora la colonna. */
+async function readTopCut(sb: Client, tid: string): Promise<number | null> {
+  const { data, error } = await sb.from("tournaments").select("top_cut").eq("id", tid).maybeSingle();
+  if (error || !data) return null;
+  return (data as { top_cut: number | null }).top_cut ?? null;
+}
+
 async function startedMessage(sb: Client, tid: string, before: string | undefined): Promise<string | null> {
   const t = await readTournament(sb, tid);
   // confronto con lo stato di prima: si annuncia solo il passaggio a "running" appena avvenuto
@@ -247,8 +255,12 @@ async function resultMessage(sb: Client, mid: string): Promise<string | null> {
   if (!m || m.status !== "confirmed" || !m.winner || m.score_a === null || m.score_b === null) return null;
   const t = await readTournament(sb, m.tournament_id);
   if (!t || t.status !== "running") return null;
-  const [matches, names] = await Promise.all([readMatches(sb, t.id), readNames(sb, t.id)]);
+  const [matches, names, cut] = await Promise.all([readMatches(sb, t.id), readNames(sb, t.id), readTopCut(sb, t.id)]);
   const size = matches.filter((x) => x.round === 1).length * 2;
+  // 08/11/2026: con la qualificazione a bracket (256 giocatori = 240 partite prima della Top 16) nel canale vanno solo le
+  // finali dei bracket, che mandano un giocatore nella fase finale, e le partite della fase finale
+  const plan = stagePlan(size, cut);
+  if (plan.topRound !== null && m.round < plan.podRounds) return null;
   const loser = m.winner === m.player_a ? m.player_b : m.player_a;
   const w = nameOf(names, m.winner);
   const l = nameOf(names, loser);

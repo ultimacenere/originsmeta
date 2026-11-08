@@ -11,6 +11,8 @@ import { createTournament, updateTournament, type TournamentActionState } from "
 import { useMounted } from "@/lib/useMounted";
 import { RULES } from "@/lib/deckrules";
 import { CRIMSON_PRESET, NO_SHOW_RANGE } from "@/lib/tournament/rules";
+import { BRACKETS_PRESET, TOP_CUTS } from "@/lib/tournament/stages";
+import type { StageLabels } from "@/lib/tournament/stageLabels";
 import { shrinkImage } from "@/lib/shrinkImage";
 import { trackEvent, type EventParams } from "@/lib/analytics";
 
@@ -31,6 +33,10 @@ export type TournamentInitial = {
   checkin: boolean;
   hidden_decklists: boolean;
   no_show_minutes: number | null;
+  /** 08/11/2026 (blocco BRACKET E TOP CUT): fase finale, pausa prima della fase finale, ban di un mazzo */
+  top_cut?: number | null;
+  top_cut_hold?: boolean;
+  deck_ban?: boolean;
   lang: Locale;
   description: string;
   rules: string;
@@ -51,6 +57,8 @@ type Props = {
   initial?: TournamentInitial;
   /** indirizzo dello staff: a chi non può pubblicare sul calendario diciamo come chiedere il tag */
   contactEmail?: string;
+  /** testi della fase finale a bracket, della pausa e del ban (08/11/2026), nella lingua della pagina */
+  stageText?: StageLabels;
 };
 
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale focus:border-mint";
@@ -61,6 +69,8 @@ const MAX_UPLOAD = 1024 * 1024;
 const COVERS_SHOWN = 8;
 /** Errori che riguardano campi dentro "Altre opzioni": quando arrivano, il blocco si apre da solo. */
 const MORE_ERRORS = new Set(["discord", "cover", "listing", "listing_not_allowed", "visibility", "lang", "private_not_listed"]);
+/** Posti proposti all'inizio (prima era scritto nel campo): il preset del formato a bracket li porta a 256. */
+const DEFAULT_SIZE = 8;
 
 function pad(n: number): string {
   return String(n).padStart(2, "0");
@@ -95,7 +105,8 @@ export function TournamentForm(props: Props) {
   return <TournamentFormInner {...props} />;
 }
 
-function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode = "create", initial, contactEmail }: Props) {
+function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode = "create", initial, contactEmail, stageText }: Props) {
+  const sl = stageText;
   const x = labels;
   const c = x.create;
   const edit = mode === "edit" && Boolean(initial);
@@ -116,14 +127,31 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     checkin: initial?.checkin ?? false,
     hidden_decklists: initial?.hidden_decklists ?? false,
     no_show_minutes: initial?.no_show_minutes ?? null,
+    size: initial?.size ?? DEFAULT_SIZE,
+    top_cut: initial?.top_cut ?? null,
+    top_cut_hold: initial?.top_cut_hold ?? false,
+    deck_ban: initial?.deck_ban ?? false,
   }));
   const [rulesKey, setRulesKey] = useState(0);
   const [presetApplied, setPresetApplied] = useState(false);
   const applyCrimson = () => {
     setDeckMode("conquest");
-    setRules({ ...CRIMSON_PRESET });
+    setRules((r) => ({ ...r, ...CRIMSON_PRESET }));
     setRulesKey((k) => k + 1);
     setPresetApplied(true);
+    setBracketsApplied(false);
+  };
+  // 08/11/2026: il formato del torneo della community italiana (256 posti, 16 bracket + Top 16, ban di un mazzo)
+  const [bracketsApplied, setBracketsApplied] = useState(false);
+  // la fase finale scelta: senza, la pausa prima della fase finale non ha senso e la casella si spegne
+  const [topCut, setTopCut] = useState<number | null>(initial?.top_cut ?? null);
+  const applyBrackets = () => {
+    setDeckMode("conquest");
+    setRules({ ...BRACKETS_PRESET });
+    setTopCut(BRACKETS_PRESET.top_cut);
+    setRulesKey((k) => k + 1);
+    setBracketsApplied(true);
+    setPresetApplied(false);
   };
   const [startLocal, setStartLocal] = useState<string>(() => (initial ? toLocalInput(new Date(initial.starts_at)) : defaultStart()));
   const [cover, setCover] = useState<string>(initial?.cover_url ?? DEFAULT_COVER);
@@ -175,7 +203,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     }
   };
 
-  const errorText = state.error ? (x.errors[state.error as keyof typeof x.errors] ?? x.errors.db) : null;
+  const errorText = state.error ? (x.errors[state.error as keyof typeof x.errors] ?? sl?.errors[state.error as keyof StageLabels["errors"]] ?? x.errors.db) : null;
   const uploaded = !(COVER_PRESETS as readonly string[]).includes(cover);
   const shownCovers = allCovers ? COVER_PRESETS : COVER_PRESETS.filter((p, i) => i < COVERS_SHOWN || p === cover);
   const [howToBefore, howToAfter] = c.listedHowTo.split("{email}");
@@ -240,6 +268,9 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
           <input type="hidden" name="checkin" value={initial.checkin ? "on" : ""} />
           <input type="hidden" name="hidden_decklists" value={initial.hidden_decklists ? "on" : ""} />
           <input type="hidden" name="no_show_minutes" value={initial.no_show_minutes ?? ""} />
+          <input type="hidden" name="top_cut" value={initial.top_cut ?? ""} />
+          <input type="hidden" name="top_cut_hold" value={initial.top_cut_hold ? "on" : ""} />
+          <input type="hidden" name="deck_ban" value={initial.deck_ban ? "on" : ""} />
         </>
       ) : null}
 
@@ -261,7 +292,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
             </label>
             <label className="block text-sm">
               <span className="kicker text-mint">{c.size}</span>
-              <select name="size" defaultValue={initial?.size ?? 8} disabled={lockRules} className={inputCls}>
+              <select key={`sz-${rulesKey}`} name="size" defaultValue={rules.size} disabled={lockRules} className={inputCls}>
                 {TOURNAMENT_SIZES.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -319,6 +350,53 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
                 </button>
                 <span className="text-xs text-pale-muted">{presetApplied ? c.crimsonApplied : c.crimsonPresetHint}</span>
               </div>
+            ) : null}
+            {!lockRules && sl ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="button" onClick={applyBrackets} className="btn btn-gold text-xs">
+                  {sl.preset}
+                </button>
+                <span className="text-xs text-pale-muted">{bracketsApplied ? sl.presetApplied : sl.presetHint}</span>
+              </div>
+            ) : null}
+            {sl ? (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm">
+                  <span className="text-pale-muted">{sl.formTopCut}</span>
+                  <select
+                    key={`tc-${rulesKey}`}
+                    name="top_cut"
+                    defaultValue={rules.top_cut ?? ""}
+                    onChange={(e) => setTopCut(e.target.value ? Number(e.target.value) : null)}
+                    disabled={lockRules}
+                    className={inputCls}
+                  >
+                    <option value="">{sl.formTopCutNone}</option>
+                    {TOP_CUTS.map((n) => (
+                      <option key={n} value={n}>
+                        {fill(sl.formTopCutOption, { n })}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mt-1 block text-xs text-pale-muted">{sl.formTopCutHint}</span>
+                </label>
+                <label className="flex items-start gap-2 self-center text-sm">
+                  <input key={`th-${rulesKey}`} type="checkbox" name="top_cut_hold" defaultChecked={rules.top_cut_hold} disabled={lockRules || topCut === null} className="mt-1 accent-mint" />
+                  <span>
+                    <span className="font-semibold text-pale">{sl.formHold}</span>
+                    <span className="mt-0.5 block text-xs text-pale-muted">{sl.formHoldHint}</span>
+                  </span>
+                </label>
+              </div>
+            ) : null}
+            {sl && deckMode === "conquest" ? (
+              <label className="flex items-start gap-2 text-sm">
+                <input key={`db-${rulesKey}`} type="checkbox" name="deck_ban" defaultChecked={rules.deck_ban} disabled={lockRules} className="mt-1 accent-mint" />
+                <span>
+                  <span className="font-semibold text-pale">{sl.formDeckBan}</span>
+                  <span className="mt-0.5 block text-xs text-pale-muted">{sl.formDeckBanHint}</span>
+                </span>
+              </label>
             ) : null}
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm">

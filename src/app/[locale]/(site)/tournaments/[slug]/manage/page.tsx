@@ -4,8 +4,15 @@ import { notFound, redirect } from "next/navigation";
 import { href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
-import { getInviteCode, getTournament, listInvites, listJudges, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
-import { bestOfSummary, canListTournaments, tournamentInviteLink, tournamentShortLink } from "@/lib/tournament/types";
+import { getInviteCode, getStageOptions, getTournament, listBanProgress, listBanStats, listInvites, listJudges, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { bestOfSummary, canListTournaments, fill, totalRounds, tournamentInviteLink, tournamentShortLink } from "@/lib/tournament/types";
+import { matchNeed } from "@/lib/tournament/rules";
+import { banApplies, banRate, holdRound, planOf, podLetter, podMatches, podWinner, podsDone, topMatches } from "@/lib/tournament/stages";
+import { stageLabels } from "@/lib/tournament/stageLabels";
+import { stageMatchNames, stageRoundTitle } from "@/lib/tournament/stageNames";
+import { podRoundNames } from "@/components/StagedBracket";
+import type { EditorGroup } from "@/components/BracketEditor";
+import type { ManagedStage } from "@/components/ManagePanel";
 import { authorName } from "@/lib/community/util";
 import { decodeOmCode } from "@/lib/deckcode";
 import { getCard } from "@/lib/data/cards";
@@ -14,6 +21,7 @@ import { ManagePanel, type ManagedPlayer } from "@/components/ManagePanel";
 import { TournamentForm } from "@/components/TournamentForm";
 import { Bracket } from "@/components/Bracket";
 import { BracketEditor } from "@/components/BracketEditor";
+import { StagedBracket } from "@/components/StagedBracket";
 import { LocalTime } from "@/components/LocalTime";
 import { CopyButton } from "@/components/CopyButton";
 import { contactEmail } from "@/components/Footer";
@@ -51,7 +59,58 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
   // chi non fa parte dello staff torna alla scheda, con il segnale dell'accesso se arriva dal login (lo conta la scheda)
   if (!canAdmin && !isJudge) redirect(withCarriedParams(back, await searchParams));
 
-  const [players, matches, invites, inviteCode, decks] = await Promise.all([listPlayers(t.id, supabase), listMatches(t.id, supabase), canAdmin ? listInvites(supabase, t.id) : Promise.resolve([]), canAdmin ? getInviteCode(supabase, t.id) : Promise.resolve(null), listVisibleDecks(t.id, supabase)]);
+  const [players, matches, invites, inviteCode, decks, stages, banProgress, banStats] = await Promise.all([
+    listPlayers(t.id, supabase),
+    listMatches(t.id, supabase),
+    canAdmin ? listInvites(supabase, t.id) : Promise.resolve([]),
+    canAdmin ? getInviteCode(supabase, t.id) : Promise.resolve(null),
+    listVisibleDecks(t.id, supabase),
+    // 08/11/2026 (blocco BRACKET E TOP CUT): opzioni, ban per partita e Leggendarie bannate (lo staff le vede sempre)
+    getStageOptions(supabase, t.id),
+    listBanProgress(supabase, t.id),
+    listBanStats(supabase, t.id),
+  ]);
+  const sl = stageLabels[locale];
+  const plan = planOf(matches, stages.top_cut);
+  const holdFrom = holdRound(stages, plan);
+  const rounds = totalRounds(matches);
+  const stage: ManagedStage | null =
+    plan.topRound !== null || stages.deck_ban
+      ? {
+          names: plan.topRound !== null ? stageMatchNames(locale, x, plan, matches) : {},
+          roundTitles: plan.topRound !== null ? Object.fromEntries(Array.from({ length: rounds }, (_, i) => [i + 1, stageRoundTitle(locale, x, plan, i + 1)])) : {},
+          banCounts: Object.fromEntries(banProgress),
+          banRounds: Array.from({ length: rounds }, (_, i) => i + 1).filter((r) => banApplies({ deck_ban: stages.deck_ban, deck_mode: t.deck_mode, conquest_decks: t.conquest_decks }, matchNeed(t.best_of, t.final_best_of, r, rounds))),
+          release:
+            holdFrom !== null && plan.topCut
+              ? {
+                  cut: plan.topCut,
+                  ready: matches.filter((mt) => mt.round >= holdFrom && mt.status === "pending" && mt.player_a && mt.player_b && !mt.ready_at).length,
+                  podsRunning: plan.pods - podsDone(matches, plan),
+                }
+              : null,
+          releasedCut: stages.top_cut_released_at && plan.topCut ? plan.topCut : null,
+          labels: sl,
+        }
+      : null;
+  // tabellone dello staff a schede, come quello pubblico (un bracket per scheda, poi la Top)
+  const editorGroups: EditorGroup[] | undefined =
+    plan.topRound !== null && plan.topCut
+      ? [
+          ...Array.from({ length: plan.pods }, (_, p) => ({
+            id: podLetter(p),
+            short: podLetter(p),
+            label: fill(sl.pod, { letter: podLetter(p) }),
+            done: Boolean(podWinner(matches, plan, p)),
+            matches: podMatches(matches, plan, p),
+            roundNames: podRoundNames(locale, plan),
+            championLabel: fill(sl.podWinner, { n: plan.topCut ?? 0 }),
+          })),
+          { id: "top", short: fill(sl.top, { n: plan.topCut }), label: fill(sl.top, { n: plan.topCut }), top: true, matches: topMatches(matches, plan) },
+        ]
+      : undefined;
+  const firstOpenPod = editorGroups ? editorGroups.findIndex((g) => !g.top && !g.done) : -1;
+  const initialGroup = editorGroups ? (firstOpenPod >= 0 ? editorGroups[firstOpenPod].id : "top") : undefined;
   const managed: ManagedPlayer[] = players.map((p) => ({ user_id: p.user_id, name: authorName(p.profile), status: p.status, decks: p.decks_submitted, checkedInAt: p.checked_in_at, createdAt: p.created_at }));
   const names = new Map(managed.map((p) => [p.user_id, p.name]));
   const invitedList = invites.map((i) => ({ user_id: i.user_id, name: authorName(i.profile), registered: players.some((p) => p.user_id === i.user_id) }));
@@ -108,8 +167,26 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
           invites={invitedList}
           canAdmin={canAdmin}
           judges={judges.map((j) => ({ user_id: j.user_id, name: authorName(j.profile) }))}
+          stage={stage}
         />
       </div>
+
+      {/* Leggendarie bannate (08/11/2026): allo staff anche a torneo in corso, per la diretta */}
+      {banStats.length ? (
+        <section className="card-night mt-6 p-5">
+          <h2 className="t-section">{sl.banStatsTitle}</h2>
+          <p className="mt-1 text-sm text-pale-muted">{sl.banStatsHint}</p>
+          <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {banStats.slice(0, 16).map((b) => (
+              <li key={b.legendary} className="flex items-center gap-3 rounded-lg border-2 border-sky bg-night-2/70 px-3 py-2">
+                {getCard(b.legendary) ? <CardChip slug={b.legendary} locale={locale} /> : <span className="text-pale">{b.legendary}</span>}
+                <span className="ml-auto font-mono text-sm text-pale">{Math.round(banRate(b) * 100)}%</span>
+                <span className="font-mono text-[11px] text-pale-muted">{fill(sl.banStatsRow, { bans: b.bans, chances: b.chances })}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {matches.length ? (
         <section className="card-night mt-6 p-5">
@@ -119,10 +196,14 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
           </h2>
           {t.status === "running" ? (
             /* a torneo in corso il tabellone è interattivo: due clic scambiano i giocatori di partite dello stesso turno ancora da giocare */
-            <BracketEditor id={t.id} slug={t.slug} matches={matches} names={Object.fromEntries(names)} labels={x} linkBase={`${back}/match/`} />
+            <BracketEditor id={t.id} slug={t.slug} matches={matches} names={Object.fromEntries(names)} labels={x} linkBase={`${back}/match/`} groups={editorGroups} initialGroup={initialGroup} tabsLabel={sl.tabsLabel} mineLabel={sl.yours} />
           ) : (
             <div className="mt-3">
-              <Bracket matches={matches} names={names} dict={d} open={{ linkBase: `${back}/match/`, all: true }} />
+              {plan.topRound !== null ? (
+                <StagedBracket matches={matches} plan={plan} names={names} dict={d} locale={locale} open={{ linkBase: `${back}/match/`, all: true }} holdFrom={holdFrom} />
+              ) : (
+                <Bracket matches={matches} names={names} dict={d} open={{ linkBase: `${back}/match/`, all: true }} />
+              )}
             </div>
           )}
         </section>
@@ -177,6 +258,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
               labels={x}
               loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
               contactEmail={contactEmail}
+              stageText={sl}
               initial={{
                 id: t.id,
                 status: t.status,
@@ -192,6 +274,9 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
                 checkin: t.checkin,
                 hidden_decklists: t.hidden_decklists,
                 no_show_minutes: t.no_show_minutes,
+                top_cut: stages.top_cut,
+                top_cut_hold: stages.top_cut_hold,
+                deck_ban: stages.deck_ban,
                 lang: t.lang,
                 description: t.description,
                 rules: t.rules,

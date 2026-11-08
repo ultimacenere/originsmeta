@@ -277,6 +277,15 @@ export type TournamentRow = {
   final_best_of: number | null;
   /** minuti di assenza prima della vittoria a tavolino (null = niente tavolino) */
   no_show_minutes: number | null;
+  /**
+   * 08/11/2026 (blocco BRACKET E TOP CUT): fase finale (Top N) con la qualificazione a bracket, pausa prima della fase
+   * finale e quando lo staff l'ha avviata, ban di un mazzo. Facoltativi nel tipo: le letture di sempre
+   * (TOURNAMENT_SELECT) non li chiedono, li legge getStageOptions (queries.ts), che regge il database non ancora migrato.
+   */
+  top_cut?: number | null;
+  top_cut_hold?: boolean;
+  top_cut_released_at?: string | null;
+  deck_ban?: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -309,6 +318,8 @@ export type TournamentPlayerRow = {
 export type TournamentDecksRow = { tournament_id: string; user_id: string; codes: string[]; legendaries: string[]; created_at: string; updated_at: string };
 export type TournamentJudgeRow = { tournament_id: string; user_id: string; added_by: string | null; created_at: string };
 export type TournamentMessageRow = { id: number; match_id: string; user_id: string; body: string; created_at: string };
+/** 08/11/2026: un ban per giocatore e partita; nessun client legge la tabella (match_bans, tournament_ban_stats). */
+export type TournamentBanRow = { match_id: string; user_id: string; target: string; deck: number; legendary: string | null; created_at: string };
 export type TournamentMatchRow = {
   id: string;
   tournament_id: string;
@@ -856,6 +867,12 @@ export type Database = {
           },
         ];
       };
+      tournament_bans: {
+        Row: TournamentBanRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
       tournament_secrets: {
         Row: TournamentSecretRow;
         Insert: { tournament_id: string; invite_code?: string };
@@ -1031,6 +1048,12 @@ export type Database = {
       staff_check_in: { Args: { tid: string; uid: string; undo?: boolean }; Returns: undefined };
       mark_match_seen: { Args: { mid: string }; Returns: boolean };
       claim_no_show: { Args: { mid: string }; Returns: undefined };
+      /** 08/11/2026, blocco BRACKET E TOP CUT */
+      ban_deck: { Args: { mid: string; idx: number }; Returns: undefined };
+      match_bans: { Args: { mid: string }; Returns: { user_id: string; target: string; deck: number | null; legendary: string | null; created_at: string }[] };
+      release_top_cut: { Args: { tid: string }; Returns: number };
+      tournament_ban_progress: { Args: { tid: string }; Returns: { match_id: string; bans: number }[] };
+      tournament_ban_stats: { Args: { tid: string }; Returns: { legendary: string; bans: number; chances: number }[] };
       add_judge: { Args: { tid: string; uname: string }; Returns: undefined };
       remove_judge: { Args: { tid: string; uid: string }; Returns: undefined };
       tournament_legendaries: { Args: { tid: string }; Returns: { user_id: string; legendaries: string[] }[] };

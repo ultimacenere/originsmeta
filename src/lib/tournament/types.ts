@@ -7,7 +7,8 @@ import type { TournamentDecksRow, TournamentInviteRow, TournamentJudgeRow, Tourn
  * vincoli `check` delle tabelle: se cambiano lì, vanno cambiati anche qui.
  */
 
-export const TOURNAMENT_SIZES = [4, 8, 16, 32, 64, 128] as const;
+/** 256 dall'08/11/2026 (torneo della community italiana: 16 bracket da 16 e Top 16, blocco BRACKET E TOP CUT). */
+export const TOURNAMENT_SIZES = [4, 8, 16, 32, 64, 128, 256] as const;
 export type TournamentSize = (typeof TOURNAMENT_SIZES)[number];
 
 export const BEST_OF_OPTIONS = [1, 3, 5] as const;

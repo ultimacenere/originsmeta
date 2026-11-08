@@ -15,8 +15,12 @@ type Open = { linkBase: string; viewer?: string | null; all?: boolean };
  * Accessibilità (21/09/2026): la propria partita non è segnalata solo dal colore (tinta menta al 10%, 1,24:1)
  * ma anche dall'etichetta "Tu"; sul telefono, dove il tabellone scorre di lato, una sfumatura sul bordo destro
  * e la scritta "scorri" dicono che c'è altro da vedere.
+ *
+ * 08/11/2026 (torneo a bracket con la Top N): lo stesso componente disegna un bracket della qualificazione o la fase
+ * finale, con le partite rinumerate da stages.ts; `roundNames` sostituisce i nomi dei turni (un bracket non ha "Quarti di
+ * finale", ha "Turno 3") e `championLabel` la colonna del vincitore ("Alla Top 16").
  */
-export function Bracket({ matches, names, dict, highlight, open }: { matches: TournamentMatch[]; names: Names; dict: Dictionary; highlight?: string | null; open?: Open }) {
+export function Bracket({ matches, names, dict, highlight, open, roundNames, championLabel }: { matches: TournamentMatch[]; names: Names; dict: Dictionary; highlight?: string | null; open?: Open; roundNames?: string[]; championLabel?: string }) {
   const x = dict.tournaments;
   if (!matches.length) return null;
   const size = matches.filter((m) => m.round === 1).length * 2;
@@ -24,6 +28,7 @@ export function Bracket({ matches, names, dict, highlight, open }: { matches: To
   const rounds: TournamentMatch[][] = [];
   for (let r = 1; r <= total; r++) rounds.push(matches.filter((m) => m.round === r).sort((a, b) => a.position - b.position));
   const label = (r: number) => {
+    if (roundNames?.[r - 1]) return roundNames[r - 1];
     const l = roundLabel(r, size);
     return typeof l === "string" ? x.rounds[l] : fill(x.rounds.of, { n: l.of });
   };
@@ -54,7 +59,7 @@ export function Bracket({ matches, names, dict, highlight, open }: { matches: To
             ))}
             {champion ? (
               <section className="flex w-60 flex-col">
-                <h3 className="kicker mb-3 text-gold">{x.winner}</h3>
+                <h3 className="kicker mb-3 text-gold">{championLabel ?? x.winner}</h3>
                 <div className="flex flex-1 items-center">
                   <p className="w-full rounded-lg border-2 border-gold bg-gold/15 p-3 text-center font-display text-lg font-extrabold text-gold">★ {names.get(champion) ?? "?"}</p>
                 </div>

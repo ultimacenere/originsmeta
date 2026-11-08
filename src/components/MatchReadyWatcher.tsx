@@ -23,6 +23,9 @@ type Props = {
   matchHrefBase: string;
   noShowMinutes: number | null;
   labels: Dictionary["tournaments"];
+  /** 08/11/2026: primo turno della fase finale in pausa (stages.ts `holdRound`), e il testo per chi ci è arrivato */
+  holdRound?: number | null;
+  holdText?: string;
 };
 
 const POLL_MS = 20_000;
@@ -36,7 +39,7 @@ const ACTIVE = new Set(["pending", "reported", "disputed"]);
  * scheda. Quando la partita cambia, ricarica la pagina (tabellone e iscritti). Dal 07/11/2026, su consenso di chi gioca,
  * la stessa lettura fa partire anche una notifica del browser e un suono (matchAlerts.ts): nessuna richiesta in più.
  */
-export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roundNames, matchHrefBase, noShowMinutes, labels }: Props) {
+export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roundNames, matchHrefBase, noShowMinutes, labels, holdRound = null, holdText }: Props) {
   const x = labels;
   const b = x.liveBanner;
   const router = useRouter();
@@ -62,13 +65,14 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
       if (!alive) return;
       const row = ((data ?? []) as WatchedMatch[])[0] ?? null;
       setMatch(row);
-      const key = row ? `${row.id}:${row.player_a}:${row.player_b}:${row.status}` : null;
+      // con ready_at: quando lo staff avvia la fase finale in pausa (08/11/2026) la pagina si rilegge
+      const key = row ? `${row.id}:${row.player_a}:${row.player_b}:${row.status}:${row.ready_at ? 1 : 0}` : null;
       if (key !== firstId.current) {
         firstId.current = key;
         if (document.visibilityState === "visible") router.refresh();
       }
     };
-    firstId.current = initial ? `${initial.id}:${initial.player_a}:${initial.player_b}:${initial.status}` : null;
+    firstId.current = initial ? `${initial.id}:${initial.player_a}:${initial.player_b}:${initial.status}:${initial.ready_at ? 1 : 0}` : null;
     const timer = setInterval(poll, POLL_MS);
     return () => {
       alive = false;
@@ -77,7 +81,9 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
   }, [tournamentId, viewerId, initial, router]);
 
   const live = match && ACTIVE.has(match.status) ? match : null;
-  const ready = Boolean(live && live.player_a && live.player_b);
+  // fase finale in pausa (08/11/2026): i due giocatori ci sono ma la partita non è pronta finché lo staff non la avvia
+  const held = Boolean(live && holdRound !== null && live.round >= holdRound && !live.ready_at);
+  const ready = Boolean(live && live.player_a && live.player_b) && !held;
   const mine = live ? (live.player_a === viewerId ? "a" : "b") : null;
   const seenByMe = live ? Boolean(mine === "a" ? live.seen_a : live.seen_b) : false;
   const opponent = live ? (mine === "a" ? live.player_b : live.player_a) : null;
@@ -128,14 +134,14 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
         <p className="kicker text-mint">
           {x.statuses.running} · {roundNames[live.round] ?? fill(x.match.round, { n: live.round })}
         </p>
-        <p className="mt-1 font-display text-lg font-extrabold text-chalk">{ready ? b.title : b.titleWaiting}</p>
+        <p className="mt-1 font-display text-lg font-extrabold text-chalk">{ready ? b.title : held && holdText ? holdText : b.titleWaiting}</p>
         {ready && opponent ? <p className="mt-1 text-sm text-pale">{fill(b.detail, { name: names[opponent] ?? "?" })}</p> : null}
         {ready && !seenByMe && left !== null ? (
           <p className={`mt-2 font-mono text-sm ${left > 0 ? "text-gold" : "text-bad"}`}>{left > 0 ? fill(b.enterWithin, { time: formatCountdown(left) }) : b.enterLate}</p>
         ) : null}
       </div>
-      {ready ? (
-        <Link href={`${matchHrefBase}${live.id}`} className="btn btn-primary">
+      {ready || held ? (
+        <Link href={`${matchHrefBase}${live.id}`} className={`btn ${held ? "btn-ink" : "btn-primary"}`}>
           {b.cta}
         </Link>
       ) : null}

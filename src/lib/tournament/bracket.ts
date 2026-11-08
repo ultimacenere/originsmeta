@@ -7,7 +7,7 @@
  * iscritti lo fa il chiamante prima di passare la lista.
  *
  * Algoritmo
- * - Il tabellone ha `size` posti, potenza di 2 (nel menu del TO 4..128, vedi `BRACKET_SIZES`).
+ * - Il tabellone ha `size` posti, potenza di 2 (nel menu del TO 4..256, vedi `BRACKET_SIZES`).
  *   `bracketSize` sceglie la minima potenza di 2 che contiene gli iscritti, limitata al massimo del
  *   torneo: 50 iscritti su massimo 64 → tabellone da 64 con 14 bye.
  * - Gli iscritti ricevono un seed 1..n nell'ordine in cui arrivano (`seeded[0]` è il seed 1).
@@ -35,7 +35,7 @@
  */
 
 /** Dimensioni del tabellone proposte nel menu del Tournament Organizer. */
-export const BRACKET_SIZES = [4, 8, 16, 32, 64, 128] as const;
+export const BRACKET_SIZES = [4, 8, 16, 32, 64, 128, 256] as const;
 
 export type BracketSize = (typeof BRACKET_SIZES)[number];
 

@@ -4,12 +4,16 @@ import { notFound } from "next/navigation";
 import { getDictionary, href, siteUrl, type Dictionary } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { currentUser, supabaseServer } from "@/lib/supabase/server";
-import { getInviteCode, getTournament, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { getInviteCode, getStageOptions, getTournament, listBanStats, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
 import { roundLabel } from "@/lib/tournament/bracket";
 import { bestOfSummary, fill, totalRounds, tournamentInviteLink, tournamentShortLink, type TournamentMatch, type TournamentPlayer } from "@/lib/tournament/types";
 import { seatPlan, submittedPlayerIds, waitlistPosition } from "@/lib/tournament/rules";
+import { banRate, holdRound, planOf, podOf } from "@/lib/tournament/stages";
+import { stageLabels } from "@/lib/tournament/stageLabels";
+import { stageMatchName } from "@/lib/tournament/stageNames";
 import { MatchReadyWatcher, type WatchedMatch } from "@/components/MatchReadyWatcher";
 import { Bracket } from "@/components/Bracket";
+import { StagedBracket } from "@/components/StagedBracket";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { shownBadge } from "@/lib/community/badges";
@@ -86,7 +90,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const t = await getTournament(slug, client);
   if (!t) notFound();
 
-  const [players, matches, others, decks, inviteCode, judges] = await Promise.all([
+  const [players, matches, others, decks, inviteCode, judges, stages, banStats] = await Promise.all([
     listPlayers(t.id, client),
     listMatches(t.id, client),
     listListedTournaments(30),
@@ -95,7 +99,15 @@ export default async function TournamentPage({ params, searchParams }: { params:
     // il codice del link d'invito lo leggono solo organizzatore e admin (policy): per gli altri è null
     getInviteCode(client, t.id),
     listJudges(t.id, client),
+    // 08/11/2026: fase finale a bracket, pausa e ban (lettura a parte: regge il database non ancora migrato)
+    getStageOptions(client, t.id),
+    t.status === "finished" ? listBanStats(client, t.id) : Promise.resolve([]),
   ]);
+  const sl = stageLabels[locale];
+  const bplan = planOf(matches, stages.top_cut);
+  const holdFrom = holdRound(stages, bplan);
+  // prima dell'avvio il tabellone non c'è: la struttura si legge dai posti massimi
+  const cut = stages.top_cut && stages.top_cut < t.size ? stages.top_cut : null;
   const inviteLink = inviteCode ? tournamentInviteLink(siteUrl, t.tag, inviteCode) : null;
   const active = players.filter((p) => p.status === "registered");
   const waitlist = players.filter((p) => p.status === "waitlist");
@@ -123,7 +135,16 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const liveMatch = myMatch && (myMatch.status === "pending" || myMatch.status === "reported" || myMatch.status === "disputed") ? myMatch : undefined;
   // 05/10/2026: il riquadro "la tua partita è pronta" si aggiorna da solo nel browser (MatchReadyWatcher)
   const watched: WatchedMatch | null = myMatch ? { id: myMatch.id, round: myMatch.round, player_a: myMatch.player_a, player_b: myMatch.player_b, status: myMatch.status, ready_at: myMatch.ready_at, seen_a: myMatch.seen_a, seen_b: myMatch.seen_b } : null;
-  const roundNames = Object.fromEntries(Array.from({ length: rounds }, (_, i) => [i + 1, roundName(x, i + 1, matches)]));
+  // con la fase finale (08/11/2026) il nome del turno dice anche il bracket di chi guarda: "Bracket C · Turno 2"
+  const myPod = bplan.topRound !== null ? podOf(matches, bplan, viewer) : null;
+  const roundNames = Object.fromEntries(
+    Array.from({ length: rounds }, (_, i) => {
+      const r = i + 1;
+      if (bplan.topRound === null) return [r, roundName(x, r, matches)];
+      const pos = myPod !== null && r < bplan.topRound ? myPod * (bplan.podSize / 2 ** r) : 0;
+      return [r, stageMatchName(locale, x, bplan, r, pos)];
+    }),
+  );
   // check-in e lista d'attesa di chi guarda
   const me = viewer ? players.find((p) => p.user_id === viewer) : undefined;
   const plan = t.checkin ? seatPlan(players, t.size) : null;
@@ -205,8 +226,13 @@ export default async function TournamentPage({ params, searchParams }: { params:
         <p className="mt-2 text-sm text-pale-muted">{t.checkin ? x.checkin.bracketSoon : x.bracketSoon}</p>
       ) : (
         <div className="mt-3">
-          {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito) */}
-          <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
+          {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito);
+              con la fase finale (08/11/2026) una scheda per bracket e una per la Top */}
+          {bplan.topRound !== null ? (
+            <StagedBracket matches={matches} plan={bplan} names={nameOf} dict={d} locale={locale} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} holdFrom={holdFrom} />
+          ) : (
+            <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
+          )}
         </div>
       )}
     </section>
@@ -251,7 +277,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
       ) : null}
 
       {viewer && t.status === "running" && registeredIds.includes(viewer) ? (
-        <MatchReadyWatcher tournamentId={t.id} viewerId={viewer} initial={watched} names={Object.fromEntries(nameOf)} roundNames={roundNames} matchHrefBase={`${path}/match/`} noShowMinutes={t.no_show_minutes} labels={x} />
+        <MatchReadyWatcher tournamentId={t.id} viewerId={viewer} initial={watched} names={Object.fromEntries(nameOf)} roundNames={roundNames} matchHrefBase={`${path}/match/`} noShowMinutes={t.no_show_minutes} labels={x} holdRound={holdFrom} holdText={fill(sl.holdBanner, { n: bplan.topCut ?? 0 })} />
       ) : null}
 
       <article className="card-night mt-6 overflow-hidden">
@@ -291,6 +317,9 @@ export default async function TournamentPage({ params, searchParams }: { params:
             <span className="stat-pill bg-night-3 text-pale">{x.formats[t.format]}</span>
             <span className="stat-pill bg-night-3 text-pale">{x.deckModes[t.deck_mode]}</span>
             <span className="stat-pill bg-night-3 text-pale">{bestOfSummary(x, t.best_of, t.final_best_of)}</span>
+            {cut ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(sl.structurePill, { pods: cut, top: cut })}</span> : null}
+            {cut && stages.top_cut_hold ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: cut })}</span> : null}
+            {stages.deck_ban ? <span className="stat-pill bg-night-3 text-pale">{sl.banPill}</span> : null}
             {t.checkin ? <span className="stat-pill bg-night-3 text-pale">{x.checkin.pillRequired}</span> : null}
             {t.hidden_decklists ? <span className="stat-pill bg-night-3 text-pale">{x.hiddenPill}</span> : null}
             {t.no_show_minutes ? <span className="stat-pill bg-night-3 text-pale">{fill(x.noShowPill, { n: t.no_show_minutes })}</span> : null}
@@ -299,7 +328,10 @@ export default async function TournamentPage({ params, searchParams }: { params:
             </span>
             {waitlist.length ? <span className="stat-pill border-2 border-gold font-mono text-pale">{fill(x.checkin.waitlistCount, { n: waitlist.length })}</span> : null}
           </div>
+          {cut ? <p className="mt-2 text-sm text-pale">{fill(sl.structureRule, { pods: cut, size: bplan.topRound !== null ? bplan.podSize : t.size / cut, top: cut })}</p> : null}
+          {cut && stages.top_cut_hold ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: cut })}</p> : null}
           {t.deck_mode === "conquest" ? <p className="mt-2 text-sm text-pale-muted">{fill(x.conquestRule, { n: t.conquest_decks, min: t.conquest_min_different })}</p> : null}
+          {stages.deck_ban ? <p className="mt-1 text-sm text-pale-muted">{sl.banRule}</p> : null}
           {t.checkin ? <p className="mt-1 text-sm text-pale-muted">{x.checkin.rule}</p> : null}
           {t.hidden_decklists ? <p className="mt-1 text-sm text-pale-muted">{x.hiddenRule}</p> : null}
           {t.no_show_minutes ? <p className="mt-1 text-sm text-pale-muted">{fill(x.noShowRule, { n: t.no_show_minutes })}</p> : null}
@@ -436,6 +468,22 @@ export default async function TournamentPage({ params, searchParams }: { params:
               <p className="mt-2 text-sm text-pale-muted">{t.hidden_decklists ? x.hiddenRule : x.decklistsHidden}</p>
             )}
           </section>
+
+          {banStats.length ? (
+            <section className="mt-8">
+              <h2 className="t-section">{sl.banStatsTitle}</h2>
+              <p className="mt-1 text-sm text-pale-muted">{sl.banStatsHint}</p>
+              <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {banStats.slice(0, 12).map((b) => (
+                  <li key={b.legendary} className="flex items-center gap-3 rounded-lg border-2 border-sky bg-night-2/70 px-3 py-2">
+                    {getCard(b.legendary) ? <CardChip slug={b.legendary} locale={locale} /> : <span className="text-pale">{b.legendary}</span>}
+                    <span className="ml-auto font-mono text-sm text-pale">{Math.round(banRate(b) * 100)}%</span>
+                    <span className="font-mono text-[11px] text-pale-muted">{fill(sl.banStatsRow, { bans: b.bans, chances: b.chances })}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           {t.report ? (
             <section className="mt-8 rounded-xl border-2 border-gold bg-gold/10 p-5">

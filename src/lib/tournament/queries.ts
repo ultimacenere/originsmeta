@@ -1,6 +1,7 @@
 import { supabasePublic, type Db } from "@/lib/supabase/public";
 import type { Locale } from "@/lib/i18n";
 import { canListTournaments, type Tournament, type TournamentInvite, type TournamentJudge, type TournamentMatch, type TournamentMessage, type TournamentPlayer } from "./types";
+import type { BanTally, MatchBan } from "./stages";
 
 /**
  * Letture dei tornei. Con il client anonimo (`supabasePublic`, pagine ISR) si vede quello che le policy
@@ -133,6 +134,50 @@ export async function listUserTournaments(client: Db, userId: string): Promise<{
   };
   const [playing, invited] = await Promise.all([fetchByIds(playingIds), fetchByIds(invitedIds)]);
   return { organized, playing, invited: invited.filter((t) => t.status === "open" || t.status === "running") };
+}
+
+/* ---------- 08/11/2026: fase finale a bracket, pausa e ban (blocco BRACKET E TOP CUT di schema.sql) ---------- */
+
+export type StageOptions = { top_cut: number | null; top_cut_hold: boolean; top_cut_released_at: string | null; deck_ban: boolean };
+export const NO_STAGES: StageOptions = { top_cut: null, top_cut_hold: false, top_cut_released_at: null, deck_ban: false };
+
+/**
+ * Opzioni del blocco BRACKET E TOP CUT di un torneo. Sono una lettura a parte (non in TOURNAMENT_SELECT) così le pagine
+ * reggono il database non ancora migrato: colonne mancanti = torneo senza fase finale, senza pausa e senza ban.
+ */
+export async function getStageOptions(client: Db | null, tid: string): Promise<StageOptions> {
+  if (!client) return NO_STAGES;
+  const { data, error } = await client.from("tournaments").select("top_cut, top_cut_hold, top_cut_released_at, deck_ban").eq("id", tid).maybeSingle();
+  if (error || !data) return NO_STAGES;
+  const r = data as Partial<StageOptions>;
+  return { top_cut: r.top_cut ?? null, top_cut_hold: Boolean(r.top_cut_hold), top_cut_released_at: r.top_cut_released_at ?? null, deck_ban: Boolean(r.deck_ban) };
+}
+
+/** Ban di una partita come li lascia vedere match_bans (il ban dell'avversario senza mazzo finché non hanno bannato tutti e due). */
+export async function listMatchBans(client: Db | null, mid: string): Promise<MatchBan[]> {
+  if (!client) return [];
+  const { data, error } = await client.rpc("match_bans", { mid });
+  if (error) {
+    if (!/match_bans/.test(error.message ?? "")) console.error("[tournaments] listMatchBans:", error.message);
+    return [];
+  }
+  return (Array.isArray(data) ? data : []) as MatchBan[];
+}
+
+/** Leggendarie bannate nel torneo (allo staff sempre, a tutti a torneo finito), dalla più bannata. */
+export async function listBanStats(client: Db | null, tid: string): Promise<BanTally[]> {
+  if (!client) return [];
+  const { data, error } = await client.rpc("tournament_ban_stats", { tid });
+  if (error) return [];
+  return ((Array.isArray(data) ? data : []) as BanTally[]).filter((r) => r.legendary);
+}
+
+/** Ban fatti per partita (solo lo staff, tournament_ban_progress): partita → numero di ban (0, 1 o 2). */
+export async function listBanProgress(client: Db | null, tid: string): Promise<Map<string, number>> {
+  if (!client) return new Map();
+  const { data, error } = await client.rpc("tournament_ban_progress", { tid });
+  if (error) return new Map();
+  return new Map(((Array.isArray(data) ? data : []) as { match_id: string; bans: number }[]).map((r) => [r.match_id, Number(r.bans)]));
 }
 
 /** Codice del link d'invito (solo organizzatore e admin, per policy), oppure null. */

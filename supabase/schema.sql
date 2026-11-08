@@ -8227,3 +8227,402 @@ revoke all on function public.card_vote_totals() from public;
 grant execute on function public.card_vote_totals() to anon, authenticated;
 
 comment on table public.card_votes_guest is 'Voti alle carte di chi non ha l''account (04/11/2026): codice anonimo del browser (impronta), impronta della connessione per un giorno; li scrive solo il server del sito.';
+
+-- =====================================================================================================
+-- ===== 08/11/2026: BRACKET E TOP CUT =====
+-- =====================================================================================================
+-- Il torneo da 256 della community italiana del 28/11/2026 (Pierluigi, 08/11/2026: "dobbiamo creargli
+-- l'infrastruttura"): 256 giocatori in 16 bracket da 16 a eliminazione diretta, i 16 vincitori nella Top 16, partite
+-- al meglio delle 3 in Conquest a tre mazzi con un ban. Un tabellone da 256 a eliminazione diretta È questo formato: i
+-- primi quattro turni sono 16 bracket da 16 (posizioni consecutive del primo turno), gli ultimi quattro la Top 16.
+-- Quindi nessun tabellone separato: il motore resta quello di sempre e il sito lo mostra a pezzi. Tutto facoltativo per
+-- torneo, i tornei già creati non cambiano.
+--   - 256 posti (`size`).
+--   - fase finale (`top_cut`: 4, 8, 16 o 32): i turni prima sono la qualificazione, divisa in `top_cut` bracket. Con
+--     l'ordine standard dei seed (bracket_order) ogni bracket riceve un seed di ogni fascia, quindi i bye si spartiscono
+--     fra i bracket il più possibile alla pari (con 200 iscritti 3 o 4 bye per bracket).
+--   - pausa prima della fase finale (`top_cut_hold`): le partite della fase finale non diventano pronte (niente
+--     ready_at, niente avviso, niente referti, niente presenza né tavolino) finché lo staff non la avvia
+--     (`release_top_cut`), per esempio dopo l'intervista in diretta; `top_cut_released_at` dice quando.
+--   - ban di un mazzo (`deck_ban`, solo Conquest): prima di giocare ognuno banna un mazzo dell'avversario
+--     (`ban_deck`); i ban dell'altro si vedono quando li hanno fatti tutti e due (`match_bans`), e prima dei due ban i
+--     giocatori non refertano (lo staff sì). Vale dove restano abbastanza mazzi per vincere (mazzi − 1 ≥ vittorie che
+--     servono: con tre mazzi al meglio delle 3 sì, al meglio delle 5 no, come alla Crimson Cup).
+-- Le stesse regole stanno in src/lib/tournament/stages.ts (test in stages.test.ts, che confronta i numeri con questo
+-- blocco); componenti StagedBracket e BanPanel. Prova a secco: node scripts/tournament-dry-run.mjs (sezione Top cut).
+
+alter table public.tournaments drop constraint if exists tournaments_size_check;
+alter table public.tournaments add constraint tournaments_size_check check (size in (4, 8, 16, 32, 64, 128, 256));
+alter table public.tournaments add column if not exists top_cut int;
+alter table public.tournaments add column if not exists top_cut_hold boolean not null default false;
+alter table public.tournaments add column if not exists top_cut_released_at timestamptz;
+alter table public.tournaments add column if not exists deck_ban boolean not null default false;
+alter table public.tournaments drop constraint if exists tournaments_top_cut_check;
+alter table public.tournaments add constraint tournaments_top_cut_check check (top_cut is null or (top_cut in (4, 8, 16, 32) and top_cut < size));
+alter table public.tournaments drop constraint if exists tournaments_deck_ban_check;
+alter table public.tournaments add constraint tournaments_deck_ban_check check (not deck_ban or deck_mode = 'conquest');
+
+-- Primo turno della fase finale: null se il torneo non ne ha una o se il tabellone non è più grande della fase finale
+-- (pochi iscritti: un solo tabellone, niente qualificazione).
+create or replace function public.tm_top_round(tid uuid)
+returns int language plpgsql stable set search_path = public, pg_temp as $$
+declare
+  cut int;
+  total int;
+  k int := 0;
+begin
+  select t.top_cut into cut from public.tournaments t where t.id = tid;
+  if cut is null then return null; end if;
+  select max(m.round) into total from public.tournament_matches m where m.tournament_id = tid;
+  if total is null then return null; end if;
+  while (1 << k) < cut loop k := k + 1; end loop;
+  if total <= k then return null; end if;
+  return total - k + 1;
+end $$;
+revoke all on function public.tm_top_round(uuid) from public, anon, authenticated;
+
+-- La partita è nella fase finale e la pausa non è ancora finita.
+create or replace function public.tm_held(tid uuid, rnd int)
+returns boolean language sql stable set search_path = public, pg_temp as $$
+  select coalesce((
+    select t.top_cut_hold and t.top_cut_released_at is null and rnd >= public.tm_top_round(tid)
+      from public.tournaments t where t.id = tid
+  ), false);
+$$;
+revoke all on function public.tm_held(uuid, int) from public, anon, authenticated;
+
+-- Il ban vale in questa partita: Conquest con il ban e, dopo il ban, almeno tanti mazzi quante le vittorie che servono.
+create or replace function public.tm_ban_applies(tid uuid, rnd int)
+returns boolean language sql stable set search_path = public, pg_temp as $$
+  select coalesce((
+    select t.deck_ban and t.deck_mode = 'conquest' and t.conquest_decks - 1 >= public.tm_need(tid, rnd)
+      from public.tournaments t where t.id = tid
+  ), false);
+$$;
+revoke all on function public.tm_ban_applies(uuid, int) from public, anon, authenticated;
+
+-- Un ban per giocatore e per partita: `user_id` banna il mazzo numero `deck` (0 = il primo consegnato) di `target`.
+-- `legendary` è la Leggendaria di quel mazzo, per le statistiche. Nessun client legge la tabella: match_bans nasconde il
+-- ban dell'avversario finché non hanno bannato tutti e due.
+create table if not exists public.tournament_bans (
+  match_id uuid not null references public.tournament_matches(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  target uuid not null references public.profiles(id) on delete cascade,
+  deck int not null check (deck between 0 and 3),
+  legendary text check (legendary is null or char_length(legendary) <= 80),
+  created_at timestamptz not null default now(),
+  primary key (match_id, user_id)
+);
+alter table public.tournament_bans enable row level security;
+drop policy if exists "tournament bans no direct access" on public.tournament_bans;
+create policy "tournament bans no direct access" on public.tournament_bans as restrictive for all to anon, authenticated using (false) with check (false);
+revoke all on public.tournament_bans from anon, authenticated;
+comment on table public.tournament_bans is 'Ban dei mazzi nelle partite dei tornei (08/11/2026): si scrivono con ban_deck e si leggono con match_bans e tournament_ban_stats.';
+
+-- Avviso "la tua partita è pronta": mai per una partita senza ready_at (fase finale in pausa).
+create or replace function public.tm_notify_ready(mid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  s text;
+begin
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.player_a is null or m.player_b is null or m.status <> 'pending' or m.ready_at is null then return; end if;
+  select t.slug into s from public.tournaments t where t.id = m.tournament_id;
+  if s is null or s !~ '^[a-z0-9-]{1,90}$' then return; end if;
+  insert into public.notifications (user_id, kind, actor_id, target, event_key) values
+    (m.player_a, 'match_ready', m.player_b, '/tournaments/' || s || '/match/' || m.id, 'match:' || m.id || ':' || m.player_b),
+    (m.player_b, 'match_ready', m.player_a, '/tournaments/' || s || '/match/' || m.id, 'match:' || m.id || ':' || m.player_a)
+  on conflict (user_id, kind, event_key) do nothing;
+exception when others then
+  raise notice 'tm_notify_ready: %', sqlerrm;
+end $$;
+revoke all on function public.tm_notify_ready(uuid) from public, anon, authenticated;
+
+-- Propagazione (come nel blocco TORNEO CRIMSON) più: se uno slot cambia, i ban di quella partita si cancellano (erano
+-- contro un altro avversario); una partita della fase finale in pausa ha i due giocatori ma non diventa pronta.
+create or replace function public.tm_propagate(mid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  nm public.tournament_matches%rowtype;
+  drop_a boolean;
+  drop_b boolean;
+  w uuid;
+  need int;
+begin
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.winner is null then return; end if;
+  select * into nm from public.tournament_matches where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2 for update;
+  if not found then return; end if;
+  if m.position % 2 = 0 then
+    if nm.player_a is distinct from m.winner then
+      update public.tournament_matches set player_a = m.winner, seen_a = null, ready_at = null where id = nm.id;
+      delete from public.tournament_bans where match_id = nm.id;
+    end if;
+  else
+    if nm.player_b is distinct from m.winner then
+      update public.tournament_matches set player_b = m.winner, seen_b = null, ready_at = null where id = nm.id;
+      delete from public.tournament_bans where match_id = nm.id;
+    end if;
+  end if;
+  select * into nm from public.tournament_matches where id = nm.id;
+  if nm.player_a is null or nm.player_b is null or nm.status <> 'pending' then return; end if;
+  select coalesce(bool_or(p.user_id = nm.player_a and p.status = 'dropped'), false), coalesce(bool_or(p.user_id = nm.player_b and p.status = 'dropped'), false)
+    into drop_a, drop_b
+    from public.tournament_players p where p.tournament_id = nm.tournament_id and p.user_id in (nm.player_a, nm.player_b);
+  if drop_a or drop_b then
+    need := public.tm_need(nm.tournament_id, nm.round);
+    w := case when drop_a and not drop_b then nm.player_b else nm.player_a end;
+    update public.tournament_matches
+       set winner = w, status = 'confirmed', forfeit = true, reported_by = null, note = 'drop',
+           score_a = case when w = nm.player_a then need else 0 end, score_b = case when w = nm.player_b then need else 0 end
+     where id = nm.id;
+    perform public.tm_propagate(nm.id);
+    return;
+  end if;
+  if nm.ready_at is null and not public.tm_held(nm.tournament_id, nm.round) then
+    update public.tournament_matches set ready_at = now() where id = nm.id;
+    perform public.tm_notify_ready(nm.id);
+  end if;
+end $$;
+revoke all on function public.tm_propagate(uuid) from public, anon, authenticated;
+
+-- Scambio (come nel blocco TORNEO CRIMSON) più: nella fase finale in pausa le partite restano non pronte; i ban delle
+-- due partite si cancellano (l'avversario è cambiato).
+create or replace function public.swap_players(tid uuid, u1 uuid, u2 uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  m1 public.tournament_matches%rowtype;
+  m2 public.tournament_matches%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if u1 = u2 then raise exception 'bad_swap'; end if;
+  select * into m1 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u1 or player_b = u1) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  select * into m2 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u2 or player_b = u2) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  if m1.round <> m2.round then raise exception 'bad_swap'; end if;
+  if m1.id = m2.id then
+    update public.tournament_matches set player_a = player_b, player_b = player_a, seen_a = seen_b, seen_b = seen_a where id = m1.id;
+    return;
+  end if;
+  if m1.player_a = u1 then update public.tournament_matches set player_a = u2 where id = m1.id; else update public.tournament_matches set player_b = u2 where id = m1.id; end if;
+  if m2.player_a = u2 then update public.tournament_matches set player_a = u1 where id = m2.id; else update public.tournament_matches set player_b = u1 where id = m2.id; end if;
+  update public.tournament_matches
+     set seen_a = null, seen_b = null,
+         ready_at = case when player_a is not null and player_b is not null and not public.tm_held(tid, round) then now() else null end
+   where id in (m1.id, m2.id);
+  delete from public.tournament_bans where match_id in (m1.id, m2.id);
+  perform public.tm_notify_ready(m1.id);
+  perform public.tm_notify_ready(m2.id);
+end $$;
+revoke all on function public.swap_players(uuid, uuid, uuid) from public, anon;
+grant execute on function public.swap_players(uuid, uuid, uuid) to authenticated;
+
+-- Referto (come nel blocco TORNEO CRIMSON) più: niente referti nella fase finale in pausa; con il ban, prima i due ban.
+create or replace function public.report_match_result(mid uuid, a int, b int)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  need int;
+  me uuid := auth.uid();
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if me <> m.player_a and me <> m.player_b then raise exception 'forbidden'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  if m.status not in ('pending', 'reported', 'disputed') then raise exception 'already_confirmed'; end if;
+  if public.tm_held(t.id, m.round) then raise exception 'top_cut_on_hold'; end if;
+  if public.tm_ban_applies(t.id, m.round) and (select count(*) from public.tournament_bans x where x.match_id = mid) < 2 then raise exception 'bans_pending'; end if;
+  need := public.tm_need(t.id, m.round);
+  if a is null or b is null or a < 0 or b < 0 or greatest(a, b) <> need or least(a, b) >= need then raise exception 'bad_score'; end if;
+  update public.tournament_matches
+     set seen_a = case when me = player_a then coalesce(seen_a, now()) else seen_a end,
+         seen_b = case when me = player_b then coalesce(seen_b, now()) else seen_b end
+   where id = mid;
+  if m.status in ('pending', 'disputed') then
+    update public.tournament_matches set score_a = a, score_b = b, status = 'reported', reported_by = me, reported_at = now(), note = null where id = mid;
+  elsif m.reported_by = me then
+    update public.tournament_matches set score_a = a, score_b = b, reported_at = now() where id = mid;
+  elsif m.score_a = a and m.score_b = b then
+    update public.tournament_matches set status = 'confirmed', winner = case when a > b then m.player_a else m.player_b end where id = mid;
+    perform public.tm_propagate(mid);
+  else
+    update public.tournament_matches set status = 'disputed', note = format('%s-%s vs %s-%s', m.score_a, m.score_b, a, b) where id = mid;
+  end if;
+end $$;
+revoke all on function public.report_match_result(uuid, int, int) from public, anon;
+grant execute on function public.report_match_result(uuid, int, int) to authenticated;
+
+-- Presenza (come nel blocco TORNEO CRIMSON) più: non si segna in una partita della fase finale in pausa, così il tempo
+-- di assenza parte per tutti all'avvio della fase finale.
+create or replace function public.mark_match_seen(mid uuid)
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  me uuid := auth.uid();
+begin
+  if me is null then return false; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.player_a is null or m.player_b is null or m.status not in ('pending', 'reported', 'disputed') then return false; end if;
+  if not exists (select 1 from public.tournaments t where t.id = m.tournament_id and t.status = 'running') then return false; end if;
+  if public.tm_held(m.tournament_id, m.round) then return false; end if;
+  if me = m.player_a and m.seen_a is null then
+    update public.tournament_matches set seen_a = now() where id = mid and seen_a is null;
+    return true;
+  elsif me = m.player_b and m.seen_b is null then
+    update public.tournament_matches set seen_b = now() where id = mid and seen_b is null;
+    return true;
+  end if;
+  return false;
+end $$;
+revoke all on function public.mark_match_seen(uuid) from public, anon;
+grant execute on function public.mark_match_seen(uuid) to authenticated;
+
+-- Avvio della fase finale (staff): le partite della fase finale con i due giocatori diventano pronte adesso, con
+-- l'avviso; le altre lo diventano da sole quando arrivano i giocatori. Restituisce quante partite sono partite.
+create or replace function public.release_top_cut(tid uuid)
+returns int language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  top int;
+  r record;
+  n int := 0;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  top := public.tm_top_round(tid);
+  if not t.top_cut_hold or top is null then raise exception 'no_hold'; end if;
+  if t.top_cut_released_at is not null then raise exception 'already_released'; end if;
+  update public.tournaments set top_cut_released_at = now() where id = tid;
+  for r in
+    update public.tournament_matches set ready_at = now(), seen_a = null, seen_b = null
+     where tournament_id = tid and round >= top and status = 'pending' and player_a is not null and player_b is not null and ready_at is null
+    returning id
+  loop
+    perform public.tm_notify_ready(r.id);
+    n := n + 1;
+  end loop;
+  return n;
+end $$;
+revoke all on function public.release_top_cut(uuid) from public, anon;
+grant execute on function public.release_top_cut(uuid) to authenticated;
+
+-- Ban di un giocatore: il mazzo numero `idx` (da 0) dell'avversario. Si può cambiare finché l'avversario non ha
+-- bannato; con i due ban la scelta è fatta. Solo su una partita pronta e da giocare. Conta come presenza.
+create or replace function public.ban_deck(mid uuid, idx int)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  me uuid := auth.uid();
+  opp uuid;
+  legs text[];
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if me is distinct from m.player_a and me is distinct from m.player_b then raise exception 'forbidden'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  if public.tm_held(t.id, m.round) then raise exception 'top_cut_on_hold'; end if;
+  if not public.tm_ban_applies(t.id, m.round) then raise exception 'ban_off'; end if;
+  if m.status <> 'pending' then raise exception 'ban_closed'; end if;
+  if idx is null or idx < 0 or idx >= t.conquest_decks then raise exception 'bad_ban'; end if;
+  if (select count(*) from public.tournament_bans x where x.match_id = mid) >= 2 then raise exception 'ban_closed'; end if;
+  opp := case when me = m.player_a then m.player_b else m.player_a end;
+  select d.legendaries into legs from public.tournament_decks d where d.tournament_id = t.id and d.user_id = opp;
+  insert into public.tournament_bans (match_id, user_id, target, deck, legendary)
+  values (mid, me, opp, idx, nullif(left(legs[idx + 1], 80), ''))
+  on conflict (match_id, user_id) do update set target = excluded.target, deck = excluded.deck, legendary = excluded.legendary, created_at = now();
+  update public.tournament_matches
+     set seen_a = case when me = player_a then coalesce(seen_a, now()) else seen_a end,
+         seen_b = case when me = player_b then coalesce(seen_b, now()) else seen_b end
+   where id = mid;
+end $$;
+revoke all on function public.ban_deck(uuid, int) from public, anon;
+grant execute on function public.ban_deck(uuid, int) to authenticated;
+
+-- I ban di una partita. Le righe le vedono le parti (i due giocatori e lo staff) e, a torneo finito, chi vede il torneo;
+-- il mazzo bannato si vede se il ban è tuo, se sei dello staff, se il torneo è finito o se hanno bannato tutti e due.
+-- Prima, dell'avversario sai solo che ha bannato (riga con deck e legendary vuoti).
+create or replace function public.match_bans(mid uuid)
+returns table (user_id uuid, target uuid, deck int, legendary text, created_at timestamptz)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select b.user_id, b.target,
+         case when v.open then b.deck end,
+         case when v.open then b.legendary end,
+         b.created_at
+    from public.tournament_bans b
+    join public.tournament_matches m on m.id = b.match_id
+    join public.tournaments t on t.id = m.tournament_id
+    cross join lateral (
+      select (
+        b.user_id = auth.uid()
+        or public.is_tournament_staff(t.id)
+        or t.status = 'finished'
+        or (select count(*) from public.tournament_bans x where x.match_id = b.match_id) >= 2
+      ) as open
+    ) v
+   where b.match_id = mid
+     and public.can_view_tournament(t.id)
+     and (public.is_match_party(mid) or t.status = 'finished');
+$$;
+revoke all on function public.match_bans(uuid) from public;
+grant execute on function public.match_bans(uuid) to anon, authenticated;
+
+-- Leggendarie bannate in un torneo: quante volte (bans) su quante volte si potevano bannare (chances: ban fatti contro
+-- un giocatore che la portava). Allo staff sempre, a tutti a torneo finito.
+create or replace function public.tournament_ban_stats(tid uuid)
+returns table (legendary text, bans int, chances int)
+language sql stable security definer set search_path = public, pg_temp as $$
+  with ok as (
+    select 1 as y from public.tournaments t
+     where t.id = tid and public.can_view_tournament(tid) and (t.status = 'finished' or public.is_tournament_staff(tid))
+  ), b as (
+    select x.target, x.legendary from public.tournament_bans x
+      join public.tournament_matches m on m.id = x.match_id
+     where m.tournament_id = tid and exists (select 1 from ok)
+  ), c as (
+    select l.leg, count(*)::int as n
+      from b
+      join public.tournament_decks d on d.tournament_id = tid and d.user_id = b.target
+      cross join lateral unnest(d.legendaries) as l(leg)
+     where l.leg <> ''
+     group by l.leg
+  )
+  select c.leg, (select count(*)::int from b where b.legendary = c.leg), c.n
+    from c
+   order by 2 desc, 3 desc, 1;
+$$;
+revoke all on function public.tournament_ban_stats(uuid) from public;
+grant execute on function public.tournament_ban_stats(uuid) to anon, authenticated;
+
+-- Quanti ban ha ogni partita del torneo (solo lo staff): la coda "Da sistemare" segnala i ban fermi da troppo tempo.
+create or replace function public.tournament_ban_progress(tid uuid)
+returns table (match_id uuid, bans int)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select b.match_id, count(*)::int
+    from public.tournament_bans b
+    join public.tournament_matches m on m.id = b.match_id
+   where m.tournament_id = tid and public.is_tournament_staff(tid)
+   group by b.match_id;
+$$;
+revoke all on function public.tournament_ban_progress(uuid) from public, anon;
+grant execute on function public.tournament_ban_progress(uuid) to authenticated;

@@ -94,17 +94,26 @@ export type QueueMatch = {
   note?: string | null;
 };
 
-export type QueueKind = "disputed" | "bothAbsent" | "staleReport" | "long";
+/** "banPending" dall'08/11/2026: partita pronta da più di BAN_WAIT_MINUTES (stages.ts) senza i due ban. */
+export type QueueKind = "disputed" | "bothAbsent" | "banPending" | "staleReport" | "long";
 export type QueueItem = { match: QueueMatch; kind: QueueKind; since: number };
 
-const QUEUE_ORDER: Record<QueueKind, number> = { disputed: 0, bothAbsent: 1, staleReport: 2, long: 3 };
+const QUEUE_ORDER: Record<QueueKind, number> = { disputed: 0, bothAbsent: 1, banPending: 2, staleReport: 3, long: 4 };
 
 /**
  * La coda "Da sistemare" degli arbitri: contestate; partite oltre il tempo di assenza con nessuno dei due presente (il
  * tavolino non lo può chiedere nessuno); referti non confermati da più di STALE_REPORT_MINUTES; partite pronte da più di
  * LONG_MATCH_MINUTES. Una partita compare una volta sola, con il motivo più urgente; dentro lo stesso motivo, la più vecchia prima.
  */
-export function staffQueue(matches: QueueMatch[], opts: { now: number; noShowMinutes?: number | null }): QueueItem[] {
+export function staffQueue(
+  matches: QueueMatch[],
+  opts: {
+    now: number;
+    noShowMinutes?: number | null;
+    /** 08/11/2026: ban fatti per partita (tournament_ban_progress), turni in cui il ban vale e minuti di attesa ammessi */
+    bans?: { counts: Map<string, number>; applies: (round: number) => boolean; waitMinutes: number };
+  },
+): QueueItem[] {
   const out: QueueItem[] = [];
   for (const m of matches) {
     if (!m.player_a || !m.player_b) continue;
@@ -117,6 +126,10 @@ export function staffQueue(matches: QueueMatch[], opts: { now: number; noShowMin
     const deadline = noShowAt(m.ready_at, opts.noShowMinutes);
     if (m.status === "pending" && deadline !== null && opts.now >= deadline && !m.seen_a && !m.seen_b) {
       out.push({ match: m, kind: "bothAbsent", since: deadline });
+      continue;
+    }
+    if (opts.bans && m.status === "pending" && !Number.isNaN(ready) && opts.bans.applies(m.round) && (opts.bans.counts.get(m.id) ?? 0) < 2 && opts.now - ready >= opts.bans.waitMinutes * MIN) {
+      out.push({ match: m, kind: "banPending", since: ready });
       continue;
     }
     const reported = m.reported_at ? Date.parse(m.reported_at) : NaN;

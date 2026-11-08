@@ -8,9 +8,10 @@ import { revalidateSitemaps } from "@/lib/sitemapData";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { checkDeck } from "@/lib/community/util";
 import { validateConquest, type DeckState } from "@/lib/deckrules";
-import { newSlug, parseTournamentForm, splitCodes } from "./util";
+import { isMissingColumn, newSlug, parseTournamentForm, splitCodes, usesStageOptions, withoutStageOptions } from "./util";
 import { decksRequired } from "./types";
 import { notifyIfStarted, notifyMatchResult, notifyTournamentCreated, notifyTournamentFinished } from "./notify";
+import { STAGE_RPC_ERRORS } from "./stageLabels";
 
 /**
  * Server Action del Tournament Organizer. Creazione e cancellazione passano dalle policy RLS della
@@ -83,6 +84,8 @@ const RPC_ERRORS = [
   "already_staff",
   "judge_is_player",
   "too_many_judges",
+  // 08/11/2026, blocco BRACKET E TOP CUT: fase finale in pausa e ban dei mazzi
+  ...STAGE_RPC_ERRORS,
 ];
 function rpcError(e: { message?: string } | null | undefined): string {
   const m = e?.message ?? "";
@@ -111,7 +114,10 @@ export async function createTournament(_prev: TournamentActionState, formData: F
     // 05/10/2026: niente .select() sull'insert. Con "insert … returning" Postgres controlla la riga nuova anche con la
     // policy di lettura (can_view_tournament), che dentro la stessa istruzione non la vede ancora: l'inserimento veniva
     // rifiutato ("new row violates row-level security policy", provato su PGlite). Si inserisce e poi si rilegge.
-    const { error } = await ctx.supabase.from("tournaments").insert({ ...parsed.row, slug, organizer: ctx.user.id });
+    const row = { ...parsed.row, slug, organizer: ctx.user.id };
+    let { error } = await ctx.supabase.from("tournaments").insert(row);
+    // database non ancora migrato (blocco BRACKET E TOP CUT, 08/11/2026): un torneo che non usa le opzioni nuove si crea lo stesso
+    if (error && isMissingColumn(error) && !usesStageOptions(row)) ({ error } = await ctx.supabase.from("tournaments").insert(withoutStageOptions(row)));
     const { data } = error ? { data: null } : await ctx.supabase.from("tournaments").select("id, slug").eq("slug", slug).maybeSingle();
     if (!error && data) {
       const { id, slug: s } = data as { id: string; slug: string };
@@ -361,6 +367,31 @@ export async function claimNoShow(matchId: string, slug: string): Promise<Simple
   return r;
 }
 
+/* ---------- 08/11/2026: ban dei mazzi e avvio della fase finale (blocco BRACKET E TOP CUT di schema.sql) ---------- */
+
+/** Ban del mazzo numero `idx` (da 0) dell'avversario: si cambia finché l'avversario non ha bannato. Non rigenera pagine. */
+export async function banDeck(matchId: string, idx: number): Promise<Simple> {
+  if (!UUID.test(matchId) || !Number.isInteger(idx) || idx < 0 || idx > 3) return { error: "bad_ban" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { error } = await supabase.rpc("ban_deck", { mid: matchId, idx });
+  if (error) return { error: rpcError(error) };
+  return { ok: true };
+}
+
+/** Avvio della fase finale in pausa (staff): le sue partite con i due giocatori diventano pronte, con l'avviso. */
+export async function releaseTopCut(id: string, slug: string): Promise<Simple & { count?: number }> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { data, error } = await supabase.rpc("release_top_cut", { tid: id });
+  if (error) return { error: rpcError(error) };
+  revalidateTournamentPaths(slug);
+  return { ok: true, count: typeof data === "number" ? data : undefined };
+}
+
 /** Arbitro per nome utente (solo organizzatore e admin, al massimo 10). */
 export async function addJudge(id: string, slug: string, username: string): Promise<Simple> {
   if (!UUID.test(id)) return { error: "not_found" };
@@ -421,7 +452,9 @@ export async function updateTournament(_prev: TournamentActionState, formData: F
         })()
       : { name, cover_url, description, rules, discord_url, listed, lang, visibility };
   if (!patch) return { error: "sizeTooSmall" };
-  const { data, error } = await ctx.supabase.from("tournaments").update(patch).eq("id", id).select("slug").maybeSingle();
+  let { data, error } = await ctx.supabase.from("tournaments").update(patch).eq("id", id).select("slug").maybeSingle();
+  // database non ancora migrato (08/11/2026): senza le opzioni nuove la modifica passa lo stesso
+  if (error && isMissingColumn(error) && !usesStageOptions(patch)) ({ data, error } = await ctx.supabase.from("tournaments").update(withoutStageOptions(patch)).eq("id", id).select("slug").maybeSingle());
   if (error) return { error: error.message.includes("listing_not_allowed") ? "listing" : error.message.includes("private_not_listed") ? "private_not_listed" : "db" };
   if (!data) return { error: "forbidden" };
   const s = (data as { slug: string }).slug;

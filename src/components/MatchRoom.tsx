@@ -33,6 +33,16 @@ type Props = {
   /** scheda del torneo: a partita chiusa il tasto per tornarci, è lì che si vede la partita dopo */
   tournamentHref: string;
   labels: Dictionary["tournaments"];
+  /**
+   * 08/11/2026 (blocco BRACKET E TOP CUT): `held` = partita della fase finale in pausa (niente presenza, tavolino né
+   * referti finché lo staff non la avvia, con `heldText` che lo spiega); `reportLock` = perché i giocatori non refertano
+   * ancora (i due ban mancano), null se possono. Lo staff impone il risultato comunque.
+   */
+  held?: boolean;
+  heldText?: string | null;
+  reportLock?: string | null;
+  /** testi degli errori del blocco BRACKET E TOP CUT, accanto a quelli del dizionario */
+  extraErrors?: Record<string, string>;
 };
 
 const POLL_MS = 5000;
@@ -47,7 +57,7 @@ type Live = Pick<TournamentMatch, "status" | "seen_a" | "seen_b" | "ready_at" | 
  * screenshot caricati dal browser nel bucket privato (percorso <partita>/<utente>/<n>.webp; le policy
  * fanno da guardia), col selettore file o incollati con Ctrl+V. Dopo referto o upload la pagina (dinamica) si ricarica.
  */
-export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowMinutes, running, initialMessages, screens, tournamentHref, labels }: Props) {
+export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowMinutes, running, initialMessages, screens, tournamentHref, labels, held = false, heldText = null, reportLock = null, extraErrors }: Props) {
   const x = labels;
   const l = x.match;
   const router = useRouter();
@@ -66,7 +76,9 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
     setLive(fromMatch(match));
   }
   const ready = Boolean(match.player_a && match.player_b);
-  const active = running && ready && (live.status === "pending" || live.status === "reported" || live.status === "disputed");
+  // fase finale in pausa (08/11/2026): finché lo staff non la avvia la partita non è "attiva" (niente presenza né tavolino)
+  const pausedNow = held && !live.ready_at;
+  const active = running && ready && !pausedNow && (live.status === "pending" || live.status === "reported" || live.status === "disputed");
   const opponentId = side === "a" ? match.player_b : side === "b" ? match.player_a : null;
   const myName = side === "a" ? names.a : side === "b" ? names.b : null;
   const theirName = side === "a" ? names.b : side === "b" ? names.a : null;
@@ -83,7 +95,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
   const myScreens = side === "a" ? screens.a : side === "b" ? screens.b : [];
   const theirScreens = side === "a" ? screens.b : side === "b" ? screens.a : [];
 
-  const errText = (code: string) => x.errors[code as keyof typeof x.errors] ?? x.errors.db;
+  const errText = (code: string) => x.errors[code as keyof typeof x.errors] ?? extraErrors?.[code] ?? x.errors.db;
 
   // Presenza (05/10/2026): chi gioca ha aperto la stanza. Si segna dal browser, una volta, solo a partita pronta.
   const mySeen = side === "a" ? live.seen_a : side === "b" ? live.seen_b : null;
@@ -108,7 +120,8 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
       const { data } = await sb.from("tournament_matches").select("status, seen_a, seen_b, ready_at, reported_by, player_a, player_b").eq("id", matchId).maybeSingle();
       const row = data as (Live & { player_a: string | null; player_b: string | null }) | null;
       if (!alive || !row) return;
-      const changed = row.status !== match.status || row.reported_by !== match.reported_by || row.player_a !== match.player_a || row.player_b !== match.player_b;
+      // anche quando la partita diventa pronta: lo staff ha avviato la fase finale in pausa (08/11/2026)
+      const changed = row.status !== match.status || row.reported_by !== match.reported_by || row.player_a !== match.player_a || row.player_b !== match.player_b || Boolean(row.ready_at) !== Boolean(match.ready_at);
       setLive(row);
       if (changed) router.refresh();
     };
@@ -117,7 +130,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
       alive = false;
       clearInterval(timer);
     };
-  }, [matchId, running, match.status, match.reported_by, match.player_a, match.player_b, router]);
+  }, [matchId, running, match.status, match.reported_by, match.player_a, match.player_b, match.ready_at, router]);
 
   const opponentSeen = side === "a" ? Boolean(live.seen_b) : side === "b" ? Boolean(live.seen_a) : false;
   const opponentWrote = opponentId ? messages.some((msg) => msg.user_id === opponentId) : false;
@@ -270,7 +283,7 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
   const reportedByMe = match.status === "reported" && match.reported_by === me;
   const reportedByThem = match.status === "reported" && match.reported_by !== me;
   const scoreLine = match.score_a !== null && match.score_b !== null ? `${names.a} ${match.score_a} – ${match.score_b} ${names.b}` : null;
-  const canReport = running && side !== null && Boolean(match.player_a && match.player_b) && (match.status === "pending" || match.status === "reported" || match.status === "disputed");
+  const canReport = running && side !== null && !pausedNow && !reportLock && Boolean(match.player_a && match.player_b) && (match.status === "pending" || match.status === "reported" || match.status === "disputed");
   const validScore = mine !== theirs && Math.max(mine, theirs) === need && Math.min(mine, theirs) < need;
   const scoreText = (a: number, b: number) => `${Math.max(a, b)}–${Math.min(a, b)}`;
   const reportedWinner = match.score_a !== null && match.score_b !== null ? (match.score_a > match.score_b ? names.a : names.b) : null;
@@ -298,6 +311,8 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
                       ? l.tbd
                       : l.statusPending}
         </p>
+        {pausedNow && heldText ? <p className="mt-3 rounded-lg border-2 border-gold bg-gold/10 p-3 text-sm text-pale">{heldText}</p> : null}
+        {!pausedNow && reportLock && side !== null && running && match.status === "pending" ? <p className="mt-3 text-sm font-semibold text-gold">{reportLock}</p> : null}
         {side && active && noShowMinutes ? (
           <div className={`mt-4 rounded-lg border-2 p-3 text-sm ${opponentHere ? "border-good/60" : "border-gold bg-gold/10"}`}>
             {opponentHere ? (
