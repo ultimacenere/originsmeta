@@ -3,7 +3,7 @@ import { currentUser } from "@/lib/supabase/server";
 import { supabaseAnon } from "@/lib/supabase/public";
 import { isLocale } from "@/lib/i18n";
 import { trackerInstallHref } from "@/lib/analyticsLabels";
-import { TRACKER_DOWNLOAD_URL } from "@/lib/trackerDownload";
+import { trackerDownloadTarget } from "@/lib/trackerDownload";
 
 /**
  * Download di OriginsMeta Tracker solo per chi ha fatto l'accesso (12/10/2026, Pierluigi: "ben inteso che solo i
@@ -16,6 +16,9 @@ import { TRACKER_DOWNLOAD_URL } from "@/lib/trackerDownload";
  * database, `tracker_download_log` con il segreto del server (blocco "15/10/2026: DOWNLOAD DEL TRACKER"): l'account se
  * c'è l'accesso, la lingua, l'ora. Lo legge lo staff con scripts/tracker-downloads.mjs. Il conteggio va dopo la
  * risposta (`after`) e un suo errore non ferma mai il download; i crawler non contano.
+ *
+ * Dall'8/11/2026, se GitHub non risponde entro pochi secondi, si va alla copia di riserva su Vercel Blob
+ * (`trackerDownloadTarget`, `TRACKER_MIRROR_URL` in src/lib/trackerDownload.ts).
  *
  * Mai in cache (dipende dalla sessione). Lo zip resta pubblico su GitHub per chi ne conosce l'indirizzo: la protezione
  * vera è nell'app, che funziona solo collegata a un account.
@@ -30,7 +33,7 @@ export async function GET(request: NextRequest) {
   const locale = isLocale(raw) ? raw : "en";
   const { user } = await currentUser();
   const target = user
-    ? TRACKER_DOWNLOAD_URL
+    ? await trackerDownloadTarget()
     : new URL(`/${locale}/login?next=${encodeURIComponent(trackerInstallHref(locale))}`, request.nextUrl.origin).toString();
   if (!BOT_RE.test(request.headers.get("user-agent") ?? "")) after(() => logDownload(user?.id ?? null, locale));
   return NextResponse.redirect(target, { status: 302, headers: NO_STORE });

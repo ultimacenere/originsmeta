@@ -118,6 +118,15 @@ npm run package    # versione portatile non firmata: out/OriginsMeta-Tracker-<ve
   condivise si archiviano in `G:\Il mio Drive\OriginsMeta\20_Tracker_build\`. Prima di una build per i tester: soglia
   delle statistiche a 20 e 3 (docs/tracker.md, "Statistiche anonime").
 
+- **Riserva del download** (08/11/2026, GitHub in timeout per chi non aveva fatto l'accesso; Pierluigi: "Si crea
+  alternativa"): se GitHub non risponde entro 3,5 s, il tasto del sito manda a una copia dello zip su Vercel Blob
+  (`TRACKER_MIRROR_URL` in `../src/lib/trackerDownload.ts`). **A ogni release**, dopo `npm run package`, dalla radice
+  del repo collegata al progetto Vercel (`vercel link --project originsmeta`):
+  `vercel blob put tracker/out/OriginsMeta-Tracker-win-x64.zip --access public --pathname tracker/OriginsMeta-Tracker-<versione>-win-x64.zip`
+  (se la CLI chiede `BLOB_STORE_ID`, togliere `VERCEL_OIDC_TOKEN` dal `.env.local` scaricato), poi aggiornare
+  `TRACKER_MIRROR_URL`. Il test `src/lib/trackerDownload.test.ts` fallisce se la riserva non è alla versione di
+  `package.json`. Lo stesso nome non si sovrascrive: il CDN lo tiene in cache 30 giorni.
+
 - `npm run build` rigenera anche `src/cards.json` dal database carte del sito (`../src/lib/data/cards.ts`).
 - Prove senza toccare lo storico vero: `ORIGINSMETA_TRACKER_DATA=<cartella>` (dati dell'app),
   `ORIGINSMETA_TRACKER_CACHE` e `ORIGINSMETA_TRACKER_REPLAYS` (cartelle del gioco finte, separate da `;`),
