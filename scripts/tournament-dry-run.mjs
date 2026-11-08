@@ -12,6 +12,10 @@
 // Dall'08/11/2026 anche il blocco "BRACKET E TOP CUT": un torneo da 256 (256 utenti finti in più) in 16 bracket con la
 // Top 16 in pausa e il ban di un mazzo, giocato fino in fondo; con --no-schema la sezione si salta finché il database
 // non ha il blocco.
+// ATTENZIONE (08/11/2026): senza --no-schema lo schema si applica dentro la transazione, che tiene bloccate le tabelle
+// (profili, mazzi, tornei…) fino al rollback: per tutta la durata il SITO NON RISPONDE (letture in timeout). La prima
+// versione della sezione da 256 durava minuti e ha fermato il sito; ora fa il grosso in blocco, ma resta un minuto buono.
+// Sul database vero, a migrazione fatta, meglio --no-schema (nessun blocco di tabelle: solo righe nuove).
 // Legge .env.local della cartella corrente, altrimenti quello del checkout principale (i worktree non lo hanno).
 import { existsSync, readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
@@ -358,16 +362,29 @@ try {
     check("torneo da 256 con la Top 16, la pausa e il ban", !ins3.error, err(ins3));
     const T3 = (await one(`select id from public.tournaments where slug = 'zzdry-256'`))?.id;
     check("arbitro del torneo da 256", !(await attempt(`select public.add_judge($1, 'zzdry-judge')`, [T3])).error);
+    // Tutto in blocco, con poche richieste (08/11/2026): con lo schema applicato la transazione tiene bloccate le tabelle e
+    // il sito non risponde finché non finisce. La prima versione faceva ~4.000 richieste una per una e ha fermato il sito
+    // per minuti; ora 256 utenti con un insert, 254 iscrizioni in blocco e le ultime due con le RPC.
     await as("postgres");
-    const Q = [];
-    for (let i = 0; i < 256; i++) Q.push(await mkUser(`q${i}`));
+    await db.query(
+      `insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+         created_at, updated_at, confirmation_token, recovery_token, email_change_token_new, email_change, phone_change, phone_change_token,
+         email_change_token_current, reauthentication_token, is_sso_user, is_anonymous)
+       select gen_random_uuid(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'q' || g || '@${DOMAIN}', '', now(),
+         '{"provider":"email","providers":["email"]}'::jsonb, jsonb_build_object('user_name', 'zzdry-q' || g), now(), now(), '', '', '', '', '', '', '', '', false, false
+         from generate_series(0, 255) g`,
+    );
+    const Q = (await db.query(`select u.id from auth.users u join public.profiles p on p.id = u.id where u.email like 'q%@${DOMAIN}' order by u.email`)).rows.map((r) => r.id);
+    check("256 utenti finti in un colpo, con il profilo", Q.length === 256, String(Q.length));
+    await db.query(`insert into public.tournament_players (tournament_id, user_id, status, decks_submitted) select $1, x, 'registered', true from unnest($2::uuid[]) x`, [T3, Q.slice(0, 254)]);
+    await db.query(`insert into public.tournament_decks (tournament_id, user_id, codes) select $1, x, $3::jsonb from unnest($2::uuid[]) x`, [T3, Q.slice(0, 254), trio(0)]);
     let joinErrors = 0;
-    for (let i = 0; i < 256; i++) {
-      await as(Q[i]);
+    for (const [i, u] of Q.slice(254).entries()) {
+      await as(u);
       if ((await attempt(`select public.join_tournament($1)`, [T3])).error) joinErrors++;
-      if ((await attempt(`select public.submit_tournament_decks($1, $2::jsonb)`, [T3, trio(i)])).error) joinErrors++;
+      if ((await attempt(`select public.submit_tournament_decks($1, $2::jsonb)`, [T3, trio(254 + i)])).error) joinErrors++;
     }
-    check("256 iscrizioni e mazzi consegnati con le RPC", joinErrors === 0, String(joinErrors));
+    check("gli ultimi due si iscrivono e consegnano con le RPC", joinErrors === 0, String(joinErrors));
     await as("postgres");
     const st3 = await one(`select status from public.tournaments where id = $1`, [T3]);
     const all3 = (await db.query(`select * from public.tournament_matches where tournament_id = $1 order by round, position`, [T3])).rows;
@@ -399,18 +416,25 @@ try {
     check("il ban salva la Leggendaria del mazzo bannato", (await one(`select legendary from public.tournament_bans where match_id = $1 and user_id = $2`, [a0.id, a0.player_a]))?.legendary === "mulan");
     check("dopo i ban si referta e si conferma", !(await play(a0, 2, 1)).error && (await statusM(a0.id)) === "confirmed");
 
-    // la qualificazione fino in fondo come bot-play: due ban, risultato, tm_propagate
-    const closeDirect = async (m) => {
-      for (const [who, target] of [[m.player_a, m.player_b], [m.player_b, m.player_a]]) await db.query(`insert into public.tournament_bans (match_id, user_id, target, deck, legendary) values ($1, $2, $3, 1, 'king-arthur') on conflict do nothing`, [m.id, who, target]);
-      const need = (await one(`select public.tm_need($1, $2) as n`, [T3, m.round])).n;
-      await db.query(`update public.tournament_matches set winner = player_a, status = 'confirmed', score_a = $2, score_b = 0 where id = $1`, [m.id, need]);
-      await db.query(`select public.tm_propagate($1)`, [m.id]);
+    // la qualificazione fino in fondo come bot-play (due ban, risultato, tm_propagate), in un solo blocco eseguito dal database
+    const closeRounds = (from, to) => {
+      if (!/^[0-9a-f-]{36}$/.test(T3)) throw new Error("id del torneo strano");
+      return db.query(`do $do$
+        declare m record; need int;
+        begin
+          for r in ${from}..${to} loop
+            for m in select * from public.tournament_matches where tournament_id = '${T3}' and round = r and status = 'pending' and player_a is not null and player_b is not null order by position loop
+              insert into public.tournament_bans (match_id, user_id, target, deck, legendary)
+              values (m.id, m.player_a, m.player_b, 1, 'king-arthur'), (m.id, m.player_b, m.player_a, 1, 'king-arthur') on conflict do nothing;
+              need := public.tm_need(m.tournament_id, m.round);
+              update public.tournament_matches set winner = m.player_a, status = 'confirmed', score_a = need, score_b = 0 where id = m.id;
+              perform public.tm_propagate(m.id);
+            end loop;
+          end loop;
+        end $do$`);
     };
     await as("postgres");
-    for (let round = 1; round <= 4; round++) {
-      const ms = (await db.query(`select * from public.tournament_matches where tournament_id = $1 and round = $2 and status = 'pending' order by position`, [T3, round])).rows;
-      for (const m of ms) await closeDirect(m);
-    }
+    await closeRounds(1, 4);
     const r5 = (await db.query(`select * from public.tournament_matches where tournament_id = $1 and round = 5 order by position`, [T3])).rows;
     check("16 bracket finiti: 8 partite della Top 16 con i due giocatori", r5.length === 8 && r5.every((m) => m.player_a && m.player_b));
     check("Top 16 in pausa: nessuna partita pronta", r5.every((m) => !m.ready_at && m.status === "pending"));
@@ -451,10 +475,7 @@ try {
     await db.query(`update public.tournaments set final_best_of = 5 where id = $1`, [T3]);
     check("con la finale al meglio delle 5 il ban non vale in finale, nella Top 16 sì", (await one(`select public.tm_ban_applies($1, 8) as f, public.tm_ban_applies($1, 5) as t`, [T3]))?.f === false && (await one(`select public.tm_ban_applies($1, 5) as t`, [T3]))?.t === true);
     await as("postgres");
-    for (let round = 5; round <= 8; round++) {
-      const ms = (await db.query(`select * from public.tournament_matches where tournament_id = $1 and round = $2 and status = 'pending' order by position`, [T3, round])).rows;
-      for (const m of ms) await closeDirect(m);
-    }
+    await closeRounds(5, 8);
     await as(J);
     check("il torneo da 256 si chiude", !(await attempt(`select public.finish_tournament($1, 'GG')`, [T3])).error);
     await as(null);
