@@ -43,7 +43,10 @@ export function StarRating({
   path: string;
   loginHref: string;
   labels: RatingLabels;
-  /** versione del mazzo in vigore (blocco VERSIONI, 30/09/2026): il voto dell'utente si legge su quella; assente prima della migrazione */
+  /**
+   * versione del mazzo in vigore (blocco VERSIONI, 30/09/2026); assente prima della migrazione. Dal 09/11/2026 il voto
+   * dell'utente è il suo ultimo, di qualsiasi versione (con la versione la lettura ordina per `version`)
+   */
   version?: number | null;
   /** mazzo singolo (default) o mazzo torneo */
   kind?: "deck" | "set";
@@ -71,8 +74,10 @@ export function StarRating({
         if (kind === "set") {
           ({ data } = await sb.from("deck_set_votes").select("stars").eq("set_id", deckId).eq("user_id", uid).maybeSingle());
         } else {
+          // Il voto che conta è l'ultimo dato, di qualsiasi versione (09/11/2026: il mazzo aggiornato tiene i voti, vista
+          // deck_ratings): chi ha votato la versione di prima lo vede ancora, e votando di nuovo vota quella in vigore.
           const q = sb.from("deck_votes").select("stars").eq("deck_id", deckId).eq("user_id", uid);
-          ({ data } = await (version ? q.eq("version", version) : q).maybeSingle());
+          ({ data } = await (version ? q.order("version", { ascending: false }).limit(1) : q).maybeSingle());
         }
         if (alive && data) setMine((data as { stars: number }).stars);
       }

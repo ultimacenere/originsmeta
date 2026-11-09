@@ -203,6 +203,66 @@ describe("blocco ORDINE PER AGGIORNAMENTO di schema.sql", () => {
     assert.doesNotMatch(block, /add column/);
     assert.doesNotMatch(block, /^\s*(?:update|delete from|truncate)\b/im);
   });
+  test("la media mostrata è l'ultimo voto di ogni persona, di qualsiasi versione (l'ultima vista del file)", () => {
+    const last = schema.lastIndexOf("create or replace view public.deck_ratings as");
+    assert.ok(last > start);
+    const view = schema.slice(last, schema.indexOf(";", last));
+    assert.match(view, /distinct on \(v\.deck_id, v\.user_id\)/);
+    assert.match(view, /order by v\.deck_id, v\.user_id, v\.version desc/);
+    assert.doesNotMatch(view, /d\.version = v\.version/);
+    assert.match(block, /grant select on public\.deck_ratings to anon, authenticated;/);
+  });
+});
+
+describe("il mazzo aggiornato tiene visite e voti (09/11/2026)", () => {
+  test("i voti della versione di prima restano nella media finché chi li ha dati non vota quella nuova", () => {
+    const v1 = [
+      { user_id: "anna", version: 1, stars: 5 },
+      { user_id: "bruno", version: 1, stars: 4 },
+      { user_id: "carla", version: 1, stars: 3 },
+    ];
+    assert.deepEqual(V.deckRating(v1), { avg: 4, votes: 3 });
+    // le carte cambiano (versione 2): nessun voto nuovo, la media non riparte da zero
+    assert.deepEqual(V.deckRating(v1), { avg: 4, votes: 3 });
+    // Anna vota la versione 2: conta il suo voto nuovo, non due voti
+    const v2 = [...v1, { user_id: "anna", version: 2, stars: 2 }];
+    assert.deepEqual(V.deckRating(v2), { avg: 3, votes: 3 });
+    // Dario vota solo la versione 2: si aggiunge
+    assert.deepEqual(V.deckRating([...v2, { user_id: "dario", version: 2, stars: 5 }]), { avg: 3.5, votes: 4 });
+  });
+  test("l'ordine delle righe non conta e i voti non validi si scartano", () => {
+    const votes = [
+      { user_id: "anna", version: 2, stars: 2 },
+      { user_id: "anna", version: 1, stars: 5 },
+      { user_id: "bruno", version: 1, stars: 9 },
+    ];
+    assert.deepEqual(V.deckRating(votes), { avg: 2, votes: 1 });
+    assert.deepEqual(V.deckRating([]), { avg: 0, votes: 0 });
+  });
+  test("la media di ogni versione di prima resta quella dei voti ricevuti mentre era in vigore", () => {
+    const votes = [
+      { user_id: "anna", version: 1, stars: 5 },
+      { user_id: "anna", version: 2, stars: 2 },
+      { user_id: "bruno", version: 1, stars: 4 },
+    ];
+    assert.deepEqual(V.versionRatings(votes).get(1), { avg: 4.5, votes: 2 });
+    assert.deepEqual(V.versionRatings(votes).get(2), { avg: 2, votes: 1 });
+    assert.deepEqual(V.deckRating(votes), { avg: 3, votes: 2 });
+  });
+  test("le visite stanno sull'id del mazzo, che un aggiornamento non cambia", () => {
+    const schema = read("../../../supabase/schema.sql");
+    assert.match(schema, /create table if not exists public\.deck_stats_daily \(\s*deck_id uuid not null references public\.community_decks\(id\) on delete cascade/);
+    const before = { id: "id-1", slug: "x", status: "published", legendary: "merlin", cards: ["a", "b"], custom_cards: [], version: 1, created_at: "2026-10-01T00:00:00Z", cards_updated_at: null };
+    const after = V.deckAfterSave(before, { cards: ["a", "c"] }, "2026-11-09T00:00:00Z");
+    assert.equal(after.id, before.id);
+    assert.equal(after.version, 2);
+  });
+  test("testi: nessuna lingua dice più che i voti ripartono", () => {
+    for (const [l, t] of Object.entries(L.deckVersionLabels)) {
+      for (const text of [t.edit.intro, t.edit.saveNotice, t.builder.banner, t.deck.hint])
+        assert.doesNotMatch(text, /from zero|starts again|ripart|da zero|vuelven a cero|empieza de nuevo|repartent|de zéro|começa de novo|do zero|von vorn|bei null|с нуля|начнутся заново|从零|重新开始/i, `${l}: ${text}`);
+    }
+  });
 });
 
 describe("blocco VERSIONI di schema.sql", () => {
@@ -226,7 +286,7 @@ describe("blocco VERSIONI di schema.sql", () => {
     // un mazzo privato si riscrive senza versioni
     assert.match(block, /if old\.status <> 'draft'/);
   });
-  test("la media mostrata è quella della versione in vigore", () => {
+  test("la vista di VERSIONI contava la versione in vigore (sostituita il 09/11/2026, vedi ORDINE PER AGGIORNAMENTO)", () => {
     assert.match(block, /create or replace view public\.deck_ratings as[\s\S]*?d\.version = v\.version/);
   });
   test("nessuna scrittura degli utenti sulla tabella delle versioni", () => {

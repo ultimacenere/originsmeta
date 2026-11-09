@@ -129,6 +129,26 @@ export async function deckOrderChecks(db, sql, log = console.log) {
   check("le visite restano al mazzo aggiornato", views === 7);
   const votes = (await db.query(`select count(*)::int as n from public.deck_votes where deck_id = $1`, [id])).rows[0]?.n;
   check("i voti restano in deck_votes", votes === 1);
+  const rating = async () => {
+    await as("anon");
+    const r = (await attempt(`select avg_stars, votes from public.deck_ratings where deck_id = $1`, [id])).rows?.[0];
+    await as("postgres");
+    return r ? { avg: Number(r.avg_stars), votes: Number(r.votes) } : null;
+  };
+  let r = await rating();
+  check("la media non riparte: il voto della versione 1 conta ancora (letto da anon)", r?.votes === 1 && r?.avg === 4, JSON.stringify(r));
+  await as("authenticated", voter);
+  const again = await attempt(`insert into public.deck_votes (deck_id, user_id, stars) values ($1, $2, 2) on conflict (deck_id, user_id, version) do update set stars = excluded.stars returning version`, [id, voter]);
+  check("chi aveva votato la versione 1 vota la versione 2", again.rows?.[0]?.version === 2, again.error ?? "");
+  r = await rating();
+  check("conta il voto nuovo, non due voti", r?.votes === 1 && r?.avg === 2, JSON.stringify(r));
+  const old = await (async () => {
+    await as("authenticated", voter);
+    const x = await attempt(`update public.deck_votes set stars = 5 where deck_id = $1 and user_id = $2 and version = 1 returning stars`, [id, voter]);
+    await as("postgres");
+    return x;
+  })();
+  check("il voto della versione chiusa non si cambia più", Boolean(old.error) || old.rows?.length === 0, old.error ?? "");
 
   // ---------- informazione sui mazzi veri (sola lettura) ----------
   const fake = (

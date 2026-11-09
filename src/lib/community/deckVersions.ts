@@ -1,14 +1,16 @@
 /*
  * Versioni delle carte di un mazzo della community (pacchetto VERSIONI, 30/09/2026). Richiesta di MagicOfHands sul
  * Discord dopo la patch 0.7: aggiornare le carte di un mazzo già pubblicato tenendo nome e guida, invece di pubblicarne
- * uno nuovo; i voti ripartono sulla versione nuova, quella di prima resta consultabile con la sua media.
+ * uno nuovo; quella di prima resta consultabile con la sua media. Fino al 09/11/2026 i voti ripartivano sulla versione
+ * nuova; da allora (Pierluigi: "il deck aggiornato mantiene visualizzazioni e voti") il mazzo tiene l'ultimo voto di ogni
+ * persona (`deckRating`) e un cambio di carte lo riporta in cima all'ordine "Più recenti" (`newestCardsFirst`).
  *
- * Chi decide davvero è il database (supabase/schema.sql, blocco VERSIONI): il trigger guard_deck_version apre una
- * versione nuova quando cambiano carte, Leggendaria o carte create, e i voti portano la versione in cui sono stati dati.
- * Qui le regole pure che servono al sito: se le carte sono cambiate (come le confronta il trigger, ma senza badare
- * all'ordine: il sito rimette l'ordine salvato, così un riordino non apre una versione), che cosa è cambiato (il riepilogo
- * della pagina di modifica), da quale data si ricava la patch e la media di ogni versione. Nessun import a runtime: lo
- * esegue anche Node nei test.
+ * Chi decide davvero è il database (supabase/schema.sql, blocchi VERSIONI e "09/11/2026: ORDINE PER AGGIORNAMENTO"): il
+ * trigger guard_deck_version apre una versione nuova quando cambiano carte, Leggendaria o carte create, e i voti portano
+ * la versione in cui sono stati dati. Qui le regole pure che servono al sito: se le carte sono cambiate (senza badare
+ * all'ordine, come il trigger dal 09/11/2026; il sito rimette anche l'ordine salvato), che cosa è cambiato (il riepilogo
+ * della pagina di modifica), da quale data si ricava la patch, l'ordine e la media del mazzo e di ogni versione. Nessun
+ * import a runtime: lo esegue anche Node nei test.
  */
 
 /** Carta creata dall'autore (il `BuilderCard` del deck builder): qui serve solo lo slug. */
@@ -110,6 +112,24 @@ export function mergeNewestCards<T extends Dated & { id: string }>(byCreated: re
   const seen = new Map<string, T>();
   for (const d of [...byCreated, ...byCardsUpdate]) if (!seen.has(d.id)) seen.set(d.id, d);
   return Array.from(seen.values()).sort(newestCardsFirst).slice(0, limit);
+}
+
+/**
+ * Media mostrata di un mazzo (blocco "09/11/2026: ORDINE PER AGGIORNAMENTO", Pierluigi: "il deck aggiornato mantiene
+ * visualizzazioni e voti"): un voto per persona, il più recente di qualsiasi versione. Chi aveva votato la versione di
+ * prima conta ancora finché non vota quella nuova, e allora conta il voto nuovo. È la regola della vista deck_ratings,
+ * scritta qui per i test. Media con due decimali, come la vista; voti non validi scartati.
+ */
+export function deckRating(votes: readonly { user_id: string; version: number; stars: number }[]): { avg: number; votes: number } {
+  const latest = new Map<string, { version: number; stars: number }>();
+  for (const v of votes) {
+    if (!Number.isInteger(v.version) || !(v.stars >= 1 && v.stars <= 5)) continue;
+    const seen = latest.get(v.user_id);
+    if (!seen || v.version > seen.version) latest.set(v.user_id, v);
+  }
+  if (!latest.size) return { avg: 0, votes: 0 };
+  const total = Array.from(latest.values()).reduce((sum, v) => sum + v.stars, 0);
+  return { avg: Math.round((total / latest.size) * 100) / 100, votes: latest.size };
 }
 
 /*

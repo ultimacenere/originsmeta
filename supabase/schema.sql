@@ -4309,6 +4309,8 @@ comment on function public.community_comic_files(jsonb, text, jsonb) is 'Tutti i
 --      la sua media. Un voto di una versione chiusa non si cambia più (si può solo togliere).
 --   3) deck_ratings conta solo i voti della versione in vigore: è la media che il sito mostra ovunque (schede, /decks,
 --      profili, tier list). Le versioni di prima la calcolano dai voti con la loro `version` (listDeckVersions).
+--      (Dal 09/11/2026 la vista conta l'ultimo voto di ogni persona di qualsiasi versione: blocco ORDINE PER
+--      AGGIORNAMENTO in fondo al file, che la sostituisce.)
 --   4) community_deck_versions: lettura con le stesse regole del mazzo (la policy guarda community_decks, che ha la sua
 --      RLS: chi non vede il mazzo non vede le versioni), nessuna scrittura degli utenti (solo il grant di select e una
 --      policy restrittiva che nega le scritture): le righe le scrive solo il trigger security definer. Si cancellano
@@ -8649,7 +8651,10 @@ grant execute on function public.tournament_ban_progress(uuid) to authenticated;
 --      (ordinate, doppioni compresi: conta anche una quantità diversa) con deck_cards_key, come `sameDeckCards` del sito.
 --      La funzione guard_deck_version qui sotto sostituisce quella del blocco VERSIONI (db-migrate applica il file
 --      intero, in ordine: vale l'ultima); il resto è uguale.
--- Il sito regge prima e dopo questo blocco: l'ordine nuovo è solo codice. Prova a secco con rollback:
+--   2) Il mazzo aggiornato tiene i suoi voti: deck_ratings conta l'ultimo voto di ogni persona, di qualsiasi versione,
+--      invece dei soli voti della versione in vigore (sostituisce la vista del blocco VERSIONI, punto 3).
+-- Il sito regge prima e dopo questo blocco: l'ordine nuovo è solo codice, e fino alla migrazione la media resta quella
+-- della versione in vigore. Prova a secco con rollback:
 -- node scripts/deck-order-dry-run.mjs.
 -- =====================================================================================================
 
@@ -8687,3 +8692,23 @@ revoke all on function public.guard_deck_version() from public, anon, authentica
 
 comment on function public.deck_cards_key(jsonb) is 'Le carte di un mazzo come multinsieme (ordinate, doppioni compresi): guard_deck_version confronta così, senza badare all''ordine (09/11/2026).';
 comment on column public.community_decks.cards_updated_at is 'Quando sono cambiate le carte l''ultima volta (null: quelle della pubblicazione). La patch del mazzo si ricava da qui (30/09/2026); dal 09/11/2026 è anche la data dell''ordine "Più recenti" delle liste dei mazzi.';
+
+-- ---------- 2) il mazzo aggiornato tiene i suoi voti ----------
+-- "Il deck aggiornato mantiene visualizzazioni e voti: niente reset". Le visite (deck_stats_daily, blocco STATS) stanno
+-- sull'id del mazzo e non sono mai ripartite. I voti sì: dal 30/09/2026 deck_ratings contava solo quelli della versione
+-- in vigore (VERSIONI, punto 3), e dopo un cambio di carte il mazzo tornava a "nessun voto", in fondo a "Più votati" e
+-- fuori dalla classifica dei migliori mazzi. Ora conta un voto per persona, il più recente di qualsiasi versione: chi
+-- aveva votato la versione di prima conta finché non vota quella nuova, poi conta il voto nuovo. Le righe di
+-- deck_votes, la chiave (deck_id, user_id, version) e il trigger guard_vote_version non cambiano (un voto di una versione
+-- chiusa non si modifica: si vota la versione nuova), e le versioni di prima mostrano ancora la media dei voti ricevuti
+-- mentre erano in vigore (listDeckVersions). La stessa regola sta in `deckRating` (src/lib/community/deckVersions.ts).
+create or replace view public.deck_ratings as
+  select l.deck_id, round(avg(l.stars)::numeric, 2) as avg_stars, count(*)::int as votes
+    from (
+      select distinct on (v.deck_id, v.user_id) v.deck_id, v.stars
+        from public.deck_votes v
+       order by v.deck_id, v.user_id, v.version desc
+    ) l
+   group by l.deck_id;
+grant select on public.deck_ratings to anon, authenticated;
+comment on view public.deck_ratings is 'Media e numero dei voti di ogni mazzo: un voto per persona, il più recente di qualsiasi versione (09/11/2026; dal 30/09 al 09/11 solo la versione in vigore).';
