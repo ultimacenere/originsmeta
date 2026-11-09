@@ -4,6 +4,10 @@
 // tocca: lì si gioca, si referta, si prova la vittoria a tavolino (i bot non aprono mai la stanza partita).
 // Dall'08/11/2026 (blocco BRACKET E TOP CUT): nei tornei con il ban i due bot bannano un mazzo a caso prima di chiudere
 // la partita, e le partite della fase finale in pausa (tm_held) restano ferme finché lo staff non la avvia.
+// Dal 09/11/2026 (blocco SVIZZERA, GIRONI E SIDEBOARD): in una svizzera, con --all, quando il turno è chiuso genera il
+// turno dopo come "Genera il turno successivo" (tm_swiss_round + tm_ready_round), fino ai turni previsti, e si ferma lì:
+// la Top la crea lo staff dalla gestione ("Chiudi la svizzera e avvia la Top"). Nei gironi chiude le partite fra bot di
+// tutti i turni. Le partite di un giocatore vero bloccano il turno dopo finché non si giocano (o --with-humans).
 // La connessione diretta scavalca RLS e RPC: solo per le prove dello staff, mai su un torneo vero.
 // Uso: node scripts/bot-play.mjs <TAG>                → chiude le partite fra bot pronte adesso (un giro)
 //      node scripts/bot-play.mjs <TAG> --all          → ripete finché restano partite fra bot da chiudere
@@ -39,7 +43,7 @@ const tag = arg.toUpperCase().startsWith("OM-") ? arg.toUpperCase() : `OM-${arg.
 const db = new pg.Client({ host: env.SUPABASE_DB_HOST, port: Number(env.SUPABASE_DB_PORT || 5432), user: env.SUPABASE_DB_USER, password: env.SUPABASE_DB_PASSWORD, database: "postgres", ssl: env.SUPABASE_DB_SSL === "off" ? false : { rejectUnauthorized: false } });
 await db.connect();
 
-const { rows: trows } = await db.query("select id, name, status from public.tournaments where tag = $1", [tag]);
+const { rows: trows } = await db.query("select id, name, status, format from public.tournaments where tag = $1", [tag]);
 const t = trows[0];
 if (!t) {
   console.error(`Nessun torneo con tag ${tag}`);
@@ -55,7 +59,35 @@ const stages = (await db.query("select to_regproc('public.tm_held') is not null 
 const BOTS = "^bot-[0-9]+(-[0-9]+)?$";
 let closed = 0;
 let banned = 0;
-for (let pass = 0; pass < 12; pass++) {
+let generated = 0;
+/** Svizzera: turno chiuso e altri turni previsti → genera il prossimo (come swiss_next_round, senza i controlli dello staff). */
+async function nextSwissRound() {
+  if (t.format !== "swiss") return false;
+  const { rows } = await db.query(
+    `select t.swiss_rounds,
+            (select coalesce(max(round), 0) from public.tournament_matches where tournament_id = t.id and stage = 'swiss') as cur,
+            exists (select 1 from public.tournament_matches where tournament_id = t.id and stage = 'swiss' and status in ('pending', 'reported', 'disputed')) as open,
+            exists (select 1 from public.tournament_matches where tournament_id = t.id and (stage is null or stage = 'champion')) as over
+       from public.tournaments t where t.id = $1`,
+    [t.id],
+  );
+  const r = rows[0];
+  if (!r || r.open || r.over || r.cur >= (r.swiss_rounds ?? 0) || r.cur + 1 > until) return false;
+  await db.query("begin");
+  try {
+    await db.query("select 1 from public.tournaments where id = $1 for update", [t.id]);
+    await db.query("select public.tm_swiss_round($1, $2)", [t.id, r.cur + 1]);
+    await db.query("select public.tm_ready_round($1, $2)", [t.id, r.cur + 1]);
+    await db.query("commit");
+    generated++;
+    return true;
+  } catch (e) {
+    await db.query("rollback");
+    console.error(`turno svizzero ${r.cur + 1}: ${e.message}`);
+    return false;
+  }
+}
+for (let pass = 0; pass < 40; pass++) {
   const { rows: found } = await db.query(
     `select m.id, m.round, m.position, m.player_a, m.player_b from public.tournament_matches m
        join public.profiles a on a.id = m.player_a join public.profiles b on b.id = m.player_b
@@ -67,7 +99,10 @@ for (let pass = 0; pass < 12; pass++) {
   );
   // --leave: le ultime n del giro restano da giocare (solo al primo giro, poi il tabellone avanza solo fin lì)
   const ready = pass === 0 && leave ? found.slice(0, Math.max(0, found.length - leave)) : found;
-  if (!ready.length) break;
+  if (!ready.length) {
+    if (all && (await nextSwissRound())) continue;
+    break;
+  }
   for (const m of ready) {
     await db.query("begin");
     try {
@@ -113,5 +148,5 @@ const { rows: left } = await db.query(
      from public.tournament_matches where tournament_id = $1`,
   [t.id],
 );
-console.log(`Torneo "${t.name}" (${tag}): ${closed} partite chiuse${banned ? ` (${banned} ban)` : ""}; ${left[0].ready} partite con i due giocatori ancora da giocare, ${left[0].open} in tutto.`);
+console.log(`Torneo "${t.name}" (${tag}): ${closed} partite chiuse${banned ? ` (${banned} ban)` : ""}${generated ? `, ${generated} turni svizzeri generati` : ""}; ${left[0].ready} partite con i due giocatori ancora da giocare, ${left[0].open} in tutto.`);
 await db.end();

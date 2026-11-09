@@ -250,7 +250,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
               {fv.bracket.length ? (
                 <div className="mb-6">
                   <h3 className="t-item">{t.format === "swiss" ? fill(sl.top, { n: fv.cut ?? 0 }) : fl.finalStage}</h3>
-                  {holdFrom !== null ? <p className="mt-1 text-sm text-gold">{fill(sl.holdStatus, { n: fv.cut ?? 0 })}</p> : null}
+                  {holdFrom !== null ? <p className="mt-1 text-sm text-gold">{t.format === "swiss" ? fill(sl.holdStatus, { n: fv.cut ?? 0 }) : fl.finalHold}</p> : null}
                   <div className="mt-2">
                     <Bracket matches={fv.bracket} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
                   </div>
@@ -270,7 +270,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
                   .map((p) => ({ user_id: p.user_id, grp: matches.find((m) => m.stage === "group" && (m.player_a === p.user_id || m.player_b === p.user_id))?.grp ?? null }))}
                 dropped={players.filter((p) => p.status === "dropped").map((p) => p.user_id)}
                 rounds={fv.stageRounds}
-                qualify={fv.qualify}
+                qualify={fv.open === 0 ? fv.qualify : null}
                 groups={t.format === "groups"}
                 viewer={viewer}
                 locale={locale}
@@ -370,7 +370,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
             <span className="stat-pill bg-night-3 text-pale">{bestOfSummary(x, t.best_of, t.final_best_of)}</span>
             {cut ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(sl.structurePill, { pods: cut, top: cut })}</span> : null}
             {cut && stages.top_cut_hold ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: cut })}</span> : null}
-            {t.format === "swiss" ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fo?.swiss_rounds ? fill(fl.swissPill, { n: fo.swiss_rounds }) : fl.swissPillAuto}</span> : null}
+            {t.format === "swiss" && fo?.swiss_rounds ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(fl.swissPill, { n: fo.swiss_rounds })}</span> : null}
             {t.format === "swiss" && stages.top_cut ? <span className="stat-pill bg-night-3 text-pale">{fill(fl.topPill, { n: stages.top_cut })}</span> : null}
             {t.format === "groups" && fo?.group_size ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(fl.groupsPill, { n: fo.group_size, k: fo.group_advance ?? 1 })}</span> : null}
             {t.format === "swiss" && stages.top_cut_hold && stages.top_cut ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: stages.top_cut })}</span> : null}
