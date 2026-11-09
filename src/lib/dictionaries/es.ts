@@ -1419,7 +1419,7 @@ export const es: Dictionary = {
     organizedBy: "Organizado por",
     startsAt: "Inicio",
     utc: "UTC",
-    formats: { single_elim: "Eliminación directa" },
+    formats: { single_elim: "Eliminación directa", swiss: "Sistema suizo", groups: "Fase de grupos" },
     deckModes: { free: "Mazo libre", conquest: "Conquest" },
     conquestRule: "{n} mazos con Legendarias distintas, al menos {min} cartas únicas entre dos mazos cualesquiera",
     bestOf: "Al mejor de {n}",

@@ -1421,7 +1421,7 @@ export const pt: Dictionary = {
     organizedBy: "Organizado por",
     startsAt: "Início",
     utc: "UTC",
-    formats: { single_elim: "Eliminação simples" },
+    formats: { single_elim: "Eliminação simples", swiss: "Sistema suíço", groups: "Fase de grupos" },
     deckModes: { free: "Deck livre", conquest: "Conquest" },
     conquestRule: "{n} decks com Lendárias diferentes, pelo menos {min} cartas únicas entre dois decks quaisquer",
     bestOf: "Melhor de {n}",

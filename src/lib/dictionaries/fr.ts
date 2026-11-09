@@ -1424,7 +1424,7 @@ export const fr: Dictionary = {
     organizedBy: "Organisé par",
     startsAt: "Début",
     utc: "UTC",
-    formats: { single_elim: "Élimination directe" },
+    formats: { single_elim: "Élimination directe", swiss: "Rondes suisses", groups: "Phase de poules" },
     deckModes: { free: "Deck libre", conquest: "Conquest" },
     conquestRule: "{n} decks avec des Légendaires différentes, au moins {min} cartes uniques entre deux decks quelconques",
     bestOf: "Au meilleur des {n}",

@@ -1340,7 +1340,7 @@ export const de: Dictionary = {
     organizedBy: "Organisiert von",
     startsAt: "Beginn",
     utc: "UTC",
-    formats: { single_elim: "K.-o.-System" },
+    formats: { single_elim: "K.-o.-System", swiss: "Schweizer System", groups: "Gruppenphase" },
     deckModes: { free: "Freies Deck", conquest: "Conquest" },
     conquestRule: "{n} Decks mit verschiedenen Legendären, mindestens {min} einzigartige Karten Unterschied zwischen je zwei Decks",
     bestOf: "Best of {n}",

@@ -182,7 +182,9 @@ describe("ordine per data dell'ultimo aggiornamento delle carte (Pierluigi, 09/1
 describe("blocco ORDINE PER AGGIORNAMENTO di schema.sql", () => {
   const schema = read("../../../supabase/schema.sql");
   const start = schema.indexOf("-- ===== 09/11/2026: ORDINE PER AGGIORNAMENTO =====");
-  const block = schema.slice(start);
+  // il blocco finisce dove comincia il successivo (dal 09/11/2026 c'è SVIZZERA, GIRONI E SIDEBOARD, che aggiunge colonne ai tornei)
+  const next = schema.indexOf("-- ===== ", start + 10);
+  const block = schema.slice(start, next > 0 ? next : undefined);
   test("c'è, dopo VERSIONI, quindi la sua guard_deck_version è quella che resta", () => {
     assert.ok(start > schema.indexOf("-- ===== 30/09/2026: VERSIONI ====="));
     assert.equal(schema.lastIndexOf("create or replace function public.guard_deck_version()") > start, true);

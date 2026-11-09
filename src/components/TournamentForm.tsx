@@ -13,6 +13,8 @@ import { RULES } from "@/lib/deckrules";
 import { CRIMSON_PRESET, NO_SHOW_RANGE } from "@/lib/tournament/rules";
 import { BRACKETS_PRESET, TOP_CUTS } from "@/lib/tournament/stages";
 import type { StageLabels } from "@/lib/tournament/stageLabels";
+import { GROUP_ADVANCE_RANGE, GROUP_SIZE_RANGE, SIDEBOARD_RANGE, SWISS_PRESET, SWISS_ROUNDS_RANGE, type TournamentFormat } from "@/lib/tournament/formats";
+import type { FormatLabels } from "@/lib/tournament/formatLabels";
 import { shrinkImage } from "@/lib/shrinkImage";
 import { trackEvent, type EventParams } from "@/lib/analytics";
 
@@ -37,6 +39,13 @@ export type TournamentInitial = {
   top_cut?: number | null;
   top_cut_hold?: boolean;
   deck_ban?: boolean;
+  /** 09/11/2026 (blocco SVIZZERA, GIRONI E SIDEBOARD): formato, turni svizzeri, gironi, sideboard */
+  format?: TournamentFormat;
+  swiss_rounds?: number | null;
+  group_size?: number | null;
+  group_advance?: number | null;
+  group_seeding?: "snake" | "random" | null;
+  sideboard?: number | null;
   lang: Locale;
   description: string;
   rules: string;
@@ -59,6 +68,8 @@ type Props = {
   contactEmail?: string;
   /** testi della fase finale a bracket, della pausa e del ban (08/11/2026), nella lingua della pagina */
   stageText?: StageLabels;
+  /** testi di svizzera, gironi e sideboard (09/11/2026); senza, il modulo resta quello dell'eliminazione diretta */
+  formatText?: FormatLabels;
 };
 
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale focus:border-mint";
@@ -105,8 +116,9 @@ export function TournamentForm(props: Props) {
   return <TournamentFormInner {...props} />;
 }
 
-function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode = "create", initial, contactEmail, stageText }: Props) {
+function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode = "create", initial, contactEmail, stageText, formatText }: Props) {
   const sl = stageText;
+  const fl = formatText;
   const x = labels;
   const c = x.create;
   const edit = mode === "edit" && Boolean(initial);
@@ -131,7 +143,15 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     top_cut: initial?.top_cut ?? null,
     top_cut_hold: initial?.top_cut_hold ?? false,
     deck_ban: initial?.deck_ban ?? false,
+    swiss_rounds: initial?.swiss_rounds ?? null,
+    group_size: initial?.group_size ?? GROUP_SIZE_RANGE.default,
+    group_advance: initial?.group_advance ?? GROUP_ADVANCE_RANGE.default,
+    group_seeding: initial?.group_seeding ?? "snake",
+    sideboard: initial?.sideboard ?? null,
   }));
+  // 09/11/2026: formato del torneo (eliminazione diretta, svizzera, gironi)
+  const [format, setFormat] = useState<TournamentFormat>(initial?.format ?? "single_elim");
+  const [swissApplied, setSwissApplied] = useState(false);
   const [rulesKey, setRulesKey] = useState(0);
   const [presetApplied, setPresetApplied] = useState(false);
   const applyCrimson = () => {
@@ -140,6 +160,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     setRulesKey((k) => k + 1);
     setPresetApplied(true);
     setBracketsApplied(false);
+    setSwissApplied(false);
   };
   // 08/11/2026: il formato del torneo della community italiana (256 posti, 16 bracket + Top 16, ban di un mazzo)
   const [bracketsApplied, setBracketsApplied] = useState(false);
@@ -147,11 +168,23 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
   const [topCut, setTopCut] = useState<number | null>(initial?.top_cut ?? null);
   const applyBrackets = () => {
     setDeckMode("conquest");
-    setRules({ ...BRACKETS_PRESET });
+    setRules((r) => ({ ...r, ...BRACKETS_PRESET }));
     setTopCut(BRACKETS_PRESET.top_cut);
     setRulesKey((k) => k + 1);
     setBracketsApplied(true);
     setPresetApplied(false);
+    setSwissApplied(false);
+    setFormat("single_elim");
+  };
+  // "Usa il formato Svizzera + Top 8" (09/11/2026): i mazzi restano quelli scelti
+  const applySwiss = () => {
+    setFormat("swiss");
+    setRules((r) => ({ ...r, ...SWISS_PRESET, deck_ban: deckMode === "conquest" && r.deck_ban }));
+    setTopCut(SWISS_PRESET.top_cut);
+    setRulesKey((k) => k + 1);
+    setSwissApplied(true);
+    setPresetApplied(false);
+    setBracketsApplied(false);
   };
   const [startLocal, setStartLocal] = useState<string>(() => (initial ? toLocalInput(new Date(initial.starts_at)) : defaultStart()));
   const [cover, setCover] = useState<string>(initial?.cover_url ?? DEFAULT_COVER);
@@ -203,7 +236,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     }
   };
 
-  const errorText = state.error ? (x.errors[state.error as keyof typeof x.errors] ?? sl?.errors[state.error as keyof StageLabels["errors"]] ?? x.errors.db) : null;
+  const errorText = state.error ? (x.errors[state.error as keyof typeof x.errors] ?? sl?.errors[state.error as keyof StageLabels["errors"]] ?? fl?.errors[state.error as keyof FormatLabels["errors"]] ?? x.errors.db) : null;
   const uploaded = !(COVER_PRESETS as readonly string[]).includes(cover);
   const shownCovers = allCovers ? COVER_PRESETS : COVER_PRESETS.filter((p, i) => i < COVERS_SHOWN || p === cover);
   const [howToBefore, howToAfter] = c.listedHowTo.split("{email}");
@@ -271,6 +304,12 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
           <input type="hidden" name="top_cut" value={initial.top_cut ?? ""} />
           <input type="hidden" name="top_cut_hold" value={initial.top_cut_hold ? "on" : ""} />
           <input type="hidden" name="deck_ban" value={initial.deck_ban ? "on" : ""} />
+          <input type="hidden" name="format" value={initial.format ?? "single_elim"} />
+          <input type="hidden" name="swiss_rounds" value={initial.swiss_rounds ?? ""} />
+          <input type="hidden" name="group_size" value={initial.group_size ?? ""} />
+          <input type="hidden" name="group_advance" value={initial.group_advance ?? ""} />
+          <input type="hidden" name="group_seeding" value={initial.group_seeding ?? ""} />
+          <input type="hidden" name="sideboard" value={initial.sideboard ?? ""} />
         </>
       ) : null}
 
@@ -340,6 +379,100 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
             </div>
           ) : null}
 
+          {/* Formato (09/11/2026): eliminazione diretta, svizzera con la Top facoltativa, gironi con la fase finale; sideboard */}
+          {fl ? (
+            <fieldset className="grid gap-4 rounded-xl border-2 border-sky/60 p-4">
+              <legend className="kicker px-1 text-mint">{fl.formFormat}</legend>
+              {!lockRules ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <button type="button" onClick={applySwiss} className="btn btn-gold text-xs">
+                    {fl.preset}
+                  </button>
+                  <span className="text-xs text-pale-muted">{swissApplied ? fl.presetApplied : fl.presetHint}</span>
+                </div>
+              ) : null}
+              <div className="flex flex-wrap gap-2">
+                {(["single_elim", "swiss", "groups"] as const).map((f) => (
+                  <label key={f} className={`${choiceCls} ${format === f ? "is-on" : ""}`}>
+                    <input type="radio" name="format" value={f} checked={format === f} onChange={() => setFormat(f)} disabled={lockRules} className="sr-only" />
+                    {format === f ? "✓ " : ""}
+                    {x.formats[f]}
+                  </label>
+                ))}
+              </div>
+              <p className="text-xs text-pale-muted">{fl.formFormatHint}</p>
+              {format === "swiss" ? (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block text-sm">
+                    <span className="text-pale-muted">{fl.formSwissRounds}</span>
+                    <select key={`sr-${rulesKey}`} name="swiss_rounds" defaultValue={rules.swiss_rounds ?? ""} disabled={lockRules} className={inputCls}>
+                      <option value="">{fl.formSwissRoundsAuto}</option>
+                      {Array.from({ length: SWISS_ROUNDS_RANGE.max - SWISS_ROUNDS_RANGE.min + 1 }, (_, i) => i + SWISS_ROUNDS_RANGE.min).map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="mt-1 block text-xs text-pale-muted">{fl.formSwissRoundsHint}</span>
+                  </label>
+                  <label className="block text-sm">
+                    <span className="text-pale-muted">{fl.formSwissTop}</span>
+                    <select key={`st-${rulesKey}`} name="top_cut" defaultValue={rules.top_cut ?? ""} onChange={(e) => setTopCut(e.target.value ? Number(e.target.value) : null)} disabled={lockRules} className={inputCls}>
+                      <option value="">{fl.formSwissTopNone}</option>
+                      {TOP_CUTS.map((n) => (
+                        <option key={n} value={n}>
+                          {fill(fl.formSwissTopOption, { n })}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="mt-1 block text-xs text-pale-muted">{fl.formSwissTopHint}</span>
+                  </label>
+                </div>
+              ) : null}
+              {format === "groups" ? (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <label className="block text-sm">
+                    <span className="text-pale-muted">{fl.formGroupSize}</span>
+                    <input key={`gs-${rulesKey}`} type="number" name="group_size" min={GROUP_SIZE_RANGE.min} max={GROUP_SIZE_RANGE.max} defaultValue={rules.group_size ?? GROUP_SIZE_RANGE.default} disabled={lockRules} className={inputCls} />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="text-pale-muted">{fl.formGroupAdvance}</span>
+                    <input key={`ga-${rulesKey}`} type="number" name="group_advance" min={GROUP_ADVANCE_RANGE.min} max={GROUP_ADVANCE_RANGE.max} defaultValue={rules.group_advance ?? GROUP_ADVANCE_RANGE.default} disabled={lockRules} className={inputCls} />
+                  </label>
+                  <label className="block text-sm">
+                    <span className="text-pale-muted">{fl.formGroupSeeding}</span>
+                    <select key={`gd-${rulesKey}`} name="group_seeding" defaultValue={rules.group_seeding ?? "snake"} disabled={lockRules} className={inputCls}>
+                      <option value="snake">{fl.seedingSnake}</option>
+                      <option value="random">{fl.seedingRandom}</option>
+                    </select>
+                  </label>
+                  <p className="text-xs text-pale-muted sm:col-span-3">{fl.formGroupHint}</p>
+                </div>
+              ) : null}
+              {format !== "single_elim" && sl ? (
+                <label className="flex items-start gap-2 text-sm">
+                  <input key={`fh-${rulesKey}-${format}`} type="checkbox" name="top_cut_hold" defaultChecked={rules.top_cut_hold} disabled={lockRules || (format === "swiss" && topCut === null)} className="mt-1 accent-mint" />
+                  <span>
+                    <span className="font-semibold text-pale">{sl.formHold}</span>
+                    <span className="mt-0.5 block text-xs text-pale-muted">{sl.formHoldHint}</span>
+                  </span>
+                </label>
+              ) : null}
+              <label className="block text-sm sm:max-w-xs">
+                <span className="text-pale-muted">{fl.formSideboard}</span>
+                <select key={`sb-${rulesKey}`} name="sideboard" defaultValue={rules.sideboard ?? ""} disabled={lockRules} className={inputCls}>
+                  <option value="">{fl.formSideboardOff}</option>
+                  {Array.from({ length: SIDEBOARD_RANGE.max - SIDEBOARD_RANGE.min + 1 }, (_, i) => i + SIDEBOARD_RANGE.min).map((n) => (
+                    <option key={n} value={n}>
+                      {fill(fl.formSideboardOption, { n })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="-mt-2 text-xs text-pale-muted">{fl.formSideboardHint}</p>
+            </fieldset>
+          ) : null}
+
           {/* Regole del torneo (05/10/2026): finale, check-in e lista d'attesa, liste segrete, assenza */}
           <fieldset className="grid gap-4 rounded-xl border-2 border-sky/60 p-4">
             <legend className="kicker px-1 text-mint">{c.rulesTitle}</legend>
@@ -359,7 +492,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
                 <span className="text-xs text-pale-muted">{bracketsApplied ? sl.presetApplied : sl.presetHint}</span>
               </div>
             ) : null}
-            {sl ? (
+            {sl && format === "single_elim" ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block text-sm">
                   <span className="text-pale-muted">{sl.formTopCut}</span>

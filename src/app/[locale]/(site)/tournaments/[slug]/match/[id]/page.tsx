@@ -4,7 +4,11 @@ import { notFound, redirect } from "next/navigation";
 import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
-import { getMatch, getStageOptions, getTournament, listLegendaries, listMatchBans, listMatches, listMessages, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { getFormatOptions, getMatch, getStageOptions, getTournament, listLegendaries, listMatchBans, listMatchSideSwaps, listMatches, listMessages, listPlayers, listSideboards, listVisibleDecks, withMatchStages } from "@/lib/tournament/queries";
+import { isStagedFormat } from "@/lib/tournament/formats";
+import { formatMatchName, formatView } from "@/lib/tournament/formatView";
+import { formatLabels } from "@/lib/tournament/formatLabels";
+import { SidePanel } from "@/components/SidePanel";
 import { SCREENSHOT_BUCKET, bestOfLabel, fill, totalRounds } from "@/lib/tournament/types";
 import { matchBestOf, matchNeed } from "@/lib/tournament/rules";
 import { banApplies, banState, holdRound, isHeld, planOf } from "@/lib/tournament/stages";
@@ -62,28 +66,37 @@ export default async function MatchPage({ params, searchParams }: { params: Para
   // chi non gioca la partita torna alla scheda, con il segnale dell'accesso se arriva dal login (lo conta la scheda)
   if (side === null && staff !== true) redirect(withCarriedParams(back, await searchParams));
 
-  const [players, decks, legendaries, allMatches, messages, screensA, screensB, stages, bans] = await Promise.all([
+  const staged = isStagedFormat(t.format);
+  const [players, decks, legendaries, allMatches, messages, screensA, screensB, stages, bans, fo, sides, sideSwaps] = await Promise.all([
     listPlayers(t.id, supabase),
     listVisibleDecks(t.id, supabase),
     listLegendaries(t.id, supabase),
-    listMatches(t.id, supabase),
+    listMatches(t.id, supabase).then((ms) => withMatchStages(supabase, t.id, t.format, ms)),
     listMessages(match.id, supabase),
     signedScreens(supabase, match.id, match.player_a),
     signedScreens(supabase, match.id, match.player_b),
     // 08/11/2026: fase finale in pausa e ban (letture che reggono il database non ancora migrato)
     getStageOptions(supabase, t.id),
     listMatchBans(supabase, match.id),
+    // 09/11/2026: sideboard (riserve visibili con le regole delle liste e scambi dichiarati)
+    getFormatOptions(supabase, t.id),
+    listSideboards(supabase, t.id),
+    listMatchSideSwaps(supabase, match.id),
   ]);
   const sl = stageLabels[locale];
-  const plan = planOf(allMatches, stages.top_cut);
-  const held = isHeld(match, holdRound(stages, plan));
+  const fl = formatLabels[locale];
+  const fv = staged ? formatView({ ...t, ...stages, ...fo }, allMatches) : null;
+  const thisMatch = allMatches.find((m) => m.id === match.id) ?? match;
+  const plan = planOf(fv ? fv.bracket : allMatches, fv ? null : stages.top_cut);
+  const held = isHeld(match, fv ? fv.holdFrom : holdRound(stages, plan));
   const nameOf = new Map(players.map((p) => [p.user_id, authorName(p.profile)]));
   const names = { a: match.player_a ? nameOf.get(match.player_a) ?? "?" : l.tbd, b: match.player_b ? nameOf.get(match.player_b) ?? "?" : match.status === "bye" ? "bye" : l.tbd };
 
-  const rounds = totalRounds(allMatches);
+  // svizzera e gironi: la finale è l'ultimo turno del tabellone (0 finché non c'è)
+  const rounds = fv ? fv.finalRound : totalRounds(allMatches);
   const need = matchNeed(t.best_of, t.final_best_of, match.round, rounds);
   const isFinal = Boolean(t.final_best_of) && match.round === rounds;
-  const stageName = plan.topRound !== null ? stageMatchName(locale, x, plan, match.round, match.position) : fill(l.round, { n: match.round });
+  const stageName = fv ? formatMatchName(locale, x, t.format, fv, thisMatch) : plan.topRound !== null ? stageMatchName(locale, x, plan, match.round, match.position) : fill(l.round, { n: match.round });
 
   // Ban (08/11/2026): mazzi dei due giocatori nell'ordine di consegna, con la Leggendaria (dalla lista se si vede, se no
   // dalle Leggendarie che il database mostra all'avversario)
@@ -101,7 +114,18 @@ export default async function MatchPage({ params, searchParams }: { params: Para
   const bothPlayers = Boolean(match.player_a && match.player_b);
   const bansDone = banState(bans, match.player_a ?? "", match.player_b).done;
   const reportLock = banHere && bothPlayers && !bansDone ? sl.banReportFirst : null;
-  const extraErrors: Record<string, string> = { ...sl.errors };
+  const extraErrors: Record<string, string> = { ...sl.errors, ...fl.errors };
+  // sideboard: riserva propria sempre, dell'avversario solo se la sua lista si vede (stesse regole); carte per nome
+  const sideOf = (uid: string | null) => (uid ? (decks.some((r) => r.user_id === uid) ? (sides.get(uid) ?? []) : null) : null);
+  const sidePlayers = [match.player_a, match.player_b].filter((u): u is string => Boolean(u)).map((u) => ({ id: u, name: nameOf.get(u) ?? "?", side: sideOf(u) }));
+  const cardName = (slug: string) => getCard(slug)?.name ?? slug;
+  const myCodes = side ? (decks.find((r) => r.user_id === user.id)?.codes ?? []) : [];
+  const myDecks = myCodes.map((c, i) => {
+    const deck = decodeOmCode(c);
+    return { name: deck?.legendary ? cardName(deck.legendary) : fill(sl.deckN, { n: i + 1 }), cards: deck?.cards ?? [] };
+  });
+  const cardNames = Object.fromEntries([...new Set([...myDecks.flatMap((dk) => dk.cards), ...sidePlayers.flatMap((p) => p.side ?? []), ...sideSwaps.flatMap((s) => s.swaps.flatMap((x) => [x.out, x.in]))])].map((sg) => [sg, cardName(sg)]));
+  const deckNames = Object.fromEntries(sidePlayers.map((p) => [p.id, (decks.find((r) => r.user_id === p.id)?.codes ?? []).map((c, i) => { const dk = decodeOmCode(c); return dk?.legendary ? cardName(dk.legendary) : fill(sl.deckN, { n: i + 1 }); })]));
 
   const deckBlock = (uid: string | null, title: string) => {
     if (!uid) return null;
@@ -193,6 +217,24 @@ export default async function MatchPage({ params, searchParams }: { params: Para
         </div>
       ) : null}
 
+      {fo.sideboard && bothPlayers && match.status !== "bye" ? (
+        <div className="mt-6">
+          <SidePanel
+            matchId={match.id}
+            me={side ? user.id : null}
+            players={sidePlayers}
+            myDecks={myDecks}
+            games={need * 2 - 1}
+            swaps={sideSwaps}
+            cardNames={cardNames}
+            open={t.status === "running" && match.status === "pending" && !held}
+            labels={fl}
+            deckNames={deckNames}
+            errors={{ ...(x.errors as Record<string, string>), ...extraErrors }}
+          />
+        </div>
+      ) : null}
+
       <div className="mt-6">
         <MatchRoom
           slug={t.slug}
@@ -209,7 +251,7 @@ export default async function MatchPage({ params, searchParams }: { params: Para
           tournamentHref={back}
           labels={x}
           held={held}
-          heldText={held ? fill(sl.holdRoom, { n: plan.topCut ?? 0 }) : null}
+          heldText={held ? fill(sl.holdRoom, { n: fv ? (fv.cut ?? 0) : (plan.topCut ?? 0) }) : null}
           reportLock={reportLock}
           extraErrors={extraErrors}
         />

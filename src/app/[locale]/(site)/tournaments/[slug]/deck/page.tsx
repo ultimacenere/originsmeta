@@ -4,7 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
-import { getMyDecks, getTournament } from "@/lib/tournament/queries";
+import { getFormatOptions, getMyDecks, getTournament, listSideboards } from "@/lib/tournament/queries";
+import { formatLabels } from "@/lib/tournament/formatLabels";
+import { stageLabels } from "@/lib/tournament/stageLabels";
+import { decodeOmCode } from "@/lib/deckcode";
+import { cards } from "@/lib/data/cards";
+import { SideboardForm } from "@/components/SideboardForm";
 import { decksRequired, fill, tournamentBuilderKey } from "@/lib/tournament/types";
 import { submitDeckCodes } from "@/lib/tournament/actions";
 import { builderLabels, builderPool } from "@/lib/builderLabels";
@@ -44,6 +49,15 @@ export default async function TournamentDeckPage({ params }: { params: Params })
   const registered = Boolean(reg);
   const codes = registered ? (await getMyDecks(supabase, t.id, user.id)) ?? [] : [];
   const required = decksRequired(t);
+  // 09/11/2026: sideboard facoltativa del torneo (lettura a parte, regge il database non migrato)
+  const fo = await getFormatOptions(supabase, t.id);
+  const mySide = fo.sideboard && registered ? ((await listSideboards(supabase, t.id)).get(user.id) ?? []) : [];
+  const fl = formatLabels[locale];
+  const inDecks = codes.flatMap((c) => {
+    const deck = decodeOmCode(c);
+    return deck ? [...deck.cards, ...(deck.legendary ? [deck.legendary] : [])] : [];
+  });
+  const sidePool = fo.sideboard ? cards.filter((c) => !c.legendary && c.type !== "token" && c.status === "active").map((c) => ({ slug: c.slug, name: c.name })).sort((a, b) => a.name.localeCompare(b.name)) : [];
   const tid = t.id;
   const submit = async (list: string[]) => {
     "use server";
@@ -98,6 +112,14 @@ export default async function TournamentDeckPage({ params }: { params: Params })
               onSubmit={submit}
               submitLabels={{ submit: x.deckPage.builderSubmit, submitting: x.deckPage.builderSubmitting, saved: x.deckPage.builderSaved, incomplete: x.deckPage.builderIncomplete, errors: x.errors }}
             />
+            {fo.sideboard ? (
+              <section className="card-night mt-8 p-5 sm:p-6">
+                <h2 className="t-section">{fill(fl.sideFormTitle, { n: fo.sideboard })}</h2>
+                <div className="mt-3">
+                  <SideboardForm tournamentId={t.id} max={fo.sideboard} initial={mySide} pool={sidePool} inDecks={inDecks} labels={fl} errors={{ ...x.errors, ...stageLabels[locale].errors, ...fl.errors }} hasDecks={codes.length > 0} />
+                </div>
+              </section>
+            ) : null}
             <details className="mt-8">
               <summary className="cursor-pointer text-sm text-pale-muted hover:text-pale">{x.deckPage.codesAdvanced}</summary>
               <div className="mt-3">
