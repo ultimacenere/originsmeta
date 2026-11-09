@@ -33,6 +33,18 @@ export type SteamLabels = {
   outcomes: Record<SteamLinkOutcome, string>;
   /** paragrafo #steam dell'informativa */
   privacy: string;
+  /** popup "collega Steam" per gli iscritti senza Steam collegato (src/components/SteamPromo.tsx, 09/11/2026) */
+  promo: {
+    /** riga sopra il titolo, accanto al logo di Steam */
+    kicker: string;
+    title: string;
+    text: string;
+    /** tasto verso /account#steam */
+    cta: string;
+    later: string;
+    /** nome del tasto × per i lettori di schermo */
+    close: string;
+  };
 };
 
 const en: SteamLabels = {
@@ -49,6 +61,14 @@ const en: SteamLabels = {
   missing: "Connecting Steam isn't active on this site yet.",
   readError: "We can't read your Steam connection right now. Try again shortly.",
   accountLabel: "Steam account",
+  promo: {
+    kicker: "Steam account",
+    title: "The marketplace is almost ready!",
+    text: "Connect your Steam account straight from your profile.",
+    cta: "Go to your profile",
+    later: "Not now",
+    close: "Close",
+  },
   outcomes: {
     linked: "Done: your Steam account is connected.",
     already: "This Steam account was already connected to your profile.",
@@ -79,6 +99,14 @@ const it: SteamLabels = {
   missing: "Il collegamento con Steam non è ancora attivo su questo sito.",
   readError: "Non riusciamo a leggere il collegamento con Steam. Riprova tra poco.",
   accountLabel: "Account Steam",
+  promo: {
+    kicker: "Account Steam",
+    title: "Il marketplace è quasi pronto!",
+    text: "Collega il tuo account Steam direttamente dal tuo profilo.",
+    cta: "Entra nel tuo profilo",
+    later: "Non ora",
+    close: "Chiudi",
+  },
   outcomes: {
     linked: "Fatto: il tuo account Steam è collegato.",
     already: "Questo account Steam era già collegato al tuo profilo.",
@@ -109,6 +137,14 @@ const es: SteamLabels = {
   missing: "La conexión con Steam todavía no está activa en este sitio.",
   readError: "No podemos leer tu conexión con Steam ahora mismo. Inténtalo de nuevo en un rato.",
   accountLabel: "Cuenta de Steam",
+  promo: {
+    kicker: "Cuenta de Steam",
+    title: "¡El marketplace está casi listo!",
+    text: "Conecta tu cuenta de Steam directamente desde tu perfil.",
+    cta: "Entra en tu perfil",
+    later: "Ahora no",
+    close: "Cerrar",
+  },
   outcomes: {
     linked: "Listo: tu cuenta de Steam está conectada.",
     already: "Esta cuenta de Steam ya estaba conectada a tu perfil.",
@@ -139,6 +175,14 @@ const fr: SteamLabels = {
   missing: "L'association avec Steam n'est pas encore active sur ce site.",
   readError: "Impossible de lire votre association avec Steam pour le moment. Réessayez dans un instant.",
   accountLabel: "Compte Steam",
+  promo: {
+    kicker: "Compte Steam",
+    title: "La marketplace est presque prête !",
+    text: "Associez votre compte Steam directement depuis votre profil.",
+    cta: "Accéder à votre profil",
+    later: "Plus tard",
+    close: "Fermer",
+  },
   outcomes: {
     linked: "C'est fait : votre compte Steam est associé.",
     already: "Ce compte Steam était déjà associé à votre profil.",
@@ -169,6 +213,14 @@ const pt: SteamLabels = {
   missing: "A conexão com a Steam ainda não está ativa neste site.",
   readError: "Não conseguimos ler sua conexão com a Steam agora. Tente de novo daqui a pouco.",
   accountLabel: "Conta Steam",
+  promo: {
+    kicker: "Conta Steam",
+    title: "O marketplace está quase pronto!",
+    text: "Conecte sua conta Steam direto do seu perfil.",
+    cta: "Acesse seu perfil",
+    later: "Agora não",
+    close: "Fechar",
+  },
   outcomes: {
     linked: "Pronto: sua conta Steam está conectada.",
     already: "Esta conta Steam já estava conectada ao seu perfil.",
@@ -199,6 +251,14 @@ const de: SteamLabels = {
   missing: "Die Verbindung mit Steam ist auf dieser Seite noch nicht aktiv.",
   readError: "Wir können deine Steam-Verbindung gerade nicht lesen. Versuch es gleich noch einmal.",
   accountLabel: "Steam-Konto",
+  promo: {
+    kicker: "Steam-Konto",
+    title: "Der Marktplatz ist fast fertig!",
+    text: "Verbinde dein Steam-Konto direkt in deinem Profil.",
+    cta: "Zu deinem Profil",
+    later: "Nicht jetzt",
+    close: "Schließen",
+  },
   outcomes: {
     linked: "Erledigt: Dein Steam-Konto ist verbunden.",
     already: "Dieses Steam-Konto war schon mit deinem Profil verbunden.",
@@ -229,6 +289,14 @@ const ru: SteamLabels = {
   missing: "Привязка Steam на этом сайте пока не работает.",
   readError: "Не удаётся прочитать привязку Steam. Попробуйте чуть позже.",
   accountLabel: "Аккаунт Steam",
+  promo: {
+    kicker: "Аккаунт Steam",
+    title: "Маркетплейс почти готов!",
+    text: "Привяжите аккаунт Steam прямо в своём профиле.",
+    cta: "Перейти в профиль",
+    later: "Не сейчас",
+    close: "Закрыть",
+  },
   outcomes: {
     linked: "Готово: аккаунт Steam привязан.",
     already: "Этот аккаунт Steam уже был привязан к вашему профилю.",
@@ -259,6 +327,14 @@ const zhCn: SteamLabels = {
   missing: "本站尚未开放 Steam 关联功能。",
   readError: "暂时无法读取你的 Steam 关联，请稍后再试。",
   accountLabel: "Steam 账号",
+  promo: {
+    kicker: "Steam 账号",
+    title: "交易市场即将上线！",
+    text: "直接在你的个人资料中关联 Steam 账号。",
+    cta: "进入个人资料",
+    later: "以后再说",
+    close: "关闭",
+  },
   outcomes: {
     linked: "完成：你的 Steam 账号已关联。",
     already: "这个 Steam 账号已经关联到你的个人资料。",

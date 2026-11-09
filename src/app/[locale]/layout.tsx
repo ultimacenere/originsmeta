@@ -19,6 +19,9 @@ import { kickstarterLabels } from "@/lib/kickstarterLabels";
 import { TournamentPromoDialog } from "@/components/TournamentPromo";
 import { TOURNAMENT_PROMO, promoActive } from "@/lib/tournamentPromo";
 import { tournamentPromoText } from "@/lib/tournamentPromoLabels";
+import { SteamPromoDialog } from "@/components/SteamPromo";
+import { STEAM_PROMO, steamPromoActive } from "@/lib/steamPromo";
+import { steamLabels } from "@/lib/steamLabels";
 
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
@@ -147,6 +150,10 @@ export default async function LocaleLayout({ children, params }: Props) {
             href={`${href(l, `/tournaments/${promo.slug}`)}#join`}
             labels={tournamentPromoText(l, d.tournaments, promo)}
           />
+        ) : null}
+        {/* Popup "collega Steam" per gli iscritti senza Steam collegato (09/11/2026): src/lib/steamPromo.ts. Porta a /account#steam. */}
+        {STEAM_PROMO && steamPromoActive(new Date().getTime(), STEAM_PROMO) ? (
+          <SteamPromoDialog promoId={STEAM_PROMO.id} until={STEAM_PROMO.until} href={`${href(l, "/account")}#steam`} labels={steamLabels[l].promo} />
         ) : null}
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
         {/* Il grafo del sito su ogni pagina (Ondata 2, GEO-08): il sito nella lingua, OriginsMeta con i fondatori, Koin

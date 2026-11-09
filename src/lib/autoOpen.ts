@@ -1,8 +1,9 @@
 /**
  * Riquadri che si aprono da soli (05/11/2026): il riquadro dei feedback (FeedbackWidget, un minuto dopo il banner dei
- * cookie) e il popup di un torneo (TournamentPromo, pochi secondi dopo). Uno alla volta: chi sta per aprirsi aspetta
- * finché l'altro è aperto, come aspetta chi sta scrivendo in un campo o navigando con la tastiera (`isBusy`).
- * Lo stato sta nel modulo, quindi vale per la scheda e sopravvive ai cambi di pagina (i due componenti sono nel layout).
+ * cookie), il popup di un torneo (TournamentPromo, pochi secondi dopo) e, dal 09/11/2026, il popup "collega Steam" per
+ * gli iscritti (SteamPromo). Uno alla volta: chi sta per aprirsi aspetta finché un altro è aperto, come aspetta chi sta
+ * scrivendo in un campo o navigando con la tastiera (`isBusy`).
+ * Lo stato sta nel modulo, quindi vale per la scheda e sopravvive ai cambi di pagina (i componenti sono nel layout).
  */
 const openPanels = new Set<string>();
 

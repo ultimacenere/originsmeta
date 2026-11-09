@@ -6,6 +6,7 @@ import { parseSteamLinkStatus, steamMigrationMissing, type SteamLinkOutcome } fr
 import { steamProfileUrl } from "@/lib/steam/openid";
 import { unlinkSteam } from "@/lib/community/steamActions";
 import { ConfirmButton } from "./ConfirmButton";
+import { SteamAccountBeacon } from "./SteamAccountBeacon";
 import { newTabProps, SteamLogo } from "./SteamButton";
 
 /** Tono dell'esito: conferme in verde, annullamenti e avvisi in celeste, il resto in rosso (come il pannello di accesso). */
@@ -89,6 +90,8 @@ export async function SteamAccountSection({ supabase, locale, outcome, loginOn }
       </p>
       {outcome ? <Note tone={toneOf(outcome)}>{L.outcomes[outcome]}</Note> : null}
       <div className="card-night mt-4 p-6">{body}</div>
+      {/* ancora #steam (tasto del popup "collega Steam", ritorno da Steam) ed evento steam_link */}
+      <SteamAccountBeacon outcome={outcome} />
     </section>
   );
 }

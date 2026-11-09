@@ -156,12 +156,22 @@
  *     tournament_promo_close popup chiuso senza andare al torneo                   tournament, method (close: la × |
  *                                                                                 later: "Non ora" | esc: Esc o il tasto
  *                                                                                 Indietro del telefono | backdrop: clic fuori)
+ *     steam_promo_view    il popup "collega Steam" si apre da solo (09/11/2026,    promo (la campagna, STEAM_PROMO.id)
+ *                         SteamPromo.tsx, src/lib/steamPromo.ts): solo a chi ha
+ *                         fatto l'accesso e non ha Steam collegato, una volta per
+ *                         browser e per account
+ *     steam_promo_click   clic su "Entra nel tuo profilo" del popup, verso         promo
+ *                         /account#steam (il collegamento vero è steam_link)
+ *     steam_promo_close   popup chiuso senza andare al profilo                     promo, method (come tournament_promo_close)
+ *     steam_link          ritorno in /account dopo "Collega Steam" o "Scollega     outcome (linked | already | other | taken |
+ *                         Steam" (09/11/2026, SteamAccountBeacon.tsx): una volta  cancelled | error | missing | mismatch |
+ *                         per arrivo, poi `?steam=` esce dall'indirizzo           unlinked | steamOnly: src/lib/steam/link.ts)
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
  *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars, score,
  *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, comic_lang, provider,
- *     host, tool, format, category, tournament;
+ *     host, tool, format, category, tournament, promo, outcome;
  *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources, cards.
  * `lang` va a GA4 con ogni evento (dal percorso); `locale` è il parametro dei tre eventi nati con a9400e8 e resta per
  * non rompere i rapporti già impostati: hanno lo stesso valore.
@@ -294,6 +304,10 @@ export type EventParams = {
   tournament_promo_view: { tournament: string };
   tournament_promo_click: { tournament: string };
   tournament_promo_close: { tournament: string; method: "close" | "later" | "esc" | "backdrop" };
+  steam_promo_view: { promo: string };
+  steam_promo_click: { promo: string };
+  steam_promo_close: { promo: string; method: "close" | "later" | "esc" | "backdrop" };
+  steam_link: { outcome: string };
 };
 export type EventName = keyof EventParams;
 
@@ -359,6 +373,10 @@ export const VERCEL_PROPS = {
   tournament_promo_view: ["tournament"],
   tournament_promo_click: ["tournament"],
   tournament_promo_close: ["method", "tournament"],
+  steam_promo_view: ["promo"],
+  steam_promo_click: ["promo"],
+  steam_promo_close: ["method", "promo"],
+  steam_link: ["outcome"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

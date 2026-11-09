@@ -6,7 +6,8 @@
  * - link.ts: esiti del collegamento;
  * - il blocco "09/11/2026: STEAM" di supabase/schema.sql: stesse espressioni del codice, permessi chiusi;
  * - testi: steamLabels.ts e le chiavi `auth` dei dizionari nelle otto lingue, tipi di errore del pannello di accesso,
- *   segnale della misura con il metodo steam.
+ *   segnale della misura con il metodo steam;
+ * - steamPromo.ts: il popup "collega Steam" (accensione, memoria del browser, testi, eventi).
  * I moduli sono scritti per Next (import senza estensione): come showcase.test.ts, prima di caricarli il test registra un
  * piccolo hook di risoluzione dei moduli di Node che aggiunge `.ts` agli import senza estensione.
  */
@@ -64,6 +65,8 @@ const { de }: typeof import("../dictionaries/de") = await import("../dictionarie
 const { ru }: typeof import("../dictionaries/ru") = await import("../dictionaries/ru.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const { zhCn }: typeof import("../dictionaries/zh-cn") = await import("../dictionaries/zh-cn.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const P: typeof import("../steamPromo") = await import("../steamPromo.ts");
 
 const ORIGIN = "https://originsmeta.com";
 const STATE = "AbCdEfGhIjKlMnOpQrStUvWxYz012345";
@@ -441,5 +444,51 @@ describe("testi nelle otto lingue", () => {
     assert.equal(AN.isNewAccount({ created_at: ago(1), confirmed_at: ago(1) }, "steam", NOW), true);
     assert.equal(AN.isNewAccount({ created_at: ago(20), confirmed_at: ago(20) }, "steam", NOW), false);
     assert.equal(AN.isNewAccount({ created_at: ago(60 * 24 * 30), confirmed_at: ago(60 * 24 * 30) }, "steam", NOW), false);
+  });
+});
+
+describe("popup \"collega Steam\" (steamPromo.ts)", () => {
+  test("acceso, spento e con una fine", () => {
+    assert.equal(P.steamPromoActive(NOW, null), false, "null lo spegne");
+    assert.equal(P.steamPromoActive(NOW, { id: "x", until: null }), true, "senza fine resta acceso");
+    assert.equal(P.steamPromoActive(NOW, { id: "x", until: "2026-11-09T12:00:01Z" }), true);
+    assert.equal(P.steamPromoActive(NOW, { id: "x", until: "2026-11-09T12:00:00Z" }), false, "alla fine si spegne");
+    assert.equal(P.steamPromoActive(NOW, { id: "x", until: "domani" }), false, "una fine illeggibile lo spegne");
+    if (P.STEAM_PROMO) assert.match(P.STEAM_PROMO.id, /^[a-z0-9-]{3,40}$/, "l'id entra negli eventi e nella memoria del browser");
+  });
+
+  test("memoria del browser: una voce per campagna e account, niente doppioni, al massimo 20", () => {
+    const e = P.steamPromoSeenEntry("steam-link-1109", "user-1");
+    assert.equal(e, "steam-link-1109:user-1");
+    assert.notEqual(e, P.steamPromoSeenEntry("steam-link-1109", "user-2"), "un altro account sullo stesso browser lo vede");
+    assert.notEqual(e, P.steamPromoSeenEntry("market-open", "user-1"), "una campagna nuova lo fa ricomparire");
+    assert.deepEqual(P.parseSteamPromoSeen(null), []);
+    assert.deepEqual(P.parseSteamPromoSeen("non è json"), []);
+    assert.deepEqual(P.parseSteamPromoSeen('{"a":1}'), []);
+    assert.deepEqual(P.parseSteamPromoSeen('["a", 2, "b"]'), ["a", "b"]);
+    assert.deepEqual(P.addSteamPromoSeen(["a", "b"], "b"), ["b", "a"]);
+    const many = Array.from({ length: 25 }, (_, i) => `x${i}`);
+    const out = P.addSteamPromoSeen(many, "nuovo");
+    assert.equal(out.length, 20);
+    assert.equal(out[0], "nuovo");
+    assert.equal(P.parseSteamPromoSeen(JSON.stringify(many)).length, 20);
+  });
+
+  test("testi del popup in ogni lingua, con il marketplace e Steam", () => {
+    for (const l of locales) {
+      const p = steamLabels[l].promo;
+      for (const [k, v] of Object.entries(p)) assert.ok(v.trim().length > 0, `${l}.promo.${k}`);
+      assert.ok(p.text.includes("Steam"), `${l}.promo.text`);
+      assert.ok(p.kicker.includes("Steam"), `${l}.promo.kicker`);
+    }
+    assert.equal(steamLabels.it.promo.title, "Il marketplace è quasi pronto!", "le parole di Pierluigi");
+    assert.equal(steamLabels.it.promo.cta, "Entra nel tuo profilo");
+  });
+
+  test("misura: eventi del popup e del ritorno dal collegamento, con le loro proprietà", () => {
+    assert.deepEqual(AN.vercelProps("steam_promo_view", { promo: "steam-link-1109", lang: "it" }), { promo: "steam-link-1109" });
+    assert.deepEqual(AN.vercelProps("steam_promo_click", { promo: "steam-link-1109" }), { promo: "steam-link-1109" });
+    assert.deepEqual(AN.vercelProps("steam_promo_close", { promo: "steam-link-1109", method: "later" }), { method: "later", promo: "steam-link-1109" });
+    assert.deepEqual(AN.vercelProps("steam_link", { outcome: "linked" }), { outcome: "linked" });
   });
 });
