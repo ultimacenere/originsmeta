@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { statSync } from "node:fs";
 import path from "node:path";
+import type { ReactNode } from "react";
 import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
@@ -10,6 +11,7 @@ import { KIT_COLORS, KIT_FILES, KIT_ZIP, TOOL_IDS, creatorApplyPath, isExternal,
 import { fillFc, forCreatorsLabels, type ForCreatorsLabels, type GuideLink, type ToolGuide } from "@/lib/forCreatorsLabels";
 import { CreatorCode, CreatorUserNote } from "@/components/creators/CreatorCode";
 import { CopyButton } from "@/components/CopyButton";
+import { OpenDetailsOnHash } from "@/components/OpenDetailsOnHash";
 import { newTabProps } from "@/components/SteamButton";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 
@@ -23,7 +25,44 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
   messaggio già scritto).
   Statica e indicizzabile in tutte le lingue. Le righe da copiare prendono il nome utente nel browser (CreatorCode).
   Testi in src/lib/forCreatorsLabels-<lingua>.ts, costanti in src/lib/forCreators.ts.
+  Tendine (10/11/2026, Pierluigi: "le loro sezioni devono essere nascoste, se poi uno clicca su una freccetta, si apre la
+  sezione dedicata", anche per "ogni strumento della sezione 2"): "Che cosa ti dà OriginsMeta", "Strumenti e guide passo
+  passo" e "Idee per i tuoi contenuti" sono chiuse e mostrano solo il titolo (`Fold`), e dentro gli strumenti ogni guida
+  è chiusa sul suo nome (`Guide`). Media kit, "Diventa Creator" e domande restano come prima. Il testo resta nell'HTML
+  (motori, ricerca nella pagina); le ancore (indice, schede degli strumenti, /for-creators#tracker) aprono la tendina
+  giusta con OpenDetailsOnHash.
 */
+
+/** La freccetta delle tendine, che si gira quando la tendina è aperta: la rotazione la passa chi la usa. */
+function Chevron({ className }: { className: string }) {
+  return (
+    <span aria-hidden="true" className={`grid shrink-0 place-items-center rounded-full transition-transform duration-200 motion-reduce:transition-none ${className}`}>
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 7.5l5 5 5-5" />
+      </svg>
+    </span>
+  );
+}
+
+/**
+ * Una sezione a tendina: chiusa resta solo il titolo, sul suo nastro con la freccetta piena; il contenuto si apre con un
+ * clic sul nastro. L'ancora (#perks, #tools, #ideas) sta sulla <section>, come prima.
+ */
+function Fold({ id, title, className, children }: { id: string; title: string; className: string; children: ReactNode }) {
+  return (
+    <section id={id} aria-labelledby={`fc-${id}`} className={`min-w-0 scroll-mt-24 ${className}`}>
+      <details className="group/fold" suppressHydrationWarning>
+        <summary className="card-night flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 transition-colors hover:border-mint sm:px-6 [&::-webkit-details-marker]:hidden">
+          <h2 id={`fc-${id}`} className="t-section">
+            {title}
+          </h2>
+          <Chevron className="h-9 w-9 bg-mint text-ink group-open/fold:rotate-180" />
+        </summary>
+        <div className="pb-6">{children}</div>
+      </details>
+    </section>
+  );
+}
 
 const HERO = "/media/analytics/tracker-cover.webp";
 
@@ -58,69 +97,77 @@ function GuideAnchor({ link, locale, className = "link-mint font-bold" }: { link
   );
 }
 
-/** Una guida: che cosa fa, che cosa serve, i passi numerati con le righe da copiare, come si capisce che va, se non va. */
+/**
+ * Una guida, chiusa sul nome dello strumento (dove si usa e quanto ci vuole sotto, freccetta con il bordo); aperta: che
+ * cosa fa, che cosa serve, i passi numerati con le righe da copiare, come si capisce che va, se non va. L'id dello
+ * strumento è l'ancora delle schede in cima alla sezione (/for-creators#tracker). Nel <summary> stanno solo titoli e
+ * testo semplice: nome e riga sotto in un <hgroup>.
+ */
 function Guide({ tool, L, locale }: { tool: ToolGuide; L: ForCreatorsLabels; locale: Locale }) {
   const T = L.tools;
   return (
-    <section id={tool.id} aria-labelledby={`${tool.id}-title`} className="card-night min-w-0 scroll-mt-24 p-5 sm:p-7">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 id={`${tool.id}-title`} className="font-display text-xl font-extrabold text-sky">
-          {tool.name}
-        </h3>
-        <p className="font-mono text-xs uppercase tracking-wider text-pale-muted">
-          {tool.tag} · {T.time}: {tool.time}
+    <details id={tool.id} className="card-night group/tool min-w-0 scroll-mt-24" suppressHydrationWarning>
+      <summary className="flex cursor-pointer list-none items-center gap-4 p-5 sm:px-7 [&::-webkit-details-marker]:hidden">
+        <hgroup className="min-w-0 flex-1">
+          <h3 className="font-display text-xl font-extrabold text-sky">{tool.name}</h3>
+          <p className="mt-1 font-mono text-xs uppercase tracking-wider text-pale-muted">
+            {tool.tag} · {T.time}: {tool.time}
+          </p>
+        </hgroup>
+        <Chevron className="h-8 w-8 border-2 border-mint text-mint group-open/tool:rotate-180" />
+      </summary>
+      <div className="px-5 pb-5 sm:px-7 sm:pb-7">
+        <p className="max-w-3xl text-pale">{tool.what}</p>
+        <p className="felt-panel mt-4 px-4 py-3 text-sm text-chalk">
+          <span className="font-bold text-mint">{T.needs}:</span> {tool.needs}
         </p>
-      </div>
-      <p className="mt-2 max-w-3xl text-pale">{tool.what}</p>
-      <p className="felt-panel mt-4 px-4 py-3 text-sm text-chalk">
-        <span className="font-bold text-mint">{T.needs}:</span> {tool.needs}
-      </p>
-      <ol className="mt-5 grid gap-4">
-        {tool.steps.map((step, i) => (
-          <li key={step.text} className="flex min-w-0 gap-3 sm:gap-4">
-            <span aria-hidden="true" className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-mint font-mono text-sm font-bold text-ink">
-              {i + 1}
-            </span>
-            <div className="min-w-0 flex-1 pt-1">
-              <p className="text-chalk">{step.text}</p>
-              {step.code ? <CreatorCode code={step.code} lang={locale} placeholder={L.you} copy={L.copy} copied={L.copied} tool={`${tool.id}_${i + 1}`} /> : null}
-              {step.codes?.map((c) => (
-                <CreatorCode key={c.label} code={c.code} lang={locale} placeholder={L.you} label={c.label} copy={L.copy} copied={L.copied} tool={`${tool.id}_${c.label.toLowerCase()}`} />
+        <ol className="mt-5 grid gap-4">
+          {tool.steps.map((step, i) => (
+            <li key={step.text} className="flex min-w-0 gap-3 sm:gap-4">
+              <span aria-hidden="true" className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-mint font-mono text-sm font-bold text-ink">
+                {i + 1}
+              </span>
+              <div className="min-w-0 flex-1 pt-1">
+                <p className="text-chalk">{step.text}</p>
+                {step.code ? <CreatorCode code={step.code} lang={locale} placeholder={L.you} copy={L.copy} copied={L.copied} tool={`${tool.id}_${i + 1}`} /> : null}
+                {step.codes?.map((c) => (
+                  <CreatorCode key={c.label} code={c.code} lang={locale} placeholder={L.you} label={c.label} copy={L.copy} copied={L.copied} tool={`${tool.id}_${c.label.toLowerCase()}`} />
+                ))}
+                {step.link ? (
+                  <p className="mt-2 text-sm">
+                    <GuideAnchor link={step.link} locale={locale} />
+                  </p>
+                ) : null}
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="felt-panel-mint min-w-0 p-4">
+            <p className="font-display text-sm font-bold text-mint">✓ {T.done}</p>
+            <p className="mt-1 text-sm text-chalk">{tool.done}</p>
+          </div>
+          <div className="felt-panel min-w-0 p-4">
+            <p className="font-display text-sm font-bold text-gold">? {T.stuck}</p>
+            <ul className="mt-1 grid gap-1.5 text-sm text-pale">
+              {tool.stuck.map((s) => (
+                <li key={s} className="flex gap-2">
+                  <span aria-hidden="true" className="text-gold">
+                    •
+                  </span>
+                  <span>{s}</span>
+                </li>
               ))}
-              {step.link ? (
-                <p className="mt-2 text-sm">
-                  <GuideAnchor link={step.link} locale={locale} />
-                </p>
-              ) : null}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="felt-panel-mint min-w-0 p-4">
-          <p className="font-display text-sm font-bold text-mint">✓ {T.done}</p>
-          <p className="mt-1 text-sm text-chalk">{tool.done}</p>
+            </ul>
+          </div>
         </div>
-        <div className="felt-panel min-w-0 p-4">
-          <p className="font-display text-sm font-bold text-gold">? {T.stuck}</p>
-          <ul className="mt-1 grid gap-1.5 text-sm text-pale">
-            {tool.stuck.map((s) => (
-              <li key={s} className="flex gap-2">
-                <span aria-hidden="true" className="text-gold">
-                  •
-                </span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {tool.more ? (
+          <p className="mt-4 text-sm">
+            <GuideAnchor link={tool.more} locale={locale} />
+          </p>
+        ) : null}
       </div>
-      {tool.more ? (
-        <p className="mt-4 text-sm">
-          <GuideAnchor link={tool.more} locale={locale} />
-        </p>
-      ) : null}
-    </section>
+    </details>
   );
 }
 
@@ -151,6 +198,7 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-10">
+      <OpenDetailsOnHash />
       <JsonLd
         data={[
           breadcrumbs([
@@ -200,11 +248,8 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
       </nav>
 
       {/* Che cosa dà OriginsMeta: per tutti e, con la pastiglia, solo con il ruolo Creator */}
-      <section id="perks" className="mt-14 scroll-mt-24" aria-labelledby="fc-perks">
-        <h2 id="fc-perks" className="t-section">
-          {L.perks.title}
-        </h2>
-        <p className="mt-2 max-w-3xl text-pale">{L.perks.intro}</p>
+      <Fold id="perks" title={L.perks.title} className="mt-10">
+        <p className="mt-5 max-w-3xl text-pale">{L.perks.intro}</p>
         <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {L.perks.items.map((item) => (
             <li key={item.title} className="card-night flex min-w-0 flex-col p-5">
@@ -219,14 +264,11 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
             </li>
           ))}
         </ul>
-      </section>
+      </Fold>
 
-      {/* Gli strumenti: prima la mappa, poi una guida passo passo per ognuno */}
-      <section id="tools" className="mt-16 scroll-mt-24" aria-labelledby="fc-tools">
-        <h2 id="fc-tools" className="t-section">
-          {L.tools.title}
-        </h2>
-        <p className="mt-2 max-w-3xl text-pale">{L.tools.intro}</p>
+      {/* Gli strumenti: prima la mappa (un clic apre la guida), poi una guida passo passo per ognuno, chiusa */}
+      <Fold id="tools" title={L.tools.title} className="mt-4">
+        <p className="mt-5 max-w-3xl text-pale">{L.tools.intro}</p>
         <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {tools.map((t) => (
             <li key={t.id} className="min-w-0">
@@ -244,19 +286,16 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
         <div className="mt-6">
           <CreatorUserNote filled={L.filled} notFilled={L.notFilled} signIn={L.signIn} loginHref={loginHref} />
         </div>
-        <div className="mt-6 grid gap-6">
+        <div className="mt-6 grid gap-3">
           {tools.map((t) => (
             <Guide key={t.id} tool={t} L={L} locale={locale} />
           ))}
         </div>
-      </section>
+      </Fold>
 
       {/* Idee per i contenuti: i dati e gli strumenti del sito da mostrare */}
-      <section id="ideas" className="mt-16 scroll-mt-24" aria-labelledby="fc-ideas">
-        <h2 id="fc-ideas" className="t-section">
-          {L.ideas.title}
-        </h2>
-        <p className="mt-2 max-w-3xl text-pale">{L.ideas.intro}</p>
+      <Fold id="ideas" title={L.ideas.title} className="mt-4">
+        <p className="mt-5 max-w-3xl text-pale">{L.ideas.intro}</p>
         <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {L.ideas.items.map((item) => (
             <li key={item.title} className="card-night flex min-w-0 flex-col p-5">
@@ -268,7 +307,7 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
             </li>
           ))}
         </ul>
-      </section>
+      </Fold>
 
       {/* Il media kit: lo zip, i file uno per uno, colori, font, frasi pronte e regole */}
       <section id="kit" className="mt-16 scroll-mt-24" aria-labelledby="fc-kit">
