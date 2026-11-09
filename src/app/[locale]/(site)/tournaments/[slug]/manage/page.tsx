@@ -4,7 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { href, siteUrl } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
-import { getInviteCode, getStageOptions, getTournament, listBanProgress, listBanStats, listInvites, listJudges, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { getFormatOptions, getInviteCode, getStageOptions, getTournament, listBanProgress, listBanStats, listInvites, listJudges, listMatches, listPlayers, listVisibleDecks, withMatchStages } from "@/lib/tournament/queries";
+import { defaultSwissRounds, groupCount, groupsProblem, isStagedFormat, openStageMatches } from "@/lib/tournament/formats";
+import { formatMatchNames, formatRoundTitle, formatView } from "@/lib/tournament/formatView";
+import { formatLabels } from "@/lib/tournament/formatLabels";
+import { FormatControls } from "@/components/FormatControls";
+import { FormatRounds } from "@/components/FormatRounds";
 import { bestOfSummary, canListTournaments, fill, totalRounds, tournamentInviteLink, tournamentShortLink } from "@/lib/tournament/types";
 import { matchNeed } from "@/lib/tournament/rules";
 import { banApplies, banRate, holdRound, planOf, podLetter, podMatches, podWinner, podsDone, topMatches } from "@/lib/tournament/stages";
@@ -59,9 +64,10 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
   // chi non fa parte dello staff torna alla scheda, con il segnale dell'accesso se arriva dal login (lo conta la scheda)
   if (!canAdmin && !isJudge) redirect(withCarriedParams(back, await searchParams));
 
-  const [players, matches, invites, inviteCode, decks, stages, banProgress, banStats] = await Promise.all([
+  const staged = isStagedFormat(t.format);
+  const [players, matches, invites, inviteCode, decks, stages, banProgress, banStats, fo] = await Promise.all([
     listPlayers(t.id, supabase),
-    listMatches(t.id, supabase),
+    listMatches(t.id, supabase).then((ms) => withMatchStages(supabase, t.id, t.format, ms)),
     canAdmin ? listInvites(supabase, t.id) : Promise.resolve([]),
     canAdmin ? getInviteCode(supabase, t.id) : Promise.resolve(null),
     listVisibleDecks(t.id, supabase),
@@ -69,13 +75,29 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
     getStageOptions(supabase, t.id),
     listBanProgress(supabase, t.id),
     listBanStats(supabase, t.id),
+    getFormatOptions(supabase, t.id),
   ]);
   const sl = stageLabels[locale];
-  const plan = planOf(matches, stages.top_cut);
-  const holdFrom = holdRound(stages, plan);
+  const fl = formatLabels[locale];
+  // svizzera e gironi (09/11/2026): fasi, nomi delle partite e dei turni, pausa della fase finale
+  const fv = staged ? formatView({ ...t, ...stages, ...fo }, matches) : null;
+  const plan = planOf(fv ? fv.bracket : matches, fv ? null : stages.top_cut);
+  const holdFrom = fv ? fv.holdFrom : holdRound(stages, plan);
   const rounds = totalRounds(matches);
-  const stage: ManagedStage | null =
-    plan.topRound !== null || stages.deck_ban
+  const stage: ManagedStage | null = fv
+    ? {
+        names: formatMatchNames(locale, x, t.format, fv, matches),
+        roundTitles: Object.fromEntries(Array.from({ length: rounds }, (_, i) => [i + 1, formatRoundTitle(locale, x, t.format, fv, i + 1)])),
+        banCounts: Object.fromEntries(banProgress),
+        banRounds: Array.from({ length: rounds }, (_, i) => i + 1).filter((r) => banApplies({ deck_ban: stages.deck_ban, deck_mode: t.deck_mode, conquest_decks: t.conquest_decks }, matchNeed(t.best_of, t.final_best_of, r, fv.finalRound))),
+        release:
+          holdFrom !== null && fv.cut
+            ? { cut: fv.cut, ready: matches.filter((mt) => mt.round >= holdFrom && mt.status === "pending" && mt.player_a && mt.player_b && !mt.ready_at).length, podsRunning: 0 }
+            : null,
+        releasedCut: stages.top_cut_released_at && fv.cut ? fv.cut : null,
+        labels: sl,
+      }
+    : plan.topRound !== null || stages.deck_ban
       ? {
           names: plan.topRound !== null ? stageMatchNames(locale, x, plan, matches) : {},
           roundTitles: plan.topRound !== null ? Object.fromEntries(Array.from({ length: rounds }, (_, i) => [i + 1, stageRoundTitle(locale, x, plan, i + 1)])) : {},
@@ -95,7 +117,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
       : null;
   // tabellone dello staff a schede, come quello pubblico (un bracket per scheda, poi la Top)
   const editorGroups: EditorGroup[] | undefined =
-    plan.topRound !== null && plan.topCut
+    !fv && plan.topRound !== null && plan.topCut
       ? [
           ...Array.from({ length: plan.pods }, (_, p) => ({
             id: podLetter(p),
@@ -116,6 +138,22 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
   const invitedList = invites.map((i) => ({ user_id: i.user_id, name: authorName(i.profile), registered: players.some((p) => p.user_id === i.user_id) }));
   const inviteLink = inviteCode ? tournamentInviteLink(siteUrl, t.tag, inviteCode) : null;
   const shortLink = tournamentShortLink(siteUrl, t.tag);
+  // all'avvio di svizzera e gironi l'anteprima dei bye del tabellone non vale: si dice come parte la fase
+  const eligibleN = players.filter((p) => p.status === "registered" && p.decks_submitted).length;
+  const startNote = !fv
+    ? undefined
+    : t.format === "swiss"
+      ? `${fill(fl.startSwiss, { n: eligibleN, rounds: fo.swiss_rounds ?? defaultSwissRounds(eligibleN) })}${eligibleN % 2 ? ` ${fl.startSwissBye}` : ""}`
+      : fo.group_size
+        ? groupsProblem(eligibleN, fo.group_size, fo.group_advance ?? 1)
+          ? fl.errors.groups_too_small
+          : fill(fo.group_seeding === "random" ? fl.startGroupsRandom : fl.startGroups, { n: eligibleN, groups: groupCount(eligibleN, fo.group_size), k: fo.group_advance ?? 1 })
+        : undefined;
+  const stageList = fv ? matches.filter((mt) => mt.stage === "swiss" || mt.stage === "group") : [];
+  const curRound = fv ? fv.stageRounds : 0;
+  const curList = t.format === "swiss" ? stageList.filter((mt) => mt.round === curRound) : stageList;
+  const finishReady = fv ? (fv.bracket.length ? undefined : t.format === "swiss" && !stages.top_cut && curRound >= 1 && openStageMatches(matches).length === 0) : undefined;
+  const allErrors: Record<string, string> = { ...(sl.errors as Record<string, string>), ...(fl.errors as Record<string, string>) };
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -146,6 +184,25 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
         </div>
       ) : null}
 
+      {fv && t.status === "running" && (t.format === "swiss" || t.format === "groups") ? (
+        <div className="mt-8">
+          <FormatControls
+            id={t.id}
+            slug={t.slug}
+            format={t.format}
+            round={curRound}
+            total={t.format === "swiss" ? fv.plannedRounds : curRound}
+            done={curList.filter((mt) => mt.status === "confirmed" || mt.status === "bye").length}
+            matches={curList.length}
+            open={fv.open}
+            cut={t.format === "swiss" ? (stages.top_cut ?? null) : (fo.group_advance ?? null)}
+            finalStarted={fv.bracket.length > 0 || Boolean(fv.champion)}
+            labels={fl}
+            errors={{ ...(x.errors as Record<string, string>), ...allErrors }}
+          />
+        </div>
+      ) : null}
+
       <div className="mt-8">
         <ManagePanel
           id={t.id}
@@ -168,6 +225,10 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
           canAdmin={canAdmin}
           judges={judges.map((j) => ({ user_id: j.user_id, name: authorName(j.profile) }))}
           stage={stage}
+          finalRound={fv ? fv.finalRound : undefined}
+          finishReady={finishReady}
+          startNote={startNote}
+          extraErrors={allErrors}
         />
       </div>
 
@@ -194,7 +255,24 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
             {x.bracket}
             {t.status === "running" ? <span className="ml-2 text-sm font-normal text-pale-muted">· {x.manage.swapTitle}</span> : null}
           </h2>
-          {t.status === "running" ? (
+          {fv ? (
+            /* svizzera e gironi (09/11/2026): turni con le stanze, poi il tabellone della fase finale (scambi solo lì e nel turno svizzero in corso) */
+            <>
+              <FormatRounds matches={matches} names={names} total={t.format === "swiss" ? fv.plannedRounds : 0} groups={t.format === "groups"} dict={d} labels={fl} open={{ linkBase: `${back}/match/`, viewer: null, all: true }} />
+              {fv.bracket.length ? (
+                <div className="mt-5">
+                  <h3 className="t-item">{t.format === "swiss" ? fill(sl.top, { n: fv.cut ?? 0 }) : fl.finalStage}</h3>
+                  {t.status === "running" ? (
+                    <BracketEditor id={t.id} slug={t.slug} matches={fv.bracket} names={Object.fromEntries(names)} labels={x} linkBase={`${back}/match/`} />
+                  ) : (
+                    <div className="mt-2">
+                      <Bracket matches={fv.bracket} names={names} dict={d} open={{ linkBase: `${back}/match/`, all: true }} />
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </>
+          ) : t.status === "running" ? (
             /* a torneo in corso il tabellone è interattivo: due clic scambiano i giocatori di partite dello stesso turno ancora da giocare */
             <BracketEditor id={t.id} slug={t.slug} matches={matches} names={Object.fromEntries(names)} labels={x} linkBase={`${back}/match/`} groups={editorGroups} initialGroup={initialGroup} tabsLabel={sl.tabsLabel} mineLabel={sl.yours} />
           ) : (
@@ -259,6 +337,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
               loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`}
               contactEmail={contactEmail}
               stageText={sl}
+              formatText={fl}
               initial={{
                 id: t.id,
                 status: t.status,
@@ -277,6 +356,12 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
                 top_cut: stages.top_cut,
                 top_cut_hold: stages.top_cut_hold,
                 deck_ban: stages.deck_ban,
+                format: t.format,
+                swiss_rounds: fo.swiss_rounds,
+                group_size: fo.group_size,
+                group_advance: fo.group_advance,
+                group_seeding: fo.group_seeding,
+                sideboard: fo.sideboard,
                 lang: t.lang,
                 description: t.description,
                 rules: t.rules,

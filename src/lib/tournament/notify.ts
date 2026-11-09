@@ -5,6 +5,7 @@ import { supabaseEnabled, supabaseKey, supabaseUrl } from "@/lib/supabase/env";
 import { siteUrl, type Locale } from "@/lib/i18n";
 import { roundLabel, standings } from "./bracket";
 import { stagePlan } from "./stages";
+import { bracketRenumbered, championOf, isStagedFormat } from "./formats";
 import { tournamentShortLink } from "./types";
 import { discordUtm } from "@/lib/analytics";
 import { DISCORD_AVATAR_URL, DISCORD_USERNAME } from "@/lib/discordWebhook";
@@ -77,13 +78,13 @@ function freshClient() {
 }
 type Client = NonNullable<ReturnType<typeof freshClient>>;
 
-type TInfo = { id: string; slug: string; tag: string; name: string; lang: Locale; status: string; visibility: string };
+type TInfo = { id: string; slug: string; tag: string; name: string; lang: Locale; status: string; visibility: string; format?: string };
 type MInfo = { id: string; tournament_id: string; round: number; position: number; player_a: string | null; player_b: string | null; winner: string | null; score_a: number | null; score_b: number | null; status: string; forfeit: boolean };
 
 const MATCH_FIELDS = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, forfeit";
 
 async function readTournament(sb: Client, id: string): Promise<TInfo | null> {
-  const { data } = await sb.from("tournaments").select("id, slug, tag, name, lang, status, visibility").eq("id", id).maybeSingle();
+  const { data } = await sb.from("tournaments").select("id, slug, tag, name, lang, status, visibility, format").eq("id", id).maybeSingle();
   const t = data as TInfo | null;
   // difesa in profondità: l'anonimo non vede i privati, ma se una policy cambiasse non partirebbe comunque nulla
   return t && t.visibility === "public" ? t : null;
@@ -92,6 +93,17 @@ async function readTournament(sb: Client, id: string): Promise<TInfo | null> {
 async function readMatches(sb: Client, tid: string): Promise<MInfo[]> {
   const { data } = await sb.from("tournament_matches").select(MATCH_FIELDS).eq("tournament_id", tid).order("round", { ascending: true }).order("position", { ascending: true });
   return (data ?? []) as unknown as MInfo[];
+}
+
+/**
+ * Svizzera e gironi (09/11/2026): nel canale vanno solo le partite del tabellone finale (una svizzera da 256 sono 128
+ * partite a turno), rinumerate dal turno 1 come un tabellone a sé; `champion` è il vincitore di una svizzera senza Top.
+ */
+async function readStagedBracket(sb: Client, tid: string): Promise<{ bracket: MInfo[]; base: number; champion: string | null }> {
+  const { data } = await sb.from("tournament_matches").select(`${MATCH_FIELDS}, stage`).eq("tournament_id", tid);
+  const all = (data ?? []) as unknown as (MInfo & { stage: string | null })[];
+  const { matches, base } = bracketRenumbered(all);
+  return { bracket: matches, base, champion: championOf(all) };
 }
 
 async function readNames(sb: Client, tid: string): Promise<Map<string, string>> {
@@ -255,7 +267,16 @@ async function resultMessage(sb: Client, mid: string): Promise<string | null> {
   if (!m || m.status !== "confirmed" || !m.winner || m.score_a === null || m.score_b === null) return null;
   const t = await readTournament(sb, m.tournament_id);
   if (!t || t.status !== "running") return null;
-  const [matches, names, cut] = await Promise.all([readMatches(sb, t.id), readNames(sb, t.id), readTopCut(sb, t.id)]);
+  const staged = isStagedFormat(t.format);
+  const [all, names, cut] = await Promise.all([staged ? readStagedBracket(sb, t.id).then((r) => r.bracket) : readMatches(sb, t.id), readNames(sb, t.id), staged ? Promise.resolve(null) : readTopCut(sb, t.id)]);
+  let matches = all;
+  if (staged) {
+    // la partita della svizzera o dei gironi non va nel canale; quella del tabellone si rinumera come le altre
+    const inBracket = all.find((x) => x.id === m.id);
+    if (!inBracket) return null;
+    m.round = inBracket.round;
+    matches = all;
+  }
   const size = matches.filter((x) => x.round === 1).length * 2;
   // 08/11/2026: con la qualificazione a bracket (256 giocatori = 240 partite prima della Top 16) nel canale vanno solo le
   // finali dei bracket, che mandano un giocatore nella fase finale, e le partite della fase finale
@@ -299,10 +320,14 @@ async function resultMessage(sb: Client, mid: string): Promise<string | null> {
 async function finishedMessage(sb: Client, tid: string): Promise<string | null> {
   const t = await readTournament(sb, tid);
   if (!t || t.status !== "finished") return null;
-  const [matches, names] = await Promise.all([readMatches(sb, tid), readNames(sb, tid)]);
+  const staged = isStagedFormat(t.format);
+  const sb2 = staged ? await readStagedBracket(sb, tid) : null;
+  const [matches, names] = await Promise.all([sb2 ? Promise.resolve(sb2.bracket) : readMatches(sb, tid), readNames(sb, tid)]);
   const size = matches.filter((m) => m.round === 1).length * 2;
-  if (!size) return null;
+  if (!size && !sb2?.champion) return null;
   const podium = (() => {
+    // svizzera senza Top (09/11/2026): vince il primo della classifica
+    if (!size && sb2?.champion) return { winner: sb2.champion, runnerUp: null };
     try {
       return standings(matches, size);
     } catch {
