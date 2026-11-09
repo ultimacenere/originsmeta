@@ -33,19 +33,28 @@ export function popularityMap(
   return out;
 }
 
-type Sortable = { trend?: number; favorites?: number; created?: string; updated: string };
+type Sortable = { trend?: number; favorites?: number; cardsAt?: string; created?: string; updated: string };
+
+/**
+ * La data dell'ordine "Più recenti" di una riga dell'elenco dei mazzi: l'ultimo cambio di carte per i mazzi della
+ * community (09/11/2026, Pierluigi: conta solo un cambio delle carte, non guida o titolo), altrimenti la creazione,
+ * altrimenti l'aggiornamento (mazzi editoriali).
+ */
+export function recentAt(d: Sortable): string {
+  return d.cardsAt ?? d.created ?? d.updated;
+}
 
 /**
  * Ordine "Di tendenza": punteggio della settimana, poi salvataggi, poi il più recente (i mazzi senza movimento nella
  * settimana restano in fondo dal più nuovo, così la lista non si mescola a caso). "Più salvati": salvataggi, poi
- * punteggio, poi il più recente.
+ * punteggio, poi il più recente. "Il più recente" è `recentAt`, come l'ordine "Più recenti".
  */
 export function compareTrending(a: Sortable, b: Sortable): number {
-  return (b.trend ?? 0) - (a.trend ?? 0) || (b.favorites ?? 0) - (a.favorites ?? 0) || (b.created ?? b.updated).localeCompare(a.created ?? a.updated);
+  return (b.trend ?? 0) - (a.trend ?? 0) || (b.favorites ?? 0) - (a.favorites ?? 0) || recentAt(b).localeCompare(recentAt(a));
 }
 
 export function compareSaved(a: Sortable, b: Sortable): number {
-  return (b.favorites ?? 0) - (a.favorites ?? 0) || (b.trend ?? 0) - (a.trend ?? 0) || (b.created ?? b.updated).localeCompare(a.created ?? a.updated);
+  return (b.favorites ?? 0) - (a.favorites ?? 0) || (b.trend ?? 0) - (a.trend ?? 0) || recentAt(b).localeCompare(recentAt(a));
 }
 
 /** Funzione del database che non c'è ancora (blocco PREFERITI E TENDENZA non applicato): si fa senza. */

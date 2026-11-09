@@ -54,7 +54,7 @@ import { UserComics } from "@/components/comics/UserComics";
 import { communityGuideLabels } from "@/lib/communityGuideLabels";
 import { safeAvatarUrl } from "@/lib/community/profileMedia";
 import { supabaseUrl } from "@/lib/supabase/env";
-import { deckCardsDate } from "@/lib/community/deckVersions";
+import { deckCardsDate, deckCardsUpdated } from "@/lib/community/deckVersions";
 
 type Params = Promise<{ locale: string; username: string }>;
 
@@ -272,7 +272,8 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
       <ProfileHighlights profileId={profile.id} memberSince={profile.created_at} badge={profile.badge} name={name} decks={decks} tierLists={tierLists} locale={locale} />
       {showcaseRole ? <CreatorTournaments organizerId={profile.id} locale={locale} dict={d} /> : null}
 
-      {/* I mazzi pubblicati, dal più recente, con data di creazione e versione del gioco (richiesta del 23/09/2026) */}
+      {/* I mazzi pubblicati, dal più recente, con data di creazione e versione del gioco (richiesta del 23/09/2026); dal
+          09/11/2026 "più recente" vuol dire dall'ultimo cambio di carte (listDecksByOwner) */}
       {decks.length === 0 && hideEmpty ? null : (
         <section className="card-night mt-2.5 p-4 sm:p-5">
           <h2 className="t-panel">{p.decksTitle}</h2>
@@ -283,6 +284,7 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
               {decks.map((deck) => {
                 const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
                 const patch = patchAt(deckCardsDate(deck));
+                const cardsUpdated = deckCardsUpdated(deck);
                 // artwork della Leggendaria dei Creator e dello Staff (29/09/2026), al posto dell'illustrazione ufficiale
                 const art = deckArtUrl(deck, supabaseUrl);
                 return (
@@ -309,7 +311,10 @@ export default async function PublicProfilePage({ params }: { params: Params }) 
                         ) : null}
                       </p>
                       <p className="mt-2 font-mono text-xs text-pale-muted">
-                        {d.common.createdOn} {formatDate(locale, deck.created_at.slice(0, 10))}
+                        {/* carte cambiate dopo la pubblicazione: la data dell'aggiornamento, quella dell'ordine (09/11/2026) */}
+                        {cardsUpdated
+                          ? `${d.common.updated} ${formatDate(locale, cardsUpdated.slice(0, 10))}`
+                          : `${d.common.createdOn} ${formatDate(locale, deck.created_at.slice(0, 10))}`}
                         {deck.rating?.votes ? ` · ★ ${deck.rating.avg.toFixed(1)} (${deck.rating.votes})` : ""}
                       </p>
                     </div>

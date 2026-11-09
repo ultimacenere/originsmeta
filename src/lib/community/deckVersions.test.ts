@@ -7,6 +7,9 @@
  * - Blocco "30/09/2026: VERSIONI" di supabase/schema.sql: colonne, chiave dei voti con la versione, trigger, vista
  *   deck_ratings sulla versione in vigore, tabella delle versioni senza scritture degli utenti.
  * - Etichette nelle tre lingue (deckVersionLabels.ts): stesse chiavi e stessi segnaposto.
+ * - Ordine per data dell'ultimo aggiornamento delle carte (09/11/2026): una modifica di solo testo non sposta la data,
+ *   una modifica delle carte sì e porta il mazzo in cima, il mazzo resta lo stesso; blocco "09/11/2026: ORDINE PER
+ *   AGGIORNAMENTO" di schema.sql (carte confrontate senza badare all'ordine).
  *
  * Import senza estensione come in deckArt.test.ts: un hook di risoluzione aggiunge `.ts`.
  */
@@ -37,6 +40,8 @@ registerHooks({
 const V: typeof import("./deckVersions") = await import("./deckVersions.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const L: typeof import("../deckVersionLabels") = await import("../deckVersionLabels.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const F: typeof import("./favorites") = await import("./favorites.ts");
 
 const read = (rel: string) => readFileSync(new URL(rel, import.meta.url), "utf8");
 const deck = (legendary: string | null, cards: string[], custom: { slug: string; name?: string }[] = []) => ({ legendary, cards, custom_cards: custom });
@@ -50,6 +55,11 @@ describe("regole delle versioni", () => {
     assert.equal(V.sameDeckCards(deck("merlin", ["a", "b"]), deck("mulan", ["a", "b"])), false);
     assert.equal(V.sameDeckCards(deck("merlin", ["a"], [{ slug: "custom:x", name: "X" }]), deck("merlin", ["a"], [{ slug: "custom:x", name: "Y" }])), false);
     assert.equal(V.sameDeckCards(deck("merlin", ["a"], [{ slug: "custom:x", name: "X" }]), deck("merlin", ["a"], [{ name: "X", slug: "custom:x" }])), true);
+  });
+  test("una quantità diversa è una versione nuova (le carte sono un multinsieme, come in deck_cards_key)", () => {
+    assert.equal(V.sameDeckCards(deck("merlin", ["a", "a", "b"]), deck("merlin", ["a", "b", "b"])), false);
+    assert.equal(V.sameDeckCards(deck("merlin", ["a", "b"]), deck("merlin", ["a", "a", "b"])), false);
+    assert.equal(V.sameDeckCards(deck("merlin", ["b", "a", "a"]), deck("merlin", ["a", "b", "a"])), true);
   });
   test("riepilogo dei cambi nell'ordine del mazzo", () => {
     const d = V.deckCardsDiff(deck("merlin", ["a", "b", "c"]), deck("mulan", ["c", "d", "a", "e"]));
@@ -84,6 +94,114 @@ describe("regole delle versioni", () => {
     assert.deepEqual(m.get(1), { avg: 4.33, votes: 3 });
     assert.deepEqual(m.get(2), { avg: 3, votes: 1 });
     assert.equal(m.get(3), undefined);
+  });
+});
+
+describe("ordine per data dell'ultimo aggiornamento delle carte (Pierluigi, 09/11/2026)", () => {
+  type Row = import("./deckVersions").DeckSaveState & { id: string; slug: string; name: string; guide: string; updated_at: string };
+  const row = (slug: string, created_at: string, cards: string[], extra: Partial<Row> = {}): Row => ({
+    id: `id-${slug}`,
+    slug,
+    name: `Mazzo ${slug}`,
+    guide: "guida",
+    status: "published",
+    legendary: "merlin",
+    cards,
+    custom_cards: [],
+    version: 1,
+    created_at,
+    updated_at: created_at,
+    cards_updated_at: null,
+    ...extra,
+  });
+  const order = (rows: Row[]) => rows.slice().sort(V.newestCardsFirst).map((r) => r.slug);
+  const vecchio = row("vecchio", "2026-10-01T10:00:00.000+00:00", ["a", "b", "c"]);
+  const medio = row("medio", "2026-10-20T10:00:00.000+00:00", ["d", "e", "f"]);
+  const nuovo = row("nuovo", "2026-11-05T10:00:00.000+00:00", ["g", "h", "i"]);
+  const oggi = "2026-11-09T09:30:00.000+00:00";
+
+  test("di partenza: dal più nuovo, come prima", () => {
+    assert.deepEqual(order([vecchio, nuovo, medio]), ["nuovo", "medio", "vecchio"]);
+  });
+  test("una modifica di solo testo (nome, guida) non sposta la data né il mazzo", () => {
+    const dopo = V.deckAfterSave(vecchio, { name: "Nome nuovo", guide: "guida riscritta", updated_at: oggi }, oggi);
+    assert.equal(dopo.cards_updated_at, null);
+    assert.equal(dopo.version, 1);
+    assert.equal(V.deckCardsDate(dopo), vecchio.created_at);
+    assert.deepEqual(order([dopo, nuovo, medio]), ["nuovo", "medio", "vecchio"]);
+  });
+  test("le stesse carte in un altro ordine non sono un aggiornamento", () => {
+    const dopo = V.deckAfterSave(vecchio, { cards: ["c", "a", "b"] }, oggi);
+    assert.equal(dopo.cards_updated_at, null);
+    assert.deepEqual(order([dopo, nuovo, medio]), ["nuovo", "medio", "vecchio"]);
+  });
+  test("una modifica delle carte sposta la data e porta il mazzo in cima", () => {
+    for (const edit of [{ cards: ["a", "b", "x"] }, { cards: ["a", "b"] }, { cards: ["a", "b", "c", "c"] }, { legendary: "mulan" }]) {
+      const dopo = V.deckAfterSave(vecchio, edit, oggi);
+      assert.equal(dopo.cards_updated_at, oggi, JSON.stringify(edit));
+      assert.equal(dopo.version, 2);
+      assert.equal(V.deckCardsUpdated(dopo), oggi);
+      assert.deepEqual(order([dopo, nuovo, medio]), ["vecchio", "nuovo", "medio"]);
+    }
+  });
+  test("il mazzo aggiornato resta lo stesso: id, slug e data di creazione", () => {
+    const dopo = V.deckAfterSave(vecchio, { cards: ["a", "b", "x"], created_at: oggi } as Partial<Row>, oggi);
+    assert.equal(dopo.id, vecchio.id);
+    assert.equal(dopo.slug, vecchio.slug);
+    assert.equal(dopo.created_at, vecchio.created_at);
+  });
+  test("un mazzo privato si riscrive senza versioni né data", () => {
+    const dopo = V.deckAfterSave({ ...vecchio, status: "draft" }, { cards: ["x", "y", "z"] }, oggi);
+    assert.equal(dopo.cards_updated_at, null);
+    assert.equal(dopo.version, 1);
+  });
+  test("dopo un aggiornamento, un cambio di guida non sposta più la data dell'aggiornamento", () => {
+    const aggiornato = V.deckAfterSave(vecchio, { cards: ["a", "b", "x"] }, "2026-11-08T10:00:00.000+00:00");
+    const dopo = V.deckAfterSave(aggiornato, { guide: "altra guida" }, oggi);
+    assert.equal(dopo.cards_updated_at, "2026-11-08T10:00:00.000+00:00");
+    assert.equal(dopo.version, 2);
+  });
+  test("due letture unite: un mazzo vecchio aggiornato entra anche oltre il limite", () => {
+    const aggiornato = { ...vecchio, cards_updated_at: oggi, version: 2 };
+    // limite 2: per creazione arrivano "nuovo" e "medio", fra gli aggiornati "vecchio"
+    assert.deepEqual(V.mergeNewestCards([nuovo, medio], [aggiornato], 2).map((r) => r.slug), ["vecchio", "nuovo"]);
+    // la stessa riga letta due volte conta una volta
+    assert.deepEqual(V.mergeNewestCards([aggiornato, nuovo], [aggiornato], 5).map((r) => r.slug), ["vecchio", "nuovo"]);
+  });
+  test("elenco nel browser: l'ordine \"Più recenti\" e gli spareggi di tendenza usano l'ultimo cambio di carte", () => {
+    assert.equal(F.recentAt({ cardsAt: oggi, created: "2026-10-01", updated: "2026-10-02" }), oggi);
+    assert.equal(F.recentAt({ created: "2026-10-01", updated: "2026-10-02" }), "2026-10-01");
+    assert.equal(F.recentAt({ updated: "2026-10-02" }), "2026-10-02");
+    const a = { trend: 0, favorites: 0, cardsAt: oggi, created: "2026-10-01", updated: oggi };
+    const b = { trend: 0, favorites: 0, cardsAt: "2026-11-05T10:00:00.000+00:00", created: "2026-11-05", updated: "2026-11-05" };
+    assert.ok(F.compareTrending(a, b) < 0);
+    assert.ok(F.compareSaved(a, b) < 0);
+  });
+});
+
+describe("blocco ORDINE PER AGGIORNAMENTO di schema.sql", () => {
+  const schema = read("../../../supabase/schema.sql");
+  const start = schema.indexOf("-- ===== 09/11/2026: ORDINE PER AGGIORNAMENTO =====");
+  const block = schema.slice(start);
+  test("c'è, dopo VERSIONI, quindi la sua guard_deck_version è quella che resta", () => {
+    assert.ok(start > schema.indexOf("-- ===== 30/09/2026: VERSIONI ====="));
+    assert.equal(schema.lastIndexOf("create or replace function public.guard_deck_version()") > start, true);
+  });
+  test("carte e carte create confrontate come multinsieme, senza badare all'ordine", () => {
+    assert.match(block, /create or replace function public\.deck_cards_key\(cards jsonb\)[\s\S]*?jsonb_agg\(x order by x\)/);
+    assert.match(block, /public\.deck_cards_key\(new\.cards\) is distinct from public\.deck_cards_key\(old\.cards\)/);
+    assert.match(block, /new\.legendary is distinct from old\.legendary/);
+    assert.match(block, /public\.deck_cards_key\(new\.custom_cards\) is distinct from public\.deck_cards_key\(old\.custom_cards\)/);
+  });
+  test("versione e data delle carte restano quelle di prima, salvo un cambio di carte di un mazzo non privato", () => {
+    const fn = block.slice(block.indexOf("create or replace function public.guard_deck_version()"));
+    assert.match(fn, /new\.version := old\.version;\s*new\.cards_updated_at := old\.cards_updated_at;/);
+    assert.match(fn, /if old\.status <> 'draft'/);
+    assert.match(fn, /new\.version := old\.version \+ 1;\s*new\.cards_updated_at := now\(\);/);
+  });
+  test("niente colonne nuove né riempimenti: nessuna riga di mazzi, voti o visite si tocca", () => {
+    assert.doesNotMatch(block, /add column/);
+    assert.doesNotMatch(block, /^\s*(?:update|delete from|truncate)\b/im);
   });
 });
 

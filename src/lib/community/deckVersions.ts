@@ -26,7 +26,8 @@ export type DeckVersion = DeckCards & {
   rating: { avg: number; votes: number };
 };
 
-const sortedSlugs = (xs: readonly string[]) => Array.from(new Set(xs)).sort();
+/** Le carte come multinsieme (09/11/2026): ordinate e con i doppioni, così conta anche una quantità diversa, come nel trigger. */
+const sortedSlugs = (xs: readonly string[]) => [...xs].sort();
 const sameList = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
 /** Le carte create si confrontano per intero (nome e statistiche comprese), ordinate per slug. */
 const customKey = (xs: readonly CustomCard[] | null | undefined) =>
@@ -39,6 +40,23 @@ const customKey = (xs: readonly CustomCard[] | null | undefined) =>
 /** Stesse carte, stessa Leggendaria e stesse carte create, in qualsiasi ordine: nessuna versione nuova. */
 export function sameDeckCards(a: DeckCards, b: DeckCards): boolean {
   return (a.legendary ?? null) === (b.legendary ?? null) && sameList(sortedSlugs(a.cards), sortedSlugs(b.cards)) && customKey(a.custom_cards) === customKey(b.custom_cards);
+}
+
+/** Lo stato di un mazzo salvato che conta per le versioni (colonne di community_decks). */
+export type DeckSaveState = DeckCards & { status: string; version: number; created_at: string; cards_updated_at: string | null };
+
+/**
+ * Che cosa fa il trigger guard_deck_version a un salvataggio di un mazzo (supabase/schema.sql, blocco "09/11/2026: ORDINE
+ * PER AGGIORNAMENTO", che sostituisce quello di VERSIONI): versione e data delle carte non le scrive chi salva; se un
+ * mazzo non privato cambia carte (in qualsiasi ordine: `sameDeckCards`), `version` sale di uno e `cards_updated_at`
+ * diventa `now`, altrimenti restano quelle di prima, qualunque altro campo cambi (nome, guida, video). La regola vera è
+ * nell'SQL: questa copia serve ai test, che controllano anche che il blocco dica lo stesso.
+ */
+export function deckAfterSave<T extends DeckSaveState>(before: T, edit: Partial<T>, now: string): T {
+  // anche created_at resta quella di prima (trigger guard_created_at, blocco DATE E FOTO)
+  const next: T = { ...before, ...edit, created_at: before.created_at, version: before.version, cards_updated_at: before.cards_updated_at };
+  if (before.status !== "draft" && !sameDeckCards(before, next)) return { ...next, version: before.version + 1, cards_updated_at: now };
+  return next;
 }
 
 /** Che cosa cambia passando da `from` a `to`: carte entrate e uscite (nell'ordine del mazzo) e Leggendaria. */
@@ -60,6 +78,38 @@ export function deckCardsDiff(from: DeckCards, to: DeckCards): CardsDiff {
  */
 export function deckCardsDate(deck: { created_at: string; cards_updated_at?: string | null }): string {
   return deck.cards_updated_at || deck.created_at;
+}
+
+/*
+ * Ordine "più recenti" dei mazzi della community (richiesta di Pierluigi sul Discord del 09/11/2026): conta la data
+ * dell'ultimo aggiornamento delle carte, non quella della prima pubblicazione. Aggiornamento = carte diverse (una carta
+ * entrata o uscita, una quantità diversa, la Leggendaria o una carta creata), come decide il trigger guard_deck_version;
+ * nome, guida, video e gli altri testi cambiano solo `updated_at`, che qui non conta. Il mazzo resta lo stesso (stesso
+ * id, stesso indirizzo): visite e voti restano suoi.
+ */
+type Dated = { slug: string; created_at: string; cards_updated_at?: string | null };
+
+/** Dal mazzo con le carte cambiate più di recente; a pari data il più nuovo, poi lo slug (ordine stabile). */
+export function newestCardsFirst(a: Dated, b: Dated): number {
+  return deckCardsDate(b).localeCompare(deckCardsDate(a)) || b.created_at.localeCompare(a.created_at) || a.slug.localeCompare(b.slug);
+}
+
+/** Data dell'ultimo cambio di carte dopo la pubblicazione (da mostrare come "Aggiornato il …"); null se le carte sono quelle pubblicate. */
+export function deckCardsUpdated(deck: { cards_updated_at?: string | null }): string | null {
+  return deck.cards_updated_at || null;
+}
+
+/**
+ * I `limit` mazzi con le carte più recenti da due letture del database, perché PostgREST non ordina su
+ * coalesce(cards_updated_at, created_at): i più nuovi per `created_at` e gli aggiornati per `cards_updated_at`, tutte e
+ * due con lo stesso `limit`. Basta così: un mazzo mai aggiornato che sta nei primi `limit` per data delle carte sta nei
+ * primi `limit` per creazione (chi è nato dopo di lui ha anche le carte più recenti), e un mazzo aggiornato sta nei primi
+ * `limit` degli aggiornati. Senza doppioni: vale la prima riga letta per id.
+ */
+export function mergeNewestCards<T extends Dated & { id: string }>(byCreated: readonly T[], byCardsUpdate: readonly T[], limit: number): T[] {
+  const seen = new Map<string, T>();
+  for (const d of [...byCreated, ...byCardsUpdate]) if (!seen.has(d.id)) seen.set(d.id, d);
+  return Array.from(seen.values()).sort(newestCardsFirst).slice(0, limit);
 }
 
 /*

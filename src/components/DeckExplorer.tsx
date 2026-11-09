@@ -12,7 +12,7 @@ import { ChannelLinks } from "./ChannelLinks";
 import { LiveBadge } from "./LiveBadge";
 import { ArchetypeIcon } from "./ArchetypeIcon";
 import { bumpDeckStat } from "@/lib/community/deckStatsClient";
-import { compareSaved, compareTrending } from "@/lib/community/favorites";
+import { compareSaved, compareTrending, recentAt } from "@/lib/community/favorites";
 
 type DeckCard = {
   name: string;
@@ -63,6 +63,15 @@ export type ExplorerDeck = {
   created?: string;
   /** data già scritta nella lingua della pagina, per non portare l'intera formattazione nel browser */
   createdLabel?: string;
+  /**
+   * Istante dell'ultimo cambio di carte, o della pubblicazione se le carte sono quelle di allora (solo mazzi della
+   * community): l'ordine "Più recenti" (Pierluigi, 09/11/2026: "conta come aggiornamento solo un cambio delle carte").
+   * Senza, l'ordine usa `created` e poi `updated`.
+   */
+  cardsAt?: string;
+  /** giorno (aaaa-mm-gg) e data scritta dell'ultimo cambio di carte, solo se le carte sono cambiate dopo la pubblicazione */
+  cardsUpdated?: string;
+  cardsUpdatedLabel?: string;
   patchId?: string;
   patchLabel?: string;
   /** media e numero dei voti (solo mazzi della community) */
@@ -129,6 +138,8 @@ type Labels = {
   sortTrending?: string;
   sortSaved?: string;
   createdOn: string;
+  /** "Aggiornato" davanti alla data di un mazzo con le carte cambiate dopo la pubblicazione (09/11/2026) */
+  updatedOn?: string;
   /** canali e badge LIVE accanto a chi ha pubblicato (pacchetto CREATOR): senza, non si mostrano */
   channels?: ChannelLabels;
   live?: LiveLabels;
@@ -246,8 +257,9 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
       if (needle && !d.cardNames.some((c) => c.toLowerCase().includes(needle)) && !d.name.toLowerCase().includes(needle)) return false;
       return true;
     });
-    // "più recenti": la data di creazione, con quella di aggiornamento come ripiego per i mazzi editoriali
-    const when = (d: ExplorerDeck) => d.created ?? d.updated;
+    // "più recenti": l'ultimo cambio di carte dei mazzi della community (09/11/2026; un cambio di guida o di nome non
+    // conta), altrimenti la data di creazione, con quella di aggiornamento come ripiego per i mazzi editoriali
+    const when = recentAt;
     if (sort === "trending") return filtered.sort(compareTrending);
     if (sort === "saved") return filtered.sort(compareSaved);
     return filtered.sort((a, b) =>
@@ -536,7 +548,13 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                     {publisherExtras(d)}
                     {/* Quando è stato costruito e con quale versione del gioco: un mazzo di tre patch fa vale
                         un'altra cosa, e chi legge deve poterlo capire senza aprire la scheda. */}
-                    {d.createdLabel ? (
+                    {/* Un mazzo con le carte cambiate dopo la pubblicazione mostra la data dell'aggiornamento, quella
+                        dell'ordine "Più recenti" (09/11/2026): la patch accanto si ricava già da lì. */}
+                    {d.cardsUpdatedLabel && labels.updatedOn ? (
+                      <span>
+                        {labels.updatedOn} <time dateTime={d.cardsUpdated}>{d.cardsUpdatedLabel}</time>
+                      </span>
+                    ) : d.createdLabel ? (
                       <span>
                         {labels.createdOn} <time dateTime={d.created}>{d.createdLabel}</time>
                       </span>
@@ -583,7 +601,13 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
               <span className="flex min-w-0 max-w-full flex-wrap items-center gap-x-2 gap-y-1 text-xs text-pale-muted sm:max-w-md sm:shrink-0">
                 <span className="truncate">{d.publisher}</span>
                 {publisherExtras(d, "icon")}
-                {d.createdLabel ? <time dateTime={d.created}>{d.createdLabel}</time> : null}
+                {d.cardsUpdatedLabel && labels.updatedOn ? (
+                  <time dateTime={d.cardsUpdated} title={labels.updatedOn}>
+                    {d.cardsUpdatedLabel}
+                  </time>
+                ) : d.createdLabel ? (
+                  <time dateTime={d.created}>{d.createdLabel}</time>
+                ) : null}
                 {d.patchLabel ? <span className="stat-pill bg-night-3 text-[11px] text-pale">{d.patchLabel}</span> : null}
                 {d.code ? <CopyCode code={d.code} labels={labels} statsSlug={d.statsSlug} /> : null}
               </span>

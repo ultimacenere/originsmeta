@@ -5,7 +5,7 @@ import { normalizeBadge, publishedDeckCap, type Badge } from "./badges";
 import type { DeckTranslations } from "./deckTranslation";
 import { sitemapDecks, type SitemapDeck } from "./deckQuality";
 import { guideTableMissing } from "./guides";
-import { versionRatings, type DeckVersion } from "./deckVersions";
+import { mergeNewestCards, newestCardsFirst, versionRatings, type DeckVersion } from "./deckVersions";
 import { popularityMap, popularityMissing, type DeckPopularity } from "./favorites";
 import { splitTheory } from "@/lib/theoryCraft";
 
@@ -124,10 +124,32 @@ async function withRatings(client: Db, decks: CommunityDeck[], lenient = false):
   return decks.map((d) => ({ ...d, rating: map.get(d.id) ?? { avg: 0, votes: 0 } }));
 }
 
+/** Gruppi di colonne delle liste dei mazzi: con "version" arriva anche `cards_updated_at`, la data dell'ordine. */
+const LIST_GROUPS: readonly OptionalGroup[] = ["translations", "art", "version"];
+
 /**
- * Mazzi pubblicati, dal più recente; con autore e media voti. Vuoto se la community è spenta; con un errore lancia.
- * Chi chiede lo stesso `limit` condivide la stessa risposta nella cache dei dati di Next (60 s, `supabasePublic`):
- * /decks, le tier list e le schede dei mazzi usano il valore di default, quindi una lettura sola al minuto.
+ * Ordine "più recenti" delle liste pubbliche dei mazzi (richiesta di Pierluigi del 09/11/2026): dalla data dell'ultimo
+ * cambio di carte (`cards_updated_at`, altrimenti la pubblicazione), non dalla creazione; un cambio di guida o di nome
+ * non sposta il mazzo. `byCreated` sono le righe lette dalla più nuova per `created_at`, con `limit`. Se sono meno di
+ * `limit` ci sono già tutti i mazzi e basta riordinarli; altrimenti un mazzo vecchio aggiornato da poco potrebbe essere
+ * rimasto fuori, e si leggono anche i `limit` aggiornati più di recente (`updated`, `mergeNewestCards`). Se quella
+ * seconda lettura non riesce (colonna mancante prima della migrazione VERSIONI, rete) si tiene la prima, riordinata.
+ */
+async function newestByCards(what: string, byCreated: CommunityDeck[], limit: number, updated: (select: string) => PromiseLike<ReadResult>): Promise<CommunityDeck[]> {
+  if (byCreated.length < limit) return byCreated.slice().sort(newestCardsFirst);
+  const res = await readWithTranslations(DECK_SELECT, updated, LIST_GROUPS);
+  if (res.error) {
+    console.error(`[community] ${what}, mazzi aggiornati: ${res.error.message}`);
+    return byCreated.slice().sort(newestCardsFirst);
+  }
+  return mergeNewestCards(byCreated, rowsOrThrow<CommunityDeck>(what, res), limit);
+}
+
+/**
+ * Mazzi pubblicati, dal più recente per data delle carte (`newestByCards`); con autore e media voti. Vuoto se la
+ * community è spenta; con un errore lancia. Chi chiede lo stesso `limit` condivide la stessa risposta nella cache dei
+ * dati di Next (60 s, `supabasePublic`): /decks, le tier list e le schede dei mazzi usano il valore di default, quindi
+ * una lettura sola al minuto (due quando i mazzi pubblicati sono più di `limit`).
  */
 export async function listPublishedDecks(limit = 200): Promise<CommunityDeck[]> {
   const client = supabasePublic();
@@ -135,9 +157,12 @@ export async function listPublishedDecks(limit = 200): Promise<CommunityDeck[]> 
   const res = await readWithTranslations(
     DECK_SELECT,
     (sel) => client.from("community_decks").select(sel).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
-    ["translations", "art", "version"],
+    LIST_GROUPS,
   );
-  return withRatings(client, rowsOrThrow<CommunityDeck>("listPublishedDecks", res));
+  const decks = await newestByCards("listPublishedDecks", rowsOrThrow<CommunityDeck>("listPublishedDecks", res), limit, (sel) =>
+    client.from("community_decks").select(sel).eq("status", PUBLISHED).not("cards_updated_at", "is", null).order("cards_updated_at", { ascending: false }).limit(limit),
+  );
+  return withRatings(client, decks);
 }
 
 /** Un mazzo pubblicato; null solo se la lettura riesce e il mazzo non c'è (o non è pubblicato): allora è una 404 vera. */
@@ -217,16 +242,22 @@ export async function profileMovedTo(username: string, client: Db | null = supab
   return typeof res.data === "string" && res.data !== username ? res.data : null;
 }
 
-/** Mazzi pubblicati di un utente, dal più recente: quel che si vede sulla sua pagina pubblica. Con un errore lancia. */
+/**
+ * Mazzi pubblicati di un utente, dal più recente per data delle carte (`newestByCards`, 09/11/2026): quel che si vede
+ * sulla sua pagina pubblica. Con un errore lancia.
+ */
 export async function listDecksByOwner(userId: string, limit = 50): Promise<CommunityDeck[]> {
   const client = supabasePublic();
   if (!client) return [];
   const res = await readWithTranslations(
     DECK_SELECT,
     (sel) => client.from("community_decks").select(sel).eq("owner", userId).eq("status", PUBLISHED).order("created_at", { ascending: false }).limit(limit),
-    ["translations", "art", "version"],
+    LIST_GROUPS,
   );
-  return withRatings(client, rowsOrThrow<CommunityDeck>("listDecksByOwner", res));
+  const decks = await newestByCards("listDecksByOwner", rowsOrThrow<CommunityDeck>("listDecksByOwner", res), limit, (sel) =>
+    client.from("community_decks").select(sel).eq("owner", userId).eq("status", PUBLISHED).not("cards_updated_at", "is", null).order("cards_updated_at", { ascending: false }).limit(limit),
+  );
+  return withRatings(client, decks);
 }
 
 type UserRow = { updated_at: string; profile: { username: string | null } | null };

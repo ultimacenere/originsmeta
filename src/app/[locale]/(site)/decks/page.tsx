@@ -24,6 +24,7 @@ import { bestDecks, deckBrief, excludedFromBest, fillParts, listParts, usageCoun
 import { CardName } from "@/components/CardChip";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { communityExplorerDecks, deckArt } from "@/lib/community/explorerDecks";
+import { newestCardsFirst } from "@/lib/community/deckVersions";
 import { officialDecks } from "@/lib/theoryCraft";
 
 /** I mazzi della community arrivano da Supabase: la pagina si rigenera al massimo ogni 5 minuti (e subito dopo ogni pubblicazione). */
@@ -52,9 +53,9 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
   // Codice del gioco (KGBLDC…) di ogni mazzo, da copiare senza aprire la scheda: il codice OriginsMeta dall'interfaccia
   // è sparito (note del 22/09/2026). Se una carta non ha l'ID ufficiale il tasto non compare.
   const gameCodes = new Map(await Promise.all(community.map(async (deck) => [deck.slug, (await deckGameCode(deck)).code] as const)));
-  // L'ordine lo decide l'elenco nel browser (di partenza: dal più recente, Pierluigi 23/09/2026); qui basta
-  // una lista stabile, la stessa dei dati strutturati.
-  const newestFirst = community.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  // L'ordine lo decide l'elenco nel browser (di partenza: dal più recente, Pierluigi 23/09/2026; dal 09/11/2026 per data
+  // dell'ultimo cambio di carte, `newestCardsFirst`); qui basta una lista stabile, la stessa dei dati strutturati.
+  const newestFirst = community.slice().sort(newestCardsFirst);
   const communityList = communityExplorerDecks({ decks: newestFirst, locale, d, gameCodes, popularity, creators, winrates });
   const list: ExplorerDeck[] = decks.map((deck) => {
     const leg = deck.legendary ? getCard(deck.legendary) : undefined;
@@ -251,6 +252,7 @@ export default async function DecksPage({ params }: { params: LocaleParams }) {
             // ordini nuovi solo con la migrazione del blocco PREFERITI E TENDENZA (30/09/2026)
             ...(popularity ? { sortTrending: favoriteLabels[locale].sortTrending, sortSaved: favoriteLabels[locale].sortSaved } : {}),
             createdOn: d.common.createdOn,
+            updatedOn: d.common.updated,
             channels: creatorLabels[locale].channels,
             live: creatorLabels[locale].live,
           }}

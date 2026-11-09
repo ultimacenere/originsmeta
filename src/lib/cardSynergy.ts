@@ -61,11 +61,11 @@ export function deckHasCard(deck: Pick<DeckRef, "legendary" | "cards">, slug: st
 
 /**
  * Ordine dei mazzi, lo stesso dell'elenco dei mazzi e della tier list (`loadTierData`): prima quelli con voti, dal
- * voto pesato sul numero di voti (`weightedRating`), poi i più recenti.
+ * voto pesato sul numero di voti (`weightedRating`), poi i più recenti (dall'ultimo cambio di carte, 09/11/2026).
  */
 export function byRating(a: DeckRef, b: DeckRef): number {
   const score = (d: DeckRef) => weightedRating(d.rating.avg, d.rating.votes);
-  return Number(b.rating.votes > 0) - Number(a.rating.votes > 0) || score(b) - score(a) || b.created.localeCompare(a.created);
+  return Number(b.rating.votes > 0) - Number(a.rating.votes > 0) || score(b) - score(a) || (b.cardsAt ?? b.created).localeCompare(a.cardsAt ?? a.created);
 }
 
 /**
