@@ -8,12 +8,13 @@ import { authErrorKind, cleanOtp, OTP_MAX_DIGITS, otpErrorKind, type AuthErrorKi
 import { countsOnArrival, isNewAccount, navigationType, trackEvent, withAuthSignal, type AuthMethod } from "@/lib/analytics";
 import { useMounted } from "@/lib/useMounted";
 import { DiscordLogo } from "./DiscordButton";
+import { SteamLogo } from "./SteamButton";
 import { Turnstile } from "./Turnstile";
 
 export type { LoginLabels };
 
 type Status = "idle" | "sent" | "error" | "providerError" | "rateLimited" | "captchaError";
-type Via = "discord" | "email";
+type Via = AuthMethod;
 /** Esito del codice dell'email: quello di Supabase (`otpErrorKind`) più i due controlli fatti prima di chiamarlo. */
 type CodeStatus = OtpErrorKind | "format" | "needsEmail" | null;
 
@@ -36,6 +37,11 @@ const ERROR_KIND: Record<AuthErrorKind, string> = {
   discordCancelled: "discord_cancelled",
   discord: "discord",
   generic: "generic",
+  steamCancelled: "steam_cancelled",
+  steam: "steam",
+  steamExpired: "steam_expired",
+  steamUnavailable: "steam_unavailable",
+  steamNoEmail: "steam_no_email",
 };
 
 /** Misura (MIS-11): un errore mostrato dal pannello, mandato dal punto in cui il pannello lo mostra (un invio fallito due volte conta due volte). */
@@ -102,7 +108,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
     if (!urlError || urlErrorCounted.current) return;
     urlErrorCounted.current = true;
     if (!countsOnArrival(navigationType())) return;
-    reportLoginError(ERROR_KIND[urlError], urlVia === "discord" || urlVia === "email" ? urlVia : undefined);
+    reportLoginError(ERROR_KIND[urlError], urlVia === "discord" || urlVia === "email" || urlVia === "steam" ? urlVia : undefined);
   }, [urlError, urlVia]);
 
   // Conto alla rovescia per "Invia di nuovo": orologio a parete, così resta giusto anche con la scheda in secondo piano.
@@ -169,6 +175,18 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
       /* rete o CORS: si prova comunque */
     }
     window.location.assign(data.url);
+  };
+
+  // "Continua con Steam" (09/11/2026): la rotta /auth/steam scrive il cookie del giro e rimanda a Steam (OpenID); il
+  // ritorno /auth/steam/callback apre la sessione e torna a `next`. Il tasto c'è solo con `labels.steamOn`.
+  const steam = () => {
+    trackEvent("login_start", { method: "steam" });
+    setPending("steam");
+    setStatus("idle");
+    // navigazione completa: /auth/steam è una rotta del server che rimanda a Steam, non una pagina del router
+    const start = new URL("/auth/steam", window.location.origin);
+    start.searchParams.set("next", backPath());
+    window.location.assign(start.href);
   };
 
   const magic = async (e: FormEvent) => {
@@ -258,6 +276,11 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
     discordCancelled: labels.errorDiscordCancelled,
     discord: labels.providerError,
     generic: labels.error,
+    steamCancelled: labels.errorSteamCancelled,
+    steam: labels.errorSteam,
+    steamExpired: labels.errorSteamExpired,
+    steamUnavailable: labels.errorSteamUnavailable,
+    steamNoEmail: labels.errorSteamNoEmail,
   };
 
   // Messaggi: errori con .alert-bad (leggibili, non più magenta su blu a 2,7:1), avvisi in giallo, conferma con .alert-good.
@@ -267,7 +290,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   else if (status === "captchaError") message = captchaBroken ? <Note tone="bad">{labels.captchaRequired}</Note> : <Note tone="bad">{labels.captchaError}</Note>;
   else if (status === "providerError") message = <Note tone="bad">{labels.providerError}</Note>;
   else if (status === "error") message = <Note tone="bad">{labels.error}</Note>;
-  else if (urlError) message = <Note tone={urlError === "discordCancelled" ? "warn" : "bad"}>{urlErrorText[urlError]}</Note>;
+  else if (urlError) message = <Note tone={urlError === "discordCancelled" || urlError === "steamCancelled" ? "warn" : "bad"}>{urlErrorText[urlError]}</Note>;
   // Il CAPTCHA che non si disegna si segnala finché il link non è partito (dopo, non serve più allarmare).
   const brokenNotice = captchaBroken && status !== "sent" && status !== "captchaError" ? <Note tone="warn">{labels.captchaBroken}</Note> : null;
 
@@ -295,6 +318,19 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
         <DiscordLogo className="h-5 w-5" />
         <span>{pending === "discord" ? labels.redirecting : labels.discord}</span>
       </button>
+      {labels.steamOn ? (
+        // colori del tasto "Sign in through Steam" di Valve (superficie scura del negozio, btn-steam-dark)
+        <button
+          type="button"
+          onClick={steam}
+          disabled={busy}
+          aria-busy={pending === "steam"}
+          className="btn-steam btn-steam-dark mt-3 w-full justify-center py-3.5 text-base disabled:opacity-60"
+        >
+          <SteamLogo className="h-5 w-5" />
+          <span>{pending === "steam" ? labels.redirectingSteam : labels.steam}</span>
+        </button>
+      ) : null}
 
       <p className="my-5 flex items-center gap-3 text-xs uppercase tracking-widest text-pale-muted">
         <span className="h-px flex-1 bg-chalk/15" />

@@ -1021,7 +1021,7 @@ export const zhCn: Dictionary = {
     title: "隐私",
     body: "OriginsMeta 不使用广告 Cookie。本站托管在 Vercel 上，Vercel 会出于安全和性能目的保留标准服务器日志（IP 地址、用户代理、请求的页面），并使用 Vercel Web Analytics——一种不使用 Cookie、汇总统计、不会识别您身份的访问测量工具。如果您通过邮件联系我们，我们只会为回复您而保留您的消息。数据控制者：OriginsMeta，staff@originsmeta.com。您可以随时询问我们持有您的哪些数据，并要求删除。",
     accounts:
-      "如果您创建账号（通过 Discord 登录或邮件链接），我们会在 Supabase（服务器位于欧盟爱尔兰）上存储您的邮箱、用户名、头像和 Discord ID，以及您发布的卡组和给出的评分。卡组和评分以您的用户名公开显示；您的邮箱不会公开。一个会话 Cookie 用于保持您的登录状态。如需删除您的账号及与之关联的全部内容，请发邮件至 staff@originsmeta.com。",
+      "如果您创建账号（通过 Discord 或 Steam 登录，或邮件链接），我们会在 Supabase（服务器位于欧盟爱尔兰）上存储您的邮箱、用户名、头像和 Discord ID 或 SteamID，以及您发布的卡组和给出的评分。卡组和评分以您的用户名公开显示；您的邮箱不会公开。一个会话 Cookie 用于保持您的登录状态。如需删除您的账号及与之关联的全部内容，请发邮件至 staff@originsmeta.com。",
     cookies:
       "Cookie：本站只设置技术性 Cookie，且仅在您登录后设置（Supabase 会话，名称以 sb- 开头，在会话期间保留，并在您使用本站时刷新）。您对 Cookie 的选择保存在浏览器的本地存储中。同一本地存储还会记住您是否已看过或关闭过自动弹出的窗口（“反馈”窗口、锦标赛弹窗），以免它再次弹出。如果您开启锦标赛的对局提醒，同一本地存储会保存这一选择（通知和声音）；通知由您的浏览器显示，不会向我们发送任何内容。当您创建账号时，您的浏览器还会在同一本地存储中保存账号的创建时间，仅用于避免我们的统计重复计数；它绝不会被发送到任何地方。Vercel Web Analytics 在不使用 Cookie、不识别您身份的情况下，测量访问量和站内的少数操作（例如复制卡组代码、点击前往 Steam 或搜索卡牌，包括搜索文本）。卡组页面和攻略中的 YouTube 和 Twitch 视频，以及直播页面上的 Twitch 直播，只有在您点击播放后才会加载：在此之前，页面不会连接这两个服务（详见下文“YouTube 和 Twitch 视频”）。如果您选择“全部接受”，还会运行 Google Analytics 4（Google Ireland Ltd）：它会设置以 _ga 开头的 Cookie，保留最长 2 年，用于统计访问、页面和上述操作，启用 IP 匿名化且不使用任何广告功能；Google 可能依据其标准合同条款在美国处理这些数据。选择“仅必要”时，不会加载任何 Google 内容；如果您撤回同意，Google Analytics 会立即停止，_ga Cookie 也会被删除。没有广告或用户画像 Cookie，除非您播放视频，否则也没有其他第三方追踪器。您可以随时通过页脚的“Cookie 偏好设置”更改您的选择。",
     feedback:
@@ -1227,6 +1227,14 @@ export const zhCn: Dictionary = {
     errorOtherBrowser: "打开链接的浏览器与申请链接的浏览器不同（例如在电脑上申请，在手机上打开）。请重新申请链接：如果你在另一台设备上看邮件，不要打开链接，而是在申请链接的页面上输入邮件里的验证码。",
     errorDiscordCancelled: "Discord 登录已取消。你可以重试，或使用邮件链接。",
     providerError: "Discord 登录暂时不可用。请使用邮件链接。",
+    steam: "使用 Steam 继续",
+    redirectingSteam: "正在打开 Steam……",
+    errorSteamCancelled: "Steam 登录已取消。你可以重试，或使用 Discord 或邮件链接。",
+    errorSteam: "Steam 没有确认这次登录。请稍后重试，或使用 Discord 或邮件链接。",
+    errorSteamExpired: "Steam 登录已过期，或已在另一个浏览器中完成。请从这个页面重新开始。",
+    errorSteamUnavailable: "Steam 登录暂时不可用。请使用 Discord 或邮件链接。",
+    errorSteamNoEmail: "与这个 Steam 账号关联的个人资料无法通过 Steam 打开。请使用 Discord 或邮件链接，或联系我们。",
+    introSteam: "一个账号，就能以你的名字附攻略发布卡组、私密保存其他卡组、为社区的卡表评分，以及参加或组织锦标赛。无需密码：使用 Discord、Steam，或发送到你邮箱的一次性链接。",
     rateLimited: "刚刚已经向这个地址发送过链接：请查收邮件（包括垃圾邮件），或者等一分钟后再试。",
     captchaError: "安全验证未通过。请重新完成验证，或刷新页面后重试。",
     captchaWaiting: "完成下方的安全验证后，按钮就会解锁。",

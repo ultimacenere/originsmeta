@@ -5,6 +5,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { archetypeLabels } from "@/lib/data/decks";
 import { PublishDeckForm, type PoolCard } from "@/components/PublishDeckForm";
 import { loginLabels } from "@/lib/loginLabels";
+import { steamLoginOn } from "@/lib/supabase/admin";
 import { videoFormLabels } from "@/lib/videoLabels";
 import { deckArtFormLabels } from "@/lib/deckArtLabels";
 import { publishPool } from "@/lib/builderLabels";
@@ -55,7 +56,7 @@ export default async function PublishPage({ params }: { params: LocaleParams }) 
             artLabels={deckArtFormLabels(locale)}
             builderHref={href(locale, "/deck-builder")}
             publishPath={href(locale, "/decks/publish")}
-            loginLabels={loginLabels(d)}
+            loginLabels={loginLabels(d, steamLoginOn())}
             theoryNotice={theoryCraftLabels[locale].publishNotice}
           />
         </Suspense>

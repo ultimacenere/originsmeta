@@ -35,6 +35,11 @@ import { ComicStatsPanel } from "@/components/comics/ComicStatsPanel";
 import { TRACKER_ACCOUNT_LINK_PUBLIC, trackerLabels } from "@/lib/trackerLabels";
 import { trackerInstallHref } from "@/lib/analyticsLabels";
 import { canSeeAnalytics } from "@/lib/community/badges";
+import { SteamAccountSection } from "@/components/SteamAccountSection";
+import { parseSteamOutcome } from "@/lib/steam/link";
+import { isSteamAccountEmail } from "@/lib/steam/account";
+import { steamLabels } from "@/lib/steamLabels";
+import { steamLoginOn } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -52,8 +57,10 @@ function legendaryName(deck: CommunityDeck): string {
   return leg?.name ?? deck.custom_cards.find((x) => x.slug === deck.legendary)?.name ?? deck.legendary ?? "—";
 }
 
-export default async function AccountPage({ params }: { params: LocaleParams }) {
+export default async function AccountPage({ params, searchParams }: { params: LocaleParams; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { locale, dict: d } = await resolveLocale(params);
+  // esito del collegamento con Steam appena fatto (?steam=, dalla rotta di ritorno o da "Scollega Steam")
+  const steamOutcome = parseSteamOutcome((await searchParams).steam);
   const c = d.community;
   const { supabase, user } = await currentUser();
   if (!supabase) {
@@ -99,7 +106,8 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
           <p className="t-item">{name}</p>
           <p className="break-all font-mono text-xs text-pale-muted">
             {profile?.username ? `@${profile.username} · ` : ""}
-            {user.email}
+            {/* account nato con Steam: l'indirizzo tecnico (steam-…@steam.originsmeta.local) non si mostra */}
+            {isSteamAccountEmail(user.email) ? steamLabels[locale].accountLabel : user.email}
             {profile?.role === "admin" ? ` · ${c.account.role}: admin` : ""}
           </p>
         </div>
@@ -121,6 +129,11 @@ export default async function AccountPage({ params }: { params: LocaleParams }) 
         </div>
       </section>
       <AccountHashRedirect target={href(locale, "/account/profile")} />
+
+      {/* Account Steam (09/11/2026): collegamento e scollegamento, ancora #steam. Dentro <Suspense> come le altre letture. */}
+      <Suspense fallback={null}>
+        <SteamAccountSection supabase={supabase} locale={locale} outcome={steamOutcome} loginOn={steamLoginOn()} />
+      </Suspense>
 
       {/* La casella messaggi non sta qui: vive tutta in /account/messages, dove porta la busta dell'header (Pierluigi, 27/09/2026:
           "questo modulo deve stare sotto messaggi e non sotto profilo") */}

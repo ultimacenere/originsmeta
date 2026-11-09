@@ -18,6 +18,7 @@ import { canUseDeckArt } from "@/lib/community/badges";
 import { deckArtPathOk } from "@/lib/community/deckArt";
 import { deckArtFormLabels } from "@/lib/deckArtLabels";
 import { loginLabels } from "@/lib/loginLabels";
+import { steamLoginOn } from "@/lib/supabase/admin";
 import { withCarriedParams } from "@/lib/analytics";
 import { deckResources, deckVideos } from "@/lib/videos";
 import { videoFormLabels } from "@/lib/videoLabels";
@@ -206,7 +207,7 @@ export default async function EditDeckPage({ params, searchParams }: { params: P
           art={art}
           builderHref={versionsReady ? builderHref : `${href(locale, "/deck-builder")}#${code}`}
           publishPath={path}
-          loginLabels={loginLabels(d)}
+          loginLabels={loginLabels(d, steamLoginOn())}
         />
       </div>
     </div>

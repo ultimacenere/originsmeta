@@ -6,6 +6,7 @@ import { cards } from "@/lib/data/cards";
 import { archetypeLabels } from "@/lib/data/decks";
 import { deckSetLabels } from "@/lib/deckSetLabels";
 import { loginLabels } from "@/lib/loginLabels";
+import { steamLoginOn } from "@/lib/supabase/admin";
 import { videoFormLabels } from "@/lib/videoLabels";
 import { DeckSetForm, type SetPoolCard } from "@/components/DeckSetForm";
 import { DeckSectionTabs } from "@/components/DeckSectionTabs";
@@ -51,7 +52,7 @@ export default async function PublishDeckSetPage({ params }: { params: LocalePar
             labels={S.form}
             deckLetterLabel={S.page.deckLetter}
             mediaLabels={videoFormLabels(locale)}
-            loginLabels={loginLabels(d)}
+            loginLabels={loginLabels(d, steamLoginOn())}
             builderHref={href(locale, "/deck-builder")}
             publishPath={href(locale, "/decks/tournament/publish")}
           />

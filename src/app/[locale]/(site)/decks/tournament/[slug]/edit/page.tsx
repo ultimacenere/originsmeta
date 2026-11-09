@@ -10,6 +10,7 @@ import { getOwnDeckSet } from "@/lib/community/deckSetQueries";
 import { setCodesOf } from "@/lib/community/deckSets";
 import { deckSetLabels } from "@/lib/deckSetLabels";
 import { loginLabels } from "@/lib/loginLabels";
+import { steamLoginOn } from "@/lib/supabase/admin";
 import { deckVideos } from "@/lib/videos";
 import { videoFormLabels } from "@/lib/videoLabels";
 import { DeckSetForm, type SetPoolCard } from "@/components/DeckSetForm";
@@ -68,7 +69,7 @@ export default async function EditDeckSetPage({ params }: { params: Params }) {
             labels={S.form}
             deckLetterLabel={S.page.deckLetter}
             mediaLabels={videoFormLabels(locale)}
-            loginLabels={loginLabels(d)}
+            loginLabels={loginLabels(d, steamLoginOn())}
             builderHref={href(locale, "/deck-builder")}
             publishPath={href(locale, "/decks/tournament/publish")}
           />

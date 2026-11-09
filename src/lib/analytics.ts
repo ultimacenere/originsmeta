@@ -18,16 +18,17 @@
  * EVENTI (nomi stabili: non si rinominano, i rapporti li contano per nome). ★ = da segnare come evento chiave in GA4
  * (Amministrazione → Eventi → "Segna come evento chiave", dopo che l'evento è arrivato almeno una volta).
  *
- *   ★ sign_up             primo accesso completato di un account nuovo           method (discord | email)
+ *   ★ sign_up             primo accesso completato di un account nuovo           method (discord | email | steam)
  *                         (dal 25/09/2026, a9400e8; un account nuovo = un solo sign_up, vedi `isNewAccount`; solo
- *                         con una sessione appena aperta nel browser, vedi `consumeAuthSignal`)
+ *                         con una sessione appena aperta nel browser, vedi `consumeAuthSignal`; steam dal 09/11/2026)
  *     login               accesso completato di un account che c'era già         method
- *     login_start         clic su "Accedi con Discord", o link via email spedito  method
+ *     login_start         clic su "Accedi con Discord" o "Continua con Steam", o link via email spedito  method
  *     login_error         errore mostrato dal pannello di accesso                 kind, method
  *                         (kind: discord_start, email_send, captcha, rate_limited e, per il codice dell'email, code_invalid,
  *                         code_too_many, code_error, code_format, code_no_email nel pannello; expired, other_browser,
- *                         discord_cancelled, discord, generic al ritorno da /auth/callback, contati solo all'arrivo:
- *                         non a un ricaricamento né tornando con avanti/indietro, vedi `countsOnArrival`)
+ *                         discord_cancelled, discord, generic al ritorno da /auth/callback e steam_cancelled, steam,
+ *                         steam_expired, steam_unavailable, steam_no_email al ritorno da /auth/steam/callback, contati
+ *                         solo all'arrivo: non a un ricaricamento né tornando con avanti/indietro, vedi `countsOnArrival`)
  *   ★ deck_published      mazzo pubblicato sul sito, solo la prima volta (non le   locale, legendary, source
  *                         modifiche; dal 25/09/2026, a9400e8)                     (builder | private_draft)
  *   ★ deck_created        mazzo privato NUOVO salvato nel profilo dal deck         locale, legendary, cards, placement
@@ -226,7 +227,9 @@ declare global {
 
 /* ---------- catalogo degli eventi ---------- */
 
-export type AuthMethod = "discord" | "email";
+/** Come si entra: Discord (OAuth), link o codice via email, Steam (OpenID, dal 09/11/2026: src/app/auth/steam). */
+export type AuthMethod = "discord" | "email" | "steam";
+export const AUTH_METHODS: readonly AuthMethod[] = ["discord", "email", "steam"];
 export type SearchArea = "cards" | "deck_builder";
 export type DiscordServer = "originsmeta" | "official" | "other";
 
@@ -835,8 +838,8 @@ export function readAuthSignal(search: string): { event: AuthEvent; method: Auth
   const p = new URLSearchParams(search);
   const event = p.get(AUTH_PARAM);
   const method = p.get(AUTH_METHOD_PARAM);
-  if ((event !== "sign_up" && event !== "login") || (method !== "discord" && method !== "email")) return null;
-  return { event, method };
+  if ((event !== "sign_up" && event !== "login") || !(AUTH_METHODS as readonly string[]).includes(method ?? "")) return null;
+  return { event, method: method as AuthMethod };
 }
 
 /** Finestre per riconoscere un account nuovo: la conferma appena avvenuta, la creazione entro la durata del link via email (1 ora). */
@@ -870,7 +873,8 @@ export function isNewAccount(
   const created = at(user.created_at);
   const confirmed = at(user.confirmed_at ?? user.email_confirmed_at);
   if (recent(confirmed, NEW_ACCOUNT_CONFIRMED_MS)) return true;
-  if (method === "discord") return recent(created, NEW_ACCOUNT_CONFIRMED_MS);
+  // Discord e Steam: l'account nasce durante il giro, che dura poco (con Steam lo crea la rotta di ritorno)
+  if (method === "discord" || method === "steam") return recent(created, NEW_ACCOUNT_CONFIRMED_MS);
   const confirmedAtCreation = confirmed === null || (created !== null && Math.abs(confirmed - created) < CONFIRMED_AT_CREATION_MS);
   return confirmedAtCreation && recent(created, NEW_ACCOUNT_CREATED_MS);
 }

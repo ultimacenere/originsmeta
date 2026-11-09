@@ -8626,3 +8626,105 @@ language sql stable security definer set search_path = public, pg_temp as $$
 $$;
 revoke all on function public.tournament_ban_progress(uuid) from public, anon;
 grant execute on function public.tournament_ban_progress(uuid) to authenticated;
+
+-- ===== 09/11/2026: STEAM =====
+-- =====================================================================================================
+-- 09/11/2026 — ACCOUNT STEAM (Pierluigi: "nel profilo dei nostri giocatori, dare la possibilità di connettersi anche a
+--   steam con il profilo id. e viceversa perché creiamo la possibilità di registrarsi usando il loro steamid").
+--   Un iscritto collega il suo account Steam da /account#steam ("Il mio profilo") e, con l'account collegato, entra nel sito con
+--   "Continua con Steam"; chi non ha un account lo crea così. "Sign in through Steam" è OpenID 2.0: Steam dà al sito
+--   solo lo SteamID64 (nessuna password, nessun token), che il ritorno /auth/steam/callback fa confermare a Steam prima
+--   di usarlo (src/lib/steam/openid.ts). Un account Steam vale per un solo profilo e un profilo ha un solo account Steam.
+--
+--   steam_links           una riga per profilo collegato: SteamID64 e data. Nessun client la legge né la scrive: lega un
+--                         profilo del sito a una persona su Steam, come discord_id (blocco ID DISCORD PRIVATO). La legge e
+--                         la scrive il server per l'accesso con Steam, con la chiave segreta di Supabase
+--                         (SUPABASE_SECRET_KEY, solo server: src/lib/supabase/admin.ts), e le funzioni qui sotto:
+--   steam_link_status()   l'iscritto della sessione legge il SUO collegamento (id, data, se è l'unico modo per entrare);
+--   steam_link_set(k, id) collega lo SteamID all'iscritto della sessione SOLO con il segreto del server (notify_key_ok,
+--                         CRON_SECRET): lo SteamID l'ha confermato Steam alla rotta di ritorno, quindi un client con la sola
+--                         sessione non può collegarsi lo SteamID di un altro. Esiti: ok, same (era già questo), other (il
+--                         profilo ne ha già un altro: prima si scollega), taken (è di un altro profilo), invalid;
+--   steam_link_remove()   l'iscritto toglie il suo collegamento (ok, none), tranne quando l'account è nato con Steam e non
+--                         ha altri modi per entrare (steam_only): indirizzo tecnico steam-<id>-<parte casuale>@
+--                         steam.originsmeta.local, che non riceve posta, e nessun accesso con Discord.
+--
+--   Tutto si cancella con l'account (on delete cascade dal profilo). Nessuna grant né revoke su public.profiles: le regole
+--   di scripts/schema-guard.mjs non cambiano. Idempotente. Il sito regge senza questo blocco (la sezione Steam del profilo
+--   dice "non ancora attivo", l'accesso con Steam si ferma con un errore). Prova a secco: node scripts/steam-dry-run.mjs.
+--   Regole uguali nel codice: STEAM_ID_PATTERN di src/lib/steam/openid.ts e STEAM_ACCOUNT_EMAIL_PATTERN di
+--   src/lib/steam/account.ts (src/lib/steam/steam.test.ts li confronta con questo blocco).
+-- =====================================================================================================
+
+create table if not exists public.steam_links (
+  user_id uuid primary key references public.profiles(id) on delete cascade,
+  steam_id text not null unique check (steam_id ~ '^7656119[0-9]{10}$'),
+  linked_at timestamptz not null default now()
+);
+alter table public.steam_links enable row level security;
+-- nessuna policy: per anon e authenticated la tabella non esiste (le funzioni qui sotto girano come proprietario)
+revoke all on public.steam_links from anon, authenticated;
+-- il server, con la chiave segreta, cerca il profilo di uno SteamID e collega gli account nuovi (service_role salta RLS)
+grant select, insert, delete on public.steam_links to service_role;
+
+-- L'account è nato con Steam e non ha altri modi per entrare? (Indirizzo tecnico, stessa espressione di
+-- STEAM_ACCOUNT_EMAIL_PATTERN in src/lib/steam/account.ts, e nessuna identità diversa dall'email, cioè niente Discord.)
+create or replace function public.steam_account_only(p_uid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select exists (select 1 from auth.users u where u.id = p_uid and lower(coalesce(u.email, '')) ~ '^steam-7656119[0-9]{10}-[0-9a-f]{16}@steam\.originsmeta\.local$')
+     and not exists (select 1 from auth.identities i where i.user_id = p_uid and i.provider <> 'email');
+$$;
+revoke all on function public.steam_account_only(uuid) from public, anon, authenticated;
+
+-- Il collegamento dell'iscritto della sessione (nessuna riga se non c'è).
+create or replace function public.steam_link_status()
+returns table (steam_id text, linked_at timestamptz, steam_only boolean)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select l.steam_id, l.linked_at, public.steam_account_only(l.user_id)
+    from public.steam_links l
+   where auth.uid() is not null and l.user_id = auth.uid();
+$$;
+revoke all on function public.steam_link_status() from public, anon;
+grant execute on function public.steam_link_status() to authenticated;
+
+-- Collega uno SteamID già confermato da Steam (lo passa la rotta di ritorno con il segreto del server) all'iscritto della
+-- sessione. Il lock sullo SteamID mette in fila due collegamenti dello stesso account Steam nello stesso istante.
+create or replace function public.steam_link_set(p_key text, p_steam_id text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  current_id text;
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden' using errcode = '42501'; end if;
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  if p_steam_id is null or p_steam_id !~ '^7656119[0-9]{10}$' then return 'invalid'; end if;
+  if not exists (select 1 from public.profiles p where p.id = uid) then return 'invalid'; end if;
+  perform pg_advisory_xact_lock(hashtext('steam_link:' || p_steam_id));
+  select l.steam_id into current_id from public.steam_links l where l.user_id = uid;
+  if current_id = p_steam_id then return 'same'; end if;
+  if current_id is not null then return 'other'; end if;
+  if exists (select 1 from public.steam_links l where l.steam_id = p_steam_id) then return 'taken'; end if;
+  insert into public.steam_links (user_id, steam_id) values (uid, p_steam_id);
+  return 'ok';
+exception when unique_violation then
+  -- lo stesso iscritto che collega due account Steam insieme: ne resta uno
+  return case when exists (select 1 from public.steam_links l where l.user_id = uid) then 'other' else 'taken' end;
+end $$;
+revoke all on function public.steam_link_set(text, text) from public, anon;
+grant execute on function public.steam_link_set(text, text) to authenticated;
+comment on function public.steam_link_set(text, text) is 'Collega lo SteamID64 confermato da Steam all''iscritto della sessione, solo con il segreto del server (09/11/2026, rotta /auth/steam/callback).';
+
+-- L'iscritto scollega il suo account Steam (resta collegato solo se è il suo unico modo per entrare).
+create or replace function public.steam_link_remove()
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+begin
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  if not exists (select 1 from public.steam_links l where l.user_id = uid) then return 'none'; end if;
+  if public.steam_account_only(uid) then return 'steam_only'; end if;
+  delete from public.steam_links l where l.user_id = uid;
+  return 'ok';
+end $$;
+revoke all on function public.steam_link_remove() from public, anon;
+grant execute on function public.steam_link_remove() to authenticated;

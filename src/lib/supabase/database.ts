@@ -980,6 +980,22 @@ export type Database = {
           },
         ];
       };
+      /** account Steam collegati (blocco STEAM, 09/11/2026): nessun client la legge; solo il server con la chiave segreta
+          (accesso con Steam, src/app/auth/steam/callback/route.ts) e le funzioni steam_link_* */
+      steam_links: {
+        Row: { user_id: string; steam_id: string; linked_at: string };
+        Insert: { user_id: string; steam_id: string; linked_at?: string };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "steam_links_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       deck_set_ratings: {
@@ -1195,6 +1211,13 @@ export type Database = {
       tracker_stats_opponents: { Args: { p_patch: string }; Returns: (TrackerStatCount & { opponent: string })[] };
       /** le sette qui sopra in una lettura sola (blocco STATISTICHE IN UNA LETTURA, 25/10/2026): un array di righe per parte */
       tracker_stats_bundle: { Args: { p_patch: string }; Returns: unknown };
+      /* account Steam (09/11/2026, blocco STEAM) */
+      /** il proprio collegamento (nessuna riga se non c'è); steam_only = account nato con Steam senza altri modi per entrare */
+      steam_link_status: { Args: Record<string, never>; Returns: { steam_id: string; linked_at: string; steam_only: boolean }[] };
+      /** collega lo SteamID confermato da Steam, solo dalla rotta /auth/steam/callback con il segreto del server */
+      steam_link_set: { Args: { p_key: string; p_steam_id: string }; Returns: string };
+      /** scollega il proprio account Steam: ok, none, steam_only */
+      steam_link_remove: { Args: Record<string, never>; Returns: string };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

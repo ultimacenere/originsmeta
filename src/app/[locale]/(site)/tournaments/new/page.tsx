@@ -7,6 +7,7 @@ import { stageLabels } from "@/lib/tournament/stageLabels";
 import { TournamentForm } from "@/components/TournamentForm";
 import { LoginPanel } from "@/components/LoginPanel";
 import { loginLabels } from "@/lib/loginLabels";
+import { steamLoginOn } from "@/lib/supabase/admin";
 import { contactEmail } from "@/components/Footer";
 
 /** Pagina "Organizza un torneo": renderizzata sul server (legge la sessione), quindi passa dal proxy per il refresh dei cookie. */
@@ -30,7 +31,7 @@ export default async function NewTournamentPage({ params }: { params: LocalePara
     body = (
       <div className="card-night p-6 sm:p-8">
         <p className="mb-4 text-pale">{x.create.loginFirst}</p>
-        <LoginPanel next={path} labels={loginLabels(d)} locale={locale} />
+        <LoginPanel next={path} labels={loginLabels(d, steamLoginOn())} locale={locale} />
       </div>
     );
   } else {

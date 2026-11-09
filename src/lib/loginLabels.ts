@@ -45,11 +45,35 @@ export type LoginLabels = {
   codeNeedsEmail: string;
   codeInvalid: string;
   codeTooMany: string;
+  /**
+   * "Continua con Steam" (09/11/2026): c'è solo se il server ha la chiave segreta che apre la sessione
+   * (`steamLoginOn` di src/lib/supabase/admin.ts, letta dalla pagina, sul server).
+   */
+  steamOn: boolean;
+  steam: string;
+  redirectingSteam: string;
+  errorSteamCancelled: string;
+  errorSteam: string;
+  errorSteamExpired: string;
+  errorSteamUnavailable: string;
+  errorSteamNoEmail: string;
 };
 
-export function loginLabels(dict: Dictionary): LoginLabels {
+/**
+ * `steamOn`: la pagina (server component) passa `steamLoginOn()`; questo file lo importa anche il browser, quindi non
+ * legge da sé la configurazione del server.
+ */
+export function loginLabels(dict: Dictionary, steamOn = false): LoginLabels {
   const a = dict.auth;
   return {
+    steamOn,
+    steam: a.steam,
+    redirectingSteam: a.redirectingSteam,
+    errorSteamCancelled: a.errorSteamCancelled,
+    errorSteam: a.errorSteam,
+    errorSteamExpired: a.errorSteamExpired,
+    errorSteamUnavailable: a.errorSteamUnavailable,
+    errorSteamNoEmail: a.errorSteamNoEmail,
     discord: a.discord,
     redirecting: a.redirecting,
     or: a.or,
@@ -92,10 +116,16 @@ export function loginLabels(dict: Dictionary): LoginLabels {
  * - discordCancelled: accesso annullato sulla pagina di Discord;
  * - discord: Discord non disponibile (provider spento o in errore);
  * - generic: tutto il resto.
+ * Dal 09/11/2026 quelli dell'accesso con Steam, scritti già classificati dal ritorno /auth/steam/callback:
+ * - steamCancelled: annullato sulla pagina di Steam;
+ * - steam: Steam non ha confermato l'accesso (o un errore del sito durante l'apertura della sessione);
+ * - steamExpired: il giro è durato più di 10 minuti o è finito in un altro browser (cookie del giro assente);
+ * - steamUnavailable: il server non ha la chiave per aprire la sessione, o il database non ha il blocco STEAM;
+ * - steamNoEmail: il profilo collegato non ha un indirizzo (non si può aprire con un link di accesso).
  */
-export type AuthErrorKind = "expired" | "otherBrowser" | "discordCancelled" | "discord" | "generic";
+export type AuthErrorKind = "expired" | "otherBrowser" | "discordCancelled" | "discord" | "generic" | "steamCancelled" | "steam" | "steamExpired" | "steamUnavailable" | "steamNoEmail";
 
-const kinds: readonly string[] = ["expired", "otherBrowser", "discordCancelled", "discord", "generic"];
+const kinds: readonly string[] = ["expired", "otherBrowser", "discordCancelled", "discord", "generic", "steamCancelled", "steam", "steamExpired", "steamUnavailable", "steamNoEmail"];
 
 /** Codici di Supabase Auth (vedi @supabase/auth-js, error-codes) raggruppati per messaggio. */
 const expiredCodes = new Set(["otp_expired", "access_denied", "flow_state_expired", "flow_state_not_found"]);
