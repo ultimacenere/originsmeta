@@ -217,7 +217,7 @@ export const es: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Mazos, Legendarias, cartas base",
-    tierStatus: "En vivo: win rate, comunidad y votos a las cartas. Aquí: las más jugadas.",
+    tierStatus: "Legendarias clasificadas el 9 nov 2026. Mazos y cartas base, después.",
     tierSoon: "Las más jugadas",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -372,11 +372,11 @@ export const es: Dictionary = {
        del 25/09/2026), senza "mazos" e "cartas", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list de Origins TCG",
     metaTitle: "Tier list y meta de Origins TCG",
-    intro: "Mazos, Legendarias y cartas base. Los tiers de OriginsMeta salen solo de resultados de torneos, nunca de corazonadas. Actualizado el 9 de noviembre de 2026: las clasificaciones en vivo son el win rate por Legendaria de Analytics, la tier list de la comunidad, los votos a las cartas y las cartas más jugadas.",
-    description: "Tier list y meta de Origins TCG (Koin Games), 9 nov 2026: win rate por Legendaria, tier list de la comunidad, votos a las cartas y cartas más jugadas.",
+    intro: "Mazos, Legendarias y cartas base. La primera tier list de OriginsMeta, del 9 de noviembre de 2026, clasifica las Legendarias: el win rate del parche actual, contando los dos lados de cada partida registrada con OriginsMeta Tracker, corregido con la Crimson Cup. Los mazos y las cartas base llegarán después; mientras tanto, las clasificaciones en vivo.",
+    description: "Tier list de Origins TCG (Koin Games), 9 nov 2026: las Legendarias de S a D según el win rate del parche actual y la Crimson Cup, y clasificaciones en vivo.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "Todas las clasificaciones en vivo:",
+    mainText: "La tier list y las clasificaciones en vivo:",
     mainAnchor: "tier list de Origins TCG",
     decksText: "Para las listas completas:",
     decksAnchor: "todos los mazos de Origins TCG",
@@ -387,9 +387,9 @@ export const es: Dictionary = {
     },
     methodTitle: "Cómo clasificamos",
     method: [
-      "Primero los resultados de torneos y las listas de lo más alto de la ladder, después la lectura de los parches.",
-      "Las cartas se clasifican dentro de su rol: Legendaria, unidad, hechizo.",
-      "Cada cambio de tier lleva fecha y explicación.",
+      "Legendarias: el win rate del parche actual con las partidas registradas en OriginsMeta Tracker, contando los dos lados de cada partida en la que se conoce la Legendaria rival.",
+      "S si sigue por encima del 50 % incluso en el extremo inferior del intervalo al 95 %; A desde el 50 %, B desde el 45 %, C desde el 40 %, D por debajo. Con menos de 100 partidas: sin clasificar.",
+      "La Crimson Cup sube una Legendaria un tier si fue baneada en al menos el 30 % de sus partidas y llegó a la final, salvo que su carta haya cambiado después. Cada cambio va fechado y explicado en una noticia.",
     ],
     tiers: {
       S: "Define el meta",
@@ -434,8 +434,8 @@ export const es: Dictionary = {
     lineSample: "Muestra",
     lineStatus: "Estado",
     lineMeasure: "Medida",
-    officialSourceText: "resultados de torneos oficiales y listas de lo más alto de la clasificatoria",
-    officialStatusText: "clasificaciones en vivo al 9 nov 2026; tiers solo por resultados de torneos",
+    officialSourceText: "win rate del parche actual (Analytics, los dos lados de cada partida) y cifras oficiales de la Crimson Cup",
+    officialStatusText: "Legendarias clasificadas el 9 nov 2026; mazos y cartas base después",
     officialEmpty: "Los tiers de OriginsMeta salen solo de resultados de torneos. Al 9 de noviembre de 2026, las clasificaciones en vivo son:",
     meanwhileDecks: "Mientras tanto: los mazos mejor valorados por la comunidad",
     meanwhileLegendaries: "Mientras tanto: las Legendarias presentes en más mazos publicados",
@@ -732,7 +732,7 @@ export const es: Dictionary = {
       votesMany: "{n} votos",
       distribution: "Votos por tier",
       notRanked: "Aún nadie la ha clasificado.",
-      officialPending: "Sin tier de OriginsMeta: los tiers salen solo de resultados de torneos.",
+      officialPending: "No está en la tier list de OriginsMeta: menos de 100 partidas en el parche actual, o aún sin clasificar.",
       inDecks: "En {n} de {total} mazos publicados ({pct} %)",
       decksTitle: "En los mazos publicados",
       noDecks: "En ningún mazo publicado.",

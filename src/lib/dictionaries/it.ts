@@ -212,7 +212,7 @@ export const it: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Mazzi, Leggendarie, carte base",
-    tierStatus: "Classifiche vive: win rate, community, voti alle carte. Qui: le più giocate.",
+    tierStatus: "Leggendarie classificate il 9 nov 2026. Mazzi e carte base dopo.",
     tierSoon: "Le più giocate",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -365,11 +365,11 @@ export const it: Dictionary = {
        del 25/09/2026), senza "mazzi" e "carte", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list di Origins TCG",
     metaTitle: "Tier list e meta di Origins TCG",
-    intro: "Mazzi, Leggendarie e carte base. Le fasce di OriginsMeta nascono solo dai risultati dei tornei, mai dalle sensazioni. Aggiornato al 9 novembre 2026: le classifiche vive sono i win rate per Leggendaria di Analytics, la tier list della community, i voti alle carte e le carte più giocate.",
-    description: "Tier list e meta di Origins TCG (Koin Games), 9 nov 2026: win rate per Leggendaria, tier list della community, voti alle carte e carte più giocate, dal vivo.",
+    intro: "Mazzi, Leggendarie e carte base. La prima tier list di OriginsMeta, del 9 novembre 2026, classifica le Leggendarie: i win rate della patch in corso, contando i due lati di ogni partita registrata con OriginsMeta Tracker, corretti con la Crimson Cup. Mazzi e carte base arrivano dopo; intanto, le classifiche vive.",
+    description: "Tier list di Origins TCG (Koin Games), 9 nov 2026: le Leggendarie da S a D dai win rate della patch in corso e dalla Crimson Cup, più le classifiche vive.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "Tutte le classifiche vive:",
+    mainText: "La tier list e le classifiche vive:",
     mainAnchor: "tier list di Origins TCG",
     decksText: "Per le liste complete:",
     decksAnchor: "tutti i mazzi di Origins TCG",
@@ -380,9 +380,9 @@ export const it: Dictionary = {
     },
     methodTitle: "Come classifichiamo",
     method: [
-      "Prima i risultati dei tornei e le liste in cima alla ladder, poi la lettura delle patch.",
-      "Le carte sono classificate nel loro ruolo: Leggendaria, unità, magia.",
-      "Ogni spostamento tra i tier è datato e spiegato.",
+      "Leggendarie: il win rate della patch in corso dalle partite registrate con OriginsMeta Tracker, contando i due lati di ogni partita in cui la Leggendaria avversaria è nota.",
+      "S se resta sopra il 50% anche nel bordo basso dell'intervallo al 95%; A dal 50%, B dal 45%, C dal 40%, D sotto. Sotto le 100 partite: non classificata.",
+      "La Crimson Cup alza una Leggendaria di una fascia se è stata bannata in almeno il 30% delle sue partite ed è arrivata alle finali, a meno che la carta sia cambiata dopo. Ogni spostamento è datato e spiegato in una news.",
     ],
     tiers: {
       S: "Definisce il meta",
@@ -427,8 +427,8 @@ export const it: Dictionary = {
     lineSample: "Campione",
     lineStatus: "Stato",
     lineMeasure: "Misura",
-    officialSourceText: "risultati dei tornei ufficiali e liste in cima alla classificata",
-    officialStatusText: "classifiche vive al 9 nov 2026; fasce solo dai risultati dei tornei",
+    officialSourceText: "win rate della patch in corso (Analytics, i due lati di ogni partita) e numeri ufficiali della Crimson Cup",
+    officialStatusText: "Leggendarie classificate il 9 nov 2026; mazzi e carte base dopo",
     officialEmpty: "Le fasce di OriginsMeta nascono solo dai risultati dei tornei. Al 9 novembre 2026 le classifiche vive sono:",
     meanwhileDecks: "Intanto: i mazzi più votati dalla community",
     meanwhileLegendaries: "Intanto: le Leggendarie nei mazzi più pubblicati",
@@ -725,7 +725,7 @@ export const it: Dictionary = {
       votesMany: "{n} voti",
       distribution: "Voti per fascia",
       notRanked: "Nessuno l'ha ancora classificata.",
-      officialPending: "Nessuna fascia di OriginsMeta: le fasce nascono solo dai risultati dei tornei.",
+      officialPending: "Non è nella tier list di OriginsMeta: meno di 100 partite nella patch in corso, o non ancora classificata.",
       inDecks: "In {n} dei {total} mazzi pubblicati ({pct}%)",
       decksTitle: "Nei mazzi pubblicati",
       noDecks: "In nessun mazzo pubblicato.",

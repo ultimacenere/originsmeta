@@ -14,6 +14,68 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "origins-tcg-tier-list-legendaries-november-2026": {
+    title: "OriginsMeta 第一版 Origins TCG 强度榜：传说卡，2026年11月",
+    metaTitle: "Origins TCG 强度榜：传说卡分档，2026年11月",
+    description: "OriginsMeta 发布第一版 Origins TCG 强度榜：根据 11月4日补丁的胜率（OriginsMeta Tracker 记录的对局，双方都计入）和 Crimson Cup 官方禁用率，把传说卡分为 S 到 D 五档，并公开全部数字、分档方法和局限，便于你核对与引用。",
+    summary: "OriginsMeta 发布了第一版 Origins TCG 强度榜：十二张传说卡中有十一张分为 S 到 D 档，Three Not So Little Pigs、Dracula 和 Van Helsing 位居 S 档。档位依据当前补丁的胜率（每局记录的对局双方都计入）以及 Crimson Cup 的结果。",
+    highlights: [
+      { label: "S 档", text: "Three Not So Little Pigs、Dracula 和 Van Helsing", anchor: "fen-dang" },
+      { label: "数据", text: "当前补丁胜率和 Crimson Cup 禁用率，逐张传说卡列出", anchor: "shu-ju" },
+      { label: "分档方法", text: "每局双方都计入，按 95% 区间分档，Crimson Cup 可上调一档", anchor: "fang-fa" },
+      { label: "局限", text: "只针对传说卡而非卡表；只统计记录过的对局", anchor: "ju-xian" },
+      { label: "下次更新", text: "11月17日平衡补丁之后", anchor: "geng-xin" },
+    ],
+    body: `OriginsMeta 发布了第一版强度榜：当前补丁（2026年11月4日）下 Origins TCG 的十二张传说卡。其中十一张分为 S 到 D 档；第十二张 Wicked Stepmother 对局太少，暂不分档。卡组和基础卡随后推出。
+
+## 强度榜 {#fen-dang}
+
+| 档位 | 传说卡 |
+| --- | --- |
+| S，定义环境 | Three Not So Little Pigs、Dracula、Van Helsing |
+| A，顶级竞技选择 | King Arthur、Legion of the Dead |
+| B，稳定，取决于卡组 | Mulan |
+| C，小众或已被超越 | Queen of Hearts、Robin Hood、Merlin |
+| D，需要调整 | Dr. Frank、Dorothy |
+
+暂不分档：Wicked Stepmother，23 局。强度榜见专门页面 [Origins TCG 强度榜](/zh-cn/tier-list)，每张卡牌页面也会显示其档位。
+
+## 档位背后的数据 {#shu-ju}
+
+| 传说卡 | 胜率 | 对局 | Crimson Cup 禁用率 | 档位 |
+| --- | --- | --- | --- | --- |
+| Three Not So Little Pigs | 56.7% | 1,488 | 34.3% | S |
+| Dracula | 53.2% | 1,647 | 12.9% | S |
+| Van Helsing | 50.5% | 505 | 50.5% | S（A，因 Crimson Cup 上调） |
+| King Arthur | 51.0% | 439 | 18.2% | A |
+| Legion of the Dead | 50.1% | 379 | 13.7% | A |
+| Mulan | 47.5% | 202 | 17.5% | B |
+| Queen of Hearts | 44.2% | 337 | 12.9% | C |
+| Robin Hood | 41.5% | 390 | 14.8% | C |
+| Merlin | 38.4% | 138 | 43.2% | C（D，因 Crimson Cup 上调） |
+| Dr. Frank | 39.8% | 596 | 当时还不在游戏中 | D |
+| Dorothy | 38.0% | 150 | 23.5%，不计入 | D |
+| Wicked Stepmother | 21.7% | 23 | 11.4% | 暂不分档 |
+
+胜率为 2026年11月4日补丁的数据，于 2026年11月9日读取，来自 OriginsMeta Tracker 记录、且已知对手传说卡的 3,147 局对局；同样的数据实时更新在 [Analytics](/zh-cn/analytics)。对局数按出场计：每局对两张传说卡都计一次。禁用率来自 Koin Games 公布的 Crimson Cup 四场有数据的资格赛（0.7 补丁）：被禁次数除以该传说卡被带上的对局数。
+
+## 分档方法 {#fang-fa}
+
+- **先看天梯。** 每局对双方都计入：一张传说卡的胜利就是另一张的失败，所以平均值按构造就是 50%，传说卡不会仅因为记录对局的玩家常用它而显得更强。
+- **按区间分档。** 即使取 95% 置信区间的下限仍高于 50% 为 S；50% 起为 A，45% 起为 B，40% 起为 C，低于 40% 为 D。不足 100 局不分档。
+- **再看 Crimson Cup。** 在锦标赛中至少 30% 的对局被禁用、并且进入决赛的传说卡上调一档，最高到 S：Van Helsing（50.5% 的对局被禁，出现在四名决赛选手中三人的卡组里）和 Merlin（43.2%，一名决赛选手）。Three Not So Little Pigs 同样符合规则，但本来就是 S。对于在 11月4日补丁中改动过的 Dorothy 和当时还不在游戏中的 Dr. Frank，锦标赛不计入。
+
+## 它不说明什么 {#ju-xian}
+
+- 它为传说卡分档，而不是卡表：同一张传说卡可以带领截然不同的卡组。卡表请看[卡组](/zh-cn/decks)，有人使用时每个卡组都有自己的胜率。
+- 对局来自使用 OriginsMeta Tracker 记录的玩家，他们的胜率高于平均水平（在本补丁的 4,004 局中赢下 54.8%）。双方都计入能修正大部分偏差，但不是全部。
+- 所有队列都计入：排位赛和普通对局没有分开。
+- Crimson Cup 是在抢先体验之前的 0.7 补丁上进行的：它只会让传说卡上调，不会下调。
+
+## 何时更新 {#geng-xin}
+
+Koin Games 已宣布将于 2026年11月17日推出平衡补丁（[AMA Preview](/zh-cn/news/origins-tcg-roadmap-ama-preview)）。补丁之后，我们会重新读取数据、更新强度榜，并在新文章中说明每一项变动。在此之前，实时数据见 [Analytics](/zh-cn/analytics)，其他榜单还有[社区强度榜](/zh-cn/tier-list/community)、[卡牌评分](/zh-cn/tier-list/votes)和[使用率最高的卡牌](/zh-cn/tier-list/most-played)。`,
+  },
   "origins-tcg-roadmap-ama-recap": {
     title: "Origins TCG 路线图 AMA 完整回顾：Prestige、稀有度、锦标赛和新机制",
     metaTitle: "Origins TCG 路线图 AMA：完整回顾",

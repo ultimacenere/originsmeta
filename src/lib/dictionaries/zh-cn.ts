@@ -221,7 +221,7 @@ export const zhCn: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "卡组、传说卡、基础卡",
-    tierStatus: "实时榜单：胜率、社区、卡牌评分。这里：使用率最高的卡牌。",
+    tierStatus: "传说卡已于 2026年11月9日分档。卡组和基础卡随后推出。",
     tierSoon: "最常用",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -377,11 +377,11 @@ export const zhCn: Dictionary = {
        del 25/09/2026), senza "decks" e "cards", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Origins TCG 强度榜",
     metaTitle: "Origins TCG 强度榜与当前 Meta 环境",
-    intro: "卡组、传说卡和基础卡。OriginsMeta 的档位只依据锦标赛成绩，绝不凭感觉。截至 2026年11月9日，实时榜单包括：Analytics 中按传说卡统计的胜率、社区强度榜、卡牌评分和使用率最高的卡牌。",
-    description: "Origins TCG（Koin Games）强度榜与当前环境，更新于 2026年11月9日：按传说卡统计的胜率、社区强度榜、玩家卡牌评分和使用率最高的卡牌，全部实时更新。OriginsMeta 的档位只依据锦标赛成绩，绝不凭感觉划分；在此之前，这些实时榜单帮你看清当前环境里哪些传说卡和卡牌最强、最常用。",
+    intro: "卡组、传说卡和基础卡。OriginsMeta 于 2026年11月9日发布第一版强度榜，先为传说卡划分档位：依据当前补丁的胜率（OriginsMeta Tracker 记录的每局对局双方都计入），并参考 Crimson Cup 的结果进行修正。卡组和基础卡随后推出；在此之前，请看实时榜单。",
+    description: "Origins TCG（Koin Games）强度榜，更新于 2026年11月9日：根据当前补丁的胜率（OriginsMeta Tracker 记录的对局，双方都计入）和 Crimson Cup 官方数据，把传说卡分为 S 到 D 五档；卡组和基础卡随后推出，在此之前可以参考社区强度榜、卡牌评分和使用率最高的卡牌。",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "全部实时榜单：",
+    mainText: "强度榜与实时榜单：",
     mainAnchor: "Origins TCG 强度榜",
     decksText: "完整卡表请看：",
     decksAnchor: "所有 Origins TCG 卡组",
@@ -392,9 +392,9 @@ export const zhCn: Dictionary = {
     },
     methodTitle: "我们如何排名",
     method: [
-      "优先参考锦标赛成绩和天梯高分段卡表，其次是对补丁的解读。",
-      "卡牌在各自定位内排名：传说卡、角色、法术。",
-      "每次档位变动都会注明日期并说明原因。",
+      "传说卡：依据 OriginsMeta Tracker 记录的当前补丁对局胜率，在已知对手传说卡的对局中，双方都计入。",
+      "即使取 95% 区间的下限仍高于 50% 为 S；50% 起为 A，45% 起为 B，40% 起为 C，低于 40% 为 D。不足 100 局：不分档。",
+      "如果一张传说卡在 Crimson Cup 中至少 30% 的对局被禁用并进入决赛，就上调一档，除非这张卡之后改动过。每次变动都会注明日期并在新闻中说明。",
     ],
     tiers: {
       S: "定义环境",
@@ -439,8 +439,8 @@ export const zhCn: Dictionary = {
     lineSample: "样本",
     lineStatus: "状态",
     lineMeasure: "衡量",
-    officialSourceText: "官方锦标赛成绩和高排名卡表",
-    officialStatusText: "实时榜单，更新于 2026年11月9日；档位只依据锦标赛成绩",
+    officialSourceText: "当前补丁的胜率（Analytics，每局双方都计入）和 Crimson Cup 官方数据",
+    officialStatusText: "传说卡已于 2026年11月9日分档；卡组和基础卡随后推出",
     officialEmpty: "OriginsMeta 的档位只依据锦标赛成绩。截至 2026年11月9日，实时榜单包括：",
     meanwhileDecks: "在此之前：社区评分最高的卡组",
     meanwhileLegendaries: "在此之前：发布最多的卡组中的传说卡",
@@ -745,7 +745,7 @@ export const zhCn: Dictionary = {
       votesMany: "{n} 票",
       distribution: "各档位票数",
       notRanked: "还没有人给它排名。",
-      officialPending: "暂无 OriginsMeta 档位：档位只依据锦标赛成绩。",
+      officialPending: "未进入 OriginsMeta 强度榜：当前补丁对局少于 100 局，或尚未分档。",
       inDecks: "出现在 {total} 套已发布卡组中的 {n} 套（{pct}%）",
       decksTitle: "所在的已发布卡组",
       noDecks: "未出现在任何已发布卡组中。",

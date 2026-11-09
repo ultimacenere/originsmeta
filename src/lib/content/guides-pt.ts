@@ -40,7 +40,7 @@ export const ptText: Record<GuideSlug, GuideCopy> = {
 - Das onze que estavam no jogo antes de novembro, sete mudaram nos patches de balanceamento entre agosto e 21 de setembro de 2026; Dracula, Van Helsing, Legion of the Dead e Robin Hood não. O [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026 não rebalanceou nenhuma delas, e o patch de 4 de novembro de 2026 transformou Dorothy em uma 3/3.
 - Os 20 decks publicados no OriginsMeta até as 20:00 CEST de 25 de setembro de 2026 usam dez das onze Lendárias que estavam no jogo na época: Three Not So Little Pigs lidera quatro, Van Helsing três, Wicked Stepmother nenhum. Seis Lendárias têm um guia do OriginsMeta dedicado a um dos seus decks.
 
-As Lendárias abaixo estão em ordem de custo e, com o mesmo custo, em ordem alfabética. O guia descreve o que cada carta faz, não o quanto ela é forte: para isso existem o [win rate por Lendária do Analytics](/pt/analytics), com as partidas registradas com o OriginsMeta Tracker, e a nossa [tier list de Origins TCG](/pt/tier-list), que reúne os rankings ao vivo. Os tiers do OriginsMeta vão sair só dos resultados dos torneios e do topo da [ranqueada](/pt/guides/origins-tcg-ranked).
+As Lendárias abaixo estão em ordem de custo e, com o mesmo custo, em ordem alfabética. O guia descreve o que cada carta faz, não o quanto ela é forte: para isso existe a nossa [tier list de Origins TCG](/pt/tier-list), que em 9 de novembro de 2026 classificou as Lendárias pelo [win rate do Analytics](/pt/analytics) e pela Crimson Cup, como explica [o artigo sobre a tier list](/pt/news/origins-tcg-tier-list-legendaries-november-2026). O win rate muda com a [ranqueada](/pt/guides/origins-tcg-ranked) e a cada patch.
 
 ## As 12 Lendárias em uma tabela {#visao-geral}
 
@@ -312,7 +312,7 @@ No playtest fechado, segundo jogadores no fórum do Steam em 14 de setembro de 2
 
 ## O que o OriginsMeta vai fazer com a ranqueada {#originsmeta}
 
-As finais da Crimson Cup foram disputadas em 25 de outubro de 2026. Os tiers do OriginsMeta saem só dos resultados dos torneios e do topo da ladder ranqueada; em 9 de novembro de 2026, a página da [tier list](/pt/tier-list) reúne os rankings ao vivo: o win rate por Lendária do [Analytics](/pt/analytics), a tier list da comunidade, os votos nas cartas e as cartas mais jogadas.
+As finais da Crimson Cup foram disputadas em 25 de outubro de 2026. Em 9 de novembro de 2026 o OriginsMeta publicou a sua primeira [tier list](/pt/tier-list), das Lendárias: o win rate do patch atual a partir das partidas registradas com o OriginsMeta Tracker, contando os dois lados de cada partida ([Analytics](/pt/analytics)), corrigido pela Crimson Cup. Decks e cartas base vêm depois.
 
 ## O que ainda não sabemos {#o-que-nao-sabemos}
 

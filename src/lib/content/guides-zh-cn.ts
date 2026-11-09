@@ -36,7 +36,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 - 在 11月之前就已在游戏中的十一张里，有七张在 2026年8月至 9月21日之间的平衡补丁中被改动过；Dracula、Van Helsing、Legion of the Dead 和 Robin Hood 没有变化。2026年9月29日的 [0.7 补丁](/zh-cn/news/patch-0-7)没有调整其中任何一张，2026年11月4日的补丁则让 Dorothy 变为 3/3。
 - 截至 2026年9月25日 20:00 CEST 在 OriginsMeta 上发布的 20 副卡组，用到了当时游戏中十一张传说卡里的十张：Three Not So Little Pigs 带领四副，Van Helsing 三副，Wicked Stepmother 一副也没有。有六张传说卡拥有 OriginsMeta 为其某副卡组撰写的攻略。
 
-下面的传说卡按费用排序，费用相同时按字母顺序排列。本攻略介绍每张卡的作用，而不是它有多强：想看强弱，可以看 [Analytics 中按传说卡统计的胜率](/zh-cn/analytics)（来自 OriginsMeta Tracker 记录的对局），以及汇集各项实时榜单的 [Origins TCG 强度榜](/zh-cn/tier-list)。OriginsMeta 的档位只会依据锦标赛结果和[排位天梯](/zh-cn/guides/origins-tcg-ranked)顶端的数据。
+下面的传说卡按费用排序，费用相同时按字母顺序排列。本攻略介绍每张卡的作用，而不是它有多强：想看强弱，请看我们的 [Origins TCG 强度榜](/zh-cn/tier-list)。它于 2026年11月9日依据 [Analytics 胜率](/zh-cn/analytics)和 Crimson Cup 为传说卡分档，方法见[强度榜文章](/zh-cn/news/origins-tcg-tier-list-legendaries-november-2026)。胜率会随[排位天梯](/zh-cn/guides/origins-tcg-ranked)和每次补丁而变化。
 
 ## 12 张传说卡一览 {#yi-lan}
 
@@ -309,7 +309,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 ## OriginsMeta 将如何利用排位 {#originsmeta}
 
-Crimson Cup 决赛已于 2026年10月25日举行。OriginsMeta 的档位只依据锦标赛结果和排位天梯顶端的数据；截至 2026年11月9日，[强度榜](/zh-cn/tier-list)页面汇集了各项实时榜单：[Analytics](/zh-cn/analytics) 中按传说卡统计的胜率、社区强度榜、卡牌评分和使用率最高的卡牌。
+Crimson Cup 决赛已于 2026年10月25日举行。2026年11月9日，OriginsMeta 发布了第一版[强度榜](/zh-cn/tier-list)，先为传说卡分档：依据 OriginsMeta Tracker 记录的当前补丁对局胜率，每局双方都计入（[Analytics](/zh-cn/analytics)），并参考 Crimson Cup 修正。卡组和基础卡随后推出。
 
 ## 我们尚不知道的 {#shang-bu-zhi-dao}
 

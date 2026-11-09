@@ -9,6 +9,68 @@ import type { NewsCopy } from "./news-fr";
  * docs/tedesco.md; controlli in newsMeta.test.ts (lunghezze, link con /de/, ancore, paragrafo "Update vom …").
  */
 export const deText: Record<string, NewsCopy> = {
+  "origins-tcg-tier-list-legendaries-november-2026": {
+    title: "Die erste Tier-List von Origins TCG bei OriginsMeta: die Legendären, November 2026",
+    metaTitle: "Tier-List von Origins TCG: die Legendären, November 2026",
+    description: "Die erste Tier-List von Origins TCG bei OriginsMeta stuft die Legendären von S bis D ein: Win-Rates des Patches vom 4. November und der Crimson Cup.",
+    summary: "OriginsMeta hat seine erste Tier-List von Origins TCG veröffentlicht: elf der zwölf Legendären von S bis D eingestuft, mit Three Not So Little Pigs, Dracula und Van Helsing an der Spitze. Die Tiers kommen aus den Win-Rates des aktuellen Patches, beide Seiten jedes aufgezeichneten Spiels gezählt, und aus dem Crimson Cup.",
+    highlights: [
+      { label: "Tier S", text: "Three Not So Little Pigs, Dracula und Van Helsing", anchor: "tiers" },
+      { label: "Die Zahlen", text: "Win-Rate des aktuellen Patches und Bann-Rate beim Crimson Cup, Legendäre für Legendäre", anchor: "zahlen" },
+      { label: "Wie wir einstufen", text: "beide Seiten jedes Spiels, Tiers aus dem 95-%-Intervall, eine Stufe höher durch den Crimson Cup", anchor: "methode" },
+      { label: "Was sie nicht sagt", text: "Legendäre, keine Decklisten; nur aufgezeichnete Spiele", anchor: "grenzen" },
+      { label: "Nächstes Update", text: "nach dem Balance-Patch vom 17. November", anchor: "naechstes" },
+    ],
+    body: `OriginsMeta hat seine erste Tier-List veröffentlicht: die zwölf Legendären von Origins TCG im aktuellen Patch, dem vom 4. November 2026. Elf sind von S bis D eingestuft; die zwölfte, Wicked Stepmother, hat zu wenige Spiele für ein Tier. Decks und Basiskarten folgen.
+
+## Die Tier-List {#tiers}
+
+| Tier | Legendäre |
+| --- | --- |
+| S, prägt das Meta | Three Not So Little Pigs, Dracula, Van Helsing |
+| A, Top-Wahl im Wettbewerb | King Arthur, Legion of the Dead |
+| B, solide, abhängig vom Deck | Mulan |
+| C, Nische oder überholt | Queen of Hearts, Robin Hood, Merlin |
+| D, braucht Überarbeitung | Dr. Frank, Dorothy |
+
+Nicht eingestuft: Wicked Stepmother, 23 Spiele. Die Tier-List steht auf ihrer Seite, [Tier-List von Origins TCG](/de/tier-list), und jede Kartenseite zeigt ihr Tier.
+
+## Die Zahlen hinter den Tiers {#zahlen}
+
+| Legendäre | Win-Rate | Spiele | Bann-Rate beim Crimson Cup | Tier |
+| --- | --- | --- | --- | --- |
+| Three Not So Little Pigs | 56,7 % | 1.488 | 34,3 % | S |
+| Dracula | 53,2 % | 1.647 | 12,9 % | S |
+| Van Helsing | 50,5 % | 505 | 50,5 % | S (A, hoch durch den Crimson Cup) |
+| King Arthur | 51,0 % | 439 | 18,2 % | A |
+| Legion of the Dead | 50,1 % | 379 | 13,7 % | A |
+| Mulan | 47,5 % | 202 | 17,5 % | B |
+| Queen of Hearts | 44,2 % | 337 | 12,9 % | C |
+| Robin Hood | 41,5 % | 390 | 14,8 % | C |
+| Merlin | 38,4 % | 138 | 43,2 % | C (D, hoch durch den Crimson Cup) |
+| Dr. Frank | 39,8 % | 596 | damals noch nicht im Spiel | D |
+| Dorothy | 38,0 % | 150 | 23,5 %, zählt nicht | D |
+| Wicked Stepmother | 21,7 % | 23 | 11,4 % | nicht eingestuft |
+
+Die Win-Rate ist die des Patches vom 4. November 2026, gelesen am 9. November 2026 aus den 3.147 mit OriginsMeta Tracker aufgezeichneten Spielen, in denen die gegnerische Legendäre bekannt ist; dieselben Zahlen, aktuell, stehen in [Analytics](/de/analytics). Spiele sind Auftritte: Jedes Spiel zählt für beide Legendären. Die Bann-Rate stammt aus den offiziellen Zahlen von Koin Games zu den vier Qualifikationen des Crimson Cup, die welche haben (Patch 0.7): Banns auf die Spiele, in die die Legendäre mitgebracht wurde.
+
+## Wie wir einstufen {#methode}
+
+- **Zuerst die Ladder.** Jedes Spiel zählt für beide Seiten: Der Sieg einer Legendären ist die Niederlage der anderen, also liegt der Durchschnitt per Konstruktion bei 50 %, und eine Legendäre wirkt nicht stärker, nur weil die Spieler, die ihre Spiele aufzeichnen, sie spielen.
+- **Die Tiers aus dem Intervall.** S, wenn eine Legendäre selbst an der unteren Grenze des 95-%-Konfidenzintervalls über 50 % bleibt; A ab 50 %, B ab 45 %, C ab 40 %, D darunter. Unter 100 Spielen wird sie nicht eingestuft.
+- **Dann der Crimson Cup.** Eine Legendäre, die in mindestens 30 % ihrer Turnierspiele gebannt wurde und das Finale erreicht hat, steigt um ein Tier, nie über S: Van Helsing (in 50,5 % ihrer Spiele gebannt, in den Decks von drei der vier Finalisten) und Merlin (43,2 %, ein Finalist). Three Not So Little Pigs erfüllte dieselbe Regel, war aber schon S. Für Dorothy, geändert mit dem Patch vom 4. November, und für Dr. Frank, der noch nicht im Spiel war, zählt das Turnier nicht.
+
+## Was sie nicht sagt {#grenzen}
+
+- Sie stuft die Legendäre ein, keine Deckliste: Dieselbe Legendäre führt sehr unterschiedliche Decks. Für die Listen gibt es [die Decks](/de/decks), jedes mit seiner Win-Rate, wenn jemand es spielt.
+- Die Spiele sind die mit OriginsMeta Tracker aufgezeichneten, deren Nutzer mehr gewinnen als der Durchschnitt (54,8 % ihrer 4.004 Spiele in diesem Patch). Beide Seiten zu zählen korrigiert das größtenteils, nicht vollständig.
+- Alle Warteschlangen zählen: Ranglisten- und normale Spiele sind nicht getrennt.
+- Der Crimson Cup lief auf Patch 0.7, vor dem Early Access: Er kann eine Legendäre nur hochstufen, nie herabstufen.
+
+## Wann sie sich ändert {#naechstes}
+
+Koin Games hat einen Balance-Patch für den 17. November 2026 angekündigt ([AMA Preview](/de/news/origins-tcg-roadmap-ama-preview)). Nach diesem Patch lesen wir die Zahlen neu, aktualisieren die Tier-List und erklären jede Änderung in einem neuen Artikel. Bis dahin stehen die Live-Zahlen in [Analytics](/de/analytics), und die anderen Rankings sind die [Tier-List der Community](/de/tier-list/community), die [Kartenbewertungen](/de/tier-list/votes) und die [meistgespielten Karten](/de/tier-list/most-played).`,
+  },
   "origins-tcg-roadmap-ama-recap": {
     title: "Roadmap-AMA von Origins TCG, der vollständige Bericht: Prestige, Seltenheiten, Turniere und neue Mechaniken",
     metaTitle: "Roadmap-AMA von Origins TCG: der vollständige Bericht",

@@ -215,7 +215,7 @@ export const en = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Legendaries, base cards",
-    tierStatus: "Live rankings: win rates, community, card votes. Here: the most played cards.",
+    tierStatus: "Legendaries ranked on 9 Nov 2026. Decks and base cards next.",
     tierSoon: "Most played",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -371,11 +371,11 @@ export const en = {
        del 25/09/2026), senza "decks" e "cards", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Origins TCG tier list",
     metaTitle: "Origins TCG tier list and meta",
-    intro: "Decks, Legendaries and base cards. OriginsMeta tiers come only from tournament results, never from gut feeling. Updated 9 November 2026: the live rankings are the win rates by Legendary in Analytics, the community tier list, the card votes and the most played cards.",
-    description: "Origins TCG tier list and meta (Koin Games), 9 Nov 2026: win rates by Legendary, the community tier list, card votes and the most played cards, all live.",
+    intro: "Decks, Legendaries and base cards. OriginsMeta's first tier list, of 9 November 2026, ranks the Legendaries: win rates on the current patch, counting both sides of every game recorded with OriginsMeta Tracker, adjusted by the Crimson Cup. Decks and base cards come next; meanwhile, the live rankings.",
+    description: "Origins TCG tier list (Koin Games), 9 Nov 2026: the Legendaries ranked S to D from win rates on the current patch and the Crimson Cup, plus live rankings.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "All the live rankings:",
+    mainText: "The tier list and the live rankings:",
     mainAnchor: "Origins TCG tier list",
     decksText: "For the full decklists:",
     decksAnchor: "all the Origins TCG decks",
@@ -386,9 +386,9 @@ export const en = {
     },
     methodTitle: "How we rank",
     method: [
-      "Tournament results and top-ladder decklists first, then patch reads.",
-      "Cards are ranked inside their role: Legendary, unit, spell.",
-      "Every move between tiers is dated and explained.",
+      "Legendaries: the win rate on the current patch from the games recorded with OriginsMeta Tracker, counting both sides of every game where the opposing Legendary is known.",
+      "S if it stays above 50% even at the low end of the 95% interval; A from 50%, B from 45%, C from 40%, D below. Under 100 games: not ranked.",
+      "The Crimson Cup moves a Legendary up one tier if it was banned in at least 30% of its matches and reached the finals, unless its card changed afterwards. Every change is dated and explained in a news article.",
     ],
     tiers: {
       S: "Defines the meta",
@@ -433,8 +433,8 @@ export const en = {
     lineSample: "Sample",
     lineStatus: "Status",
     lineMeasure: "Measure",
-    officialSourceText: "official tournament results and top-ranked lists",
-    officialStatusText: "live rankings as of 9 Nov 2026; tiers only from tournament results",
+    officialSourceText: "win rates on the current patch (Analytics, both sides of every game) and the official Crimson Cup numbers",
+    officialStatusText: "Legendaries ranked on 9 Nov 2026; decks and base cards next",
     officialEmpty: "OriginsMeta tiers come only from tournament results. As of 9 November 2026, the live rankings are:",
     meanwhileDecks: "Meanwhile: the community's best-rated decks",
     meanwhileLegendaries: "Meanwhile: the Legendaries in the most published decks",
@@ -739,7 +739,7 @@ export const en = {
       votesMany: "{n} votes",
       distribution: "Votes by tier",
       notRanked: "Nobody has ranked it yet.",
-      officialPending: "No OriginsMeta tier: tiers come only from tournament results.",
+      officialPending: "Not in the OriginsMeta tier list: fewer than 100 games on the current patch, or not ranked yet.",
       inDecks: "In {n} of {total} published decks ({pct}%)",
       decksTitle: "In the published decks",
       noDecks: "In no published deck.",

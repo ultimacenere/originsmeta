@@ -143,7 +143,7 @@ const en: Record<GuideSlug, Guide> = {
 - Of the eleven in the game before November, seven changed in the balance patches between August and 21 September 2026; Dracula, Van Helsing, Legion of the Dead and Robin Hood did not. [Patch 0.7](/en/news/patch-0-7) of 29 September 2026 did not rebalance any of them, and the patch of 4 November 2026 made Dorothy a 3/3.
 - The 20 decks published on OriginsMeta by 20:00 CEST on 25 September 2026 use ten of the eleven Legendaries in the game at the time: Three Not So Little Pigs leads four, Van Helsing three, Wicked Stepmother none. Six Legendaries have an OriginsMeta guide to one of their decks.
 
-The Legendaries below are in order of cost and, at the same cost, in alphabetical order. The guide describes what each card does, not how strong it is: for that, the [win rates by Legendary in Analytics](/en/analytics) count the games recorded with OriginsMeta Tracker, and our [Origins TCG tier list](/en/tier-list) gathers the live rankings. OriginsMeta tiers will come only from tournament results and the top of the [ranked ladder](/en/guides/origins-tcg-ranked).
+The Legendaries below are in order of cost and, at the same cost, in alphabetical order. The guide describes what each card does, not how strong it is: for that there is our [Origins TCG tier list](/en/tier-list), which ranked the Legendaries on 9 November 2026 from the [win rates in Analytics](/en/analytics) and the Crimson Cup, as [the article on the tier list](/en/news/origins-tcg-tier-list-legendaries-november-2026) explains. The win rates move with the [ranked ladder](/en/guides/origins-tcg-ranked) and with every patch.
 
 ## The 12 Legendaries at a glance {#at-a-glance}
 
@@ -409,7 +409,7 @@ In the closed playtest, according to players on the Steam forum on 14 September 
 
 ## What OriginsMeta will do with ranked {#originsmeta}
 
-The Crimson Cup finals were played on 25 October 2026. OriginsMeta tiers come only from tournament results and the top of the ranked ladder; as of 9 November 2026 the [tier list](/en/tier-list) page gathers the live rankings: the win rates by Legendary in [Analytics](/en/analytics), the community tier list, card votes and the most played cards.
+The Crimson Cup finals were played on 25 October 2026. On 9 November 2026 OriginsMeta published its first [tier list](/en/tier-list), of the Legendaries: win rates on the current patch from the games recorded with OriginsMeta Tracker, counting both sides of every game ([Analytics](/en/analytics)), adjusted by the Crimson Cup. Decks and base cards come next.
 
 ## What we don't know yet {#unknowns}
 
@@ -1807,7 +1807,7 @@ const it: Record<GuideSlug, Guide> = {
 - Delle undici nel gioco prima di novembre, sette sono cambiate nelle patch di bilanciamento fra agosto e il 21 settembre 2026; Dracula, Van Helsing, Legion of the Dead e Robin Hood no. La [patch 0.7](/it/news/patch-0-7) del 29 settembre 2026 non ne ha ribilanciata nessuna, e la patch del 4 novembre 2026 ha fatto di Dorothy una 3/3.
 - I 20 mazzi pubblicati su OriginsMeta entro le 20:00 del 25 settembre 2026 usano dieci delle undici Leggendarie allora nel gioco: Three Not So Little Pigs ne guida quattro, Van Helsing tre, Wicked Stepmother nessuno. Sei Leggendarie hanno una guida di OriginsMeta a uno dei loro mazzi.
 
-Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordine alfabetico. La guida descrive che cosa fa ogni carta, non quanto è forte: per quello ci sono i [win rate per Leggendaria di Analytics](/it/analytics), dalle partite registrate con OriginsMeta Tracker, e la nostra [tier list di Origins TCG](/it/tier-list), che raccoglie le classifiche vive. Le fasce di OriginsMeta nasceranno solo dai risultati dei tornei e dalla cima della [classificata](/it/guides/origins-tcg-ranked).
+Qui sotto le Leggendarie sono in ordine di costo e, a parità di costo, in ordine alfabetico. La guida descrive che cosa fa ogni carta, non quanto è forte: per quello c'è la nostra [tier list di Origins TCG](/it/tier-list), che il 9 novembre 2026 ha classificato le Leggendarie dai [win rate di Analytics](/it/analytics) e dalla Crimson Cup, come spiega [l'articolo sulla tier list](/it/news/origins-tcg-tier-list-legendaries-november-2026). I win rate si muovono con la [classificata](/it/guides/origins-tcg-ranked) e a ogni patch.
 
 ## Le 12 Leggendarie in una tabella {#tabella}
 
@@ -2073,7 +2073,7 @@ Nel playtest chiuso, secondo i giocatori sul forum di Steam il 14 settembre 2026
 
 ## Cosa farà OriginsMeta con la classificata {#originsmeta}
 
-Le finali della Crimson Cup si sono giocate il 25 ottobre 2026. Le fasce di OriginsMeta nascono solo dai risultati dei tornei e dalla cima della classificata; al 9 novembre 2026 la pagina della [tier list](/it/tier-list) raccoglie le classifiche vive: i win rate per Leggendaria di [Analytics](/it/analytics), la tier list della community, i voti alle carte e le carte più giocate.
+Le finali della Crimson Cup si sono giocate il 25 ottobre 2026. Il 9 novembre 2026 OriginsMeta ha pubblicato la sua prima [tier list](/it/tier-list), delle Leggendarie: i win rate della patch in corso dalle partite registrate con OriginsMeta Tracker, contando i due lati di ogni partita ([Analytics](/it/analytics)), corretti con la Crimson Cup. Mazzi e carte base arrivano dopo.
 
 ## Cosa non sappiamo ancora {#da-sapere}
 

@@ -219,7 +219,7 @@ export const fr: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Légendaires, cartes de base",
-    tierStatus: "En direct : win rate, communauté, votes des cartes. Ici : les plus jouées.",
+    tierStatus: "Légendaires classées le 9 nov. 2026. Decks et cartes de base ensuite.",
     tierSoon: "Les plus jouées",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -373,11 +373,11 @@ export const fr: Dictionary = {
        del 25/09/2026), senza "decks" e "cartes", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list Origins TCG",
     metaTitle: "Tier list et meta d'Origins TCG",
-    intro: "Decks, Légendaires et cartes de base. Les tiers d'OriginsMeta viennent uniquement des résultats des tournois, jamais de l'intuition. Mis à jour le 9 novembre 2026 : les classements en direct sont le win rate par Légendaire d'Analytics, la tier list de la communauté, les votes des cartes et les cartes les plus jouées.",
-    description: "Tier list et meta d'Origins TCG (Koin Games), 9 nov. 2026 : win rate par Légendaire, tier list de la communauté, votes des cartes, cartes les plus jouées.",
+    intro: "Decks, Légendaires et cartes de base. La première tier list d'OriginsMeta, du 9 novembre 2026, classe les Légendaires : le win rate du patch en cours, en comptant les deux côtés de chaque partie enregistrée avec OriginsMeta Tracker, corrigé par la Crimson Cup. Les decks et les cartes de base suivront ; en attendant, les classements en direct.",
+    description: "Tier list d'Origins TCG (Koin Games), 9 nov. 2026 : les Légendaires de S à D selon le win rate du patch en cours et la Crimson Cup, et classements en direct.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
-    mainText: "Tous les classements en direct :",
+    mainText: "La tier list et les classements en direct :",
     mainAnchor: "tier list Origins TCG",
     decksText: "Pour les listes complètes :",
     decksAnchor: "tous les decks Origins TCG",
@@ -388,9 +388,9 @@ export const fr: Dictionary = {
     },
     methodTitle: "Comment nous classons",
     method: [
-      "D'abord les résultats des tournois et les listes du haut de la ladder, ensuite la lecture des patchs.",
-      "Les cartes sont classées dans leur rôle : Légendaire, unité, sort.",
-      "Chaque changement de tier est daté et expliqué.",
+      "Légendaires : le win rate du patch en cours d'après les parties enregistrées avec OriginsMeta Tracker, en comptant les deux côtés de chaque partie où la Légendaire adverse est connue.",
+      "S si elle reste au-dessus de 50 % même à la borne basse de l'intervalle à 95 % ; A dès 50 %, B dès 45 %, C dès 40 %, D en dessous. Moins de 100 parties : pas classée.",
+      "La Crimson Cup fait monter une Légendaire d'un tier si elle a été bannie dans au moins 30 % de ses parties et a atteint les finales, sauf si sa carte a changé depuis. Chaque changement est daté et expliqué dans une actu.",
     ],
     tiers: {
       S: "Définit la meta",
@@ -435,8 +435,8 @@ export const fr: Dictionary = {
     lineSample: "Échantillon",
     lineStatus: "État",
     lineMeasure: "Mesure",
-    officialSourceText: "résultats des tournois officiels et listes du haut du classement",
-    officialStatusText: "classements en direct au 9 nov. 2026 ; tiers uniquement d'après les tournois",
+    officialSourceText: "win rate du patch en cours (Analytics, les deux côtés de chaque partie) et chiffres officiels de la Crimson Cup",
+    officialStatusText: "Légendaires classées le 9 nov. 2026 ; decks et cartes de base ensuite",
     officialEmpty: "Les tiers d'OriginsMeta viennent uniquement des résultats des tournois. Au 9 novembre 2026, les classements en direct sont :",
     meanwhileDecks: "En attendant : les decks les mieux notés par la communauté",
     meanwhileLegendaries: "En attendant : les Légendaires présentes dans le plus de decks publiés",
@@ -735,7 +735,7 @@ export const fr: Dictionary = {
       votesMany: "{n} votes",
       distribution: "Votes par tier",
       notRanked: "Personne ne l'a encore classée.",
-      officialPending: "Pas de tier d'OriginsMeta : les tiers viennent uniquement des résultats des tournois.",
+      officialPending: "Absente de la tier list d'OriginsMeta : moins de 100 parties sur le patch en cours, ou pas encore classée.",
       inDecks: "Dans {n} des {total} decks publiés ({pct} %)",
       decksTitle: "Dans les decks publiés",
       noDecks: "Dans aucun deck publié.",

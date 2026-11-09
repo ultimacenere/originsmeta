@@ -20,6 +20,68 @@ export type NewsCopy = {
 };
 
 export const frText: Record<string, NewsCopy> = {
+  "origins-tcg-tier-list-legendaries-november-2026": {
+    title: "La première tier list d'Origins TCG d'OriginsMeta : les Légendaires, novembre 2026",
+    metaTitle: "Tier list d'Origins TCG : les Légendaires, novembre 2026",
+    description: "La première tier list d'Origins TCG d'OriginsMeta classe les Légendaires de S à D d'après le win rate du patch du 4 novembre et la Crimson Cup.",
+    summary: "OriginsMeta a publié sa première tier list d'Origins TCG : onze des douze Légendaires classées de S à D, avec Three Not So Little Pigs, Dracula et Van Helsing en tête. Les tiers viennent du win rate du patch en cours, en comptant les deux côtés de chaque partie enregistrée, et de la Crimson Cup.",
+    highlights: [
+      { label: "Tier S", text: "Three Not So Little Pigs, Dracula et Van Helsing", anchor: "tiers" },
+      { label: "Les chiffres", text: "win rate du patch en cours et ban rate à la Crimson Cup, Légendaire par Légendaire", anchor: "chiffres" },
+      { label: "Notre méthode", text: "les deux côtés de chaque partie, tiers selon l'intervalle à 95 %, un cran de plus avec la Crimson Cup", anchor: "methode" },
+      { label: "Ce qu'elle ne dit pas", text: "des Légendaires, pas des listes ; seulement les parties enregistrées", anchor: "limites" },
+      { label: "Prochaine mise à jour", text: "après le patch d'équilibrage du 17 novembre", anchor: "prochaine" },
+    ],
+    body: `OriginsMeta a publié sa première tier list : les douze Légendaires d'Origins TCG sur le patch en cours, celui du 4 novembre 2026. Onze sont classées de S à D ; la douzième, Wicked Stepmother, a trop peu de parties pour un tier. Les decks et les cartes de base suivront.
+
+## La tier list {#tiers}
+
+| Tier | Légendaires |
+| --- | --- |
+| S, définit le meta | Three Not So Little Pigs, Dracula, Van Helsing |
+| A, choix compétitif de premier plan | King Arthur, Legion of the Dead |
+| B, solide, dépend du deck | Mulan |
+| C, de niche ou dépassée | Queen of Hearts, Robin Hood, Merlin |
+| D, à revoir | Dr. Frank, Dorothy |
+
+Non classée : Wicked Stepmother, 23 parties. La tier list est sur sa page, [tier list d'Origins TCG](/fr/tier-list), et chaque fiche de carte affiche son tier.
+
+## Les chiffres derrière les tiers {#chiffres}
+
+| Légendaire | Win rate | Parties | Ban rate à la Crimson Cup | Tier |
+| --- | --- | --- | --- | --- |
+| Three Not So Little Pigs | 56,7 % | 1 488 | 34,3 % | S |
+| Dracula | 53,2 % | 1 647 | 12,9 % | S |
+| Van Helsing | 50,5 % | 505 | 50,5 % | S (A, monte avec la Crimson Cup) |
+| King Arthur | 51,0 % | 439 | 18,2 % | A |
+| Legion of the Dead | 50,1 % | 379 | 13,7 % | A |
+| Mulan | 47,5 % | 202 | 17,5 % | B |
+| Queen of Hearts | 44,2 % | 337 | 12,9 % | C |
+| Robin Hood | 41,5 % | 390 | 14,8 % | C |
+| Merlin | 38,4 % | 138 | 43,2 % | C (D, monte avec la Crimson Cup) |
+| Dr. Frank | 39,8 % | 596 | pas encore dans le jeu | D |
+| Dorothy | 38,0 % | 150 | 23,5 %, non compté | D |
+| Wicked Stepmother | 21,7 % | 23 | 11,4 % | non classée |
+
+Le win rate est celui du patch du 4 novembre 2026, lu le 9 novembre 2026 sur les 3 147 parties enregistrées avec OriginsMeta Tracker où la Légendaire adverse est connue ; les mêmes chiffres, à jour, sont dans [Analytics](/fr/analytics). Les parties sont des présences : chaque partie compte pour les deux Légendaires. Le ban rate vient des chiffres officiels de Koin Games pour les quatre qualifications de la Crimson Cup qui en ont (patch 0.7) : les bans sur les parties où la Légendaire a été apportée.
+
+## Notre méthode {#methode}
+
+- **D'abord la ladder.** Chaque partie compte pour les deux côtés : la victoire d'une Légendaire est la défaite de l'autre, donc la moyenne est de 50 % par construction et une Légendaire ne paraît pas plus forte simplement parce que ceux qui enregistrent leurs parties la jouent.
+- **Les tiers selon l'intervalle.** S si une Légendaire reste au-dessus de 50 % même à la borne basse de l'intervalle de confiance à 95 % ; A dès 50 %, B dès 45 %, C dès 40 %, D en dessous. Sous 100 parties, elle n'est pas classée.
+- **Ensuite la Crimson Cup.** Une Légendaire bannie dans au moins 30 % de ses parties du tournoi et arrivée en finale monte d'un tier, jamais au-delà de S : Van Helsing (bannie dans 50,5 % de ses parties, dans les decks de trois des quatre finalistes) et Merlin (43,2 %, un finaliste). Three Not So Little Pigs remplissait la même règle mais était déjà S. Le tournoi ne compte pas pour Dorothy, modifiée par le patch du 4 novembre, ni pour Dr. Frank, qui n'était pas encore dans le jeu.
+
+## Ce qu'elle ne dit pas {#limites}
+
+- Elle classe la Légendaire, pas une liste : la même Légendaire mène des decks très différents. Pour les listes, voyez [les decks](/fr/decks), chacun avec son win rate quand quelqu'un le joue.
+- Les parties sont celles enregistrées avec OriginsMeta Tracker, dont les utilisateurs gagnent plus que la moyenne (54,8 % de leurs 4 004 parties sur ce patch). Compter les deux côtés en corrige l'essentiel, pas tout.
+- Toutes les files comptent : les parties classées et normales ne sont pas séparées.
+- La Crimson Cup s'est jouée sur le patch 0.7, avant l'Accès anticipé : elle peut seulement faire monter une Légendaire, jamais la faire descendre.
+
+## Quand elle change {#prochaine}
+
+Koin Games a annoncé un patch d'équilibrage pour le 17 novembre 2026 ([AMA Preview](/fr/news/origins-tcg-roadmap-ama-preview)). Après ce patch, nous relirons les chiffres, mettrons la tier list à jour et expliquerons chaque changement dans un nouvel article. En attendant, les chiffres en direct sont dans [Analytics](/fr/analytics), et les autres classements sont la [tier list de la communauté](/fr/tier-list/community), les [votes des cartes](/fr/tier-list/votes) et les [cartes les plus jouées](/fr/tier-list/most-played).`,
+  },
   "origins-tcg-roadmap-ama-recap": {
     title: "AMA sur la feuille de route d'Origins TCG, le compte rendu complet : Prestige, raretés, tournois et mécaniques",
     metaTitle: "AMA d'Origins TCG : le compte rendu complet",

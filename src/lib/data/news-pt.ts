@@ -10,6 +10,68 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "origins-tcg-tier-list-legendaries-november-2026": {
+    title: "A primeira tier list de Origins TCG do OriginsMeta: as Lendárias, novembro de 2026",
+    metaTitle: "Tier list de Origins TCG: as Lendárias, novembro de 2026",
+    description: "A primeira tier list de Origins TCG do OriginsMeta classifica as Lendárias de S a D pelo win rate do patch de 4 de novembro e pela Crimson Cup.",
+    summary: "O OriginsMeta publicou a sua primeira tier list de Origins TCG: onze das doze Lendárias classificadas de S a D, com Three Not So Little Pigs, Dracula e Van Helsing no topo. Os tiers vêm do win rate do patch atual, contando os dois lados de cada partida registrada, e da Crimson Cup.",
+    highlights: [
+      { label: "Tier S", text: "Three Not So Little Pigs, Dracula e Van Helsing", anchor: "tiers" },
+      { label: "Os números", text: "win rate do patch atual e ban rate na Crimson Cup, Lendária por Lendária", anchor: "numeros" },
+      { label: "Como classificamos", text: "os dois lados de cada partida, tiers pelo intervalo de 95%, um degrau a mais pela Crimson Cup", anchor: "metodo" },
+      { label: "O que ela não diz", text: "Lendárias, não listas; só partidas registradas", anchor: "limites" },
+      { label: "Próxima atualização", text: "depois do patch de balanceamento de 17 de novembro", anchor: "proxima" },
+    ],
+    body: `O OriginsMeta publicou a sua primeira tier list: as doze Lendárias de Origins TCG no patch atual, o de 4 de novembro de 2026. Onze estão classificadas de S a D; a décima segunda, Wicked Stepmother, tem poucas partidas demais para um tier. Decks e cartas base vêm depois.
+
+## A tier list {#tiers}
+
+| Tier | Lendárias |
+| --- | --- |
+| S, define o meta | Three Not So Little Pigs, Dracula, Van Helsing |
+| A, escolha competitiva de ponta | King Arthur, Legion of the Dead |
+| B, sólida, depende do deck | Mulan |
+| C, de nicho ou superada | Queen of Hearts, Robin Hood, Merlin |
+| D, precisa de ajustes | Dr. Frank, Dorothy |
+
+Sem classificação: Wicked Stepmother, 23 partidas. A tier list está na sua página, [tier list de Origins TCG](/pt/tier-list), e cada página de carta mostra o seu tier.
+
+## Os números por trás dos tiers {#numeros}
+
+| Lendária | Win rate | Partidas | Ban rate na Crimson Cup | Tier |
+| --- | --- | --- | --- | --- |
+| Three Not So Little Pigs | 56,7% | 1.488 | 34,3% | S |
+| Dracula | 53,2% | 1.647 | 12,9% | S |
+| Van Helsing | 50,5% | 505 | 50,5% | S (A, sobe com a Crimson Cup) |
+| King Arthur | 51,0% | 439 | 18,2% | A |
+| Legion of the Dead | 50,1% | 379 | 13,7% | A |
+| Mulan | 47,5% | 202 | 17,5% | B |
+| Queen of Hearts | 44,2% | 337 | 12,9% | C |
+| Robin Hood | 41,5% | 390 | 14,8% | C |
+| Merlin | 38,4% | 138 | 43,2% | C (D, sobe com a Crimson Cup) |
+| Dr. Frank | 39,8% | 596 | ainda não estava no jogo | D |
+| Dorothy | 38,0% | 150 | 23,5%, não conta | D |
+| Wicked Stepmother | 21,7% | 23 | 11,4% | sem classificação |
+
+O win rate é o do patch de 4 de novembro de 2026, lido em 9 de novembro de 2026 nas 3.147 partidas registradas com o OriginsMeta Tracker em que a Lendária adversária é conhecida; os mesmos números, atualizados, estão no [Analytics](/pt/analytics). As partidas são presenças: cada partida conta para as duas Lendárias. O ban rate vem dos números oficiais da Koin Games para as quatro qualificatórias da Crimson Cup que os têm (patch 0.7): os bans sobre as partidas em que a Lendária foi levada.
+
+## Como classificamos {#metodo}
+
+- **Primeiro a ladder.** Cada partida conta para os dois lados: a vitória de uma Lendária é a derrota da outra, então a média é 50% por construção e uma Lendária não parece mais forte só porque quem registra as partidas a usa.
+- **Os tiers pelo intervalo.** S se uma Lendária fica acima de 50% mesmo no limite inferior do intervalo de confiança de 95%; A a partir de 50%, B de 45%, C de 40%, D abaixo. Com menos de 100 partidas, não é classificada.
+- **Depois, a Crimson Cup.** Uma Lendária banida em pelo menos 30% das suas partidas do torneio e que chegou às finais sobe um tier, nunca acima de S: Van Helsing (banida em 50,5% das suas partidas, nos decks de três dos quatro finalistas) e Merlin (43,2%, um finalista). Three Not So Little Pigs cumpria a mesma regra, mas já era S. O torneio não conta para Dorothy, que mudou com o patch de 4 de novembro, nem para Dr. Frank, que ainda não estava no jogo.
+
+## O que ela não diz {#limites}
+
+- Ela classifica a Lendária, não uma lista: a mesma Lendária lidera decks muito diferentes. Para as listas, veja [os decks](/pt/decks), cada um com o seu win rate quando alguém o joga.
+- As partidas são as registradas com o OriginsMeta Tracker, cujos usuários vencem mais que a média (54,8% das suas 4.004 partidas neste patch). Contar os dois lados corrige boa parte disso, não tudo.
+- Todas as filas contam: ranqueadas e normais não são separadas.
+- A Crimson Cup foi jogada no patch 0.7, antes do Acesso Antecipado: ela só pode subir uma Lendária, nunca descê-la.
+
+## Quando ela muda {#proxima}
+
+A Koin Games anunciou um patch de balanceamento para 17 de novembro de 2026 ([AMA Preview](/pt/news/origins-tcg-roadmap-ama-preview)). Depois desse patch, relemos os números, atualizamos a tier list e explicamos cada mudança num novo artigo. Enquanto isso, os números ao vivo estão no [Analytics](/pt/analytics), e os outros rankings são a [tier list da comunidade](/pt/tier-list/community), os [votos nas cartas](/pt/tier-list/votes) e as [cartas mais jogadas](/pt/tier-list/most-played).`,
+  },
   "origins-tcg-roadmap-ama-recap": {
     title: "AMA do roadmap de Origins TCG, o resumo completo: Prestige, raridades, torneios e novas mecânicas",
     metaTitle: "AMA do roadmap de Origins TCG: o resumo completo",

@@ -217,7 +217,7 @@ export const pt: Dictionary = {
     metaPostit1: "Meta",
     metaPostit2: "shifting",
     tierSub: "Decks, Lendárias, cartas base",
-    tierStatus: "Ao vivo: win rate, comunidade e votos nas cartas. Aqui: as mais jogadas.",
+    tierStatus: "Lendárias classificadas em 9 nov 2026. Decks e cartas base depois.",
     tierSoon: "Mais jogadas",
     /* Invito a salvare la propria tier list (Ondata 3, TOOL-01): {min} la soglia della community; dal 12/10/2026 solo
        questa frase, senza numeri (mai il numero di persone) */
@@ -370,10 +370,10 @@ export const pt: Dictionary = {
        del 25/09/2026), senza "decks" e "cartas", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list de Origins TCG",
     metaTitle: "Tier list e meta de Origins TCG",
-    intro: "Decks, Lendárias e cartas base. Os tiers do OriginsMeta saem só de resultados de torneios, nunca do achismo. Atualizado em 9 de novembro de 2026: os rankings ao vivo são o win rate por Lendária do Analytics, a tier list da comunidade, os votos nas cartas e as cartas mais jogadas.",
-    description: "Tier list e meta de Origins TCG (Koin Games), 9 nov 2026: win rate por Lendária, tier list da comunidade, votos nas cartas e cartas mais jogadas, ao vivo.",
+    intro: "Decks, Lendárias e cartas base. A primeira tier list do OriginsMeta, de 9 de novembro de 2026, classifica as Lendárias: o win rate do patch atual, contando os dois lados de cada partida registrada com o OriginsMeta Tracker, corrigido pela Crimson Cup. Decks e cartas base vêm depois; enquanto isso, os rankings ao vivo.",
+    description: "Tier list de Origins TCG (Koin Games), 9 nov 2026: as Lendárias de S a D pelo win rate do patch atual e pela Crimson Cup, mais os rankings ao vivo.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate) */
-    mainText: "Todos os rankings ao vivo:",
+    mainText: "A tier list e os rankings ao vivo:",
     mainAnchor: "Tier list de Origins TCG",
     decksText: "Para as decklists completas:",
     decksAnchor: "todos os decks de Origins TCG",
@@ -384,9 +384,9 @@ export const pt: Dictionary = {
     },
     methodTitle: "Como classificamos",
     method: [
-      "Primeiro os resultados de torneios e as decklists do topo da ladder, depois a leitura dos patches.",
-      "As cartas são classificadas dentro da sua função: Lendária, personagem, feitiço.",
-      "Cada mudança de tier tem data e explicação.",
+      "Lendárias: o win rate do patch atual a partir das partidas registradas com o OriginsMeta Tracker, contando os dois lados de cada partida em que a Lendária adversária é conhecida.",
+      "S se fica acima de 50% mesmo no limite inferior do intervalo de 95%; A a partir de 50%, B de 45%, C de 40%, D abaixo. Menos de 100 partidas: sem classificação.",
+      "A Crimson Cup sobe uma Lendária um tier se ela foi banida em pelo menos 30% das suas partidas e chegou às finais, a menos que a carta tenha mudado depois. Cada mudança é datada e explicada numa notícia.",
     ],
     tiers: {
       S: "Define o meta",
@@ -431,8 +431,8 @@ export const pt: Dictionary = {
     lineSample: "Amostra",
     lineStatus: "Status",
     lineMeasure: "Medida",
-    officialSourceText: "resultados oficiais de torneios e listas do topo do ranking",
-    officialStatusText: "rankings ao vivo em 9 nov 2026; tiers só por resultados de torneios",
+    officialSourceText: "win rate do patch atual (Analytics, os dois lados de cada partida) e números oficiais da Crimson Cup",
+    officialStatusText: "Lendárias classificadas em 9 nov 2026; decks e cartas base depois",
     officialEmpty: "Os tiers do OriginsMeta saem só de resultados de torneios. Em 9 de novembro de 2026, os rankings ao vivo são:",
     meanwhileDecks: "Enquanto isso: os decks da comunidade mais bem avaliados",
     meanwhileLegendaries: "Enquanto isso: as Lendárias nos decks mais publicados",
@@ -735,7 +735,7 @@ export const pt: Dictionary = {
       votesMany: "{n} votos",
       distribution: "Votos por tier",
       notRanked: "Ninguém a classificou ainda.",
-      officialPending: "Sem tier do OriginsMeta: os tiers saem só de resultados de torneios.",
+      officialPending: "Fora da tier list do OriginsMeta: menos de 100 partidas no patch atual, ou ainda sem classificação.",
       inDecks: "Em {n} de {total} decks publicados ({pct}%)",
       decksTitle: "Nos decks publicados",
       noDecks: "Em nenhum deck publicado.",
