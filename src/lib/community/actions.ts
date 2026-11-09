@@ -321,8 +321,10 @@ export async function updateDeck(_prev: ActionState, formData: FormData): Promis
   if ("error" in p) return { error: p.error, ...("field" in p ? { field: p.field } : {}) };
   const id = formData.get("id");
   if (!isUuid(id)) return { error: "forbidden" };
-  // Carte (blocco VERSIONI, 30/09/2026): con carte diverse il trigger apre una versione nuova e i voti ripartono. Stesse
-  // carte in un altro ordine: si tiene l'ordine salvato, così un riordino del deck builder non apre una versione. Senza
+  // Carte (blocco VERSIONI, 30/09/2026): con carte diverse il trigger apre una versione nuova e scrive cards_updated_at,
+  // che dal 09/11/2026 riporta il mazzo in cima a "Più recenti" (i voti restano: deck_ratings conta l'ultimo voto di ogni
+  // persona). Stesse carte in un altro ordine: si tiene l'ordine salvato, così un riordino del deck builder non apre una
+  // versione (dal 09/11/2026 il trigger le confronta anche lui senza badare all'ordine). Senza
   // la migrazione (colonna `version` assente) un cambio di carte non passa: i voti resterebbero su carte diverse.
   let row: Record<string, unknown> = p.row;
   const withVersion = await p.supabase.from("community_decks").select("legendary, cards, custom_cards, status, version").eq("id", id).maybeSingle();

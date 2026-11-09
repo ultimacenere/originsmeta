@@ -53,7 +53,9 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
   // solo i mazzi del gioco di oggi: i theory craft (29/10/2026) usano carte che non ci sono e stanno nel loro elenco
   const rawDecks = officialDecks(allDecks);
 
-  // Mazzi: dal più votato (voto pesato sul numero di voti), quelli senza voti in fondo dal più recente
+  // Mazzi: dal più votato (voto pesato sul numero di voti), quelli senza voti in fondo dal più recente, cioè dall'ultimo
+  // cambio di carte come l'ordine "Più recenti" di /decks (09/11/2026)
+  const cardsAt = new Map(rawDecks.map((deck) => [deck.slug, deckCardsDate(deck)]));
   const decks: TierRankedDeck[] = rawDecks
     .map((deck) => {
       const leg = deck.legendary ? activeCards.find((c) => c.slug === deck.legendary) : undefined;
@@ -80,7 +82,10 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
         indexable: indexableLocales(deck, [locale]).length > 0,
       };
     })
-    .sort((a, b) => Number(b.rating.votes > 0) - Number(a.rating.votes > 0) || b.score - a.score || b.created.localeCompare(a.created));
+    .sort(
+      (a, b) =>
+        Number(b.rating.votes > 0) - Number(a.rating.votes > 0) || b.score - a.score || (cardsAt.get(b.slug) ?? b.created).localeCompare(cardsAt.get(a.slug) ?? a.created),
+    );
 
   const usage = usageCounts(rawDecks.map((deck) => ({ legendary: deck.legendary, cards: deck.cards })));
   const scores = new Map<string, CardScore>();

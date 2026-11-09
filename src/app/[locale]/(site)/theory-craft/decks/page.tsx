@@ -14,6 +14,7 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { indexableLocales } from "@/lib/community/deckQuality";
 import { BADGE_ORDER } from "@/lib/community/badges";
 import { communityExplorerDecks } from "@/lib/community/explorerDecks";
+import { newestCardsFirst } from "@/lib/community/deckVersions";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { THEORY_DECKS_PATH, THEORY_PATH, splitTheory, theoryCards } from "@/lib/theoryCraft";
 import { fillTheory, theoryCraftLabels } from "@/lib/theoryCraftLabels";
@@ -42,7 +43,8 @@ export default async function TheoryDecksPage({ params }: { params: LocaleParams
   const { theory } = splitTheory(await listPublishedDecks());
   const popularity = await listDeckPopularity();
   const creators = creatorIndex(await listCreators());
-  const newestFirst = theory.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  // dall'ultimo cambio di carte, come /decks (09/11/2026)
+  const newestFirst = theory.slice().sort(newestCardsFirst);
   // niente codice del gioco (le carte non ci sono) e niente win rate (nessuno gioca questi mazzi)
   const list = communityExplorerDecks({ decks: newestFirst, locale, d, gameCodes: new Map(), popularity, creators, winrates: null });
   const legendaries = theoryCards.filter((c) => c.legendary);
@@ -118,6 +120,7 @@ export default async function TheoryDecksPage({ params }: { params: LocaleParams
             sortRated: d.common.sortRated,
             ...(popularity ? { sortTrending: favoriteLabels[locale].sortTrending, sortSaved: favoriteLabels[locale].sortSaved } : {}),
             createdOn: d.common.createdOn,
+            updatedOn: d.common.updated,
             channels: creatorLabels[locale].channels,
             live: creatorLabels[locale].live,
           }}

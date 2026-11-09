@@ -10,7 +10,7 @@ import { deckListKey } from "@/lib/tracker/stats";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { deckArtUrl } from "@/lib/community/deckArt";
 import { weightedRating } from "@/lib/tierstats";
-import { deckCardsDate } from "@/lib/community/deckVersions";
+import { deckCardsDate, deckCardsUpdated } from "@/lib/community/deckVersions";
 import { stripMarkdown } from "@/lib/userMarkdown";
 import type { CommunityDeck } from "@/lib/community/types";
 import type { DeckPopularity } from "@/lib/community/favorites";
@@ -127,6 +127,13 @@ export function communityExplorerDecks({
       // data di creazione e versione del gioco di quel giorno (richiesta di Pierluigi del 23/09/2026)
       created: deck.created_at.slice(0, 10),
       createdLabel: formatDate(locale, deck.created_at.slice(0, 10)),
+      // ordine "Più recenti" dall'ultimo cambio di carte (09/11/2026, `newestCardsFirst`): l'istante intero, così due
+      // mazzi dello stesso giorno restano nell'ordine giusto; e "Aggiornato il …" quando le carte sono cambiate
+      cardsAt: deckCardsDate(deck),
+      ...(() => {
+        const at = deckCardsUpdated(deck)?.slice(0, 10);
+        return at ? { cardsUpdated: at, cardsUpdatedLabel: formatDate(locale, at) } : {};
+      })(),
       patchId: patch,
       patchLabel: patch ? patchLabel(patch, locale) : undefined,
       rating: deck.rating,

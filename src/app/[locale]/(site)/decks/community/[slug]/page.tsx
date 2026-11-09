@@ -14,7 +14,7 @@ import { deckGameCode } from "@/lib/deckGameCode";
 import { getCommunityDeck, listDeckPopularity, listDeckVersions, listPublishedDecks } from "@/lib/community/queries";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { favoriteLabels } from "@/lib/favoriteLabels";
-import { deckCardsDate, deckCardsDiff, deckOutdated, deckUpdateHref, type DeckCards } from "@/lib/community/deckVersions";
+import { deckCardsDate, deckCardsDiff, deckCardsUpdated, deckOutdated, deckUpdateHref, type DeckCards } from "@/lib/community/deckVersions";
 import { deckVersionLabels } from "@/lib/deckVersionLabels";
 import { DeckVersions, type VersionCard, type VersionView } from "@/components/DeckVersions";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
@@ -160,6 +160,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   /** versione del gioco in vigore quando il mazzo è stato creato (dal calendario delle patch, non dichiarata) */
   // Dal 30/09/2026 (pacchetto VERSIONI) la patch è quella dell'ultimo cambio di carte, non della pubblicazione.
   const deckPatch = patchAt(deckCardsDate(deck));
+  // ultimo cambio di carte dopo la pubblicazione (09/11/2026): "Aggiornato il …" nel kicker
+  const cardsUpdated = deckCardsUpdated(deck);
   const handle = authorHandle(deck.profile);
   const L = communityPageLabels[locale];
   // Tutti i mazzi pubblicati, con il limite di default: la stessa lettura di /decks e delle tier list, che la cache dei
@@ -288,12 +290,15 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
           <div className="min-w-0 flex-1 basis-64">
             {/* Quando è nato il mazzo e con quale versione del gioco (Pierluigi, 23/09/2026): la versione non la
                 dichiara l'autore, si ricava dalla data con `patchAt`, cioè dal calendario delle patch ufficiali.
-                L'aggiornamento resta accanto, perché un mazzo ritoccato dopo una patch non è più quello di prima. */}
+                L'aggiornamento resta accanto, perché un mazzo ritoccato dopo una patch non è più quello di prima. Dal
+                09/11/2026 (Pierluigi: "conta come aggiornamento solo un cambio delle carte") è la data dell'ultimo
+                cambio di carte, la stessa dell'ordine "Più recenti" di /decks: guida, nome e video non la spostano
+                (`updated_at` resta la dateModified dei dati strutturati). */}
             <p className="kicker text-mint">
               {c.kicker} · {d.common.createdOn} {formatDate(locale, deck.created_at.slice(0, 10))}
               {deckPatch ? ` · ${d.common.patch} ${patchLabel(deckPatch, locale)}` : ""}
               {version && version > 1 ? ` · ${fillLabel(VL.version, { n: String(version) })}` : ""}
-              {deck.updated_at.slice(0, 10) !== deck.created_at.slice(0, 10) ? ` · ${d.common.updated} ${formatDate(locale, deck.updated_at.slice(0, 10))}` : ""}
+              {cardsUpdated && cardsUpdated.slice(0, 10) !== deck.created_at.slice(0, 10) ? ` · ${d.common.updated} ${formatDate(locale, cardsUpdated.slice(0, 10))}` : ""}
             </p>
             <h1 className="t-page mt-2 leading-tight">{deck.name}</h1>
             <p className="mt-3 flex flex-wrap items-center gap-2 text-pale-muted">
