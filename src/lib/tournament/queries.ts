@@ -192,3 +192,50 @@ export async function listInvites(client: Db, tid: string): Promise<TournamentIn
   if (error) console.error("[tournaments] listInvites:", error.message);
   return ((data ?? []) as unknown as TournamentInvite[]) ?? [];
 }
+
+/* ---------- 09/11/2026: svizzera, gironi e sideboard (blocco SVIZZERA, GIRONI E SIDEBOARD di schema.sql) ---------- */
+
+export type FormatOptions = { swiss_rounds: number | null; group_size: number | null; group_advance: number | null; group_seeding: "snake" | "random" | null; sideboard: number | null };
+export const NO_FORMAT_OPTIONS: FormatOptions = { swiss_rounds: null, group_size: null, group_advance: null, group_seeding: null, sideboard: null };
+
+/** Opzioni dei formati nuovi, lette a parte come getStageOptions: colonne mancanti = nessuna opzione (database non migrato). */
+export async function getFormatOptions(client: Db | null, tid: string): Promise<FormatOptions> {
+  if (!client) return NO_FORMAT_OPTIONS;
+  const { data, error } = await client.from("tournaments").select("swiss_rounds, group_size, group_advance, group_seeding, sideboard").eq("id", tid).maybeSingle();
+  if (error || !data) return NO_FORMAT_OPTIONS;
+  const r = data as Partial<FormatOptions>;
+  return { swiss_rounds: r.swiss_rounds ?? null, group_size: r.group_size ?? null, group_advance: r.group_advance ?? null, group_seeding: r.group_seeding ?? null, sideboard: r.sideboard ?? null };
+}
+
+/**
+ * Le partite con fase e girone: per svizzera e gironi (che esistono solo a migrazione fatta) si leggono `stage` e `grp`
+ * e si uniscono alle partite di listMatches. Per gli altri tornei le partite restano come sono (stage assente = tabellone).
+ */
+export async function withMatchStages(client: Db | null, tid: string, format: string, matches: TournamentMatch[]): Promise<TournamentMatch[]> {
+  if (!client || format === "single_elim" || !matches.length) return matches;
+  const { data, error } = await client.from("tournament_matches").select("id, stage, grp").eq("tournament_id", tid);
+  if (error) {
+    console.error("[tournaments] withMatchStages:", error.message);
+    return matches;
+  }
+  const by = new Map(((data ?? []) as { id: string; stage: TournamentMatch["stage"]; grp: number | null }[]).map((r) => [r.id, r]));
+  return matches.map((m) => ({ ...m, stage: by.get(m.id)?.stage ?? null, grp: by.get(m.id)?.grp ?? null }));
+}
+
+/** Sideboard consegnate che il client può leggere (stesse regole delle liste): utente → slug delle carte. */
+export async function listSideboards(client: Db | null, tid: string): Promise<Map<string, string[]>> {
+  if (!client) return new Map();
+  const { data, error } = await client.from("tournament_decks").select("user_id, sideboard").eq("tournament_id", tid);
+  if (error) return new Map();
+  return new Map(((data ?? []) as { user_id: string; sideboard: unknown }[]).map((r) => [r.user_id, Array.isArray(r.sideboard) ? r.sideboard.filter((s): s is string => typeof s === "string") : []]));
+}
+
+export type SideSwapRow = { user_id: string; game: number; deck: number; swaps: { out: string; in: string }[]; created_at: string };
+
+/** Scambi con la sideboard di una partita che il client può vedere (match_side_swaps). */
+export async function listMatchSideSwaps(client: Db | null, mid: string): Promise<SideSwapRow[]> {
+  if (!client) return [];
+  const { data, error } = await client.rpc("match_side_swaps", { mid });
+  if (error) return [];
+  return (Array.isArray(data) ? data : []) as SideSwapRow[];
+}

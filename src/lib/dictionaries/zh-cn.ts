@@ -1441,7 +1441,7 @@ export const zhCn: Dictionary = {
     organizedBy: "主办方",
     startsAt: "开始时间",
     utc: "UTC",
-    formats: { single_elim: "单败淘汰" },
+    formats: { single_elim: "单败淘汰", swiss: "瑞士轮", groups: "小组赛" },
     deckModes: { free: "自由卡组", conquest: "Conquest" },
     conquestRule: "{n} 套传说卡各不相同的卡组，任意两套之间至少有 {min} 张不同的卡",
     bestOf: "Bo{n}",

@@ -14,6 +14,14 @@
 //        [--name "…"] [--lang it] [--starts 2026-11-28T09:30:00Z] [--stage start|qualifiers|top] [--apply]
 //      node scripts/demo-tournament.mjs --remove <TAG> [--apply]   → cancella un torneo di prova (non i bot)
 // A prove finite i bot si tolgono con node scripts/seed-bots.mjs --remove.
+// Dal 09/11/2026 anche svizzera e gironi (blocco SVIZZERA, GIRONI E SIDEBOARD), con la sideboard di 3 carte:
+//      node scripts/demo-tournament.mjs --format swiss --organizer <utente> [--players a,b] [--stage start|rounds|top] [--apply]
+//        → 30 iscritti, 5 turni svizzeri, Top 8 in pausa. start: turno 1 (i due giocatori veri si incontrano); rounds
+//          (predefinito): turni 1–4 giocati, nel turno 5 resta la partita dei giocatori veri; top: svizzera finita e Top 8
+//          creata, in pausa ("Avvia la Top 8" dalla gestione).
+//      node scripts/demo-tournament.mjs --format groups … → 24 iscritti in 6 gironi da 4, passano 2 (i giocatori veri nel
+//          girone A). start: turno 1 fra bot; rounds (predefinito): tutte le partite fra bot; top: gironi finiti e fase
+//          finale creata, in pausa. Servono almeno 30 bot di seed-bots.mjs.
 import { existsSync, readFileSync } from "node:fs";
 import { randomBytes, randomUUID } from "node:crypto";
 import pg from "pg";
@@ -67,8 +75,12 @@ if (removeTag) {
 
 const orgName = opt("--organizer");
 if (!orgName) await fail("Uso: node scripts/demo-tournament.mjs --organizer <nome utente> [--players a,b] [--judges x,y] [--invite u,v] [--stage start|qualifiers|top] [--apply]");
-const stage = opt("--stage") ?? "qualifiers";
+const FORMAT = opt("--format") ?? "brackets";
+if (!["brackets", "swiss", "groups"].includes(FORMAT)) await fail("--format: brackets (predefinito), swiss o groups");
+const stage = FORMAT === "brackets" ? (opt("--stage") ?? "qualifiers") : "qualifiers";
 if (!["start", "qualifiers", "top"].includes(stage)) await fail("--stage: start, qualifiers o top");
+const sstage = FORMAT === "brackets" ? null : (opt("--stage") ?? "rounds");
+if (sstage !== null && !["start", "rounds", "top"].includes(sstage)) await fail("--stage con --format swiss o groups: start, rounds o top");
 const lang = opt("--lang") ?? "it";
 const name = (opt("--name") ?? "Torneo di prova · 16 bracket + Top 16").slice(0, 60);
 const startsAt = opt("--starts") ? new Date(opt("--starts")) : new Date();
@@ -114,6 +126,147 @@ const trio = (label) => {
   const pool = shuffle(bases);
   return { legs, codes: legs.map((l, i) => omCode({ name: `${label} · ${String.fromCharCode(65 + i)}`, legendary: l, cards: pool.slice(i * 12, i * 12 + 12) })) };
 };
+
+/* ---------- 09/11/2026: torneo di prova svizzero o a gironi (--format swiss | groups) ---------- */
+if (FORMAT !== "brackets") {
+  const fmtOk = await one("select to_regproc('public.swiss_next_round') is not null as ok");
+  if (!fmtOk.ok) await fail("Il database non ha il blocco 09/11/2026: SVIZZERA, GIRONI E SIDEBOARD: prima node scripts/swiss-dry-run.mjs, poi node scripts/db-migrate.mjs.");
+  const swiss = FORMAT === "swiss";
+  const N = swiss ? 30 : 24;
+  const SLOTS = 32;
+  const SIDE = 3;
+  const title = (opt("--name") ?? (swiss ? "Torneo di prova · Svizzera + Top 8" : "Torneo di prova · Gironi + fase finale")).slice(0, 60);
+  const desc = swiss
+    ? "Torneo di prova del formato svizzero: 30 giocatori finti (bot), 5 turni svizzeri, poi la Top 8 dopo una pausa. Nessun premio."
+    : "Torneo di prova della fase a gironi: 24 giocatori finti (bot) in 6 gironi da 4, passano i primi 2, poi la fase finale a eliminazione diretta dopo una pausa. Nessun premio.";
+  const rulesText = [
+    "Conquest con tre mazzi: Leggendarie diverse e almeno 8 carte uniche fra due mazzi; prima di ogni partita ognuno banna un mazzo dell'avversario. Al meglio delle 3.",
+    swiss
+      ? "Svizzera: 3 punti a vittoria, bye a chi ha meno punti (vale una vittoria), niente rivincite quando si può; spareggi OMW%, GW%, OGW% (almeno 33%). Poi la Top 8 seedata dalla classifica."
+      : "Gironi da 4 all'italiana; passano i primi 2 di ogni girone, spareggi OMW%, GW%, OGW% (almeno 33%). Poi la fase finale a eliminazione diretta.",
+    "Sideboard di 3 carte (opzione del torneo, non una regola del gioco): scambi uno per uno fra una partita e l'altra, dichiarati nella stanza partita.",
+  ].join("\n");
+  const sslug = `torneo-di-prova-${randomBytes(2).toString("hex")}`;
+  await q(
+    `insert into public.tournaments (slug, organizer, name, cover_url, description, rules, lang, starts_at, size, deck_mode, conquest_decks, conquest_min_different,
+       best_of, checkin, hidden_decklists, no_show_minutes, top_cut, top_cut_hold, deck_ban, visibility, listed, format, swiss_rounds, group_size, group_advance, group_seeding, sideboard)
+     values ($1, $2, $3, '/media/keyart-mulan.webp', $4, $5, $6, $7, $8, 'conquest', $9, 8, 3, true, true, 15, $10, true, true, 'private', false, $11, $12, $13, $14, $15, $16)`,
+    [sslug, org.id, title, desc, rulesText, lang, startsAt.toISOString(), SLOTS, DECKS, swiss ? 8 : null, FORMAT, swiss ? 5 : null, swiss ? null : 4, swiss ? null : 2, swiss ? null : "snake", SIDE],
+  );
+  const st = await one("select t.id, t.tag, s.invite_code from public.tournaments t left join public.tournament_secrets s on s.tournament_id = t.id where t.slug = $1", [sslug]);
+  const sideOf = new Map();
+  const reg = async (uid, label) => {
+    const d = trio(label);
+    sideOf.set(uid, d.legs);
+    const used = new Set(d.codes.flatMap((c) => JSON.parse(Buffer.from(c.slice(4), "base64url").toString("utf8")).c));
+    const side = shuffle(bases.filter((b) => !used.has(b))).slice(0, SIDE);
+    await q("insert into public.tournament_players (tournament_id, user_id, status, decks_submitted, checked_in_at) values ($1, $2, 'registered', true, now())", [st.id, uid]);
+    await q("insert into public.tournament_decks (tournament_id, user_id, codes, sideboard) values ($1, $2, $3::jsonb, $4::jsonb)", [st.id, uid, JSON.stringify(d.codes), JSON.stringify(side)]);
+  };
+  for (const h of humans) await reg(h.id, h.display_name || h.username);
+  const bots = [];
+  for (let i = 1; bots.length < N - humans.length; i++) {
+    const found = await one("select u.id, p.username from auth.users u left join public.profiles p on p.id = u.id where u.email = $1", [`bot${i}@${BOT_DOMAIN}`]);
+    if (found?.username && BOTS.test(found.username)) bots.push(found.id);
+    if (i > 2000) await fail("Bot insufficienti: prima node scripts/seed-bots.mjs <TAG> 30 (o --remove dopo).");
+    if (!found && i > N + 50) await fail("Mancano i bot di seed-bots.mjs (bot<n>@bots.originsmeta.local): creane almeno 30 con node scripts/seed-bots.mjs.");
+  }
+  for (const [i, id] of bots.entries()) await reg(id, `Bot ${i + 1}`);
+  for (const j of judges) await q("insert into public.tournament_judges (tournament_id, user_id, added_by) values ($1, $2, $3)", [st.id, j.id, org.id]);
+  for (const v of invited) await q("insert into public.tournament_invites (tournament_id, user_id, invited_by) values ($1, $2, $3) on conflict do nothing", [st.id, v.id, org.id]);
+  // avvio come start_tournament: nei gironi i due giocatori veri in testa all'ordine finiscono nei gironi A e B (serpentina),
+  // quindi il secondo va spostato accanto al primo (posizione 11 = girone A anche lui, con 6 gironi)
+  const order = shuffle(bots);
+  if (humans[0]) order.unshift(humans[0].id);
+  if (humans[1]) order.splice(swiss ? 1 : 11, 0, humans[1].id);
+  await q("select public.tm_start($1, $2::uuid[])", [st.id, order]);
+  await q("select public.tm_after_start($1)", [st.id]);
+  const human = (u) => humans.some((h) => h.id === u);
+  // svizzera: i due giocatori veri si incontrano al turno 1 (scambio diretto delle due partite)
+  if (swiss && humans.length === 2) {
+    const ms = (await q("select * from public.tournament_matches where tournament_id = $1 and round = 1 and status = 'pending'", [st.id])).rows;
+    const a = ms.find((m) => m.player_a === humans[0].id || m.player_b === humans[0].id);
+    const b = ms.find((m) => m.player_a === humans[1].id || m.player_b === humans[1].id);
+    if (a && b && a.id !== b.id) {
+      const oppA = a.player_a === humans[0].id ? "player_b" : "player_a";
+      const hB = b.player_a === humans[1].id ? "player_a" : "player_b";
+      await q(`update public.tournament_matches set ${hB} = $2 where id = $1`, [b.id, a[oppA]]);
+      await q(`update public.tournament_matches set ${oppA} = $2 where id = $1`, [a.id, humans[1].id]);
+    }
+  }
+  let closedN = 0;
+  const playBots = async (withHumans = false) => {
+    for (let pass = 0; pass < 20; pass++) {
+      const { rows } = await q("select * from public.tournament_matches where tournament_id = $1 and status = 'pending' and player_a is not null and player_b is not null order by round, position", [st.id]);
+      const todo = rows.filter((m) => withHumans || (!human(m.player_a) && !human(m.player_b)));
+      if (!todo.length) return;
+      for (const m of todo) {
+        for (const [who, target] of [[m.player_a, m.player_b], [m.player_b, m.player_a]]) {
+          const idx = Math.floor(Math.random() * DECKS);
+          await q("insert into public.tournament_bans (match_id, user_id, target, deck, legendary) values ($1, $2, $3, $4, $5) on conflict (match_id, user_id) do nothing", [m.id, who, target, idx, sideOf.get(target)?.[idx] ?? null]);
+        }
+        const need = (await one("select public.tm_need($1, $2) as n", [st.id, m.round])).n;
+        const aw = Math.random() < 0.5;
+        const lo = Math.floor(Math.random() * need);
+        await q("update public.tournament_matches set winner = $2, status = 'confirmed', reported_by = null, score_a = $3, score_b = $4, seen_a = coalesce(seen_a, now()), seen_b = coalesce(seen_b, now()) where id = $1", [m.id, aw ? m.player_a : m.player_b, aw ? need : lo, aw ? lo : need]);
+        await q("select public.tm_propagate($1)", [m.id]);
+        closedN++;
+      }
+    }
+  };
+  // le RPC dello staff con l'organizzatore come utente (dentro la transazione dello script)
+  const asOrganizer = () => q("select set_config('request.jwt.claims', $1, true), set_config('request.jwt.claim.sub', $2, true)", [JSON.stringify({ sub: org.id, role: "authenticated" }), org.id]);
+  if (sstage === "start") await playBots(false);
+  else {
+    if (swiss) {
+      // svizzera: i turni fra bot fino all'ultimo; la partita dei giocatori veri del turno 1 si chiude a caso, poi si gioca
+      // l'ultimo turno con la loro partita aperta (stage "rounds"), oppure tutto e la Top 8 in pausa (stage "top")
+      for (let r = 1; r <= 5; r++) {
+        await playBots(r < 5 || sstage === "top");
+        if (r < 5) {
+          await asOrganizer();
+          await q("select public.swiss_next_round($1)", [st.id]);
+        }
+      }
+      if (sstage === "top") {
+        await asOrganizer();
+        await q("select public.start_final_stage($1)", [st.id]);
+      }
+    } else {
+      // gironi: tutte le partite fra bot (stage "rounds"), poi anche quelle dei giocatori veri e la fase finale in pausa (stage "top")
+      await playBots(sstage === "top");
+      if (sstage === "top") {
+        await asOrganizer();
+        await q("select public.start_final_stage($1)", [st.id]);
+      }
+    }
+  }
+  const c = await one(
+    `select count(*)::int as matches, count(*) filter (where status in ('confirmed', 'bye'))::int as done,
+            count(*) filter (where status = 'pending' and player_a is not null and player_b is not null and ready_at is not null)::int as ready,
+            count(*) filter (where stage is null)::int as bracket
+       from public.tournament_matches where tournament_id = $1`,
+    [st.id],
+  );
+  const hm = humans.length ? await one("select id from public.tournament_matches where tournament_id = $1 and status = 'pending' and (player_a = $2 or player_b = $2) order by round limit 1", [st.id, humans[0].id]) : null;
+  const sbase = `${SITE}/${lang}/tournaments/${sslug}`;
+  console.log(`
+${APPLY ? "Creato" : "PROVA A SECCO (rollback: nulla è stato scritto)"}: "${title}" · ${st.tag} · privato · ${swiss ? "svizzera, 5 turni, Top 8 in pausa" : "6 gironi da 4, passano 2, fase finale in pausa"} · sideboard di ${SIDE}
+  iscritti ${N} (${humans.length} veri${humans.length ? `: ${humans.map((h) => h.username).join(", ")}` : ""}, ${bots.length} bot), check-in fatto per tutti
+  partite ${c.matches}: ${c.done} chiuse (${closedN} da questo script), ${c.ready} pronte da giocare, ${c.bracket} del tabellone finale
+  arbitri: ${judges.map((j) => j.username).join(", ") || "nessuno"} · invitati: ${invited.map((v) => v.username).join(", ") || "nessuno"}
+
+  Scheda:      ${sbase}
+  Gestione:    ${sbase}/manage
+  Invito:      ${SITE}/t/${st.tag}/${st.invite_code}${hm ? `\n  Partita dei giocatori veri: ${sbase}/match/${hm.id}` : ""}
+  Altri turni fra bot:  node scripts/bot-play.mjs ${st.tag} --all   (in svizzera genera anche i turni dopo)
+  Cancellare la prova:  node scripts/demo-tournament.mjs --remove ${st.tag} --apply
+`);
+  if (APPLY) await q("commit");
+  else await q("rollback");
+  await db.end();
+  process.exit(0);
+}
 
 /* ---------- il torneo ---------- */
 const description = [

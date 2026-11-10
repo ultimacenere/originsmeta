@@ -4,7 +4,12 @@ import { notFound } from "next/navigation";
 import { getDictionary, href, siteUrl, type Dictionary } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { currentUser, supabaseServer } from "@/lib/supabase/server";
-import { getInviteCode, getStageOptions, getTournament, listBanStats, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks } from "@/lib/tournament/queries";
+import { getFormatOptions, getInviteCode, getStageOptions, getTournament, listBanStats, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks, withMatchStages } from "@/lib/tournament/queries";
+import { currentMatchOf, isStagedFormat } from "@/lib/tournament/formats";
+import { formatMatchName, formatView } from "@/lib/tournament/formatView";
+import { formatLabels } from "@/lib/tournament/formatLabels";
+import { FormatStandings } from "@/components/FormatStandings";
+import { FormatRounds } from "@/components/FormatRounds";
 import { roundLabel } from "@/lib/tournament/bracket";
 import { bestOfSummary, fill, totalRounds, tournamentInviteLink, tournamentShortLink, type TournamentMatch, type TournamentPlayer } from "@/lib/tournament/types";
 import { seatPlan, submittedPlayerIds, waitlistPosition } from "@/lib/tournament/rules";
@@ -90,9 +95,11 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const t = await getTournament(slug, client);
   if (!t) notFound();
 
-  const [players, matches, others, decks, inviteCode, judges, stages, banStats] = await Promise.all([
+  const staged = isStagedFormat(t.format);
+  const [players, matches, others, decks, inviteCode, judges, stages, banStats, fo] = await Promise.all([
     listPlayers(t.id, client),
-    listMatches(t.id, client),
+    // 09/11/2026: per svizzera e gironi anche fase e girone di ogni partita
+    listMatches(t.id, client).then((ms) => withMatchStages(client, t.id, t.format, ms)),
     listListedTournaments(30),
     // a torneo finito tutte le liste; con le liste segrete, a torneo in corso, quelle della top 4 (policy)
     t.status === "finished" || (t.status === "running" && t.hidden_decklists) ? listVisibleDecks(t.id, client) : Promise.resolve([]),
@@ -102,12 +109,16 @@ export default async function TournamentPage({ params, searchParams }: { params:
     // 08/11/2026: fase finale a bracket, pausa e ban (lettura a parte: regge il database non ancora migrato)
     getStageOptions(client, t.id),
     t.status === "finished" ? listBanStats(client, t.id) : Promise.resolve([]),
+    staged ? getFormatOptions(client, t.id) : Promise.resolve(null),
   ]);
   const sl = stageLabels[locale];
-  const bplan = planOf(matches, stages.top_cut);
-  const holdFrom = holdRound(stages, bplan);
+  const fl = formatLabels[locale];
+  // svizzera e gironi (09/11/2026): fasi, Top o fase finale, pausa e semifinalisti dalle partite con la fase
+  const fv = staged ? formatView({ ...t, ...stages, ...(fo ?? {}) }, matches) : null;
+  const bplan = planOf(fv ? fv.bracket : matches, fv ? null : stages.top_cut);
+  const holdFrom = fv ? fv.holdFrom : holdRound(stages, bplan);
   // prima dell'avvio il tabellone non c'è: la struttura si legge dai posti massimi
-  const cut = stages.top_cut && stages.top_cut < t.size ? stages.top_cut : null;
+  const cut = !staged && stages.top_cut && stages.top_cut < t.size ? stages.top_cut : null;
   const inviteLink = inviteCode ? tournamentInviteLink(siteUrl, t.tag, inviteCode) : null;
   const active = players.filter((p) => p.status === "registered");
   const waitlist = players.filter((p) => p.status === "waitlist");
@@ -126,12 +137,12 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const rounds = totalRounds(matches);
   // con le liste segrete, a torneo in corso, la sezione mostra solo i semifinalisti: la policy dà anche le proprie liste
   // a chi gioca e tutte allo staff, che qui devono vedere quello che vedono tutti
-  const top4 = new Set(matches.filter((m) => m.round >= rounds - 1).flatMap((m) => [m.player_a, m.player_b]).filter((u): u is string => Boolean(u)));
+  const top4 = fv ? fv.top4 : new Set(matches.filter((m) => m.round >= rounds - 1).flatMap((m) => [m.player_a, m.player_b]).filter((u): u is string => Boolean(u)));
   const shownDecks = t.status === "running" && t.hidden_decklists ? decks.filter((row) => top4.has(row.user_id)) : decks;
 
   // Banner "il tabellone è partito" (UX-8): la partita del turno più alto di chi guarda, se è ancora da giocare.
   // Chi ha perso (ultima partita confermata) o ha vinto la finale non vede il banner.
-  const myMatch = viewer && t.status === "running" && registeredIds.includes(viewer) ? [...matches].filter((m) => m.player_a === viewer || m.player_b === viewer).sort((a, b) => b.round - a.round)[0] : undefined;
+  const myMatch = viewer && t.status === "running" && registeredIds.includes(viewer) ? (staged ? currentMatchOf(matches, viewer) : [...matches].filter((m) => m.player_a === viewer || m.player_b === viewer).sort((a, b) => b.round - a.round)[0]) : undefined;
   const liveMatch = myMatch && (myMatch.status === "pending" || myMatch.status === "reported" || myMatch.status === "disputed") ? myMatch : undefined;
   // 05/10/2026: il riquadro "la tua partita è pronta" si aggiorna da solo nel browser (MatchReadyWatcher)
   const watched: WatchedMatch | null = myMatch ? { id: myMatch.id, round: myMatch.round, player_a: myMatch.player_a, player_b: myMatch.player_b, status: myMatch.status, ready_at: myMatch.ready_at, seen_a: myMatch.seen_a, seen_b: myMatch.seen_b } : null;
@@ -140,6 +151,10 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const roundNames = Object.fromEntries(
     Array.from({ length: rounds }, (_, i) => {
       const r = i + 1;
+      if (fv) {
+        const mm = matches.find((m) => m.round === r && (m.player_a === viewer || m.player_b === viewer)) ?? matches.find((m) => m.round === r);
+        return [r, mm ? formatMatchName(locale, x, t.format, fv, mm) : fill(x.match.round, { n: r })];
+      }
       if (bplan.topRound === null) return [r, roundName(x, r, matches)];
       const pos = myPod !== null && r < bplan.topRound ? myPod * (bplan.podSize / 2 ** r) : 0;
       return [r, stageMatchName(locale, x, bplan, r, pos)];
@@ -228,7 +243,43 @@ export default async function TournamentPage({ params, searchParams }: { params:
         <div className="mt-3">
           {/* le partite sono link alla stanza: le proprie per chi gioca, tutte per organizzatore e admin (chi legge il codice d'invito);
               con la fase finale (08/11/2026) una scheda per bracket e una per la Top */}
-          {bplan.topRound !== null ? (
+          {fv ? (
+            <>
+              {/* 09/11/2026: classifica turno per turno, turni, poi la Top o la fase finale */}
+              {fv.champion ? <p className="mb-3 rounded-lg border-2 border-gold bg-gold/10 p-3 font-semibold text-gold">★ {fill(fl.champion, { name: nameOf.get(fv.champion) ?? "?" })}</p> : null}
+              {fv.bracket.length ? (
+                <div className="mb-6">
+                  <h3 className="t-item">{t.format === "swiss" ? fill(sl.top, { n: fv.cut ?? 0 }) : fl.finalStage}</h3>
+                  {holdFrom !== null ? <p className="mt-1 text-sm text-gold">{t.format === "swiss" ? fill(sl.holdStatus, { n: fv.cut ?? 0 }) : fl.finalHold}</p> : null}
+                  <div className="mt-2">
+                    <Bracket matches={fv.bracket} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
+                  </div>
+                </div>
+              ) : t.format === "swiss" && fv.cut ? (
+                <p className="mb-3 text-sm text-pale-muted">{fill(fl.topSoon, { n: fv.cut })}</p>
+              ) : t.format === "groups" ? (
+                <p className="mb-3 text-sm text-pale-muted">{fl.finalSoon}</p>
+              ) : null}
+              <h3 className="t-item">{fl.standingsTitle}</h3>
+              <FormatStandings
+                matches={matches.map((m) => ({ round: m.round, position: m.position, player_a: m.player_a, player_b: m.player_b, winner: m.winner, score_a: m.score_a, score_b: m.score_b, status: m.status, stage: m.stage ?? null, grp: m.grp ?? null }))}
+                names={Object.fromEntries(nameOf)}
+                players={players
+                  .filter((p) => p.status === "registered" || p.status === "dropped")
+                  .filter((p) => matches.some((m) => (m.stage === "swiss" || m.stage === "group") && (m.player_a === p.user_id || m.player_b === p.user_id)))
+                  .map((p) => ({ user_id: p.user_id, grp: matches.find((m) => m.stage === "group" && (m.player_a === p.user_id || m.player_b === p.user_id))?.grp ?? null }))}
+                dropped={players.filter((p) => p.status === "dropped").map((p) => p.user_id)}
+                rounds={fv.stageRounds}
+                qualify={fv.open === 0 ? fv.qualify : null}
+                groups={t.format === "groups"}
+                viewer={viewer}
+                locale={locale}
+                labels={fl}
+              />
+              <h3 className="t-item mt-6">{fl.roundsTitle}</h3>
+              <FormatRounds matches={matches} names={nameOf} total={t.format === "swiss" ? fv.plannedRounds : 0} groups={t.format === "groups"} dict={d} labels={fl} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
+            </>
+          ) : bplan.topRound !== null ? (
             <StagedBracket matches={matches} plan={bplan} names={nameOf} dict={d} locale={locale} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} holdFrom={holdFrom} />
           ) : (
             <Bracket matches={matches} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
@@ -277,7 +328,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
       ) : null}
 
       {viewer && t.status === "running" && registeredIds.includes(viewer) ? (
-        <MatchReadyWatcher tournamentId={t.id} viewerId={viewer} initial={watched} names={Object.fromEntries(nameOf)} roundNames={roundNames} matchHrefBase={`${path}/match/`} noShowMinutes={t.no_show_minutes} labels={x} holdRound={holdFrom} holdText={fill(sl.holdBanner, { n: bplan.topCut ?? 0 })} />
+        <MatchReadyWatcher tournamentId={t.id} viewerId={viewer} initial={watched} names={Object.fromEntries(nameOf)} roundNames={roundNames} matchHrefBase={`${path}/match/`} noShowMinutes={t.no_show_minutes} labels={x} holdRound={holdFrom} holdText={fill(sl.holdBanner, { n: fv ? (fv.cut ?? 0) : (bplan.topCut ?? 0) })} current={t.format === "groups"} />
       ) : null}
 
       <article className="card-night mt-6 overflow-hidden">
@@ -319,6 +370,12 @@ export default async function TournamentPage({ params, searchParams }: { params:
             <span className="stat-pill bg-night-3 text-pale">{bestOfSummary(x, t.best_of, t.final_best_of)}</span>
             {cut ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(sl.structurePill, { pods: cut, top: cut })}</span> : null}
             {cut && stages.top_cut_hold ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: cut })}</span> : null}
+            {t.format === "swiss" && fo?.swiss_rounds ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(fl.swissPill, { n: fo.swiss_rounds })}</span> : null}
+            {t.format === "swiss" && stages.top_cut ? <span className="stat-pill bg-night-3 text-pale">{fill(fl.topPill, { n: stages.top_cut })}</span> : null}
+            {t.format === "groups" && fo?.group_size ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(fl.groupsPill, { n: fo.group_size, k: fo.group_advance ?? 1 })}</span> : null}
+            {t.format === "swiss" && stages.top_cut_hold && stages.top_cut ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: stages.top_cut })}</span> : null}
+            {t.format === "groups" && stages.top_cut_hold ? <span className="stat-pill bg-night-3 text-pale">{sl.formHold}</span> : null}
+            {fo?.sideboard ? <span className="stat-pill bg-night-3 text-pale">{fill(fl.sideboardPill, { n: fo.sideboard })}</span> : null}
             {stages.deck_ban ? <span className="stat-pill bg-night-3 text-pale">{sl.banPill}</span> : null}
             {t.checkin ? <span className="stat-pill bg-night-3 text-pale">{x.checkin.pillRequired}</span> : null}
             {t.hidden_decklists ? <span className="stat-pill bg-night-3 text-pale">{x.hiddenPill}</span> : null}
@@ -331,6 +388,11 @@ export default async function TournamentPage({ params, searchParams }: { params:
           {cut ? <p className="mt-2 text-sm text-pale">{fill(sl.structureRule, { pods: cut, size: bplan.topRound !== null ? bplan.podSize : t.size / cut, top: cut })}</p> : null}
           {cut && stages.top_cut_hold ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: cut })}</p> : null}
           {t.deck_mode === "conquest" ? <p className="mt-2 text-sm text-pale-muted">{fill(x.conquestRule, { n: t.conquest_decks, min: t.conquest_min_different })}</p> : null}
+          {t.format === "swiss" ? <p className="mt-2 text-sm text-pale">{fl.swissRule}</p> : null}
+          {t.format === "swiss" ? <p className="mt-1 text-sm text-pale-muted">{stages.top_cut ? fill(fl.swissTopRule, { n: stages.top_cut }) : fl.swissNoTopRule}</p> : null}
+          {t.format === "groups" && fo?.group_size ? <p className="mt-2 text-sm text-pale">{fill(fl.groupsRule, { n: fo.group_size, k: fo.group_advance ?? 1 })}</p> : null}
+          {t.format === "swiss" && stages.top_cut_hold && stages.top_cut ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: stages.top_cut })}</p> : null}
+          {fo?.sideboard ? <p className="mt-1 text-sm text-pale-muted">{fill(fl.sideboardRule, { n: fo.sideboard })}</p> : null}
           {stages.deck_ban ? <p className="mt-1 text-sm text-pale-muted">{sl.banRule}</p> : null}
           {t.checkin ? <p className="mt-1 text-sm text-pale-muted">{x.checkin.rule}</p> : null}
           {t.hidden_decklists ? <p className="mt-1 text-sm text-pale-muted">{x.hiddenRule}</p> : null}
@@ -384,7 +446,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
               isStaff={isStaff}
               checkin={checkinInfo}
               canWithdraw={Boolean(liveMatch)}
-              matches={matches.map((m) => ({ id: m.id, round: m.round, a: m.player_a, b: m.player_b }))}
+              matches={(staged ? (myMatch ? [myMatch] : []) : matches).map((m) => ({ id: m.id, round: m.round, a: m.player_a, b: m.player_b }))}
               matchHrefBase={`${path}/match/`}
               labels={x}
             />

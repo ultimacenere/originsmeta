@@ -12,6 +12,9 @@ import { isMissingColumn, newSlug, parseTournamentForm, splitCodes, usesStageOpt
 import { decksRequired } from "./types";
 import { notifyIfStarted, notifyMatchResult, notifyTournamentCreated, notifyTournamentFinished } from "./notify";
 import { STAGE_RPC_ERRORS } from "./stageLabels";
+import { FORMAT_RPC_ERRORS } from "./formatLabels";
+import { sideboardProblem, swapsProblem, type SideSwap } from "./formats";
+import { getCard } from "@/lib/data/cards";
 
 /**
  * Server Action del Tournament Organizer. Creazione e cancellazione passano dalle policy RLS della
@@ -86,6 +89,8 @@ const RPC_ERRORS = [
   "too_many_judges",
   // 08/11/2026, blocco BRACKET E TOP CUT: fase finale in pausa e ban dei mazzi
   ...STAGE_RPC_ERRORS,
+  // 09/11/2026, blocco SVIZZERA, GIRONI E SIDEBOARD (dopo gli altri: "bad_side_swap" non contiene "bad_swap")
+  ...FORMAT_RPC_ERRORS,
 ];
 function rpcError(e: { message?: string } | null | undefined): string {
   const m = e?.message ?? "";
@@ -473,4 +478,92 @@ export async function deleteTournament(formData: FormData): Promise<void> {
     revalidateTournamentPaths((data as { slug: string } | null)?.slug);
   }
   redirect(`/${locale}/account`);
+}
+
+/* ---------- 09/11/2026: svizzera, gironi e sideboard (blocco SVIZZERA, GIRONI E SIDEBOARD di schema.sql) ---------- */
+
+/** "Genera il turno successivo" (staff): la RPC abbina per punteggio, con il bye e senza rivincite quando si può. */
+export async function swissNextRound(id: string, slug: string): Promise<Simple & { round?: number }> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { data, error } = await supabase.rpc("swiss_next_round", { tid: id });
+  if (error) return { error: rpcError(error) };
+  revalidateTournamentPaths(slug);
+  return { ok: true, round: typeof data === "number" ? data : undefined };
+}
+
+/** "Chiudi la svizzera e avvia la Top" / "Chiudi i gironi e avvia la fase finale" (staff): crea il tabellone dalla classifica. */
+export async function startFinalStage(id: string, slug: string): Promise<Simple & { count?: number }> {
+  if (!UUID.test(id)) return { error: "not_found" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { data, error } = await supabase.rpc("start_final_stage", { tid: id });
+  if (error) return { error: rpcError(error) };
+  revalidateTournamentPaths(slug);
+  return { ok: true, count: typeof data === "number" ? data : undefined };
+}
+
+const SLUG = /^[a-z0-9-]{1,80}$/;
+/** Carta base vera del database carte (niente Leggendarie, pedine o carte tolte dal gioco). */
+const isBaseCard = (slug: string) => {
+  const c = getCard(slug);
+  return Boolean(c && !c.legendary && c.type !== "token" && c.status === "active");
+};
+
+/** Consegna della sideboard: carte base vere, al massimo quante ne prevede il torneo, nessuna già nei mazzi. */
+export async function submitSideboard(id: string, cards: string[]): Promise<Simple> {
+  if (!UUID.test(id) || !Array.isArray(cards) || cards.length > 12 || cards.some((c) => typeof c !== "string" || !SLUG.test(c))) return { error: "side_invalid" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const [{ data: t }, { data: d }] = await Promise.all([
+    supabase.from("tournaments").select("slug, sideboard").eq("id", id).maybeSingle(),
+    supabase.from("tournament_decks").select("codes").eq("tournament_id", id).eq("user_id", user.id).maybeSingle(),
+  ]);
+  const tournament = t as { slug: string; sideboard: number | null } | null;
+  if (!tournament) return { error: "not_found" };
+  if (!tournament.sideboard) return { error: "sideboard_off" };
+  const codes = ((d as { codes: unknown } | null)?.codes ?? null) as unknown;
+  if (!Array.isArray(codes)) return { error: "decks_missing" };
+  const decks = codes.map((c) => decodeOmCode(String(c))).map((x) => ({ legendary: x?.legendary ?? null, cards: x?.cards ?? [] }));
+  const problem = sideboardProblem(cards, decks, tournament.sideboard, isBaseCard);
+  if (problem) return { error: problem };
+  const { error } = await supabase.rpc("submit_tournament_sideboard", { tid: id, cards });
+  if (error) return { error: rpcError(error) };
+  revalidateTournamentPaths(tournament.slug);
+  return { ok: true };
+}
+
+/**
+ * Scambi con la sideboard prima della partita `game` (2..5) di un incontro, sul mazzo `deck` (da 0; 0 fuori dal
+ * Conquest): sempre rispetto al mazzo consegnato. Lista vuota = nessuno scambio. Non rigenera pagine.
+ */
+export async function declareSideSwaps(matchId: string, game: number, deck: number, swaps: SideSwap[]): Promise<Simple> {
+  if (!UUID.test(matchId) || !Number.isInteger(game) || !Number.isInteger(deck) || !Array.isArray(swaps) || swaps.length > 12) return { error: "bad_side_swap" };
+  const list = swaps.map((x) => ({ out: String(x?.out ?? ""), in: String(x?.in ?? "") }));
+  if (list.some((x) => !SLUG.test(x.out) || !SLUG.test(x.in))) return { error: "bad_side_swap" };
+  const { supabase, user } = await currentUser();
+  if (!supabase) return { error: "disabled" };
+  if (!user) return { error: "notLoggedIn" };
+  const { data: m } = await supabase.from("tournament_matches").select("tournament_id").eq("id", matchId).maybeSingle();
+  const tid = (m as { tournament_id: string } | null)?.tournament_id;
+  if (!tid) return { error: "not_found" };
+  const [{ data: t }, { data: d }] = await Promise.all([
+    supabase.from("tournaments").select("sideboard").eq("id", tid).maybeSingle(),
+    supabase.from("tournament_decks").select("codes, sideboard").eq("tournament_id", tid).eq("user_id", user.id).maybeSingle(),
+  ]);
+  const max = (t as { sideboard: number | null } | null)?.sideboard ?? null;
+  if (!max) return { error: "sideboard_off" };
+  const row = d as { codes: unknown; sideboard: unknown } | null;
+  if (!row || !Array.isArray(row.codes)) return { error: "decks_missing" };
+  const deckCards = decodeOmCode(String(row.codes[deck] ?? ""))?.cards ?? [];
+  const side = Array.isArray(row.sideboard) ? row.sideboard.map(String) : [];
+  const problem = swapsProblem(list, deckCards, side, max);
+  if (problem) return { error: problem };
+  const { error } = await supabase.rpc("declare_side_swaps", { mid: matchId, game_no: game, deck_no: deck, list });
+  if (error) return { error: rpcError(error) };
+  return { ok: true };
 }
