@@ -13,13 +13,14 @@
 import type { FramesApi } from "../shared/types";
 import { SAME_VERSUS_MS } from "../shared/botNames";
 import { FRAME_MS, frameSignature, SAME_FRAME_DIFF, SIGNATURE_H, SIGNATURE_W, signatureDiff } from "../shared/frames";
-import { inkOnWhite, LEAGUE_TEXT_H, OPP_MANA_TEXT, VS_MY_LEAGUE, VS_NAME_SCALE, VS_NAME_SHEAR, VS_OPP_NAME, inside, layoutFor, loadRefs, readBoard, readDirection, readOppHand, readHandAt, readLife, readMana, readPhase, readResult, readSpell, readVersus, variantRefs, windowContent, type Img, type Layout } from "../shared/recognize";
+import { inkOnWhite, LEAGUE_TEXT_H, OPP_MANA_TEXT, VS_MY_LEAGUE, VS_NAME_SCALE, VS_NAME_SHEAR, VS_OPP_NAME, inside, layoutFor, loadRefs, readBoard, readDirection, readOppHand, readHandAt, readLife, readMana, readPhase, readResult, readSpell, readStartLegendary, readVersus, variantRefs, windowContent, type Img, type Layout } from "../shared/recognize";
 import cardArt from "../card-art.json";
 import cardArtExtra from "../card-art-extra.json";
 import cardArtHand from "../card-art-hand.json";
 import cardArtPreview from "../card-art-preview.json";
 import cardArtVariants from "../card-art-variants.json";
 import cardArtVariantsHand from "../card-art-variants-hand.json";
+import cardArtSkinsHand from "../card-art-skins-hand.json";
 
 declare global {
   interface Window {
@@ -31,7 +32,7 @@ const api = window.framesApi;
 // le immagini del sito, le versioni ALPHA viste in partita (12/10/2026, `EXTRA_ART` in recognize.ts) e le varianti
 // che il sito ha già, ALPHA e promo del Kickstarter (10/11/2026, `VARIANT_ART`)
 const refs = [...loadRefs(cardArt as Record<string, string>, cardArtExtra as Record<string, string[]>), ...variantRefs(loadRefs(cardArtVariants as Record<string, string[]>))];
-const handRefs = [...loadRefs(cardArtHand as Record<string, string>), ...variantRefs(loadRefs(cardArtVariantsHand as Record<string, string[]>))];
+const handRefs = [...loadRefs(cardArtHand as Record<string, string>), ...variantRefs(loadRefs(cardArtVariantsHand as Record<string, string[]>, cardArtSkinsHand as Record<string, string[]>))];
 // il riquadro delle magie in alto a sinistra (13/10/2026, `readSpell` in recognize.ts)
 const previewRefs = loadRefs(cardArtPreview as Record<string, string>);
 // la mano con le posizioni delle carte (14/10/2026, zone dell'estensione Twitch)
@@ -200,10 +201,13 @@ function grab() {
     const cards = readBoard(img, refs, board).map((m) => m.key);
     // la mano e la vita solo sul tabellone (mana letto): nei menu e nelle schermate di passaggio non ci sono
     const onBoard = mana !== null;
+    // dal 10/11/2026 il gioco non ha più la VS: la Leggendaria dell'avversario sta nella schermata della mano iniziale
+    // (`readStartLegendary`), che si cerca solo fuori dal tabellone
+    const start = !(vs.me.key && vs.opp.key) && !onBoard ? readStartLegendary(img, refs, layout.at.vs).key : null;
     api.scan({
       ms,
       board: cards,
-      vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : null,
+      vs: vs.me.key && vs.opp.key ? { me: vs.me.key, opp: vs.opp.key } : start ? { me: null, opp: start } : null,
       maxMana: mana ? mana.max : null,
       result: readResult(img, ui),
       // dall'11/10/2026 sera anche il mana dell'avversario e la freccia del combattimento (pannello a L degli overlay)

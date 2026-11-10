@@ -49,6 +49,19 @@ function game(t0: number): ScanFrame[] {
   ];
 }
 
+test("schermata della mano iniziale (10/11/2026): solo la Leggendaria dell'avversario, la mia resta da sapere", () => {
+  const frames = game(0).map((f, i) => (i < 2 ? { ...f, vs: { me: null, opp: "L_ME" } } : f));
+  const m = reconstruct(frames, info);
+  // la schermata vale come la VS: dice la Leggendaria dell'avversario anche prima che la giochi
+  assert.equal(m.oppLegendary, "L_ME");
+  assert.equal(m.myLegendary, null);
+  assert.equal(m.turns, 3);
+  // forma: `me` può essere null, `opp` no
+  const raw = { board: BOARD_SLOTS.map(() => null), maxMana: null };
+  assert.deepEqual(readScanFrame({ ...raw, vs: { me: null, opp: "C00313_MC" } }, 1)?.vs, { me: null, opp: "C00313_MC" });
+  assert.equal(readScanFrame({ ...raw, vs: { me: "C00118_MC", opp: null } }, 1), null);
+});
+
 test("ricostruzione: round, copie, sparizioni, spostamenti e carte create", () => {
   const m = reconstruct(game(0), info);
   assert.equal(m.myLegendary, "L_ME");

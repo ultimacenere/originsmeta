@@ -24,7 +24,8 @@ export type ScanFrame = {
   ms: number;
   /** Le carte dei 18 spazi nell'ordine di BOARD_SLOTS (null: vuoto o non riconosciuto). */
   board: readonly (string | null)[];
-  vs: { me: string; opp: string } | null;
+  /** Le Leggendarie della schermata VS; dal 10/11/2026 anche la schermata della mano iniziale, che mostra solo quella dell'avversario (`me` null). */
+  vs: { me: string | null; opp: string } | null;
   maxMana: number | null;
   /** Esito letto dallo stendardo di fine partita (recognize.ts, `readResult`); assente nei fotogrammi più vecchi. */
   result?: "W" | "L" | null;
@@ -748,7 +749,7 @@ export function reconstruct(raw: readonly ScanFrame[], cards: CardInfo): Scanned
   return {
     startMs: frames[0]?.ms ?? 0,
     endMs: frames[frames.length - 1]?.ms ?? 0,
-    myLegendary: mode(vs.map((f) => f.vs!.me).filter((k) => cards.legendary(k))),
+    myLegendary: mode(vs.map((f) => f.vs!.me).filter((k): k is string => k !== null && cards.legendary(k))),
     oppLegendary,
     turns: rounds.length ? rounds[rounds.length - 1] : null,
     plays,
@@ -882,7 +883,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   const key = (k: unknown): k is string => typeof k === "string" && KEY_RE.test(k);
   if (!Array.isArray(f.board) || f.board.length !== BOARD_SLOTS.length || !f.board.every((k) => k === null || key(k))) return null;
   const vs = f.vs as Record<string, unknown> | null;
-  if (vs !== null && !(vs && typeof vs === "object" && key(vs.me) && key(vs.opp))) return null;
+  if (vs !== null && !(vs && typeof vs === "object" && (vs.me === null || key(vs.me)) && key(vs.opp))) return null;
   const max = f.maxMana;
   if (max !== null && !(Number.isInteger(max) && (max as number) >= 1 && (max as number) <= 20)) return null;
   const result = f.result === "W" || f.result === "L" ? f.result : null;
@@ -907,7 +908,7 @@ export function readScanFrame(raw: unknown, now: number): ScanFrame | null {
   return {
     ms: now,
     board: f.board as (string | null)[],
-    vs: vs ? { me: vs.me as string, opp: vs.opp as string } : null,
+    vs: vs ? { me: (vs.me as string | null), opp: vs.opp as string } : null,
     maxMana: max as number | null,
     result,
     ...(f.hand ? { hand: f.hand as string[] } : {}),

@@ -120,6 +120,23 @@ test("varianti (10/11/2026): la Big Bad Wolf ALPHA vista in partita si riconosce
   for (const r of refs) assert.equal(bestMatch(r.v, all).key, r.key, r.key);
 });
 
+test("skin della mano (10/11/2026): la Dracula dorata TOP 8 di OrdinaryHarry si legge con i riferimenti della mano", async () => {
+  const handBase = loadRefs((await import("../card-art-hand.json")).default as Record<string, string>);
+  const skins = (await import("../card-art-skins-hand.json")).default as Record<string, string[]>;
+  const dracula = ref("Dracula").key;
+  assert.ok(skins[dracula]?.length >= 4);
+  for (const k of Object.keys(skins)) assert.ok(k in (cards as object), k);
+  const all = [...handBase, ...variantRefs(loadRefs(skins))];
+  for (const b64 of skins[dracula]) {
+    const pose = unpackVector(b64);
+    // senza la skin la mano non la riconosce (la più vicina era Dumpling a 0,63 con distacco 0,08)
+    assert.equal(bestMatch(pose, handBase).key, null);
+    assert.equal(bestMatch(pose, all).key, dracula);
+  }
+  // le carte della mano restano le loro
+  for (const r of handBase) assert.equal(bestMatch(r.v, all).key, r.key, r.key);
+});
+
 test("varianti: entrano solo se l'immagine base non riconosce niente, e con un distacco di almeno VARIANT_ACCEPT.margin", () => {
   const a = ref("Dracula");
   const b = ref("Big Bad Wolf");

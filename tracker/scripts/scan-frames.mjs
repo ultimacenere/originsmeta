@@ -6,7 +6,7 @@ import "./ts-hooks.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { EXTRA_ART, layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readPhase, readResult, readSpell, readVersus, windowContent, PREVIEW_ART, VARIANT_ART, VARIANT_HAND_ART, variantRefs } from "../src/shared/recognize.ts";
+import { EXTRA_ART, layoutFor, loadRefs, readBoard, readHand, readLife, readMana, readPhase, readResult, readSpell, readVersus, windowContent, PREVIEW_ART, VARIANT_ART, VARIANT_HAND_ART, SKIN_HAND_ART, variantRefs } from "../src/shared/recognize.ts";
 
 const root = path.resolve(import.meta.dirname, "..");
 const sharp = createRequire(path.join(root, "..", "package.json"))("sharp");
@@ -17,7 +17,9 @@ const refs = [
 ];
 const handRefs = [
   ...loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src/card-art-hand.json"), "utf8"))),
-  ...(process.argv.includes("--no-variants") ? [] : variantRefs(loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src", VARIANT_HAND_ART), "utf8"))))),
+  ...(process.argv.includes("--no-variants")
+    ? []
+    : variantRefs(loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src", VARIANT_HAND_ART), "utf8")), JSON.parse(fs.readFileSync(path.join(root, "src", SKIN_HAND_ART), "utf8"))))),
 ];
 const previewRefs = loadRefs(JSON.parse(fs.readFileSync(path.join(root, "src", PREVIEW_ART), "utf8")));
 const [dir, out] = process.argv.slice(2).filter((a) => !a.startsWith("--"));

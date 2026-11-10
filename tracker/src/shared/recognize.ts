@@ -336,6 +336,23 @@ export function readVersus(img: Img, refs: readonly CardRef[], area: Rect = game
   return { me: at("me"), opp: at("opp") };
 }
 
+/**
+ * La Leggendaria dell'avversario nella schermata "STARTING HAND – Keep or Replace Cards" (10/11/2026). Il gioco non ha
+ * più la schermata VS: dopo il caricamento mostra la mano iniziale da tenere o cambiare e, in alto a destra, la carta
+ * dell'avversario con la scritta "Opponent's Legendary"; la mia non c'è (si sa dal mazzo). Misurata sulla diretta di
+ * OrdinaryHarry del 10/11 (1920 × 1080, Dr. Frank: 0,81 con distacco 0,49 nei 3 fotogrammi in cui la carta è ferma);
+ * prima dell'aggiornamento la Leggendaria avversaria non si leggeva mai.
+ */
+export const START_OPP_LEGENDARY: Rect = { x: 1680 / 1920, y: 88 / 1080, w: 188 / 1920, h: 274 / 1080 };
+/** Soglie più alte del solito: una lettura falsa farebbe cominciare una partita nuova (`splitMatches`). */
+export const START_ACCEPT = { min: 0.7, margin: 0.3 } as const;
+
+/** La Leggendaria dell'avversario nella schermata della mano iniziale (key null se non c'è). Da chiamare fuori dal tabellone. */
+export function readStartLegendary(img: Img, refs: readonly CardRef[], area: Rect = gameArea(img.width, img.height)): Match {
+  const m = bestMatch(artVector(img, inside(inside(area, START_OPP_LEGENDARY), ART_IN_CARD)), refs);
+  return m.key && LEGENDARY_KEY.test(m.key) && m.score >= START_ACCEPT.min && m.margin >= START_ACCEPT.margin ? m : { ...m, key: null };
+}
+
 /* ---------- riferimenti: vettori delle carte del sito, in un JSON compatto (scripts/card-art.mjs) ---------- */
 
 /** Un vettore in 1200 byte (int8, scala su 127) e base64: le correlazioni cambiano di meno di 0,001. */
@@ -399,6 +416,13 @@ export const VARIANT_ART = "card-art-variants.json";
  * ("Dracula card with the skin doesn't work") passavano il mouse sulla sua mano nell'estensione Twitch.
  */
 export const VARIANT_HAND_ART = "card-art-variants-hand.json";
+/**
+ * Skin che il sito non ha, imparate dai fotogrammi (solo i 20 × 20 colori medi, nessuna immagine del gioco nel repo),
+ * nella mano; si leggono come le varianti (`variantRefs`). Dal 10/11/2026: la Dracula dorata "TOP 8" (premio dei
+ * tornei) di OrdinaryHarry, 4 pose dalla sua diretta (fotogrammi 1–59, mano da 3 a 6 carte, 1920 × 1080). Prova sui 49
+ * fotogrammi dopo: Dracula in tutti. Sul tabellone e nella schermata VS non c'è ancora: Harry non l'ha giocata.
+ */
+export const SKIN_HAND_ART = "card-art-skins-hand.json";
 /** La carta dentro l'immagine di una variante ALPHA (bordi arrotondati compresi); l'illustrazione poi è `ART_IN_CARD`. */
 export const VARIANT_CARD: Rect = { x: 0.04, y: 0.03, w: 0.92, h: 0.97 };
 /** La carta dentro la teca di una promo del Kickstarter (misurata su Dracula, 480 × 770; vale per tutte le 28 teche). */
