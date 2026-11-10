@@ -265,11 +265,11 @@ export const zhCnTextB: Partial<Record<GuideSlug, GuideCopy>> = {
 | 10月27日 | [试玩版结束，随 0.8 更新开启抢先体验](https://store.steampowered.com/news/app/4429430/view/1847286114049982)：Grandmaster 段位开放，卡牌评级，收藏卡登陆 Steam 市场；同一天，Alpha Edition 的 Kickstarter 开启 |
 | 11月4日 | [补丁说明](/zh-cn/news/balance-patch-1104-cyber-queen)：十张卡调整，Cyber Queen 成为第 11 号首领 |
 | 11月6日 | 官方 Discord 上的[路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap)：直到 2 月的抢先体验计划 |
+| 11月10日 | [0.8.2 补丁](/zh-cn/news/patch-notes-0-8-2)：封堵排位中的漏洞，减少掉线，改进 PvP 新玩家的匹配；没有卡牌改动 |
 
 ## 接下来
 
 - **现在。** Origins TCG 已在 Steam 免费开启抢先体验，而 Alpha Edition 的 Kickstarter 正在进行中，日期由 Koin Games 的 CEO 于 9月17日公布：详情见我们的 [Kickstarter 攻略](/zh-cn/guides/origins-tcg-kickstarter)。
-- **2026年11月10日。** 针对掉线和作弊的更新，不含平衡调整。
 - **2026年11月17日。** 平衡补丁，预计会调整 Sherwood Forest。
 - **2026年11月。** 抢先体验的第一场月度锦标赛，采用 Conquest 赛制，约 400 个名额；Koin 将在 11月9日那一周公布细节。
 - **2026年12月2日。** 当前排位赛季结束，第一次大型更新上线：Collector Pass、Prestige、胶囊、新地点和称号。之后一个赛季持续到 1 月中旬，另一个从 1 月中旬到 2 月。

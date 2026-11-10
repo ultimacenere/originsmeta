@@ -1296,15 +1296,15 @@ Le deck n'est étiqueté que pour le ladder, mais il s'intègre dans une sélect
 | 19–25 octobre | [Crimson Cup](/fr/news/crimson-cup-coachcrono-wins) : cinq qualifications régionales, playoffs le 24, finales le 25 gagnées par CoachCrono ; pic de plus de 5 000 spectateurs |
 | 27 octobre | [Le Kickstarter de l'Alpha Edition ouvre](/fr/guides/origins-tcg-kickstarter) : Alpha Set « Myths & Legends », 218 cartes |
 | 27 octobre | [Fin de la démo, Origins TCG en Accès anticipé](https://store.steampowered.com/news/app/4429430/view/1847286114049982), version 0.8 : division Grandmaster ouverte avec son classement mondial, grade des cartes de 1 à 10 visible, cartes de collection sur le Marché de la communauté Steam |
-| 4 novembre | [Notes de patch](/fr/news/balance-patch-1104-cyber-queen) : dix cartes rééquilibrées, Cyber Queen est le boss n° 11 |
-| 6 novembre | [AMA sur la feuille de route](/fr/news/origins-tcg-roadmap-ama-recap) sur le Discord officiel : le plan de l'Accès anticipé jusqu'en février |
+| 4 novembre | [Notes de patch](/fr/news/balance-patch-1104-cyber-queen) : dix cartes rééquilibrées, Cyber Queen est le boss n° 11 |
+| 6 novembre | [AMA sur la feuille de route](/fr/news/origins-tcg-roadmap-ama-recap) sur le Discord officiel : le plan de l'Accès anticipé jusqu'en février |
+| 10 novembre | [Patch 0.8.2](/fr/news/patch-notes-0-8-2) : exploits du mode classé colmatés, moins de déconnexions, meilleur matchmaking pour les débutants en PvP ; aucun changement de cartes |
 
 ## Ce qui vient ensuite
 
-- **10 novembre 2026.** Une mise à jour contre les déconnexions et la triche, sans équilibrage.
 - **17 novembre 2026.** Patch d'équilibrage, avec un changement attendu sur Sherwood Forest.
 - **Novembre 2026.** Le premier tournoi mensuel de l'Accès anticipé, au format Conquest avec environ 400 places ; Koin donne les détails la semaine du 9 novembre.
-- **2 décembre 2026.** Fin de la saison classée en cours et première grande mise à jour : Collector Pass, Prestige, capsules, nouveaux lieux et titres. Suivent une saison jusqu'à la mi-janvier et une de la mi-janvier à février. Voir notre [guide du mode classé](/fr/guides/origins-tcg-ranked).
+- **2 décembre 2026.** Fin de la saison classée en cours et première grande mise à jour : Collector Pass, Prestige, capsules, nouveaux lieux et titres. Suivent une saison jusqu'à la mi-janvier et une de la mi-janvier à février. Voir notre [guide du mode classé](/fr/guides/origins-tcg-ranked).
 - **Février 2027.** Le set complet Myths and Legends, environ 218 cartes, avec toutes les récompenses du Kickstarter ; l'édition standard arrive en boutique.
 - **Fin de l'Accès anticipé.** Le Myths and Legends Open, pour ceux qui se qualifient par les tournois mensuels.
 - **Pendant l'Accès anticipé.** Koin publiera progressivement les 218 cartes de l'Alpha Set « Myths & Legends », l'exclusivité du Kickstarter, d'après le post Steam du 27 octobre 2026.

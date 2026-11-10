@@ -1297,10 +1297,10 @@ O deck está marcado só para a ladder, mas cabe numa seleção de Conquest: uma
 | 27 de outubro | [Fim da demo e Acesso Antecipado no Steam](https://store.steampowered.com/news/app/4429430/view/1847286114049982), versão 0.8: Divisão Grandmaster, cartas colecionáveis no Mercado da Comunidade Steam, notas de 1 a 10 visíveis nas cartas; no mesmo dia abre o Kickstarter da Alpha Edition ([o nosso guia](/pt/guides/origins-tcg-kickstarter)) |
 | 4 de novembro | [Notas do patch](/pt/news/balance-patch-1104-cyber-queen): dez cartas rebalanceadas, Cyber Queen é o chefe nº 11 |
 | 6 de novembro | [AMA do roadmap](/pt/news/origins-tcg-roadmap-ama-recap) no Discord oficial: o plano do Acesso Antecipado até fevereiro |
+| 10 de novembro | [Patch 0.8.2](/pt/news/patch-notes-0-8-2): exploits da ranqueada fechados, menos desconexões, matchmaking melhor para quem está começando no PvP; nenhuma mudança nas cartas |
 
 ## O que vem a seguir
 
-- **10 de novembro de 2026.** Uma atualização contra desconexões e trapaças, sem balanceamento.
 - **17 de novembro de 2026.** Patch de balanceamento, com uma mudança esperada em Sherwood Forest.
 - **Novembro de 2026.** O primeiro torneio mensal do Acesso Antecipado, no formato Conquest com cerca de 400 vagas; a Koin dá os detalhes na semana de 9 de novembro.
 - **2 de dezembro de 2026.** Fim da temporada ranqueada atual e primeira grande atualização: Collector Pass, Prestige, cápsulas, locais novos e títulos. Segue uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.

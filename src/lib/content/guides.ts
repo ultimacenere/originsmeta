@@ -1319,7 +1319,7 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
     metaTitle: "Origins TCG roadmap and release dates",
     excerpt: "Every confirmed Origins TCG date, from the first Steam post to the demo, the Crimson Cup and Early Access on 27 October 2026, plus what comes next.",
     readTime: 4,
-    updated: "2026-11-07",
+    updated: "2026-11-10",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "When did Origins TCG launch on Steam?", a: "In Early Access on 27 October 2026, with update 0.8, as a free-to-play game. Koin Games aims to leave Early Access with version 1.0 \"roughly\" on 17 March 2027, according to the Steam page: a date that may change." },
@@ -1364,11 +1364,11 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
 | 27 October | [End of the demo and Early Access with update 0.8](https://store.steampowered.com/news/app/4429430/view/1847286114049982): Grandmaster Division open, graded cards, collectible cards on the Steam Market; the same day the Kickstarter for the Alpha Edition opens |
 | 4 November | [Patch notes](/en/news/balance-patch-1104-cyber-queen): ten cards rebalanced, Cyber Queen is boss #11 |
 | 6 November | [Roadmap AMA](/en/news/origins-tcg-roadmap-ama-recap) on the official Discord: the Early Access plan up to February |
+| 10 November | [Patch 0.8.2](/en/news/patch-notes-0-8-2): exploits closed in ranked, fewer disconnects, better matchmaking for new PvP players; no card changes |
 
 ## What comes next
 
 - **Now.** Origins TCG is free on Steam in Early Access, and the Kickstarter for the Alpha Edition, whose date Koin Games' CEO gave on 17 September, is running: everything about it in our [Kickstarter guide](/en/guides/origins-tcg-kickstarter).
-- **10 November 2026.** An update against disconnects and cheating, with no balance changes.
 - **17 November 2026.** A balance patch, with a change to Sherwood Forest expected.
 - **November 2026.** The first monthly tournament of Early Access, in Conquest format with about 400 seats; Koin gives the details the week of 9 November.
 - **2 December 2026.** End of the current ladder season and the first big update: Collector Pass, Prestige, capsules, new locations and titles. One season follows to mid-January and one from mid-January to February.
@@ -2983,7 +2983,7 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
     metaTitle: "Origins TCG: roadmap e date di uscita",
     excerpt: "Tutte le date confermate di Origins TCG, dal primo post su Steam alla demo, alla Crimson Cup e all'Accesso anticipato del 27 ottobre 2026, e cosa viene dopo.",
     readTime: 4,
-    updated: "2026-11-07",
+    updated: "2026-11-10",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "Quando è uscito Origins TCG su Steam?", a: "In Accesso anticipato il 27 ottobre 2026, con l'aggiornamento 0.8, come gioco free-to-play. Koin Games punta a uscire dall'Accesso anticipato con la versione 1.0 intorno al 17 marzo 2027 (\"roughly\", dice la pagina Steam): una data che può cambiare." },
@@ -3028,11 +3028,11 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
 | 27 ottobre | [Fine della demo e Accesso anticipato con l'aggiornamento 0.8](https://store.steampowered.com/news/app/4429430/view/1847286114049982): divisione Grandmaster aperta, carte con il grado, carte da collezione sul Mercato di Steam; lo stesso giorno parte il Kickstarter dell'Alpha Edition |
 | 4 novembre | [Patch notes](/it/news/balance-patch-1104-cyber-queen): dieci carte ribilanciate, Cyber Queen è il boss n. 11 |
 | 6 novembre | [AMA sulla roadmap](/it/news/origins-tcg-roadmap-ama-recap) sul Discord ufficiale: il piano dell'Accesso anticipato fino a febbraio |
+| 10 novembre | [Patch 0.8.2](/it/news/patch-notes-0-8-2): chiusi gli exploit della classificata, meno disconnessioni, matchmaking migliore per chi inizia il PvP; nessuna modifica alle carte |
 
 ## Cosa viene dopo
 
 - **Adesso.** Origins TCG è gratuito su Steam in Accesso anticipato, ed è in corso il Kickstarter dell'Alpha Edition, la cui data era stata annunciata dal CEO di Koin Games il 17 settembre: tutto quello che c'è da sapere nella nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter).
-- **10 novembre 2026.** Un aggiornamento contro disconnessioni e cheat, senza bilanciamento.
 - **17 novembre 2026.** Patch di bilanciamento, con una modifica attesa a Sherwood Forest.
 - **Novembre 2026.** Il primo torneo mensile dell'Accesso anticipato, in formato Conquest con circa 400 posti; Koin dà i dettagli nella settimana del 9 novembre.
 - **2 dicembre 2026.** Fine della stagione classificata in corso e primo grande aggiornamento: Collector Pass, Prestige, capsule, luoghi nuovi e titoli. Segue una stagione fino a metà gennaio e una da metà gennaio a febbraio.
