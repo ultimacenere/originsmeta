@@ -20,6 +20,11 @@ salva sul PC. Guida completa (file del gioco, formato dei replay, regole, fasi, 
   "OCR senza PowerShell"): i ritagli della schermata VS (bot e classificata) li legge l'OCR di Windows attraverso
   `originsmeta-tracker-ocr.exe`, un programma nostro compilato da `build.mjs` con il csc.exe di Windows e messo da
   `package.mjs` in `resources\`. Prima passava da PowerShell con `-EncodedCommand`, e Norton bloccava l'app come infetta.
+- **Varianti, magie generate e Leggendaria avversaria** (0.5.4, 10/11/2026; dettagli in docs/tracker.md, "Carte ALPHA"):
+  lo scanner riconosce le varianti che il sito ha (ALPHA e promo del Kickstarter) e la Dracula dorata "TOP 8" in mano;
+  con Genie, Morgan le Fay o Spellbook nel mazzo le magie senza prova non vanno più all'avversario; la Leggendaria
+  dell'avversario si legge dalla schermata della mano iniziale, perché il gioco non ha più la schermata VS. Dalla diretta
+  di OrdinaryHarry, segnalazione di Pierluigi.
 - **Tabella carte aggiornata** (0.5.3, 07/11/2026): Trash for Treasure a 2 mana, come nel gioco (cambiata senza patch notes,
   segnalata da MagicOfHands). `src/cards.json` sta dentro l'app: un costo corretto sul sito arriva qui solo con una release.
 - **Cimiteri nei pannelli** (0.5.2, 05/11/2026, `graveyardStep` di `src/shared/reconstruct.ts`, ruoli delle carte in
