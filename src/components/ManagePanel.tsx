@@ -43,6 +43,14 @@ type Props = {
   judges: ManagedJudge[];
   /** 08/11/2026 (blocco BRACKET E TOP CUT): nomi delle partite e dei turni, ban fatti, avvio della fase finale */
   stage?: ManagedStage | null;
+  /**
+   * 09/11/2026 (svizzera e gironi): ultimo turno del tabellone (la finale; 0 = non c'è ancora), torneo chiudibile (svizzera
+   * senza Top a turni finiti), riga che sostituisce l'anteprima dei bye all'avvio, testi d'errore in più.
+   */
+  finalRound?: number;
+  finishReady?: boolean;
+  startNote?: string;
+  extraErrors?: Record<string, string>;
 };
 
 export type ManagedStage = {
@@ -82,7 +90,7 @@ function shuffle<T>(list: T[]): T[] {
  * rilegge da sola ogni 20 secondi.
  */
 export function ManagePanel(props: Props) {
-  const { id, slug, status, size, bestOf, finalBestOf, noShowMinutes, checkin, startsAt, locale, players, matches, tournamentHref, labels, visibility, inviteLink, invites, canAdmin, judges, stage = null } = props;
+  const { id, slug, status, size, bestOf, finalBestOf, noShowMinutes, checkin, startsAt, locale, players, matches, tournamentHref, labels, visibility, inviteLink, invites, canAdmin, judges, stage = null, finalRound, finishReady, startNote, extraErrors } = props;
   const sl = stage?.labels ?? null;
   const x = labels;
   const m = x.manage;
@@ -119,7 +127,7 @@ export function ManagePanel(props: Props) {
       setNotice(null);
       const r = await fn();
       if (r.error) {
-        setError(x.errors[r.error as keyof typeof x.errors] ?? sl?.errors[r.error as keyof StageLabels["errors"]] ?? x.errors.db);
+        setError(x.errors[r.error as keyof typeof x.errors] ?? sl?.errors[r.error as keyof StageLabels["errors"]] ?? extraErrors?.[r.error] ?? x.errors.db);
         return;
       }
       setNotice(m.done);
@@ -139,9 +147,9 @@ export function ManagePanel(props: Props) {
 
   const rounds = new Map<number, TournamentMatch[]>();
   for (const mt of matches) rounds.set(mt.round, [...(rounds.get(mt.round) ?? []), mt]);
-  const total = matches.length ? roundsOf(matches.filter((mt) => mt.round === 1).length * 2) : 0;
+  const total = finalRound ?? (matches.length ? roundsOf(matches.filter((mt) => mt.round === 1).length * 2) : 0);
   const final = total ? matches.find((mt) => mt.round === total && mt.position === 0) : undefined;
-  const finalDone = Boolean(final && final.winner && (final.status === "confirmed" || final.status === "bye"));
+  const finalDone = finishReady ?? Boolean(final && final.winner && (final.status === "confirmed" || final.status === "bye"));
   const [report, setReport] = useState("");
   const banCounts = useMemo(() => new Map(Object.entries(stage?.banCounts ?? {})), [stage?.banCounts]);
   const queue =
@@ -411,10 +419,10 @@ export function ManagePanel(props: Props) {
             <p className="mt-3 text-sm text-error">{m.tooFew}</p>
           ) : (
             <>
-              <p className="mt-3 font-mono text-xs text-pale">{byes ? fill(m.byesPreview, { n: seeding.length, size: bracket, byes }) : fill(m.noByes, { n: seeding.length, size: bracket })}</p>
+              <p className="mt-3 font-mono text-xs text-pale">{startNote ?? (byes ? fill(m.byesPreview, { n: seeding.length, size: bracket, byes }) : fill(m.noByes, { n: seeding.length, size: bracket }))}</p>
               <ol className="mt-3 grid grid-cols-1 gap-1 sm:grid-cols-2">
                 {seeding.map((uid, i) => (
-                  <li key={uid} className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${i < byes ? "border-gold bg-gold/10" : "border-sky bg-night-2/60"}`}>
+                  <li key={uid} className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm ${!startNote && i < byes ? "border-gold bg-gold/10" : "border-sky bg-night-2/60"}`}>
                     <span className="w-6 font-mono text-xs text-pale-muted">{i + 1}.</span>
                     <span className="min-w-0 flex-1 truncate text-pale">{nameOf.get(uid) ?? "?"}</span>
                     <button type="button" onClick={() => move(i, -1)} className="btn btn-ink !px-2 !py-0.5 text-[11px]" aria-label={m.moveUp} disabled={i === 0}>

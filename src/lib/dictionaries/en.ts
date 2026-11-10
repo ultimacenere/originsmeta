@@ -1437,7 +1437,7 @@ export const en = {
     organizedBy: "Organized by",
     startsAt: "Starts",
     utc: "UTC",
-    formats: { single_elim: "Single elimination" },
+    formats: { single_elim: "Single elimination", swiss: "Swiss rounds", groups: "Group stage" },
     deckModes: { free: "Free deck", conquest: "Conquest" },
     conquestRule: "{n} decks with different Legendaries, at least {min} unique cards between any two decks",
     bestOf: "Best of {n}",

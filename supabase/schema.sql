@@ -8714,7 +8714,7 @@ grant select on public.deck_ratings to anon, authenticated;
 comment on view public.deck_ratings is 'Media e numero dei voti di ogni mazzo: un voto per persona, il più recente di qualsiasi versione (09/11/2026; dal 30/09 al 09/11 solo la versione in vigore).';
 
 -- ===== 09/11/2026: STEAM =====
--- =====================================================================================================
+-- ==============================================================================================
 -- 09/11/2026 — ACCOUNT STEAM (Pierluigi: "nel profilo dei nostri giocatori, dare la possibilità di connettersi anche a
 --   steam con il profilo id. e viceversa perché creiamo la possibilità di registrarsi usando il loro steamid").
 --   Un iscritto collega il suo account Steam da /account#steam ("Il mio profilo") e, con l'account collegato, entra nel sito con
@@ -8814,6 +8814,978 @@ begin
 end $$;
 revoke all on function public.steam_link_remove() from public, anon;
 grant execute on function public.steam_link_remove() to authenticated;
+
+-- =====================================================================================================
+-- ===== 09/11/2026: SVIZZERA, GIRONI E SIDEBOARD =====
+-- =====================================================================================================
+-- Richiesta di apix (organizzatore della community di Origins TCG), Pierluigi il 09/11/2026: "Costruisci quello che ci
+-- ha chiesto". Tre cose che il Tournament Organizer non aveva; tutto facoltativo per torneo: i tornei a eliminazione
+-- diretta (compreso il formato "16 bracket + Top 16" del 28/11/2026) non cambiano.
+--   1) SVIZZERA (`format = 'swiss'`): turni svizzeri (`swiss_rounds`, null = scelto all'avvio con
+--      tm_swiss_default_rounds: log2 degli iscritti per eccesso). Il primo turno nasce all'avvio, gli altri quando lo
+--      staff preme "Genera il turno successivo" (`swiss_next_round`), a turno precedente chiuso. Abbinamenti per punteggio
+--      senza rivincite quando si può (`tm_swiss_pairs`), bye a chi ha meno punti fra chi non l'ha ancora avuto: vale come
+--      vittoria (3 punti, partita vinta con le vittorie che servono a 0). Chi si ritira (o è ritirato dallo staff) non
+--      viene più abbinato. Facoltativa la Top (`top_cut`, 4, 8, 16 o 32) a eliminazione diretta seedata dalla classifica:
+--      "Chiudi la svizzera e avvia la Top" (`start_final_stage`) crea il tabellone di sempre nei turni dopo la svizzera,
+--      con la pausa `top_cut_hold` / `release_top_cut` già esistenti (svizzera il sabato e Top la domenica, come voleva
+--      la riunione del 5–6/10). Senza Top il torneo si chiude con il primo della classifica (riga `champion`).
+--   2) GIRONI (`format = 'groups'`): gironi da `group_size` giocatori (3–8), all'italiana, tutti contro tutti, con la
+--      distribuzione a serpentina dell'ordine di avvio o casuale (`group_seeding`). Tutte le partite dei gironi nascono
+--      all'avvio; una partita diventa pronta quando i due giocatori hanno finito le loro partite dei turni prima. Passano
+--      i primi `group_advance` di ogni girone (1–4) a una fase finale a eliminazione diretta (stesso tasto e stessa pausa
+--      della Top), seedata per piazzamento nel girone e poi per percentuali.
+--   3) SIDEBOARD (`sideboard` = M carte, null = spento): Origins TCG non ha un sideboard nelle sue regole (cercato il
+--      09/11/2026 nel cervello di gioco, nelle carte e nelle news: nessuna traccia), quindi è un'opzione del torneo. Lista
+--      di riserva di al massimo M carte base consegnata con i mazzi (`tournament_decks.sideboard`, si legge con le stesse
+--      regole delle liste: liste segrete comprese), nessuna carta già in un mazzo (ogni carta del gioco vale due copie, in
+--      mazzo o in riserva), scambi uno per uno fra una partita e l'altra di un Bo3/Bo5 dichiarati nella stanza partita
+--      (`declare_side_swaps`, letti con `match_side_swaps`, visibili come le liste).
+-- Classifica (`tm_standings`, pubblica con `tournament_standings`): 3 punti a vittoria (bye compreso; il pareggio non
+-- esiste: ogni partita ha un vincitore), poi OMW% (media delle percentuali di vittoria degli avversari, ognuna almeno
+-- 33%), GW% (partite vinte sulle giocate, almeno 33%), OGW% (media delle GW% degli avversari); i bye non contano come
+-- avversari. Come nel regolamento dei tornei di Magic: The Gathering, lo standard dei TCG. Ultimo spareggio: l'id
+-- dell'utente (fisso, non casuale). Le stesse regole stanno in src/lib/tournament/formats.ts (test in formats.test.ts;
+-- scripts/swiss-dry-run.mjs le confronta con queste funzioni su PGlite o sul database vero, sempre con rollback).
+-- Partite: `tournament_matches.stage` ('swiss', 'group', 'champion'; null = tabellone a eliminazione diretta, come
+-- prima) e `grp` (girone, da 0). Le funzioni che cercavano "l'ultimo turno" (finale, semifinalisti con le liste segrete,
+-- inizio della Top) ora guardano solo il tabellone; la propagazione salta le partite svizzere e dei gironi.
+-- =====================================================================================================
+
+alter table public.tournaments drop constraint if exists tournaments_format_check;
+alter table public.tournaments add constraint tournaments_format_check check (format in ('single_elim', 'swiss', 'groups'));
+alter table public.tournaments add column if not exists swiss_rounds int;
+alter table public.tournaments add column if not exists group_size int;
+alter table public.tournaments add column if not exists group_advance int;
+alter table public.tournaments add column if not exists group_seeding text;
+alter table public.tournaments add column if not exists sideboard int;
+alter table public.tournaments drop constraint if exists tournaments_swiss_rounds_check;
+alter table public.tournaments add constraint tournaments_swiss_rounds_check check (swiss_rounds is null or swiss_rounds between 1 and 15);
+alter table public.tournaments drop constraint if exists tournaments_group_size_check;
+alter table public.tournaments add constraint tournaments_group_size_check check (group_size is null or group_size between 3 and 8);
+alter table public.tournaments drop constraint if exists tournaments_group_advance_check;
+alter table public.tournaments add constraint tournaments_group_advance_check check (group_advance is null or group_advance between 1 and 4);
+alter table public.tournaments drop constraint if exists tournaments_group_seeding_check;
+alter table public.tournaments add constraint tournaments_group_seeding_check check (group_seeding is null or group_seeding in ('snake', 'random'));
+alter table public.tournaments drop constraint if exists tournaments_sideboard_check;
+alter table public.tournaments add constraint tournaments_sideboard_check check (sideboard is null or sideboard between 1 and 12);
+-- le opzioni di un formato solo nel suo formato; i gironi non hanno top_cut (la fase finale la fanno i qualificati)
+alter table public.tournaments drop constraint if exists tournaments_format_options_check;
+alter table public.tournaments add constraint tournaments_format_options_check check (
+  (format = 'swiss' or swiss_rounds is null)
+  and (format <> 'groups' or (group_size is not null and group_advance is not null and group_advance < group_size and top_cut is null))
+  and (format = 'groups' or (group_size is null and group_advance is null and group_seeding is null))
+);
+
+alter table public.tournament_matches add column if not exists stage text;
+alter table public.tournament_matches add column if not exists grp int;
+alter table public.tournament_matches drop constraint if exists tournament_matches_stage_check;
+alter table public.tournament_matches add constraint tournament_matches_stage_check check (stage is null or stage in ('swiss', 'group', 'champion'));
+alter table public.tournament_matches drop constraint if exists tournament_matches_grp_check;
+alter table public.tournament_matches add constraint tournament_matches_grp_check check (grp is null or (stage = 'group' and grp between 0 and 255));
+
+alter table public.tournament_decks add column if not exists sideboard jsonb not null default '[]'::jsonb;
+alter table public.tournament_decks drop constraint if exists tournament_decks_sideboard_check;
+alter table public.tournament_decks add constraint tournament_decks_sideboard_check check (jsonb_typeof(sideboard) = 'array' and jsonb_array_length(sideboard) <= 12);
+
+-- Formato, turni svizzeri, gironi e sideboard non cambiano a torneo avviato: le funzioni li rileggono a ogni turno e
+-- l'organizzatore ha la grant di update sull'intera riga (il sito blocca già i campi, questo vale per le chiamate dirette).
+create or replace function public.guard_tournament_format()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if old.status <> 'open' and (
+    new.format is distinct from old.format or new.swiss_rounds is distinct from old.swiss_rounds
+    or new.group_size is distinct from old.group_size or new.group_advance is distinct from old.group_advance
+    or new.group_seeding is distinct from old.group_seeding or new.sideboard is distinct from old.sideboard
+    or new.top_cut is distinct from old.top_cut
+  ) then
+    raise exception 'format_locked';
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_tournament_format() from public, anon, authenticated;
+drop trigger if exists tournaments_guard_format on public.tournaments;
+create trigger tournaments_guard_format before update on public.tournaments
+  for each row execute function public.guard_tournament_format();
+
+-- ---------- regole del tabellone che guardavano "l'ultimo turno": ora solo il tabellone (stage null) ----------
+-- Vittorie che servono: la finale (`final_best_of`) è l'ultimo turno del tabellone; svizzera e gironi mai.
+create or replace function public.tm_need(tid uuid, rnd int)
+returns int language sql stable set search_path = public, pg_temp as $$
+  select (case
+            when t.final_best_of is not null and rnd = (select max(m.round) from public.tournament_matches m where m.tournament_id = tid and m.stage is null) then t.final_best_of
+            else t.best_of
+          end + 1) / 2
+  from public.tournaments t where t.id = tid;
+$$;
+revoke all on function public.tm_need(uuid, int) from public, anon, authenticated;
+
+-- Semifinalisti del tabellone (liste segrete: da lì le liste sono pubbliche). In svizzera e nei gironi nessuno, finché
+-- non c'è la fase finale.
+create or replace function public.tm_in_top4(tid uuid, uid uuid)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select exists (
+    select 1 from public.tournament_matches m
+    where m.tournament_id = tid and m.stage is null and (m.player_a = uid or m.player_b = uid)
+      and m.round >= (select max(r.round) from public.tournament_matches r where r.tournament_id = tid and r.stage is null) - 1
+  );
+$$;
+
+-- Primo turno della fase finale: per svizzera e gironi il primo turno del tabellone (null finché non c'è).
+create or replace function public.tm_top_round(tid uuid)
+returns int language plpgsql stable set search_path = public, pg_temp as $$
+declare
+  cut int;
+  fmt text;
+  total int;
+  k int := 0;
+begin
+  select t.top_cut, t.format into cut, fmt from public.tournaments t where t.id = tid;
+  if fmt in ('swiss', 'groups') then
+    return (select min(m.round) from public.tournament_matches m where m.tournament_id = tid and m.stage is null);
+  end if;
+  if cut is null then return null; end if;
+  select max(m.round) into total from public.tournament_matches m where m.tournament_id = tid;
+  if total is null then return null; end if;
+  while (1 << k) < cut loop k := k + 1; end loop;
+  if total <= k then return null; end if;
+  return total - k + 1;
+end $$;
+revoke all on function public.tm_top_round(uuid) from public, anon, authenticated;
+
+-- ---------- gironi: una partita è pronta quando i due giocatori hanno finito i turni prima ----------
+create or replace function public.tm_group_ready(tid uuid, uid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare nm public.tournament_matches%rowtype;
+begin
+  if uid is null then return; end if;
+  select * into nm from public.tournament_matches m
+   where m.tournament_id = tid and m.stage = 'group' and m.status = 'pending' and (m.player_a = uid or m.player_b = uid)
+   order by m.round limit 1;
+  if not found or nm.ready_at is not null or nm.player_a is null or nm.player_b is null then return; end if;
+  if exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id in (nm.player_a, nm.player_b) and p.status = 'dropped') then return; end if;
+  if exists (
+    select 1 from public.tournament_matches o
+     where o.tournament_id = tid and o.stage = 'group' and o.status in ('pending', 'reported', 'disputed') and o.round < nm.round
+       and (o.player_a in (nm.player_a, nm.player_b) or o.player_b in (nm.player_a, nm.player_b))
+  ) then return; end if;
+  update public.tournament_matches set ready_at = now() where id = nm.id;
+  perform public.tm_notify_ready(nm.id);
+end $$;
+revoke all on function public.tm_group_ready(uuid, uuid) from public, anon, authenticated;
+
+-- Propagazione (come nel blocco BRACKET E TOP CUT) più: una partita svizzera non ha una partita "successiva" (il turno
+-- dopo lo genera lo staff); una partita dei gironi rende pronte le prossime dei due giocatori.
+create or replace function public.tm_propagate(mid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  nm public.tournament_matches%rowtype;
+  drop_a boolean;
+  drop_b boolean;
+  w uuid;
+  need int;
+begin
+  select * into m from public.tournament_matches where id = mid;
+  if not found or m.winner is null then return; end if;
+  if m.stage = 'group' then
+    perform public.tm_group_ready(m.tournament_id, m.player_a);
+    perform public.tm_group_ready(m.tournament_id, m.player_b);
+    return;
+  elsif m.stage is not null then
+    return;
+  end if;
+  select * into nm from public.tournament_matches where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2 for update;
+  if not found then return; end if;
+  if m.position % 2 = 0 then
+    if nm.player_a is distinct from m.winner then
+      update public.tournament_matches set player_a = m.winner, seen_a = null, ready_at = null where id = nm.id;
+      delete from public.tournament_bans where match_id = nm.id;
+    end if;
+  else
+    if nm.player_b is distinct from m.winner then
+      update public.tournament_matches set player_b = m.winner, seen_b = null, ready_at = null where id = nm.id;
+      delete from public.tournament_bans where match_id = nm.id;
+    end if;
+  end if;
+  select * into nm from public.tournament_matches where id = nm.id;
+  if nm.player_a is null or nm.player_b is null or nm.status <> 'pending' then return; end if;
+  select coalesce(bool_or(p.user_id = nm.player_a and p.status = 'dropped'), false), coalesce(bool_or(p.user_id = nm.player_b and p.status = 'dropped'), false)
+    into drop_a, drop_b
+    from public.tournament_players p where p.tournament_id = nm.tournament_id and p.user_id in (nm.player_a, nm.player_b);
+  if drop_a or drop_b then
+    need := public.tm_need(nm.tournament_id, nm.round);
+    w := case when drop_a and not drop_b then nm.player_b else nm.player_a end;
+    update public.tournament_matches
+       set winner = w, status = 'confirmed', forfeit = true, reported_by = null, note = 'drop',
+           score_a = case when w = nm.player_a then need else 0 end, score_b = case when w = nm.player_b then need else 0 end
+     where id = nm.id;
+    perform public.tm_propagate(nm.id);
+    return;
+  end if;
+  if nm.ready_at is null and not public.tm_held(nm.tournament_id, nm.round) then
+    update public.tournament_matches set ready_at = now() where id = nm.id;
+    perform public.tm_notify_ready(nm.id);
+  end if;
+end $$;
+revoke all on function public.tm_propagate(uuid) from public, anon, authenticated;
+
+-- Ritiro a torneo in corso (come nel blocco TORNEO CRIMSON): perde la partita in corso. Nei gironi perde tutte le
+-- partite del girone che restano (le vince l'avversario a tavolino); in svizzera non viene più abbinato.
+create or replace function public.tm_drop(tid uuid, uid uuid)
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  m record;
+  need int;
+begin
+  update public.tournament_players set status = 'dropped' where tournament_id = tid and user_id = uid;
+  for m in
+    select * from public.tournament_matches
+     where tournament_id = tid and status in ('pending', 'reported', 'disputed') and (player_a = uid or player_b = uid)
+     order by round
+     for update
+  loop
+    -- tabellone: come prima, solo la prima partita aperta, e solo se l'avversario c'è già (se no la perde quando arriva)
+    if m.player_a is null or m.player_b is null then exit; end if;
+    need := public.tm_need(tid, m.round);
+    if m.player_a = uid then
+      update public.tournament_matches set score_a = 0, score_b = need, winner = m.player_b, status = 'confirmed', forfeit = true, reported_by = null, note = 'drop' where id = m.id;
+    else
+      update public.tournament_matches set score_a = need, score_b = 0, winner = m.player_a, status = 'confirmed', forfeit = true, reported_by = null, note = 'drop' where id = m.id;
+    end if;
+    perform public.tm_propagate(m.id);
+    exit when m.stage is distinct from 'group';
+  end loop;
+end $$;
+revoke all on function public.tm_drop(uuid, uuid) from public, anon, authenticated;
+
+-- ---------- svizzera: turni, abbinamenti, bye ----------
+-- Turni proposti: log2 degli iscritti per eccesso (8 → 3, 9–16 → 4, 17–32 → 5, 33–64 → 6…), almeno 1.
+create or replace function public.tm_swiss_default_rounds(n int)
+returns int language sql immutable set search_path = public, pg_temp as $$
+  select greatest(1, coalesce((select min(k) from generate_series(0, 15) as g(k) where (1 << k) >= greatest(n, 2)), 15));
+$$;
+
+-- Abbinamenti di un turno. I giocatori 1..n sono già in ordine di classifica (punti, poi a caso fra pari punti);
+-- `had_bye[i]` dice se i ha già avuto il bye; `pa[k]`–`pb[k]` sono le coppie già giocate. Restituisce il compagno di
+-- ogni giocatore (0 = bye). Con n dispari il bye va al più basso in classifica che non l'ha ancora avuto (se l'hanno
+-- avuto tutti, al più basso). Poi ricerca in profondità dall'alto: ogni giocatore con il primo libero più in basso con cui
+-- non ha già giocato, tornando indietro quando non si chiude; se un bye non permette abbinamenti senza rivincite si
+-- prova il candidato dopo. Senza soluzione (o oltre 5000 passi) si abbina dall'alto preferendo chi non si è già
+-- incontrato: le rivincite restano solo dove sono inevitabili. Uguale a `swissPairs` di src/lib/tournament/formats.ts.
+create or replace function public.tm_swiss_pairs(n int, had_bye boolean[], pa int[], pb int[])
+returns int[] language plpgsql immutable set search_path = public, pg_temp as $$
+declare
+  budget constant int := 5000;
+  played boolean[];
+  partner int[];
+  cand int[];
+  stack int[];
+  byes int[] := '{}';
+  sp int;
+  steps int := 0;
+  bye int;
+  ok boolean;
+  i int;
+  j int;
+  k int;
+  pick int;
+begin
+  if n is null or n < 1 then return '{}'; end if;
+  if n = 1 then return array[0]; end if;
+  played := array_fill(false, array[n * n]);
+  for k in 1 .. coalesce(array_length(pa, 1), 0) loop
+    if pa[k] between 1 and n and pb[k] between 1 and n then
+      played[(pa[k] - 1) * n + pb[k]] := true;
+      played[(pb[k] - 1) * n + pa[k]] := true;
+    end if;
+  end loop;
+  if n % 2 = 1 then
+    for k in reverse n .. 1 loop
+      if not coalesce(had_bye[k], false) then byes := byes || k; end if;
+    end loop;
+    if coalesce(array_length(byes, 1), 0) = 0 then
+      for k in reverse n .. 1 loop byes := byes || k; end loop;
+    end if;
+  else
+    byes := array[0];
+  end if;
+
+  foreach bye in array byes loop
+    partner := array_fill(0, array[n]);
+    cand := array_fill(0, array[n]);
+    if bye > 0 then partner[bye] := -1; end if;
+    stack := array_fill(0, array[n]);
+    sp := 0;
+    i := 1;
+    ok := false;
+    loop
+      while i <= n and partner[i] <> 0 loop i := i + 1; end loop;
+      if i > n then ok := true; exit; end if;
+      steps := steps + 1;
+      exit when steps > budget;
+      pick := 0;
+      j := greatest(cand[i], i) + 1;
+      while j <= n loop
+        if partner[j] = 0 and not played[(i - 1) * n + j] then pick := j; exit; end if;
+        j := j + 1;
+      end loop;
+      if pick > 0 then
+        partner[i] := pick;
+        partner[pick] := i;
+        cand[i] := pick;
+        sp := sp + 1;
+        stack[sp] := i;
+        i := i + 1;
+      else
+        cand[i] := 0;
+        exit when sp = 0;
+        k := stack[sp];
+        sp := sp - 1;
+        j := partner[k];
+        partner[k] := 0;
+        partner[j] := 0;
+        i := k;
+      end if;
+    end loop;
+    if ok then
+      if bye > 0 then partner[bye] := 0; end if;
+      return partner;
+    end if;
+    exit when steps > budget;
+  end loop;
+
+  -- nessun abbinamento senza rivincite: dall'alto, il primo libero non ancora incontrato, se no il primo libero
+  bye := byes[1];
+  partner := array_fill(0, array[n]);
+  if bye > 0 then partner[bye] := -1; end if;
+  for i in 1 .. n loop
+    continue when partner[i] <> 0;
+    pick := 0;
+    for j in i + 1 .. n loop
+      if partner[j] = 0 and not played[(i - 1) * n + j] then pick := j; exit; end if;
+    end loop;
+    if pick = 0 then
+      for j in i + 1 .. n loop
+        if partner[j] = 0 then pick := j; exit; end if;
+      end loop;
+    end if;
+    if pick = 0 then raise exception 'pairing_failed'; end if;
+    partner[i] := pick;
+    partner[pick] := i;
+  end loop;
+  if bye > 0 then partner[bye] := 0; end if;
+  return partner;
+end $$;
+revoke all on function public.tm_swiss_pairs(int, boolean[], int[], int[]) from public, anon, authenticated;
+
+-- Crea il turno svizzero `rnd` (senza permessi né lock: li fanno tm_start e swiss_next_round). Giocatori ancora in gara
+-- (status 'registered'), in ordine di punti e a caso fra pari punti; un'istruzione sola per tutte le partite del turno.
+-- Il bye si chiude subito (vittoria con le vittorie che servono a 0). Restituisce quante partite ha creato.
+create or replace function public.tm_swiss_round(tid uuid, rnd int)
+returns int language plpgsql set search_path = public, pg_temp as $$
+declare
+  ids uuid[];
+  hb boolean[];
+  pa int[];
+  pb int[];
+  partner int[];
+  n int;
+  need int;
+  made int;
+begin
+  select coalesce(array_agg(x.user_id order by x.rk), '{}'), coalesce(array_agg(x.bye order by x.rk), '{}')
+    into ids, hb
+    from (
+      select s.user_id, s.bye, row_number() over (order by s.wins desc, random()) as rk
+        from (
+          select p.user_id,
+                 (select count(*) from public.tournament_matches m where m.tournament_id = tid and m.stage = 'swiss' and m.winner = p.user_id and m.status in ('confirmed', 'bye')) as wins,
+                 exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.stage = 'swiss' and m.status = 'bye' and m.player_a = p.user_id) as bye
+            from public.tournament_players p
+           where p.tournament_id = tid and p.status = 'registered'
+        ) s
+    ) x;
+  n := coalesce(array_length(ids, 1), 0);
+  if n < 2 then raise exception 'too_few_players'; end if;
+  select coalesce(array_agg(ia.o::int order by m.id), '{}'), coalesce(array_agg(ib.o::int order by m.id), '{}')
+    into pa, pb
+    from public.tournament_matches m
+    join unnest(ids) with ordinality as ia(u, o) on ia.u = m.player_a
+    join unnest(ids) with ordinality as ib(u, o) on ib.u = m.player_b
+   where m.tournament_id = tid and m.stage = 'swiss';
+  partner := public.tm_swiss_pairs(n, hb, pa, pb);
+  need := public.tm_need(tid, rnd);
+  insert into public.tournament_matches (tournament_id, round, position, stage, player_a, player_b, winner, status, score_a, score_b)
+  select tid, rnd, (row_number() over (order by (p.j = 0), p.i) - 1)::int, 'swiss',
+         ids[p.i], case when p.j > 0 then ids[p.j] end,
+         case when p.j = 0 then ids[p.i] end,
+         case when p.j = 0 then 'bye' else 'pending' end,
+         case when p.j = 0 then need end,
+         case when p.j = 0 then 0 end
+    from (select g.i, partner[g.i] as j from generate_series(1, n) as g(i)) p
+   where p.j = 0 or p.j > p.i;
+  get diagnostics made = row_count;
+  return made;
+end $$;
+revoke all on function public.tm_swiss_round(uuid, int) from public, anon, authenticated;
+
+-- Le partite di un turno con i due giocatori diventano pronte adesso, con l'avviso (in blocco: un turno svizzero da 256
+-- iscritti sono 128 partite). Un errore negli avvisi non ferma il turno.
+create or replace function public.tm_ready_round(tid uuid, rnd int)
+returns int language plpgsql set search_path = public, pg_temp as $$
+declare
+  s text;
+  n int;
+  stamp timestamptz := clock_timestamp();
+begin
+  if public.tm_held(tid, rnd) then return 0; end if;
+  update public.tournament_matches set ready_at = stamp
+   where tournament_id = tid and round = rnd and status = 'pending' and player_a is not null and player_b is not null and ready_at is null;
+  get diagnostics n = row_count;
+  select t.slug into s from public.tournaments t where t.id = tid;
+  if s is not null and s ~ '^[a-z0-9-]{1,90}$' then
+    begin
+      insert into public.notifications (user_id, kind, actor_id, target, event_key)
+      select v.u, 'match_ready', v.o, '/tournaments/' || s || '/match/' || m.id, 'match:' || m.id || ':' || v.o
+        from public.tournament_matches m
+        cross join lateral (values (m.player_a, m.player_b), (m.player_b, m.player_a)) as v(u, o)
+       where m.tournament_id = tid and m.round = rnd and m.status = 'pending' and m.ready_at = stamp
+      on conflict (user_id, kind, event_key) do nothing;
+    exception when others then
+      raise notice 'tm_ready_round: %', sqlerrm;
+    end;
+  end if;
+  return n;
+end $$;
+revoke all on function public.tm_ready_round(uuid, int) from public, anon, authenticated;
+
+-- ---------- gironi: divisione e calendario all'italiana ----------
+-- Gironi = iscritti / group_size per eccesso; l'ordine di avvio (casuale se group_seeding = 'random') si distribuisce a
+-- serpentina (A B C C B A A B C…), così i gironi differiscono al più di un giocatore. Calendario col metodo del cerchio
+-- (il primo fermo, gli altri ruotano; con un numero dispari un posto vuoto = chi riposa quel turno): ogni coppia del
+-- girone si incontra una volta. Posizione nel turno = girone × 4 + tavolo (al massimo 4 partite per girone e turno).
+-- Uguale a `snakeGroups` e `roundRobin` di formats.ts.
+create or replace function public.tm_groups_create(tid uuid, seeded uuid[])
+returns int language plpgsql set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+  g int;
+  ord uuid[];
+  made int;
+begin
+  select * into t from public.tournaments where id = tid;
+  n := coalesce(array_length(seeded, 1), 0);
+  g := ceil(n::numeric / t.group_size)::int;
+  if g < 1 or n / g < 2 or n / g <= t.group_advance then raise exception 'groups_too_small'; end if;
+  if g * t.group_advance < 2 then raise exception 'groups_too_small'; end if;
+  if t.group_seeding = 'random' then
+    select array_agg(x order by random()) into ord from unnest(seeded) x;
+  else
+    ord := seeded;
+  end if;
+  with seeds as (
+    select s.u, (s.o - 1)::int as p from unnest(ord) with ordinality as s(u, o)
+  ), placed as (
+    select seeds.u, seeds.p, case when (seeds.p / g) % 2 = 0 then seeds.p % g else g - 1 - seeds.p % g end as grp from seeds
+  ), members as (
+    select placed.u, placed.grp, (row_number() over (partition by placed.grp order by placed.p) - 1)::int as slot,
+           (count(*) over (partition by placed.grp))::int as m
+      from placed
+  ), dims as (
+    select distinct members.grp, members.m + members.m % 2 as mm from members
+  ), sched as (
+    select d.grp, r.r, k.k,
+           case when k.k = 0 then 0 else ((k.k - 1 + r.r) % (d.mm - 1)) + 1 end as sa,
+           ((d.mm - 2 - k.k + r.r) % (d.mm - 1)) + 1 as sb
+      from dims d
+      cross join lateral generate_series(0, d.mm - 2) as r(r)
+      cross join lateral generate_series(0, d.mm / 2 - 1) as k(k)
+  )
+  insert into public.tournament_matches (tournament_id, round, position, stage, grp, player_a, player_b)
+  select tid, s.r + 1, s.grp * 4 + s.k, 'group', s.grp, a.u, b.u
+    from sched s
+    join members a on a.grp = s.grp and a.slot = s.sa
+    join members b on b.grp = s.grp and b.slot = s.sb;
+  get diagnostics made = row_count;
+  return made;
+end $$;
+revoke all on function public.tm_groups_create(uuid, uuid[]) from public, anon, authenticated;
+
+-- ---------- avvio: per svizzera e gironi il primo turno (o tutti i gironi) invece del tabellone ----------
+-- Come tm_start del 16/09/2026 (controlli, chi non è nell'ordine resta fuori) più il ramo dei formati nuovi. La
+-- chiamano start_tournament e tm_autostart; dopo, tm_after_start rende pronte le partite del primo turno.
+create or replace function public.tm_start(tid uuid, seeded uuid[])
+returns void language plpgsql set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  n int;
+  size int := 2;
+  rounds int := 0;
+  cnt int;
+  r int;
+  pos int;
+  ord int[];
+  a uuid;
+  b uuid;
+begin
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  n := coalesce(array_length(seeded, 1), 0);
+  if n < 2 then raise exception 'too_few_players'; end if;
+  if n > t.size then raise exception 'too_many_players'; end if;
+  if (select count(distinct x) from unnest(seeded) x) <> n then raise exception 'bad_seeding'; end if;
+  if exists (
+    select 1 from unnest(seeded) x
+    where not exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id = x and p.status = 'registered' and p.decks_submitted)
+  ) then raise exception 'bad_seeding'; end if;
+  if exists (select 1 from public.tournament_matches where tournament_id = tid) then raise exception 'already_started'; end if;
+
+  update public.tournament_players set status = 'dropped' where tournament_id = tid and status = 'registered' and not (user_id = any(seeded));
+
+  if t.format = 'swiss' then
+    update public.tournaments set swiss_rounds = coalesce(t.swiss_rounds, public.tm_swiss_default_rounds(n)) where id = tid;
+    perform public.tm_swiss_round(tid, 1);
+    update public.tournaments set status = 'running' where id = tid;
+    return;
+  elsif t.format = 'groups' then
+    perform public.tm_groups_create(tid, seeded);
+    update public.tournaments set status = 'running' where id = tid;
+    return;
+  end if;
+
+  while size < n loop size := size * 2; end loop;
+  cnt := size;
+  while cnt > 1 loop cnt := cnt / 2; rounds := rounds + 1; end loop;
+  ord := public.bracket_order(size);
+
+  cnt := size;
+  for r in 1..rounds loop
+    cnt := cnt / 2;
+    for pos in 0..cnt - 1 loop
+      insert into public.tournament_matches (tournament_id, round, position) values (tid, r, pos);
+    end loop;
+  end loop;
+
+  for pos in 0..size / 2 - 1 loop
+    a := case when ord[2 * pos + 1] <= n then seeded[ord[2 * pos + 1]] else null end;
+    b := case when ord[2 * pos + 2] <= n then seeded[ord[2 * pos + 2]] else null end;
+    if a is null then raise exception 'bad_seeding'; end if;
+    if b is null then
+      update public.tournament_matches set player_a = a, winner = a, status = 'bye' where tournament_id = tid and round = 1 and position = pos;
+      perform public.tm_propagate((select id from public.tournament_matches where tournament_id = tid and round = 1 and position = pos));
+    else
+      update public.tournament_matches set player_a = a, player_b = b where tournament_id = tid and round = 1 and position = pos;
+    end if;
+  end loop;
+
+  update public.tournaments set status = 'running' where id = tid;
+end $$;
+revoke all on function public.tm_start(uuid, uuid[]) from public, anon, authenticated;
+
+-- ---------- classifica ----------
+-- Una riga per giocatore con almeno una partita svizzera o di girone chiusa. `grp` è il girone (null in svizzera),
+-- `rank` la posizione nella classifica (nel girone per i gironi). Percentuali arrotondate a 6 decimali prima del
+-- confronto, così il sito (formats.ts, in virgola mobile) ordina come il database.
+create or replace function public.tm_standings(tid uuid)
+returns table (user_id uuid, grp int, rank int, points int, wins int, losses int, byes int, played int, mw numeric, gw numeric, omw numeric, ogw numeric, dropped boolean)
+language sql stable set search_path = public, pg_temp as $$
+  with ms as (
+    select m.player_a, m.player_b, m.winner, m.score_a, m.score_b, m.status, m.grp from public.tournament_matches m
+     where m.tournament_id = tid and m.stage in ('swiss', 'group') and m.status in ('confirmed', 'bye') and m.winner is not null
+  ), res as (
+    select ms.player_a as uid, ms.player_b as opp, ms.grp, ms.winner = ms.player_a as won, coalesce(ms.score_a, 0) as gf, coalesce(ms.score_b, 0) as ga, ms.player_b is null as bye from ms
+    union all
+    select ms.player_b, ms.player_a, ms.grp, ms.winner = ms.player_b, coalesce(ms.score_b, 0), coalesce(ms.score_a, 0), false from ms where ms.player_b is not null
+  ), base as (
+    select res.uid, max(res.grp) as grp, count(*)::int as played, (count(*) filter (where res.won))::int as wins,
+           (count(*) filter (where not res.won))::int as losses, (count(*) filter (where res.bye))::int as byes,
+           sum(res.gf)::int as gf, sum(res.gf + res.ga)::int as gp
+      from res group by res.uid
+  ), pct as (
+    select base.*, greatest(base.wins::numeric / base.played, 0.33) as mw,
+           case when base.gp > 0 then greatest(base.gf::numeric / base.gp, 0.33) else 0.33 end as gw
+      from base
+  ), opp as (
+    select res.uid, avg(pct.mw) as omw, avg(pct.gw) as ogw
+      from res join pct on pct.uid = res.opp
+     where not res.bye
+     group by res.uid
+  ), full_rows as (
+    select pct.uid, pct.grp, pct.wins * 3 as points, pct.wins, pct.losses, pct.byes, pct.played,
+           round(pct.mw, 6) as mw, round(pct.gw, 6) as gw, round(coalesce(opp.omw, 0.33), 6) as omw, round(coalesce(opp.ogw, 0.33), 6) as ogw,
+           coalesce((select p.status = 'dropped' from public.tournament_players p where p.tournament_id = tid and p.user_id = pct.uid), false) as dropped
+      from pct left join opp on opp.uid = pct.uid
+  )
+  select f.uid, f.grp,
+         (row_number() over (partition by f.grp order by f.points desc, f.omw desc, f.gw desc, f.ogw desc, f.uid))::int,
+         f.points, f.wins, f.losses, f.byes, f.played, f.mw, f.gw, f.omw, f.ogw, f.dropped
+    from full_rows f;
+$$;
+revoke all on function public.tm_standings(uuid) from public, anon, authenticated;
+
+-- La classifica per chi vede il torneo (anche senza accesso, per i tornei pubblici).
+create or replace function public.tournament_standings(tid uuid)
+returns table (user_id uuid, grp int, rank int, points int, wins int, losses int, byes int, played int, mw numeric, gw numeric, omw numeric, ogw numeric, dropped boolean)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select s.* from public.tm_standings(tid) s where public.can_view_tournament(tid) order by s.grp nulls first, s.rank;
+$$;
+revoke all on function public.tournament_standings(uuid) from public;
+grant execute on function public.tournament_standings(uuid) to anon, authenticated;
+
+-- ---------- RPC dello staff: turno successivo, fase finale ----------
+-- "Genera il turno successivo" (svizzera): solo a turno precedente chiuso, fino ai turni previsti. Restituisce il numero
+-- del turno creato.
+create or replace function public.swiss_next_round(tid uuid)
+returns int language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  cur int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if t.format <> 'swiss' then raise exception 'not_swiss'; end if;
+  if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and (m.stage is null or m.stage = 'champion')) then raise exception 'swiss_over'; end if;
+  if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.stage = 'swiss' and m.status in ('pending', 'reported', 'disputed')) then raise exception 'round_open'; end if;
+  select coalesce(max(m.round), 0) into cur from public.tournament_matches m where m.tournament_id = tid and m.stage = 'swiss';
+  if cur >= coalesce(t.swiss_rounds, 0) then raise exception 'swiss_over'; end if;
+  perform public.tm_swiss_round(tid, cur + 1);
+  perform public.tm_ready_round(tid, cur + 1);
+  return cur + 1;
+end $$;
+revoke all on function public.swiss_next_round(uuid) from public, anon;
+grant execute on function public.swiss_next_round(uuid) to authenticated;
+
+-- "Chiudi la svizzera e avvia la Top" / "Chiudi i gironi e avvia la fase finale": con tutte le partite chiuse crea il
+-- tabellone di sempre nei turni dopo, seedato dalla classifica (svizzera: i primi `top_cut` ancora in gara; gironi: i
+-- primi `group_advance` di ogni girone, prima i primi classificati, poi i secondi…, a pari piazzamento per percentuali).
+-- Bye ai seed più alti se i qualificati non sono una potenza di 2. Con `top_cut_hold` le partite aspettano
+-- release_top_cut. Restituisce quanti giocatori sono entrati.
+create or replace function public.start_final_stage(tid uuid)
+returns int language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  q uuid[];
+  n int;
+  size int := 2;
+  rounds int := 0;
+  base int;
+  ord int[];
+  pos int;
+  a uuid;
+  b uuid;
+  mid uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if t.format not in ('swiss', 'groups') then raise exception 'no_final_stage'; end if;
+  if t.format = 'swiss' and t.top_cut is null then raise exception 'no_final_stage'; end if;
+  if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and (m.stage is null or m.stage = 'champion')) then raise exception 'already_started'; end if;
+  if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.status in ('pending', 'reported', 'disputed')) then raise exception 'round_open'; end if;
+  if t.format = 'swiss' then
+    select array_agg(s.user_id order by s.rank) into q
+      from (select x.user_id, x.rank from public.tm_standings(tid) x where not x.dropped order by x.rank limit t.top_cut) s;
+  else
+    select array_agg(s.user_id order by s.place, s.mw desc, s.gw desc, s.omw desc, s.grp) into q
+      from (
+        select x.user_id, x.grp, x.mw, x.gw, x.omw, row_number() over (partition by x.grp order by x.rank) as place
+          from public.tm_standings(tid) x where not x.dropped
+      ) s
+     where s.place <= t.group_advance;
+  end if;
+  n := coalesce(array_length(q, 1), 0);
+  if n < 2 then raise exception 'too_few_players'; end if;
+  while size < n loop size := size * 2; end loop;
+  while (1 << rounds) < size loop rounds := rounds + 1; end loop;
+  select coalesce(max(m.round), 0) into base from public.tournament_matches m where m.tournament_id = tid;
+  ord := public.bracket_order(size);
+  insert into public.tournament_matches (tournament_id, round, position)
+  select tid, base + r.r, p.p
+    from generate_series(1, rounds) as r(r)
+    cross join lateral generate_series(0, (size >> r.r) - 1) as p(p);
+  for pos in 0 .. size / 2 - 1 loop
+    a := case when ord[2 * pos + 1] <= n then q[ord[2 * pos + 1]] end;
+    b := case when ord[2 * pos + 2] <= n then q[ord[2 * pos + 2]] end;
+    if b is null then
+      update public.tournament_matches set player_a = a, winner = a, status = 'bye' where tournament_id = tid and round = base + 1 and position = pos returning id into mid;
+      perform public.tm_propagate(mid);
+    else
+      update public.tournament_matches set player_a = a, player_b = b where tournament_id = tid and round = base + 1 and position = pos;
+    end if;
+  end loop;
+  perform public.tm_ready_round(tid, base + 1);
+  return n;
+end $$;
+revoke all on function public.start_final_stage(uuid) from public, anon;
+grant execute on function public.start_final_stage(uuid) to authenticated;
+
+-- Risultato imposto dallo staff (come nel blocco TORNEO CRIMSON) più: in svizzera e nei gironi si corregge finché non
+-- c'è la fase finale (che è seedata dalla classifica); la riga del campione non si tocca.
+create or replace function public.set_match_result(mid uuid, a int, b int, forfeit boolean default false)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  nm public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  need int;
+  w uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if not public.is_tournament_staff(t.id) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  need := public.tm_need(t.id, m.round);
+  if a is null or b is null or a < 0 or b < 0 or greatest(a, b) <> need or least(a, b) >= need then raise exception 'bad_score'; end if;
+  if forfeit and least(a, b) <> 0 then raise exception 'bad_score'; end if;
+  w := case when a > b then m.player_a else m.player_b end;
+  if m.stage is not null then
+    if m.stage = 'champion' or exists (select 1 from public.tournament_matches x where x.tournament_id = t.id and (x.stage is null or x.stage = 'champion')) then
+      raise exception 'next_match_started';
+    end if;
+  else
+    select * into nm from public.tournament_matches where tournament_id = m.tournament_id and round = m.round + 1 and position = m.position / 2;
+    if found and nm.status <> 'pending' then raise exception 'next_match_started'; end if;
+    if found and m.winner is not null and m.winner <> w then
+      if (m.position % 2 = 0 and nm.player_a is distinct from m.winner) or (m.position % 2 = 1 and nm.player_b is distinct from m.winner) then raise exception 'next_match_started'; end if;
+    end if;
+  end if;
+  update public.tournament_matches set score_a = a, score_b = b, winner = w, status = 'confirmed', forfeit = set_match_result.forfeit, reported_by = null where id = mid;
+  perform public.tm_propagate(mid);
+end $$;
+revoke all on function public.set_match_result(uuid, int, int, boolean) from public, anon;
+grant execute on function public.set_match_result(uuid, int, int, boolean) to authenticated;
+
+-- Scambio (come nel blocco BRACKET E TOP CUT) più: mai nei gironi (il calendario all'italiana non regge uno scambio).
+create or replace function public.swap_players(tid uuid, u1 uuid, u2 uuid)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  m1 public.tournament_matches%rowtype;
+  m2 public.tournament_matches%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if u1 = u2 then raise exception 'bad_swap'; end if;
+  select * into m1 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u1 or player_b = u1) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  select * into m2 from public.tournament_matches where tournament_id = tid and status = 'pending' and (player_a = u2 or player_b = u2) order by round limit 1 for update;
+  if not found then raise exception 'not_pending'; end if;
+  if m1.round <> m2.round then raise exception 'bad_swap'; end if;
+  if m1.stage = 'group' or m2.stage = 'group' or m1.stage is distinct from m2.stage then raise exception 'bad_swap'; end if;
+  if m1.id = m2.id then
+    update public.tournament_matches set player_a = player_b, player_b = player_a, seen_a = seen_b, seen_b = seen_a where id = m1.id;
+    return;
+  end if;
+  if m1.player_a = u1 then update public.tournament_matches set player_a = u2 where id = m1.id; else update public.tournament_matches set player_b = u2 where id = m1.id; end if;
+  if m2.player_a = u2 then update public.tournament_matches set player_a = u1 where id = m2.id; else update public.tournament_matches set player_b = u1 where id = m2.id; end if;
+  update public.tournament_matches
+     set seen_a = null, seen_b = null,
+         ready_at = case when player_a is not null and player_b is not null and not public.tm_held(tid, round) then now() else null end
+   where id in (m1.id, m2.id);
+  delete from public.tournament_bans where match_id in (m1.id, m2.id);
+  perform public.tm_notify_ready(m1.id);
+  perform public.tm_notify_ready(m2.id);
+end $$;
+revoke all on function public.swap_players(uuid, uuid, uuid) from public, anon;
+grant execute on function public.swap_players(uuid, uuid, uuid) to authenticated;
+
+-- Chiusura (come nel blocco TORNEO CRIMSON) più: con la fase finale vale la sua finale; una svizzera senza Top si chiude a
+-- turni chiusi e il primo della classifica ancora in gara diventa il campione (riga `champion` dopo l'ultimo turno,
+-- partita in posizione 0 con il vincitore: la leggono i traguardi e i messaggi come la finale di un tabellone).
+create or replace function public.finish_tournament(tid uuid, report text default null)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  last_round int;
+  f public.tournament_matches%rowtype;
+  champ uuid;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if t.format in ('swiss', 'groups') and not exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.stage is null) then
+    if t.format <> 'swiss' or t.top_cut is not null then raise exception 'final_not_played'; end if;
+    if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.status in ('pending', 'reported', 'disputed')) then raise exception 'round_open'; end if;
+    if not exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.stage = 'champion') then
+      select s.user_id into champ from public.tm_standings(tid) s where not s.dropped order by s.rank limit 1;
+      if champ is null then raise exception 'final_not_played'; end if;
+      insert into public.tournament_matches (tournament_id, round, position, stage, player_a, winner, status)
+      select tid, max(m.round) + 1, 0, 'champion', champ, champ, 'bye' from public.tournament_matches m where m.tournament_id = tid;
+    end if;
+  else
+    select max(round) into last_round from public.tournament_matches where tournament_id = tid and (stage is null or t.format = 'single_elim');
+    select * into f from public.tournament_matches where tournament_id = tid and round = last_round and position = 0;
+    if not found or f.winner is null or f.status not in ('confirmed', 'bye') then raise exception 'final_not_played'; end if;
+  end if;
+  update public.tournaments set status = 'finished', report = left(coalesce(finish_tournament.report, ''), 2000) where id = tid;
+end $$;
+revoke all on function public.finish_tournament(uuid, text) from public, anon;
+grant execute on function public.finish_tournament(uuid, text) to authenticated;
+
+-- ---------- sideboard ----------
+-- Carte base di un codice OM1 (campo `c`), come om_code_legendary.
+create or replace function public.om_code_cards(code text)
+returns text[] language plpgsql immutable as $$
+declare
+  at int;
+  b text;
+begin
+  at := position('OM1.' in coalesce(code, ''));
+  if at = 0 then return '{}'; end if;
+  b := translate(substr(code, at + 4), '-_', '+/');
+  b := b || repeat('=', (4 - length(b) % 4) % 4);
+  return coalesce((select array_agg(left(x, 80)) from jsonb_array_elements_text(convert_from(decode(b, 'base64'), 'UTF8')::jsonb -> 'c') as x), '{}');
+exception when others then
+  return '{}';
+end $$;
+
+-- Una carta in riserva non può stare in un mazzo (nel gioco ogni carta vale due copie: in mazzo o in riserva). Se i
+-- mazzi cambiano dopo la riserva, le carte finite in un mazzo escono dalla riserva.
+create or replace function public.tournament_decks_sideboard()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if jsonb_typeof(new.sideboard) <> 'array' or jsonb_array_length(new.sideboard) = 0 then return new; end if;
+  new.sideboard := coalesce((
+    select jsonb_agg(s.value order by s.ordinality)
+      from jsonb_array_elements_text(new.sideboard) with ordinality as s(value, ordinality)
+     where not exists (
+       select 1 from jsonb_array_elements_text(case when jsonb_typeof(new.codes) = 'array' then new.codes else '[]'::jsonb end) as c(code)
+        where s.value = any(public.om_code_cards(c.code)) or s.value = public.om_code_legendary(c.code)
+     )
+  ), '[]'::jsonb);
+  return new;
+end $$;
+drop trigger if exists tournament_decks_sideboard on public.tournament_decks;
+create trigger tournament_decks_sideboard before insert or update of codes, sideboard on public.tournament_decks
+  for each row execute function public.tournament_decks_sideboard();
+
+-- Consegna della riserva (dopo i mazzi, con le stesse finestre: iscrizioni aperte, con il check-in fino a 5 minuti
+-- prima). Slug delle carte; che siano carte base vere lo controlla il sito (submitSideboard) contro il database carte.
+create or replace function public.submit_tournament_sideboard(tid uuid, cards jsonb)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  d public.tournament_decks%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if t.status <> 'open' then raise exception 'not_open'; end if;
+  if t.sideboard is null then raise exception 'sideboard_off'; end if;
+  if not exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid() and status in ('registered', 'waitlist')) then raise exception 'not_registered'; end if;
+  if t.checkin and now() > t.starts_at - interval '5 minutes' then raise exception 'decks_closed'; end if;
+  select * into d from public.tournament_decks where tournament_id = tid and user_id = auth.uid();
+  if not found then raise exception 'decks_missing'; end if;
+  if jsonb_typeof(cards) <> 'array' or jsonb_array_length(cards) > t.sideboard then raise exception 'side_count'; end if;
+  if exists (select 1 from jsonb_array_elements(cards) x where jsonb_typeof(x) <> 'string' or (x #>> '{}') !~ '^[a-z0-9-]{1,80}$') then raise exception 'side_invalid'; end if;
+  if (select count(distinct x) from jsonb_array_elements_text(cards) x) <> jsonb_array_length(cards) then raise exception 'side_invalid'; end if;
+  if exists (
+    select 1 from jsonb_array_elements_text(cards) x, jsonb_array_elements_text(d.codes) c(code)
+     where x = any(public.om_code_cards(c.code)) or x = public.om_code_legendary(c.code)
+  ) then raise exception 'side_in_deck'; end if;
+  update public.tournament_decks set sideboard = cards where tournament_id = tid and user_id = auth.uid();
+end $$;
+revoke all on function public.submit_tournament_sideboard(uuid, jsonb) from public, anon;
+grant execute on function public.submit_tournament_sideboard(uuid, jsonb) to authenticated;
+
+-- Scambi dichiarati prima della partita `game` (2..5) di un incontro: [{"out": carta del mazzo, "in": carta della
+-- riserva}], sempre rispetto al mazzo consegnato (non a quello della partita prima). `deck` è il mazzo (da 0) nel
+-- Conquest, 0 altrimenti. Nessuna lettura diretta: match_side_swaps.
+create table if not exists public.tournament_side_swaps (
+  match_id uuid not null references public.tournament_matches(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  game int not null check (game between 2 and 5),
+  deck int not null default 0 check (deck between 0 and 3),
+  swaps jsonb not null default '[]'::jsonb check (jsonb_typeof(swaps) = 'array' and jsonb_array_length(swaps) <= 12),
+  created_at timestamptz not null default now(),
+  primary key (match_id, user_id, game)
+);
+alter table public.tournament_side_swaps enable row level security;
+drop policy if exists "tournament side swaps no direct access" on public.tournament_side_swaps;
+create policy "tournament side swaps no direct access" on public.tournament_side_swaps as restrictive for all to anon, authenticated using (false) with check (false);
+revoke all on public.tournament_side_swaps from anon, authenticated;
+comment on table public.tournament_side_swaps is 'Scambi con la sideboard fra una partita e l''altra (09/11/2026): si scrivono con declare_side_swaps e si leggono con match_side_swaps.';
+
+create or replace function public.declare_side_swaps(mid uuid, game_no int, deck_no int, list jsonb)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  m public.tournament_matches%rowtype;
+  t public.tournaments%rowtype;
+  d public.tournament_decks%rowtype;
+  me uuid := auth.uid();
+  deck_cards text[];
+  need int;
+begin
+  if me is null then raise exception 'not_logged_in'; end if;
+  select * into m from public.tournament_matches where id = mid;
+  if not found then raise exception 'not_found'; end if;
+  select * into t from public.tournaments where id = m.tournament_id for update;
+  select * into m from public.tournament_matches where id = mid for update;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if t.sideboard is null then raise exception 'sideboard_off'; end if;
+  if me is distinct from m.player_a and me is distinct from m.player_b then raise exception 'forbidden'; end if;
+  if m.player_a is null or m.player_b is null then raise exception 'not_ready'; end if;
+  if m.status <> 'pending' then raise exception 'already_confirmed'; end if;
+  if public.tm_held(t.id, m.round) then raise exception 'top_cut_on_hold'; end if;
+  need := public.tm_need(t.id, m.round);
+  if game_no is null or game_no < 2 or game_no > 2 * need - 1 then raise exception 'bad_game'; end if;
+  if deck_no is null or deck_no < 0 or deck_no >= (case when t.deck_mode = 'conquest' then t.conquest_decks else 1 end) then raise exception 'bad_side_swap'; end if;
+  select * into d from public.tournament_decks where tournament_id = t.id and user_id = me;
+  if not found then raise exception 'decks_missing'; end if;
+  deck_cards := public.om_code_cards(d.codes ->> deck_no);
+  if jsonb_typeof(list) <> 'array' or jsonb_array_length(list) > least(t.sideboard, jsonb_array_length(d.sideboard)) then raise exception 'bad_side_swap'; end if;
+  if exists (
+    select 1 from jsonb_array_elements(list) x
+     where jsonb_typeof(x) <> 'object' or jsonb_typeof(x -> 'out') <> 'string' or jsonb_typeof(x -> 'in') <> 'string'
+        or not ((x ->> 'out') = any(deck_cards))
+        or not (d.sideboard ? (x ->> 'in'))
+  ) then raise exception 'bad_side_swap'; end if;
+  if (select count(distinct x ->> 'out') from jsonb_array_elements(list) x) <> jsonb_array_length(list)
+     or (select count(distinct x ->> 'in') from jsonb_array_elements(list) x) <> jsonb_array_length(list) then raise exception 'bad_side_swap'; end if;
+  insert into public.tournament_side_swaps (match_id, user_id, game, deck, swaps)
+  values (mid, me, game_no, deck_no, (select coalesce(jsonb_agg(jsonb_build_object('out', x ->> 'out', 'in', x ->> 'in')), '[]'::jsonb) from jsonb_array_elements(list) x))
+  on conflict (match_id, user_id, game) do update set deck = excluded.deck, swaps = excluded.swaps, created_at = now();
+end $$;
+revoke all on function public.declare_side_swaps(uuid, int, int, jsonb) from public, anon;
+grant execute on function public.declare_side_swaps(uuid, int, int, jsonb) to authenticated;
+
+-- Gli scambi di una partita che chi chiama può vedere: i suoi, e quelli di chi ha la lista visibile per lui (staff,
+-- avversario senza liste segrete, tutti a torneo finito), con le regole di tm_can_see_deck.
+create or replace function public.match_side_swaps(mid uuid)
+returns table (user_id uuid, game int, deck int, swaps jsonb, created_at timestamptz)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select s.user_id, s.game, s.deck, s.swaps, s.created_at
+    from public.tournament_side_swaps s
+    join public.tournament_matches m on m.id = s.match_id
+   where s.match_id = mid
+     and public.can_view_tournament(m.tournament_id)
+     and (public.is_match_party(mid) or exists (select 1 from public.tournaments t where t.id = m.tournament_id and t.status = 'finished'))
+     and public.tm_can_see_deck(m.tournament_id, s.user_id)
+   order by s.game, s.user_id;
+$$;
+revoke all on function public.match_side_swaps(uuid) from public;
+grant execute on function public.match_side_swaps(uuid) to anon, authenticated;
+
+comment on column public.tournaments.format is 'single_elim (eliminazione diretta), swiss (turni svizzeri, Top facoltativa) o groups (gironi all''italiana e fase finale): 09/11/2026.';
+comment on column public.tournament_matches.stage is 'null = tabellone a eliminazione diretta; swiss, group (con grp) o champion (vincitore di una svizzera senza Top): 09/11/2026.';
+comment on column public.tournament_decks.sideboard is 'Riserva (slug di carte base, al massimo tournaments.sideboard), letta con le stesse regole delle liste: 09/11/2026.';
 
 -- ===== 10/11/2026: EVENTI DELLA COMMUNITY =====
 -- =====================================================================================================

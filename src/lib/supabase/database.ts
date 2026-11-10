@@ -258,7 +258,8 @@ export type TournamentRow = {
   lang: Locale;
   starts_at: string;
   size: number;
-  format: "single_elim";
+  /** 09/11/2026: anche turni svizzeri e gironi (blocco SVIZZERA, GIRONI E SIDEBOARD) */
+  format: "single_elim" | "swiss" | "groups";
   deck_mode: "free" | "conquest";
   conquest_decks: number;
   conquest_min_different: number;
@@ -286,6 +287,16 @@ export type TournamentRow = {
   top_cut_hold?: boolean;
   top_cut_released_at?: string | null;
   deck_ban?: boolean;
+  /**
+   * 09/11/2026 (blocco SVIZZERA, GIRONI E SIDEBOARD): turni svizzeri (null = scelti all'avvio), gironi (giocatori per
+   * girone, quanti passano, serpentina o casuale) e carte della sideboard (null = spenta). Facoltativi come i campi
+   * dell'08/11: li legge getFormatOptions (queries.ts), che regge il database non ancora migrato.
+   */
+  swiss_rounds?: number | null;
+  group_size?: number | null;
+  group_advance?: number | null;
+  group_seeding?: "snake" | "random" | null;
+  sideboard?: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -297,7 +308,7 @@ export type TournamentInsert = Omit<TournamentRow, "id" | "tag" | "status" | "re
   listed?: boolean;
   cover_url?: string | null;
   discord_url?: string | null;
-  format?: "single_elim";
+  format?: TournamentRow["format"];
   visibility?: TournamentRow["visibility"];
   checkin?: boolean;
   hidden_decklists?: boolean;
@@ -315,7 +326,7 @@ export type TournamentPlayerRow = {
   created_at: string;
   updated_at: string;
 };
-export type TournamentDecksRow = { tournament_id: string; user_id: string; codes: string[]; legendaries: string[]; created_at: string; updated_at: string };
+export type TournamentDecksRow = { tournament_id: string; user_id: string; codes: string[]; legendaries: string[]; /** 09/11/2026: riserva (slug), solo a migrazione fatta */ sideboard?: string[]; created_at: string; updated_at: string };
 export type TournamentJudgeRow = { tournament_id: string; user_id: string; added_by: string | null; created_at: string };
 export type TournamentMessageRow = { id: number; match_id: string; user_id: string; body: string; created_at: string };
 /** 08/11/2026: un ban per giocatore e partita; nessun client legge la tabella (match_bans, tournament_ban_stats). */
@@ -339,6 +350,9 @@ export type TournamentMatchRow = {
   seen_a: string | null;
   seen_b: string | null;
   reported_at: string | null;
+  /** 09/11/2026: fase della partita (null = tabellone; 'swiss', 'group', 'champion') e girone; letti a parte (listMatchStages) */
+  stage?: "swiss" | "group" | "champion" | null;
+  grp?: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -1070,6 +1084,13 @@ export type Database = {
       release_top_cut: { Args: { tid: string }; Returns: number };
       tournament_ban_progress: { Args: { tid: string }; Returns: { match_id: string; bans: number }[] };
       tournament_ban_stats: { Args: { tid: string }; Returns: { legendary: string; bans: number; chances: number }[] };
+      /* 09/11/2026: blocco SVIZZERA, GIRONI E SIDEBOARD */
+      swiss_next_round: { Args: { tid: string }; Returns: number };
+      start_final_stage: { Args: { tid: string }; Returns: number };
+      tournament_standings: { Args: { tid: string }; Returns: { user_id: string; grp: number | null; rank: number; points: number; wins: number; losses: number; byes: number; played: number; mw: number; gw: number; omw: number; ogw: number; dropped: boolean }[] };
+      submit_tournament_sideboard: { Args: { tid: string; cards: string[] }; Returns: undefined };
+      declare_side_swaps: { Args: { mid: string; game_no: number; deck_no: number; list: { out: string; in: string }[] }; Returns: undefined };
+      match_side_swaps: { Args: { mid: string }; Returns: { user_id: string; game: number; deck: number; swaps: { out: string; in: string }[]; created_at: string }[] };
       add_judge: { Args: { tid: string; uname: string }; Returns: undefined };
       remove_judge: { Args: { tid: string; uid: string }; Returns: undefined };
       tournament_legendaries: { Args: { tid: string }; Returns: { user_id: string; legendaries: string[] }[] };

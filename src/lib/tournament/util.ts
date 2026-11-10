@@ -5,11 +5,12 @@ import { newSlug } from "@/lib/community/util";
 import type { TournamentInsert } from "@/lib/supabase/database";
 import { NO_SHOW_RANGE } from "./rules";
 import { TOP_CUTS } from "./stages";
+import { FORMATS, GROUP_ADVANCE_RANGE, GROUP_SEEDINGS, GROUP_SIZE_RANGE, SIDEBOARD_RANGE, SWISS_ROUNDS_RANGE, type GroupSeeding, type TournamentFormat } from "./formats";
 import { BEST_OF_OPTIONS, CONQUEST_DECKS_RANGE, COVER_BUCKET, COVER_PRESETS, DECK_MODES, DEFAULT_COVER, TOURNAMENT_SIZES, VISIBILITIES, canListTournaments, type DeckMode, type Visibility } from "./types";
 
 /** Validazione lato server del modulo "Organizza un torneo" (creazione e modifica). Solo testo semplice, niente HTML. */
 
-export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "finalBestOf" | "noShow" | "lang" | "discord" | "cover" | "listing" | "visibility" | "topCut" | "deckBan";
+export type TournamentFormError = "name" | "startsAt" | "size" | "deckMode" | "conquestDecks" | "conquestMin" | "bestOf" | "finalBestOf" | "noShow" | "lang" | "discord" | "cover" | "listing" | "visibility" | "topCut" | "deckBan" | "format" | "swissRounds" | "groups" | "sideboard";
 
 const LIMITS = { nameMin: 3, nameMax: 60, textMax: 2000 };
 const DISCORD_HOSTS = ["discord.gg", "discord.com", "discordapp.com"];
@@ -105,7 +106,29 @@ export function parseTournamentForm(
     return v === "on" || v === "true";
   };
   // 08/11/2026 (blocco BRACKET E TOP CUT): fase finale a bracket, pausa prima della fase finale, ban di un mazzo
-  const topCutRaw = String(fd.get("top_cut") ?? "").trim();
+  // 09/11/2026 (blocco SVIZZERA, GIRONI E SIDEBOARD): formato, turni svizzeri, gironi, sideboard. Senza il campo il
+  // torneo è a eliminazione diretta, come prima.
+  const formatRaw = String(fd.get("format") ?? "single_elim").trim() || "single_elim";
+  if (!(FORMATS as readonly string[]).includes(formatRaw)) return { ok: false, error: "format" };
+  const format = formatRaw as TournamentFormat;
+  const int = (key: string) => {
+    const raw = String(fd.get(key) ?? "").trim();
+    return raw ? Number(raw) : null;
+  };
+  const swissRounds = format === "swiss" ? int("swiss_rounds") : null;
+  if (swissRounds !== null && (!Number.isInteger(swissRounds) || swissRounds < SWISS_ROUNDS_RANGE.min || swissRounds > SWISS_ROUNDS_RANGE.max)) return { ok: false, error: "swissRounds" };
+  const groupSize = format === "groups" ? int("group_size") : null;
+  const groupAdvance = format === "groups" ? int("group_advance") : null;
+  const seedingRaw = String(fd.get("group_seeding") ?? "snake");
+  if (
+    format === "groups" &&
+    (groupSize === null || groupAdvance === null || !Number.isInteger(groupSize) || !Number.isInteger(groupAdvance) || groupSize < GROUP_SIZE_RANGE.min || groupSize > GROUP_SIZE_RANGE.max || groupAdvance < GROUP_ADVANCE_RANGE.min || groupAdvance > GROUP_ADVANCE_RANGE.max || groupAdvance >= groupSize || !(GROUP_SEEDINGS as readonly string[]).includes(seedingRaw))
+  )
+    return { ok: false, error: "groups" };
+  const sideboard = int("sideboard");
+  if (sideboard !== null && (!Number.isInteger(sideboard) || sideboard < SIDEBOARD_RANGE.min || sideboard > SIDEBOARD_RANGE.max)) return { ok: false, error: "sideboard" };
+
+  const topCutRaw = format === "groups" ? "" : String(fd.get("top_cut") ?? "").trim();
   const topCut = topCutRaw ? Number(topCutRaw) : null;
   if (topCut !== null && (!(TOP_CUTS as readonly number[]).includes(topCut) || topCut >= size)) return { ok: false, error: "topCut" };
   const deckBan = on("deck_ban");
@@ -149,8 +172,15 @@ export function parseTournamentForm(
       hidden_decklists: on("hidden_decklists"),
       no_show_minutes: noShow,
       top_cut: topCut,
-      top_cut_hold: topCut !== null && on("top_cut_hold"),
+      // nei gironi la pausa vale per la fase finale, che c'è sempre
+      top_cut_hold: (topCut !== null || format === "groups") && on("top_cut_hold"),
       deck_ban: deckBan,
+      format,
+      swiss_rounds: swissRounds,
+      group_size: groupSize,
+      group_advance: groupAdvance,
+      group_seeding: format === "groups" ? (seedingRaw as GroupSeeding) : null,
+      sideboard,
       discord_url: discord.value,
       listed,
       visibility,
@@ -158,13 +188,16 @@ export function parseTournamentForm(
   };
 }
 
-/** Campi del blocco BRACKET E TOP CUT (08/11/2026) nella riga del torneo. */
-const STAGE_KEYS = ["top_cut", "top_cut_hold", "deck_ban"] as const;
+/**
+ * Campi dei blocchi BRACKET E TOP CUT (08/11/2026) e SVIZZERA, GIRONI E SIDEBOARD (09/11/2026) nella riga del torneo.
+ * `format` c'è da sempre, ma 'swiss' e 'groups' li accetta solo il database migrato: si toglie solo se è 'single_elim'.
+ */
+const STAGE_KEYS = ["top_cut", "top_cut_hold", "deck_ban", "swiss_rounds", "group_size", "group_advance", "group_seeding", "sideboard"] as const;
 
-/** La riga usa almeno una delle opzioni del blocco BRACKET E TOP CUT. */
+/** La riga usa almeno una delle opzioni dei blocchi BRACKET E TOP CUT o SVIZZERA, GIRONI E SIDEBOARD. */
 export function usesStageOptions(row: object): boolean {
-  const r = row as { top_cut?: number | null; top_cut_hold?: boolean; deck_ban?: boolean };
-  return r.top_cut != null || Boolean(r.top_cut_hold) || Boolean(r.deck_ban);
+  const r = row as { top_cut?: number | null; top_cut_hold?: boolean; deck_ban?: boolean; format?: string; sideboard?: number | null };
+  return r.top_cut != null || Boolean(r.top_cut_hold) || Boolean(r.deck_ban) || (r.format !== undefined && r.format !== "single_elim") || r.sideboard != null;
 }
 
 /** La riga senza i campi del blocco BRACKET E TOP CUT: per scrivere su un database non ancora migrato. */

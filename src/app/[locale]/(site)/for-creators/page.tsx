@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { statSync } from "node:fs";
 import path from "node:path";
+import type { ReactNode } from "react";
 import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
@@ -24,16 +25,44 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
   messaggio già scritto).
   Statica e indicizzabile in tutte le lingue. Le righe da copiare prendono il nome utente nel browser (CreatorCode).
   Testi in src/lib/forCreatorsLabels-<lingua>.ts, costanti in src/lib/forCreators.ts.
-
-  10/11/2026, pagina semplificata (note di Pierluigi: "i creator vanno in panico con pagine lunghe", tutorial "in righe
-  collassabili", la sezione "cosa ti dà Origins Meta" "apribile, non espansa di default"): all'inizio si vedono solo le
-  righe. Ogni guida è un <details> chiuso (nome dello strumento, dove si usa, il tempo e che cosa fa; dentro che cosa
-  serve, i passi, le righe da copiare, "Ha funzionato se" e "Se non funziona"), e la mappa delle schede in cima alla
-  sezione non c'è più (le righe sono la mappa); chiusi anche "Che cosa ti dà OriginsMeta" (il titolo resta nella riga),
-  le idee e, nel media kit, colori, font, frasi pronte e regole. Restano aperti i download del kit e "Diventa Creator".
-  Le domande usano la stessa riga (ROW, ROW_SUMMARY, RowEnd). Le ancore di sempre (#perks, #tracker, #ideas…) aprono la
-  loro riga e ci scorrono: OpenDetailsOnHash. Il testo dei <details> chiusi resta nell'HTML.
+  Tendine (10/11/2026, Pierluigi: "le loro sezioni devono essere nascoste, se poi uno clicca su una freccetta, si apre la
+  sezione dedicata", anche per "ogni strumento della sezione 2"): "Che cosa ti dà OriginsMeta", "Strumenti e guide passo
+  passo" e "Idee per i tuoi contenuti" sono chiuse e mostrano solo il titolo (`Fold`), e dentro gli strumenti ogni guida
+  è chiusa sul suo nome (`Guide`). Media kit, "Diventa Creator" e domande restano come prima. Il testo resta nell'HTML
+  (motori, ricerca nella pagina); le ancore (indice, schede degli strumenti, /for-creators#tracker) aprono la tendina
+  giusta con OpenDetailsOnHash.
 */
+
+/** La freccetta delle tendine, che si gira quando la tendina è aperta: la rotazione la passa chi la usa. */
+function Chevron({ className }: { className: string }) {
+  return (
+    <span aria-hidden="true" className={`grid shrink-0 place-items-center rounded-full transition-transform duration-200 motion-reduce:transition-none ${className}`}>
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 7.5l5 5 5-5" />
+      </svg>
+    </span>
+  );
+}
+
+/**
+ * Una sezione a tendina: chiusa resta solo il titolo, sul suo nastro con la freccetta piena; il contenuto si apre con un
+ * clic sul nastro. L'ancora (#perks, #tools, #ideas) sta sulla <section>, come prima.
+ */
+function Fold({ id, title, className, children }: { id: string; title: string; className: string; children: ReactNode }) {
+  return (
+    <section id={id} aria-labelledby={`fc-${id}`} className={`min-w-0 scroll-mt-24 ${className}`}>
+      <details className="group/fold" suppressHydrationWarning>
+        <summary className="card-night flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 transition-colors hover:border-mint sm:px-6 [&::-webkit-details-marker]:hidden">
+          <h2 id={`fc-${id}`} className="t-section">
+            {title}
+          </h2>
+          <Chevron className="h-9 w-9 bg-mint text-ink group-open/fold:rotate-180" />
+        </summary>
+        <div className="pb-6">{children}</div>
+      </details>
+    </section>
+  );
+}
 
 const HERO = "/media/analytics/tracker-cover.webp";
 
@@ -68,53 +97,28 @@ function GuideAnchor({ link, locale, className = "link-mint font-bold" }: { link
   );
 }
 
-/*
-  Le righe che si aprono (guide, vantaggi, idee, il resto del kit, domande), tutte uguali. Tutta la riga è il <summary>,
-  margine interno compreso, così si apre cliccando ovunque; il segno gira di un quarto quando è aperta; il fuoco da
-  tastiera è un anello menta dentro la cornice. Il <summary> è una griglia a due colonne con i testi come figli diretti
-  (nel <summary> stanno solo testo e titoli, niente div né p): a sinistra titolo e righe sotto, a destra RowEnd, sempre
-  sulla prima riga. Dentro, i riquadri sono felt-panel (non card-night, che farebbe cornice celeste su cornice celeste).
-*/
-const ROW = "card-night group min-w-0 scroll-mt-24";
-const ROW_SUMMARY =
-  "grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 rounded-[11px] px-4 py-4 transition-colors hover:bg-night-3/40 focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-mint group-open:rounded-b-none motion-reduce:transition-none sm:px-6 sm:py-5 [&::-webkit-details-marker]:hidden";
-const ROW_BODY = "px-4 pb-5 sm:px-6 sm:pb-6";
-
-/** La fine della prima riga di un <summary>: un suggerimento facoltativo ("Guida", da 640 px) e il segno che gira. */
-function RowEnd({ hint }: { hint?: string }) {
-  return (
-    <span className="col-start-2 row-start-1 flex items-center gap-2">
-      {hint ? <span className="hidden font-display text-sm font-bold text-mint sm:inline">{hint}</span> : null}
-      <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-mint/70 text-mint transition-transform group-open:rotate-90 motion-reduce:transition-none">
-        <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.25} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M6 3.5 10.5 8 6 12.5" />
-        </svg>
-      </span>
-    </span>
-  );
-}
-
 /**
- * Una guida in una riga che si apre (10/11/2026). Chiusa: nome dello strumento, dove si usa, il tempo e che cosa fa.
- * Aperta: che cosa serve, i passi numerati con le righe da copiare, come si capisce che va, se non va. L'id dello
- * strumento è anche l'ancora (/for-creators#tracker), che apre la riga (OpenDetailsOnHash).
+ * Una guida, chiusa sul nome dello strumento (dove si usa e quanto ci vuole sotto, freccetta con il bordo); aperta: che
+ * cosa fa, che cosa serve, i passi numerati con le righe da copiare, come si capisce che va, se non va. L'id dello
+ * strumento è l'ancora delle schede in cima alla sezione (/for-creators#tracker). Nel <summary> stanno solo titoli e
+ * testo semplice: nome e riga sotto in un <hgroup>.
  */
 function Guide({ tool, L, locale }: { tool: ToolGuide; L: ForCreatorsLabels; locale: Locale }) {
   const T = L.tools;
   return (
-    <details id={tool.id} className={ROW}>
-      <summary className={ROW_SUMMARY}>
-        <h3 id={`${tool.id}-title`} className="col-start-1 font-display text-lg font-extrabold text-sky sm:text-xl">
-          {tool.name}
-        </h3>
-        <span className="col-start-1 mt-1 font-mono text-xs uppercase tracking-wider text-pale-muted">
-          {tool.tag} · {T.time}: {tool.time}
-        </span>
-        <span className="col-start-1 mt-2 max-w-3xl text-sm text-pale sm:text-base">{tool.what}</span>
-        <RowEnd hint={T.guide} />
+    <details id={tool.id} className="card-night group/tool min-w-0 scroll-mt-24" suppressHydrationWarning>
+      <summary className="flex cursor-pointer list-none items-center gap-4 p-5 sm:px-7 [&::-webkit-details-marker]:hidden">
+        <hgroup className="min-w-0 flex-1">
+          <h3 className="font-display text-xl font-extrabold text-sky">{tool.name}</h3>
+          <p className="mt-1 font-mono text-xs uppercase tracking-wider text-pale-muted">
+            {tool.tag} · {T.time}: {tool.time}
+          </p>
+        </hgroup>
+        <Chevron className="h-8 w-8 border-2 border-mint text-mint group-open/tool:rotate-180" />
       </summary>
-      <div className={ROW_BODY}>
-        <p className="felt-panel px-4 py-3 text-sm text-chalk">
+      <div className="px-5 pb-5 sm:px-7 sm:pb-7">
+        <p className="max-w-3xl text-pale">{tool.what}</p>
+        <p className="felt-panel mt-4 px-4 py-3 text-sm text-chalk">
           <span className="font-bold text-mint">{T.needs}:</span> {tool.needs}
         </p>
         <ol className="mt-5 grid gap-4">
@@ -194,6 +198,7 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-10">
+      <OpenDetailsOnHash />
       <JsonLd
         data={[
           breadcrumbs([
@@ -242,78 +247,69 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
         ))}
       </nav>
 
-      {/* Che cosa dà OriginsMeta: una riga chiusa con il titolo; dentro le voci, per tutti e, con la pastiglia, solo con il ruolo Creator */}
-      <section className="mt-14" aria-labelledby="fc-perks">
-        <details id="perks" className={ROW}>
-          <summary className={ROW_SUMMARY}>
-            <h2 id="fc-perks" className="t-section col-start-1">
-              {L.perks.title}
-            </h2>
-            <span className="col-start-1 mt-1 max-w-3xl text-sm text-pale sm:text-base">{L.perks.intro}</span>
-            <RowEnd />
-          </summary>
-          <div className={ROW_BODY}>
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {L.perks.items.map((item) => (
-                <li key={item.title} className="felt-panel flex min-w-0 flex-col p-4">
-                  {item.creator ? <span className="badge-creator mb-2 self-start rounded-full px-2.5 py-0.5 text-[11px] font-bold">{L.perks.creatorOnly}</span> : null}
-                  <h3 className="t-item">{item.title}</h3>
-                  <p className="mt-2 text-sm text-pale">{item.text}</p>
-                  {item.link ? (
-                    <p className="mt-auto pt-3 text-sm">
-                      <GuideAnchor link={item.link} locale={locale} />
-                    </p>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </details>
-      </section>
+      {/* Che cosa dà OriginsMeta: per tutti e, con la pastiglia, solo con il ruolo Creator */}
+      <Fold id="perks" title={L.perks.title} className="mt-10">
+        <p className="mt-5 max-w-3xl text-pale">{L.perks.intro}</p>
+        <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {L.perks.items.map((item) => (
+            <li key={item.title} className="card-night flex min-w-0 flex-col p-5">
+              {item.creator ? <span className="badge-creator mb-2 self-start rounded-full px-2.5 py-0.5 text-[11px] font-bold">{L.perks.creatorOnly}</span> : null}
+              <h3 className="t-item">{item.title}</h3>
+              <p className="mt-2 text-sm text-pale">{item.text}</p>
+              {item.link ? (
+                <p className="mt-auto pt-3 text-sm">
+                  <GuideAnchor link={item.link} locale={locale} />
+                </p>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </Fold>
 
-      {/* Gli strumenti: una riga chiusa per ognuno, con la sua guida passo passo dentro */}
-      <section id="tools" className="mt-16 scroll-mt-24" aria-labelledby="fc-tools">
-        <h2 id="fc-tools" className="t-section">
-          {L.tools.title}
-        </h2>
-        <p className="mt-2 max-w-3xl text-pale">{L.tools.intro}</p>
-        <div className="mt-4">
+      {/* Gli strumenti: prima la mappa (un clic apre la guida), poi una guida passo passo per ognuno, chiusa */}
+      <Fold id="tools" title={L.tools.title} className="mt-4">
+        <p className="mt-5 max-w-3xl text-pale">{L.tools.intro}</p>
+        <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {tools.map((t) => (
+            <li key={t.id} className="min-w-0">
+              <a href={`#${t.id}`} className="card-night card-night-hover flex h-full min-w-0 flex-col p-4">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-pale-muted">{t.tag}</span>
+                <span className="mt-1 font-display font-bold text-sky">{t.name}</span>
+                <span className="mt-1 line-clamp-3 text-sm text-pale">{t.what}</span>
+                <span className="mt-auto pt-2 text-sm font-bold text-mint">
+                  {L.tools.guide} · {t.time} ↓
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6">
           <CreatorUserNote filled={L.filled} notFilled={L.notFilled} signIn={L.signIn} loginHref={loginHref} />
         </div>
-        <div className="mt-5 grid grid-cols-1 gap-3">
+        <div className="mt-6 grid gap-3">
           {tools.map((t) => (
             <Guide key={t.id} tool={t} L={L} locale={locale} />
           ))}
         </div>
-      </section>
+      </Fold>
 
-      {/* Idee per i contenuti, in una riga chiusa: i dati e gli strumenti del sito da mostrare */}
-      <section className="mt-16" aria-labelledby="fc-ideas">
-        <details id="ideas" className={ROW}>
-          <summary className={ROW_SUMMARY}>
-            <h2 id="fc-ideas" className="t-section col-start-1">
-              {L.ideas.title}
-            </h2>
-            <span className="col-start-1 mt-1 max-w-3xl text-sm text-pale sm:text-base">{L.ideas.intro}</span>
-            <RowEnd />
-          </summary>
-          <div className={ROW_BODY}>
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {L.ideas.items.map((item) => (
-                <li key={item.title} className="felt-panel flex min-w-0 flex-col p-4">
-                  <h3 className="t-item">{item.title}</h3>
-                  <p className="mt-2 text-sm text-pale">{item.text}</p>
-                  <p className="mt-auto pt-3 text-sm">
-                    <GuideAnchor link={item.link} locale={locale} />
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </details>
-      </section>
+      {/* Idee per i contenuti: i dati e gli strumenti del sito da mostrare */}
+      <Fold id="ideas" title={L.ideas.title} className="mt-4">
+        <p className="mt-5 max-w-3xl text-pale">{L.ideas.intro}</p>
+        <ul className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {L.ideas.items.map((item) => (
+            <li key={item.title} className="card-night flex min-w-0 flex-col p-5">
+              <h3 className="t-item">{item.title}</h3>
+              <p className="mt-2 text-sm text-pale">{item.text}</p>
+              <p className="mt-auto pt-3 text-sm">
+                <GuideAnchor link={item.link} locale={locale} />
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Fold>
 
-      {/* Il media kit: lo zip e i file uno per uno sempre aperti; colori, font, frasi pronte e regole in una riga chiusa */}
+      {/* Il media kit: lo zip, i file uno per uno, colori, font, frasi pronte e regole */}
       <section id="kit" className="mt-16 scroll-mt-24" aria-labelledby="fc-kit">
         <h2 id="fc-kit" className="t-section">
           {L.kit.title}
@@ -354,58 +350,51 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
           })}
         </ul>
 
-        {/* Il resto del kit in una riga chiusa, il cui nome sono i titoli di quello che c'è dentro */}
-        <details className={`${ROW} mt-8`}>
-          <summary className={ROW_SUMMARY}>
-            <span className="col-start-1 font-display font-bold text-sky">{[L.kit.colors.title, L.kit.fonts.title, L.kit.lines.title, L.kit.rules.title].join(" · ")}</span>
-            <RowEnd />
-          </summary>
-          <div className={`${ROW_BODY} grid grid-cols-1 gap-6 lg:grid-cols-2`}>
-            <div className="min-w-0">
-              <h3 className="t-item">{L.kit.colors.title}</h3>
-              <ul className="mt-3 grid gap-2">
-                {KIT_COLORS.map((c) => (
-                  <li key={c.id} className="felt-panel flex min-w-0 items-center gap-3 p-2.5">
-                    <span aria-hidden="true" className="h-9 w-9 shrink-0 rounded-lg border-2 border-felt-line" style={{ backgroundColor: c.hex }} />
-                    <span className="min-w-0 flex-1 text-sm">
-                      <span className="font-bold text-chalk">{L.kit.colors.items[c.id].name}</span> <span className="font-mono text-pale">{c.hex}</span>
-                      <span className="block text-xs text-pale-muted">{L.kit.colors.items[c.id].use}</span>
-                    </span>
-                    <CopyButton text={c.hex} label={L.copy} copied={L.copied} ariaLabel={`${L.copy}: ${c.hex}`} />
-                  </li>
-                ))}
-              </ul>
-              <h3 className="t-item mt-6">{L.kit.fonts.title}</h3>
-              <p className="mt-2 text-sm text-pale">{L.kit.fonts.text}</p>
-            </div>
-            <div className="min-w-0">
-              <h3 className="t-item">{L.kit.lines.title}</h3>
-              <p className="mt-2 text-sm text-pale">{L.kit.lines.intro}</p>
-              {L.kit.lines.items.map((line, i) => (
-                <CreatorCode key={line} code={line} lang={locale} placeholder={L.you} copy={L.copy} copied={L.copied} tool={`kit_line_${i + 1}`} />
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="min-w-0">
+            <h3 className="t-item">{L.kit.colors.title}</h3>
+            <ul className="mt-3 grid gap-2">
+              {KIT_COLORS.map((c) => (
+                <li key={c.id} className="felt-panel flex min-w-0 items-center gap-3 p-2.5">
+                  <span aria-hidden="true" className="h-9 w-9 shrink-0 rounded-lg border-2 border-felt-line" style={{ backgroundColor: c.hex }} />
+                  <span className="min-w-0 flex-1 text-sm">
+                    <span className="font-bold text-chalk">{L.kit.colors.items[c.id].name}</span> <span className="font-mono text-pale">{c.hex}</span>
+                    <span className="block text-xs text-pale-muted">{L.kit.colors.items[c.id].use}</span>
+                  </span>
+                  <CopyButton text={c.hex} label={L.copy} copied={L.copied} ariaLabel={`${L.copy}: ${c.hex}`} />
+                </li>
               ))}
-              <h3 className="t-item mt-6">{L.kit.rules.title}</h3>
-              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="felt-panel-mint min-w-0 p-4">
-                  <p className="font-display text-sm font-bold text-mint">✓ {L.kit.rules.doTitle}</p>
-                  <ul className="mt-1 grid gap-1.5 text-sm text-chalk">
-                    {L.kit.rules.do.map((r) => (
-                      <li key={r}>{r}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="felt-panel min-w-0 p-4">
-                  <p className="font-display text-sm font-bold text-crimson-soft">✕ {L.kit.rules.dontTitle}</p>
-                  <ul className="mt-1 grid gap-1.5 text-sm text-pale">
-                    {L.kit.rules.dont.map((r) => (
-                      <li key={r}>{r}</li>
-                    ))}
-                  </ul>
-                </div>
+            </ul>
+            <h3 className="t-item mt-6">{L.kit.fonts.title}</h3>
+            <p className="mt-2 text-sm text-pale">{L.kit.fonts.text}</p>
+          </div>
+          <div className="min-w-0">
+            <h3 className="t-item">{L.kit.lines.title}</h3>
+            <p className="mt-2 text-sm text-pale">{L.kit.lines.intro}</p>
+            {L.kit.lines.items.map((line, i) => (
+              <CreatorCode key={line} code={line} lang={locale} placeholder={L.you} copy={L.copy} copied={L.copied} tool={`kit_line_${i + 1}`} />
+            ))}
+            <h3 className="t-item mt-6">{L.kit.rules.title}</h3>
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="felt-panel-mint min-w-0 p-4">
+                <p className="font-display text-sm font-bold text-mint">✓ {L.kit.rules.doTitle}</p>
+                <ul className="mt-1 grid gap-1.5 text-sm text-chalk">
+                  {L.kit.rules.do.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="felt-panel min-w-0 p-4">
+                <p className="font-display text-sm font-bold text-crimson-soft">✕ {L.kit.rules.dontTitle}</p>
+                <ul className="mt-1 grid gap-1.5 text-sm text-pale">
+                  {L.kit.rules.dont.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
-        </details>
+        </div>
       </section>
 
       {/* Come si diventa Creator: accesso, canali nel profilo, la richiesta già scritta nella casella dello staff */}
@@ -444,22 +433,23 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
         <h2 id="fc-faq" className="t-section">
           {L.faq.title}
         </h2>
-        <div className="mt-5 grid grid-cols-1 gap-3">
+        <div className="mt-5 grid gap-3">
           {L.faq.items.map((f) => (
-            <details key={f.q} className={ROW}>
-              <summary className={ROW_SUMMARY}>
-                <span className="col-start-1 font-display font-bold text-sky">{f.q}</span>
-                <RowEnd />
+            <details key={f.q} className="card-night group p-4 sm:p-5">
+              <summary className="cursor-pointer list-none font-display font-bold text-sky [&::-webkit-details-marker]:hidden">
+                <span className="flex items-start justify-between gap-4">
+                  <span>{f.q}</span>
+                  <span aria-hidden="true" className="text-mint transition group-open:rotate-45 motion-reduce:transition-none">
+                    +
+                  </span>
+                </span>
               </summary>
-              <p className={`${ROW_BODY} text-pale`}>{f.a}</p>
+              <p className="mt-3 text-pale">{f.a}</p>
             </details>
           ))}
         </div>
         <p className="mt-8 text-sm text-pale-muted">{L.unofficial}</p>
       </section>
-
-      {/* Le ancore (#tracker, #perks, #ideas…) aprono la loro riga */}
-      <OpenDetailsOnHash />
     </div>
   );
 }

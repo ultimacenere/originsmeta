@@ -26,6 +26,11 @@ type Props = {
   /** 08/11/2026: primo turno della fase finale in pausa (stages.ts `holdRound`), e il testo per chi ci è arrivato */
   holdRound?: number | null;
   holdText?: string;
+  /**
+   * 09/11/2026 (gironi): le partite nascono tutte all'avvio, quindi si segue la prima ancora aperta (non quella del turno
+   * più alto) ed è pronta solo con `ready_at` (quando i due giocatori hanno finito i turni prima).
+   */
+  current?: boolean;
 };
 
 const POLL_MS = 20_000;
@@ -39,7 +44,7 @@ const ACTIVE = new Set(["pending", "reported", "disputed"]);
  * scheda. Quando la partita cambia, ricarica la pagina (tabellone e iscritti). Dal 07/11/2026, su consenso di chi gioca,
  * la stessa lettura fa partire anche una notifica del browser e un suono (matchAlerts.ts): nessuna richiesta in più.
  */
-export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roundNames, matchHrefBase, noShowMinutes, labels, holdRound = null, holdText }: Props) {
+export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roundNames, matchHrefBase, noShowMinutes, labels, holdRound = null, holdText, current = false }: Props) {
   const x = labels;
   const b = x.liveBanner;
   const router = useRouter();
@@ -55,13 +60,16 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
     if (!sb) return;
     let alive = true;
     const poll = async () => {
-      const { data } = await sb
-        .from("tournament_matches")
-        .select("id, round, player_a, player_b, status, ready_at, seen_a, seen_b")
-        .eq("tournament_id", tournamentId)
-        .or(`player_a.eq.${viewerId},player_b.eq.${viewerId}`)
-        .order("round", { ascending: false })
-        .limit(1);
+      const base = () =>
+        sb
+          .from("tournament_matches")
+          .select("id, round, player_a, player_b, status, ready_at, seen_a, seen_b")
+          .eq("tournament_id", tournamentId)
+          .or(`player_a.eq.${viewerId},player_b.eq.${viewerId}`);
+      // gironi: prima la partita aperta del turno più basso (pronta per prima), poi quella del turno più alto
+      const openRows = current ? (((await base().in("status", ["pending", "reported", "disputed"]).order("round", { ascending: true }).limit(4)).data ?? []) as WatchedMatch[]) : [];
+      const pick = openRows.find((m) => m.ready_at) ?? openRows[0];
+      const { data } = pick ? { data: [pick] } : await base().order("round", { ascending: false }).limit(1);
       if (!alive) return;
       const row = ((data ?? []) as WatchedMatch[])[0] ?? null;
       setMatch(row);
@@ -78,12 +86,12 @@ export function MatchReadyWatcher({ tournamentId, viewerId, initial, names, roun
       alive = false;
       clearInterval(timer);
     };
-  }, [tournamentId, viewerId, initial, router]);
+  }, [tournamentId, viewerId, initial, router, current]);
 
   const live = match && ACTIVE.has(match.status) ? match : null;
   // fase finale in pausa (08/11/2026): i due giocatori ci sono ma la partita non è pronta finché lo staff non la avvia
   const held = Boolean(live && holdRound !== null && live.round >= holdRound && !live.ready_at);
-  const ready = Boolean(live && live.player_a && live.player_b) && !held;
+  const ready = Boolean(live && live.player_a && live.player_b) && !held && (!current || Boolean(live?.ready_at));
   const mine = live ? (live.player_a === viewerId ? "a" : "b") : null;
   const seenByMe = live ? Boolean(mine === "a" ? live.seen_a : live.seen_b) : false;
   const opponent = live ? (mine === "a" ? live.player_b : live.player_a) : null;

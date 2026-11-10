@@ -84,7 +84,7 @@ export type ForCreatorsLabels = {
   tools: {
     title: string;
     intro: string;
-    /** accanto al segno delle righe delle guide, da 640 px: "Guida" (fino al 10/11/2026 nelle schede in cima, "Guida ↓") */
+    /** tasto della scheda in cima: "Guida ↓" */
     guide: string;
     time: string;
     needs: string;
