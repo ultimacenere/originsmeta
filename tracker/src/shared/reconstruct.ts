@@ -108,6 +108,8 @@ export type CardInfo = {
   legendary: (key: string) => boolean;
   myDeck?: () => readonly string[] | null;
   grave?: (key: string) => GraveRole | null;
+  /** la carta aggiunge magie casuali alla mano (Genie, Morgan le Fay, Spellbook: campo `sp` di cards.json, 10/11/2026) */
+  makesSpells?: (key: string) => boolean;
 };
 
 export const STABLE_FRAMES = 2;
@@ -275,18 +277,28 @@ function leftHand(frames: readonly ScanFrame[], key: string): number {
  * giocato in quel round, cioè il più alto fra le volte che l'ho vista mentre sceglievo il bersaglio e le copie uscite
  * dalla mia mano entro la fine della pianificazione (`leftHand`); le altre sono dell'avversario. Le carte create (token) restano fuori, come
  * sul tabellone; il luogo non si sa (0).
+ *
+ * Mazzi che generano magie (10/11/2026, Pierluigi: l'overlay di OrdinaryHarry "funziona poco e male"): con Genie,
+ * Morgan le Fay o Spellbook nel mio mazzo le magie che lancio possono non essere nel mazzo, e Spellbook si rivede a ogni
+ * round per il suo effetto. Prima finivano tutte all'avversario: nella partita di Harry contro Van Helsing (stato del
+ * sito del 10/11 alle 14:46) l'avversario aveva 21 carte viste su 13, fra cui Spellbook 8 volte, Searing Light e
+ * Underworld Flare del mazzo di Harry e dieci magie che il suo mazzo genera. Con un mazzo così una magia rivelata è mia
+ * se ne ho la prova (bersaglio o mano), anche se non è nel mazzo; senza prova non si dà a nessuno.
  */
 export function spellPlays(frames: readonly ScanFrame[], turn: number, cards: CardInfo): ScannedPlay[] {
   const reveal = spellRuns(frames.filter((f) => f.phase !== "plan"));
   // durante la pianificazione il riquadro mostra solo le mie magie: basta un fotogramma
   const aimed = spellRuns(frames.filter((f) => f.phase === "plan"), 1);
   const deck = cards.myDeck?.() ?? null;
+  const makesSpells = !!deck && !!cards.makesSpells && deck.some((k) => cards.makesSpells!(k));
   const out: ScannedPlay[] = [];
   for (const [key, n] of reveal) {
     if (cards.token(key)) continue;
-    const mine = deck && !deck.includes(key) ? 0 : Math.min(n, Math.max(aimed.get(key) ?? 0, leftHand(frames, key)));
+    const proven = Math.min(n, Math.max(aimed.get(key) ?? 0, leftHand(frames, key)));
+    const mine = deck && !deck.includes(key) && !makesSpells ? 0 : proven;
+    const theirs = makesSpells ? 0 : n - mine;
     for (let i = 0; i < mine; i++) out.push({ turn, me: true, card: key, lane: 0 });
-    for (let i = mine; i < n; i++) out.push({ turn, me: false, card: key, lane: 0 });
+    for (let i = 0; i < theirs; i++) out.push({ turn, me: false, card: key, lane: 0 });
   }
   return out;
 }

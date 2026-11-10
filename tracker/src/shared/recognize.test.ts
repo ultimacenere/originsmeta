@@ -2,6 +2,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import cardArt from "../card-art.json";
+import cardArtExtra from "../card-art-extra.json";
+import cardArtVariants from "../card-art-variants.json";
 import cards from "../cards.json";
 import {
   ACCEPT,
@@ -28,6 +30,9 @@ import {
   readVersus,
   unpackVector,
   VEC,
+  VARIANT_ACCEPT,
+  variantRefs,
+  VEC_LEN,
   VS_CARDS,
   windowContent,
   type CardRef,
@@ -77,6 +82,55 @@ test("riferimenti: uno per carta con immagine, nessuna coppia quasi uguale", () 
     }
   // Mama Bear e Papa Bear il 10/10: 0,71. Sopra 0,8 il distacco minimo non basterebbe più a separarle
   assert.ok(worst < 0.8, `due carte troppo simili: ${worst}`);
+});
+
+test("varianti (10/11/2026): la Big Bad Wolf ALPHA vista in partita si riconosce dall'immagine della variante, e nessuna variante ruba un'altra carta", () => {
+  const variants = cardArtVariants as Record<string, string[]>;
+  const extra = cardArtExtra as Record<string, string[]>;
+  const vrefs = variantRefs(loadRefs(variants));
+  assert.ok(vrefs.length >= 66, `varianti: ${vrefs.length}`);
+  assert.ok(vrefs.every((r) => r.variant));
+  for (const r of vrefs) assert.ok(r.key in (cards as object), `${r.key} non è nella tabella delle carte`);
+  // la promo del Kickstarter di Dracula (la segnalazione di Pierluigi) c'è
+  assert.ok(variants[ref("Dracula").key]?.length, "Dracula senza varianti");
+  // le due pose della Big Bad Wolf ALPHA prese dai fotogrammi: con le sole immagini del sito non si leggono, con le varianti sì
+  const wolf = ref("Big Bad Wolf").key;
+  const otherExtra = Object.fromEntries(Object.entries(extra).filter(([k]) => k !== wolf));
+  const siteOnly = loadRefs(cardArt as Record<string, string>, otherExtra);
+  const withVariants = [...siteOnly, ...vrefs];
+  for (const b64 of extra[wolf]) {
+    const pose = unpackVector(b64);
+    assert.equal(bestMatch(pose, siteOnly).key, null);
+    const m = bestMatch(pose, withVariants);
+    assert.equal(m.key, wolf);
+    assert.ok(m.margin > 0.5, `distacco ${m.margin}`);
+  }
+  // nessuna variante quasi uguale all'immagine di un'altra carta, e ogni immagine del sito resta la sua carta
+  const all = [...loadRefs(cardArt as Record<string, string>, extra), ...vrefs];
+  for (const v of vrefs) {
+    for (const r of refs) {
+      if (r.key === v.key) continue;
+      let s = 0;
+      for (let k = 0; k < VEC_LEN; k++) s += v.v[k] * r.v[k];
+      assert.ok(s < 0.8, `${v.key} somiglia troppo a ${r.key}: ${s}`);
+    }
+    // l'illustrazione di una variante si legge come la sua carta
+    assert.equal(bestMatch(v.v, all).key, v.key, v.key);
+  }
+  for (const r of refs) assert.equal(bestMatch(r.v, all).key, r.key, r.key);
+});
+
+test("varianti: entrano solo se l'immagine base non riconosce niente, e con un distacco di almeno VARIANT_ACCEPT.margin", () => {
+  const a = ref("Dracula");
+  const b = ref("Big Bad Wolf");
+  // una lettura a metà fra due carte: la base non la accetta, una variante vicina la vincerebbe di poco
+  const mix = new Float32Array(VEC_LEN);
+  for (let i = 0; i < VEC_LEN; i++) mix[i] = a.v[i] * 0.7 + b.v[i] * 0.3;
+  const base = [a, b];
+  assert.equal(bestMatch(a.v, [...base, { key: b.key, v: a.v, variant: true }]).key, a.key, "la base vince sempre se riconosce");
+  const close = { key: "C99999_MB", v: mix, variant: true as const };
+  const m = bestMatch(mix, [...base, close]);
+  assert.ok(m.key === null || m.key === a.key || m.margin >= VARIANT_ACCEPT.margin);
 });
 
 test("vettori: compressi senza perdere la correlazione; un'immagine piatta non somiglia a niente", () => {

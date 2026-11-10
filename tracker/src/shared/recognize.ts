@@ -260,15 +260,42 @@ export function normalize(v: Float32Array): Float32Array {
   return v;
 }
 
-export type CardRef = { key: string; v: Float32Array };
+/** `variant`: riferimento preso dall'immagine di una variante del sito (`VARIANT_ART`), vale solo in seconda battuta. */
+export type CardRef = { key: string; v: Float32Array; variant?: true };
 export type Match = { key: string | null; score: number; margin: number; best: string | null };
+
+/**
+ * Soglie per i riferimenti delle varianti (10/11/2026): stesso minimo, distacco più alto. Rilettura dei 24.283 fotogrammi
+ * del 10–12/10: le Aladdin ALPHA vere stavano a 0,45–0,67 di distacco (una a 0,28), le carte ingrandite durante le
+ * animazioni lette come la promo di Sandman a 0,20–0,27.
+ */
+export const VARIANT_ACCEPT = { min: 0.5, margin: 0.3 } as const;
+
+/** I riferimenti di `card-art-variants.json`, segnati come varianti. */
+export const variantRefs = (refs: readonly CardRef[]): CardRef[] => refs.map((r) => ({ ...r, variant: true as const }));
 
 /**
  * La carta più somigliante; `key` è null se non supera le soglie (spazio vuoto, dorso, carta coperta a metà). Una carta
  * può avere più riferimenti (l'immagine del sito e le versioni ALPHA di `card-art-extra.json`): il distacco si misura
  * dalla migliore carta **diversa**, altrimenti due versioni della stessa carta si annullerebbero a vicenda.
+ * I riferimenti delle varianti (`variant`) entrano solo se senza di loro non si riconosce niente, e con `VARIANT_ACCEPT`:
+ * così non tolgono il distacco alle letture che c'erano già (rilettura del 10/11: Mary, Scarecrow e altre 190 letture
+ * sparivano mettendole tutte insieme).
  */
 export function bestMatch(v: Float32Array, refs: readonly CardRef[]): Match {
+  let baseRefs = withoutVariants.get(refs);
+  if (!baseRefs) withoutVariants.set(refs, (baseRefs = refs.filter((r) => !r.variant)));
+  if (baseRefs.length === refs.length) return bestOf(v, refs);
+  const base = bestOf(v, baseRefs);
+  if (base.key) return base;
+  // se la migliore è l'immagine base di una carta, il distacco con le varianti non è più alto di quello appena scartato:
+  // passa solo una lettura vinta da una variante
+  const all = bestOf(v, refs);
+  return all.best && all.score >= VARIANT_ACCEPT.min && all.margin >= VARIANT_ACCEPT.margin ? { ...all, key: all.best } : base;
+}
+const withoutVariants = new WeakMap<readonly CardRef[], readonly CardRef[]>();
+
+function bestOf(v: Float32Array, refs: readonly CardRef[]): Match {
   let best: CardRef | null = null;
   let s1 = -Infinity;
   let s2 = -Infinity;
@@ -354,6 +381,28 @@ export function loadRefs(...tables: Record<string, string | readonly string[]>[]
  * docs/tracker.md, "Carte ALPHA".
  */
 export const EXTRA_ART = "card-art-extra.json";
+
+/**
+ * Le varianti delle carte (10/11/2026; Pierluigi: "sul tracker dobbiamo aggiungere le varianti carta, ho visto uno
+ * streamer giocare la Dracula variante e non è stata riconosciuta"). `card-art-variants.json` ha, per la chiave della
+ * carta base, i vettori presi dalle immagini delle varianti che il sito ha già (`scripts/card-art.mjs`):
+ * - le varianti ALPHA del pacco creator (`public/cards/alt/`, manifest `src/lib/data/card-variants.json`): carte a tutta
+ *   illustrazione, senza la cornice bianca del sito;
+ * - le promo Alpha del Kickstarter (`public/media/kickstarter/promos/`, `src/lib/kickstarterPromos.ts`), tranne i
+ *   "Character Profile", che non sono carte: la carta sta dentro una teca da collezione (`SLAB_CARD`).
+ * Prova del 10/11 sulla Big Bad Wolf ALPHA, l'unica che c'è sia fra le varianti del sito sia fra le pose viste in partita
+ * (`card-art-extra.json`): correlazione 0,05 con l'immagine base del sito, 0,90–0,91 con la variante, distacco 0,66–0,70.
+ */
+export const VARIANT_ART = "card-art-variants.json";
+/**
+ * Le stesse varianti con l'inquadratura delle carte della mano (`ART_IN_HAND`): gli spettatori di OrdinaryHarry il 10/11
+ * ("Dracula card with the skin doesn't work") passavano il mouse sulla sua mano nell'estensione Twitch.
+ */
+export const VARIANT_HAND_ART = "card-art-variants-hand.json";
+/** La carta dentro l'immagine di una variante ALPHA (bordi arrotondati compresi); l'illustrazione poi è `ART_IN_CARD`. */
+export const VARIANT_CARD: Rect = { x: 0.04, y: 0.03, w: 0.92, h: 0.97 };
+/** La carta dentro la teca di una promo del Kickstarter (misurata su Dracula, 480 × 770; vale per tutte le 28 teche). */
+export const SLAB_CARD: Rect = { x: 47 / 480, y: 147 / 770, w: 390 / 480, h: 566 / 770 };
 
 /* ---------- mana del giocatore: "attuale/massimo", da cui il round ---------- */
 

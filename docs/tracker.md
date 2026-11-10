@@ -809,6 +809,13 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
     misura il distacco dalla migliore carta **diversa**. Si imparano partita per partita: fotogrammi raccolti con
     `npm run frames`, letture non riconosciute raggruppate, un nome per gruppo guardando un esemplare, controllo su
     tutte le sessioni che nessuna carta cambi nome. Zombie no: somiglia al dorso rosa del mazzo.
+    **Dal 10/11/2026 anche dalle immagini del sito** (`src/card-art-variants.json`, `VARIANT_ART`, generato da
+    `npm run card-art`): le 38 varianti ALPHA del pacco creator (`public/cards/alt/`) e le 28 promo Alpha del Kickstarter
+    con la carta dentro la teca (`SLAB_CARD`; fuori i "Character Profile"), 66 immagini di 43 carte, Dracula compresa
+    (segnalazione di Pierluigi: una Dracula variante giocata da uno streamer non riconosciuta). Prova sulla Big Bad Wolf
+    ALPHA vista in partita: 0,05 con l'immagine base, 0,90–0,91 con la variante del sito. Quando il sito aggiunge
+    varianti (`import-card-variants.mjs`) o promo, si rilancia `npm run card-art`. Le varianti valgono per tabellone e
+    schermata VS, non ancora per mano e riquadro delle magie.
   - **Pannello a L**: largo 480, carte viste 4 per fila con il mana sotto; larghezza fissa e sempre dentro lo schermo;
     trascinamento fatto dall'app (`deck:drag`) con `setBounds`, perché con la scala al 150% `setPosition` allarga la
     finestra di un pixel a ogni passo. "Vita" diventa "Barriere" (glossario del gioco).

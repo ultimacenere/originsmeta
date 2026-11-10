@@ -14,7 +14,10 @@ const table = {};
 for (const c of cards) {
   if (!c.key) continue;
   const g = graveRoleOf(c);
-  table[c.key] = { n: c.name, s: c.slug, m: c.mana ?? null, t: c.type, l: c.legendary ? 1 : 0, a: c.status === "active" ? 1 : 0, ...(g ? { g } : {}) };
+  // `sp` (10/11/2026): la carta aggiunge magie casuali alla mano (Genie, Morgan le Fay, Spellbook): le magie che lancio
+  // possono non essere nel mio mazzo (`makesSpells` di src/shared/reconstruct.ts)
+  const sp = /add (?:a|\d+) random spells? to your hand/i.test(c.ability?.en ?? "");
+  table[c.key] = { n: c.name, s: c.slug, m: c.mana ?? null, t: c.type, l: c.legendary ? 1 : 0, a: c.status === "active" ? 1 : 0, ...(g ? { g } : {}), ...(sp ? { sp: 1 } : {}) };
 }
 fs.writeFileSync(path.join(root, "src/cards.json"), JSON.stringify(table));
 console.log(`carte per l'app: ${Object.keys(table).length}`);
