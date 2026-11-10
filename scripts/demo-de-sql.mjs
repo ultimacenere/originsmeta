@@ -1,6 +1,6 @@
 // Torneo di prova a doppia eliminazione (lo stesso di demo-tournament.mjs --format double_elim) come UN file SQL da
 // incollare nell'editor SQL di Supabase: serve quando si lavora da un PC senza .env.local (10/11/2026).
-// Uso: node scripts/demo-de-sql.mjs --organizer <nome utente> [--players a] [--count 300] [--stage qualifiers|ready]
+// Uso: node scripts/demo-de-sql.mjs --organizer <nome utente> [--players a] [--judges x,y] [--count 300] [--stage qualifiers|ready]
 //        [--lang en] [--out file.sql]
 // Il file fa tutto in un blocco DO (una transazione): bot mancanti, torneo privato, iscrizioni con mazzo e sideboard di 3,
 // avvio, partite fra bot. In fondo una select con tag, link e codice d'invito. Se qualcosa non torna non scrive niente.
@@ -15,6 +15,7 @@ const opt = (name) => {
 const org = opt("--organizer");
 if (!org) throw new Error("--organizer <nome utente> obbligatorio");
 const players = (opt("--players") ?? "").split(",").map((s) => s.trim().replace(/^@/, "")).filter(Boolean).slice(0, 2);
+const judges = (opt("--judges") ?? "").split(",").map((x) => x.trim().replace(/^@/, "")).filter(Boolean);
 const N = Number(opt("--count") ?? 300);
 if (!Number.isInteger(N) || N < 130 || N > 1024) throw new Error("--count fra 130 e 1024");
 const stage = opt("--stage") ?? "qualifiers";
@@ -97,6 +98,13 @@ begin
   select tid, ids[d.k + 1], jsonb_build_array(d.code), d.side::jsonb from (values
 ${decks.map((d) => `    (${d.k}, ${lit(d.code)}, ${lit(d.side)})`).join(",\n")}
   ) as d(k, code, side);
+
+  -- arbitri (--judges): gestiscono il torneo come l'organizzatore
+  foreach nm in array array[${judges.map(lit).join(", ")}]::text[] loop
+    select id into u from public.profiles where lower(username) = lower(nm);
+    if u is null then raise exception 'Nessun profilo con nome utente %', nm; end if;
+    insert into public.tournament_judges (tournament_id, user_id, added_by) values (tid, u, org);
+  end loop;
 
   -- avvio come start_tournament: i giocatori veri in testa, i bot in ordine casuale
   perform public.tm_start(tid, humans || (select array_agg(x order by random()) from unnest(ids[${H + 1}:]) x));
