@@ -6,6 +6,7 @@ import { canListTournaments } from "@/lib/tournament/types";
 import { stageLabels } from "@/lib/tournament/stageLabels";
 import { TournamentForm } from "@/components/TournamentForm";
 import { formatLabels } from "@/lib/tournament/formatLabels";
+import { doubleElimLabels } from "@/lib/tournament/doubleElimLabels";
 import { LoginPanel } from "@/components/LoginPanel";
 import { loginLabels } from "@/lib/loginLabels";
 import { steamLoginOn } from "@/lib/supabase/admin";
@@ -38,7 +39,7 @@ export default async function NewTournamentPage({ params }: { params: LocalePara
   } else {
     const { data } = await supabase.from("profiles").select("badge, role").eq("id", user.id).maybeSingle();
     const profile = (data as { badge: string; role: string } | null) ?? null;
-    body = <TournamentForm locale={locale} userId={user.id} canList={canListTournaments(profile)} labels={x} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} contactEmail={contactEmail} stageText={stageLabels[locale]} formatText={formatLabels[locale]} />;
+    body = <TournamentForm locale={locale} userId={user.id} canList={canListTournaments(profile)} labels={x} loginHref={`${href(locale, "/login")}?next=${encodeURIComponent(path)}`} contactEmail={contactEmail} stageText={stageLabels[locale]} formatText={formatLabels[locale]} deText={doubleElimLabels[locale]} />;
   }
 
   return (

@@ -12,11 +12,18 @@
  * Funzioni pure, senza import a runtime: le usano pagine, componenti client, script e test.
  */
 
-export const FORMATS = ["single_elim", "swiss", "groups"] as const;
+/** 10/11/2026: anche la qualificazione a doppia eliminazione (doubleElim.ts, blocco DOPPIA ELIMINAZIONE di schema.sql). */
+export const FORMATS = ["single_elim", "swiss", "groups", "double_elim"] as const;
 export type TournamentFormat = (typeof FORMATS)[number];
 
-export function isStagedFormat(format: string | null | undefined): format is "swiss" | "groups" {
-  return format === "swiss" || format === "groups";
+/** Formati con una prima fase (svizzera, gironi, qualificazione a doppia eliminazione) e la fase finale a tabellone. */
+export function isStagedFormat(format: string | null | undefined): format is "swiss" | "groups" | "double_elim" {
+  return format === "swiss" || format === "groups" || format === "double_elim";
+}
+
+/** Partita della prima fase (svizzera, gironi, vincenti o perdenti della doppia eliminazione). */
+export function isStageMatch(m: { stage?: string | null }): boolean {
+  return m.stage === "swiss" || m.stage === "group" || m.stage === "upper" || m.stage === "lower";
 }
 
 /** Turni svizzeri che l'organizzatore può scegliere (vincolo tournaments_swiss_rounds_check). */
@@ -364,14 +371,14 @@ export function finalRoundOf(format: string, matches: { round: number; stage?: s
   return b.reduce((max, m) => Math.max(max, m.round), 0);
 }
 
-/** Turni svizzeri o dei gironi giocati o in corso (il più alto). */
+/** Turni della prima fase giocati o in corso (il più alto). */
 export function stageRounds(matches: { round: number; stage?: string | null }[]): number {
-  return matches.reduce((max, m) => (m.stage === "swiss" || m.stage === "group" ? Math.max(max, m.round) : max), 0);
+  return matches.reduce((max, m) => (isStageMatch(m) ? Math.max(max, m.round) : max), 0);
 }
 
-/** Partite ancora aperte della svizzera o dei gironi. */
+/** Partite ancora aperte della prima fase. */
 export function openStageMatches<T extends { stage?: string | null; status: string }>(matches: T[]): T[] {
-  return matches.filter((m) => (m.stage === "swiss" || m.stage === "group") && (m.status === "pending" || m.status === "reported" || m.status === "disputed"));
+  return matches.filter((m) => isStageMatch(m) && (m.status === "pending" || m.status === "reported" || m.status === "disputed"));
 }
 
 /** Il vincitore di una svizzera senza Top (riga `champion` scritta da finish_tournament), oppure null. */

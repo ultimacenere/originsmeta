@@ -19,6 +19,8 @@ import { stageMatchName } from "@/lib/tournament/stageNames";
 import { MatchReadyWatcher, type WatchedMatch } from "@/components/MatchReadyWatcher";
 import { Bracket } from "@/components/Bracket";
 import { StagedBracket } from "@/components/StagedBracket";
+import { DoubleElimBracket, dePanelOf } from "@/components/DoubleElimBracket";
+import { doubleElimLabels } from "@/lib/tournament/doubleElimLabels";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { shownBadge } from "@/lib/community/badges";
@@ -113,6 +115,7 @@ export default async function TournamentPage({ params, searchParams }: { params:
   ]);
   const sl = stageLabels[locale];
   const fl = formatLabels[locale];
+  const dl = doubleElimLabels[locale];
   // svizzera e gironi (09/11/2026): fasi, Top o fase finale, pausa e semifinalisti dalle partite con la fase
   const fv = staged ? formatView({ ...t, ...stages, ...(fo ?? {}) }, matches) : null;
   const bplan = planOf(fv ? fv.bracket : matches, fv ? null : stages.top_cut);
@@ -249,8 +252,8 @@ export default async function TournamentPage({ params, searchParams }: { params:
               {fv.champion ? <p className="mb-3 rounded-lg border-2 border-gold bg-gold/10 p-3 font-semibold text-gold">★ {fill(fl.champion, { name: nameOf.get(fv.champion) ?? "?" })}</p> : null}
               {fv.bracket.length ? (
                 <div className="mb-6">
-                  <h3 className="t-item">{t.format === "swiss" ? fill(sl.top, { n: fv.cut ?? 0 }) : fl.finalStage}</h3>
-                  {holdFrom !== null ? <p className="mt-1 text-sm text-gold">{t.format === "swiss" ? fill(sl.holdStatus, { n: fv.cut ?? 0 }) : fl.finalHold}</p> : null}
+                  <h3 className="t-item">{t.format === "swiss" ? fill(sl.top, { n: fv.cut ?? 0 }) : t.format === "double_elim" ? fill(dl.final, { n: fv.cut ?? 0 }) : fl.finalStage}</h3>
+                  {holdFrom !== null ? <p className="mt-1 text-sm text-gold">{t.format === "swiss" || t.format === "double_elim" ? fill(sl.holdStatus, { n: fv.cut ?? 0 }) : fl.finalHold}</p> : null}
                   <div className="mt-2">
                     <Bracket matches={fv.bracket} names={nameOf} dict={d} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
                   </div>
@@ -259,7 +262,24 @@ export default async function TournamentPage({ params, searchParams }: { params:
                 <p className="mb-3 text-sm text-pale-muted">{fill(fl.topSoon, { n: fv.cut })}</p>
               ) : t.format === "groups" ? (
                 <p className="mb-3 text-sm text-pale-muted">{fl.finalSoon}</p>
+              ) : t.format === "double_elim" ? (
+                <p className="mb-3 text-sm text-pale-muted">{fill(dl.finalSoon, { n: fv.cut ?? 0 })}</p>
               ) : null}
+              {/* 10/11/2026: la qualificazione a doppia eliminazione, una scheda alla volta (?b=A-w) */}
+              {t.format === "double_elim" && fv.de ? (
+                <DoubleElimBracket
+                  matches={matches}
+                  plan={fv.de}
+                  names={nameOf}
+                  dict={d}
+                  labels={dl}
+                  panel={dePanelOf(typeof sp.b === "string" ? sp.b : undefined, fv.de, matches, viewer)}
+                  hrefFor={(id) => `${path}?b=${id}#bracket`}
+                  open={{ linkBase: `${path}/match/`, viewer, all: isStaff }}
+                />
+              ) : null}
+              {t.format !== "double_elim" ? (
+              <>
               <h3 className="t-item">{fl.standingsTitle}</h3>
               <FormatStandings
                 matches={matches.map((m) => ({ round: m.round, position: m.position, player_a: m.player_a, player_b: m.player_b, winner: m.winner, score_a: m.score_a, score_b: m.score_b, status: m.status, stage: m.stage ?? null, grp: m.grp ?? null }))}
@@ -278,6 +298,8 @@ export default async function TournamentPage({ params, searchParams }: { params:
               />
               <h3 className="t-item mt-6">{fl.roundsTitle}</h3>
               <FormatRounds matches={matches} names={nameOf} total={t.format === "swiss" ? fv.plannedRounds : 0} groups={t.format === "groups"} dict={d} labels={fl} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} />
+              </>
+              ) : null}
             </>
           ) : bplan.topRound !== null ? (
             <StagedBracket matches={matches} plan={bplan} names={nameOf} dict={d} locale={locale} open={{ linkBase: `${path}/match/`, viewer, all: isStaff }} holdFrom={holdFrom} />
@@ -375,6 +397,8 @@ export default async function TournamentPage({ params, searchParams }: { params:
             {t.format === "groups" && fo?.group_size ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(fl.groupsPill, { n: fo.group_size, k: fo.group_advance ?? 1 })}</span> : null}
             {t.format === "swiss" && stages.top_cut_hold && stages.top_cut ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: stages.top_cut })}</span> : null}
             {t.format === "groups" && stages.top_cut_hold ? <span className="stat-pill bg-night-3 text-pale">{sl.formHold}</span> : null}
+            {t.format === "double_elim" && fo?.de_pools && fo.de_qualify ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(dl.pill, { pools: fo.de_pools, n: fo.de_qualify })}</span> : null}
+            {t.format === "double_elim" && stages.top_cut_hold && fo?.de_pools && fo.de_qualify ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: fo.de_pools * fo.de_qualify * 2 })}</span> : null}
             {fo?.sideboard ? <span className="stat-pill bg-night-3 text-pale">{fill(fl.sideboardPill, { n: fo.sideboard })}</span> : null}
             {stages.deck_ban ? <span className="stat-pill bg-night-3 text-pale">{sl.banPill}</span> : null}
             {t.checkin ? <span className="stat-pill bg-night-3 text-pale">{x.checkin.pillRequired}</span> : null}
@@ -392,6 +416,8 @@ export default async function TournamentPage({ params, searchParams }: { params:
           {t.format === "swiss" ? <p className="mt-1 text-sm text-pale-muted">{stages.top_cut ? fill(fl.swissTopRule, { n: stages.top_cut }) : fl.swissNoTopRule}</p> : null}
           {t.format === "groups" && fo?.group_size ? <p className="mt-2 text-sm text-pale">{fill(fl.groupsRule, { n: fo.group_size, k: fo.group_advance ?? 1 })}</p> : null}
           {t.format === "swiss" && stages.top_cut_hold && stages.top_cut ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: stages.top_cut })}</p> : null}
+          {t.format === "double_elim" && fo?.de_pools && fo.de_qualify ? <p className="mt-2 text-sm text-pale">{fill(dl.rule, { pools: fo.de_pools, n: fo.de_qualify, cut: fo.de_pools * fo.de_qualify * 2 })}</p> : null}
+          {t.format === "double_elim" && stages.top_cut_hold && fo?.de_pools && fo.de_qualify ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: fo.de_pools * fo.de_qualify * 2 })}</p> : null}
           {fo?.sideboard ? <p className="mt-1 text-sm text-pale-muted">{fill(fl.sideboardRule, { n: fo.sideboard })}</p> : null}
           {stages.deck_ban ? <p className="mt-1 text-sm text-pale-muted">{sl.banRule}</p> : null}
           {t.checkin ? <p className="mt-1 text-sm text-pale-muted">{x.checkin.rule}</p> : null}

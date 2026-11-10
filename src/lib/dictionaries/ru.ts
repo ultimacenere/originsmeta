@@ -1350,7 +1350,7 @@ export const ru: Dictionary = {
     organizedBy: "Организатор:",
     startsAt: "Начало",
     utc: "UTC",
-    formats: { single_elim: "Одиночное выбывание", swiss: "Швейцарская система", groups: "Групповой этап" },
+    formats: { single_elim: "Одиночное выбывание", swiss: "Швейцарская система", groups: "Групповой этап", double_elim: "Двойное выбывание" },
     deckModes: { free: "Свободная колода", conquest: "Conquest" },
     conquestRule: "Колод: {n}, с разными Легендарными, не меньше {min} уникальных карт разницы между любыми двумя колодами",
     bestOf: "Серия из {n} партий",

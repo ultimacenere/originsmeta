@@ -9,6 +9,10 @@ import { defaultSwissRounds, groupCount, groupsProblem, isStagedFormat, openStag
 import { formatMatchNames, formatRoundTitle, formatView } from "@/lib/tournament/formatView";
 import { formatLabels } from "@/lib/tournament/formatLabels";
 import { FormatControls } from "@/components/FormatControls";
+import { DoubleElimControls } from "@/components/DoubleElimControls";
+import { DoubleElimBracket, dePanelOf } from "@/components/DoubleElimBracket";
+import { doubleElimLabels } from "@/lib/tournament/doubleElimLabels";
+import { deMinPlayers, poolCounts } from "@/lib/tournament/doubleElim";
 import { FormatRounds } from "@/components/FormatRounds";
 import { bestOfSummary, canListTournaments, fill, totalRounds, tournamentInviteLink, tournamentShortLink } from "@/lib/tournament/types";
 import { matchNeed } from "@/lib/tournament/rules";
@@ -79,6 +83,8 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
   ]);
   const sl = stageLabels[locale];
   const fl = formatLabels[locale];
+  const dl = doubleElimLabels[locale];
+  const sp = await searchParams;
   // svizzera e gironi (09/11/2026): fasi, nomi delle partite e dei turni, pausa della fase finale
   const fv = staged ? formatView({ ...t, ...stages, ...fo }, matches) : null;
   const plan = planOf(fv ? fv.bracket : matches, fv ? null : stages.top_cut);
@@ -142,6 +148,12 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
   const eligibleN = players.filter((p) => p.status === "registered" && p.decks_submitted).length;
   const startNote = !fv
     ? undefined
+    : t.format === "double_elim"
+      ? fo.de_pools && fo.de_qualify
+        ? eligibleN < deMinPlayers(fo.de_pools, fo.de_qualify) || Math.min(...poolCounts(eligibleN, fo.de_pools)) <= 2 * fo.de_qualify
+          ? dl.errors.doubleElim
+          : fill(dl.startNote, { n: eligibleN, pools: fo.de_pools, k: fo.de_qualify })
+        : undefined
     : t.format === "swiss"
       ? `${fill(fl.startSwiss, { n: eligibleN, rounds: fo.swiss_rounds ?? defaultSwissRounds(eligibleN) })}${eligibleN % 2 ? ` ${fl.startSwissBye}` : ""}`
       : fo.group_size
@@ -153,7 +165,8 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
   const curRound = fv ? fv.stageRounds : 0;
   const curList = t.format === "swiss" ? stageList.filter((mt) => mt.round === curRound) : stageList;
   const finishReady = fv ? (fv.bracket.length ? undefined : t.format === "swiss" && !stages.top_cut && curRound >= 1 && openStageMatches(matches).length === 0) : undefined;
-  const allErrors: Record<string, string> = { ...(sl.errors as Record<string, string>), ...(fl.errors as Record<string, string>) };
+  const allErrors: Record<string, string> = { ...(sl.errors as Record<string, string>), ...(fl.errors as Record<string, string>), ...(dl.errors as Record<string, string>) };
+  const deMatches = matches.filter((mt) => mt.stage === "upper" || mt.stage === "lower");
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -184,6 +197,22 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
         </div>
       ) : null}
 
+      {fv && t.status === "running" && t.format === "double_elim" ? (
+        <div className="mt-8">
+          <DoubleElimControls
+            id={t.id}
+            slug={t.slug}
+            done={deMatches.filter((mt) => mt.status === "confirmed" || mt.status === "bye").length}
+            total={deMatches.length}
+            open={fv.open}
+            cut={fv.cut ?? 0}
+            finalStarted={fv.bracket.length > 0}
+            labels={dl}
+            warnOpen={fl.roundOpenWarn}
+            errors={{ ...(x.errors as Record<string, string>), ...allErrors }}
+          />
+        </div>
+      ) : null}
       {fv && t.status === "running" && (t.format === "swiss" || t.format === "groups") ? (
         <div className="mt-8">
           <FormatControls
@@ -250,7 +279,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
       ) : null}
 
       {matches.length ? (
-        <section className="card-night mt-6 p-5">
+        <section id="de" className="card-night mt-6 scroll-mt-24 p-5">
           <h2 className="t-section">
             {x.bracket}
             {t.status === "running" ? <span className="ml-2 text-sm font-normal text-pale-muted">· {x.manage.swapTitle}</span> : null}
@@ -258,10 +287,23 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
           {fv ? (
             /* svizzera e gironi (09/11/2026): turni con le stanze, poi il tabellone della fase finale (scambi solo lì e nel turno svizzero in corso) */
             <>
-              <FormatRounds matches={matches} names={names} total={t.format === "swiss" ? fv.plannedRounds : 0} groups={t.format === "groups"} dict={d} labels={fl} open={{ linkBase: `${back}/match/`, viewer: null, all: true }} />
+              {t.format === "double_elim" && fv.de ? (
+                <DoubleElimBracket
+                  matches={matches}
+                  plan={fv.de}
+                  names={names}
+                  dict={d}
+                  labels={dl}
+                  panel={dePanelOf(typeof sp.b === "string" ? sp.b : undefined, fv.de, matches, null)}
+                  hrefFor={(id) => `${back}/manage?b=${id}#de`}
+                  open={{ linkBase: `${back}/match/`, viewer: null, all: true }}
+                />
+              ) : (
+                <FormatRounds matches={matches} names={names} total={t.format === "swiss" ? fv.plannedRounds : 0} groups={t.format === "groups"} dict={d} labels={fl} open={{ linkBase: `${back}/match/`, viewer: null, all: true }} />
+              )}
               {fv.bracket.length ? (
                 <div className="mt-5">
-                  <h3 className="t-item">{t.format === "swiss" ? fill(sl.top, { n: fv.cut ?? 0 }) : fl.finalStage}</h3>
+                  <h3 className="t-item">{t.format === "swiss" ? fill(sl.top, { n: fv.cut ?? 0 }) : t.format === "double_elim" ? fill(dl.final, { n: fv.cut ?? 0 }) : fl.finalStage}</h3>
                   {t.status === "running" ? (
                     <BracketEditor id={t.id} slug={t.slug} matches={fv.bracket} names={Object.fromEntries(names)} labels={x} linkBase={`${back}/match/`} />
                   ) : (
@@ -338,6 +380,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
               contactEmail={contactEmail}
               stageText={sl}
               formatText={fl}
+              deText={dl}
               initial={{
                 id: t.id,
                 status: t.status,
@@ -362,6 +405,8 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
                 group_advance: fo.group_advance,
                 group_seeding: fo.group_seeding,
                 sideboard: fo.sideboard,
+                de_pools: fo.de_pools,
+                de_qualify: fo.de_qualify,
                 lang: t.lang,
                 description: t.description,
                 rules: t.rules,
