@@ -8814,3 +8814,521 @@ begin
 end $$;
 revoke all on function public.steam_link_remove() from public, anon;
 grant execute on function public.steam_link_remove() to authenticated;
+
+-- ===== 10/11/2026: EVENTI DELLA COMMUNITY =====
+-- =====================================================================================================
+-- 10/11/2026 — EVENTI DELLA COMMUNITY: LA ROYALE RUMBLE DEL 16/11/2026 (Pierluigi: "una royale rumble tra i creators
+--   italiani con giveaway di oltre 125 pacchetti di carte di origins, noi gestiamo tutta la infrastruttura"; note Granola
+--   "sito roadmap" del 10/11/2026: pagina unica con talent, mazzi, classifica svizzera e abbinamenti, pagina nascosta dei
+--   caster con la ruota dei mazzi, giveaway a slot con il comando in chat, codici univoci dati dai mod e riscattati sul
+--   sito con l'iscrizione, countdown e overlay per OBS).
+--
+--   community_events          un evento: `config` (talent, mazzi, slot del giveaway, testi) e `state` (ruota, turni,
+--                             risultati, orologio del giveaway), due JSON che scrive solo la regia con il numero di
+--                             versione; `control_token` è il link della regia (i caster) e lo staff entra senza link.
+--   community_event_mods      il link del mod di ogni canale del giveaway (uno per canale).
+--   community_event_codes     i codici del giveaway: liberi finché un mod non li dà a un vincitore (slot, canale, impronta
+--                             del nome Twitch del vincitore), poi riscattati da un iscritto. Una vincita a persona in tutto
+--                             l'evento (unique slug + impronta). L'impronta è sha256(slug:nome) e il nome non si salva.
+--   community_event_redeem_fails  i tentativi di riscatto sbagliati (10 l'ora per account), tenuti un giorno.
+--
+--   Nessun client legge o scrive le tabelle: tutto passa dalle funzioni qui sotto (security definer).
+--   community_event_public(slug)              pagina e overlay (anon): i talent con revealAt nel futuro escono come
+--                                              {id: "hidden-<n>", role, hidden, revealAt}, senza nome, foto né canale;
+--                                              i loro canali spariscono anche dagli slot e nello stato i loro id
+--                                              diventano "hidden-<n>";
+--                                              niente coppie decise, niente codici né link.
+--   community_event_control(slug, token)      la regia: tutto, più i link dei mod, i conteggi dei codici e chi ha riscattato
+--                                              (nome utente del sito; isNew = iscritto dopo la creazione dell'evento).
+--                                              Con il token della regia o da staff (is_staff()).
+--   community_event_create(slug, config)      lo staff crea un evento e riceve il link della regia;
+--   community_event_rotate(slug)              lo staff cambia il link della regia (il vecchio smette di valere);
+--   community_event_save(slug, token, config, state, version)  la regia salva: config e/o stato (null = invariato),
+--                                              solo se la versione è quella letta (altrimenti 'conflict');
+--   community_event_codes_add(slug, token, n) la regia genera codici (al massimo 500 per evento);
+--   community_event_mods_sync(slug, token)    la regia crea i link dei mod per i canali degli slot;
+--   community_event_mod_view(slug, token)     il pannello del mod: slot, orologio e codici del suo canale;
+--   community_event_assign(slug, token, slot, nomi)  il mod dà i codici ai vincitori del suo slot: ok, dup (ha già
+--                                              vinto), full (pacchetti dello slot finiti), none (codici finiti), invalid;
+--   community_event_swap(slug, token, codice, nome)  il codice non riscattato passa a un altro vincitore;
+--   community_event_release(slug, token, codice)     il codice non riscattato torna libero;
+--   community_event_redeem(slug, codice)      un iscritto riscatta: ok, mine, taken, invalid, limit, too_many, closed;
+--   community_event_my_codes(slug)            i codici riscattati dall'iscritto della sessione;
+--   community_event_forget(slug)              lo staff, a pacchetti consegnati, toglie impronte e account dai codici
+--                                              (restano i conteggi e la pagina).
+--
+--   Regole uguali nel codice (src/lib/event/codes.ts: CODE_ALPHABET, CODE_PATTERN, TWITCH_LOGIN_PATTERN;
+--   src/lib/event/event.test.ts le confronta con questo blocco). Il controllo del contenuto dei due JSON lo fa il sito
+--   (src/lib/event/config.ts e engine.ts) prima di salvare; qui solo forma e dimensioni. Nessuna grant né revoke su
+--   public.profiles. Idempotente. Il sito regge senza questo blocco (la pagina dell'evento risponde 404 e la regia dice
+--   "non ancora attivo"). Prova a secco: node scripts/event-dry-run.mjs.
+-- =====================================================================================================
+
+create table if not exists public.community_events (
+  slug text primary key check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$' and char_length(slug) between 3 and 60),
+  config jsonb not null default '{}'::jsonb check (jsonb_typeof(config) = 'object' and octet_length(config::text) <= 200000),
+  state jsonb not null default '{}'::jsonb check (jsonb_typeof(state) = 'object' and octet_length(state::text) <= 200000),
+  version integer not null default 0,
+  control_token text not null unique check (char_length(control_token) between 32 and 200),
+  created_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table public.community_events enable row level security;
+revoke all on public.community_events from anon, authenticated;
+
+create table if not exists public.community_event_mods (
+  slug text not null references public.community_events(slug) on delete cascade,
+  channel text not null check (channel ~ '^[a-z0-9_]{3,25}$'),
+  token text not null unique check (char_length(token) between 32 and 200),
+  created_at timestamptz not null default now(),
+  primary key (slug, channel)
+);
+alter table public.community_event_mods enable row level security;
+revoke all on public.community_event_mods from anon, authenticated;
+
+create table if not exists public.community_event_codes (
+  id bigint generated always as identity primary key,
+  slug text not null references public.community_events(slug) on delete cascade,
+  code text not null unique check (code ~ '^[A-HJKMNP-Z2-9]{10}$'),
+  slot integer check (slot is null or slot between 0 and 199),
+  channel text check (channel is null or channel ~ '^[a-z0-9_]{3,25}$'),
+  winner_hash text check (winner_hash is null or winner_hash ~ '^[0-9a-f]{64}$'),
+  assigned_at timestamptz,
+  redeemed_by uuid references public.profiles(id) on delete set null,
+  redeemed_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (slug, winner_hash)
+);
+create index if not exists community_event_codes_free_idx on public.community_event_codes (slug, id) where slot is null;
+create index if not exists community_event_codes_user_idx on public.community_event_codes (redeemed_by) where redeemed_by is not null;
+alter table public.community_event_codes enable row level security;
+revoke all on public.community_event_codes from anon, authenticated;
+
+create table if not exists public.community_event_redeem_fails (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  at timestamptz not null default now()
+);
+create index if not exists community_event_redeem_fails_idx on public.community_event_redeem_fails (user_id, at);
+alter table public.community_event_redeem_fails enable row level security;
+revoke all on public.community_event_redeem_fails from anon, authenticated;
+
+-- Una data scritta nel JSON, o null se non si legge (una data sbagliata non deve rompere la lettura pubblica).
+create or replace function public.community_event_ts(p text)
+returns timestamptz language plpgsql stable set search_path = public, pg_temp as $$
+begin
+  if p is null or p = '' then return null; end if;
+  return p::timestamptz;
+exception when others then
+  return null;
+end $$;
+revoke all on function public.community_event_ts(text) from public, anon, authenticated;
+
+-- Chi comanda l'evento: lo staff, o chi ha il link della regia.
+create or replace function public.community_event_can_control(p_slug text, p_token text)
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select public.is_staff()
+      or (p_token is not null and char_length(p_token) between 32 and 200
+          and exists (select 1 from public.community_events e where e.slug = p_slug and e.control_token = p_token));
+$$;
+revoke all on function public.community_event_can_control(text, text) from public, anon, authenticated;
+
+-- Un codice nuovo: 10 caratteri dall'alfabeto senza I, L, O, 0 e 1 (CODE_ALPHABET di src/lib/event/codes.ts), presi da
+-- byte casuali di gen_random_uuid() (saltati il 6 e l'8, che portano versione e variante dell'uuid).
+create or replace function public.community_event_new_code()
+returns text language plpgsql volatile set search_path = public, pg_temp as $$
+declare
+  alphabet constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  raw bytea := decode(replace(gen_random_uuid()::text, '-', ''), 'hex');
+  picks constant integer[] := array[0, 1, 2, 3, 4, 5, 9, 10, 11, 12];
+  out text := '';
+  i integer;
+begin
+  foreach i in array picks loop
+    out := out || substr(alphabet, (get_byte(raw, i) % 31) + 1, 1);
+  end loop;
+  return out;
+end $$;
+revoke all on function public.community_event_new_code() from public, anon, authenticated;
+
+-- Pagina pubblica e overlay: nessun nome da svelare, nessun codice, nessun link.
+create or replace function public.community_event_public(p_slug text)
+returns jsonb language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  ev public.community_events%rowtype;
+  talent jsonb := '[]'::jsonb;
+  hidden_ids text[] := '{}';
+  hidden_ords text[] := '{}';
+  hidden_channels text[] := '{}';
+  public_slots jsonb;
+  st text;
+  t record;
+  i integer;
+begin
+  select * into ev from public.community_events x where x.slug = p_slug;
+  if not found then return null; end if;
+  for t in
+    select a.v, a.ord from jsonb_array_elements(case when jsonb_typeof(ev.config->'talent') = 'array' then ev.config->'talent' else '[]'::jsonb end) with ordinality as a(v, ord)
+  loop
+    if jsonb_typeof(t.v) <> 'object' then continue; end if;
+    if t.v->>'revealAt' is null or coalesce(public.community_event_ts(t.v->>'revealAt') <= now(), false) then
+      talent := talent || jsonb_build_array(t.v);
+    else
+      talent := talent || jsonb_build_array(jsonb_build_object('id', 'hidden-' || t.ord, 'role', coalesce(t.v->'role', to_jsonb('player'::text)), 'hidden', true, 'revealAt', t.v->'revealAt'));
+      if t.v->>'id' is not null then
+        hidden_ids := hidden_ids || (t.v->>'id');
+        hidden_ords := hidden_ords || ('hidden-' || t.ord);
+      end if;
+      if t.v->>'twitch' is not null then hidden_channels := hidden_channels || lower(t.v->>'twitch'); end if;
+    end if;
+  end loop;
+  select coalesce(jsonb_agg(case when lower(s.v->>'channel') = any(hidden_channels) then s.v || jsonb_build_object('channel', '') else s.v end order by s.ord), '[]'::jsonb)
+    into public_slots
+    from jsonb_array_elements(case when jsonb_typeof(ev.config->'slots') = 'array' then ev.config->'slots' else '[]'::jsonb end) with ordinality as s(v, ord)
+   where jsonb_typeof(s.v) = 'object';
+  st := ev.state::text;
+  for i in 1 .. coalesce(array_length(hidden_ids, 1), 0) loop
+    st := replace(st, to_jsonb(hidden_ids[i])::text, to_jsonb(hidden_ords[i])::text);
+  end loop;
+  return jsonb_build_object(
+    'slug', ev.slug,
+    'config', (ev.config - 'talent' - 'pairs' - 'slots') || jsonb_build_object('talent', talent, 'slots', public_slots),
+    'state', st::jsonb,
+    'version', ev.version,
+    'stats', (select jsonb_build_object('codes', count(*), 'assigned', count(*) filter (where c.slot is not null), 'redeemed', count(*) filter (where c.redeemed_at is not null))
+                from public.community_event_codes c where c.slug = ev.slug),
+    'now', now());
+end $$;
+revoke all on function public.community_event_public(text) from public;
+grant execute on function public.community_event_public(text) to anon, authenticated;
+
+-- La regia: tutto l'evento. Il link della regia lo vede solo lo staff (i caster ce l'hanno già).
+create or replace function public.community_event_control(p_slug text, p_token text)
+returns jsonb language plpgsql stable security definer set search_path = public, pg_temp as $$
+begin
+  if not public.community_event_can_control(p_slug, p_token) then raise exception 'forbidden' using errcode = '42501'; end if;
+  return (
+    select jsonb_build_object(
+      'slug', e.slug,
+      'config', e.config,
+      'state', e.state,
+      'version', e.version,
+      'now', now(),
+      'controlToken', case when public.is_staff() then e.control_token else null end,
+      'mods', coalesce((select jsonb_agg(jsonb_build_object('channel', m.channel, 'token', m.token) order by m.channel) from public.community_event_mods m where m.slug = e.slug), '[]'::jsonb),
+      'codes', (select jsonb_build_object('total', count(*), 'assigned', count(*) filter (where c.slot is not null), 'redeemed', count(*) filter (where c.redeemed_at is not null))
+                  from public.community_event_codes c where c.slug = e.slug),
+      'slotCodes', coalesce((select jsonb_agg(jsonb_build_object('slot', x.slot, 'assigned', x.n, 'redeemed', x.r) order by x.slot)
+                               from (select c.slot, count(*) as n, count(*) filter (where c.redeemed_at is not null) as r
+                                       from public.community_event_codes c where c.slug = e.slug and c.slot is not null group by c.slot) x), '[]'::jsonb),
+      'redeemers', coalesce((select jsonb_agg(jsonb_build_object('username', p.username, 'display', p.display_name, 'at', c.redeemed_at, 'slot', c.slot,
+                                                                 'isNew', p.created_at >= e.created_at)
+                                               order by c.redeemed_at desc)
+                               from public.community_event_codes c join public.profiles p on p.id = c.redeemed_by
+                              where c.slug = e.slug), '[]'::jsonb))
+    from public.community_events e where e.slug = p_slug);
+end $$;
+revoke all on function public.community_event_control(text, text) from public;
+grant execute on function public.community_event_control(text, text) to anon, authenticated;
+
+-- Lo staff crea un evento e riceve il link della regia.
+create or replace function public.community_event_create(p_slug text, p_config jsonb)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  tok text := replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '');
+begin
+  if not public.is_staff() then raise exception 'forbidden' using errcode = '42501'; end if;
+  if p_slug is null or p_slug !~ '^[a-z0-9]+(-[a-z0-9]+)*$' or char_length(p_slug) not between 3 and 60 then raise exception 'invalid_slug' using errcode = '22023'; end if;
+  if p_config is not null and jsonb_typeof(p_config) <> 'object' then raise exception 'invalid_config' using errcode = '22023'; end if;
+  insert into public.community_events (slug, config, control_token, created_by) values (p_slug, coalesce(p_config, '{}'::jsonb), tok, auth.uid())
+    on conflict (slug) do nothing;
+  if not found then raise exception 'exists' using errcode = '23505'; end if;
+  return tok;
+end $$;
+revoke all on function public.community_event_create(text, jsonb) from public, anon;
+grant execute on function public.community_event_create(text, jsonb) to authenticated;
+
+-- Lo staff cambia il link della regia.
+create or replace function public.community_event_rotate(p_slug text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  tok text := replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '');
+begin
+  if not public.is_staff() then raise exception 'forbidden' using errcode = '42501'; end if;
+  update public.community_events e set control_token = tok, updated_at = now() where e.slug = p_slug;
+  if not found then raise exception 'not_found' using errcode = 'P0002'; end if;
+  return tok;
+end $$;
+revoke all on function public.community_event_rotate(text) from public, anon;
+grant execute on function public.community_event_rotate(text) to authenticated;
+
+-- La regia salva configurazione e/o stato, solo sulla versione letta.
+create or replace function public.community_event_save(p_slug text, p_token text, p_config jsonb, p_state jsonb, p_version integer)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v integer;
+begin
+  if not public.community_event_can_control(p_slug, p_token) then raise exception 'forbidden' using errcode = '42501'; end if;
+  if p_config is not null and (jsonb_typeof(p_config) <> 'object' or octet_length(p_config::text) > 200000) then raise exception 'invalid_config' using errcode = '22023'; end if;
+  if p_state is not null and (jsonb_typeof(p_state) <> 'object' or octet_length(p_state::text) > 200000) then raise exception 'invalid_state' using errcode = '22023'; end if;
+  update public.community_events e
+     set config = coalesce(p_config, e.config), state = coalesce(p_state, e.state), version = e.version + 1, updated_at = now()
+   where e.slug = p_slug and e.version = p_version
+  returning e.version into v;
+  if v is null then raise exception 'conflict' using errcode = '40001'; end if;
+  return v;
+end $$;
+revoke all on function public.community_event_save(text, text, jsonb, jsonb, integer) from public;
+grant execute on function public.community_event_save(text, text, jsonb, jsonb, integer) to anon, authenticated;
+
+-- La regia genera codici (al massimo 500 per evento); restituisce quanti sono in tutto.
+create or replace function public.community_event_codes_add(p_slug text, p_token text, p_count integer)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  have integer;
+  want integer;
+  tries integer := 0;
+begin
+  if not public.community_event_can_control(p_slug, p_token) then raise exception 'forbidden' using errcode = '42501'; end if;
+  if not exists (select 1 from public.community_events e where e.slug = p_slug) then raise exception 'not_found' using errcode = 'P0002'; end if;
+  if p_count is null or p_count < 1 or p_count > 500 then raise exception 'bad_count' using errcode = '22023'; end if;
+  perform pg_advisory_xact_lock(hashtext('community_event:' || p_slug));
+  select count(*) into have from public.community_event_codes c where c.slug = p_slug;
+  want := least(have + p_count, 500);
+  while have < want and tries < 5000 loop
+    tries := tries + 1;
+    insert into public.community_event_codes (slug, code) values (p_slug, public.community_event_new_code()) on conflict (code) do nothing;
+    if found then have := have + 1; end if;
+  end loop;
+  return have;
+end $$;
+revoke all on function public.community_event_codes_add(text, text, integer) from public;
+grant execute on function public.community_event_codes_add(text, text, integer) to anon, authenticated;
+
+-- La regia crea i link dei mod per i canali degli slot che non ne hanno uno.
+create or replace function public.community_event_mods_sync(p_slug text, p_token text)
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  cfg jsonb;
+  ch text;
+begin
+  if not public.community_event_can_control(p_slug, p_token) then raise exception 'forbidden' using errcode = '42501'; end if;
+  select e.config into cfg from public.community_events e where e.slug = p_slug;
+  if not found then raise exception 'not_found' using errcode = 'P0002'; end if;
+  perform pg_advisory_xact_lock(hashtext('community_event:' || p_slug));
+  for ch in
+    select distinct lower(s.v->>'channel')
+      from jsonb_array_elements(case when jsonb_typeof(cfg->'slots') = 'array' then cfg->'slots' else '[]'::jsonb end) as s(v)
+     where jsonb_typeof(s.v) = 'object' and lower(s.v->>'channel') ~ '^[a-z0-9_]{3,25}$'
+  loop
+    insert into public.community_event_mods (slug, channel, token)
+      values (p_slug, ch, replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', ''))
+      on conflict (slug, channel) do nothing;
+  end loop;
+  return coalesce((select jsonb_agg(jsonb_build_object('channel', m.channel, 'token', m.token) order by m.channel) from public.community_event_mods m where m.slug = p_slug), '[]'::jsonb);
+end $$;
+revoke all on function public.community_event_mods_sync(text, text) from public;
+grant execute on function public.community_event_mods_sync(text, text) to anon, authenticated;
+
+-- Il pannello del mod: il suo canale, gli slot, l'orologio e i codici dati nel suo canale (senza nomi: non ci sono).
+create or replace function public.community_event_mod_view(p_slug text, p_token text)
+returns jsonb language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  ch text;
+begin
+  if p_token is null or char_length(p_token) not between 32 and 200 then raise exception 'forbidden' using errcode = '42501'; end if;
+  select m.channel into ch from public.community_event_mods m where m.slug = p_slug and m.token = p_token;
+  if ch is null then raise exception 'forbidden' using errcode = '42501'; end if;
+  return (
+    select jsonb_build_object(
+      'slug', e.slug,
+      'channel', ch,
+      'name', coalesce(e.config->>'name', ''),
+      'keyword', coalesce(e.config->>'keyword', '!codice'),
+      'slots', case when jsonb_typeof(e.config->'slots') = 'array' then e.config->'slots' else '[]'::jsonb end,
+      'giveaway', coalesce(e.state->'giveaway', '{}'::jsonb),
+      'codes', coalesce((select jsonb_agg(jsonb_build_object('code', c.code, 'slot', c.slot, 'assignedAt', c.assigned_at, 'redeemed', c.redeemed_at is not null) order by c.assigned_at, c.id)
+                           from public.community_event_codes c where c.slug = e.slug and c.channel = ch and c.slot is not null), '[]'::jsonb),
+      'now', now())
+    from public.community_events e where e.slug = p_slug);
+end $$;
+revoke all on function public.community_event_mod_view(text, text) from public;
+grant execute on function public.community_event_mod_view(text, text) to anon, authenticated;
+
+-- Il mod dà i codici ai vincitori di uno slot del suo canale. Una vincita a persona in tutto l'evento; i pacchetti dello
+-- slot (config.slots[slot].packs) sono il tetto. Lo stesso vincitore chiesto due volte nello stesso slot riceve lo stesso
+-- codice (il pannello può ripetere la richiesta senza paura).
+create or replace function public.community_event_assign(p_slug text, p_token text, p_slot integer, p_logins text[])
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  ch text;
+  cfg jsonb;
+  slot_cfg jsonb;
+  packs integer;
+  used integer;
+  lg text;
+  h text;
+  got record;
+  new_code text;
+  out jsonb := '[]'::jsonb;
+begin
+  if p_token is null or char_length(p_token) not between 32 and 200 then raise exception 'forbidden' using errcode = '42501'; end if;
+  select m.channel into ch from public.community_event_mods m where m.slug = p_slug and m.token = p_token;
+  if ch is null then raise exception 'forbidden' using errcode = '42501'; end if;
+  if p_logins is null or cardinality(p_logins) > 100 then raise exception 'bad_logins' using errcode = '22023'; end if;
+  perform pg_advisory_xact_lock(hashtext('community_event:' || p_slug));
+  select e.config into cfg from public.community_events e where e.slug = p_slug;
+  if p_slot is null or p_slot < 0 or jsonb_typeof(cfg->'slots') <> 'array' or p_slot >= jsonb_array_length(cfg->'slots') then raise exception 'bad_slot' using errcode = '22023'; end if;
+  slot_cfg := cfg->'slots'->p_slot;
+  if lower(coalesce(slot_cfg->>'channel', '')) <> ch then raise exception 'not_your_slot' using errcode = '42501'; end if;
+  packs := case when coalesce(slot_cfg->>'packs', '') ~ '^[0-9]{1,3}$' then (slot_cfg->>'packs')::integer else 0 end;
+  foreach lg in array p_logins loop
+    lg := lower(trim(coalesce(lg, '')));
+    if lg !~ '^[a-z0-9_]{3,25}$' then
+      out := out || jsonb_build_array(jsonb_build_object('login', left(lg, 25), 'status', 'invalid'));
+      continue;
+    end if;
+    h := encode(sha256(convert_to(p_slug || ':' || lg, 'UTF8')), 'hex');
+    select c.code, c.slot, c.redeemed_at into got from public.community_event_codes c where c.slug = p_slug and c.winner_hash = h;
+    if found then
+      if got.slot = p_slot then
+        out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'ok', 'code', got.code, 'redeemed', got.redeemed_at is not null));
+      else
+        out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'dup'));
+      end if;
+      continue;
+    end if;
+    select count(*) into used from public.community_event_codes c where c.slug = p_slug and c.slot = p_slot;
+    if used >= packs then
+      out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'full'));
+      continue;
+    end if;
+    update public.community_event_codes c
+       set slot = p_slot, channel = ch, winner_hash = h, assigned_at = now()
+     where c.id = (select y.id from public.community_event_codes y where y.slug = p_slug and y.slot is null order by y.id limit 1 for update skip locked)
+    returning c.code into new_code;
+    if new_code is null then
+      out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'none'));
+      continue;
+    end if;
+    out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'ok', 'code', new_code, 'redeemed', false));
+    new_code := null;
+  end loop;
+  return out;
+end $$;
+revoke all on function public.community_event_assign(text, text, integer, text[]) from public;
+grant execute on function public.community_event_assign(text, text, integer, text[]) to anon, authenticated;
+
+-- Il codice (non ancora riscattato) passa a un altro vincitore: ok, dup, redeemed, invalid, not_found.
+create or replace function public.community_event_swap(p_slug text, p_token text, p_code text, p_login text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  ch text;
+  lg text := lower(trim(coalesce(p_login, '')));
+  h text;
+  c record;
+begin
+  if p_token is null or char_length(p_token) not between 32 and 200 then raise exception 'forbidden' using errcode = '42501'; end if;
+  select m.channel into ch from public.community_event_mods m where m.slug = p_slug and m.token = p_token;
+  if ch is null then raise exception 'forbidden' using errcode = '42501'; end if;
+  if lg !~ '^[a-z0-9_]{3,25}$' then return 'invalid'; end if;
+  perform pg_advisory_xact_lock(hashtext('community_event:' || p_slug));
+  select * into c from public.community_event_codes x where x.slug = p_slug and x.code = upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g')) and x.channel = ch for update;
+  if not found then return 'not_found'; end if;
+  if c.redeemed_at is not null then return 'redeemed'; end if;
+  h := encode(sha256(convert_to(p_slug || ':' || lg, 'UTF8')), 'hex');
+  if exists (select 1 from public.community_event_codes x where x.slug = p_slug and x.winner_hash = h) then return 'dup'; end if;
+  update public.community_event_codes x set winner_hash = h, assigned_at = now() where x.id = c.id;
+  return 'ok';
+end $$;
+revoke all on function public.community_event_swap(text, text, text, text) from public;
+grant execute on function public.community_event_swap(text, text, text, text) to anon, authenticated;
+
+-- Il codice (non ancora riscattato) torna libero: ok, redeemed, not_found.
+create or replace function public.community_event_release(p_slug text, p_token text, p_code text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  ch text;
+  c record;
+begin
+  if p_token is null or char_length(p_token) not between 32 and 200 then raise exception 'forbidden' using errcode = '42501'; end if;
+  select m.channel into ch from public.community_event_mods m where m.slug = p_slug and m.token = p_token;
+  if ch is null then raise exception 'forbidden' using errcode = '42501'; end if;
+  perform pg_advisory_xact_lock(hashtext('community_event:' || p_slug));
+  select * into c from public.community_event_codes x where x.slug = p_slug and x.code = upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g')) and x.channel = ch for update;
+  if not found then return 'not_found'; end if;
+  if c.redeemed_at is not null then return 'redeemed'; end if;
+  update public.community_event_codes x set slot = null, channel = null, winner_hash = null, assigned_at = null where x.id = c.id;
+  return 'ok';
+end $$;
+revoke all on function public.community_event_release(text, text, text) from public;
+grant execute on function public.community_event_release(text, text, text) to anon, authenticated;
+
+-- Un iscritto riscatta un codice dato da un mod. Tetto per account: config.maxCodesPerUser (1 se manca); 10 tentativi
+-- sbagliati l'ora; config.redeemUntil chiude il riscatto.
+create or replace function public.community_event_redeem(p_slug text, p_code text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  cfg jsonb;
+  until timestamptz;
+  norm text;
+  c record;
+  cap integer;
+  mine integer;
+  fails integer;
+begin
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  if not exists (select 1 from public.profiles p where p.id = uid) then return 'invalid'; end if;
+  select e.config into cfg from public.community_events e where e.slug = p_slug;
+  if not found then return 'invalid'; end if;
+  until := public.community_event_ts(cfg->>'redeemUntil');
+  if until is not null and now() > until then return 'closed'; end if;
+  perform pg_advisory_xact_lock(hashtext('community_event_redeem:' || uid::text));
+  delete from public.community_event_redeem_fails f where f.user_id = uid and f.at < now() - interval '1 day';
+  select count(*) into fails from public.community_event_redeem_fails f where f.user_id = uid and f.at > now() - interval '1 hour';
+  if fails >= 10 then return 'too_many'; end if;
+  norm := upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g'));
+  select * into c from public.community_event_codes x where x.slug = p_slug and x.code = norm for update;
+  if not found or c.slot is null then
+    insert into public.community_event_redeem_fails (user_id) values (uid);
+    return 'invalid';
+  end if;
+  if c.redeemed_by = uid then return 'mine'; end if;
+  if c.redeemed_at is not null then return 'taken'; end if;
+  cap := case when coalesce(cfg->>'maxCodesPerUser', '') ~ '^[0-9]{1,2}$' then greatest((cfg->>'maxCodesPerUser')::integer, 1) else 1 end;
+  select count(*) into mine from public.community_event_codes x where x.slug = p_slug and x.redeemed_by = uid;
+  if mine >= cap then return 'limit'; end if;
+  update public.community_event_codes x set redeemed_by = uid, redeemed_at = now() where x.id = c.id;
+  return 'ok';
+end $$;
+revoke all on function public.community_event_redeem(text, text) from public, anon;
+grant execute on function public.community_event_redeem(text, text) to authenticated;
+
+-- I codici riscattati dall'iscritto della sessione.
+create or replace function public.community_event_my_codes(p_slug text)
+returns table (code text, redeemed_at timestamptz)
+language sql stable security definer set search_path = public, pg_temp as $$
+  select c.code, c.redeemed_at
+    from public.community_event_codes c
+   where auth.uid() is not null and c.slug = p_slug and c.redeemed_by = auth.uid()
+   order by c.redeemed_at;
+$$;
+revoke all on function public.community_event_my_codes(text) from public, anon;
+grant execute on function public.community_event_my_codes(text) to authenticated;
+
+-- A pacchetti consegnati lo staff toglie dai codici le impronte dei vincitori e gli account (restano i conteggi).
+create or replace function public.community_event_forget(p_slug text)
+returns integer language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  n integer;
+begin
+  if not public.is_staff() then raise exception 'forbidden' using errcode = '42501'; end if;
+  update public.community_event_codes c set winner_hash = null, redeemed_by = null
+   where c.slug = p_slug and (c.winner_hash is not null or c.redeemed_by is not null);
+  get diagnostics n = row_count;
+  delete from public.community_event_redeem_fails f where f.at < now();
+  return n;
+end $$;
+revoke all on function public.community_event_forget(text) from public, anon;
+grant execute on function public.community_event_forget(text) to authenticated;

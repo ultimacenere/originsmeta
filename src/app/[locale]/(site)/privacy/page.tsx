@@ -17,6 +17,7 @@ import { cardVoteLabels } from "@/lib/cardVoteLabels";
 import { deckCommentLabels } from "@/lib/deckCommentLabels";
 import { profileNameLabels } from "@/lib/profileNameLabels";
 import { steamLabels } from "@/lib/steamLabels";
+import { eventPrivacy } from "@/lib/eventPrivacy";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -64,6 +65,10 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         {/* Account Steam collegato e accesso con Steam (09/11/2026): testo in src/lib/steamLabels.ts */}
         <p id="steam" className="mt-6 scroll-mt-24">
           {steamLabels[locale].privacy}
+        </p>
+        {/* Giveaway degli eventi della community (10/11/2026, Royale Rumble): testo in src/lib/eventPrivacy.ts */}
+        <p id="event-giveaway" className="mt-6 scroll-mt-24">
+          {eventPrivacy[locale]}
         </p>
         {/* Foto profilo caricate e vetrina (pacchetto VETRINA, 27/09/2026): testo in src/lib/showcaseLabels.ts */}
         <p id="profile-media" className="mt-6 scroll-mt-24">

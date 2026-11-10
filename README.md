@@ -643,6 +643,11 @@ Vocale di Dav del 29/10/2026: un ragazzo che fa video e dirette su YouTube o Twi
 - **Testi** in `src/lib/forCreatorsLabels-<lingua>.ts` (forma e regole in `forCreatorsLabels.ts`): i nomi dei tasti come li mostra il programma nella lingua (app del Tracker in en/it/es, configurazione dell'estensione in en/it/es/fr, regia di Broadcasting in it/en: nelle altre lingue i nomi inglesi). Eventi `creator_apply_click` (hero | join) e ★ `creator_kit_download` (file, placement). Ingressi: colonna "Esplora" del footer e tasto in `/creators`.
 - **Test** `src/lib/forCreators.test.ts` in `npm test`: stessa forma e stesse righe da copiare nelle sette lingue, limiti di title e description, una guida per strumento, link interni verso sezioni che esistono, file del kit presenti con le misure dichiarate, colori uguali al README.
 - **Da fare quando cambia uno strumento**: aggiornare la sua guida nelle sette lingue (nomi dei tasti compresi). L'indirizzo dell'estensione Twitch è `TWITCH_EXTENSION_URL`.
+- **Righe che si aprono (10/11/2026**, note Granola "sito roadmap": "i creator vanno in panico con pagine lunghe"): le guide degli strumenti, "Che cosa ti dà OriginsMeta", le idee e colori/font/frasi del kit sono `<details>` chiusi all'inizio (il testo resta nell'HTML); restano aperti hero, indice, download del kit e "Diventa Creator". `OpenDetailsOnHash` (`src/components/OpenDetailsOnHash.tsx`) apre la riga dell'ancora all'arrivo, al cambio di hash e al clic su un link della stessa pagina, e ci scorre.
+
+## Eventi della community: Royale Rumble del 16/11/2026 (10/11/2026)
+
+Pierluigi: "una royale rumble tra i creators italiani con giveaway di oltre 125 pacchetti di carte di origins, noi gestiamo tutta la infrastruttura". Pagina `/it/events/<slug>` (link breve originsmeta.com/rumble, solo italiano), regia dei caster con la ruota dei mazzi e la svizzera, pannello dei mod che legge la chat di Twitch ed estrae i vincitori, codici del giveaway riscattati con l'iscrizione, overlay per OBS e comando di chat. Procedura, configurazione e codice in **`docs/eventi.md`**. SQL nel blocco `-- ===== 10/11/2026: EVENTI DELLA COMMUNITY =====`: **migrazione da lanciare** (prova a secco `node scripts/event-dry-run.mjs`, poi `db-migrate`); il sito regge senza.
 
 ## Diretta ufficiale di Origins TCG in home (18/10/2026)
 

@@ -156,6 +156,12 @@
  *     tournament_promo_close popup chiuso senza andare al torneo                   tournament, method (close: la × |
  *                                                                                 later: "Non ora" | esc: Esc o il tasto
  *                                                                                 Indietro del telefono | backdrop: clic fuori)
+ *     event_channel_click   clic su "Vai al canale" del giveaway di un evento     placement (clock | talent), channel (il
+ *                         della community (10/11/2026, src/lib/event/)             canale Twitch)
+ *     event_code_redeem     riscatto di un codice del giveaway di un evento        result (ok | mine | taken | invalid |
+ *                                                                                 limit | too_many | closed | …)
+ *     event_redeem_signin   "Accedi e riscatta": verso l'accesso con il codice     placement
+ *                         tenuto nel browser
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -294,6 +300,9 @@ export type EventParams = {
   tournament_promo_view: { tournament: string };
   tournament_promo_click: { tournament: string };
   tournament_promo_close: { tournament: string; method: "close" | "later" | "esc" | "backdrop" };
+  event_channel_click: { placement: "clock" | "talent"; channel: string };
+  event_code_redeem: { result: string };
+  event_redeem_signin: { placement: string };
 };
 export type EventName = keyof EventParams;
 
@@ -359,6 +368,9 @@ export const VERCEL_PROPS = {
   tournament_promo_view: ["tournament"],
   tournament_promo_click: ["tournament"],
   tournament_promo_close: ["method", "tournament"],
+  event_channel_click: ["placement", "channel"],
+  event_code_redeem: ["result"],
+  event_redeem_signin: ["placement"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);

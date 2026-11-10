@@ -1218,6 +1218,34 @@ export type Database = {
       steam_link_set: { Args: { p_key: string; p_steam_id: string }; Returns: string };
       /** scollega il proprio account Steam: ok, none, steam_only */
       steam_link_remove: { Args: Record<string, never>; Returns: string };
+      /** eventi della community (10/11/2026): pagina e overlay, senza i talent da svelare né codici; null se l'evento non c'è */
+      community_event_public: { Args: { p_slug: string }; Returns: unknown };
+      /** la regia (link della regia o staff): tutto l'evento, link dei mod, conteggi dei codici, chi ha riscattato */
+      community_event_control: { Args: { p_slug: string; p_token: string | null }; Returns: unknown };
+      /** lo staff crea un evento: il link della regia */
+      community_event_create: { Args: { p_slug: string; p_config: unknown }; Returns: string };
+      /** lo staff cambia il link della regia */
+      community_event_rotate: { Args: { p_slug: string }; Returns: string };
+      /** la regia salva configurazione e/o stato sulla versione letta: la versione nuova */
+      community_event_save: { Args: { p_slug: string; p_token: string | null; p_config: unknown | null; p_state: unknown | null; p_version: number }; Returns: number };
+      /** la regia genera codici del giveaway: quanti sono in tutto */
+      community_event_codes_add: { Args: { p_slug: string; p_token: string | null; p_count: number }; Returns: number };
+      /** la regia crea i link dei mod dei canali degli slot */
+      community_event_mods_sync: { Args: { p_slug: string; p_token: string | null }; Returns: unknown };
+      /** il pannello del mod di un canale */
+      community_event_mod_view: { Args: { p_slug: string; p_token: string }; Returns: unknown };
+      /** il mod dà i codici ai vincitori di uno slot */
+      community_event_assign: { Args: { p_slug: string; p_token: string; p_slot: number; p_logins: string[] }; Returns: unknown };
+      /** il codice non riscattato passa a un altro vincitore: ok, dup, redeemed, invalid, not_found */
+      community_event_swap: { Args: { p_slug: string; p_token: string; p_code: string; p_login: string }; Returns: string };
+      /** il codice non riscattato torna libero: ok, redeemed, not_found */
+      community_event_release: { Args: { p_slug: string; p_token: string; p_code: string }; Returns: string };
+      /** un iscritto riscatta un codice: ok, mine, taken, invalid, limit, too_many, closed */
+      community_event_redeem: { Args: { p_slug: string; p_code: string }; Returns: string };
+      /** i codici riscattati dall'iscritto della sessione */
+      community_event_my_codes: { Args: { p_slug: string }; Returns: { code: string; redeemed_at: string }[] };
+      /** lo staff toglie impronte dei vincitori e account dai codici (restano i conteggi) */
+      community_event_forget: { Args: { p_slug: string }; Returns: number };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
