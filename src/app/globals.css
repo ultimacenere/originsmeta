@@ -7087,3 +7087,11 @@
     }
   }
 }
+
+/* Riquadro navigabile dei tabelloni (BracketViewport, 11/11/2026): barre di scorrimento scure, del colore delle cornici. */
+@layer components {
+  .bracket-view-scroll {
+    color-scheme: dark;
+    scrollbar-color: color-mix(in srgb, var(--color-sky) 55%, var(--color-night-2)) var(--color-night-2);
+  }
+}

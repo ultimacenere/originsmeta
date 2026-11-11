@@ -5,6 +5,7 @@ import type { DoubleElimLabels } from "@/lib/tournament/doubleElimLabels";
 import { groupLetter } from "@/lib/tournament/formats";
 import { fill, type TournamentMatch } from "@/lib/tournament/types";
 import { MatchBox } from "./Bracket";
+import { BracketViewport } from "./BracketViewport";
 
 type Open = { linkBase: string; viewer?: string | null; all?: boolean };
 
@@ -86,6 +87,11 @@ export function DeQualified({ matches, plan, names, labels, viewer }: { matches:
   );
 }
 
+/** Partite chiuse di una colonna. */
+const closedIn = (list: TournamentMatch[]) => list.filter((m) => m.status === "confirmed" || m.status === "bye").length;
+/** Intestazione di una colonna: resta in cima al riquadro mentre si scorre in giù. */
+const colHead = "kicker sticky top-0 z-10 mb-3 bg-night py-2";
+
 /** Nome di un turno dentro un lato: "Turno 2", e l'ultimo "Turno di qualificazione". */
 function roundName(l: DoubleElimLabels, plan: DePlan, stage: DeStage, local: number): string {
   const last = stage === "upper" ? plan.upperRounds : plan.lowerRounds;
@@ -97,6 +103,8 @@ function roundName(l: DoubleElimLabels, plan: DePlan, stage: DeStage, local: num
  * solo la scheda scelta, con una colonna per turno e l'ultima con i qualificati. Le schede sono link (`?b=A-w#bracket`):
  * il server disegna una scheda alla volta, perché due tabelloni da 512 sono 1856 partite e tutte insieme peserebbero
  * troppo sulla pagina. Server component.
+ * Dall'11/11/2026 le colonne stanno in un riquadro navigabile (BracketViewport: salto ai turni, trascinamento, zoom,
+ * schermo intero), i nomi dei turni restano in cima mentre si scorre e ogni qualificato sta accanto alla sua partita.
  */
 export function DoubleElimBracket({ matches, plan, names, dict, labels, panel, hrefFor, open }: { matches: TournamentMatch[]; plan: DePlan; names: Map<string, string>; dict: Dictionary; labels: DoubleElimLabels; panel: DePanel; hrefFor: (id: string) => string; open?: Open }) {
   const l = labels;
@@ -148,36 +156,44 @@ export function DoubleElimBracket({ matches, plan, names, dict, labels, panel, h
         ))}
       </nav>
       <h3 className="kicker mb-2 text-mint">{panelName(l, plan, panel)}</h3>
-      <div className="relative">
-        <div className="overflow-x-auto pb-2">
-          <div className="flex min-w-max gap-6">
-            {columns.map((col, i) => (
-              <section key={i} className="flex w-60 flex-col">
-                <h4 className="kicker mb-3 text-pale-muted">{col.name}</h4>
-                <ol className="flex flex-1 flex-col justify-around gap-3">
-                  {col.list.map((m) => (
-                    <MatchBox key={m.id} m={m} names={names} dict={dict} highlight={viewer} open={open} />
-                  ))}
-                </ol>
-              </section>
-            ))}
-            <section className="flex w-60 flex-col">
-              <h4 className="kicker mb-3 text-gold">
-                {l.qualified} <span className="font-mono">{qualified.length}/{plan.qualify}</span>
-              </h4>
-              <ol className="flex flex-col gap-1.5">
-                {qualified.map((u) => (
-                  <li key={u} className={`truncate rounded-lg border-2 border-gold bg-gold/10 px-3 py-1.5 text-sm font-semibold text-gold ${u === viewer ? "ring-2 ring-mint" : ""}`}>
-                    ★ {names.get(u) ?? "?"}
-                  </li>
-                ))}
-              </ol>
-            </section>
-            <div className="w-6 shrink-0" aria-hidden="true" />
-          </div>
-        </div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-night-2 to-transparent" aria-hidden="true" />
-      </div>
+      <BracketViewport
+        columns={[...columns.map((col) => `${col.name}${closedIn(col.list) === col.list.length ? " ✓" : ""}`), `${l.qualified} ${qualified.length}/${plan.qualify}`]}
+        labels={{ region: l.viewRegion, rounds: l.viewRounds, zoomIn: l.viewZoomIn, zoomOut: l.viewZoomOut, zoomReset: l.viewZoomReset, full: l.viewFull, exitFull: l.viewExitFull, hint: l.viewHint }}
+        resetKey={dePanelId(panel)}
+      >
+        {columns.map((col, i) => (
+          <section key={i} data-col={i} className="flex w-60 shrink-0 flex-col">
+            <h4 className={colHead}>
+              <span className="text-pale-muted">{col.name}</span> <span className="font-mono text-pale-muted">{closedIn(col.list)}/{col.list.length}</span>
+            </h4>
+            <ol className="flex flex-1 flex-col justify-around gap-3">
+              {col.list.map((m) => (
+                <MatchBox key={m.id} m={m} names={names} dict={dict} highlight={viewer} open={open} />
+              ))}
+            </ol>
+          </section>
+        ))}
+        {/* i qualificati: uno per partita dell'ultimo turno, alla stessa altezza della sua partita */}
+        <section data-col={columns.length} className="flex w-52 shrink-0 flex-col">
+          <h4 className={colHead}>
+            <span className="text-gold">{l.qualified}</span> <span className="font-mono text-gold">{qualified.length}/{plan.qualify}</span>
+          </h4>
+          <ol className="flex flex-1 flex-col justify-around gap-3">
+            {(columns[columns.length - 1]?.list ?? []).map((m) => {
+              const u = m.winner && (m.status === "confirmed" || m.status === "bye") ? m.winner : null;
+              return u ? (
+                <li key={m.id} className={`truncate rounded-lg border-2 border-gold bg-gold/10 px-3 py-1.5 text-sm font-semibold text-gold ${u === viewer ? "ring-2 ring-mint" : ""}`}>
+                  ★ {names.get(u) ?? "?"}
+                </li>
+              ) : (
+                <li key={m.id} aria-hidden="true" className="rounded-lg border-2 border-dashed border-sky/30 px-3 py-1.5 text-sm text-transparent">
+                  ·
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      </BracketViewport>
     </div>
   );
 }
