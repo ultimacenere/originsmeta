@@ -137,7 +137,7 @@ export const es: Dictionary = {
     updated: "Actualizado",
     stats: "Estadísticas",
     unknownStats: "estadísticas aún no publicadas",
-    asOf: "Estadísticas del parche del 4 de noviembre de 2026: las 122 cartas de la colección del juego se verificaron en el juego el 22 de septiembre, los cambios de equilibrio vienen de las notas oficiales de los parches y las ocho cartas que entraron en el juego con el parche del 4 de noviembre aún no se han verificado en el juego.",
+    asOf: "Estadísticas del parche del 4 de noviembre de 2026: las 130 cartas de la colección del juego se verificaron en el juego el 11 de noviembre de 2026, en la versión 0.8.2 del Acceso anticipado, y los cambios de equilibrio vienen de las notas oficiales de los parches.",
     alignment: "Alineamiento",
     good: "Good",
     evil: "Evil",
@@ -292,7 +292,7 @@ export const es: Dictionary = {
     countRemoved: "retiradas en builds anteriores",
     legendNote: "Las cartas Legendarias lideran el mazo: una por mazo, marcadas con la estrella. Las sagas son una clasificación propia de OriginsMeta según la leyenda de origen; el juego no las muestra.",
     sourceNote:
-      "Los costes, las estadísticas, los alineamientos y los textos de las cartas jugables se verificaron en el juego, en inglés, italiano, español, francés, portugués, alemán y ruso, antes del Acceso anticipado, salvo las ocho cartas que entraron en el juego con el parche del 4 de noviembre de 2026; los cambios de equilibrio vienen de las notas oficiales de los parches. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han verificado en el juego. Texto de las cartas © Koin Games. Las sagas, las notas sobre el origen y los textos en italiano, español, francés, portugués, alemán y ruso de las cartas creadas y retiradas, y de las ocho cartas del 4 de noviembre, son de OriginsMeta.",
+      "Los costes, las estadísticas, las rarezas, los alineamientos y los textos de las cartas jugables se verificaron en el juego el 11 de noviembre de 2026, en inglés, italiano, español, francés, portugués, alemán, ruso y chino simplificado; los cambios de equilibrio vienen de las notas oficiales de los parches. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han verificado en el juego; el texto de las cartas creadas es el de los archivos del juego. Texto de las cartas © Koin Games. Las sagas, las notas sobre el origen y los textos de las cartas retiradas en idiomas distintos del inglés son de OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta coleccionable",
     changesTitle: "Historial de cambios de equilibrio",

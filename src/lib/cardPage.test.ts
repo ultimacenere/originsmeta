@@ -77,27 +77,27 @@ describe("frase d'attacco: esempi", () => {
     const decks = { n: 1, total: 16 };
     assert.equal(
       lead("merlin", "en", decks),
-      "Merlin is a Legendary unit in Origins TCG, the digital card game by Koin Games. It costs 5 mana, has 5 Power and 5 Health, and is Neutral. It is a playable card (checked in the game on September 22, 2026). It leads 1 of the 16 decks published on OriginsMeta.",
+      "Merlin is a Legendary unit in Origins TCG, the digital card game by Koin Games. It costs 5 mana, has 5 Power and 5 Health, and is Neutral. It is a playable card (checked in the game on November 11, 2026). It leads 1 of the 16 decks published on OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "it", decks),
-      "Merlin è un'unità Leggendaria di Origins TCG, il gioco di carte digitale di Koin Games. Costa 5 mana, ha 5 di Potenza e 5 di Salute ed è Neutral. È nella collezione del gioco (verificata il 22 settembre 2026). Guida 1 dei 16 mazzi pubblicati su OriginsMeta.",
+      "Merlin è un'unità Leggendaria di Origins TCG, il gioco di carte digitale di Koin Games. Costa 5 mana, ha 5 di Potenza e 5 di Salute ed è Neutral. È nella collezione del gioco (verificata l'11 novembre 2026). Guida 1 dei 16 mazzi pubblicati su OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "es", decks),
-      "Merlin es una unidad Legendaria de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 5 de maná, tiene 5 de Poder y 5 de Salud y es Neutral. Está en la colección del juego (verificada el 22 de septiembre de 2026). Lidera 1 de los 16 mazos publicados en OriginsMeta.",
+      "Merlin es una unidad Legendaria de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 5 de maná, tiene 5 de Poder y 5 de Salud y es Neutral. Está en la colección del juego (verificada el 11 de noviembre de 2026). Lidera 1 de los 16 mazos publicados en OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "pt", decks),
-      "Merlin é um personagem Lendário de Origins TCG, o jogo de cartas digital da Koin Games. Custa 5 de mana, tem 5 de Poder e 5 de Vida e é Neutral. Está na coleção do jogo (verificado em 22 de setembro de 2026). Lidera 1 dos 16 decks publicados no OriginsMeta.",
+      "Merlin é um personagem Lendário de Origins TCG, o jogo de cartas digital da Koin Games. Custa 5 de mana, tem 5 de Poder e 5 de Vida e é Neutral. Está na coleção do jogo (verificado em 11 de novembro de 2026). Lidera 1 dos 16 decks publicados no OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "de", decks),
-      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Kraft und 5 Leben und ist Neutral. Die Karte ist in der Sammlung (am 22. September 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
+      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Kraft und 5 Leben und ist Neutral. Die Karte ist in der Sammlung (am 11. November 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
     );
     assert.equal(
       lead("merlin", "ru", decks),
-      "Merlin — Легендарный персонаж из Origins TCG, цифровой карточной игры от Koin Games. Стоит 5 ед. маны, имеет Силу 5 и Здоровье 5, мировоззрение — Neutral. Карта есть в коллекции (проверено в игре 22 сентября 2026 г.). Возглавляет 1 из 16 опубликованных на OriginsMeta колод.",
+      "Merlin — Легендарный персонаж из Origins TCG, цифровой карточной игры от Koin Games. Стоит 5 ед. маны, имеет Силу 5 и Здоровье 5, мировоззрение — Neutral. Карта есть в коллекции (проверено в игре 11 ноября 2026 г.). Возглавляет 1 из 16 опубликованных на OriginsMeta колод.",
     );
   });
 
@@ -109,7 +109,7 @@ describe("frase d'attacco: esempi", () => {
     const decks = { n: 0, total: 16 };
     assert.equal(
       lead("spellbook", "es", decks),
-      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la colección del juego (verificado el 22 de septiembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
+      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la colección del juego (verificado el 11 de noviembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
     );
     assert.match(lead("spellbook", "it", decks), /^Spellbook è una magia di Origins TCG.*Costa 4 mana ed è Neutral\..*Nessuno dei 16 mazzi pubblicati su OriginsMeta la usa ancora\.$/);
     assert.match(lead("spellbook", "pt", decks), /^Spellbook é um feitiço de Origins TCG.*Custa 4 de mana e é Neutral\. Está na coleção do jogo \(verificado em .*Nenhum dos 16 decks publicados no OriginsMeta usa esta carta ainda\.$/);
@@ -122,27 +122,27 @@ describe("frase d'attacco: esempi", () => {
   test("una carta creata: non si aggiunge nel deck builder e chi la genera, con la catena dai testi", () => {
     assert.equal(
       lead("garlic", "en"),
-      "Garlic is a created card in Origins TCG, the digital card game by Koin Games: it cannot be added to a deck in the deck builder, and during a match it is created by Van Helsing's Tools, which is in turn created by Van Helsing. It costs 1 mana and is Neutral.",
+      "Garlic is a created card in Origins TCG, the digital card game by Koin Games: it cannot be added to a deck in the deck builder, and during a match it is created by Van Helsing's Tools, which is in turn created by Van Helsing. It costs 0 mana and is Neutral.",
     );
     assert.equal(
       lead("garlic", "it"),
-      "Garlic è una carta generata di Origins TCG, il gioco di carte digitale di Koin Games: non si può mettere nel mazzo con il deck builder, in partita la genera Van Helsing's Tools, a sua volta generata da Van Helsing. Costa 1 mana ed è Neutral.",
+      "Garlic è una carta generata di Origins TCG, il gioco di carte digitale di Koin Games: non si può mettere nel mazzo con il deck builder, in partita la genera Van Helsing's Tools, a sua volta generata da Van Helsing. Costa 0 mana ed è Neutral.",
     );
     assert.equal(
       lead("garlic", "es"),
-      "Garlic es una carta creada de Origins TCG, el juego de cartas digital de Koin Games: no se puede añadir a un mazo en el deck builder, durante la partida la crea Van Helsing's Tools, a su vez creada por Van Helsing. Cuesta 1 de maná y es Neutral.",
+      "Garlic es una carta creada de Origins TCG, el juego de cartas digital de Koin Games: no se puede añadir a un mazo en el deck builder, durante la partida la crea Van Helsing's Tools, a su vez creada por Van Helsing. Cuesta 0 de maná y es Neutral.",
     );
     assert.equal(
       lead("garlic", "pt"),
-      "Garlic é uma carta criada de Origins TCG, o jogo de cartas digital da Koin Games: não pode ser adicionada a um deck no deck builder, e durante a partida é criada por Van Helsing's Tools, por sua vez criada por Van Helsing. Custa 1 de mana e é Neutral.",
+      "Garlic é uma carta criada de Origins TCG, o jogo de cartas digital da Koin Games: não pode ser adicionada a um deck no deck builder, e durante a partida é criada por Van Helsing's Tools, por sua vez criada por Van Helsing. Custa 0 de mana e é Neutral.",
     );
     assert.equal(
       lead("garlic", "de"),
-      "Garlic ist eine erschaffene Karte aus Origins TCG, dem digitalen Kartenspiel von Koin Games: Im Deckbuilder lässt sie sich nicht in ein Deck aufnehmen; im Match entsteht sie durch Van Helsing's Tools, ihrerseits erschaffen von Van Helsing. Sie kostet 1 Mana und ist Neutral.",
+      "Garlic ist eine erschaffene Karte aus Origins TCG, dem digitalen Kartenspiel von Koin Games: Im Deckbuilder lässt sie sich nicht in ein Deck aufnehmen; im Match entsteht sie durch Van Helsing's Tools, ihrerseits erschaffen von Van Helsing. Sie kostet 0 Mana und ist Neutral.",
     );
     assert.equal(
       lead("garlic", "ru"),
-      "Garlic — созданная карта из Origins TCG, цифровой карточной игры от Koin Games: её нельзя добавить в колоду в конструкторе колод; в матче её создаёт Van Helsing's Tools, которую, в свою очередь, создаёт Van Helsing. Стоит 1 ед. маны, мировоззрение — Neutral.",
+      "Garlic — созданная карта из Origins TCG, цифровой карточной игры от Koin Games: её нельзя добавить в колоду в конструкторе колод; в матче её создаёт Van Helsing's Tools, которую, в свою очередь, создаёт Van Helsing. Стоит 0 ед. маны, мировоззрение — Neutral.",
     );
     // i nomi delle carte della catena sono link alle loro schede
     const parts = cardLead(card("garlic"), facts("garlic"), "it");
@@ -469,7 +469,7 @@ describe("etichette e fonti", () => {
     const merlin = cardLdTexts(card("merlin"), false);
     assert.deepEqual(
       merlin.map((t) => t.lang),
-      ["en", "it", "es", "fr", "pt", "de", "ru"],
+      ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"],
     );
     assert.ok(merlin.every((t) => !/\n| {2}/.test(t.text)));
     // carte create e rimosse: il solo inglese, mai la nostra traduzione
@@ -613,39 +613,32 @@ describe("World of Origins non si nomina nei testi pubblici", () => {
   });
 });
 
-describe("carte entrate nel gioco dopo la verifica (05/11/2026)", () => {
-  // Le otto di Dr. Frank, nel gioco dalla patch del 04/11/2026 (cards.ts, `enteredGame`): attive, ma non lette nel gioco
-  test("sono le otto di Dr. Frank, attive e con la patch del 4 novembre", () => {
-    assert.deepEqual(
-      newCards.map((c) => c.slug).sort(),
-      ["doppelganger", "dr-frank", "franken-bride", "franks-monster", "its-alive", "morgan-le-fay", "necromancer", "red-knight"],
-    );
-    for (const c of newCards) {
-      assert.equal(c.status, "active", c.slug);
-      assert.equal(c.since, "ea-1104", c.slug);
-      assert.equal(checkedInGame(c), false, c.slug);
+describe("carte entrate nel gioco dopo la verifica (05/11/2026), verificate l'11/11/2026", () => {
+  // Le otto di Dr. Frank, nel gioco dalla patch del 04/11/2026 (cards.ts, `enteredGame`): dalla verifica dell'11/11/2026
+  // sono lette nel gioco come le altre; `newCards` torna a riempirsi solo con carte entrate con una patch successiva.
+  const frank = ["doppelganger", "dr-frank", "franken-bride", "franks-monster", "its-alive", "morgan-le-fay", "necromancer", "red-knight"];
+  test("nessuna carta attende la verifica: le otto di Dr. Frank sono nel gioco e verificate", () => {
+    assert.deepEqual(newCards.map((c) => c.slug), []);
+    for (const slug of frank) {
+      const c = card(slug);
+      assert.equal(c.status, "active", slug);
+      assert.equal(c.since, "ea-1104", slug);
+      assert.equal(checkedInGame(c), true, slug);
     }
     assert.equal(checkedInGame(card("merlin")), true);
     assert.equal(checkedInGame(card("zombie")), false);
   });
-  test("frase d'attacco, In breve e riga dei dati dicono da quale patch sono nel gioco e che non sono verificate", () => {
-    const lead = cardLead(card("dr-frank"), facts("dr-frank", { n: 1, total: 16 }), "en");
-    assert.match(partsText(lead), /It has been in the game since the patch of November 4, 2026 \(EA · 4 Nov\), but it has not been checked in the game yet\./);
-    assert.ok(lead.some((p) => typeof p !== "string" && "path" in p && p.path === "/news/balance-patch-1104-cyber-queen"));
-    assert.doesNotMatch(partsText(lead), /checked in the game on/);
-    const brief = cardBrief(card("dr-frank"), facts("dr-frank"), "it");
-    assert.equal(partsText(brief[0].a), "Sì: è nel gioco dalla patch del 4 novembre 2026, quindi può guidare un mazzo nel deck builder. Il suo testo non è ancora stato verificato nel gioco.");
-    assert.equal(partsText(brief[1].a), "No: è entrata nel gioco con la patch EA · 4 nov del 4 novembre 2026, e da allora nessuna patch l'ha cambiata.");
-    assert.match(asOfLine(card("red-knight"), "en", cardSource) ?? "", /^In the game since patch EA · 4 Nov \(November 4, 2026\): its text and stats have not been checked in the game yet\.$/);
-    for (const l of locales) assert.ok(asOfLine(card("its-alive"), l, cardSource), l);
-    // Merlin, verificata il 22/09: "verificata" va con la carta, non con tutte le Leggendarie (Dr. Frank non lo è)
+  test("frase d'attacco e In breve dicono la verifica, la riga dei dati non dice più che manca", () => {
+    const lead = partsText(cardLead(card("dr-frank"), facts("dr-frank", { n: 1, total: 16 }), "en"));
+    assert.match(lead, /checked in the game on November 11, 2026/);
+    assert.doesNotMatch(lead, /not been checked/);
+    for (const slug of frank) assert.equal(asOfLine(card(slug), "en", cardSource), undefined, slug);
     assert.equal(
       partsText(cardBrief(card("merlin"), facts("merlin"), "en")[0].a),
-      "Yes: it is one of the 12 Legendaries in the game and was checked in the game's collection on September 22, 2026, so it can lead a deck in the deck builder.",
+      "Yes: it is one of the 12 Legendaries in the game and was checked in the game's collection on November 11, 2026, so it can lead a deck in the deck builder.",
     );
   });
-  test("nel JSON-LD solo il testo inglese, come le carte create e rimosse", () => {
-    assert.deepEqual(cardLdTexts(card("necromancer"), false).map((t) => t.lang), ["en"]);
-    assert.ok(cardLdTexts(card("merlin"), false).length > 1);
+  test("nel JSON-LD i testi del gioco in tutte le lingue, come le altre carte della collezione", () => {
+    assert.deepEqual(cardLdTexts(card("necromancer"), false).map((t) => t.lang), ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"]);
   });
 });

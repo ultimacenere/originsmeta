@@ -1,0 +1,133 @@
+# Testi ufficiali delle carte in CINESE SEMPLIFICATO, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
+# Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
+# Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
+Itsy Bitsy Spider
+Bullseye	对任意角色造成 3 点伤害。
+Defense Matrix	使任意角色获得护盾。
+Freeze!	眩晕任意角色。
+Mummy	重生
+Poison Apple	使任意角色获得死触。
+Reinforcements	在两个随机格子上各召唤一个 Merry Man [1⚔️/1❤️]。
+Stroke of Midnight	将任意角色送回其拥有者的手牌。
+Thumbelina
+Toto	每当有敌方角色在此处被打出后，我移动到另一个地点并获得 +1⚔️。
+Twister Toss	移动一个友方角色到任意格子。如果那里已有卡牌，则双方交换格子。
+Animate Object	选择一个格子。在那里召唤一个 Broomstick。
+Axe Throw	对任意角色造成 4 点伤害。
+Bagheera	展示时：如果我在中间的格子上，我获得 +2⚔️/+2❤️。
+Banshee	死亡时：友方角色获得 +1⚔️。
+Basilisk	死触
+Billy	死亡时：对此处一个随机敌方角色造成 2 点伤害。
+Card Soldier	我移动后，在我原来的格子上召唤一个我的复制。
+Don Quixote	守护者\n此处的敌方角色拥有守护者。
+Esmeralda	当我被弃掉时，使一个随机友方角色获得护盾。
+First Aid	治疗 6 点任意角色或屏障的伤害。
+Huck Finn
+Jack-in-the-Box	死亡时：对此处对手的屏障造成 2 点伤害。
+Lady of the Lake	当你打出善良角色时，使它获得守护者。
+Lightning Strike	对任意角色或屏障造成 3 点伤害。
+Merlin's Prophecy	重复你本回合打出的下一个法术。
+Morgan le Fay	展示时：弃掉你最右边的一张牌。将一个随机法术加入你的手牌，并使其费用减少 2 点。
+Morgiana	阻止此处触发所有展示时能力。
+Musketeer	先攻
+Piglet	展示时：使此处其他友方角色获得 +1⚔️。
+Red Knight	践踏\n持续：我正对面的角色拥有践踏。
+Roo	移动
+Rumple	展示时：你在下个回合获得 +1 法力。
+Sandman	你的法术费用减少 1 点。
+Scarecrow	展示时：抽一张牌。
+Shahrazad	当有卡牌进入你的手牌时，治疗 1 点此处你屏障的伤害。
+Three Blind Mice	死亡时：在两个随机格子上各召唤一个 Mouse [1⚔️/1❤️]。
+Trash for Treasure	摧毁一个友方角色以抽 2 张牌。
+Ugly Duckling	当你弃掉一张牌时，我变形为 Beautiful Swan [4⚔️/4❤️]。
+Aladdin	当我被弃掉时，在一个随机格子上召唤我。
+Ali Baba	当我对对手的屏障造成伤害时，抽一张牌。
+Asanbosam	展示时：随机弃掉一张费用为偶数的牌。
+Baby Bear	当敌方角色对此处你的屏障造成伤害时，对该敌方角色造成 1 点伤害。\n死亡时：将 Papa Bear [4⚔️/4❤️] 加入你的手牌。
+Beast	当你打出友方角色时，我获得 +1⚔️/+1❤️。
+Big Bad Wolf	战斗后，我获得 +1⚔️/+1❤️。
+Black Knight	展示时：对我正对面的敌方角色造成 2 点伤害。
+Cowardly Lion	守护者
+Dark Omen	摧毁任意角色。
+Davy Crockett	守护者\n死亡时：你卡组顶端的角色获得 +2⚔️/+2❤️。
+En Passant	移动一个友方角色。它对正对面的角色造成等同于其 ⚔️ 的伤害。
+Flying Monkey	展示时：将任意其他角色移动到此处的一个随机格子上。
+Frog Prince	选择其一：展示时：我获得 +3⚔️或展示时：我获得 +3❤️。
+Golden Egg	死亡时：在这个格子上召唤一个 Golden Goose [5⚔️/5❤️]。
+Humpty	死亡时：将一张随机卡牌加入你的手牌。
+It's Alive	从你的墓地召唤一个随机角色到一个随机格子上。
+Jack	展示时：摧毁一个 ⚔️ 为 7 或更高的随机敌方角色。
+Jill	当我受到伤害时，治疗 2 点此处你屏障的伤害。
+Kanga	战斗前，使本回合移动过的友方角色获得 +1⚔️/+1❤️。
+King Shahryar	回合开始时，抽一张牌。在战斗前弃掉它。
+Mary	展示时：将一只 Little Lamb [1⚔️/1❤️] 加入你的手牌。\n死亡时：你所有的 Little Lambs 永久获得 +3⚔️/+3❤️。
+Mind Palace	抽 2 张牌。
+Pegasus	我移动后，我的 ⚔️ 翻倍。
+Piggy Bank	你永久获得 +1 法力。
+Quasimodo	展示时：弃掉你费用最低的一张牌。抽一张牌。
+Queen of the Night	当你打出法术时，对此处对手的屏障造成 2 点伤害。
+Searing Light	对一个敌方角色造成 4 点伤害。治疗 4 点你在该处屏障的伤害。
+Shield Maiden	护盾
+Wicked Stepsisters
+Wicked Witch of the West	我在承受伤害后存活时，将一个 Flying Monkey [4⚔️/1❤️] 加入你的手牌，并且我向左移动一个格子。
+Beauty	当你打出友方角色时，抽一张牌。
+Blow the House Down	选择一个友方角色。它对该处所有敌方角色造成等同于其 ⚔️ 的伤害。
+Boogeyman	展示时：摧毁此处 ⚔️ 最低的友方角色——即使那是我。
+Christopher Robin
+Doppelganger	当你弃掉一个角色时，我变形为该角色的复制。
+Dorothy	我每个回合都可以移动。\n本局中友方角色每移动一次，我就获得 +1⚔️/+1❤️。
+Dracula	当你弃牌时，将我从你的墓地返回手牌。\n展示时：在此处一个随机格子上召唤 Brides of Dracula [2⚔️/2❤️]。
+Glinda	当你打出法术时，使友方角色获得 +1⚔️。
+Huntsman	击杀时：我获得 +1⚔️/+1❤️。
+Imhotep	死亡时：对此处所有敌方角色造成 2 点伤害。
+Jekyll	展示时：治疗 3 点此处任意其他角色或屏障的伤害。\n如果战斗后我在手牌中，我变形为 Hyde [5⚔️/3❤️]。
+Lancelot	当你在此处打出善良角色时，使它获得 +2⚔️/+2❤️。
+Little John	展示时：如果本回合有敌方角色在此处被打出，我获得 +2⚔️/+2❤️。
+Magic Carpet	选择其一：展示时：将其他友方角色向左移动一个格子或展示时：将其他友方角色向右移动一个格子。
+Marian	狙击 2
+Mothman	展示时：废弃此地点。
+Mulan	双重攻击\n当友方角色的展示时能力触发时，重复它。
+Necromancer	展示时：随机弃掉一张牌，以将 2 个 Zombie [2⚔️/2❤️] 加入你的手牌。如果你弃掉的是邪恶卡牌，则改为召唤这些 Zombie。
+Old MacDonald	每回合任意玩家首次弃牌时，将三个 Pumpkin 洗入你对手的卡组。
+Phuong Hoang	重生，移动\n当友方角色或屏障被治疗时，我获得 +1⚔️/+1❤️。
+Puck	当敌方角色或对手的屏障将被治疗时，改为对其造成等量的伤害。
+Queen of Hearts	先攻\n当友方角色的死亡时能力触发时，重复它。
+Spellbook	本局余下的回合中，每个回合开始时将一个随机法术加入你的手牌。在战斗前弃掉它。
+Tweedledum	展示时：在另一个随机地点召唤 Tweedledee，它是我的复制。
+Underworld Flare	对一个敌方角色造成 6 点伤害。当这张牌被弃掉时，对一个随机敌方角色造成 6 点伤害。
+Van Helsing	战斗前，如果 Van Helsing's Tools 不在你的手牌中，将它加入你的手牌。
+White Queen	展示时：将任意角色送回其拥有者的手牌。
+Wicked Stepmother	死触\n展示时：使你的邪恶角色获得死触。
+Baloo
+Bigfoot	践踏
+Boitata	当法术或能力将要对你的任一屏障造成伤害时，改为对该处对手的屏障造成该伤害。
+Bridge Troll	守护者
+Captain Ahab	展示时：弃掉你费用最高的一张牌，对一个敌方角色造成等同于其费用的伤害。
+Fairy Godmother	展示时：使另一个友方角色获得 +3⚔️/+3❤️。
+Franken Bride	重生\n当我从墓地进入战场时，治疗 4 点此处你屏障的伤害。
+Galahad	展示时：使其他友方角色获得 +1⚔️/+1❤️。
+Genie	展示时：弃掉你的手牌。将 3 个随机法术加入你的手牌。
+Hare	先攻，移动
+Impundulu	我攻击时，将一张 Lightning Strike 加入你的手牌。在下个回合战斗前弃掉它。
+Merlin	重复你每回合打出的第一个法术。
+Rain of Arrows	对所有敌方角色造成 2 点伤害。
+Sorcerer's Apprentice	当你打出法术时，在一个随机格子上召唤一个 Broomstick [1⚔️/1❤️]。
+The Green Knight	战斗后，我治疗自身所有伤害。
+Three Musketeers	先攻\n展示时：在此处每个格子上各召唤一个带有先攻的 Musketeer [2⚔️/1❤️]。
+Cockatrice	死触\n死亡时：摧毁一个随机敌方角色。
+Dr. Frank	战斗前，从你的墓地召唤一个随机角色到一个随机格子上。
+Frank's Monster	重生\n当我从墓地进入战场时，我的 ⚔️ 翻倍。
+Guy of Gisborne	双重攻击，狙击 1
+Heroic Charge	本回合友方角色获得 +2⚔️ 和践踏。
+Koschei	死亡时或被弃掉时：我返回你的手牌，并永久获得 +2⚔️/+2❤️。
+Mowgli	展示时：在另一个随机地点召唤 Baloo [6⚔️/6❤️]。
+Tin Woodman	展示时：治疗 8 点此处任意其他角色或屏障的伤害。
+King Arthur	护盾\n展示时：使你的善良角色获得护盾。
+Legion of the Dead	用 Zombie [2⚔️/2❤️] 填满你的场地。
+Paul Bunyan
+Three Not So Little Pigs	践踏\n展示时：在其他每个地点的一个随机格子上，召唤一个带有践踏的 Not So Little Pig [3⚔️/3❤️]。
+Bandersnatch	践踏
+Ellen Trechend	践踏\n展示时：此处每有一张敌方卡牌，我就获得 +3⚔️/+3❤️。
+Forbidden Knowledge	摧毁所有角色。
+Robin Hood	狙击 3\n展示时：对所有敌方角色造成 2 点伤害。
+Obliterate	对任意角色或屏障造成 10 点伤害。

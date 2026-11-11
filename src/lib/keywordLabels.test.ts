@@ -62,8 +62,10 @@ describe("keywordLabel", () => {
     assert.equal(keywordLabel("Snipe", "ru"), "Меткий выстрел");
     assert.equal(keywordLabel("Summon", "ru"), "Призывает");
   });
-  test("in cinese il glossario provvisorio del 04/11/2026 (docs/cinese.md)", () => {
-    assert.equal(keywordLabel("On Reveal", "zh-cn"), "揭示时");
+  test("in cinese i nomi del gioco, letti l'11/11/2026 (docs/cinese.md)", () => {
+    assert.equal(keywordLabel("On Reveal", "zh-cn"), "展示时");
+    assert.equal(keywordLabel("Defender", "zh-cn"), "守护者");
+    assert.equal(keywordLabel("Double Attack", "zh-cn"), "双重攻击");
     assert.equal(keywordLabel("Trample", "zh-cn"), "践踏");
     assert.equal(keywordLabel("Move", "zh-cn"), "移动");
     assert.equal(keywordLabel("Snipe", "zh-cn"), "狙击");

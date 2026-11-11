@@ -126,7 +126,7 @@ export const de: Dictionary = {
     updated: "Aktualisiert",
     stats: "Werte",
     unknownStats: "Werte noch nicht veröffentlicht",
-    asOf: "Werte des Patches vom 4. November 2026: Die 122 Karten der Sammlung wurden am 22. September im Spiel geprüft, die Balance-Hinweise stammen aus den offiziellen Patchnotes, und die acht Karten, die mit dem Patch vom 4. November ins Spiel kamen, sind noch nicht im Spiel geprüft.",
+    asOf: "Werte des Patches vom 4. November 2026: Die 130 Karten der Sammlung wurden am 11. November 2026 im Spiel geprüft, auf Version 0.8.2 des Early Access, und die Balance-Hinweise stammen aus den offiziellen Patchnotes.",
     alignment: "Gesinnung",
     good: "Good",
     evil: "Evil",
@@ -266,7 +266,7 @@ export const de: Dictionary = {
     countRemoved: "in früheren Builds entfernt",
     legendNote: "Legendäre Karten führen ein Deck an: eine pro Deck, markiert mit dem Stern. Die Sagas sind eine eigene Einteilung von OriginsMeta nach der Ursprungslegende; das Spiel zeigt sie nicht.",
     sourceNote:
-      "Kosten, Werte, Gesinnungen und Texte der spielbaren Karten wurden im Spiel geprüft, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch und Russisch, außer den acht Karten, die mit dem Patch vom 4. November 2026 ins Spiel kamen; die Balance-Änderungen stammen aus den offiziellen Patchnotes. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft. Kartentext © Koin Games. Die Sagas, die Hinweise zum Ursprung und der italienische, spanische, französische, portugiesische, deutsche und russische Text der erschaffenen und entfernten Karten sowie der acht Karten vom 4. November stammen von OriginsMeta.",
+      "Kosten, Werte, Seltenheiten, Gesinnungen und Texte der spielbaren Karten wurden am 11. November 2026 im Spiel geprüft, auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch, Russisch und vereinfachtem Chinesisch; die Balance-Änderungen stammen aus den offiziellen Patchnotes. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft; der Text der erschaffenen Karten ist der aus den Dateien des Spiels. Kartentext © Koin Games. Die Sagas, die Hinweise zum Ursprung und der Text der entfernten Karten in anderen Sprachen als Englisch stammen von OriginsMeta.",
     detailKicker: "Karte",
     collectible: "Sammelkarte",
     changesTitle: "Balance-Historie",

@@ -1,6 +1,6 @@
-# Testi ufficiali delle carte in TEDESCO letti nel gioco il 20/10/2026 (Demo 2.0, demo 0.7.1, testi della patch 0.7): collezione con le carte non possedute ("Nicht im Besitz").
+# Testi ufficiali delle carte in TEDESCO, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
 # Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
-# Il testo è trascritto com'è, anche dove il gioco non è coerente.
+# Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
 Itsy Bitsy Spider
 Bullseye	Füge EINEM BELIEBIGEN Charakter 3 Schaden zu.
 Defense Matrix	Gib EINEM BELIEBIGEN Charakter Schild.
@@ -11,11 +11,9 @@ Reinforcements	Beschwöre einen Merry Man [1⚔️/1❤️] auf zwei zufälligen
 Stroke of Midnight	Bringe EINEN BELIEBIGEN Charakter auf die Hand seines Besitzers zurück.
 Thumbelina
 Toto	Nachdem hier ein Gegner gespielt wurde, bewege ich mich an einen anderen Ort und erhalte +1⚔️.
-Trash for Treasure	Zerstöre einen Verbündeten, um 2 Karten zu ziehen.
 Twister Toss	Bewege einen Verbündeten auf ein beliebiges Feld. Steht dort bereits eine Karte, tauschen sie die Felder.
 Animate Object	Wähle ein Feld. Beschwöre dort einen Broomstick.
 Axe Throw	Füge EINEM BELIEBIGEN Charakter 4 Schaden zu.
-Baby Bear	Wenn ein Gegner deine Barriere hier beschädigt, füge diesem Gegner 1 Schaden zu.\nBei Tod: Füge deiner Hand Papa Bear [4⚔️/4❤️] hinzu.
 Bagheera	Beim Aufdecken: Wenn ich auf einem mittleren Feld bin, erhalte ich +2⚔️/+2❤️.
 Banshee	Bei Tod: Verbündete erhalten +1⚔️.
 Basilisk	Todesberührung
@@ -29,19 +27,23 @@ Jack-in-the-Box	Bei Tod: Füge der gegnerischen Barriere hier 2 Schaden zu.
 Lady of the Lake	Wenn du einen guten Charakter spielst, gib ihm Verteidiger.
 Lightning Strike	Füge EINEM BELIEBIGEN Charakter oder einer Barriere 3 Schaden zu.
 Merlin's Prophecy	Wiederhole den nächsten Zauber, den du diese Runde spielst.
+Morgan le Fay	Beim Aufdecken: Wirf deine Karte ganz rechts ab. Füge deiner Hand einen zufälligen Zauber hinzu und senke seine Kosten um 2.
 Morgiana	Verhindere, dass ALLE Beim Aufdecken-Fähigkeiten hier eintreten.
 Musketeer	Erstschlag
 Piglet	Beim Aufdecken: Gib den anderen Verbündeten hier +1⚔️.
+Red Knight	Überrennen\nFortlaufend: Der Charakter mir gegenüber hat Überrennen.
 Roo	Bewegen
 Rumple	Beim Aufdecken: Du erhältst nächste Runde +1 Mana.
 Sandman	Deine Zauber kosten 1 weniger.
 Scarecrow	Beim Aufdecken: Ziehe eine Karte.
 Shahrazad	Wenn eine Karte in deine Hand kommt, heile 1 Schaden bei deiner Barriere hier.
 Three Blind Mice	Bei Tod: Beschwöre eine Mouse [1⚔️/1❤️] auf zwei zufälligen Feldern.
+Trash for Treasure	Zerstöre einen Verbündeten, um 2 Karten zu ziehen.
 Ugly Duckling	Wenn du eine Karte abwirfst, verwandle ich mich in Beautiful Swan [4⚔️/4❤️].
 Aladdin	Wenn ich abgeworfen werde, beschwöre mich auf einem zufälligen Feld.
 Ali Baba	Wenn ich eine gegnerische Barriere beschädige, ziehe eine Karte.
 Asanbosam	Beim Aufdecken: Wirf eine zufällige Karte mit geraden Kosten ab.
+Baby Bear	Wenn ein Gegner deine Barriere hier beschädigt, füge diesem Gegner 1 Schaden zu.\nBei Tod: Füge deiner Hand Papa Bear [4⚔️/4❤️] hinzu.
 Beast	Wenn du einen Verbündeten spielst, erhalte ich +1⚔️/+1❤️.
 Big Bad Wolf	Nach dem Kampf erhalte ich +1⚔️/+1❤️.
 Black Knight	Beim Aufdecken: Füge dem Gegner gegenüber 2 Schaden zu.
@@ -53,6 +55,7 @@ Flying Monkey	Beim Aufdecken: Bewege EINEN BELIEBIGEN anderen Charakter auf ein 
 Frog Prince	Wähle eins: Beim Aufdecken: Ich erhalte +3⚔️ ODER Beim Aufdecken: Ich erhalte +3❤️.
 Golden Egg	Bei Tod: Beschwöre ein Golden Goose [5⚔️/5❤️] auf diesem Feld.
 Humpty	Bei Tod: Füge deiner Hand eine zufällige Karte hinzu.
+It's Alive	Beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
 Jack	Beim Aufdecken: Zerstöre einen zufälligen Gegner mit 7 oder mehr ⚔️.
 Jill	Wenn ich Schaden erleide, heile 2 Schaden bei deiner Barriere hier.
 Kanga	Vor dem Kampf: Gib Verbündeten, die sich diese Runde bewegt haben, +1⚔️/+1❤️.
@@ -63,6 +66,7 @@ Pegasus	Nachdem ich mich bewege, verdopple ich meine ⚔️.
 Piggy Bank	Du erhältst dauerhaft +1 Mana.
 Quasimodo	Beim Aufdecken: Wirf deine Karte mit den niedrigsten Kosten ab. Ziehe eine Karte.
 Queen of the Night	Wenn du einen Zauber spielst, füge der gegnerischen Barriere hier 2 Schaden zu.
+Searing Light	Füge einem Gegner 4 Schaden zu. Heile 4 Schaden bei deiner Barriere dort.
 Shield Maiden	Schild
 Wicked Stepsisters
 Wicked Witch of the West	Wenn ich Schaden überlebe, füge deiner Hand einen Flying Monkey [4⚔️/1❤️] hinzu und ich bewege mich ein Feld nach links.
@@ -70,6 +74,7 @@ Beauty	Wenn du einen Verbündeten spielst, ziehe eine Karte.
 Blow the House Down	Wähle einen Verbündeten. Er fügt ALLEN Gegnern dort Schaden in Höhe seiner ⚔️ zu.
 Boogeyman	Beim Aufdecken: Zerstöre den Verbündeten hier mit der niedrigsten ⚔️, selbst wenn ich es bin.
 Christopher Robin
+Doppelganger	Wenn du einen Charakter abwirfst, verwandle ich mich in eine Kopie dieses Charakters.
 Dorothy	Ich kann mich jede Runde Bewegen.\nIch habe +1⚔️/+1❤️ für jede Bewegung eines Verbündeten in diesem Spiel.
 Dracula	Wenn du abwirfst, kehre ich aus deinem Friedhof auf die Hand zurück.\nBeim Aufdecken: Beschwöre Brides of Dracula [2⚔️/2❤️] auf einem zufälligen Feld hier.
 Glinda	Wenn du einen Zauber spielst, gib Verbündeten +1⚔️.
@@ -82,11 +87,11 @@ Magic Carpet	Wähle eins: Beim Aufdecken: Bewege andere Verbündete ein Feld nac
 Marian	Präzisionsschuss 2
 Mothman	Beim Aufdecken: Verwüste diesen Ort.
 Mulan	Doppelangriff\nWenn eine Beim Aufdecken-Fähigkeit eines Verbündeten eintritt, wiederhole sie.
+Necromancer	Beim Aufdecken: Wirf eine zufällige Karte ab, um deiner Hand 2 Zombies [2⚔️/2❤️] hinzuzufügen. Wenn du eine böse Karte abgeworfen hast, beschwöre diese Zombies stattdessen.
 Old MacDonald	Wenn IRGENDEIN Spieler zum ersten Mal in einer Runde abwirft, mische drei Pumpkins in das Deck deines Gegners.
 Phuong Hoang	Wiedergeburt, Bewegen\nWenn ein Verbündeter oder eine Barriere geheilt wird, erhalte ich +1⚔️/+1❤️.
 Puck	Wenn ein Feind oder die Barriere des Gegners geheilt wird, füge ihm stattdessen ebenso viel Schaden zu.
 Queen of Hearts	Erstschlag\nWenn eine Bei Tod-Fähigkeit eines Verbündeten eintritt, wiederhole sie.
-Searing Light	Füge einem Gegner 4 Schaden zu. Heile 4 Schaden bei deiner Barriere dort.
 Spellbook	Für den Rest des Spiels: Füge deiner Hand zu Rundenbeginn einen zufälligen Zauber hinzu. Wirf ihn vor dem Kampf ab.
 Tweedledum	Beim Aufdecken: Beschwöre Tweedledee, eine Kopie von mir, an einem anderen zufälligen Ort.
 Underworld Flare	Füge einem Gegner 6 Schaden zu. Wenn diese Karte abgeworfen wird, füge einem zufälligen Gegner 6 Schaden zu.
@@ -99,7 +104,9 @@ Boitata	Wenn ein Zauber oder eine Fähigkeit eine deiner Barrieren beschädigen 
 Bridge Troll	Verteidiger
 Captain Ahab	Beim Aufdecken: Wirf deine Karte mit den höchsten Kosten ab, um ihre Kosten als Schaden einem Gegner zuzufügen.
 Fairy Godmother	Beim Aufdecken: Gib einem anderen Verbündeten +3⚔️/+3❤️.
+Franken Bride	Wiedergeburt\nWenn ich aus dem Friedhof ins Spiel komme, heile 4 Schaden bei deiner Barriere hier.
 Galahad	Beim Aufdecken: Gib anderen Verbündeten +1⚔️/+1❤️.
+Genie	Beim Aufdecken: Wirf deine Hand ab. Füge deiner Hand 3 zufällige Zauber hinzu.
 Hare	Erstschlag, Bewegen
 Impundulu	Wenn ich angreife, füge deiner Hand einen Lightning Strike hinzu. Wirf ihn vor dem Kampf nächste Runde ab.
 Merlin	Wiederhole den ersten Zauber, den du jede Runde spielst.
@@ -108,7 +115,8 @@ Sorcerer's Apprentice	Wenn du einen Zauber spielst, beschwöre einen Broomstick 
 The Green Knight	Nach dem Kampf heile ich allen Schaden bei mir selbst.
 Three Musketeers	Erstschlag\nBeim Aufdecken: Beschwöre einen Musketeer [2⚔️/1❤️] mit Erstschlag auf jedem Feld hier.
 Cockatrice	Todesberührung\nBei Tod: Zerstöre einen zufälligen Gegner.
-Genie	Beim Aufdecken: Wirf deine Hand ab. Füge deiner Hand 3 zufällige Zauber hinzu.
+Dr. Frank	Vor dem Kampf beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
+Frank's Monster	Wiedergeburt\nWenn ich aus dem Friedhof ins Spiel komme, verdopple ich meine ⚔️.
 Guy of Gisborne	Doppelangriff, Präzisionsschuss 1
 Heroic Charge	Verbündete haben diese Runde +2⚔️ und Überrennen.
 Koschei	Bei Tod oder wenn ich abgeworfen werde: Ich kehre auf deine Hand zurück und erhalte +2⚔️/+2❤️ dauerhaft.
