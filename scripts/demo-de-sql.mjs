@@ -1,7 +1,8 @@
 // Torneo di prova a doppia eliminazione (lo stesso di demo-tournament.mjs --format double_elim) come UN file SQL da
 // incollare nell'editor SQL di Supabase: serve quando si lavora da un PC senza .env.local (10/11/2026).
 // Uso: node scripts/demo-de-sql.mjs --organizer <nome utente> [--players a] [--judges x,y] [--count 300]
-//        [--stage qualifiers|ready|half] [--lang en] [--out file.sql]
+//        [--stage qualifiers|ready|half|open|final] [--lang en] [--out file.sql]
+//        [--waitlist 24] [--no-decks 32] [--left 4] [--deck-pool 48] [--no-select]
 //        [--pools 2] [--qualify 32] [--size 1024] [--qualifier] [--starts 2026-11-28T10:00:00Z]
 //        [--name "…"] [--slug test-qualifier-a] [--desc-file testo.txt] [--rules-file regole.txt]
 // Il file fa tutto in un blocco DO (una transazione): bot mancanti, torneo privato, iscrizioni con mazzo e sideboard di 3,
@@ -16,6 +17,10 @@
 //                    aperte non hanno `ready_at`: sono bot, non giocheranno mai, e con l'orologio acceso dopo 75 minuti
 //                    finirebbero tutte nella coda dello staff ("partita lunga"). Lo staff le chiude lo stesso a mano.
 //                    Gli avvisi "la tua partita è pronta" scritti ai bot si cancellano alla fine.
+//   --stage open   → il torneo prima dell'avvio: iscrizioni fatte, nessun check-in. --waitlist N mette altri N bot in
+//                    lista d'attesa, --no-decks N lascia gli ultimi N iscritti senza mazzo.
+//   --stage final  → l'ultimo turno: tutto giocato tranne --left N partite (predefinito 4) dell'ultimo turno dei perdenti.
+//   --deck-pool N  → solo N mazzi diversi, dati a rotazione (file più piccolo); --no-select toglie la select finale.
 import { readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 
@@ -38,7 +43,7 @@ if (![1, 2, 4, 8, 16, 32, 64, 128].includes(QUAL)) throw new Error("--qualify: 1
 if (![4, 8, 16, 32, 64, 128, 256, 512, 1024].includes(SIZE)) throw new Error("--size: una potenza di 2 fra 4 e 1024");
 if (!Number.isInteger(N) || N < POOLS * (2 * QUAL + 1) || N > SIZE) throw new Error(`--count fra ${POOLS * (2 * QUAL + 1)} e ${SIZE} (ogni tabellone deve avere più di ${2 * QUAL} iscritti)`);
 const stage = opt("--stage") ?? "qualifiers";
-if (!["qualifiers", "ready", "half"].includes(stage)) throw new Error("--stage qualifiers, ready o half");
+if (!["qualifiers", "ready", "half", "open", "final"].includes(stage)) throw new Error("--stage qualifiers, ready, half, open o final");
 const lang = opt("--lang") ?? "en";
 const out = opt("--out") ?? `demo-de-${stage}.sql`;
 const startsRaw = opt("--starts");
@@ -47,6 +52,17 @@ if (starts && Number.isNaN(starts.getTime())) throw new Error("--starts: data no
 const SIDE = 3;
 const BOT_DOMAIN = "bots.originsmeta.local";
 const CUT = POOLS * QUAL * 2;
+const OPEN = stage === "open";
+const WAIT = OPEN ? Number(opt("--waitlist") ?? 0) : 0;
+const NO_DECKS = OPEN ? Number(opt("--no-decks") ?? 0) : 0;
+if (!Number.isInteger(WAIT) || WAIT < 0 || WAIT > 200) throw new Error("--waitlist fra 0 e 200");
+if (!Number.isInteger(NO_DECKS) || NO_DECKS < 0 || NO_DECKS > N) throw new Error("--no-decks fra 0 e gli iscritti");
+const LEFT = Number(opt("--left") ?? 4);
+if (!Number.isInteger(LEFT) || LEFT < 0 || LEFT > QUAL * POOLS) throw new Error("--left fra 0 e le partite dell'ultimo turno dei perdenti");
+const ALL = N + WAIT;
+const DECK_POOL = Math.min(ALL, Number(opt("--deck-pool") ?? ALL));
+if (!Number.isInteger(DECK_POOL) || DECK_POOL < 1) throw new Error("--deck-pool: almeno 1");
+const NO_SELECT = argv.includes("--no-select");
 
 const woo = JSON.parse(readFileSync(new URL("../src/lib/data/woo-cards.json", import.meta.url), "utf8"));
 const legendaries = woo.cards.filter((c) => c.status === "active" && c.legendary && c.type !== "token").map((c) => c.slug);
@@ -55,9 +71,9 @@ const shuffle = (a) => a.map((v) => [Math.random(), v]).sort((x, y) => x[0] - y[
 const omCode = (deck) => `OM1.${Buffer.from(JSON.stringify({ n: deck.name, l: deck.legendary, c: deck.cards, x: [] }), "utf8").toString("base64url")}`;
 const lit = (s) => `'${String(s).replace(/'/g, "''")}'`;
 
-const decks = Array.from({ length: N }, (_, k) => {
+const decks = Array.from({ length: DECK_POOL }, (_, k) => {
   const pool = shuffle(bases);
-  const label = k < players.length ? players[k] : `Bot ${k - players.length + 1}`;
+  const label = DECK_POOL < ALL ? `Test deck ${k + 1}` : k < players.length ? players[k] : `Bot ${k - players.length + 1}`;
   return { k, code: omCode({ name: label, legendary: shuffle(legendaries)[0], cards: pool.slice(0, 12) }), side: JSON.stringify(pool.slice(12, 12 + SIDE)) };
 });
 const slugBase = (opt("--slug") ?? "torneo-di-prova").toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
@@ -85,7 +101,7 @@ const rules =
   ].join("\n");
 if (desc.length > 4000 || rules.length > 4000) throw new Error("descrizione o regole troppo lunghe");
 const H = players.length;
-const keepHumans = stage === "qualifiers" || stage === "half";
+const keepHumans = stage === "qualifiers" || stage === "half" || stage === "final";
 
 // il corpo che chiude una partita fra bot a caso (m è la riga della partita)
 const closeMatch = `need := public.tm_need(tid, m.round);
@@ -163,13 +179,34 @@ const playHalf = `  -- tre ondate intere (le partite pronte all'inizio di ogni o
   delete from public.notifications x using public.profiles p
    where p.id = x.user_id and p.username ~ '^bot-[0-9]+(-[0-9]+)?$' and x.kind = 'match_ready' and x.target like '/tournaments/' || ${lit(slug)} || '/match/%';`;
 
+const STEP = LEFT ? Math.max(1, Math.floor((QUAL * POOLS) / LEFT)) : 0;
+const cleanup = `  -- le partite rimaste aperte fra bot restano da giocare ma senza orologio (vedi in testa al file)
+  update public.tournament_matches set ready_at = null, seen_a = null, seen_b = null
+   where tournament_id = tid and status = 'pending' and player_a is not null and player_b is not null
+     ${keepHumans ? "and not (player_a = any(humans)) and not (player_b = any(humans))" : ""};
+  -- gli avvisi "la tua partita è pronta" dei bot non servono a nessuno
+  delete from public.notifications x using public.profiles p
+   where p.id = x.user_id and p.username ~ '^bot-[0-9]+(-[0-9]+)?$' and x.kind = 'match_ready' and x.target like '/tournaments/' || ${lit(slug)} || '/match/%';`;
+const playFinal = `  -- tutte le ondate; dell'ultimo turno dei perdenti restano da giocare ${LEFT} partite
+  select max(round) into last_round from public.tournament_matches where tournament_id = tid and stage = 'lower';
+  loop
+    n := 0;
+    for m in ${readyMatches} loop
+      ${STEP ? `continue when m.stage = 'lower' and m.round = last_round and m.position % ${STEP} = ${STEP - 1};` : ""}
+      ${closeMatch}
+    end loop;
+    exit when n = 0;
+  end loop;
+
+${cleanup}`;
+
 const sql = `-- Torneo di prova a doppia eliminazione (${stage}), generato da scripts/demo-de-sql.mjs il ${new Date().toISOString()}
--- Organizzatore ${org}${H ? `, giocatori veri ${players.join(", ")}` : ""}${judges.length ? `, arbitri ${judges.join(", ")}` : ""}, ${N} iscritti, ${POOLS} tabellon${POOLS === 1 ? "e" : "i"}, ${QUAL} + ${QUAL} qualificati${POOLS === 1 ? "" : " per tabellone"}${QUALIFIER ? ", qualificazione senza fase finale" : ""}.
+-- Organizzatore ${org}${H ? `, giocatori veri ${players.join(", ")}` : ""}${judges.length ? `, arbitri ${judges.join(", ")}` : ""}, ${N} iscritti${WAIT ? ` più ${WAIT} in lista d'attesa` : ""}, ${POOLS} tabellon${POOLS === 1 ? "e" : "i"}, ${QUAL} + ${QUAL} qualificati${POOLS === 1 ? "" : " per tabellone"}${QUALIFIER ? ", qualificazione senza fase finale" : ""}.
 -- Incollare tutto nell'editor SQL di Supabase e premere Run.
 do $demo$
 declare
   org uuid; tid uuid; ids uuid[]; m record; n int; need int; aw boolean; lo int; disputed boolean := false;
-  humans uuid[] := '{}'; u uuid; nm text; wave int; mid uuid; special uuid[] := '{}';
+  humans uuid[] := '{}'; u uuid; nm text; wave int; mid uuid; special uuid[] := '{}'; last_round int;
 begin
   if to_regproc('public.tm_de_create') is null then raise exception 'Prima la migrazione (blocco 10/11/2026: DOPPIA ELIMINAZIONE)'; end if;
 ${QUALIFIER ? `  if not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'tournaments' and column_name = 'de_qualifier') then
@@ -190,15 +227,15 @@ ${QUALIFIER ? `  if not exists (select 1 from information_schema.columns where t
   select gen_random_uuid(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'bot' || i || '@${BOT_DOMAIN}', '', now(),
     '{"provider":"email","providers":["email"]}'::jsonb, jsonb_build_object('user_name', 'bot-' || i, 'full_name', 'Bot ' || i), now(), now(),
     '', '', '', '', '', '', '', '', false, false
-    from generate_series(1, ${N - H + 20}) i
+    from generate_series(1, ${ALL - H + 20}) i
    where not exists (select 1 from auth.users x where x.email = 'bot' || i || '@${BOT_DOMAIN}');
 
   select humans || array_agg(id order by nr) into ids from (
     select u2.id, (substring(u2.email from '^bot([0-9]+)@'))::int as nr
       from auth.users u2 join public.profiles p on p.id = u2.id
      where u2.email like 'bot%@${BOT_DOMAIN}' and p.username ~ '^bot-[0-9]+(-[0-9]+)?$'
-     order by 2 limit ${N - H}) b;
-  if coalesce(array_length(ids, 1), 0) <> ${N} then raise exception 'Bot insufficienti: % iscritti su ${N}', coalesce(array_length(ids, 1), 0); end if;
+     order by 2 limit ${ALL - H}) b;
+  if coalesce(array_length(ids, 1), 0) <> ${ALL} then raise exception 'Bot insufficienti: % iscritti su ${ALL}', coalesce(array_length(ids, 1), 0); end if;
 
   insert into public.tournaments (slug, organizer, name, cover_url, description, rules, lang, starts_at, size, deck_mode, best_of, checkin, hidden_decklists,
     no_show_minutes, top_cut, top_cut_hold, deck_ban, visibility, listed, format, de_pools, de_qualify, sideboard${QUALIFIER ? ", de_qualifier" : ""})
@@ -206,12 +243,18 @@ ${QUALIFIER ? `  if not exists (select 1 from information_schema.columns where t
     15, null, ${QUALIFIER ? "false" : "true"}, false, 'private', false, 'double_elim', ${POOLS}, ${QUAL}, ${SIDE}${QUALIFIER ? ", true" : ""})
   returning id into tid;
 
-  insert into public.tournament_players (tournament_id, user_id, status, decks_submitted, checked_in_at)
-  select tid, x, 'registered', true, now() from unnest(ids) x;
+  -- iscrizioni: ${OPEN ? `prima del check-in, le ultime ${NO_DECKS} senza mazzo, ${WAIT} in lista d'attesa, in ordine di arrivo` : "tutti con il mazzo e il check-in fatto"}
+  insert into public.tournament_players (tournament_id, user_id, status, decks_submitted, checked_in_at, created_at)
+  select tid, ids[g], case when g <= ${N} then 'registered' else 'waitlist' end, ${OPEN ? `g <= ${N - NO_DECKS} or g > ${N}` : "true"},
+         ${OPEN ? "null, now() - interval '5 days' + g * interval '9 minutes'" : "now(), now()"}
+    from generate_series(1, ${ALL}) g;
   insert into public.tournament_decks (tournament_id, user_id, codes, sideboard)
-  select tid, ids[d.k + 1], jsonb_build_array(d.code), d.side::jsonb from (values
+  select tid, ids[g], jsonb_build_array(d.code), d.side::jsonb
+    from generate_series(1, ${ALL}) g
+    join (values
 ${decks.map((d) => `    (${d.k}, ${lit(d.code)}, ${lit(d.side)})`).join(",\n")}
-  ) as d(k, code, side);
+    ) as d(k, code, side) on d.k = (g - 1) % ${DECK_POOL}
+   where ${OPEN ? `g <= ${N - NO_DECKS} or g > ${N}` : "true"};
 
   -- arbitri (--judges): gestiscono il torneo come l'organizzatore
   foreach nm in array array[${judges.map(lit).join(", ")}]::text[] loop
@@ -220,13 +263,17 @@ ${decks.map((d) => `    (${d.k}, ${lit(d.code)}, ${lit(d.side)})`).join(",\n")}
     insert into public.tournament_judges (tournament_id, user_id, added_by) values (tid, u, org);
   end loop;
 
-  -- avvio come start_tournament: i giocatori veri in testa, i bot in ordine casuale
+${
+  OPEN
+    ? "  -- stato iniziale: il torneo resta aperto, nessun check-in"
+    : `  -- avvio come start_tournament: i giocatori veri in testa, i bot in ordine casuale
   perform public.tm_start(tid, humans || (select array_agg(x order by random()) from unnest(ids[${H + 1}:]) x));
   perform public.tm_after_start(tid);
 
-${stage === "half" ? playHalf : playAll}
+${stage === "half" ? playHalf : stage === "final" ? playFinal : playAll}`
+}
 end $demo$;
-
+${NO_SELECT ? "" : `
 select t.tag, t.name,
        'https://originsmeta.com/${lang}/tournaments/' || t.slug as scheda,
        'https://originsmeta.com/${lang}/tournaments/' || t.slug || '/manage' as gestione,
@@ -238,6 +285,7 @@ select t.tag, t.name,
        (select count(*) from public.tournament_players x where x.tournament_id = t.id) as iscritti
   from public.tournaments t left join public.tournament_secrets s on s.tournament_id = t.id
  where t.slug = ${lit(slug)};
-`;
+`}`;
 writeFileSync(out, sql);
-console.log(`Scritto ${out}: torneo ${slug}, ${N} iscritti, fase ${stage}, ${(sql.length / 1024).toFixed(0)} KB`);
+console.log(`Scritto ${out}: torneo ${slug}, ${N} iscritti${WAIT ? ` più ${WAIT} in lista d'attesa` : ""}, fase ${stage}, ${(sql.length / 1024).toFixed(0)} KB`);
+console.log(`SLUG=${slug}`);
