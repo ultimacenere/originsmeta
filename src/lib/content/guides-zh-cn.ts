@@ -129,7 +129,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 > 战斗前，如果 Van Helsing's Tools 不在你的手牌中，将它加入你的手牌。
 
 - **传说。** Abraham Van Helsing，带领众人追捕 Dracula 的荷兰教授。
-- **生成的卡牌。** [Van Helsing's Tools](/zh-cn/cards/van-helsings-tools)，让你从四张生成的卡牌中选择一张打出：[Holy Water](/zh-cn/cards/holy-water)、[Silver Bullet](/zh-cn/cards/silver-bullet)、[Garlic](/zh-cn/cards/garlic) 或 [Wooden Stake](/zh-cn/cards/wooden-stake)（生成的卡牌：其文本未在游戏中核实，Silver Bullet 的页面仍显示 0.6.2 补丁之前的文本；改动记录在它的平衡历史中）。
+- **生成的卡牌。** [Van Helsing's Tools](/zh-cn/cards/van-helsings-tools)，让你从四张生成的卡牌中选择一张打出：[Holy Water](/zh-cn/cards/holy-water)、[Silver Bullet](/zh-cn/cards/silver-bullet)、[Garlic](/zh-cn/cards/garlic) 或 [Wooden Stake](/zh-cn/cards/wooden-stake)（生成的卡牌：它们不在游戏收藏中，文本来自游戏文件）。
 - **补丁。** Van Helsing 本身没有变化。0.6.2 补丁中 Van Helsing's Tools 变为免费（1 → 0 法力），它生成的 Silver Bullet 从 3 点伤害降到 1 点（[补丁说明](/zh-cn/news/patch-0-6-2)）；2026年9月21日的试玩版补丁之后，Silver Bullet 也可以指定屏障为目标，Wooden Stake 可以指定生命值全满的角色为目标，但如果目标在揭示时没有受伤，它仍然会失效（[补丁说明](/zh-cn/news/demo-patch-notes-0921)）。
 - **OriginsMeta 上的卡组，2026年9月25日。** 三副：[Healing Healsing](/zh-cn/decks/community/healing-healsing-9411)、[Cure Control](/zh-cn/decks/community/cure-control-b630) 和 [CONTROL](/zh-cn/decks/community/control-2c2b)。
 - **攻略。** [Van Helsing 卡组攻略：Healing Healsing](/zh-cn/guides/healing-healsing-guide) 以及[它的对局分析](/zh-cn/guides/healing-healsing-matchups)。
