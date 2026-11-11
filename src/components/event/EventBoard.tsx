@@ -118,28 +118,26 @@ export function TalentSection() {
   );
 }
 
-/** I giocatori di un mazzo (dopo la ruota), dentro la scheda del mazzo scritta dal server. */
-export function DeckPlayers({ deck }: { deck: string }) {
+/**
+ * I giocatori di un mazzo (dopo la ruota), nella striscia del mazzo scritta dal server: due foto piccole e i nomi, o
+ * "Da assegnare con la ruota" prima del giro.
+ */
+export function DeckFaces({ deck }: { deck: string }) {
   const data = useEventData();
   const face = useFaces();
   const a = data.state.assignments.find((x) => x.deck === deck);
-  if (!a) return <p className="text-sm text-pale-muted">{L.decks.toAssign}</p>;
+  if (!a) return <span className="block truncate text-xs text-pale-muted">{L.decks.toAssign}</span>;
+  const faces = a.players.map((p) => face(p));
   return (
-    <div>
-      <p className="text-xs uppercase tracking-wider text-pale-muted">{L.decks.assigned}</p>
-      <ul className="mt-2 flex flex-wrap gap-3">
-        {a.players.map((p, i) => {
-          const f = face(p);
-          return (
-            // un giocatore ancora da svelare arriva come "hidden": la chiave tiene anche la posizione
-            <li key={`${p}-${i}`} className="flex min-w-0 items-center gap-2">
-              <FaceImg face={f} size={36} />
-              <span className="truncate font-display text-sm font-bold text-sky">{f.name}</span>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <span className="flex min-w-0 items-center gap-1.5">
+      <span className="flex shrink-0 -space-x-1.5">
+        {faces.map((f, i) => (
+          // un giocatore ancora da svelare arriva come "hidden-<n>": la chiave tiene anche la posizione
+          <FaceImg key={`${f.id}-${i}`} face={f} size={22} />
+        ))}
+      </span>
+      <span className="truncate text-xs text-pale">{faces.map((f) => f.name).join(" · ")}</span>
+    </span>
   );
 }
 

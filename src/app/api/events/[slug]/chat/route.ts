@@ -5,7 +5,7 @@ import { eventShortLink } from "@/lib/event/links";
 /**
  * Comando di chat di un evento (10/11/2026), per Nightbot, StreamElements e Fossabot, come /api/chat/deck: una riga di
  * testo con dove è il giveaway adesso e quanto manca, più il link breve della pagina. Esempio per Nightbot:
- * !commands add !rumble $(urlfetch https://originsmeta.com/api/events/royale-rumble/chat)
+ * !commands add !showmatch $(urlfetch https://originsmeta.com/api/events/attrix-showmatch/chat)
  * La CDN tiene la risposta 5 secondi. Testo semplice, sotto i 400 caratteri (il limite dei bot).
  */
 const HEADERS = { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=0, s-maxage=5, stale-while-revalidate=10" };

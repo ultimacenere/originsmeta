@@ -1,5 +1,5 @@
 /**
- * Eventi della community (10/11/2026): la Royale Rumble dei creator italiani del 16/11/2026 (Pierluigi: "una royale
+ * Eventi della community (10/11/2026): l'Attrix Showmatch dei creator italiani del 16/11/2026 (Pierluigi: "una royale
  * rumble tra i creators italiani con giveaway di oltre 125 pacchetti di carte di origins, noi gestiamo tutta la
  * infrastruttura"; note Granola "sito roadmap" del 10/11/2026). Tipi condivisi da motore, pagine e funzioni del
  * database (blocco "10/11/2026: EVENTI DELLA COMMUNITY" di supabase/schema.sql).

@@ -9789,7 +9789,7 @@ comment on column public.tournament_decks.sideboard is 'Riserva (slug di carte b
 
 -- ===== 10/11/2026: EVENTI DELLA COMMUNITY =====
 -- =====================================================================================================
--- 10/11/2026 — EVENTI DELLA COMMUNITY: LA ROYALE RUMBLE DEL 16/11/2026 (Pierluigi: "una royale rumble tra i creators
+-- 10/11/2026 — EVENTI DELLA COMMUNITY: L'ATTRIX SHOWMATCH DEL 16/11/2026 (PRIMA "ROYALE RUMBLE") (Pierluigi: "una royale rumble tra i creators
 --   italiani con giveaway di oltre 125 pacchetti di carte di origins, noi gestiamo tutta la infrastruttura"; note Granola
 --   "sito roadmap" del 10/11/2026: pagina unica con talent, mazzi, classifica svizzera e abbinamenti, pagina nascosta dei
 --   caster con la ruota dei mazzi, giveaway a slot con il comando in chat, codici univoci dati dai mod e riscattati sul

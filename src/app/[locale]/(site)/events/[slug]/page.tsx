@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { isLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/page";
@@ -7,21 +6,20 @@ import { deckCards, readPublicEvent } from "@/lib/event/server";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";
 import { EVENT_LOCALE, eventPath } from "@/lib/event/links";
 import { totalPacks } from "@/lib/event/config";
-import { CardChipList } from "@/components/CardChip";
 import { CopyButton } from "@/components/CopyButton";
 import { EventLiveProvider } from "@/components/event/EventLive";
 import { EventClockBanner } from "@/components/event/EventClock";
-import { DeckPlayers, PairingsList, StandingsTable, TalentSection } from "@/components/event/EventBoard";
+import { DeckFaces, PairingsList, StandingsTable, TalentSection } from "@/components/event/EventBoard";
 import { EventRedeem } from "@/components/event/EventRedeem";
 
 /*
-  Pagina di un evento della community (10/11/2026): la Royale Rumble dei creator italiani del 16/11/2026. Dalle note
+  Pagina di un evento della community (10/11/2026): l'Attrix Showmatch dei creator italiani del 16/11/2026. Dalle note
   Granola "sito roadmap" del 10/11/2026: "Pagina unica (no click multipli), linkabile direttamente dal bot Twitch",
   talent con foto, bio e link (alcuni sfocati fino al reveal), mazzi con il codice da copiare e le facce dei giocatori
   assegnati, classifica svizzera, abbinamenti, countdown del giveaway e riscatto dei codici.
   Solo in italiano (l'evento è dei creator italiani): le altre lingue rimandano qui. ISR ogni 60 secondi (svelamento dei
   talent, mazzi); quello che cambia durante la diretta (orologio, ruota, risultati, dirette Twitch) il browser lo
-  rilegge da /api/events/<slug> ogni 10 secondi. Link breve: originsmeta.com/rumble (next.config.ts).
+  rilegge da /api/events/<slug> ogni 10 secondi. Link breve: originsmeta.com/showmatch (next.config.ts).
 */
 
 export const revalidate = 60;
@@ -116,24 +114,36 @@ export default async function EventPage({ params }: { params: Params }) {
           </h2>
           <p className="mt-2 text-pale">{L.decks.intro}</p>
           {decks.length ? (
-            <ul className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            // strisce sottili, due per riga da 1024 px: nome, giocatori, "Copia codice" e "Lista" (deck builder in una nuova scheda)
+            <ul className="mt-4 grid grid-cols-1 gap-2 lg:grid-cols-2">
               {decks.map(({ deck, cards }) => (
-                <li key={deck.id} className="card-night min-w-0 space-y-3 p-4">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span aria-hidden className="h-4 w-4 shrink-0 rounded-full border border-chalk/40" style={{ background: deck.color }} />
-                    <h3 className="truncate font-display text-lg font-extrabold text-sky">{deck.name}</h3>
-                  </div>
-                  {deck.note ? <p className="text-sm text-pale">{deck.note}</p> : null}
-                  <DeckPlayers deck={deck.id} />
-                  {cards.legendary || cards.cards.length ? <CardChipList slugs={[...(cards.legendary ? [cards.legendary] : []), ...cards.cards]} locale="it" /> : null}
-                  <div className="flex flex-wrap gap-2">
-                    <CopyButton text={deck.code} label={L.decks.copy} copied={L.decks.copied} className="btn btn-primary text-xs" event={{ name: "game_code_copy", params: { placement: "event_page" } }} />
-                    {cards.om ? (
-                      <Link href={`/it/deck-builder#${cards.om}`} className="btn btn-ink text-xs" data-om-event="deck_open_builder" data-om-placement="event_page">
-                        {L.decks.builder}
-                      </Link>
-                    ) : null}
-                  </div>
+                <li key={deck.id} className="flex min-w-0 items-center gap-3 rounded-xl border-2 border-sky bg-night px-3 py-2" title={deck.note}>
+                  <span aria-hidden className="h-3.5 w-3.5 shrink-0 rounded-full border border-chalk/40" style={{ background: deck.color }} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-display text-base font-extrabold text-sky">{deck.name}</span>
+                    <DeckFaces deck={deck.id} />
+                  </span>
+                  <CopyButton
+                    text={deck.code}
+                    label={L.decks.copy}
+                    copied={L.decks.copied}
+                    ariaLabel={fillEvent(L.decks.copyAria, { deck: deck.name })}
+                    className="btn btn-primary shrink-0 text-xs"
+                    event={{ name: "game_code_copy", params: { placement: "event_page" } }}
+                  />
+                  {cards.om ? (
+                    <a
+                      href={`/it/deck-builder#${cards.om}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={fillEvent(L.decks.listAria, { deck: deck.name })}
+                      className="btn btn-ink shrink-0 text-xs"
+                      data-om-event="deck_open_builder"
+                      data-om-placement="event_page"
+                    >
+                      {L.decks.list}
+                    </a>
+                  ) : null}
                 </li>
               ))}
             </ul>

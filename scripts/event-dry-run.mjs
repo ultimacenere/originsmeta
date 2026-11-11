@@ -1,4 +1,4 @@
-// PROVA A SECCO del blocco "10/11/2026: EVENTI DELLA COMMUNITY" (10/11/2026, Royale Rumble del 16/11): applica SOLO quel
+// PROVA A SECCO del blocco "10/11/2026: EVENTI DELLA COMMUNITY" (10/11/2026, Attrix Showmatch del 16/11): applica SOLO quel
 // blocco di supabase/schema.sql in una transazione, crea utenti finti (email @dryrun.originsmeta.invalid, solo dentro la
 // transazione), prova evento, regia, codici, mod, riscatto e lettura pubblica con le regole del blocco e alla fine fa
 // SEMPRE rollback: sul database non resta nulla.

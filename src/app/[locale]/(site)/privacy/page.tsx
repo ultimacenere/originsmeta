@@ -66,7 +66,7 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         <p id="steam" className="mt-6 scroll-mt-24">
           {steamLabels[locale].privacy}
         </p>
-        {/* Giveaway degli eventi della community (10/11/2026, Royale Rumble): testo in src/lib/eventPrivacy.ts */}
+        {/* Giveaway degli eventi della community (10/11/2026, Attrix Showmatch): testo in src/lib/eventPrivacy.ts */}
         <p id="event-giveaway" className="mt-6 scroll-mt-24">
           {eventPrivacy[locale]}
         </p>

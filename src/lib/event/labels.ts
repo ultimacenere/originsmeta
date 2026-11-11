@@ -1,5 +1,5 @@
 /**
- * Testi degli eventi della community (10/11/2026). La Royale Rumble del 16/11/2026 è un evento dei creator italiani:
+ * Testi degli eventi della community (10/11/2026). L'Attrix Showmatch del 16/11/2026 è un evento dei creator italiani:
  * pagina, regia, pannello dei mod e overlay sono in italiano (la pagina esiste solo in /it, vedi la pagina). Un evento
  * in un'altra lingua avrà i suoi testi accanto a questi. Segnaposto fra graffe: `fillEvent`.
  */
@@ -10,7 +10,7 @@ export function fillEvent(text: string, vars: Record<string, string | number>): 
 
 export const eventLabels = {
   meta: {
-    title: "{name}: evento dei creator italiani di Origins TCG",
+    title: "{name}: i creator italiani di Origins TCG",
     description: "{name}: i creator italiani di Origins TCG si sfidano in diretta su Twitch, con {packs} pacchetti in palio per chi guarda. Giocatori, mazzi, classifica e codici.",
     descriptionNoPacks: "{name}: i creator italiani di Origins TCG si sfidano in diretta su Twitch. Giocatori, mazzi, classifica, abbinamenti e giveaway.",
   },
@@ -54,10 +54,13 @@ export const eventLabels = {
   },
   decks: {
     title: "I mazzi",
-    intro: "Ogni mazzo va a due giocatori, estratti con la ruota dei caster all'inizio della diretta.",
+    intro: "Mazzi costruiti dai pro player: ognuno va a due giocatori, estratti con la ruota dei caster all'inizio della diretta. Copia il codice e incollalo nel gioco.",
     toAssign: "Da assegnare con la ruota",
     assigned: "Lo giocano",
-    copy: "Copia codice del gioco",
+    copy: "Copia codice",
+    copyAria: "Copia il codice del gioco di {deck}",
+    list: "Lista",
+    listAria: "Lista di {deck} nel deck builder (si apre in una nuova scheda)",
     copied: "Copiato",
     builder: "Apri nel deck builder",
     cards: "Carte",

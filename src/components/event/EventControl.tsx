@@ -152,7 +152,7 @@ export function EventControl({ slug }: { slug: string }) {
           disabled={busy}
           onClick={async () => {
             setBusy(true);
-            const r = await createEvent(slug, { ...emptyConfig("Royale Rumble") });
+            const r = await createEvent(slug, { ...emptyConfig("Attrix Showmatch") });
             setBusy(false);
             if (r.ok) {
               window.location.hash = `k=${r.token}`;

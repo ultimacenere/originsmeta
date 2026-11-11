@@ -1,5 +1,5 @@
 /**
- * Test degli eventi della community (10/11/2026, Royale Rumble del 16/11): `node --test src/lib/event/event.test.ts`.
+ * Test degli eventi della community (10/11/2026, Attrix Showmatch del 16/11): `node --test src/lib/event/event.test.ts`.
  * Codici e nomi Twitch uguali al blocco SQL, configurazione, orologio del giveaway, ruota dei mazzi, svizzera,
  * classifica, lettura della chat di Twitch, lettura pubblica che non mostra i talent da svelare, testi e link breve.
  * I moduli si importano fra loro senza estensione (come vuole Next): un piccolo hook di risoluzione li rende caricabili.
@@ -61,7 +61,7 @@ const T0 = Date.parse("2026-11-16T18:00:00.000Z");
 const MIN = 60_000;
 
 const sampleConfig = (): Record<string, unknown> => ({
-  name: "Royale Rumble",
+  name: "Attrix Showmatch",
   tagline: "I creator italiani di Origins TCG",
   startsAt: "2026-11-16T19:00:00+01:00",
   talent: [
@@ -412,7 +412,7 @@ describe("chat di Twitch", () => {
 describe("lettura pubblica", () => {
   test("i talent da svelare restano nascosti e al loro posto; gli slot pure", () => {
     const raw = {
-      slug: "royale-rumble",
+      slug: "attrix-showmatch",
       version: 3,
       now: "2026-11-14T10:00:00Z",
       stats: { codes: 150, assigned: 0, redeemed: 0 },
@@ -487,7 +487,7 @@ describe("testi e link", () => {
     for (const [slug, path] of Object.entries(LK.EVENT_SHORT_PATHS)) {
       assert.ok(conf.includes(`{ source: "${path}", destination: "${LK.eventPath(slug)}", permanent: false }`), path);
     }
-    assert.equal(LK.eventShortLink("royale-rumble"), "originsmeta.com/rumble");
+    assert.equal(LK.eventShortLink("attrix-showmatch"), "originsmeta.com/showmatch");
     assert.equal(LK.eventShortLink("altro"), "originsmeta.com/it/events/altro");
   });
 });
