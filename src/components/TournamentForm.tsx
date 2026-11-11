@@ -15,6 +15,8 @@ import { BRACKETS_PRESET, TOP_CUTS } from "@/lib/tournament/stages";
 import type { StageLabels } from "@/lib/tournament/stageLabels";
 import { GROUP_ADVANCE_RANGE, GROUP_SIZE_RANGE, SIDEBOARD_RANGE, SWISS_PRESET, SWISS_ROUNDS_RANGE, type TournamentFormat } from "@/lib/tournament/formats";
 import type { FormatLabels } from "@/lib/tournament/formatLabels";
+import { DE_ONLY_SIZES, DE_POOLS_RANGE, DE_QUALIFY_DEFAULT, DE_QUALIFY_OPTIONS } from "@/lib/tournament/doubleElim";
+import type { DoubleElimLabels } from "@/lib/tournament/doubleElimLabels";
 import { shrinkImage } from "@/lib/shrinkImage";
 import { trackEvent, type EventParams } from "@/lib/analytics";
 
@@ -46,6 +48,9 @@ export type TournamentInitial = {
   group_advance?: number | null;
   group_seeding?: "snake" | "random" | null;
   sideboard?: number | null;
+  /** 10/11/2026 (blocco DOPPIA ELIMINAZIONE): tabelloni e qualificati per lato */
+  de_pools?: number | null;
+  de_qualify?: number | null;
   lang: Locale;
   description: string;
   rules: string;
@@ -70,7 +75,28 @@ type Props = {
   stageText?: StageLabels;
   /** testi di svizzera, gironi e sideboard (09/11/2026); senza, il modulo resta quello dell'eliminazione diretta */
   formatText?: FormatLabels;
+  /** testi della doppia eliminazione (10/11/2026); senza, il formato non si offre */
+  deText?: DoubleElimLabels;
 };
+
+/**
+ * Il formato del torneo di apix del 28–29/11/2026 in un clic (10/11/2026): 1024 posti in 2 tabelloni a doppia
+ * eliminazione, 32 + 32 qualificati da ognuno, Top 128 sorteggiata dopo una pausa, un mazzo con 3 carte di sideboard, al
+ * meglio delle 3, check-in e 15 minuti di assenza.
+ */
+const DE_PRESET = {
+  size: 1024,
+  de_pools: 2,
+  de_qualify: 32,
+  top_cut: null,
+  top_cut_hold: true,
+  deck_ban: false,
+  best_of: 3,
+  final_best_of: null,
+  sideboard: 3,
+  checkin: true,
+  no_show_minutes: 15,
+} as const;
 
 const inputCls = "mt-1 w-full rounded-lg border border-sky bg-night px-3 py-2 text-pale focus:border-mint";
 /** Opzione di un gruppo (radio nascosto dentro l'etichetta): cornice di focus visibile anche da tastiera. */
@@ -116,9 +142,10 @@ export function TournamentForm(props: Props) {
   return <TournamentFormInner {...props} />;
 }
 
-function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode = "create", initial, contactEmail, stageText, formatText }: Props) {
+function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode = "create", initial, contactEmail, stageText, formatText, deText }: Props) {
   const sl = stageText;
   const fl = formatText;
+  const dl = deText;
   const x = labels;
   const c = x.create;
   const edit = mode === "edit" && Boolean(initial);
@@ -148,6 +175,8 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     group_advance: initial?.group_advance ?? GROUP_ADVANCE_RANGE.default,
     group_seeding: initial?.group_seeding ?? "snake",
     sideboard: initial?.sideboard ?? null,
+    de_pools: initial?.de_pools ?? DE_POOLS_RANGE.default,
+    de_qualify: initial?.de_qualify ?? DE_QUALIFY_DEFAULT,
   }));
   // 09/11/2026: formato del torneo (eliminazione diretta, svizzera, gironi)
   const [format, setFormat] = useState<TournamentFormat>(initial?.format ?? "single_elim");
@@ -183,6 +212,18 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     setTopCut(SWISS_PRESET.top_cut);
     setRulesKey((k) => k + 1);
     setSwissApplied(true);
+    setPresetApplied(false);
+    setBracketsApplied(false);
+  };
+  const [deApplied, setDeApplied] = useState(false);
+  const applyDe = () => {
+    setFormat("double_elim");
+    setDeckMode("free");
+    setRules((r) => ({ ...r, ...DE_PRESET }));
+    setTopCut(null);
+    setRulesKey((k) => k + 1);
+    setDeApplied(true);
+    setSwissApplied(false);
     setPresetApplied(false);
     setBracketsApplied(false);
   };
@@ -236,7 +277,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     }
   };
 
-  const errorText = state.error ? (x.errors[state.error as keyof typeof x.errors] ?? sl?.errors[state.error as keyof StageLabels["errors"]] ?? fl?.errors[state.error as keyof FormatLabels["errors"]] ?? x.errors.db) : null;
+  const errorText = state.error ? (x.errors[state.error as keyof typeof x.errors] ?? sl?.errors[state.error as keyof StageLabels["errors"]] ?? fl?.errors[state.error as keyof FormatLabels["errors"]] ?? dl?.errors[state.error as keyof DoubleElimLabels["errors"]] ?? x.errors.db) : null;
   const uploaded = !(COVER_PRESETS as readonly string[]).includes(cover);
   const shownCovers = allCovers ? COVER_PRESETS : COVER_PRESETS.filter((p, i) => i < COVERS_SHOWN || p === cover);
   const [howToBefore, howToAfter] = c.listedHowTo.split("{email}");
@@ -310,6 +351,8 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
           <input type="hidden" name="group_advance" value={initial.group_advance ?? ""} />
           <input type="hidden" name="group_seeding" value={initial.group_seeding ?? ""} />
           <input type="hidden" name="sideboard" value={initial.sideboard ?? ""} />
+          <input type="hidden" name="de_pools" value={initial.de_pools ?? ""} />
+          <input type="hidden" name="de_qualify" value={initial.de_qualify ?? ""} />
         </>
       ) : null}
 
@@ -332,13 +375,14 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
             <label className="block text-sm">
               <span className="kicker text-mint">{c.size}</span>
               <select key={`sz-${rulesKey}`} name="size" defaultValue={rules.size} disabled={lockRules} className={inputCls}>
-                {TOURNAMENT_SIZES.map((s) => (
+                {[...TOURNAMENT_SIZES, ...(format === "double_elim" ? DE_ONLY_SIZES : [])].map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
                 ))}
               </select>
               <span className="mt-1 block text-xs text-pale-muted">{c.sizeHint}</span>
+              {dl ? <span className="mt-1 block text-xs text-pale-muted">{dl.sizeHint}</span> : null}
             </label>
           </div>
 
@@ -391,8 +435,16 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
                   <span className="text-xs text-pale-muted">{swissApplied ? fl.presetApplied : fl.presetHint}</span>
                 </div>
               ) : null}
+              {!lockRules && dl ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <button type="button" onClick={applyDe} className="btn btn-gold text-xs">
+                    {dl.preset}
+                  </button>
+                  <span className="text-xs text-pale-muted">{deApplied ? dl.presetApplied : dl.presetHint}</span>
+                </div>
+              ) : null}
               <div className="flex flex-wrap gap-2">
-                {(["single_elim", "swiss", "groups"] as const).map((f) => (
+                {(dl ? (["single_elim", "swiss", "groups", "double_elim"] as const) : (["single_elim", "swiss", "groups"] as const)).map((f) => (
                   <label key={f} className={`${choiceCls} ${format === f ? "is-on" : ""}`}>
                     <input type="radio" name="format" value={f} checked={format === f} onChange={() => setFormat(f)} disabled={lockRules} className="sr-only" />
                     {format === f ? "✓ " : ""}
@@ -447,6 +499,32 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
                     </select>
                   </label>
                   <p className="text-xs text-pale-muted sm:col-span-3">{fl.formGroupHint}</p>
+                </div>
+              ) : null}
+              {format === "double_elim" && dl ? (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block text-sm">
+                    <span className="text-pale-muted">{dl.formPools}</span>
+                    <select key={`dp-${rulesKey}`} name="de_pools" defaultValue={rules.de_pools ?? DE_POOLS_RANGE.default} disabled={lockRules} className={inputCls}>
+                      {Array.from({ length: DE_POOLS_RANGE.max - DE_POOLS_RANGE.min + 1 }, (_, i) => i + DE_POOLS_RANGE.min).map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="mt-1 block text-xs text-pale-muted">{dl.formPoolsHint}</span>
+                  </label>
+                  <label className="block text-sm">
+                    <span className="text-pale-muted">{dl.formQualify}</span>
+                    <select key={`dq-${rulesKey}`} name="de_qualify" defaultValue={rules.de_qualify ?? DE_QUALIFY_DEFAULT} disabled={lockRules} className={inputCls}>
+                      {DE_QUALIFY_OPTIONS.map((n) => (
+                        <option key={n} value={n}>
+                          {fill(dl.formQualifyOption, { n })}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <p className="text-xs text-pale-muted sm:col-span-2">{dl.formHint}</p>
                 </div>
               ) : null}
               {format !== "single_elim" && sl ? (

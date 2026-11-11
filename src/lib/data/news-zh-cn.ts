@@ -14,6 +14,90 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "patch-notes-0-8-2": {
+    title: "Origins TCG 0.8.2 补丁：封堵漏洞、减少掉线，新玩家的 PvP 起步更公平",
+    metaTitle: "Origins TCG 0.8.2 补丁说明：公平竞技与掉线修复",
+    description:
+      "Origins TCG 0.8.2 补丁于 2026年11月10日上线：封堵了有人用来提前结束诚实玩家对局的漏洞，提升了服务器稳定性、减少掉线，断线后可以重新加入对局，还改进了刚开始玩 PvP 的新玩家的匹配。这次更新没有任何卡牌改动，平衡补丁预计在 11月17日推出。",
+    summary:
+      "2026年11月10日，Koin Games 推出了 Origins TCG 的 0.8.2 补丁，也就是路线图 AMA 中预告的针对作弊和掉线的更新。它封堵了一些玩家用来提前结束诚实玩家对局的漏洞，让你在断线后可以重新加入对局，改进了刚开始玩 PvP 的玩家的匹配，还修复了删除全部卡组会重置账号等问题。卡牌没有改动：平衡补丁预计在 11月17日推出。",
+    highlights: [
+      { label: "公平竞技", text: "封堵了用来提前结束对局的漏洞，已经抓到一名作弊者", anchor: "gong-ping-jing-ji" },
+      { label: "掉线更少", text: "服务器更稳定，断线后可以重新加入对局", anchor: "diao-xian" },
+      { label: "PvP 新玩家", text: "调整了 PvP 初期的匹配，“这是个开始”", anchor: "pvp" },
+      { label: "Kickstarter 支持者", text: "推荐奖励卡包的密码在 Project Update #4 里", anchor: "kickstarter" },
+      { label: "问题修复", text: "删除全部卡组不再重置账号，排位对局计入任务进度", anchor: "wen-ti-xiu-fu" },
+      { label: "Dr. Frank", text: "传说卡的揭示现在会完整播放", anchor: "dr-frank" },
+      { label: "没有卡牌改动", text: "平衡补丁预计在 11月17日推出", anchor: "ka-pai" },
+    ],
+    body: `## AMA 中预告的更新 {#ama-yu-gao}
+
+2026年11月10日（周二），Koin Games 推出了 Origins TCG 的 0.8.2 更新。补丁说明发布在官方 Discord 上，同时宣布服务器已恢复运行；Steam 上的帖子发布于 UTC 时间 18:29（北京时间 11月11日 02:29），标题为“0.8.2 Hotfix”：“这是一次小型更新，旨在修复错误、提升稳定性，并加强排位天梯的公正性”。这正是 Koin 在[路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap) 中预告的 11月10日针对掉线和作弊的更新。
+
+Steam 帖子的配图把这次更新称为“Taking out the trash”（倒垃圾），并列出团队专注的两个方向：掉线和公平竞技，还有一句写给玩家的话：“感谢大家的反馈，请继续提交。”
+
+## 公平竞技：封堵排位中的漏洞 {#gong-ping-jing-ji}
+
+Koin 用海盗的口吻写了这一部分。说白了就是：团队封堵了“几个讨厌的漏洞”，有些玩家曾利用它们提前结束诚实玩家的对局；其中一人已经被抓（“戴上了镣铐”）。其他人也被警告了：如果继续这样做，就会被送进“戴维·琼斯的箱子”。配图还补充说，这个补丁“堵住了漏洞并加强了安全措施，以防止漏洞利用，让天梯对所有人保持公平”。
+
+如果你发现排位中还有其他作弊或漏洞利用，Koin 请你到[官方 Discord](https://discord.gg/originstcg) 举报。海盗口吻也有它的解释：“你知道每年的 9月19日是国际像海盗一样说话日吗？是的，我们之前也不知道。”天梯怎么运作，可以看我们的[排位指南](/zh-cn/guides/origins-tcg-ranked)。
+
+## 掉线更少，还能重新加入对局 {#diao-xian}
+
+关于掉线，配图写道：“我们提升了服务器的性能和稳定性，你应该会遇到更少的掉线，体验也更可靠。”补丁说明还列出了三项修复：
+
+- 如果你在对局中途断线，可以重新加入，游戏会从中断的地方继续，前提是游戏没有关闭。重启游戏后重新加入对局的功能“将在未来推出”。
+- 战斗结束后，对局不再卡顿几秒。
+- 首次启动更可靠：下载失败或卡住时，现在会自动重试，而不是一直停在那里。
+
+## PvP 新玩家 {#pvp}
+
+Koin 写道：“虽然我们把所有卡牌免费送给所有玩家”，但刚开始玩 PvP 就被匹配到拥有全部卡牌的对手，谁都不会喜欢。所以团队调整了 PvP 初期的匹配：“这方面还有很长的路要走，但这是个开始。”补丁说明没有说匹配具体是怎么改的。如果你现在才开始玩，我们的 [Steam 游玩指南](/zh-cn/guides/play-the-demo)介绍了下载和最初几局。
+
+## Kickstarter 支持者：密码在哪里 {#kickstarter}
+
+支持者的推荐奖励卡包（bonus referral packs）的密码在 Kickstarter 众筹的 Project Update #4 里，而不是在邮件里；只有支持这款游戏的人才能看到这篇更新。众筹结束时，Koin 会核实所有支持者：届时已不再支持这款游戏的人将失去全部奖励，所以如果你没有在 Kickstarter 上支持这款游戏，Koin 请你不要输入这个密码。有问题可以去官方 Discord 询问。众筹持续到 2026年12月2日，我们的 [Kickstarter 指南](/zh-cn/guides/origins-tcg-kickstarter)整理了档位、宣传卡和日期。
+
+## 其他问题修复 {#wen-ti-xiu-fu}
+
+- 删除自己的全部卡组不再会重置账号。Koin 说：“天哪，你能相信游戏里居然有这个问题吗？”
+- 排位对局的任务进度现在可以正确计入。
+- 原本只属于试玩版玩家的旧卡背，不会再出现在不该拥有它们的对手身上（“抱歉，不过也没那么抱歉！”）。
+
+## Dr. Frank 的揭示完整播放 {#dr-frank}
+
+传说卡 Dr. Frank 的揭示现在会完整播放：此前他的“高光时刻”一直被截断，据 Koin 说，他对此非常不满。Dr. Frank 于 11月4日随首领 Cyber Queen 进入游戏：他的卡组和卡牌见[我们的文章](/zh-cn/news/dr-frank-boss-new-cards)。
+
+## 没有卡牌改动 {#ka-pai}
+
+0.8.2 的补丁说明没有列出任何平衡调整、新卡或新的卡牌文字：正如 Koin 在 AMA 中所说，这次更新放不下平衡调整。OriginsMeta 上的卡牌数值仍是 [11月4日补丁](/zh-cn/news/balance-patch-1104-cyber-queen)的数值，所以[卡牌数据库](/zh-cn/cards)、[卡组构筑器](/zh-cn/deck-builder)和[强度榜](/zh-cn/tier-list)都是最新的。下一个平衡补丁预计在 11月17日（周二）推出。
+
+## 我们还不知道的 {#hai-bu-zhi-dao}
+
+- 被利用的是哪些漏洞，被抓到的玩家受到了什么处理。
+- PvP 初期的匹配具体是怎么改的。
+- 什么时候才能在重启游戏后重新加入对局。
+
+来源：Origins TCG 官方 Discord 上的“0.8.2 patch notes”，以及 Steam 上带配图的“0.8.2 Hotfix”帖子（2026年11月10日，UTC 时间 18:29）。引文由我们翻译。`,
+    faq: [
+      {
+        q: "Origins TCG 0.8.2 补丁改了什么？",
+        a: "这是 2026年11月10日推出的修复更新：封堵了排位中被利用的漏洞，提升了服务器稳定性，断线后可以重新加入对局，调整了 PvP 新玩家的匹配，并修复了多个问题。它没有改动任何卡牌。",
+      },
+      {
+        q: "0.8.2 补丁改动了卡牌吗？",
+        a: "没有。补丁说明没有列出平衡调整、新卡或新文字；下一个平衡补丁预计在 2026年11月17日推出。",
+      },
+      {
+        q: "在 Origins TCG 中断线后还能回到对局吗？",
+        a: "可以。从 0.8.2 补丁开始，只要游戏没有关闭，对局就会从中断的地方继续。重启游戏后重新加入的功能会在之后推出。",
+      },
+      {
+        q: "Kickstarter 支持者的奖励卡包密码在哪里？",
+        a: "在 Kickstarter 众筹的 Project Update #4 里，只有支持者能看到，不在邮件里。Koin 会在众筹结束时核实支持者，届时不再支持这款游戏的人将失去全部奖励。",
+      },
+    ],
+  },
   "origins-tcg-tier-list-legendaries-november-2026": {
     title: "OriginsMeta 第一版 Origins TCG 强度榜：传说卡，2026年11月",
     metaTitle: "Origins TCG 强度榜：传说卡分档，2026年11月",

@@ -49,6 +49,19 @@ function game(t0: number): ScanFrame[] {
   ];
 }
 
+test("schermata della mano iniziale (10/11/2026): solo la Leggendaria dell'avversario, la mia resta da sapere", () => {
+  const frames = game(0).map((f, i) => (i < 2 ? { ...f, vs: { me: null, opp: "L_ME" } } : f));
+  const m = reconstruct(frames, info);
+  // la schermata vale come la VS: dice la Leggendaria dell'avversario anche prima che la giochi
+  assert.equal(m.oppLegendary, "L_ME");
+  assert.equal(m.myLegendary, null);
+  assert.equal(m.turns, 3);
+  // forma: `me` può essere null, `opp` no
+  const raw = { board: BOARD_SLOTS.map(() => null), maxMana: null };
+  assert.deepEqual(readScanFrame({ ...raw, vs: { me: null, opp: "C00313_MC" } }, 1)?.vs, { me: null, opp: "C00313_MC" });
+  assert.equal(readScanFrame({ ...raw, vs: { me: "C00118_MC", opp: null } }, 1), null);
+});
+
 test("ricostruzione: round, copie, sparizioni, spostamenti e carte create", () => {
   const m = reconstruct(game(0), info);
   assert.equal(m.myLegendary, "L_ME");
@@ -275,6 +288,27 @@ test("magie dal riquadro in alto a sinistra: mie e dell'avversario (13/10/2026)"
   assert.deepEqual(spellPlays(fromHand, 2, info), [{ turn: 2, me: true, card: SB, lane: 0 }]);
   // le carte create non contano
   assert.deepEqual(spellPlays([f(0, { phase: "reveal", spell: "T_MOUSE" }), f(500, { phase: "reveal", spell: "T_MOUSE" })], 1, info), []);
+  // mazzo che genera magie (10/11/2026, OrdinaryHarry con Genie, Morgan le Fay e Spellbook): una magia fuori dal mazzo
+  // vista mentre scelgo il bersaglio è mia; Spellbook rivisto per il suo effetto e le altre senza prova non vanno all'avversario
+  const BOOK = "C00167_SB";
+  const LIGHTNING = "C00169_SB";
+  const caster: CardInfo = { ...info, myDeck: () => [BOOK, SB, "A"], makesSpells: (k) => k === BOOK };
+  const generated = [
+    f(0, { phase: "plan", spell: LIGHTNING }),
+    f(3000, { phase: "reveal", spell: LIGHTNING }),
+    f(3500, { phase: "reveal", spell: LIGHTNING }),
+    f(8000, { phase: "reveal", spell: BOOK }),
+    f(8500, { phase: "reveal", spell: BOOK }),
+    f(14000, { phase: "reveal", spell: SB }),
+    f(14500, { phase: "reveal", spell: SB }),
+  ];
+  assert.deepEqual(spellPlays(generated, 5, caster), [{ turn: 5, me: true, card: LIGHTNING, lane: 0 }]);
+  // lo stesso round con un mazzo che non genera magie: come prima, una magia fuori dal mazzo e quelle senza prova vanno all'avversario
+  assert.deepEqual(spellPlays(generated, 5, { ...caster, makesSpells: () => false }), [
+    { turn: 5, me: false, card: LIGHTNING, lane: 0 },
+    { turn: 5, me: false, card: BOOK, lane: 0 },
+    { turn: 5, me: false, card: SB, lane: 0 },
+  ]);
   // forma controllata
   assert.equal(readScanFrame({ ...frame(0, 4), spell: "nope" }, 1)?.spell, undefined);
   assert.equal(readScanFrame({ ...frame(0, 4), spell: "nope" }, 1), null);

@@ -259,7 +259,7 @@ export type TournamentRow = {
   starts_at: string;
   size: number;
   /** 09/11/2026: anche turni svizzeri e gironi (blocco SVIZZERA, GIRONI E SIDEBOARD) */
-  format: "single_elim" | "swiss" | "groups";
+  format: "single_elim" | "swiss" | "groups" | "double_elim";
   deck_mode: "free" | "conquest";
   conquest_decks: number;
   conquest_min_different: number;
@@ -297,6 +297,10 @@ export type TournamentRow = {
   group_advance?: number | null;
   group_seeding?: "snake" | "random" | null;
   sideboard?: number | null;
+  /** 10/11/2026 (blocco DOPPIA ELIMINAZIONE): tabelloni, qualificati per lato e per tabellone, posti di ogni tabellone (scritti all'avvio) */
+  de_pools?: number | null;
+  de_qualify?: number | null;
+  de_pool_size?: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -351,7 +355,7 @@ export type TournamentMatchRow = {
   seen_b: string | null;
   reported_at: string | null;
   /** 09/11/2026: fase della partita (null = tabellone; 'swiss', 'group', 'champion') e girone; letti a parte (listMatchStages) */
-  stage?: "swiss" | "group" | "champion" | null;
+  stage?: "swiss" | "group" | "champion" | "upper" | "lower" | null;
   grp?: number | null;
   created_at: string;
   updated_at: string;

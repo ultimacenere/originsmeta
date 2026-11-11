@@ -161,7 +161,7 @@ let checking = false;
 let lastCheckAt: number | null = null;
 let lastCheckFailed = false;
 
-type CardRow = { n: string; s: string; l: 0 | 1; t?: string; m?: number | null; g?: string };
+type CardRow = { n: string; s: string; l: 0 | 1; t?: string; m?: number | null; g?: string; sp?: 1 };
 const CARDS = cardsTable as Record<string, CardRow>;
 /** Il ruolo di una carta per il cimitero (05/11/2026, scripts/cards.mjs e src/shared/graveRoles.ts). */
 const graveRole = (k: string): GraveRole | null => {
@@ -1446,7 +1446,8 @@ async function boot() {
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
     // il mazzo scelto: una magia che non c'è è dell'avversario (13/10/2026, `spellPlays` di reconstruct.ts)
     // e il ruolo delle carte per i cimiteri (05/11/2026: Dr. Frank, It's Alive, Rinascita, Koschei…)
-    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1, myDeck: () => activeDeck?.cards ?? null, grave: graveRole };
+    // e le carte che aggiungono magie casuali alla mano (10/11/2026: Genie, Morgan le Fay, Spellbook)
+    const cards = { token: (k: string) => CARDS[k]?.t === "token", legendary: (k: string) => CARDS[k]?.l === 1, myDeck: () => activeDeck?.cards ?? null, grave: graveRole, makesSpells: (k: string) => CARDS[k]?.sp === 1 };
     frames = new FrameRecorder(app.getPath("userData"), { save: FRAMES, cards, onScan: noteFrame }, push);
     // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
     // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)

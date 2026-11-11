@@ -200,6 +200,240 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // Patch 0.8.2 (10/11/2026; Pierluigi l'11/11: "crea news", con il testo delle "0.8.2 PATCH NOTES - Servers back up" del
+    // Discord ufficiale). Fonti: quel messaggio e il post Steam "0.8.2 Hotfix" di apix (10/11/2026, 18:29:52 UTC, gid
+    // 1848664643360757, letto con ISteamNews), con lo stesso testo. La grafica del post ("v0.8.2 Taking out the trash",
+    // 800×450, letta con ajaxgetadjacentpartnerevents) aggiunge i due fronti "Disconnects" e "Fair play" ed è la copertina,
+    // portata a 1600×900 senza ritagli. È l'aggiornamento del 10/11 annunciato nell'AMA del 6/11 (disconnessioni e cheat,
+    // niente bilanciamento). Nessuna modifica alle carte: come la 0.8, la 0.8.2 non entra in `patchOrder` di cards.ts.
+    // L'ora del messaggio sul Discord non l'abbiamo letta: il testo dà solo quella del post Steam.
+    slug: "patch-notes-0-8-2",
+    image: "/media/news-patch-0-8-2.webp",
+    url: "https://store.steampowered.com/news/app/4429430/view/1848664643360757",
+    source: "steam",
+    guides: ["origins-tcg-ranked", "play-the-demo", "origins-tcg-kickstarter", "roadmap-and-dates"],
+    cards: ["dr-frank"],
+    date: "2026-11-10",
+    title: n(
+      "Origins TCG patch 0.8.2: exploits closed, fewer disconnects and a fairer start in PvP",
+      "Patch 0.8.2 di Origins TCG: chiusi gli exploit, meno disconnessioni e un inizio più giusto in PvP",
+      "Parche 0.8.2 de Origins TCG: exploits cerrados, menos desconexiones y un inicio más justo en PvP",
+    ),
+    metaTitle: n(
+      "Origins TCG 0.8.2 patch notes: fair play and disconnects",
+      "Origins TCG, patch 0.8.2: fair play e disconnessioni",
+      "Origins TCG, parche 0.8.2: juego limpio y desconexiones",
+    ),
+    description: n(
+      "Origins TCG patch 0.8.2 of 10 November 2026 closes exploits used in ranked, cuts disconnects, lets you rejoin a match and improves early PvP matchmaking.",
+      "La patch 0.8.2 di Origins TCG del 10 novembre 2026 chiude gli exploit della classificata, riduce le disconnessioni e migliora il matchmaking di chi inizia.",
+      "El parche 0.8.2 de Origins TCG del 10 de noviembre de 2026 cierra exploits de la clasificatoria, reduce desconexiones y mejora el emparejamiento inicial.",
+    ),
+    summary: n(
+      "On 10 November 2026 Koin Games released patch 0.8.2 of Origins TCG, the update against cheating and disconnects announced in the roadmap AMA. It closes exploits some players used to cut honest players' matches short, lets you rejoin a match after a dropped connection, improves matchmaking for those just starting PvP and fixes bugs such as deleting all your decks resetting the account. No card changes: the balance patch is expected on 17 November.",
+      "Il 10 novembre 2026 Koin Games ha pubblicato la patch 0.8.2 di Origins TCG, l'aggiornamento contro cheat e disconnessioni annunciato nell'AMA sulla roadmap. Chiude gli exploit che alcuni usavano per interrompere le partite dei giocatori onesti, permette di rientrare in partita dopo una disconnessione, migliora il matchmaking di chi inizia il PvP e corregge bug come l'account azzerato dopo aver cancellato tutti i mazzi. Nessuna modifica alle carte: la patch di bilanciamento è attesa il 17 novembre.",
+      "El 10 de noviembre de 2026 Koin Games lanzó el parche 0.8.2 de Origins TCG, la actualización contra las trampas y las desconexiones anunciada en el AMA de la hoja de ruta. Cierra los exploits que algunos usaban para cortar las partidas de los jugadores honrados, permite volver a una partida tras perder la conexión, mejora el emparejamiento de quien empieza en PvP y corrige errores como la cuenta reiniciada al borrar todos los mazos. Ningún cambio en las cartas: el parche de equilibrio se espera el 17 de noviembre.",
+    ),
+    highlights: {
+      en: [
+        { label: "Fair play", text: "exploits used to cut matches short are closed, one cheater already caught", anchor: "fair-play" },
+        { label: "Fewer disconnects", text: "more stable servers, and you can rejoin a match after a dropped connection", anchor: "disconnects" },
+        { label: "New players in PvP", text: "early PvP matchmaking adjusted, \"it's a start\"", anchor: "pvp" },
+        { label: "Kickstarter backers", text: "the password for the bonus referral packs is in Project Update #4", anchor: "kickstarter" },
+        { label: "Bug fixes", text: "deleting all your decks no longer resets the account, ranked counts for missions", anchor: "bug-fixes" },
+        { label: "Dr. Frank", text: "his Legendary reveal now plays in full", anchor: "dr-frank" },
+        { label: "No card changes", text: "the balance patch is expected on 17 November", anchor: "cards" },
+      ],
+      it: [
+        { label: "Fair play", text: "chiusi gli exploit usati per interrompere le partite, un giocatore già preso", anchor: "fair-play" },
+        { label: "Meno disconnessioni", text: "server più stabili, e si rientra in partita dopo una disconnessione", anchor: "disconnessioni" },
+        { label: "I nuovi in PvP", text: "matchmaking delle prime partite PvP ritoccato, \"è un inizio\"", anchor: "pvp" },
+        { label: "Sostenitori del Kickstarter", text: "la password dei pacchetti bonus del referral è nel Project Update #4", anchor: "kickstarter" },
+        { label: "Correzioni", text: "cancellare tutti i mazzi non azzera più l'account, la classificata conta per le missioni", anchor: "correzioni" },
+        { label: "Dr. Frank", text: "la rivelazione della Leggendaria ora si vede per intero", anchor: "dr-frank" },
+        { label: "Nessuna modifica alle carte", text: "la patch di bilanciamento è attesa il 17 novembre", anchor: "carte" },
+      ],
+      es: [
+        { label: "Juego limpio", text: "cerrados los exploits usados para cortar partidas, un jugador ya atrapado", anchor: "juego-limpio" },
+        { label: "Menos desconexiones", text: "servidores más estables, y puedes volver a la partida tras perder la conexión", anchor: "desconexiones" },
+        { label: "Los nuevos en PvP", text: "emparejamiento de las primeras partidas PvP ajustado, \"es un comienzo\"", anchor: "pvp" },
+        { label: "Patrocinadores del Kickstarter", text: "la contraseña de los sobres por referidos está en el Project Update #4", anchor: "kickstarter" },
+        { label: "Correcciones", text: "borrar todos los mazos ya no reinicia la cuenta, la clasificatoria cuenta para las misiones", anchor: "correcciones" },
+        { label: "Dr. Frank", text: "la revelación de la Legendaria ahora se ve entera", anchor: "dr-frank" },
+        { label: "Ningún cambio en las cartas", text: "el parche de equilibrio se espera el 17 de noviembre", anchor: "cartas" },
+      ],
+    },
+    body: n(
+      `## The update announced in the AMA {#update}
+
+On Tuesday 10 November 2026 Koin Games released update 0.8.2 of Origins TCG. The patch notes went up on the official Discord, with the news that the servers were back up, and on Steam at 18:29 UTC (19:29 in Central Europe) as "0.8.2 Hotfix": "a minor update aimed at fixing bugs, adding stability, and enhancing the integrity of the ranked ladder". It is the update against disconnects and cheating that Koin had announced for 10 November in the [roadmap AMA](/en/news/origins-tcg-roadmap-ama-recap).
+
+The graphic of the Steam post calls it "Taking out the trash" and names the two areas the team focused on, disconnects and fair play, with a line for players: "Thanks for the reports. Keep them coming."
+
+## Fair play: exploits closed in ranked {#fair-play}
+
+Koin wrote this part as a pirate. In plain words: the team has closed "a few nasty leaks" that some players were using to cut short the matches of honest players, and has already caught one of them ("clapped irons on one of yer own"). The others are warned: if they keep it up, they are "bound for Davy Jones' locker". The graphic adds that the patch "closes loopholes and strengthens security to prevent exploits and help keep the ladder fair for everyone".
+
+If you spot other cheats or exploits in ranked, Koin asks you to report them on the [official Discord](https://discord.gg/originstcg). The pirate voice comes with its own explanation: "Did you know International Talk Like a Pirate Day is September 19 each year? Yeah, neither did we." How the ladder works is in our [Ranked guide](/en/guides/origins-tcg-ranked).
+
+## Fewer disconnects, and you can rejoin a match {#disconnects}
+
+On disconnects the graphic says: "We've improved server performance and stability, you should see fewer disconnects and a more reliable experience." The notes add three fixes:
+
+- If you drop connection mid-match, you can rejoin, and the game picks up where it left off, as long as the game doesn't close. Rejoining a match after restarting the game "is still coming in the future".
+- Matches no longer freeze for a few seconds after combat.
+- First launch is more reliable: a download that fails or stalls now retries on its own instead of hanging.
+
+## New players in PvP {#pvp}
+
+"Even though we give EVERY card to EVERY player for free", Koin writes, nobody enjoys being matched against someone who has all the cards when they have just started PvP. So the team adjusted the matchmaking of early PvP: "We have farther to go here, but it's a start." The notes don't say how the matchmaking changed. If you are starting now, our [guide to playing on Steam](/en/guides/play-the-demo) covers download and first matches.
+
+## Kickstarter backers: where the password is {#kickstarter}
+
+The password for the backers' bonus referral packs is in Project Update #4 of the Kickstarter campaign, not in an email, and only those who back the game can see that update. Koin checks every backer when the campaign ends: anyone who is no longer backing the game by then forfeits all their rewards, so Koin asks you not to enter the password unless you back the game on Kickstarter. Questions go to the official Discord. The campaign runs until 2 December 2026, and our [Kickstarter guide](/en/guides/origins-tcg-kickstarter) has the tiers, the promos and the dates.
+
+## The other bug fixes {#bug-fixes}
+
+- Deleting all your decks no longer resets your account. Koin: "Yeesh, can you believe that one was in the game?"
+- Mission progress from ranked matches now applies correctly.
+- Old card backs meant only for demo players no longer show up on opponents who were not supposed to have them ("Sorry, but also not sorry!").
+
+## Dr. Frank's reveal plays in full {#dr-frank}
+
+The reveal of the Legendary Dr. Frank now plays to the end: until now his "big moment" was being cut off, and according to Koin he was not happy about it. Dr. Frank arrived in the game on 4 November with the boss Cyber Queen: his deck and his cards are in [our article](/en/news/dr-frank-boss-new-cards).
+
+## No card changes {#cards}
+
+The 0.8.2 notes list no balance changes, new cards or new card texts: as Koin said in the AMA, balance did not fit into this update. Card stats on OriginsMeta stay those of the [patch of 4 November](/en/news/balance-patch-1104-cyber-queen), so the [card database](/en/cards), the [deck builder](/en/deck-builder) and the [tier list](/en/tier-list) are up to date. The next balance patch is expected on Tuesday 17 November.
+
+## What we don't know yet {#unknown}
+
+- Which exploits were being used and what happened to the player who was caught.
+- How early PvP matchmaking changed.
+- When you will be able to rejoin a match after restarting the game.
+
+Sources: the "0.8.2 patch notes" on the official Origins TCG Discord and the "0.8.2 Hotfix" post on Steam, with its graphic (10 November 2026, 18:29 UTC).`,
+      `## L'aggiornamento annunciato nell'AMA {#aggiornamento}
+
+Martedì 10 novembre 2026 Koin Games ha pubblicato l'aggiornamento 0.8.2 di Origins TCG. Le patch notes sono uscite sul Discord ufficiale, insieme alla notizia che i server erano di nuovo online, e su Steam alle 19:29 italiane (18:29 UTC) con il titolo "0.8.2 Hotfix": "un aggiornamento minore per correggere bug, aggiungere stabilità e rafforzare l'integrità della classificata". È l'aggiornamento contro disconnessioni e cheat che Koin aveva annunciato per il 10 novembre nell'[AMA sulla roadmap](/it/news/origins-tcg-roadmap-ama-recap).
+
+La grafica del post Steam lo intitola "Taking out the trash" ("portare fuori la spazzatura") e indica i due fronti su cui ha lavorato il team, disconnessioni e fair play, con una riga per i giocatori: "Grazie per le segnalazioni. Continuate a mandarle."
+
+## Fair play: chiusi gli exploit della classificata {#fair-play}
+
+Koin ha scritto questa parte da pirata. Tradotta: il team ha chiuso "qualche brutta falla" che alcuni giocatori usavano per interrompere le partite dei giocatori onesti, e uno di loro l'ha già preso ("messo ai ferri"). Gli altri sono avvisati: se continuano, finiscono "nello scrigno di Davy Jones". La grafica aggiunge che la patch "chiude le scappatoie e rafforza la sicurezza per prevenire gli exploit e aiutare a mantenere la classificata giusta per tutti".
+
+Se vedi altri cheat o exploit in classificata, Koin chiede di segnalarli sul [Discord ufficiale](https://discord.gg/originstcg). Il tono da pirata ha una sua spiegazione: "Lo sapevi che la Giornata internazionale del parlare come un pirata è il 19 settembre di ogni anno? Già, neanche noi." Come funziona la scalata lo spiega la nostra [guida alla classificata](/it/guides/origins-tcg-ranked).
+
+## Meno disconnessioni, e si può rientrare in partita {#disconnessioni}
+
+Sulle disconnessioni la grafica dice: "Abbiamo migliorato le prestazioni e la stabilità dei server: dovresti vedere meno disconnessioni e un'esperienza più affidabile." Le note aggiungono tre correzioni:
+
+- Se perdi la connessione a metà partita, puoi rientrare e il gioco riprende da dove si era fermato, purché il gioco non si chiuda. Rientrare in una partita dopo aver riavviato il gioco "arriverà in futuro".
+- Le partite non si bloccano più per qualche secondo dopo il combattimento.
+- Il primo avvio è più affidabile: un download che fallisce o si blocca ora riprova da solo invece di restare fermo.
+
+## I nuovi giocatori in PvP {#pvp}
+
+"Anche se diamo TUTTE le carte a TUTTI i giocatori gratis", scrive Koin, a nessuno piace trovarsi contro qualcuno che ha tutte le carte quando ha appena cominciato il PvP. Per questo il team ha ritoccato il matchmaking delle prime partite PvP: "C'è ancora strada da fare, ma è un inizio." Le note non dicono come è cambiato. Se cominci adesso, la nostra [guida per giocare su Steam](/it/guides/play-the-demo) spiega download e prime partite.
+
+## Sostenitori del Kickstarter: dov'è la password {#kickstarter}
+
+La password dei pacchetti bonus del referral per i sostenitori sta nel Project Update #4 della campagna Kickstarter, non in un'email, e quell'aggiornamento lo vede solo chi sostiene il gioco. Koin controlla tutti i sostenitori alla chiusura della campagna: chi a quel punto non sostiene più il gioco perde tutte le ricompense, quindi Koin chiede di non inserire la password se non sostieni il gioco su Kickstarter. Per le domande c'è il Discord ufficiale. La campagna dura fino al 2 dicembre 2026 e la nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter) ha livelli, promo e date.
+
+## Le altre correzioni {#correzioni}
+
+- Cancellare tutti i propri mazzi non azzera più l'account. Koin: "Mamma mia, ci credi che c'era nel gioco?"
+- I progressi delle missioni dalle partite classificate ora si applicano correttamente.
+- I vecchi dorsi delle carte riservati a chi giocava la demo non compaiono più sugli avversari che non dovevano averli ("Scusate, ma anche no!").
+
+## La rivelazione di Dr. Frank si vede per intero {#dr-frank}
+
+La rivelazione della Leggendaria Dr. Frank ora si vede fino in fondo: finora il suo "grande momento" veniva tagliato e, a sentire Koin, non l'aveva presa bene. Dr. Frank è entrato nel gioco il 4 novembre con il boss Cyber Queen: il suo mazzo e le sue carte sono nel [nostro articolo](/it/news/dr-frank-boss-new-cards).
+
+## Nessuna modifica alle carte {#carte}
+
+Le note della 0.8.2 non citano bilanciamenti, carte nuove né testi nuovi: come aveva detto Koin nell'AMA, il bilanciamento in questo aggiornamento non ci stava. Le statistiche delle carte su OriginsMeta restano quelle della [patch del 4 novembre](/it/news/balance-patch-1104-cyber-queen), quindi il [database carte](/it/cards), il [deck builder](/it/deck-builder) e la [tier list](/it/tier-list) sono aggiornati. La prossima patch di bilanciamento è attesa martedì 17 novembre.
+
+## Cosa non sappiamo ancora {#da-sapere}
+
+- Quali exploit venivano usati e che cosa è successo al giocatore preso.
+- Come è cambiato il matchmaking delle prime partite PvP.
+- Quando si potrà rientrare in una partita dopo aver riavviato il gioco.
+
+Fonti: le "0.8.2 patch notes" sul Discord ufficiale di Origins TCG e il post "0.8.2 Hotfix" su Steam, con la sua grafica (10 novembre 2026, 18:29 UTC). Le citazioni sono tradotte da noi.`,
+      `## La actualización anunciada en el AMA {#actualizacion}
+
+El martes 10 de noviembre de 2026 Koin Games lanzó la actualización 0.8.2 de Origins TCG. Las notas del parche salieron en el Discord oficial, junto con el aviso de que los servidores volvían a funcionar, y en Steam a las 18:29 UTC con el título "0.8.2 Hotfix": "una actualización menor para corregir errores, añadir estabilidad y reforzar la integridad de la clasificatoria". Es la actualización contra las desconexiones y las trampas que Koin había anunciado para el 10 de noviembre en el [AMA de la hoja de ruta](/es/news/origins-tcg-roadmap-ama-recap).
+
+La imagen de la publicación de Steam la titula "Taking out the trash" ("sacar la basura") y señala los dos frentes en los que trabajó el equipo, las desconexiones y el juego limpio, con una línea para los jugadores: "Gracias por los reportes. Sigan enviándolos."
+
+## Juego limpio: exploits cerrados en la clasificatoria {#juego-limpio}
+
+Koin escribió esta parte como un pirata. En pocas palabras: el equipo cerró "unas cuantas grietas feas" que algunos jugadores usaban para cortar las partidas de los jugadores honrados, y ya atrapó a uno de ellos ("le puso los grilletes"). Los demás quedan avisados: si siguen así, acabarán "en el cofre de Davy Jones". La imagen añade que el parche "cierra resquicios y refuerza la seguridad para prevenir exploits y ayudar a que la clasificatoria sea justa para todos".
+
+Si ves otras trampas o exploits en la clasificatoria, Koin pide que los reportes en el [Discord oficial](https://discord.gg/originstcg). El tono pirata tiene su explicación: "¿Sabías que el Día Internacional de Hablar como un Pirata es el 19 de septiembre de cada año? Sí, nosotros tampoco." Cómo funciona la escalada lo explica nuestra [guía de la clasificatoria](/es/guides/origins-tcg-ranked).
+
+## Menos desconexiones, y puedes volver a la partida {#desconexiones}
+
+Sobre las desconexiones, la imagen dice: "Hemos mejorado el rendimiento y la estabilidad de los servidores: deberías ver menos desconexiones y una experiencia más fiable." Las notas añaden tres correcciones:
+
+- Si pierdes la conexión en mitad de una partida, puedes volver a entrar y el juego sigue donde se quedó, siempre que el juego no se cierre. Volver a una partida después de reiniciar el juego "llegará en el futuro".
+- Las partidas ya no se congelan unos segundos después del combate.
+- El primer inicio es más fiable: una descarga que falla o se atasca ahora se reintenta sola en lugar de quedarse colgada.
+
+## Los nuevos jugadores en PvP {#pvp}
+
+"Aunque damos TODAS las cartas a TODOS los jugadores gratis", escribe Koin, a nadie le gusta que lo emparejen con alguien que tiene todas las cartas cuando acaba de empezar en PvP. Por eso el equipo ajustó el emparejamiento de las primeras partidas PvP: "Aún nos queda camino, pero es un comienzo." Las notas no explican cómo cambió. Si empiezas ahora, nuestra [guía para jugar en Steam](/es/guides/play-the-demo) explica la descarga y las primeras partidas.
+
+## Patrocinadores del Kickstarter: dónde está la contraseña {#kickstarter}
+
+La contraseña de los sobres de bonificación por referidos de los patrocinadores está en el Project Update #4 de la campaña de Kickstarter, no en un correo, y esa actualización solo la ve quien apoya el juego. Koin verifica a todos los patrocinadores al cerrar la campaña: quien en ese momento ya no apoye el juego pierde todas sus recompensas, así que Koin pide no introducir la contraseña si no apoyas el juego en Kickstarter. Las dudas, en el Discord oficial. La campaña dura hasta el 2 de diciembre de 2026, y nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter) tiene los niveles, las promos y las fechas.
+
+## Las demás correcciones {#correcciones}
+
+- Borrar todos tus mazos ya no reinicia tu cuenta. Koin: "Uf, ¿te puedes creer que eso estaba en el juego?"
+- El progreso de las misiones en las partidas clasificatorias ahora se aplica correctamente.
+- Los antiguos dorsos de carta exclusivos de la demo ya no aparecen en rivales que no debían tenerlos ("Lo sentimos, pero tampoco tanto").
+
+## La revelación de Dr. Frank se ve entera {#dr-frank}
+
+La revelación de la Legendaria Dr. Frank ahora se ve hasta el final: hasta ahora su "gran momento" se cortaba y, según Koin, no le sentó nada bien. Dr. Frank llegó al juego el 4 de noviembre con el jefe Cyber Queen: su mazo y sus cartas están en [nuestro artículo](/es/news/dr-frank-boss-new-cards).
+
+## Ningún cambio en las cartas {#cartas}
+
+Las notas de la 0.8.2 no mencionan cambios de equilibrio, cartas nuevas ni textos nuevos: como dijo Koin en el AMA, el equilibrio no cabía en esta actualización. Las estadísticas de las cartas en OriginsMeta siguen siendo las del [parche del 4 de noviembre](/es/news/balance-patch-1104-cyber-queen), así que la [base de datos de cartas](/es/cards), el [deck builder](/es/deck-builder) y la [tier list](/es/tier-list) están al día. El próximo parche de equilibrio se espera el martes 17 de noviembre.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- Qué exploits se usaban y qué pasó con el jugador atrapado.
+- Cómo cambió el emparejamiento de las primeras partidas PvP.
+- Cuándo se podrá volver a una partida después de reiniciar el juego.
+
+Fuentes: las "0.8.2 patch notes" en el Discord oficial de Origins TCG y la publicación "0.8.2 Hotfix" en Steam, con su imagen (10 de noviembre de 2026, 18:29 UTC). Las citas están traducidas por nosotros.`,
+    ),
+    faq: {
+      en: [
+        { q: "What does Origins TCG patch 0.8.2 change?", a: "It is a bug-fix update of 10 November 2026: it closes exploits used in ranked, improves server stability, lets you rejoin a match after a dropped connection, adjusts matchmaking for new PvP players and fixes several bugs. It changes no cards." },
+        { q: "Did patch 0.8.2 change any cards?", a: "No. The notes list no balance changes, new cards or new texts; the next balance patch is expected on 17 November 2026." },
+        { q: "Can I rejoin a match after a disconnect in Origins TCG?", a: "Yes, since patch 0.8.2, as long as the game stays open: the match picks up where it left off. Rejoining after restarting the game will come later." },
+        { q: "Where is the Kickstarter backer password for the bonus packs?", a: "In Project Update #4 of the Kickstarter campaign, which only backers can see, not in an email. Koin verifies backers when the campaign ends, and anyone no longer backing the game loses all rewards." },
+      ],
+      it: [
+        { q: "Che cosa cambia la patch 0.8.2 di Origins TCG?", a: "È un aggiornamento di correzioni del 10 novembre 2026: chiude exploit usati in classificata, migliora la stabilità dei server, permette di rientrare in partita dopo una disconnessione, ritocca il matchmaking di chi inizia il PvP e corregge vari bug. Non cambia nessuna carta." },
+        { q: "La patch 0.8.2 ha cambiato delle carte?", a: "No. Le note non citano bilanciamenti, carte nuove né testi nuovi; la prossima patch di bilanciamento è attesa il 17 novembre 2026." },
+        { q: "Si può rientrare in una partita dopo una disconnessione su Origins TCG?", a: "Sì, dalla patch 0.8.2, purché il gioco resti aperto: la partita riprende da dove si era fermata. Rientrare dopo aver riavviato il gioco arriverà più avanti." },
+        { q: "Dov'è la password del Kickstarter per i pacchetti bonus?", a: "Nel Project Update #4 della campagna Kickstarter, che vedono solo i sostenitori, non in un'email. Koin verifica i sostenitori alla chiusura della campagna e chi non sostiene più il gioco perde tutte le ricompense." },
+      ],
+      es: [
+        { q: "¿Qué cambia el parche 0.8.2 de Origins TCG?", a: "Es una actualización de correcciones del 10 de noviembre de 2026: cierra exploits usados en la clasificatoria, mejora la estabilidad de los servidores, permite volver a una partida tras perder la conexión, ajusta el emparejamiento de quien empieza en PvP y corrige varios errores. No cambia ninguna carta." },
+        { q: "¿El parche 0.8.2 cambió alguna carta?", a: "No. Las notas no mencionan cambios de equilibrio, cartas nuevas ni textos nuevos; el próximo parche de equilibrio se espera el 17 de noviembre de 2026." },
+        { q: "¿Se puede volver a una partida tras una desconexión en Origins TCG?", a: "Sí, desde el parche 0.8.2, siempre que el juego siga abierto: la partida sigue donde se quedó. Volver después de reiniciar el juego llegará más adelante." },
+        { q: "¿Dónde está la contraseña del Kickstarter para los sobres de bonificación?", a: "En el Project Update #4 de la campaña de Kickstarter, que solo ven los patrocinadores, no en un correo. Koin verifica a los patrocinadores al cerrar la campaña, y quien ya no apoye el juego pierde todas sus recompensas." },
+      ],
+    },
+  },
+  {
     // Prima tier list di OriginsMeta (09/11/2026, Pierluigi: "pubblica la tier list"): le Leggendarie, con la regola di
     // src/lib/tierRule.ts e i numeri di tierlist.ts (legendaryEvidence). Copertina: Legion of the Dead, l'unica Leggendaria
     // la cui copertina non era ancora usata da una news.

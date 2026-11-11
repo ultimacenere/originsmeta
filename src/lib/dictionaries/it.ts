@@ -1420,7 +1420,7 @@ export const it: Dictionary = {
     organizedBy: "Organizzato da",
     startsAt: "Inizio",
     utc: "UTC",
-    formats: { single_elim: "Eliminazione diretta", swiss: "Turni svizzeri", groups: "Fase a gironi" },
+    formats: { single_elim: "Eliminazione diretta", swiss: "Turni svizzeri", groups: "Fase a gironi", double_elim: "Doppia eliminazione" },
     deckModes: { free: "Mazzo libero", conquest: "Conquest" },
     conquestRule: "{n} mazzi con Leggendarie diverse, almeno {min} carte uniche tra due mazzi qualsiasi",
     bestOf: "Al meglio delle {n}",

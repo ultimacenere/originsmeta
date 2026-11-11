@@ -3,6 +3,8 @@ import { roundLabel } from "./bracket";
 import { bracketRenumbered, championOf, groupLetter, openStageMatches, stageRounds } from "./formats";
 import { formatLabels } from "./formatLabels";
 import { stageLabels } from "./stageLabels";
+import { dePlanOf, deSlotOf, type DePlan } from "./doubleElim";
+import { doubleElimLabels } from "./doubleElimLabels";
 import { fill, type TournamentMatch } from "./types";
 
 /**
@@ -28,10 +30,12 @@ export type FormatView = {
   top4: Set<string>;
   champion: string | null;
   open: number;
+  /** doppia eliminazione (10/11/2026): il piano della qualificazione, null prima dell'avvio e negli altri formati */
+  de: DePlan | null;
 };
 
 export function formatView(
-  t: { format: string; top_cut?: number | null; top_cut_hold?: boolean; top_cut_released_at?: string | null; swiss_rounds?: number | null; group_advance?: number | null },
+  t: { format: string; top_cut?: number | null; top_cut_hold?: boolean; top_cut_released_at?: string | null; swiss_rounds?: number | null; group_advance?: number | null; de_pools?: number | null; de_qualify?: number | null; de_pool_size?: number | null },
   matches: TournamentMatch[],
 ): FormatView {
   const { matches: bracket, base } = bracketRenumbered(matches);
@@ -41,10 +45,16 @@ export function formatView(
   const holdFrom = t.top_cut_hold && !t.top_cut_released_at && bracket.length ? base + 1 : null;
   const top4 = new Set<string>();
   if (finalRound) for (const m of matches) if (!m.stage && m.round >= finalRound - 1) for (const u of [m.player_a, m.player_b]) if (u) top4.add(u);
-  const qualify = t.format === "groups" ? (t.group_advance ?? null) : (t.top_cut ?? null);
   const firstRound = bracket.filter((m) => m.round === 1);
+  if (t.format === "double_elim") {
+    const pools = t.de_pools ?? 1;
+    const q = t.de_qualify ?? 1;
+    const de = dePlanOf(matches, pools, q);
+    return { stageRounds: sr, plannedRounds: de ? de.upperRounds + de.lowerRounds : sr, bracket, base, finalRound, holdFrom, cut: pools * q * 2, qualify: q, top4, champion: null, open: openStageMatches(matches).length, de };
+  }
+  const qualify = t.format === "groups" ? (t.group_advance ?? null) : (t.top_cut ?? null);
   const cut = t.format === "groups" ? (firstRound.length ? firstRound.filter((m) => m.player_a).length + firstRound.filter((m) => m.player_b).length : null) : (t.top_cut ?? null);
-  return { stageRounds: sr, plannedRounds, bracket, base, finalRound, holdFrom, cut, qualify, top4, champion: championOf(matches), open: openStageMatches(matches).length };
+  return { stageRounds: sr, plannedRounds, bracket, base, finalRound, holdFrom, cut, qualify, top4, champion: championOf(matches), open: openStageMatches(matches).length, de: null };
 }
 
 function plain(x: Dictionary["tournaments"], r: number, size: number): string {
@@ -57,12 +67,20 @@ function plain(x: Dictionary["tournaments"], r: number, size: number): string {
 }
 
 /** "Svizzera · Turno 3", "Girone B · Turno 2", "Top 8 · Semifinali", "Fase finale · Quarti di finale". */
-export function formatMatchName(locale: Locale, x: Dictionary["tournaments"], format: string, view: FormatView, m: { round: number; stage?: string | null; grp?: number | null }): string {
+export function formatMatchName(locale: Locale, x: Dictionary["tournaments"], format: string, view: FormatView, m: { round: number; position?: number; stage?: string | null; grp?: number | null }): string {
   const fl = formatLabels[locale];
+  if ((m.stage === "upper" || m.stage === "lower") && view.de) {
+    const l = doubleElimLabels[locale];
+    const s = deSlotOf(view.de, { stage: m.stage, round: m.round, position: (m as { position?: number }).position ?? 0 });
+    const last = m.stage === "upper" ? view.de.upperRounds : view.de.lowerRounds;
+    const local = s?.local ?? m.round;
+    return fill(l.matchName, { letter: groupLetter(s?.pool ?? m.grp ?? 0), side: m.stage === "upper" ? l.upper : l.lower, round: local === last ? l.qualifyingRound : fill(l.round, { n: local }) });
+  }
   if (m.stage === "swiss" || m.stage === "champion") return fill(fl.swissMatch, { n: m.round });
   if (m.stage === "group") return fill(fl.groupMatch, { letter: groupLetter(m.grp ?? 0), n: m.round });
   const size = view.bracket.filter((b) => b.round === 1).length * 2;
   const name = plain(x, m.round - view.base, size || 2);
+  if (format === "double_elim") return `${fill(doubleElimLabels[locale].final, { n: view.cut ?? size })} · ${name}`;
   return format === "swiss" ? `${fill(stageLabels[locale].top, { n: view.cut ?? size })} · ${name}` : fill(fl.finalStageMatch, { round: name });
 }
 
@@ -75,5 +93,12 @@ export function formatMatchNames(locale: Locale, x: Dictionary["tournaments"], f
 export function formatRoundTitle(locale: Locale, x: Dictionary["tournaments"], format: string, view: FormatView, round: number): string {
   const fl = formatLabels[locale];
   if (view.finalRound && round > view.base) return formatMatchName(locale, x, format, view, { round, stage: null });
+  if (format === "double_elim" && view.de) {
+    const l = doubleElimLabels[locale];
+    const upper = round <= view.de.upperRounds;
+    const local = upper ? round : round - view.de.upperRounds;
+    const last = upper ? view.de.upperRounds : view.de.lowerRounds;
+    return `${upper ? l.upper : l.lower} · ${local === last ? l.qualifyingRound : fill(l.round, { n: local })}`;
+  }
   return format === "groups" ? fill(fl.groupsRound, { n: round }) : fill(fl.swissMatch, { n: round });
 }

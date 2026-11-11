@@ -98,7 +98,7 @@ export function MatchBox({ m, names, dict, highlight, open }: { m: TournamentMat
   const canOpen = Boolean(open) && playable && (Boolean(open?.all) || (Boolean(open?.viewer) && (m.player_a === open?.viewer || m.player_b === open?.viewer)));
   const body = (
     <>
-      <Row id={m.player_a} score={m.score_a} winner={Boolean(m.winner) && m.winner === m.player_a} bye={false} names={names} dict={dict} me={highlight === m.player_a && Boolean(highlight)} />
+      <Row id={m.player_a} score={m.score_a} winner={Boolean(m.winner) && m.winner === m.player_a} bye={m.status === "bye" && !m.player_a} names={names} dict={dict} me={highlight === m.player_a && Boolean(highlight)} />
       <div className="mx-3 border-t border-sky/40" />
       <Row id={m.player_b} score={m.score_b} winner={Boolean(m.winner) && m.winner === m.player_b} bye={m.status === "bye"} names={names} dict={dict} me={highlight === m.player_b && Boolean(highlight)} />
       {m.status === "reported" || m.status === "disputed" ? <p className={`px-3 pb-1.5 font-mono text-[10px] uppercase ${m.status === "disputed" ? "text-bad" : "text-gold"}`}>{x.manage.statuses[m.status]}</p> : null}

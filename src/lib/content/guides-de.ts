@@ -1299,10 +1299,10 @@ Das Deck ist nur für die Ladder getaggt, passt aber in ein Conquest-Line-up: ei
 | 27. Oktober | Ende der Demo: Origins TCG im Early Access auf Steam ([Version 0.8](https://store.steampowered.com/news/app/4429430/view/1847286114049982)), mit Grandmaster-Division und Handel der Sammelkarten auf dem Steam-Marktplatz; am selben Tag startet der Kickstarter zur Alpha Edition |
 | 4. November | [Patch Notes](/de/news/balance-patch-1104-cyber-queen): zehn Karten angepasst, Cyber Queen ist Boss Nr. 11 |
 | 6. November | [Roadmap-AMA](/de/news/origins-tcg-roadmap-ama-recap) auf dem offiziellen Discord: der Plan des Early Access bis Februar |
+| 10. November | [Patch 0.8.2](/de/news/patch-notes-0-8-2): Exploits im Ranglisten-Modus geschlossen, weniger Verbindungsabbrüche, besseres Matchmaking für PvP-Neulinge; keine Kartenänderungen |
 
 ## Wie es weitergeht
 
-- **10. November 2026.** Ein Update gegen Verbindungsabbrüche und Cheating, ohne Balance-Änderungen.
 - **17. November 2026.** Balance-Patch, mit einer erwarteten Änderung an Sherwood Forest.
 - **November 2026.** Das erste monatliche Turnier des Early Access im Conquest-Format mit etwa 400 Plätzen; die Details nennt Koin in der Woche des 9. November.
 - **2. Dezember 2026.** Ende der laufenden Ranglisten-Saison und erstes großes Update: Collector Pass, Prestige, Kapseln, neue Orte und Titel. Danach folgt eine Saison bis Mitte Januar und eine von Mitte Januar bis Februar.

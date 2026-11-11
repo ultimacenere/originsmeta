@@ -1636,11 +1636,11 @@ Origins TCG está en Acceso anticipado desde el 27 de octubre de 2026, con la ve
 | 27 de octubre | [Fin de la demo y Acceso anticipado en Steam](https://store.steampowered.com/news/app/4429430/view/1847286114049982) con la versión 0.8: Grandmaster Division abierta, gradación visible en las cartas, cartas coleccionables en el Mercado de Steam. Ese mismo día abre el Kickstarter de la Alpha Edition |
 | 4 de noviembre | [Notas del parche](/es/news/balance-patch-1104-cyber-queen): diez cartas reequilibradas, Cyber Queen es el jefe n.º 11 |
 | 6 de noviembre | [AMA de la hoja de ruta](/es/news/origins-tcg-roadmap-ama-recap) en el Discord oficial: el plan del Acceso anticipado hasta febrero |
+| 10 de noviembre | [Parche 0.8.2](/es/news/patch-notes-0-8-2): exploits de la clasificatoria cerrados, menos desconexiones, mejor emparejamiento para quien empieza en PvP; ningún cambio en las cartas |
 
 ## Lo que viene
 
 - **Kickstarter de la Alpha Edition.** Abierto desde el 27 de octubre de 2026: el Alpha Set "Myths & Legends", exclusivo del Kickstarter, tiene 218 cartas que Koin irá publicando a lo largo del Acceso anticipado. Todo lo que hay que saber, en nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
-- **10 de noviembre de 2026.** Una actualización contra las desconexiones y las trampas, sin cambios de equilibrio.
 - **17 de noviembre de 2026.** Parche de equilibrio, con un cambio previsto en Sherwood Forest.
 - **Noviembre de 2026.** El primer torneo mensual del Acceso anticipado, en formato Conquest con unas 400 plazas; Koin da los detalles la semana del 9 de noviembre.
 - **2 de diciembre de 2026.** Fin de la temporada clasificatoria en curso y primera gran actualización: Collector Pass, Prestige, cápsulas, ubicaciones nuevas y títulos. Sigue una temporada hasta mediados de enero y otra de mediados de enero a febrero.

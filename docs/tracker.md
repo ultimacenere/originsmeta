@@ -809,6 +809,28 @@ immagini delle carte del sito, e al sito vanno solo gli id delle carte: nessun f
     misura il distacco dalla migliore carta **diversa**. Si imparano partita per partita: fotogrammi raccolti con
     `npm run frames`, letture non riconosciute raggruppate, un nome per gruppo guardando un esemplare, controllo su
     tutte le sessioni che nessuna carta cambi nome. Zombie no: somiglia al dorso rosa del mazzo.
+    **Dal 10/11/2026 anche dalle immagini del sito** (`src/card-art-variants.json`, `VARIANT_ART`, generato da
+    `npm run card-art`): le 38 varianti ALPHA del pacco creator (`public/cards/alt/`) e le 28 promo Alpha del Kickstarter
+    con la carta dentro la teca (`SLAB_CARD`; fuori i "Character Profile"), 66 immagini di 43 carte, Dracula compresa
+    (segnalazione di Pierluigi: una Dracula variante giocata da uno streamer non riconosciuta). Prova sulla Big Bad Wolf
+    ALPHA vista in partita: 0,05 con l'immagine base, 0,90–0,91 con la variante del sito. Quando il sito aggiunge
+    varianti (`import-card-variants.mjs`) o promo, si rilancia `npm run card-art`. Le varianti valgono per tabellone,
+    schermata VS e mano (`card-art-variants-hand.json`), non per il riquadro delle magie. Entrano solo se l'immagine base
+    non riconosce niente, con distacco almeno 0,30 (`VARIANT_ACCEPT`): rilettura dei 24.283 fotogrammi del 10–12/10
+    senza letture perse né cambiate, 60 Aladdin ALPHA in più.
+    **Skin che il sito non ha** (`card-art-skins-hand.json`, `SKIN_HAND_ART`): la Dracula dorata "TOP 8" di
+    OrdinaryHarry, pose della mano prese il 10/11 dalla sua diretta Twitch (1920 × 1080, ffmpeg un fotogramma al
+    secondo; si salvano solo i vettori). Sul tabellone e nella VS si aggiungono quando la si vede giocata.
+  - **Magie dei mazzi che le generano (10/11/2026)**: con Genie, Morgan le Fay o Spellbook nel mazzo (`sp` in
+    cards.json, dal testo "add a random spell to your hand") una magia rivelata è mia se ne ho la prova anche fuori dal
+    mazzo, e senza prova non va a nessuno (`spellPlays`). Prima la partita di Harry dava all'avversario 21 carte viste
+    su 13, con Spellbook 8 volte.
+  - **Niente più schermata VS (10/11/2026)**: nella diretta di Harry, dopo il caricamento, c'è solo la mano iniziale
+    ("STARTING HAND – Keep or Replace Cards") con la Leggendaria dell'avversario in alto a destra, e l'overlay non la
+    sapeva mai. `readStartLegendary` (`START_OPP_LEGENDARY`, soglie `START_ACCEPT` 0,70 / 0,30, solo con il mana non
+    letto) la mette nel fotogramma come `vs: { me: null, opp }`. La schermata c'era già a ottobre ("MANO INIZIALE"): nei
+    24.283 fotogrammi del 10–12/10 la lettura dà in tutte e 8 le sessioni le stesse Leggendarie della vecchia VS.
+    Restano da rifare sulla schermata nuova il nome dell'avversario (bot) e la lega, che si leggevano dalla VS.
   - **Pannello a L**: largo 480, carte viste 4 per fila con il mana sotto; larghezza fissa e sempre dentro lo schermo;
     trascinamento fatto dall'app (`deck:drag`) con `setBounds`, perché con la scala al 150% `setPosition` allarga la
     finestra di un pixel a ogni passo. "Vita" diventa "Barriere" (glossario del gioco).

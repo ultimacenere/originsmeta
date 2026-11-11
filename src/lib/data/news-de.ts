@@ -9,6 +9,90 @@ import type { NewsCopy } from "./news-fr";
  * docs/tedesco.md; controlli in newsMeta.test.ts (lunghezze, link con /de/, ancore, paragrafo "Update vom …").
  */
 export const deText: Record<string, NewsCopy> = {
+  "patch-notes-0-8-2": {
+    title: "Patch 0.8.2 für Origins TCG: Exploits geschlossen, weniger Verbindungsabbrüche, fairerer PvP-Einstieg",
+    metaTitle: "Origins TCG Patch 0.8.2: Fair Play und Verbindungsabbrüche",
+    description:
+      "Patch 0.8.2 für Origins TCG vom 10. November 2026: Exploits im Ranglisten-Modus geschlossen, weniger Verbindungsabbrüche, besseres Matchmaking für Neue.",
+    summary:
+      "Am 10. November 2026 hat Koin Games Patch 0.8.2 für Origins TCG veröffentlicht, das im Roadmap-AMA angekündigte Update gegen Cheating und Verbindungsabbrüche. Es schließt Exploits, mit denen einige Spieler die Partien ehrlicher Spieler vorzeitig beendet haben, lässt dich nach einem Verbindungsabbruch in die Partie zurückkehren, verbessert das Matchmaking für PvP-Neulinge und behebt Fehler wie das zurückgesetzte Konto nach dem Löschen aller Decks. Keine Kartenänderungen: Der Balance-Patch wird für den 17. November erwartet.",
+    highlights: [
+      { label: "Fair Play", text: "Exploits zum vorzeitigen Beenden von Partien geschlossen, ein Cheater schon erwischt", anchor: "fair-play" },
+      { label: "Weniger Verbindungsabbrüche", text: "stabilere Server, und nach einem Abbruch kannst du zurück in die Partie", anchor: "verbindungsabbrueche" },
+      { label: "Neue Spieler im PvP", text: "Matchmaking der ersten PvP-Partien angepasst, „ein Anfang“", anchor: "pvp" },
+      { label: "Kickstarter-Unterstützer", text: "das Passwort für die Bonus-Packs aus dem Empfehlungsprogramm steht im Project Update #4", anchor: "kickstarter" },
+      { label: "Fehlerbehebungen", text: "alle Decks zu löschen setzt das Konto nicht mehr zurück, Ranglisten-Partien zählen für Missionen", anchor: "fehlerbehebungen" },
+      { label: "Dr. Frank", text: "das Aufdecken der Legendären läuft jetzt komplett", anchor: "dr-frank" },
+      { label: "Keine Kartenänderungen", text: "der Balance-Patch wird für den 17. November erwartet", anchor: "karten" },
+    ],
+    body: `## Das im AMA angekündigte Update {#update}
+
+Am Dienstag, 10. November 2026, hat Koin Games das Update 0.8.2 für Origins TCG veröffentlicht. Die Patchnotes erschienen im offiziellen Discord, zusammen mit der Nachricht, dass die Server wieder laufen, und auf Steam um 18:29 UTC unter dem Titel „0.8.2 Hotfix“: „ein kleines Update, das Fehler behebt, für mehr Stabilität sorgt und die Integrität der Ranglisten-Ladder stärkt“. Es ist das Update gegen Verbindungsabbrüche und Cheating, das Koin im [Roadmap-AMA](/de/news/origins-tcg-roadmap-ama-recap) für den 10. November angekündigt hatte.
+
+Die Grafik des Steam-Posts nennt es „Taking out the trash“ („den Müll rausbringen“) und zeigt die zwei Baustellen des Teams, Verbindungsabbrüche und Fair Play, mit einer Zeile an die Spieler: „Danke für eure Meldungen. Schickt weiter welche.“
+
+## Fair Play: Exploits im Ranglisten-Modus geschlossen {#fair-play}
+
+Koin hat diesen Teil als Pirat geschrieben. Auf gut Deutsch: Das Team hat „ein paar fiese Lecks“ gestopft, mit denen einige Spieler die Partien ehrlicher Spieler vorzeitig beendet haben, und einen von ihnen schon erwischt („in Ketten gelegt“). Die anderen sind gewarnt: Wenn sie so weitermachen, landen sie „in Davy Jones' Kiste“. Die Grafik ergänzt, dass der Patch „Schlupflöcher schließt und die Sicherheit verstärkt, um Exploits zu verhindern und die Ladder für alle fair zu halten“.
+
+Wenn du andere Cheats oder Exploits im Ranglisten-Modus entdeckst, bittet Koin dich, sie im [offiziellen Discord](https://discord.gg/originstcg) zu melden. Der Piratenton hat seine eigene Erklärung: „Wusstest du, dass der internationale Talk-Like-a-Pirate-Tag jedes Jahr am 19. September ist? Tja, wir auch nicht.“ Wie die Ladder funktioniert, steht in unserem [Guide zum Ranglisten-Modus](/de/guides/origins-tcg-ranked).
+
+## Weniger Verbindungsabbrüche, und du kannst zurück in die Partie {#verbindungsabbrueche}
+
+Zu den Verbindungsabbrüchen sagt die Grafik: „Wir haben Leistung und Stabilität der Server verbessert: Du solltest weniger Verbindungsabbrüche und ein zuverlässigeres Spielerlebnis haben.“ Die Patchnotes nennen dazu drei Korrekturen:
+
+- Wenn deine Verbindung mitten in einer Partie abbricht, kannst du wieder einsteigen, und das Spiel macht dort weiter, wo es stand, solange das Spiel nicht geschlossen wird. Nach einem Neustart des Spiels in eine Partie zurückzukehren, „kommt erst noch“.
+- Partien frieren nach dem Kampf nicht mehr für ein paar Sekunden ein.
+- Der erste Start ist zuverlässiger: Ein Download, der fehlschlägt oder hängen bleibt, versucht es jetzt von selbst erneut, statt stehen zu bleiben.
+
+## Neue Spieler im PvP {#pvp}
+
+„Auch wenn wir JEDE Karte JEDEM Spieler kostenlos geben“, schreibt Koin, will niemand gegen jemanden antreten, der alle Karten hat, wenn man gerade erst mit PvP angefangen hat. Deshalb hat das Team das Matchmaking der ersten PvP-Partien angepasst: „Da ist noch einiges zu tun, aber es ist ein Anfang.“ Wie sich das Matchmaking geändert hat, sagen die Patchnotes nicht. Wenn du jetzt anfängst, erklärt unser [Guide zum Spielen auf Steam](/de/guides/play-the-demo) Download und erste Partien.
+
+## Kickstarter-Unterstützer: Wo das Passwort steht {#kickstarter}
+
+Das Passwort für die Bonus-Packs aus dem Empfehlungsprogramm der Unterstützer steht im Project Update #4 der Kickstarter-Kampagne, nicht in einer E-Mail, und dieses Update sehen nur Leute, die das Spiel unterstützen. Koin prüft alle Unterstützer, wenn die Kampagne endet: Wer das Spiel dann nicht mehr unterstützt, verliert alle Belohnungen. Koin bittet deshalb, das Passwort nicht einzugeben, wenn du das Spiel auf Kickstarter nicht unterstützt. Fragen gehören in den offiziellen Discord. Die Kampagne läuft bis zum 2. Dezember 2026, und unser [Kickstarter-Guide](/de/guides/origins-tcg-kickstarter) hat die Stufen, die Promos und die Termine.
+
+## Die übrigen Fehlerbehebungen {#fehlerbehebungen}
+
+- Alle eigenen Decks zu löschen, setzt das Konto nicht mehr zurück. Koin: „Meine Güte, könnt ihr glauben, dass das im Spiel war?“
+- Der Missionsfortschritt aus Ranglisten-Partien wird jetzt richtig angerechnet.
+- Alte Kartenrückseiten, die nur Demo-Spieler haben sollten, erscheinen nicht mehr bei Gegnern, die sie nicht haben sollten („Tut uns leid, aber eigentlich auch nicht!“).
+
+## Das Aufdecken von Dr. Frank läuft komplett {#dr-frank}
+
+Das Aufdecken der Legendären Dr. Frank läuft jetzt bis zum Ende: Bisher wurde sein „großer Moment“ abgeschnitten, und laut Koin war er darüber alles andere als begeistert. Dr. Frank kam am 4. November mit dem Boss Cyber Queen ins Spiel: Sein Deck und seine Karten stehen in [unserem Artikel](/de/news/dr-frank-boss-new-cards).
+
+## Keine Kartenänderungen {#karten}
+
+Die Patchnotes von 0.8.2 nennen keine Balance-Änderungen, keine neuen Karten und keine neuen Kartentexte: Wie Koin im AMA gesagt hat, war für Balance in diesem Update kein Platz. Die Kartenwerte auf OriginsMeta bleiben die des [Patches vom 4. November](/de/news/balance-patch-1104-cyber-queen), also sind die [Kartendatenbank](/de/cards), der [Deckbuilder](/de/deck-builder) und die [Tier-List](/de/tier-list) aktuell. Der nächste Balance-Patch wird für Dienstag, 17. November, erwartet.
+
+## Was wir noch nicht wissen {#offen}
+
+- Welche Exploits genutzt wurden und was mit dem erwischten Spieler passiert ist.
+- Wie sich das Matchmaking der ersten PvP-Partien geändert hat.
+- Wann man nach einem Neustart des Spiels in eine Partie zurückkehren kann.
+
+Quellen: die „0.8.2 patch notes“ im offiziellen Discord von Origins TCG und der Post „0.8.2 Hotfix“ auf Steam, mit seiner Grafik (10. November 2026, 18:29 UTC). Die Zitate haben wir übersetzt.`,
+    faq: [
+      {
+        q: "Was ändert Patch 0.8.2 von Origins TCG?",
+        a: "Es ist ein Korrektur-Update vom 10. November 2026: Es schließt Exploits im Ranglisten-Modus, verbessert die Stabilität der Server, lässt dich nach einem Verbindungsabbruch in die Partie zurückkehren, passt das Matchmaking für PvP-Neulinge an und behebt mehrere Fehler. Karten ändert es keine.",
+      },
+      {
+        q: "Hat Patch 0.8.2 Karten verändert?",
+        a: "Nein. Die Patchnotes nennen keine Balance-Änderungen, keine neuen Karten und keine neuen Texte; der nächste Balance-Patch wird für den 17. November 2026 erwartet.",
+      },
+      {
+        q: "Kann ich in Origins TCG nach einem Verbindungsabbruch in die Partie zurück?",
+        a: "Ja, seit Patch 0.8.2, solange das Spiel geöffnet bleibt: Die Partie geht dort weiter, wo sie stand. Die Rückkehr nach einem Neustart des Spiels kommt später.",
+      },
+      {
+        q: "Wo steht das Kickstarter-Passwort für die Bonus-Packs?",
+        a: "Im Project Update #4 der Kickstarter-Kampagne, das nur Unterstützer sehen, nicht in einer E-Mail. Koin prüft die Unterstützer am Ende der Kampagne, und wer das Spiel nicht mehr unterstützt, verliert alle Belohnungen.",
+      },
+    ],
+  },
   "origins-tcg-tier-list-legendaries-november-2026": {
     title: "Die erste Tier-List von Origins TCG bei OriginsMeta: die Legendären, November 2026",
     metaTitle: "Tier-List von Origins TCG: die Legendären, November 2026",
