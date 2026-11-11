@@ -10,11 +10,21 @@ import type { DoubleElimLabels } from "@/lib/tournament/doubleElimLabels";
  * Comando dello staff per la qualificazione a doppia eliminazione (10/11/2026): "Chiudi la qualificazione e avvia la
  * Top N" (start_final_stage, che rifà tutti i controlli). Il tasto si spegne finché ci sono partite aperte.
  */
-export function DoubleElimControls({ id, slug, done, total, open, cut, finalStarted, labels, errors, warnOpen }: { id: string; slug: string; done: number; total: number; open: number; cut: number; finalStarted: boolean; labels: DoubleElimLabels; errors: Record<string, string>; warnOpen: string }) {
+export function DoubleElimControls({ id, slug, done, total, open, cut, finalStarted, labels, errors, warnOpen, qualifier = false }: { id: string; slug: string; done: number; total: number; open: number; cut: number; finalStarted: boolean; labels: DoubleElimLabels; errors: Record<string, string>; warnOpen: string; qualifier?: boolean }) {
   const l = labels;
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  // qualificazione senza fase finale (11/11/2026): niente Top da avviare, il torneo si chiude in fondo alla pagina
+  if (qualifier)
+    return (
+      <section className="card-night border-mint p-5">
+        <h2 className="t-section">{l.controls}</h2>
+        <p className="mt-1 font-mono text-sm text-pale">{fill(l.status, { done, total })}</p>
+        {open > 0 ? <p className="mt-2 text-sm text-gold">{warnOpen}</p> : null}
+        <p className="mt-2 max-w-3xl text-sm text-pale-muted">{fill(l.controlsQualifier, { cut })}</p>
+      </section>
+    );
   return (
     <section className="card-night border-mint p-5">
       <h2 className="t-section">{l.controls}</h2>

@@ -19,8 +19,9 @@ import { stageMatchName } from "@/lib/tournament/stageNames";
 import { MatchReadyWatcher, type WatchedMatch } from "@/components/MatchReadyWatcher";
 import { Bracket } from "@/components/Bracket";
 import { StagedBracket } from "@/components/StagedBracket";
-import { DoubleElimBracket, dePanelOf } from "@/components/DoubleElimBracket";
+import { DeQualified, DoubleElimBracket, dePanelOf } from "@/components/DoubleElimBracket";
 import { doubleElimLabels } from "@/lib/tournament/doubleElimLabels";
+import { deQualifiers } from "@/lib/tournament/doubleElim";
 import { authorHandle, authorName } from "@/lib/community/util";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { shownBadge } from "@/lib/community/badges";
@@ -262,9 +263,15 @@ export default async function TournamentPage({ params, searchParams }: { params:
                 <p className="mb-3 text-sm text-pale-muted">{fill(fl.topSoon, { n: fv.cut })}</p>
               ) : t.format === "groups" ? (
                 <p className="mb-3 text-sm text-pale-muted">{fl.finalSoon}</p>
+              ) : t.format === "double_elim" && fv.qualifier ? (
+                /* qualificazione senza fase finale (11/11/2026): a torneo finito il risultato sono i qualificati */
+                t.status === "finished" && fv.de ? (
+                  <p className="mb-3 rounded-lg border-2 border-gold bg-gold/10 p-3 font-semibold text-gold">★ {fill(dl.finished, { done: deQualifiers(fv.de, matches).length })}</p>
+                ) : null
               ) : t.format === "double_elim" ? (
                 <p className="mb-3 text-sm text-pale-muted">{fill(dl.finalSoon, { n: fv.cut ?? 0 })}</p>
               ) : null}
+              {t.format === "double_elim" && fv.qualifier && fv.de ? <DeQualified matches={matches} plan={fv.de} names={nameOf} labels={dl} viewer={viewer} /> : null}
               {/* 10/11/2026: la qualificazione a doppia eliminazione, una scheda alla volta (?b=A-w) */}
               {t.format === "double_elim" && fv.de ? (
                 <DoubleElimBracket
@@ -397,8 +404,9 @@ export default async function TournamentPage({ params, searchParams }: { params:
             {t.format === "groups" && fo?.group_size ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(fl.groupsPill, { n: fo.group_size, k: fo.group_advance ?? 1 })}</span> : null}
             {t.format === "swiss" && stages.top_cut_hold && stages.top_cut ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: stages.top_cut })}</span> : null}
             {t.format === "groups" && stages.top_cut_hold ? <span className="stat-pill bg-night-3 text-pale">{sl.formHold}</span> : null}
-            {t.format === "double_elim" && fo?.de_pools && fo.de_qualify ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fill(dl.pill, { pools: fo.de_pools, n: fo.de_qualify })}</span> : null}
-            {t.format === "double_elim" && stages.top_cut_hold && fo?.de_pools && fo.de_qualify ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: fo.de_pools * fo.de_qualify * 2 })}</span> : null}
+            {t.format === "double_elim" && fo?.de_pools && fo.de_qualify ? <span className="stat-pill border-2 border-mint font-semibold text-pale">{fo.de_pools === 1 ? fill(dl.pillOne, { n: fo.de_qualify }) : fill(dl.pill, { pools: fo.de_pools, n: fo.de_qualify })}</span> : null}
+            {t.format === "double_elim" && fo?.de_qualifier && fo.de_pools && fo.de_qualify ? <span className="stat-pill border-2 border-gold font-semibold text-pale">{fill(dl.qualifierPill, { cut: fo.de_pools * fo.de_qualify * 2 })}</span> : null}
+            {t.format === "double_elim" && !fo?.de_qualifier && stages.top_cut_hold && fo?.de_pools && fo.de_qualify ? <span className="stat-pill bg-night-3 text-pale">{fill(sl.holdPill, { n: fo.de_pools * fo.de_qualify * 2 })}</span> : null}
             {fo?.sideboard ? <span className="stat-pill bg-night-3 text-pale">{fill(fl.sideboardPill, { n: fo.sideboard })}</span> : null}
             {stages.deck_ban ? <span className="stat-pill bg-night-3 text-pale">{sl.banPill}</span> : null}
             {t.checkin ? <span className="stat-pill bg-night-3 text-pale">{x.checkin.pillRequired}</span> : null}
@@ -416,8 +424,14 @@ export default async function TournamentPage({ params, searchParams }: { params:
           {t.format === "swiss" ? <p className="mt-1 text-sm text-pale-muted">{stages.top_cut ? fill(fl.swissTopRule, { n: stages.top_cut }) : fl.swissNoTopRule}</p> : null}
           {t.format === "groups" && fo?.group_size ? <p className="mt-2 text-sm text-pale">{fill(fl.groupsRule, { n: fo.group_size, k: fo.group_advance ?? 1 })}</p> : null}
           {t.format === "swiss" && stages.top_cut_hold && stages.top_cut ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: stages.top_cut })}</p> : null}
-          {t.format === "double_elim" && fo?.de_pools && fo.de_qualify ? <p className="mt-2 text-sm text-pale">{fill(dl.rule, { pools: fo.de_pools, n: fo.de_qualify, cut: fo.de_pools * fo.de_qualify * 2 })}</p> : null}
-          {t.format === "double_elim" && stages.top_cut_hold && fo?.de_pools && fo.de_qualify ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: fo.de_pools * fo.de_qualify * 2 })}</p> : null}
+          {/* 11/11/2026: con un solo tabellone niente "da ogni tabellone"; una qualificazione senza fase finale dice che finisce con i qualificati */}
+          {t.format === "double_elim" && fo?.de_pools && fo.de_qualify ? (
+            <p className="mt-2 text-sm text-pale">
+              {fill(fo.de_qualifier ? (fo.de_pools === 1 ? dl.qualifierRuleOne : dl.qualifierRule) : fo.de_pools === 1 ? dl.ruleOne : dl.rule, { pools: fo.de_pools, n: fo.de_qualify, cut: fo.de_pools * fo.de_qualify * 2 })}
+            </p>
+          ) : null}
+          {t.format === "double_elim" && fo?.de_qualifier && fo.de_pools && fo.de_qualify ? <p className="mt-1 text-sm text-pale-muted">{fill(dl.qualifierNote, { cut: fo.de_pools * fo.de_qualify * 2 })}</p> : null}
+          {t.format === "double_elim" && !fo?.de_qualifier && stages.top_cut_hold && fo?.de_pools && fo.de_qualify ? <p className="mt-1 text-sm text-pale-muted">{fill(sl.holdRule, { n: fo.de_pools * fo.de_qualify * 2 })}</p> : null}
           {fo?.sideboard ? <p className="mt-1 text-sm text-pale-muted">{fill(fl.sideboardRule, { n: fo.sideboard })}</p> : null}
           {stages.deck_ban ? <p className="mt-1 text-sm text-pale-muted">{sl.banRule}</p> : null}
           {t.checkin ? <p className="mt-1 text-sm text-pale-muted">{x.checkin.rule}</p> : null}

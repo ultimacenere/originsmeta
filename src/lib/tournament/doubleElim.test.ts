@@ -198,3 +198,94 @@ describe("testi", () => {
     }
   });
 });
+
+/* ---------- 11/11/2026: un solo tabellone e qualificazione senza fase finale ---------- */
+describe("qualificazione senza fase finale", () => {
+  const sql = readFileSync(new URL("../../../supabase/schema.sql", import.meta.url), "utf8").replace(/\r/g, "");
+  const MARK = "===== 11/11/2026: QUALIFICAZIONE SENZA FASE FINALE =====";
+  const block = sql.slice(sql.indexOf(MARK));
+  const before = sql.slice(sql.indexOf("===== 10/11/2026: DOPPIA ELIMINAZIONE ====="), sql.indexOf(MARK));
+  /** Il corpo di una funzione dentro un pezzo di schema.sql, fino alla sua "end $$;". */
+  const fnIn = (text: string, name: string) => {
+    const from = text.indexOf(`create or replace function public.${name}(`);
+    assert.ok(from >= 0, name);
+    return text.slice(from, text.indexOf("\nend $$;", from));
+  };
+
+  test("512 in un tabellone con 32 + 32: 4 turni dei vincenti, 6 dei perdenti, 928 partite, 64 qualificati", () => {
+    const plan = dePlan(512, 1, 32);
+    assert.notEqual(plan, "too_few_players");
+    if (plan === "too_few_players") return;
+    assert.deepEqual([plan.poolSize, plan.upperRounds, plan.lowerRounds], [512, 4, 6]);
+    assert.equal(deMatchCount(plan), 928);
+    assert.equal(deSlots(plan), 7);
+    const players = Array.from({ length: 512 }, (_, i) => `u${i}`);
+    const { matches } = deCreate(players, 1, 32);
+    assert.equal(matches.length, 928);
+    assert.equal(matches.filter((m) => m.status === "bye").length, 0);
+    let waves = 0;
+    for (; waves < 20; waves++) {
+      const ready = deReady(matches);
+      if (!ready.length) break;
+      for (const m of ready) deReport(plan, matches, m, true);
+    }
+    assert.equal(waves, 7);
+    const q = deQualifiers(plan, matches);
+    assert.equal(q.length, 64);
+    assert.equal(q.filter((x) => x.from === "upper").length, 32);
+    assert.equal(new Set(q.map((x) => x.uid)).size, 64);
+    assert.ok(q.every((x) => x.pool === 0));
+  });
+
+  test("il blocco SQL c'è: colonna, vincolo e blocco a torneo avviato", () => {
+    assert.ok(block.length > 1000);
+    assert.ok(block.includes("add column if not exists de_qualifier boolean not null default false"));
+    assert.ok(block.includes("check (not de_qualifier or (format = 'double_elim' and not top_cut_hold))"));
+    assert.ok(fnIn(block, "guard_tournament_format").includes("new.de_qualifier is distinct from old.de_qualifier"));
+  });
+
+  test("una qualificazione non ha una fase finale da avviare e si chiude a partite tutte chiuse", () => {
+    assert.ok(fnIn(block, "start_final_stage").includes("if t.format = 'double_elim' and t.de_qualifier then raise exception 'no_final_stage'; end if;"));
+    const finish = fnIn(block, "finish_tournament");
+    const at = finish.indexOf("if t.format = 'double_elim' and t.de_qualifier then");
+    assert.ok(at > 0);
+    // il ramo della qualificazione viene prima di quello che pretende la finale, e controlla le partite aperte
+    const branch = finish.slice(at, finish.indexOf("elsif", at));
+    assert.ok(branch.includes("m.status in ('pending', 'reported', 'disputed')) then raise exception 'round_open'"));
+    assert.ok(!finish.slice(0, at).includes("final_not_played"));
+    assert.ok(finish.includes("update public.tournaments set status = 'finished'"));
+  });
+
+  test("le funzioni ridefinite sono quelle del blocco DOPPIA ELIMINAZIONE con le sole righe della qualificazione in più", () => {
+    const strip = (text: string) =>
+      text
+        .split("\n")
+        .filter((line) => !line.includes("de_qualifier"))
+        .join("\n");
+    assert.equal(strip(fnIn(block, "start_final_stage")), fnIn(before, "start_final_stage"));
+    assert.equal(strip(fnIn(block, "guard_tournament_format")), fnIn(before, "guard_tournament_format"));
+    // finish_tournament: il ramo nuovo in testa, il resto com'era (a parte "if" che diventa "elsif" e la variabile u)
+    const oldFinish = fnIn(before, "finish_tournament");
+    const newFinish = fnIn(block, "finish_tournament");
+    const tail = "t.format in ('swiss', 'groups', 'double_elim') and not exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.stage is null) then";
+    assert.equal(newFinish.slice(newFinish.indexOf(`elsif ${tail}`) + 3), oldFinish.slice(oldFinish.indexOf(`if ${tail}`)));
+  });
+
+  test("i testi del tabellone unico non hanno lettera né numero di tabelloni, quelli della qualificazione non parlano di Top", async () => {
+    // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+    const { doubleElimLabels } = await import("./doubleElimLabels.ts");
+    for (const [loc, l] of Object.entries(doubleElimLabels) as unknown as [string, Record<string, string>][]) {
+      for (const k of ["pillOne", "ruleOne", "matchNameOne", "startNoteOne", "qualifierRuleOne", "upperBracket", "lowerBracket"]) {
+        assert.ok(!l[k].includes("{letter}") && !l[k].includes("{pools}"), `${loc}.${k}`);
+      }
+      assert.ok(l.qualifierRule.includes("{pools}"), loc);
+      for (const k of ["qualifierRule", "qualifierRuleOne", "qualifierPill", "qualifierNote", "closeHint", "controlsQualifier", "finished"]) {
+        assert.ok(!/Top|Топ|强/.test(l[k]), `${loc}.${k}`);
+      }
+    }
+    // tipografia francese (docs/francese.md): spazio insecabile prima di : ; ? !
+    for (const [k, v] of Object.entries(doubleElimLabels.fr as Record<string, unknown>)) {
+      if (typeof v === "string") assert.ok(!/ [:;?!]/.test(v), `fr.${k}`);
+    }
+  });
+});

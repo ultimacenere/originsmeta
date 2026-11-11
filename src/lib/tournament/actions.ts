@@ -8,7 +8,7 @@ import { revalidateSitemaps } from "@/lib/sitemapData";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { checkDeck } from "@/lib/community/util";
 import { validateConquest, type DeckState } from "@/lib/deckrules";
-import { isMissingColumn, newSlug, parseTournamentForm, splitCodes, usesStageOptions, withoutStageOptions } from "./util";
+import { isMissingColumn, newSlug, parseTournamentForm, splitCodes, usesStageOptions, withoutQualifierOff, withoutStageOptions } from "./util";
 import { decksRequired } from "./types";
 import { notifyIfStarted, notifyMatchResult, notifyTournamentCreated, notifyTournamentFinished } from "./notify";
 import { STAGE_RPC_ERRORS } from "./stageLabels";
@@ -121,6 +121,9 @@ export async function createTournament(_prev: TournamentActionState, formData: F
     // rifiutato ("new row violates row-level security policy", provato su PGlite). Si inserisce e poi si rilegge.
     const row = { ...parsed.row, slug, organizer: ctx.user.id };
     let { error } = await ctx.supabase.from("tournaments").insert(row);
+    // database senza il blocco QUALIFICAZIONE SENZA FASE FINALE (11/11/2026): una doppia eliminazione con la fase finale si crea lo stesso
+    const plain = error && isMissingColumn(error) ? withoutQualifierOff(row) : null;
+    if (plain) ({ error } = await ctx.supabase.from("tournaments").insert(plain));
     // database non ancora migrato (blocco BRACKET E TOP CUT, 08/11/2026): un torneo che non usa le opzioni nuove si crea lo stesso
     if (error && isMissingColumn(error) && !usesStageOptions(row)) ({ error } = await ctx.supabase.from("tournaments").insert(withoutStageOptions(row)));
     const { data } = error ? { data: null } : await ctx.supabase.from("tournaments").select("id, slug").eq("slug", slug).maybeSingle();
@@ -458,6 +461,9 @@ export async function updateTournament(_prev: TournamentActionState, formData: F
       : { name, cover_url, description, rules, discord_url, listed, lang, visibility };
   if (!patch) return { error: "sizeTooSmall" };
   let { data, error } = await ctx.supabase.from("tournaments").update(patch).eq("id", id).select("slug").maybeSingle();
+  // database senza il blocco QUALIFICAZIONE SENZA FASE FINALE (11/11/2026): la modifica passa senza la colonna spenta
+  const plain = error && isMissingColumn(error) ? withoutQualifierOff(patch) : null;
+  if (plain) ({ data, error } = await ctx.supabase.from("tournaments").update(plain).eq("id", id).select("slug").maybeSingle());
   // database non ancora migrato (08/11/2026): senza le opzioni nuove la modifica passa lo stesso
   if (error && isMissingColumn(error) && !usesStageOptions(patch)) ({ data, error } = await ctx.supabase.from("tournaments").update(withoutStageOptions(patch)).eq("id", id).select("slug").maybeSingle());
   if (error) return { error: error.message.includes("listing_not_allowed") ? "listing" : error.message.includes("private_not_listed") ? "private_not_listed" : "db" };

@@ -136,6 +136,8 @@ export function parseTournamentForm(
     (dePools === null || deQualify === null || !Number.isInteger(dePools) || dePools < DE_POOLS_RANGE.min || dePools > DE_POOLS_RANGE.max || !(DE_QUALIFY_OPTIONS as readonly number[]).includes(deQualify) || size < deMinPlayers(dePools, deQualify))
   )
     return { ok: false, error: "doubleElim" };
+  // 11/11/2026 (blocco QUALIFICAZIONE SENZA FASE FINALE): la doppia eliminazione che finisce con i suoi qualificati
+  const deQualifier = format === "double_elim" && on("de_qualifier");
   const sideboard = int("sideboard");
   if (sideboard !== null && (!Number.isInteger(sideboard) || sideboard < SIDEBOARD_RANGE.min || sideboard > SIDEBOARD_RANGE.max)) return { ok: false, error: "sideboard" };
 
@@ -183,8 +185,9 @@ export function parseTournamentForm(
       hidden_decklists: on("hidden_decklists"),
       no_show_minutes: noShow,
       top_cut: topCut,
-      // nei gironi e nella doppia eliminazione la pausa vale per la fase finale, che c'è sempre
-      top_cut_hold: (topCut !== null || format === "groups" || format === "double_elim") && on("top_cut_hold"),
+      // nei gironi e nella doppia eliminazione la pausa vale per la fase finale, che c'è sempre, tranne in una
+      // qualificazione senza fase finale (11/11/2026)
+      top_cut_hold: (topCut !== null || format === "groups" || format === "double_elim") && !deQualifier && on("top_cut_hold"),
       deck_ban: deckBan,
       format,
       swiss_rounds: swissRounds,
@@ -193,6 +196,8 @@ export function parseTournamentForm(
       group_seeding: format === "groups" ? (seedingRaw as GroupSeeding) : null,
       de_pools: dePools,
       de_qualify: deQualify,
+      // solo per la doppia eliminazione: gli altri formati non scrivono la colonna (vale il default del database)
+      ...(format === "double_elim" ? { de_qualifier: deQualifier } : {}),
       sideboard,
       discord_url: discord.value,
       listed,
@@ -205,7 +210,7 @@ export function parseTournamentForm(
  * Campi dei blocchi BRACKET E TOP CUT (08/11/2026) e SVIZZERA, GIRONI E SIDEBOARD (09/11/2026) nella riga del torneo.
  * `format` c'è da sempre, ma 'swiss' e 'groups' li accetta solo il database migrato: si toglie solo se è 'single_elim'.
  */
-const STAGE_KEYS = ["top_cut", "top_cut_hold", "deck_ban", "swiss_rounds", "group_size", "group_advance", "group_seeding", "sideboard", "de_pools", "de_qualify"] as const;
+const STAGE_KEYS = ["top_cut", "top_cut_hold", "deck_ban", "swiss_rounds", "group_size", "group_advance", "group_seeding", "sideboard", "de_pools", "de_qualify", "de_qualifier"] as const;
 
 /** La riga usa almeno una delle opzioni dei blocchi BRACKET E TOP CUT o SVIZZERA, GIRONI E SIDEBOARD. */
 export function usesStageOptions(row: object): boolean {
@@ -217,6 +222,18 @@ export function usesStageOptions(row: object): boolean {
 export function withoutStageOptions<T extends Record<string, unknown>>(row: T): T {
   const out: Record<string, unknown> = { ...row };
   for (const k of STAGE_KEYS) delete out[k];
+  return out as T;
+}
+
+/**
+ * La riga senza `de_qualifier` quando è spenta (11/11/2026): un database senza il blocco QUALIFICAZIONE SENZA FASE
+ * FINALE accetta lo stesso una doppia eliminazione con la fase finale. Con l'opzione accesa restituisce null: senza la
+ * colonna quel torneo non si può scrivere.
+ */
+export function withoutQualifierOff<T extends Record<string, unknown>>(row: T): T | null {
+  if (!("de_qualifier" in row) || row.de_qualifier) return null;
+  const out: Record<string, unknown> = { ...row };
+  delete out.de_qualifier;
   return out as T;
 }
 
