@@ -174,8 +174,9 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     // 20/10/2026: 81413658e8b359c6cf2e0dc8acf976c44e5aa2cb56e0d41240a21944e8c962ac (russo con il glossario provvisorio)
     // 20/10/2026 notte: d3e8f57851818084af9bff60c87d2e691943f45859ced93f28b5dd1bf7c490f0 (russo con il glossario del gioco)
     // 22/10/2026: fb0f7396336cd418f14428fa82cdd3449c22bcdf6cf899f4be264d2180937786 (regola 6, i testi degli utenti hanno grassetto, corsivo, elenchi… e i segni restano attorno alle parole tradotte)
-    // 04/11/2026: cinese semplificato con il glossario provvisorio (docs/cinese.md)
-    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "00f7939c826cf1811e907bfd51944a03765e77de3bba2417442a876eeef0266b");
+    // 04/11/2026: 00f7939c826cf1811e907bfd51944a03765e77de3bba2417442a876eeef0266b (cinese semplificato con il glossario provvisorio)
+    // 11/11/2026: cinese semplificato con il glossario del gioco (展示时, 守护者, 双重攻击, 传奇卡牌, 格子, 力量/生命)
+    assert.equal(createHash("sha256").update(TRANSLATION_SYSTEM).digest("hex"), "05ef2372ed4cf6cb8a56d7d0085f5ab5d4943f737bed1e4abad9e9c273a169f7");
     assert.ok(TRANSLATION_SYSTEM.endsWith(TRANSLATION_RULES));
   });
 
@@ -184,7 +185,7 @@ describe("parti generali (pacchetto GUIDE, 27/09/2026): i mazzi non cambiano", (
     assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /heading_N/);
     assert.match(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /"title" is the title of the guide/);
     assert.doesNotMatch(STRATEGY_GUIDE_TRANSLATION_SYSTEM, /never translated/);
-    assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar = À la révélation = Ao revelar = Beim Aufdecken = При раскрытии = 揭示时/);
+    assert.match(TRANSLATION_RULES, /On Reveal = Alla rivelazione = Al revelar = À la révélation = Ao revelar = Beim Aufdecken = При раскрытии = 展示时/);
     assert.match(TRANSLATION_RULES, /Snipe = Tiro di precisione = Disparo certero = Tir de précision = Tiro certeiro = Präzisionsschuss = Меткий выстрел = 狙击/);
     assert.match(TRANSLATION_RULES, /GLOSSARY \(English = Italian = Spanish = French = Portuguese = German = Russian = Simplified Chinese\)/);
   });

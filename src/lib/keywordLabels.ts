@@ -21,26 +21,26 @@ import type { Locale } from "./i18n";
  *   Пробивной удар, Перемещение, Оглушение, Меткий выстрел…); le categorie hanno il verbo dei testi delle carte in terza
  *   persona, come il gioco (Наносит урон, Призывает, Уничтожает), e l'imperativo col «вы» dove lo usa il gioco
  *   (Возьмите карту, Сбросьте, Выберите).
- * - Il cinese semplificato (04/11/2026, `"zh-cn"`) usa il glossario PROVVISORIO di docs/cinese.md (揭示时, 践踏, 移动,
- *   眩晕, 狙击…), da allineare a quello del gioco quando lo leggeremo (il gioco ha il cinese dalla patch 0.7); le
- *   categorie sono nomi brevi d'azione (召唤, 抽牌, 弃牌, 消灭), "Vanilla" è 白板 come nel gergo dei giocatori, e
- *   "Ongoing" ha il nome del glossario, 持续.
+ * - Il cinese semplificato (04/11/2026, `"zh-cn"`) usa dall'11/11/2026 i nomi del gioco, letti nelle sue tabelle delle
+ *   traduzioni (展示时, 守护者, 双重攻击, 践踏, 移动, 眩晕, 狙击…; prima il glossario provvisorio aveva 揭示时, 守卫, 连击); le
+ *   categorie sono nomi brevi d'azione (召唤, 抽牌, 弃牌, 摧毁 come il verbo delle carte), "Vanilla" è 白板 come nel gergo
+ *   dei giocatori, e "Ongoing" è 持续, come nel gioco.
  * Un tag nuovo portato da `npm run import:woo` senza etichetta qui si mostra in inglese e fa fallire il test.
  */
 type Label = { it: string; es: string; fr: string; pt: string; de: string; ru: string; "zh-cn": string; game?: true };
 
 export const keywordLabels: Record<string, Label> = {
   // parole chiave del gioco: nomi ufficiali
-  "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", pt: "Ao revelar", de: "Beim Aufdecken", ru: "При раскрытии", "zh-cn": "揭示时", game: true },
+  "On Reveal": { it: "Alla rivelazione", es: "Al revelar", fr: "À la révélation", pt: "Ao revelar", de: "Beim Aufdecken", ru: "При раскрытии", "zh-cn": "展示时", game: true },
   "On Death": { it: "Alla morte", es: "Al morir", fr: "À la mort", pt: "Ao morrer", de: "Bei Tod", ru: "При смерти", "zh-cn": "死亡时", game: true },
   "On Kill": { it: "All'uccisione", es: "Al matar", fr: "À l'élimination", pt: "Ao matar", de: "Bei Vernichtung", ru: "При убийстве", "zh-cn": "击杀时", game: true },
   Shield: { it: "Scudo", es: "Escudo", fr: "Bouclier", pt: "Escudo", de: "Schild", ru: "Щит", "zh-cn": "护盾", game: true },
   Trample: { it: "Travolgere", es: "Arrollar", fr: "Piétinement", pt: "Atropelar", de: "Überrennen", ru: "Пробивной удар", "zh-cn": "践踏", game: true },
   Deathtouch: { it: "Tocco letale", es: "Toque mortal", fr: "Contact mortel", pt: "Toque mortífero", de: "Todesberührung", ru: "Смертельное касание", "zh-cn": "死触", game: true },
-  Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", pt: "Defensor", de: "Verteidiger", ru: "Защитник", "zh-cn": "守卫", game: true },
+  Defender: { it: "Difensore", es: "Defensor", fr: "Défenseur", pt: "Defensor", de: "Verteidiger", ru: "Защитник", "zh-cn": "守护者", game: true },
   Rebirth: { it: "Rinascita", es: "Renacer", fr: "Renaissance", pt: "Renascimento", de: "Wiedergeburt", ru: "Возрождение", "zh-cn": "重生", game: true },
   "First Strike": { it: "Primo colpo", es: "Primer golpe", fr: "Première frappe", pt: "Primeiro golpe", de: "Erstschlag", ru: "Первый удар", "zh-cn": "先攻", game: true },
-  "Double Attack": { it: "Doppio attacco", es: "Ataque doble", fr: "Double attaque", pt: "Ataque duplo", de: "Doppelangriff", ru: "Двойная атака", "zh-cn": "连击", game: true },
+  "Double Attack": { it: "Doppio attacco", es: "Ataque doble", fr: "Double attaque", pt: "Ataque duplo", de: "Doppelangriff", ru: "Двойная атака", "zh-cn": "双重攻击", game: true },
   Snipe: { it: "Tiro di precisione", es: "Disparo certero", fr: "Tir de précision", pt: "Tiro certeiro", de: "Präzisionsschuss", ru: "Меткий выстрел", "zh-cn": "狙击", game: true },
   Move: { it: "Muovere", es: "Mover", fr: "Déplacer", pt: "Mover", de: "Bewegen", ru: "Перемещение", "zh-cn": "移动", game: true },
   Stun: { it: "Stordisci", es: "Aturde", fr: "Étourdir", pt: "Atordoa", de: "Betäube", ru: "Оглушение", "zh-cn": "眩晕", game: true },
@@ -51,7 +51,7 @@ export const keywordLabels: Record<string, Label> = {
   Discard: { it: "Scarta", es: "Descarta", fr: "Défaussez", pt: "Descarta", de: "Wirf ab", ru: "Сбросьте", "zh-cn": "弃牌" },
   Draw: { it: "Pesca", es: "Roba", fr: "Piochez", pt: "Compra", de: "Ziehe", ru: "Возьмите карту", "zh-cn": "抽牌" },
   Add: { it: "Aggiungi", es: "Añade", fr: "Ajoutez", pt: "Adiciona", de: "Füge hinzu", ru: "Добавляет", "zh-cn": "加入手牌" },
-  Destroy: { it: "Distruggi", es: "Destruye", fr: "Détruisez", pt: "Destrói", de: "Zerstöre", ru: "Уничтожает", "zh-cn": "消灭" },
+  Destroy: { it: "Distruggi", es: "Destruye", fr: "Détruisez", pt: "Destrói", de: "Zerstöre", ru: "Уничтожает", "zh-cn": "摧毁" },
   Return: { it: "Riporta", es: "Devuelve", fr: "Renvoyez", pt: "Devolve", de: "Bringe zurück", ru: "Возвращает", "zh-cn": "移回手牌" },
   Heal: { it: "Cura", es: "Cura", fr: "Soignez", pt: "Cura", de: "Heile", ru: "Исцеляет", "zh-cn": "治疗" },
   Transform: { it: "Trasforma", es: "Transforma", fr: "Transformez", pt: "Transforma", de: "Verwandle", ru: "Превращает", "zh-cn": "变形" },

@@ -69,9 +69,9 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 **4 法力 · 3/3 · 单位 · Good** · 出处：绿野仙踪
 
-> 我每回合都可以移动。
+> 我每个回合都可以移动。
 >
-> 本局对局中友方每移动一次，我获得 +1⚔️/+1❤️。
+> 本局中友方角色每移动一次，我就获得 +1⚔️/+1❤️。
 
 - **传说。** L. Frank Baum 1900 年的小说中，被龙卷风带到奥兹国的堪萨斯女孩。
 - **补丁。** 2026年9月21日的试玩版补丁：法力 5 → 4（[补丁说明](/zh-cn/news/demo-patch-notes-0921)）；2026年11月4日的补丁：从 1/1 变为 3/3（[补丁说明](/zh-cn/news/balance-patch-1104-cyber-queen)）。
@@ -83,9 +83,9 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 **4 法力 · 3/2 · 单位 · Evil** · 出处：哥特恐怖
 
-> 当你弃牌时，将我从你的墓地移回手牌。
+> 当你弃牌时，将我从你的墓地返回手牌。
 >
-> 揭示时：召唤 Brides of Dracula [2⚔️/2❤️] 到此处的一个随机格位。
+> 展示时：在此处一个随机格子上召唤 Brides of Dracula [2⚔️/2❤️]。
 
 - **传说。** Bram Stoker 1897 年小说中的特兰西瓦尼亚伯爵。
 - **生成的卡牌。** [Brides of Dracula](/zh-cn/cards/brides-of-dracula)，一个 2/2，根据其文本，它会对所在地点的对手屏障造成 1 点伤害，并在你每次弃一张牌时获得 +1❤️（生成的卡牌：其文本未在游戏中核实）。
@@ -98,9 +98,9 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 **4 法力 · 2/4 · 单位 · Good** · 出处：木兰辞
 
-> 连击
+> 双重攻击
 >
-> 当友方的揭示时能力触发时，重复一次。
+> 当友方角色的展示时能力触发时，重复它。
 
 - **传说。** 出自中国南北朝民歌《木兰辞》，代父从军的女战士。
 - **补丁。** 0.6.2 补丁：数据不变，在重复友方揭示时（On Reveal）能力之外，她还获得了连击（Double Attack）（[补丁说明](/zh-cn/news/patch-0-6-2)）。
@@ -114,7 +114,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 > 先攻
 >
-> 当友方的死亡时能力触发时，重复一次。
+> 当友方角色的死亡时能力触发时，重复它。
 
 - **传说。** 仙境中暴躁的女王，对一切的回答都是“砍掉他们的头！”。
 - **补丁。** 0.6.2 补丁：从 5 法力 3/5 改为 4 法力 3/3，在重复友方死亡时（On Death）能力之外，她还获得了先攻（First Strike）（[补丁说明](/zh-cn/news/patch-0-6-2)）。
@@ -126,7 +126,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 **4 法力 · 3/4 · 单位 · Good** · 出处：哥特恐怖
 
-> 战斗前，如果 Van Helsing's Tools 不在你的手牌中，将其加入你的手牌。
+> 战斗前，如果 Van Helsing's Tools 不在你的手牌中，将它加入你的手牌。
 
 - **传说。** Abraham Van Helsing，带领众人追捕 Dracula 的荷兰教授。
 - **生成的卡牌。** [Van Helsing's Tools](/zh-cn/cards/van-helsings-tools)，让你从四张生成的卡牌中选择一张打出：[Holy Water](/zh-cn/cards/holy-water)、[Silver Bullet](/zh-cn/cards/silver-bullet)、[Garlic](/zh-cn/cards/garlic) 或 [Wooden Stake](/zh-cn/cards/wooden-stake)（生成的卡牌：其文本未在游戏中核实，Silver Bullet 的页面仍显示 0.6.2 补丁之前的文本；改动记录在它的平衡历史中）。
@@ -141,7 +141,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 > 死触
 >
-> 揭示时：给予你的邪恶角色死触。
+> 展示时：使你的邪恶角色获得死触。
 
 - **传说。** 童话中的恶毒继母，从 Cinderella 的家到白雪公主的宫廷都有她的身影。
 - **补丁。** 2026年9月21日的试玩版补丁：力量 3 → 4（[补丁说明](/zh-cn/news/demo-patch-notes-0921)）。
@@ -165,7 +165,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 **6 法力 · 2/2 · 单位 · Evil** · 出处：哥特恐怖
 
-> 战斗前，从你的墓地召唤一个随机角色到一个随机格位。
+> 战斗前，从你的墓地召唤一个随机角色到一个随机格子上。
 
 - **最新的传说卡。** 他随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏，是第 11 位首领 Cyber Queen 所用 Relentless 卡组中的传说卡，同时到来的还有另外七张卡（[Dr. Frank 的八张新卡](/zh-cn/news/dr-frank-boss-new-cards)）。上面的文本译自官方卡牌：我们还没有在游戏中读到它。
 - **传说。** 维克多·弗兰肯斯坦，在玛丽·雪莱 1818 年的小说中拼造出活物的学生。
@@ -181,7 +181,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 > 护盾
 >
-> 揭示时：给予你的善良角色护盾。
+> 展示时：使你的善良角色获得护盾。
 
 - **传说。** 不列颠永恒之王，他从石中拔出宝剑，召集了圆桌骑士。
 - **补丁。** 0.6.3 补丁：从 5/5 改为 7/7（[补丁说明](/zh-cn/news/patch-0-6-3)）。
@@ -193,7 +193,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 **7 法力 · 法术 · Neutral** · 出处：哥特恐怖
 
-> 用 Zombie [2⚔️/2❤️] 填满你的战场。
+> 用 Zombie [2⚔️/2❤️] 填满你的场地。
 
 - **游戏中唯一的传说法术。**
 - **传说。** 复活的亡者大军，死灵法师的最后手段。
@@ -209,7 +209,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 > 践踏
 >
-> 揭示时：召唤一只具有践踏的 Not So Little Pig [3⚔️/3❤️] 到其他每个地点的一个随机格位。
+> 展示时：在其他每个地点的一个随机格子上，召唤一个带有践踏的 Not So Little Pig [3⚔️/3❤️]。
 
 - **传说。** 用稻草、木棍和砖头盖房子的三只小猪，长大了，可没那么容易被吹倒。
 - **生成的卡牌。** [Not So Little Pig](/zh-cn/cards/not-so-little-pig)，一个具有践踏（Trample）的 3/3，另外两个地点各一只。
@@ -224,7 +224,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 > 狙击 3
 >
-> 揭示时：对所有敌方造成 2 点伤害。
+> 展示时：对所有敌方角色造成 2 点伤害。
 
 - **游戏中唯一一张 8 法力的传说卡。**
 - **传说。** 舍伍德森林的绿林弓箭手，劫富济贫，自 14 世纪起便在民谣中传唱。

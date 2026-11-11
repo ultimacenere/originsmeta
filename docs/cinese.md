@@ -9,12 +9,14 @@ Scelte di Pierluigi del 04/11/2026:
 - **Prima il nucleo, news dopo**: interfaccia, carte, luoghi, FAQ, guide e le news dal 20/10/2026 in poi. Le news più
   vecchie non sono tradotte: restano fuori da liste, feed e sitemap di /zh-cn e la loro pagina rimanda all'inglese
   (`untranslated` e `newsInLocale` in `src/lib/data/news.ts`). Una news nuova si scrive anche in cinese.
-- **Testi delle carte PROVVISORI**: Pierluigi non sapeva se il gioco avesse il cinese, ma le note della patch 0.7 del
-  29/09/2026 e la pagina Steam lo elencano fra le 13 lingue del gioco (public/llms.txt). Si parte quindi con una
-  traduzione nostra col glossario qui sotto, come il russo il pomeriggio del 20/10/2026; il passo dopo è leggere i testi
-  ufficiali delle 122 carte nella demo in «简体中文» (trascrizione in `docs/testi-ufficiali/zh-cn.tsv`,
-  `node scripts/official-texts.mjs zh-cn --apply`, `"zh-cn"` in `officialTextLocales`) e allineare il glossario a quello
-  del gioco.
+- **Testi delle carte UFFICIALI dall'11/11/2026**: dal 04/11 erano una traduzione nostra provvisoria; l'11/11/2026
+  (Accesso anticipato 0.8.2) i testi delle 130 carte della collezione e delle carte create sono quelli del gioco, letti
+  nelle sue tabelle delle traduzioni (`node scripts/game-texts.mjs`, trascrizione in `docs/testi-ufficiali/zh-cn.tsv`,
+  `node scripts/official-texts.mjs zh-cn --apply`), `"zh-cn"` è in `officialTextLocales` e il glossario qui sotto è quello
+  del gioco. Anche i poteri leggendari (`legendaryPowers`), le etichette delle parole chiave (`keywordLabels.ts`) e il
+  glossario del traduttore (`GAME_KEYWORDS`) usano i nomi del gioco. **Da allineare**: guide, news, luoghi, storico dei
+  bilanciamenti ed etichette scritti col glossario provvisorio (揭示时 → 展示时, 守卫 → 守护者, 连击 → 双重攻击, 格位 → 格子,
+  传说卡 → 传奇卡牌, 消灭 → 摧毁, 生命值 → 生命), e i testi delle carte rimosse, che restano nostri.
 
 ## Varietà e tono
 
@@ -33,24 +35,24 @@ Scelte di Pierluigi del 04/11/2026:
   decimali col punto «3.5»; percentuali «98%».
 - La dicitura di non affiliazione: «非官方粉丝网站，与 Koin Games 无关联»: non si toglie mai.
 
-## Glossario di gioco (nostro, finché il gioco non ha il cinese)
+## Glossario del gioco (letto l'11/11/2026)
 
 Le carte parlano in terza persona («造成 3 点伤害», «给予……», «召唤……»), i personaggi in prima persona
 («我获得……», «我移动到……»); l'imperativo solo per pescare, scartare e scegliere («抽一张牌», «弃一张牌», «选择……»).
 
 | Inglese | Cinese |
 | --- | --- |
-| On Reveal | 揭示时 |
+| On Reveal | 展示时 |
 | On Death | 死亡时 |
 | On Kill | 击杀时 |
 | Ongoing | 持续 |
 | Shield | 护盾 («给予任意角色护盾») |
 | Trample | 践踏 |
 | Deathtouch | 死触 |
-| Defender | 守卫 |
+| Defender | 守护者 |
 | Rebirth | 重生 |
 | First Strike | 先攻 |
-| Double Attack | 连击 |
+| Double Attack | 双重攻击 |
 | Snipe N | 狙击 N |
 | Move (parola chiave e verbo) | 移动 |
 | Stun | 眩晕 |
@@ -59,15 +61,15 @@ Le carte parlano in terza persona («造成 3 点伤害», «给予……», «�
 | heal N damage | 治疗 N 点伤害 |
 | draw a card | 抽一张牌 / 抽 2 张牌 |
 | discard | 弃一张牌, «当我被弃掉时» |
-| summon | 召唤……到一个随机格位 |
+| summon | 在一个随机格子上召唤…… |
 | return to hand | 将……移回其拥有者的手牌 |
-| destroy | 消灭 |
-| ally / enemy / opponent | 友方 / 敌方 / 对手 |
-| slot / location | 格位 / 地点 |
+| destroy | 摧毁 |
+| ally / enemy / opponent | 友方角色 / 敌方角色 / 对手 |
+| slot / location | 格子 / 地点 |
 | barrier | 屏障 |
 | spell / character | 法术 / 角色 |
-| Legendary (la carta Leggendaria) | 传说卡 |
-| Power / Health | 力量 / 生命值 |
+| Legendary (la carta Leggendaria) | 传奇卡牌 (potere leggendario: 传奇之力; «Game Start»: 对战开始) |
+| Power / Health | 力量 / 生命 |
 | cost | 费用 («费用最低», «偶数费用») |
 | mana | 法力 («+1 法力») |
 | round / game | 回合 / 对局 |
@@ -89,7 +91,7 @@ Le carte parlano in terza persona («造成 3 点伤害», «给予……», «�
 | wishlist (Steam) | 愿望单 |
 | tournament / bracket / playoffs | 锦标赛 / 对阵表 / 季后赛 |
 
-Nelle guide per chi inizia la prima citazione di ogni parola chiave porta l'inglese fra parentesi: «揭示时（On Reveal）».
+Nelle guide per chi inizia la prima citazione di ogni parola chiave porta l'inglese fra parentesi: «展示时（On Reveal）».
 
 ## Nomi dell'interfaccia
 

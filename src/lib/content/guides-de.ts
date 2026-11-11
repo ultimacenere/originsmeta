@@ -169,7 +169,7 @@ Die zitierten Kartentexte sind die offiziellen des Spiels, am 20. Oktober 2026 i
 
 **6 Mana · 2/2 · Einheit · Evil** · Saga: Gothic Horror
 
-> Beschwöre vor dem Kampf einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
+> Vor dem Kampf beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
 
 - **Die neueste Legendäre.** Er ist mit dem [Patch vom 4. November 2026](/de/news/balance-patch-1104-cyber-queen) ins Spiel gekommen, als Legendäre des Relentless-Decks von Cyber Queen, Boss Nr. 11, zusammen mit sieben weiteren Karten ([Dr. Franks acht Karten](/de/news/dr-frank-boss-new-cards)). Der Text oben stammt von der offiziellen Karte und ist von uns mit dem Glossar des Spiels übersetzt: Im Spiel haben wir ihn noch nicht gelesen.
 - **Die Legende.** Victor Frankenstein, der Student, der in Mary Shelleys Roman von 1818 ein lebendes Geschöpf zusammensetzt.
