@@ -311,7 +311,7 @@
 }
 .ev--a .ev-h2 {
   font-size: clamp(1.5rem, 4vw, 2.3rem);
-  line-height: 1;
+  line-height: 1.1;
   text-transform: uppercase;
 }
 .ev--a .ev-h2::after {
@@ -611,7 +611,7 @@
 }
 .ev--a .ev-redeem-title {
   font-size: clamp(1.4rem, 3.6vw, 2rem);
-  line-height: 1.05;
+  line-height: var(--title-leading, 1.66);
   text-transform: uppercase;
   color: var(--ev-chalk);
 }

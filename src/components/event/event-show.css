@@ -31,6 +31,9 @@
   --ev-display: var(--font-display, "Arial Black", sans-serif);
   --ev-mono: var(--font-mono, Consolas, monospace);
   --ev-hand: var(--font-hand, "Segoe Print", cursive);
+  /* 12/11/2026, caratteri nuovi del sito (Sofia Sans): le cifre non sono più a larghezza fissa da sole, e qui orologi,
+     conti alla rovescia e classifica cambiano sotto gli occhi. Cifre incolonnate in tutta la pagina. */
+  font-variant-numeric: tabular-nums;
   position: relative;
   overflow-x: clip;
   padding-bottom: 3.5rem;
@@ -437,7 +440,7 @@
     -webkit-line-clamp: 2;
     white-space: normal;
     font-size: 0.9rem;
-    line-height: 1.15;
+    line-height: 1.3;
   }
 }
 

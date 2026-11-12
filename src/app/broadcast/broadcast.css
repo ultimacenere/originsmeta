@@ -194,6 +194,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 12px;
   font-weight: 700;
   color: var(--color-pale);
@@ -444,6 +445,7 @@
   background: var(--color-mint);
   color: var(--color-ink);
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 13px;
   font-weight: 700;
   line-height: 1;
@@ -651,7 +653,7 @@
 }
 .bcr-mono,
 .bcr-url {
-  font-family: var(--font-mono);
+  font-family: var(--font-code);
   font-size: 0.75rem;
 }
 .bcr-url {
@@ -852,6 +854,7 @@
   border-radius: 8px;
   background: var(--color-night-2);
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 0.75rem;
   color: var(--color-pale-muted);
 }

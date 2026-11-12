@@ -241,6 +241,7 @@
   }
   .kicker {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.74rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -1323,6 +1324,7 @@
     background: var(--alert-c);
     color: var(--color-ink);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1;
@@ -1401,6 +1403,7 @@
     background: var(--color-mint);
     color: var(--color-ink);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.65rem;
     line-height: 16px;
     text-align: center;
@@ -1461,6 +1464,7 @@
     background: var(--color-mint);
     color: var(--color-ink);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.62rem;
     font-weight: 700;
   }
@@ -1551,6 +1555,7 @@
     border-radius: 999px;
     background: rgba(14, 7, 31, 0.65);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--color-mint);
@@ -1583,6 +1588,7 @@
   .builder-row-stats {
     display: block;
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.7rem;
     font-weight: 700;
     color: var(--color-pale);
@@ -1591,6 +1597,7 @@
   .builder-row-copies {
     flex-shrink: 0;
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.78rem;
     font-weight: 700;
     color: var(--color-mint);
@@ -1733,6 +1740,7 @@
     background: var(--color-mint);
     color: var(--color-ink);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.9rem;
     letter-spacing: 0;
     box-shadow: 0 0 0 2px var(--color-night), 0 0 0 4px color-mix(in srgb, var(--color-mint) 45%, transparent);
@@ -1741,6 +1749,7 @@
     background: var(--color-night-3);
     color: var(--color-chalk);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
   .deck-peek-type {
     background: var(--color-night-3);
@@ -1838,6 +1847,7 @@
     background: var(--color-mint);
     color: var(--color-ink);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.9rem;
     font-weight: 700;
     box-shadow: 0 1px 3px rgba(14, 7, 31, 0.6);
@@ -2007,6 +2017,7 @@
     margin-top: auto;
     padding-top: 6px;
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.85rem;
     font-weight: 700;
   }
@@ -2077,6 +2088,7 @@
     background: var(--color-mint);
     color: var(--color-ink);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 1rem;
     font-weight: 700;
   }
@@ -2156,6 +2168,7 @@
     gap: 10px;
     margin: 12px 12px 0;
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 1rem;
     font-weight: 700;
   }
@@ -2347,6 +2360,7 @@
     border-right: 2px solid var(--color-sky);
     color: var(--color-chalk-muted);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.7rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -2371,6 +2385,7 @@
   }
   .date-cube small {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.55rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -2410,6 +2425,7 @@
     background: var(--color-crimson-deep);
     color: var(--color-chalk);
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-weight: 800;
     line-height: 1;
     letter-spacing: 0.12em;
@@ -2580,6 +2596,7 @@
   }
   .prose-night th {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -2621,7 +2638,7 @@
     color: var(--color-pale-muted);
   }
   .ugc-text code {
-    font-family: var(--font-mono);
+    font-family: var(--font-code);
     font-size: 0.9em;
     background: var(--color-night-3);
     border-radius: 4px;
@@ -4998,6 +5015,7 @@
   }
   .an-table td.is-num {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
   .an-table td.is-num b {
     color: var(--color-chalk);
@@ -5737,6 +5755,7 @@
   }
   .an-mx-codes b {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     color: var(--color-chalk);
   }
   @media (min-width: 760px) {
@@ -6176,6 +6195,7 @@
     grid-area: val;
     text-align: right;
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
   .cc-val b {
@@ -6834,6 +6854,7 @@
   .po-chips button {
     min-width: 2.5rem;
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
   .po-tabs button.is-on,
   .po-chips button.is-on {

@@ -73,6 +73,22 @@
 .ev--b .ev-title-row {
   margin-top: 0.6rem;
   padding-right: 0.5rem;
+  /* 12/11/2026: col carattere nuovo (più stretto) il titolo finiva più corto dell'etichetta qui sopra e l'adesivo della
+     data, che sta sull'angolo destro di questa riga, le andava sopra. La riga è larga almeno quanto etichetta e adesivo:
+     etichetta corta fino a 520 px, lunga ("· in diretta su Twitch") da lì in su. */
+  min-width: min(100%, 19.5rem);
+}
+@media (min-width: 521px) {
+  .ev--b .ev-title-row {
+    min-width: min(100%, 32rem);
+  }
+}
+@media (max-width: 359px) {
+  /* telefoni da 320 px: etichetta più stretta, così l'adesivo della data le sta accanto e non sopra */
+  .ev--b .ev-kicker {
+    padding-inline: 0.6rem;
+    letter-spacing: 0.02em;
+  }
 }
 .ev--b .ev-title {
   font-size: clamp(1.9rem, calc((100vw - 3.5rem) / (var(--ev-len-flat, 9) * 0.93)), 5.2rem);
@@ -273,7 +289,8 @@
     font-size: clamp(2.4rem, calc((min(100vw, 72rem) - 5.5rem) * 0.55 / (var(--ev-len-flat, 9) * 0.93)), 5.4rem);
   }
   .ev--b .ev-date {
-    right: -0.6rem;
+    /* 12/11/2026: -1.5rem (era -0.6rem): a 960 px la prima colonna è più stretta di etichetta e adesivo messi insieme */
+    right: -1.5rem;
     top: -3.5rem;
   }
   .ev--b .ev-wheel {
@@ -358,6 +375,7 @@
 }
 .ev--b .ev-h2 {
   font-size: clamp(1.5rem, 4vw, 2.1rem);
+  line-height: 1.25;
 }
 .ev--b .ev-group-title {
   font-family: var(--ev-hand);
@@ -699,7 +717,7 @@
 }
 .ev--b .ev-redeem-title {
   font-size: clamp(1.5rem, 4vw, 2.1rem);
-  line-height: 1.05;
+  line-height: var(--title-leading, 1.66);
 }
 .ev--b .ev-redeem > [role="status"] {
   font-weight: 800;
