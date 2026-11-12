@@ -84,7 +84,8 @@ export const PAGE_UPDATED = {
   "/authors/[slug]": "2026-09-27", // 27/09: "Tutta la redazione"; Ondata 2: Person unica, link al profilo della community, tagline di Davdas
   "/u/[username]": "2026-09-27", // 27/09, profili: VETRINA (copertina, accento, frase, Leggendaria del cuore, mazzo e video in evidenza, orari), SEGUI (tasto Segui), TRAGUARDI (traguardi, numeri pubblici della vetrina, tornei in evidenza), GUIDE (guide della community); ruoli del 27/09 (Creator, Autore) e bio da 600 caratteri; CREATOR: bio, canali e lingue, sameAs, tornei organizzati; Ondata 2: noindex senza contenuti, ProfilePage
   "/creators": "2026-11-12", // 12/11: il tasto verso la pagina per i creator diventa un riquadro con una riga per chi fa dirette o video; 30/10: tasto verso la pagina per i creator (/for-creators); ruoli del 27/09: "Creator e autori", filtro per ruolo; CREATOR: nascita della directory
-  "/for-creators": "2026-11-10", // 10/11: sezioni e guide degli strumenti a tendina (ac32960); 30/10: nascita della pagina per i creator (strumenti con le guide passo passo, media kit, ruolo Creator)
+  "/twitch": "2026-11-12", // 12/11: nascita della pagina: Tracker più estensione Twitch in una schermata, sette passi e i contatti
+  "/for-creators": "2026-11-12", // 12/11: sotto i tasti della testata la riga verso /twitch (Tracker ed estensione in una schermata); 10/11: sezioni e guide degli strumenti a tendina (ac32960); 30/10: nascita della pagina per i creator (strumenti con le guide passo passo, media kit, ruolo Creator)
 } as const satisfies Record<string, Day>;
 
 export type PageRoute = keyof typeof PAGE_UPDATED;

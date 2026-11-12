@@ -48,7 +48,8 @@ export function TrackerDownloadButton({
   href: string;
   label: string;
   signInLabel: string;
-  placement: "top" | "install";
+  /** twitch: il passo 1 della pagina /twitch (12/11/2026) */
+  placement: "top" | "install" | "twitch";
   /** il passo dopo il download: id dell'elemento a cui scorrere e la riga da mostrare */
   next?: { id: string; label: string };
 }) {

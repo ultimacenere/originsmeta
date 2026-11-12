@@ -91,6 +91,8 @@ const sections = [
   "tournaments",
   // la pagina dell'app OriginsMeta Tracker (12/10/2026; prima stava in /analytics, che ora sono le statistiche)
   "tracker",
+  // il layout di Twitch in una schermata: Tracker più estensione, sette passi (12/11/2026): originsmeta.com/twitch
+  "twitch",
   "u",
 ] as const;
 

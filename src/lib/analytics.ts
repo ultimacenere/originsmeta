@@ -131,8 +131,8 @@
  *   ★ donate_click        clic su "Dona ora" verso la pagina di donazione di      placement (header | menu: la tendina
  *                         PayPal (06/10/2026, PayPalButton; attributi sul link)   del telefono)
  *   ★ analytics_download  clic su "Scarica OriginsMeta Analytics" della pagina    placement (top | install: il tasto del
- *                         /analytics (10/10/2026; attributi sul link, verso lo     passo 2 della guida)
- *                         zip di GitHub Releases)
+ *                         /analytics (10/10/2026; attributi sul link, verso lo     passo 2 della guida | twitch: il passo 1
+ *                         zip di GitHub Releases)                                 della pagina /twitch, 12/11/2026)
  *   ★ kickstarter_click   clic su un tasto verso la campagna Kickstarter con il    placement (landing_hero | landing_tiers | landing_how |
  *                         nostro link referral (26/10/2026, KickstarterButton;     landing_final | landing_sticky | guide; la
  *                         attributi sul link)                                      slide e la barra portano alla landing)
@@ -155,6 +155,11 @@
  *                         e il riquadro di /account li vede solo chi ha un ruolo   /creators | footer: colonna "Esplora")
  *                         con vetrina (Creator, Autore, Pro, Staff); /creators e il footer tutti. Le visite alla pagina
  *                         sono le pagine viste di /xx/for-creators.
+ *     twitch_setup_click  clic su un link della pagina /twitch, il layout di      target (extension: la scheda dell'estensione
+ *                         Twitch in una schermata (12/11/2026; attributi sul       su Twitch | code: il codice dell'app |
+ *                         link, `twitchSetupTrack` di src/lib/twitchSetup.ts).     twitch_code: il codice per Twitch | guides:
+ *                         Il download del passo 1 è analytics_download con         le guide di /for-creators)
+ *                         placement=twitch; le visite sono le pagine viste di /xx/twitch.
  *     tournament_promo_view  il popup di un torneo si apre da solo (05/11/2026,     tournament (il tag, OM-XXXX)
  *                         TournamentPromo.tsx, src/lib/tournamentPromo.ts): una volta per browser
  *     tournament_promo_click clic su "Iscriviti al torneo" del popup, verso la     tournament
@@ -300,12 +305,13 @@ export type EventParams = {
   draft_start: { format: string; opponent: "bot" | "friend" };
   draft_complete: { format: string; grade: string };
   donate_click: { placement: string };
-  analytics_download: { placement: "top" | "install" };
+  analytics_download: { placement: "top" | "install" | "twitch" };
   kickstarter_click: { placement: string };
   kickstarter_landing_open: { placement: "slider" | "site_bar" | "home_bar" | "guide" | "card" };
   creator_apply_click: { placement: string };
   creator_kit_download: { file: string; placement: string };
   for_creators_open: { placement: ForCreatorsPlacement };
+  twitch_setup_click: { target: "extension" | "code" | "twitch_code" | "guides" };
   tournament_promo_view: { tournament: string };
   tournament_promo_click: { tournament: string };
   tournament_promo_close: { tournament: string; method: "close" | "later" | "esc" | "backdrop" };
@@ -375,6 +381,7 @@ export const VERCEL_PROPS = {
   creator_apply_click: ["placement"],
   creator_kit_download: ["file", "placement"],
   for_creators_open: ["placement"],
+  twitch_setup_click: ["target"],
   tournament_promo_view: ["tournament"],
   tournament_promo_click: ["tournament"],
   tournament_promo_close: ["method", "tournament"],

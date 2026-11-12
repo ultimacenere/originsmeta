@@ -143,10 +143,13 @@ describe("sezioni senza lingua", () => {
   const sectionRules = redirects.filter((r) => r.source.startsWith("/:section("));
   const sections = /^\/:section\(([^)]+)\)/.exec(sectionRules[0]?.source ?? "")?.[1].split("|") ?? [];
 
-  test("l'elenco delle sezioni è quello delle cartelle di (site), senza `[...rest]`", () => {
-    const dirs = readdirSync(new URL("..", import.meta.url), { withFileTypes: true })
-      .filter((e) => e.isDirectory() && !e.name.startsWith("["))
-      .map((e) => e.name);
+  test("l'elenco delle sezioni è quello delle cartelle di (site) e di (landing), senza `[...rest]`", () => {
+    const dirsOf = (rel: string) =>
+      readdirSync(new URL(rel, import.meta.url), { withFileTypes: true })
+        .filter((e) => e.isDirectory() && !e.name.startsWith("["))
+        .map((e) => e.name);
+    // (landing), dal 12/11/2026: le pagine a una schermata, senza la striscia del calendario sopra (/twitch)
+    const dirs = [...dirsOf(".."), ...dirsOf("../../(landing)/")];
     assert.deepEqual([...sections].sort(), dirs.sort());
   });
   test("redirect temporanei, sezione sola e con il percorso: italiano, spagnolo (anche ca, gl, eu), francese (dal 07/10/2026), portoghese (dal 20/10/2026), tedesco e russo (dal 20/10/2026), cinese (dal 04/11/2026), poi inglese", () => {

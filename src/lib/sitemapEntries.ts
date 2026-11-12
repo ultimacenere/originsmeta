@@ -258,6 +258,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
     { path: "/authors", section: "pages", route: "/authors", dates: [] },
     // La pagina per i creator (30/10/2026): strumenti, guide passo passo e media kit. Date del modello.
     { path: "/for-creators", section: "pages", route: "/for-creators", dates: [] },
+    // Il layout di Twitch in una schermata (12/11/2026): Tracker più estensione, sette passi. Date del modello.
+    { path: "/twitch", section: "pages", route: "/twitch", dates: [] },
     // Directory dei creator (pacchetto CREATOR): solo da tre creator in su (sotto è noindex); cambia con i loro profili
     // e con i mazzi pubblicati, che mostra contati per autore.
     ...(directoryIndexable(data.showcase?.creators ?? 0)

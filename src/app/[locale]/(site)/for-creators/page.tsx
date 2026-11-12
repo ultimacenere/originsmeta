@@ -9,6 +9,8 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
 import { KIT_COLORS, KIT_FILES, KIT_ZIP, TOOL_IDS, creatorApplyPath, isExternal, kitFilePath } from "@/lib/forCreators";
 import { fillFc, forCreatorsLabels, type ForCreatorsLabels, type GuideLink, type ToolGuide } from "@/lib/forCreatorsLabels";
+import { TWITCH_SETUP_PATH } from "@/lib/twitchSetup";
+import { twitchSetupLabels } from "@/lib/twitchSetupLabels";
 import { CreatorCode, CreatorUserNote } from "@/components/creators/CreatorCode";
 import { CopyButton } from "@/components/CopyButton";
 import { OpenDetailsOnHash } from "@/components/OpenDetailsOnHash";
@@ -232,6 +234,12 @@ export default async function ForCreatorsPage({ params }: { params: LocaleParams
             </a>
           </div>
           <p className="mt-2 max-w-xl text-sm text-pale-muted">{L.applyNote}</p>
+          {/* 12/11/2026: per chi vuole solo Tracker ed estensione Twitch c'è la pagina a una schermata */}
+          <p className="mt-3 text-sm">
+            <Link href={href(locale, TWITCH_SETUP_PATH)} prefetch={false} className="link-mint font-bold">
+              {twitchSetupLabels[locale].fromCreators}
+            </Link>
+          </p>
         </div>
         <figure className="card-night min-w-0 overflow-hidden p-2">
           <Image src={HERO} {...heroSize} alt={L.heroAlt} sizes="(min-width: 1024px) 540px, 92vw" className="h-auto w-full rounded-lg" priority />
