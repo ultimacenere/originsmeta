@@ -121,8 +121,20 @@ export type ForCreatorsLabels = {
     body: string;
   };
   faq: { title: string; items: { q: string; a: string }[] };
-  /** link verso la pagina: colonna "Esplora" del footer e riquadro di /creators */
-  entry: { footer: string; creators: string };
+  /**
+   * Link verso la pagina (`forCreatorsTrack` di forCreators.ts dice i posti). Per tutti: `footer` (colonna "Esplora" del
+   * footer) e `creatorsText`, la riga del riquadro in cima a /creators. Solo per chi ha un ruolo con vetrina (12/11/2026):
+   * `menu`, la voce del menu dell'account, corta perché sta su una riga (ENTRY_MENU_MAX_CHARS), e `account`, titolo e
+   * testo del riquadro in cima a /account. `cta` è il tasto dei due riquadri: corto, così sul telefono resta su una riga
+   * (fino al 12/11/2026 il tasto di /creators era l'etichetta lunga `creators`, che andava a capo).
+   */
+  entry: {
+    footer: string;
+    menu: string;
+    cta: string;
+    creatorsText: string;
+    account: { title: string; text: string };
+  };
   unofficial: string;
 };
 

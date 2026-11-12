@@ -30,6 +30,8 @@ type Props = {
  * Sideboard nella stanza partita (09/11/2026): le riserve dei due giocatori (quella dell'avversario solo se le liste
  * si vedono), gli scambi dichiarati partita per partita e, per chi gioca, il modulo per dichiararli prima della partita
  * 2, 3… (`declareSideSwaps`: sempre rispetto al mazzo consegnato, uno per uno).
+ * Dichiararli è facoltativo dal 12/11/2026 (apix sulla scheda dell'Harvest Bowl: "you dont need to declare changes in
+ * the match room"): il modulo sta in una tendina chiusa, aperta solo per chi ha già segnato uno scambio.
  */
 export function SidePanel({ matchId, me, players, myDecks, games, swaps, cardNames, open, labels, deckNames, errors }: Props) {
   const fl = labels;
@@ -53,6 +55,8 @@ export function SidePanel({ matchId, me, players, myDecks, games, swaps, cardNam
   };
   const deckCards = myDecks[deck]?.cards ?? [];
   const selectCls = "rounded border border-sky bg-night px-2 py-1 text-xs text-pale";
+  // chi ha già segnato uno scambio ritrova la tendina aperta
+  const declared = Boolean(me && swaps.some((x) => x.user_id === me));
 
   return (
     <section className="card-night p-4 sm:p-5">
@@ -89,108 +93,116 @@ export function SidePanel({ matchId, me, players, myDecks, games, swaps, cardNam
       </div>
 
       {me && open && mySide.length && games > 1 ? (
-        <div className="mt-4 grid gap-3 border-t border-sky/40 pt-3">
-          <p className="text-xs text-pale-muted">{fill(fl.sideHint, { n: game })}</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="text-xs text-pale-muted">
-              <select value={game} onChange={(e) => pickGame(Number(e.target.value))} className={selectCls} aria-label={fl.sideTitle}>
-                {Array.from({ length: games - 1 }, (_, i) => i + 2).map((g) => (
-                  <option key={g} value={g}>
-                    {fill(fl.sideGame, { n: g })}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {myDecks.length > 1 ? (
+        <details open={declared} className="group mt-4 border-t border-sky/40 pt-3">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-pale-muted hover:text-pale [&::-webkit-details-marker]:hidden">
+            {fl.sideNote}
+            <span aria-hidden="true" className="shrink-0 font-mono text-base text-sky transition-transform group-open:rotate-180">
+              ▾
+            </span>
+          </summary>
+          <div className="mt-3 grid gap-3">
+            <p className="text-xs text-pale-muted">{fill(fl.sideHint, { n: game })}</p>
+            <div className="flex flex-wrap items-center gap-2">
               <label className="text-xs text-pale-muted">
-                {fl.sideDeck}{" "}
-                <select
-                  value={deck}
-                  onChange={(e) => {
-                    setDeck(Number(e.target.value));
-                    setRows([]);
-                    setSaved(false);
-                  }}
-                  className={selectCls}
-                >
-                  {myDecks.map((d, i) => (
-                    <option key={i} value={i}>
-                      {d.name}
+                <select value={game} onChange={(e) => pickGame(Number(e.target.value))} className={selectCls} aria-label={fl.sideTitle}>
+                  {Array.from({ length: games - 1 }, (_, i) => i + 2).map((g) => (
+                    <option key={g} value={g}>
+                      {fill(fl.sideGame, { n: g })}
                     </option>
                   ))}
                 </select>
               </label>
-            ) : null}
-          </div>
-          <ul className="grid gap-2">
-            {rows.map((r, i) => (
-              <li key={i} className="flex flex-wrap items-center gap-2 text-xs">
-                <label className="text-pale-muted">
-                  {fl.sideOut}{" "}
-                  <select value={r.out} onChange={(e) => setRows(rows.map((x, k) => (k === i ? { ...x, out: e.target.value } : x)))} className={selectCls}>
-                    <option value="">—</option>
-                    {deckCards.map((c) => (
-                      <option key={c} value={c}>
-                        {name(c)}
+              {myDecks.length > 1 ? (
+                <label className="text-xs text-pale-muted">
+                  {fl.sideDeck}{" "}
+                  <select
+                    value={deck}
+                    onChange={(e) => {
+                      setDeck(Number(e.target.value));
+                      setRows([]);
+                      setSaved(false);
+                    }}
+                    className={selectCls}
+                  >
+                    {myDecks.map((d, i) => (
+                      <option key={i} value={i}>
+                        {d.name}
                       </option>
                     ))}
                   </select>
                 </label>
-                <label className="text-pale-muted">
-                  {fl.sideIn}{" "}
-                  <select value={r.in} onChange={(e) => setRows(rows.map((x, k) => (k === i ? { ...x, in: e.target.value } : x)))} className={selectCls}>
-                    <option value="">—</option>
-                    {mySide.map((c) => (
-                      <option key={c} value={c}>
-                        {name(c)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <button type="button" onClick={() => setRows(rows.filter((_, k) => k !== i))} className="btn btn-ghost !px-1.5 !py-0 text-[11px]" aria-label={fl.sideRemove}>
-                  ✕
+              ) : null}
+            </div>
+            <ul className="grid gap-2">
+              {rows.map((r, i) => (
+                <li key={i} className="flex flex-wrap items-center gap-2 text-xs">
+                  <label className="text-pale-muted">
+                    {fl.sideOut}{" "}
+                    <select value={r.out} onChange={(e) => setRows(rows.map((x, k) => (k === i ? { ...x, out: e.target.value } : x)))} className={selectCls}>
+                      <option value="">—</option>
+                      {deckCards.map((c) => (
+                        <option key={c} value={c}>
+                          {name(c)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="text-pale-muted">
+                    {fl.sideIn}{" "}
+                    <select value={r.in} onChange={(e) => setRows(rows.map((x, k) => (k === i ? { ...x, in: e.target.value } : x)))} className={selectCls}>
+                      <option value="">—</option>
+                      {mySide.map((c) => (
+                        <option key={c} value={c}>
+                          {name(c)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button type="button" onClick={() => setRows(rows.filter((_, k) => k !== i))} className="btn btn-ghost !px-1.5 !py-0 text-[11px]" aria-label={fl.sideRemove}>
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap gap-2">
+              {rows.length < mySide.length ? (
+                <button type="button" onClick={() => setRows([...rows, { out: "", in: "" }])} className="btn btn-ink text-xs">
+                  + {fl.sideAdd}
                 </button>
-              </li>
-            ))}
-          </ul>
-          <div className="flex flex-wrap gap-2">
-            {rows.length < mySide.length ? (
-              <button type="button" onClick={() => setRows([...rows, { out: "", in: "" }])} className="btn btn-ink text-xs">
-                + {fl.sideAdd}
+              ) : null}
+              <button
+                type="button"
+                disabled={pending || rows.some((r) => !r.out || !r.in)}
+                onClick={() =>
+                  start(async () => {
+                    setError(null);
+                    setSaved(false);
+                    const r = await declareSideSwaps(matchId, game, deck, rows);
+                    if (r.error) {
+                      setError(errors[r.error] ?? errors.db ?? r.error);
+                      return;
+                    }
+                    setSaved(true);
+                    router.refresh();
+                  })
+                }
+                className="btn btn-primary text-xs"
+              >
+                {fill(fl.sideSave, { n: game })}
               </button>
+            </div>
+            {error ? (
+              <p role="alert" className="alert-bad">
+                {error}
+              </p>
             ) : null}
-            <button
-              type="button"
-              disabled={pending || rows.some((r) => !r.out || !r.in)}
-              onClick={() =>
-                start(async () => {
-                  setError(null);
-                  setSaved(false);
-                  const r = await declareSideSwaps(matchId, game, deck, rows);
-                  if (r.error) {
-                    setError(errors[r.error] ?? errors.db ?? r.error);
-                    return;
-                  }
-                  setSaved(true);
-                  router.refresh();
-                })
-              }
-              className="btn btn-primary text-xs"
-            >
-              {fill(fl.sideSave, { n: game })}
-            </button>
+            {saved && !error ? (
+              <p role="status" className="alert-good">
+                {fl.sideSaved}
+              </p>
+            ) : null}
           </div>
-          {error ? (
-            <p role="alert" className="alert-bad">
-              {error}
-            </p>
-          ) : null}
-          {saved && !error ? (
-            <p role="status" className="alert-good">
-              {fl.sideSaved}
-            </p>
-          ) : null}
-        </div>
+        </details>
       ) : null}
     </section>
   );

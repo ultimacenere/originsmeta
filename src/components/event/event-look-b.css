@@ -1,0 +1,783 @@
+/*
+  Taglio B · RUOTA (prova dell'11/11/2026): un game show. La ruota dei mazzi che gira piano accanto al titolo (uno
+  spicchio per mazzo, gli stessi colori della ruota dei caster), lettere "a rilievo", adesivi storti con il bordo
+  inchiostro, coriandoli, le scritte a penna dei post-it sopra i titoli, giocatori a bolle con l'anello colorato.
+*/
+
+/* ---------- testata ---------- */
+.ev--b .ev-hero {
+  overflow: clip;
+  padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(2.5rem, 5vw, 3.5rem);
+}
+.ev--b .ev-hero::after {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background:
+    radial-gradient(48% 62% at 100% 0%, rgba(255, 61, 154, 0.24), transparent 66%),
+    radial-gradient(44% 60% at 0% 100%, rgba(49, 227, 189, 0.2), transparent 66%),
+    radial-gradient(40% 50% at 55% 45%, rgba(196, 176, 255, 0.1), transparent 70%),
+    linear-gradient(180deg, #1a0f38 0%, #1d1142 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 78%, transparent 100%);
+}
+.ev--b .ev-confetti {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+}
+.ev--b .ev-conf {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  background: var(--c);
+  transform: rotate(var(--r));
+  animation: ev-float 5.5s ease-in-out infinite alternate;
+  animation-delay: var(--d);
+}
+.ev--b .ev-conf--dot {
+  border-radius: 50%;
+}
+.ev--b .ev-conf--sq {
+  border-radius: 3px;
+}
+.ev--b .ev-conf--tri {
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.ev--b .ev-conf--ring {
+  border: 4px solid var(--c);
+  border-radius: 50%;
+  background: none;
+}
+.ev--b .ev-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.ev--b .ev-kicker {
+  justify-self: start;
+  padding: 0.3rem 0.85rem;
+  border: 3px solid var(--ev-ink);
+  border-radius: 999px;
+  background: var(--ev-violet);
+  box-shadow: 0 4px 0 var(--ev-ink);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ev-ink);
+  transform: rotate(-1.5deg);
+}
+.ev--b .ev-kicker i {
+  background: var(--ev-crimson);
+}
+.ev--b .ev-title-row {
+  margin-top: 0.6rem;
+  padding-right: 0.5rem;
+}
+.ev--b .ev-title {
+  font-size: clamp(1.9rem, calc((100vw - 3.5rem) / (var(--ev-len-flat, 9) * 0.93)), 5.2rem);
+  line-height: 1;
+  transform: rotate(-2deg);
+  transform-origin: left center;
+}
+.ev--b .ev-title-1 {
+  color: var(--ev-sky);
+  text-shadow:
+    0 0.035em 0 var(--ev-sky-deep),
+    0 0.07em 0 #137a98,
+    0 0.105em 0 var(--ev-ink),
+    0 0.2em 0.28em rgba(0, 0, 0, 0.45);
+}
+.ev--b .ev-title-2 {
+  color: var(--ev-gold);
+  text-shadow:
+    0 0.035em 0 var(--ev-gold-deep),
+    0 0.07em 0 #94790c,
+    0 0.105em 0 var(--ev-ink),
+    0 0.2em 0.28em rgba(0, 0, 0, 0.45);
+}
+/* la data: un adesivo tondo in alto a destra del titolo */
+.ev--b .ev-date {
+  position: absolute;
+  z-index: 2;
+  right: -0.2rem;
+  top: -3.7rem;
+  transform: rotate(9deg);
+}
+.ev--b .ev-date-in {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: clamp(4.4rem, 12vw, 6.2rem);
+  aspect-ratio: 1;
+  border: 3px solid var(--ev-ink);
+  border-radius: 50%;
+  background: var(--ev-pink);
+  box-shadow: 0 5px 0 var(--ev-ink);
+  font-size: clamp(0.6rem, 1.6vw, 0.82rem);
+  color: var(--ev-ink);
+}
+.ev--b .ev-date b {
+  font-family: var(--ev-display);
+  font-weight: 800;
+  font-size: 2.5em;
+  line-height: 0.9;
+}
+.ev--b .ev-date-in > span {
+  font-family: var(--ev-display);
+  font-weight: 800;
+  font-size: 1.05em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.ev--b .ev-date small {
+  font-family: var(--ev-mono);
+  font-weight: 700;
+  font-size: 0.82em;
+}
+.ev--b .ev-tagline {
+  margin-top: 1.6rem;
+}
+/* numeri come adesivi */
+.ev--b .ev-stats {
+  gap: 0.7rem 0.8rem;
+  margin-top: 1.5rem;
+}
+.ev--b .ev-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem 0.45rem;
+  border: 3px solid var(--ev-ink);
+  border-radius: 999px;
+  background: var(--ev-mint);
+  box-shadow: 0 4px 0 var(--ev-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ev-ink);
+  transform: rotate(-2.5deg);
+  transition: transform 150ms ease;
+}
+.ev--b .ev-stat b {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.ev--b .ev-stat:nth-child(2) {
+  background: var(--ev-gold);
+  transform: rotate(1.8deg);
+}
+.ev--b .ev-stat:nth-child(3) {
+  background: var(--ev-orange);
+  transform: rotate(-1.2deg);
+}
+.ev--b .ev-stat:hover {
+  transform: rotate(0deg) scale(1.06);
+}
+.ev--b .ev-cta .btn {
+  border: 3px solid var(--ev-ink);
+  box-shadow: 0 5px 0 var(--ev-ink);
+}
+.ev--b .ev-cta .btn:hover {
+  transform: translateY(-2px);
+}
+.ev--b .ev-cast-label {
+  margin-bottom: 0.35rem;
+  font-family: var(--ev-hand);
+  font-size: 1.35rem;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  color: var(--ev-gold);
+  transform: rotate(-2deg);
+  transform-origin: left;
+}
+.ev--b .ev-cast-list {
+  padding-left: 11px;
+  row-gap: 10px;
+}
+.ev--b .ev-cast-item {
+  margin-left: -11px;
+}
+.ev--b .ev-cast-item:hover,
+.ev--b .ev-cast-item:focus-within {
+  z-index: 2;
+}
+.ev--b .ev-cast-item .ev-face {
+  width: 46px !important;
+  height: 46px !important;
+  border: 3px solid var(--ev-ink);
+  box-shadow: 0 0 0 3px var(--ring, var(--ev-sky));
+  transition: transform 220ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.ev--b .ev-cast-item:hover .ev-face,
+.ev--b .ev-cast-item:focus-within .ev-face {
+  transform: translateY(-7px) rotate(-8deg) scale(1.14);
+}
+.ev--b :is(.ev-cast-item, .ev-talent):nth-child(6n + 1) {
+  --ring: var(--ev-sky);
+}
+.ev--b :is(.ev-cast-item, .ev-talent):nth-child(6n + 2) {
+  --ring: var(--ev-gold);
+}
+.ev--b :is(.ev-cast-item, .ev-talent):nth-child(6n + 3) {
+  --ring: var(--ev-pink);
+}
+.ev--b :is(.ev-cast-item, .ev-talent):nth-child(6n + 4) {
+  --ring: var(--ev-mint);
+}
+.ev--b :is(.ev-cast-item, .ev-talent):nth-child(6n + 5) {
+  --ring: var(--ev-violet);
+}
+.ev--b :is(.ev-cast-item, .ev-talent):nth-child(6n) {
+  --ring: var(--ev-orange);
+}
+/* la ruota: sul telefono sta dietro il titolo, in alto a destra; da 960 px ha la sua colonna */
+.ev--b .ev-wheel {
+  position: absolute;
+  z-index: -1;
+  top: -2rem;
+  right: -7.5rem;
+  width: 15rem;
+  opacity: 0.3;
+}
+.ev--b .ev-wheel svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ev--b .ev-wheel-disc {
+  animation: ev-spin 90s linear infinite;
+  filter: drop-shadow(0 14px 0 rgba(14, 7, 31, 0.7));
+}
+.ev--b .ev-wheel-pin {
+  position: absolute;
+  inset: 0;
+}
+.ev--b .ev-bulb {
+  animation: ev-twinkle 0.9s steps(2, jump-none) infinite alternate;
+}
+.ev--b .ev-bulb:nth-child(odd) {
+  animation-delay: -0.9s;
+}
+@media (min-width: 960px) {
+  .ev--b .ev-hero-in {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    column-gap: 2rem;
+    align-items: center;
+  }
+  .ev--b .ev-hero-in > * {
+    grid-column: 1;
+  }
+  .ev--b .ev-title {
+    font-size: clamp(2.4rem, calc((min(100vw, 72rem) - 5.5rem) * 0.55 / (var(--ev-len-flat, 9) * 0.93)), 5.4rem);
+  }
+  .ev--b .ev-date {
+    right: -0.6rem;
+    top: -3.5rem;
+  }
+  .ev--b .ev-wheel {
+    position: relative;
+    z-index: 0;
+    top: auto;
+    right: auto;
+    grid-column: 2;
+    grid-row: 1 / span 7;
+    justify-self: center;
+    width: min(100%, 27rem);
+    opacity: 1;
+  }
+}
+
+/* ---------- corpo ---------- */
+.ev--b .ev-clock {
+  border: 3px solid var(--ev-ink);
+  border-radius: 24px;
+  background: var(--ev-night);
+  box-shadow: 0 6px 0 var(--ev-ink), inset 0 0 0 3px var(--ev-pink);
+}
+.ev--b .ev-clock-time {
+  color: var(--ev-gold);
+}
+.ev--b .ev-nav a {
+  border: 3px solid var(--ev-ink);
+  background: var(--ev-night-3);
+  box-shadow: 0 3px 0 var(--ev-ink);
+  color: var(--ev-chalk);
+}
+.ev--b .ev-nav a:hover {
+  background: var(--ev-gold);
+  color: var(--ev-ink);
+  transform: translateY(-2px) rotate(-2deg);
+}
+.ev--b .ev-head {
+  gap: 0.8rem;
+}
+.ev--b .ev-head-n {
+  display: none;
+}
+.ev--b .ev-head-ic {
+  display: grid;
+  place-items: center;
+  width: 3.1rem;
+  height: 3.1rem;
+  border: 3px solid var(--ev-ink);
+  border-radius: 50%;
+  background: var(--ev-gold);
+  box-shadow: 0 4px 0 var(--ev-ink);
+  color: var(--ev-ink);
+  transform: rotate(-7deg);
+}
+.ev--b #mazzi .ev-head-ic {
+  background: var(--ev-pink);
+  transform: rotate(6deg);
+}
+.ev--b #classifica .ev-head-ic {
+  background: var(--ev-mint);
+}
+.ev--b #abbinamenti .ev-head-ic {
+  background: var(--ev-orange);
+  transform: rotate(8deg);
+}
+.ev--b #giveaway .ev-head-ic {
+  background: var(--ev-violet);
+}
+.ev--b .ev-sec:hover .ev-head-ic {
+  animation: ev-wobble 0.6s ease-in-out;
+}
+.ev--b .ev-head-k {
+  margin-bottom: 0;
+  font-family: var(--ev-hand);
+  font-size: 1.35rem;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  color: var(--ev-gold);
+  transform: rotate(-2deg);
+  transform-origin: left;
+}
+.ev--b .ev-h2 {
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+}
+.ev--b .ev-group-title {
+  font-family: var(--ev-hand);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ev-mint);
+}
+
+/* giocatori a bolle */
+.ev--b .ev-talent-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.3rem 0.6rem;
+}
+@media (min-width: 520px) {
+  .ev--b .ev-talent-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 760px) {
+  .ev--b .ev-talent-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+@media (min-width: 960px) {
+  .ev--b .ev-talent-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1180px) {
+  .ev--b .ev-talent-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+.ev--b .ev-talent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  text-align: center;
+}
+.ev--b .ev-talent-top {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+.ev--b .ev-talent .ev-face {
+  display: flex;
+  width: min(100%, 6.4rem) !important;
+  height: auto !important;
+  aspect-ratio: 1;
+  border: 4px solid var(--ev-ink);
+  box-shadow: 0 0 0 4px var(--ring, var(--ev-sky)), 0 9px 0 3px rgba(14, 7, 31, 0.55);
+  font-size: 2.2rem !important;
+  transition: transform 220ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.ev--b .ev-talent:hover .ev-face,
+.ev--b .ev-talent:focus-within .ev-face {
+  transform: translateY(-8px) rotate(-6deg) scale(1.06);
+}
+.ev--b .ev-talent:nth-child(even):hover .ev-face,
+.ev--b .ev-talent:nth-child(even):focus-within .ev-face {
+  transform: translateY(-8px) rotate(6deg) scale(1.06);
+}
+.ev--b .ev-talent-info {
+  width: 100%;
+}
+.ev--b .ev-talent-name {
+  font-size: 0.84rem;
+  color: var(--ev-chalk);
+}
+.ev--b .ev-talent-link {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.7rem;
+}
+.ev--b .ev-talent-bio,
+.ev--b .ev-talent-links {
+  justify-content: center;
+  font-size: 0.75rem;
+}
+.ev--b .ev-talent.is-live .ev-face {
+  box-shadow: 0 0 0 4px var(--ev-pink), 0 0 0 9px rgba(255, 61, 154, 0.3), 0 9px 0 3px rgba(14, 7, 31, 0.55);
+}
+.ev--b .ev-talent.is-hidden {
+  gap: 0.6rem;
+}
+.ev--b .ev-talent.is-hidden .ev-face {
+  border-style: dashed;
+  border-color: var(--ev-muted);
+  box-shadow: none;
+}
+.ev--b .ev-talent.is-hidden .ev-talent-info p {
+  font-size: 0.75rem;
+}
+
+/* mazzi: gettoni numerati come gli spicchi della ruota */
+.ev--b .ev-deck {
+  padding: 0.4rem 0.55rem 0.4rem 0.45rem;
+  border: 3px solid var(--ev-ink);
+  border-radius: 999px;
+  background: var(--ev-night);
+  box-shadow: 0 4px 0 var(--ev-ink);
+}
+.ev--b .ev-deck:hover {
+  transform: translateY(-2px) rotate(-0.4deg);
+}
+.ev--b .ev-deck-dot {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid var(--ev-ink);
+  box-shadow: 0 0 0 2px var(--deck);
+  font-family: var(--ev-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--deck-ink);
+}
+.ev--b .ev-deck-dot::before {
+  content: counter(evd);
+}
+.ev--b .ev-deck-name {
+  color: var(--ev-chalk);
+}
+@media (max-width: 420px) {
+  .ev--b .ev-deck-dot {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* classifica */
+.ev--b .ev-standings {
+  border: 3px solid var(--ev-ink);
+  border-radius: 22px;
+  background: var(--ev-night);
+  box-shadow: 0 6px 0 var(--ev-ink);
+}
+.ev--b .ev-standings thead {
+  background: var(--ev-mint);
+}
+.ev--b .ev-standings thead th {
+  font-weight: 800;
+  color: var(--ev-ink);
+}
+.ev--b .ev-standings tbody tr {
+  background: transparent;
+}
+.ev--b .ev-standings tr[data-rank="1"] {
+  background: color-mix(in srgb, var(--ev-gold) 12%, transparent);
+}
+.ev--b .ev-standings tr[data-rank="1"] td:first-child {
+  font-weight: 800;
+  color: var(--ev-gold);
+}
+.ev--b .ev-standings tr[data-rank="1"] td:first-child::before {
+  content: "★ ";
+}
+
+/* abbinamenti */
+.ev--b .ev-round-title {
+  font-family: var(--ev-hand);
+  font-size: 1.6rem;
+  letter-spacing: 0;
+  color: var(--ev-gold);
+  transform: rotate(-1.5deg);
+  transform-origin: left;
+}
+.ev--b .ev-match {
+  border: 3px solid var(--ev-ink);
+  border-radius: 24px;
+  background: var(--ev-night);
+  box-shadow: 0 5px 0 var(--ev-ink);
+}
+.ev--b .ev-match-top {
+  padding-inline: 0.5rem;
+}
+.ev--b .ev-vs {
+  flex: none;
+  align-self: center;
+  font-size: 0;
+}
+.ev--b .ev-vs::after {
+  content: "VS";
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid var(--ev-ink);
+  border-radius: 50%;
+  background: var(--ev-pink);
+  box-shadow: 0 3px 0 var(--ev-ink);
+  font-family: var(--ev-display);
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--ev-ink);
+  transform: rotate(-10deg);
+}
+.ev--b .ev-side {
+  padding-right: 0.9rem;
+  border-color: var(--ev-night-3);
+  border-radius: 999px;
+  background: var(--ev-night-2);
+}
+.ev--b .ev-side.is-won {
+  border-color: var(--ev-gold);
+  background: color-mix(in srgb, var(--ev-gold) 14%, var(--ev-night-2));
+}
+.ev--b .ev-won {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--ev-gold);
+  color: var(--ev-ink);
+}
+.ev--b .ev-match.is-done .ev-side:not(.is-won) {
+  opacity: 0.6;
+}
+
+/* giveaway: un percorso a tappe */
+.ev--b .ev-steps {
+  gap: 1.1rem 1rem;
+}
+.ev--b .ev-step {
+  min-height: 3rem;
+  padding: 0.15rem 0 0 3.7rem;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.ev--b .ev-step::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0;
+  border: 3px solid var(--ev-ink);
+  border-radius: 50%;
+  background: var(--ev-mint);
+  box-shadow: 0 4px 0 var(--ev-ink);
+  font-size: 1.2rem;
+  color: var(--ev-ink);
+  transform: rotate(-6deg);
+}
+.ev--b .ev-step:nth-child(2)::before {
+  background: var(--ev-gold);
+  transform: rotate(5deg);
+}
+.ev--b .ev-step:nth-child(3)::before {
+  background: var(--ev-pink);
+}
+.ev--b .ev-step:nth-child(4)::before {
+  background: var(--ev-sky);
+  transform: rotate(7deg);
+}
+.ev--b .ev-step:nth-child(5)::before {
+  background: var(--ev-violet);
+}
+@media (min-width: 1100px) {
+  .ev--b .ev-step {
+    padding: 3.7rem 0.4rem 0 0;
+  }
+  .ev--b .ev-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 1.3rem;
+    left: 3.5rem;
+    right: 0.1rem;
+    border-top: 3px dashed var(--ev-line);
+  }
+}
+.ev--b .ev-h3 {
+  font-family: var(--ev-hand);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ev-gold);
+}
+/* i passaggi come biglietti con le tacche ai lati */
+.ev--b .ev-slot {
+  padding: 0.6rem 1.1rem;
+  border: 0;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle 8px at 0 50%, var(--ev-felt) 97%, transparent),
+    radial-gradient(circle 8px at 100% 50%, var(--ev-felt) 97%, transparent),
+    var(--ev-night-3);
+}
+.ev--b .ev-slot::before {
+  font-family: var(--ev-display);
+  font-weight: 800;
+  color: var(--ev-mint);
+}
+
+/* riscatto: il biglietto d'oro */
+.ev--b .ev-redeem {
+  border: 3px solid var(--ev-ink);
+  border-radius: 26px;
+  background: linear-gradient(135deg, #f2d23c 0%, #ffb454 100%);
+  box-shadow: 0 8px 0 var(--ev-ink);
+}
+.ev--b .ev-redeem::before,
+.ev--b .ev-redeem::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--ev-ink);
+  border-radius: 50%;
+  background: var(--ev-felt);
+  transform: translateY(-50%);
+}
+.ev--b .ev-redeem::before {
+  left: -18px;
+}
+.ev--b .ev-redeem::after {
+  right: -18px;
+}
+.ev--b .ev-redeem > p,
+.ev--b .ev-redeem > h2,
+.ev--b .ev-redeem > form > label {
+  color: var(--ev-ink);
+}
+.ev--b .ev-redeem > .ev-head-k {
+  color: var(--ev-ink);
+  font-weight: 700;
+}
+.ev--b .ev-redeem-title {
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  line-height: 1.05;
+}
+.ev--b .ev-redeem > [role="status"] {
+  font-weight: 800;
+}
+.ev--b .ev-redeem input {
+  border: 3px solid var(--ev-ink);
+  background: var(--ev-night-2);
+}
+.ev--b .ev-redeem .btn {
+  border: 3px solid var(--ev-ink);
+  box-shadow: 0 4px 0 var(--ev-ink);
+}
+.ev--b .ev-redeem > div {
+  border: 3px solid var(--ev-ink);
+  background: var(--ev-night-2);
+}
+
+/* ---------- conto alla rovescia e sezioni vuote ---------- */
+.ev--b .ev-count-label {
+  font-family: var(--ev-hand);
+  font-size: 1.5rem;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  color: var(--ev-gold);
+  transform: rotate(-2deg);
+}
+.ev--b .ev-count-row {
+  gap: 0.6rem;
+}
+.ev--b .ev-count-u {
+  justify-content: center;
+  width: 4.4rem;
+  min-width: 0;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 3px solid var(--ev-ink);
+  border-radius: 50%;
+  background: var(--ev-mint);
+  box-shadow: 0 4px 0 var(--ev-ink);
+  transform: rotate(-4deg);
+}
+.ev--b .ev-count-u:nth-child(2) {
+  background: var(--ev-gold);
+  transform: rotate(3deg);
+}
+.ev--b .ev-count-u:nth-child(3) {
+  background: var(--ev-orange);
+  transform: rotate(-2deg);
+}
+.ev--b .ev-count-u:nth-child(4) {
+  background: var(--ev-pink);
+  transform: rotate(5deg);
+}
+.ev--b .ev-count-u b {
+  font-size: 1.5rem;
+  color: var(--ev-ink);
+}
+.ev--b .ev-count-u small {
+  margin-top: 0.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ev-ink);
+}
+@media (max-width: 420px) {
+  .ev--b .ev-count-row {
+    justify-content: space-between;
+  }
+  .ev--b .ev-count-u {
+    flex: none;
+    width: 4.1rem;
+  }
+}
+.ev--b p.ev-empty {
+  border: 3px dashed var(--ev-line);
+  border-radius: 22px;
+  font-family: var(--ev-hand);
+  font-size: 1.35rem;
+  line-height: 1.2;
+  color: var(--ev-pale);
+}

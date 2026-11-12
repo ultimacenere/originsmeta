@@ -330,6 +330,15 @@ export const zhCn: ForCreatorsLabels = {
       { q: "有东西不能用？", a: "在 Discord 上或通过网站顶部的信封给我们留言：告诉我们是哪个工具、哪一步。" },
     ],
   },
-  entry: { footer: "创作者专区", creators: "创作者工具与媒体资料包" },
+  entry: {
+    footer: "创作者专区",
+    menu: "创作者工具",
+    cta: "打开工具",
+    creatorsText: "你在直播或制作 Origins TCG 的视频吗？这里有带分步指南的免费工具、媒体资料包，以及申请 Creator 角色的方法。",
+    account: {
+      title: "创作者工具",
+      text: "OriginsMeta Tracker、Twitch 扩展、卡组 Overlay 和 !deck 命令的分步指南，以及包含标志和直播角标的媒体资料包。",
+    },
+  },
   unofficial: "OriginsMeta 是非官方粉丝网站，与 Koin Games 无关联。",
 };

@@ -149,6 +149,12 @@
  *                         dello zip intero, pagina /for-creators (30/10/2026)    symbolTransparent | badge | panel), placement
  *                         Le righe copiate dalle guide di /for-creators sono stream_tool_copy con placement=for_creators
  *                         e tool = <strumento>_<passo> o <strumento>_<bot> (per esempio overlay_2, chat_nightbot).
+ *     for_creators_open   clic verso la pagina /for-creators (12/11/2026;         placement (account_menu: voce del menu
+ *                         attributi sul link, `forCreatorsTrack` di                dell'account | account: riquadro in cima a
+ *                         src/lib/forCreators.ts). La voce del menu dell'account   /account | creators: riquadro in cima a
+ *                         e il riquadro di /account li vede solo chi ha un ruolo   /creators | footer: colonna "Esplora")
+ *                         con vetrina (Creator, Autore, Pro, Staff); /creators e il footer tutti. Le visite alla pagina
+ *                         sono le pagine viste di /xx/for-creators.
  *     tournament_promo_view  il popup di un torneo si apre da solo (05/11/2026,     tournament (il tag, OM-XXXX)
  *                         TournamentPromo.tsx, src/lib/tournamentPromo.ts): una volta per browser
  *     tournament_promo_click clic su "Iscriviti al torneo" del popup, verso la     tournament
@@ -156,6 +162,12 @@
  *     tournament_promo_close popup chiuso senza andare al torneo                   tournament, method (close: la × |
  *                                                                                 later: "Non ora" | esc: Esc o il tasto
  *                                                                                 Indietro del telefono | backdrop: clic fuori)
+ *     event_channel_click   clic su "Vai al canale" del giveaway di un evento     placement (clock | talent), channel (il
+ *                         della community (10/11/2026, src/lib/event/)             canale Twitch)
+ *     event_code_redeem     riscatto di un codice del giveaway di un evento        result (ok | mine | taken | invalid |
+ *                                                                                 limit | too_many | closed | …)
+ *     event_redeem_signin   "Accedi e riscatta": verso l'accesso con il codice     placement
+ *                         tenuto nel browser
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
@@ -232,6 +244,8 @@ export type AuthMethod = "discord" | "email" | "steam";
 export const AUTH_METHODS: readonly AuthMethod[] = ["discord", "email", "steam"];
 export type SearchArea = "cards" | "deck_builder";
 export type DiscordServer = "originsmeta" | "official" | "other";
+/** Da dove si arriva alla pagina per i creator (evento for_creators_open): un posto nuovo si aggiunge qui e nel catalogo. */
+export type ForCreatorsPlacement = "account_menu" | "account" | "creators" | "footer";
 
 export type EventParams = {
   sign_up: { method: AuthMethod };
@@ -291,9 +305,13 @@ export type EventParams = {
   kickstarter_landing_open: { placement: "slider" | "site_bar" | "home_bar" | "guide" | "card" };
   creator_apply_click: { placement: string };
   creator_kit_download: { file: string; placement: string };
+  for_creators_open: { placement: ForCreatorsPlacement };
   tournament_promo_view: { tournament: string };
   tournament_promo_click: { tournament: string };
   tournament_promo_close: { tournament: string; method: "close" | "later" | "esc" | "backdrop" };
+  event_channel_click: { placement: "clock" | "talent"; channel: string };
+  event_code_redeem: { result: string };
+  event_redeem_signin: { placement: string };
 };
 export type EventName = keyof EventParams;
 
@@ -356,9 +374,13 @@ export const VERCEL_PROPS = {
   kickstarter_landing_open: ["placement"],
   creator_apply_click: ["placement"],
   creator_kit_download: ["file", "placement"],
+  for_creators_open: ["placement"],
   tournament_promo_view: ["tournament"],
   tournament_promo_click: ["tournament"],
   tournament_promo_close: ["method", "tournament"],
+  event_channel_click: ["placement", "channel"],
+  event_code_redeem: ["result"],
+  event_redeem_signin: ["placement"],
 } as const satisfies { [N in EventName]: readonly (keyof EventParams[N] & string)[] };
 
 export const isEventName = (name: unknown): name is EventName => typeof name === "string" && Object.hasOwn(VERCEL_PROPS, name);
@@ -1187,8 +1209,11 @@ export function placementOf(el: Closest): string {
   return "other";
 }
 
-/** Posti della pagina che non sono la home anche quando si è nella home: header, footer, banner e pop-up. */
-const OUTSIDE_HOME = new Set(["header", "footer", "other"]);
+/**
+ * Posti della pagina che non sono la home anche quando si è nella home: header, footer, banner e pop-up; e il menu
+ * dell'account, che sta nell'header ma dichiara un posto suo (`account_menu`, la voce verso /for-creators).
+ */
+const OUTSIDE_HOME = new Set(["header", "footer", "other", "account_menu"]);
 
 /**
  * Ascoltatore dei clic su tutto il documento (click e clic con la rotellina, auxclick), registrato da GoogleAnalytics.tsx

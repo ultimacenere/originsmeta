@@ -1441,7 +1441,7 @@ export const pt: Dictionary = {
     hiddenRule: "As decklists ficam ocultas até o top 4: o seu oponente só vê as suas Lendárias. As listas dos semifinalistas ficam públicas quando eles chegam ao top 4, as de todos quando o torneio termina.",
     top4Decklists: "Decklists do top 4",
     noShowPill: "Ausência: {n} min",
-    noShowRule: "Chegue na hora: a partir do momento em que a sua partida está pronta (a partir da rodada 2, quando as duas partidas anteriores terminam), se você não abrir a sala da partida em {n} minutos, o seu oponente pode pedir a vitória por W.O.",
+    noShowRule: "Chegue na hora: quando a sua partida está pronta (a partir da rodada 2, quando as duas partidas anteriores terminam), abra a sala da partida, ou seja, a página dessa partida: com “Ir para minha partida” no topo desta página, pelo chaveamento ou pela notificação. Basta abrir a página. Se você não fizer isso em {n} minutos, o seu oponente pode pedir a vitória por W.O.",
     withdraw: "Desistir",
     withdrawConfirm: "Desistir do torneio agora? Você perde a partida atual (ou a próxima, assim que o seu oponente for conhecido).",
     checkin: {

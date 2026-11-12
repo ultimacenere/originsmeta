@@ -1,0 +1,662 @@
+/*
+  Regia e pannello del mod nello stile della Locandina (11/11/2026, Pierluigi: "seguendo lo stile della prima rifammi
+  anche le altre due"). Stesse classi della pagina pubblica (`ev ev--a`) più `ev-tool`: testata a manifesto ma raccolta
+  (sono strumenti, non una vetrina), pannelli con l'ombra piena, numeri a contorno solo dove l'ordine è quello della
+  serata (ruota, turni, giveaway), strisce con la banda di colore, "VS" nei tavoli.
+*/
+.ev-tool {
+  padding-bottom: 4rem;
+}
+.ev-tool-msg {
+  padding-block: 2.5rem;
+}
+
+/* ---------- testata ---------- */
+.ev--a.ev-tool .ev-hero {
+  padding: clamp(1.6rem, 4vw, 2.6rem) 0 clamp(2rem, 4vw, 2.8rem);
+}
+.ev--a.ev-tool .ev-hero-in {
+  display: block;
+}
+.ev--a.ev-tool .ev-title {
+  font-size: clamp(2rem, calc((100vw - 3rem) / (var(--ev-len, 6) * 0.86)), 4.6rem);
+}
+.ev--a.ev-tool .ev-tagline {
+  margin-top: 1.6rem;
+  font-size: 1rem;
+}
+.ev--a.ev-tool .ev-tagline b {
+  color: var(--ev-sky);
+}
+.ev--a.ev-tool .ev-hero .ev-cta {
+  margin-top: 1.5rem;
+}
+.ev-tool-status {
+  min-height: 1.4rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ev-gold);
+}
+.ev-tool-alert {
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 0.95rem;
+  border: 3px solid var(--ev-gold);
+  border-radius: 6px;
+  background: var(--ev-night-2);
+  font-size: 0.875rem;
+  color: var(--ev-pale);
+}
+.ev-tool-alert > p {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ev-gold);
+}
+.ev-tool-alert.is-bad {
+  border-color: var(--color-bad, #ff5c5c);
+}
+.ev-tool-alert.is-bad > p {
+  color: var(--color-bad, #ff5c5c);
+}
+.ev-tool-alert ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1.2rem;
+  list-style: disc;
+}
+
+/* ---------- pannelli ---------- */
+.ev-tool .ev-main {
+  gap: 2rem;
+  padding-top: 0.25rem;
+}
+.ev-main--narrow {
+  max-width: 58rem;
+}
+.ev-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 3px solid var(--ev-night-3);
+  border-radius: 8px;
+  background: var(--ev-night-2);
+  box-shadow: 8px 8px 0 rgba(14, 7, 31, 0.85);
+}
+.ev-panel > * {
+  margin: 0;
+}
+.ev-tool .ev-panel .ev-head {
+  margin-bottom: 0.1rem;
+}
+.ev-tool .ev-head-n {
+  font-size: clamp(2.2rem, 5.5vw, 3.2rem);
+}
+.ev-tool .ev-h2 {
+  font-size: clamp(1.2rem, 3.2vw, 1.7rem);
+}
+.ev-tool .ev-panel .ev-cta {
+  margin-top: 0;
+  align-items: center;
+}
+.ev-tool-text {
+  font-size: 0.925rem;
+  line-height: 1.5;
+  color: var(--ev-pale);
+}
+.ev-tool-warn {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ev-gold);
+}
+.ev-tool-ok {
+  font-size: 0.925rem;
+  font-weight: 700;
+  color: var(--ev-mint);
+}
+.ev-tool .ev-note {
+  margin: 0;
+}
+.ev-tool p.ev-empty {
+  background: var(--ev-deep);
+}
+.ev-tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+.ev-tool-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.875rem;
+  color: var(--ev-pale);
+}
+.ev-tool-input {
+  width: 15rem;
+  max-width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--ev-night-3);
+  border-radius: 6px;
+  background: var(--ev-deep);
+  font: inherit;
+  color: var(--ev-chalk);
+}
+.ev-tool-input:focus {
+  border-color: var(--ev-mint);
+  outline: none;
+}
+.ev-tool-input--num {
+  width: 6.5rem;
+}
+.ev-tool-input--code {
+  width: 100%;
+  font-family: var(--ev-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--ev-pale);
+}
+.ev-tool-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: var(--ev-muted);
+}
+
+/* ---------- 01 · la ruota ---------- */
+.ev-wheel-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.75rem;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .ev-wheel-box {
+    grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
+    gap: 2.75rem;
+  }
+}
+/* la ruota sul suo palco: cerchio inchiostro, bordo giallo, ombra piena e un alone magenta */
+.ev-wheel-stage {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 27rem);
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 50%;
+  background: var(--ev-ink);
+  box-shadow: 0 0 0 4px var(--ev-gold), 0 0 0 11px var(--ev-ink), 0 16px 0 9px rgba(14, 7, 31, 0.85), 0 0 70px rgba(255, 61, 154, 0.3);
+}
+.ev-wheel-stage > div {
+  max-width: none;
+}
+.ev-wheel-stage svg {
+  display: block;
+}
+.ev-wheel-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+.ev-wheel-left {
+  margin: 0;
+  font-family: var(--ev-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ev-gold);
+}
+/* il mazzo appena uscito: un cartello giallo storto che salta fuori */
+.ev-result {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0.6rem 1.1rem 0.65rem;
+  background: var(--ev-gold);
+  box-shadow: 6px 6px 0 rgba(14, 7, 31, 0.9);
+  font-family: var(--ev-display);
+  font-weight: 800;
+  font-size: clamp(1rem, 2.6vw, 1.35rem);
+  line-height: 1.2;
+  color: var(--ev-ink);
+  transform: rotate(-2deg);
+  animation: ev-pop 480ms cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes ev-pop {
+  from {
+    opacity: 0;
+    transform: rotate(-2deg) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-2deg) scale(1);
+  }
+}
+.ev-tool .ev-assigned {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.55rem;
+  margin-inline: 4px;
+}
+@media (min-width: 560px) {
+  .ev-tool .ev-assigned {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem 0.9rem;
+  }
+}
+.ev-tool .ev-assigned .ev-deck {
+  padding-block: 0.4rem;
+}
+.ev-tool .ev-assigned .ev-deck-name {
+  font-size: 0.9rem;
+}
+.ev-tool .ev-assigned .ev-deck-sub {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  color: var(--ev-pale);
+}
+
+/* ---------- 02 · turni: si tocca chi ha vinto ---------- */
+.ev-ctl-round + .ev-ctl-round {
+  margin-top: 0.4rem;
+}
+.ev-tool .ev-round-title {
+  margin: 0;
+}
+.ev-ctl-matches {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.8rem;
+}
+@media (min-width: 900px) {
+  .ev-ctl-matches {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1.1rem;
+  }
+}
+.ev--a.ev-tool .ev-match {
+  padding: 0.65rem 0.75rem 0.75rem;
+  background: var(--ev-deep);
+  box-shadow: 4px 4px 0 rgba(14, 7, 31, 0.85);
+}
+.ev-tool .ev-match-top {
+  margin: 0 0 0.5rem;
+  font-family: var(--ev-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ev-muted);
+}
+.ev-ctl-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
+}
+.ev-pick {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.55rem 0.7rem;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ev-night-3) 60%, transparent);
+  text-align: left;
+  color: var(--ev-chalk);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+.ev-pick:hover:not(:disabled) {
+  border-color: var(--ev-gold);
+  transform: translateY(-2px);
+}
+.ev-pick:focus-visible {
+  outline: 3px solid var(--ev-mint);
+  outline-offset: 2px;
+}
+.ev-pick:disabled {
+  cursor: default;
+}
+.ev-pick.is-won {
+  border-color: var(--ev-gold);
+  background: rgba(242, 210, 60, 0.14);
+}
+.ev-pick-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--ev-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ev-sky);
+}
+.ev-pick-deck {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--ev-muted);
+}
+.ev-pick .ev-won {
+  font-family: var(--ev-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ev-ctl-match.is-done .ev-pick:not(.is-won) {
+  opacity: 0.55;
+}
+.ev-bye {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ev-pale);
+}
+@media (max-width: 480px) {
+  .ev-ctl-row {
+    flex-direction: column;
+  }
+}
+.ev--a.ev-tool .ev-standings {
+  border-width: 2px;
+  box-shadow: none;
+  background: var(--ev-deep);
+}
+.ev-tool .ev-standings :is(th, td) {
+  padding: 0.4rem 0.75rem;
+}
+
+/* ---------- 03 · giveaway: il tabellone ---------- */
+.ev-ctl-clock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  padding: 0.8rem 1rem;
+  border: 3px solid var(--ev-gold);
+  border-radius: 6px;
+  background: var(--ev-deep);
+}
+.ev-ctl-clock.is-running {
+  border-color: var(--ev-mint);
+}
+.ev-ctl-clock-ch {
+  min-width: 0;
+  font-family: var(--ev-display);
+  font-weight: 800;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: var(--ev-sky);
+  overflow-wrap: anywhere;
+}
+.ev-ctl-clock-note {
+  font-family: var(--ev-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ev-pink);
+}
+.ev-ctl-clock-time {
+  margin-left: auto;
+  font-family: var(--ev-mono);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ev-gold);
+}
+.ev-ctl-slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.45rem;
+}
+.ev-ctl-slot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.8rem;
+  min-width: 0;
+  padding: 0.45rem 0.7rem 0.45rem 0.95rem;
+  border-radius: 4px;
+  background: var(--ev-deep);
+  box-shadow: inset 5px 0 0 var(--ev-night-3);
+  font-size: 0.875rem;
+}
+.ev-ctl-slot.is-current {
+  box-shadow: inset 5px 0 0 var(--ev-mint), 0 0 0 2px var(--ev-mint);
+}
+.ev-ctl-slot-n {
+  font-family: var(--ev-mono);
+  font-size: 0.75rem;
+  color: var(--ev-muted);
+}
+.ev-ctl-slot-ch {
+  font-weight: 700;
+  color: var(--ev-sky);
+}
+.ev-ctl-slot-state {
+  font-weight: 700;
+  color: var(--ev-chalk);
+}
+.ev-ctl-slot-info {
+  font-size: 0.8rem;
+  color: var(--ev-muted);
+}
+.ev-ctl-slot .btn,
+.ev-ctl-slot-end {
+  margin-left: auto;
+}
+.ev-chat-status {
+  font-size: 0.875rem;
+  color: var(--ev-pale);
+}
+.ev-chat-status.is-on {
+  font-weight: 700;
+  color: var(--ev-mint);
+}
+
+/* ---------- dietro le quinte ---------- */
+.ev-backstage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .ev-backstage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ev-backstage > .is-wide {
+    grid-column: 1 / -1;
+  }
+}
+.ev-backstage-title {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0.5rem 0 -0.6rem;
+  font-family: var(--ev-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ev-gold);
+}
+.ev-backstage-title::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--ev-night-3);
+}
+.ev-backstage .ev-head-k {
+  display: none;
+}
+.ev-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.4rem;
+}
+@media (min-width: 640px) {
+  .ev-list--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.ev-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.6rem;
+  min-width: 0;
+  padding: 0.35rem 0.5rem 0.35rem 0.7rem;
+  border-radius: 4px;
+  background: var(--ev-deep);
+  font-size: 0.875rem;
+}
+.ev-list-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--ev-sky);
+}
+.ev-list-sub {
+  font-size: 0.75rem;
+  color: var(--ev-muted);
+}
+
+/* ---------- pannello del mod: vincitori e codici ---------- */
+.ev-codes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+.ev-code {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.8rem;
+  min-width: 0;
+  padding: 0.5rem 0.7rem 0.5rem 0.95rem;
+  border-radius: 4px;
+  background: var(--ev-deep);
+  box-shadow: inset 5px 0 0 var(--ev-pink);
+  font-size: 0.875rem;
+}
+.ev-code.is-redeemed {
+  box-shadow: inset 5px 0 0 var(--ev-mint);
+}
+.ev-code-slot {
+  font-family: var(--ev-mono);
+  font-size: 0.75rem;
+  color: var(--ev-muted);
+}
+.ev-code-who {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--ev-sky);
+}
+.ev-code-code {
+  font-family: var(--ev-mono);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ev-gold);
+}
+.ev-code-tag {
+  padding: 0 0.4rem;
+  border-radius: 3px;
+  background: var(--ev-mint);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ev-ink);
+}
+.ev-code-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+/* ---------- ritocchi: tasti piccoli nelle righe, slot su due colonne nella regia ---------- */
+.ev-ctl-slot .btn,
+.ev-list .btn {
+  padding: calc(0.32rem - 2px) calc(0.7rem - 2px);
+  font-size: 0.68rem;
+}
+@media (min-width: 1000px) {
+  .ev-main:not(.ev-main--narrow) .ev-ctl-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem 0.9rem;
+  }
+}
+@media (min-width: 640px) {
+  .ev-backstage .ev-list:not(.ev-list--two) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 12/11/2026: nuova estrazione (la ruota si rigira, mazzo sempre nuovo) ed estrazioni precedenti */
+.ev-newdraw {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: start;
+  margin-top: 0.9rem;
+  padding: 0.8rem 0.9rem;
+  border: 2px dashed var(--ev-gold);
+  border-radius: 14px;
+}
+.ev-tool-note {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ev-pale);
+}
+.ev-earlier {
+  margin-top: 0.9rem;
+}
+.ev-earlier > summary {
+  cursor: pointer;
+  font-family: var(--ev-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ev-sky);
+}
+.ev-earlier-title {
+  margin: 0.7rem 4px 0.35rem;
+  font-family: var(--ev-mono);
+  font-size: 0.75rem;
+  color: var(--ev-gold);
+}
+.ev-earlier .ev-assigned .ev-deck {
+  opacity: 0.8;
+}

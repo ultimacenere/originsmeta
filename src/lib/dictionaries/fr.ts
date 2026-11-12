@@ -1444,7 +1444,7 @@ export const fr: Dictionary = {
     hiddenRule: "Les listes restent cachées jusqu'au top 4 : votre adversaire ne voit que vos Légendaires. Les listes des demi-finalistes deviennent publiques quand ils atteignent le top 4, celles de tout le monde à la fin du tournoi.",
     top4Decklists: "Listes du top 4",
     noShowPill: "Absence : {n} min",
-    noShowRule: "Soyez à l'heure : dès que votre match est prêt (à partir de la manche 2, quand les deux matchs précédents sont finis), si vous n'ouvrez pas la salle de match dans les {n} minutes, votre adversaire peut réclamer la victoire par forfait.",
+    noShowRule: "Soyez à l'heure : dès que votre match est prêt (à partir de la manche 2, quand les deux matchs précédents sont finis), ouvrez sa salle de match, c'est-à-dire la page du match : avec « Aller à mon match » en haut de cette page, depuis l'arbre ou depuis la notification. Il suffit d'ouvrir la page. Si vous ne le faites pas dans les {n} minutes, votre adversaire peut réclamer la victoire par forfait.",
     withdraw: "Se retirer",
     withdrawConfirm: "Vous retirer du tournoi maintenant ? Vous perdez votre match en cours (ou le suivant, dès que votre adversaire est connu).",
     checkin: {

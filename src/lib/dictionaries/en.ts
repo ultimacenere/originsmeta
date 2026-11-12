@@ -1449,7 +1449,7 @@ export const en = {
     hiddenRule: "Decklists stay hidden until the top 4: your opponent only sees your Legendaries. Semifinalists' lists go public when they reach the top 4, everyone's when the tournament ends.",
     top4Decklists: "Top 4 decklists",
     noShowPill: "No-show: {n} min",
-    noShowRule: "Be on time: from the moment your match is ready (from round 2, when the two matches before it are over), if you don't open the match room within {n} minutes your opponent can claim the win by forfeit.",
+    noShowRule: "Be on time: when your match is ready (from round 2, when the two matches before it are over), open its match room, the page of your match: use “Go to my match” at the top of this page, click your match in the bracket or open the notification. Opening the page is enough. If you don't within {n} minutes, your opponent can claim the win by forfeit.",
     withdraw: "Withdraw",
     withdrawConfirm: "Withdraw from the tournament now? You lose your current match (or the next one, as soon as your opponent is known).",
     checkin: {

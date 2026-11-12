@@ -1,3 +1,4 @@
+import type { ForCreatorsPlacement } from "./analytics";
 import type { Locale } from "./i18n";
 
 /**
@@ -64,3 +65,30 @@ export const isExternal = (path: string): boolean => /^https:\/\//.test(path);
 /** Casella "Scrivi allo staff" già compilata con la richiesta del ruolo Creator (account/messages?topic=creator). */
 export const CREATOR_TOPIC = "creator";
 export const creatorApplyPath = `/account/messages?topic=${CREATOR_TOPIC}#messages`;
+
+export const FOR_CREATORS_PATH = "/for-creators";
+
+/**
+ * I posti da cui si arriva alla pagina (12/11/2026, riunione per l'Attrix Showmatch dell'11/11: la pagina era "accessibile
+ * dal footer del sito, da spostare in posizione più visibile", e "se taggati creator, dovrebbe apparire un tasto dedicato
+ * nell'interfaccia"). `account_menu` (voce del menu dell'account nell'header) e `account` (riquadro in cima a /account) li
+ * vede solo chi ha un ruolo con vetrina (`isShowcaseBadge` di community/badges.ts: Creator, Autore, Pro, Staff);
+ * `creators` (riquadro in cima alla directory /creators) e `footer` (colonna "Esplora") tutti.
+ */
+export const FOR_CREATORS_PLACEMENTS: readonly ForCreatorsPlacement[] = ["account_menu", "account", "creators", "footer"];
+
+/**
+ * Attributi di misura di un link verso la pagina: evento `for_creators_open` con il posto del link (catalogo in
+ * analytics.ts; li legge `onDocumentClick`). Si mettono sul link o sul suo contenitore.
+ */
+export function forCreatorsTrack(placement: ForCreatorsPlacement): { "data-om-event": "for_creators_open"; "data-om-placement": ForCreatorsPlacement } {
+  return { "data-om-event": "for_creators_open", "data-om-placement": placement };
+}
+
+/**
+ * La voce del menu dell'account (`entry.menu` dei testi) sta su una riga: il menu è largo 224 px, il testo ne ha 180 e
+ * il font dei titoli è largo (misurato il 12/11/2026 con il font vero: "Strumenti per i creator" fa 196 px e non ci sta,
+ * "Strumenti creator" 156, la più larga delle otto). Il tetto in caratteri è solo un paracadute per i testi futuri: una
+ * voce nuova va comunque misurata nel menu.
+ */
+export const ENTRY_MENU_MAX_CHARS = 18;

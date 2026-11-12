@@ -654,6 +654,17 @@ describe("nel browser", () => {
     go("https://originsmeta.com/it/news");
     click(new FakeAnchor("a", { href: "/it/cards" }, tree.main));
     assert.equal(vercelEvents().length, h);
+    // la pagina per i creator (12/11/2026): la voce del menu dell'account sta nell'header ma dichiara un posto suo, sul
+    // contenitore; in home manda solo il suo evento, non anche home_route (il menu dell'account non è smistamento della home)
+    go("https://originsmeta.com/it");
+    const accountMenu = new FakeEl("div", { "data-om-event": "for_creators_open", "data-om-placement": "account_menu" }, tree.header);
+    click(new FakeAnchor("a", { href: "/it/for-creators" }, accountMenu));
+    assert.equal(vercelEvents().length, h + 1);
+    assert.deepEqual(vercelEvents().at(-1), { name: "for_creators_open", data: { placement: "account_menu" }, options: undefined });
+    // il link del footer, con gli attributi sul link stesso
+    click(new FakeAnchor("a", { href: "/it/for-creators", "data-om-event": "for_creators_open", "data-om-placement": "footer" }, tree.footer));
+    assert.equal(vercelEvents().length, h + 2);
+    assert.deepEqual(vercelEvents().at(-1), { name: "for_creators_open", data: { placement: "footer" }, options: undefined });
   });
 
   test("consenso ritirato: prima GA4 spento, poi il consenso negato; cookie _ga cancellati su ogni dominio; poi solo Vercel", () => {

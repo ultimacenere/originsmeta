@@ -61,6 +61,88 @@ async function streamsOf(creds: { id: string; secret: string }, logins: readonly
   return [];
 }
 
+/* ---------- eventi della community (10/11/2026) ---------- */
+
+const USERS_URL = "https://api.twitch.tv/helix/users";
+const AVATAR_TTL_MS = 6 * 3600_000;
+const LIVE_TTL_MS = 60_000;
+const avatarCache = new Map<string, { url: string | null; at: number }>();
+let liveCache: { key: string; logins: string[]; at: number } | null = null;
+const LOGIN_RE = /^[a-z0-9_]{3,25}$/;
+
+/**
+ * Foto del profilo Twitch dei talent di un evento (login → indirizzo https dell'immagine, al massimo 100 canali). Tenute
+ * in memoria sei ore e nella cache dei dati di Next: la pagina dell'evento e la sua rotta le chiedono a ogni
+ * rigenerazione, Twitch le vede una volta ogni tanto. Senza chiavi, o con Twitch giù, nessuna foto (si vede l'iniziale).
+ */
+export async function twitchAvatars(logins: readonly string[]): Promise<Record<string, string>> {
+  const creds = credentials();
+  if (!creds) return {};
+  const out: Record<string, string> = {};
+  const want = [...new Set(logins.map((l) => l.toLowerCase()))].filter((l) => LOGIN_RE.test(l)).slice(0, 100);
+  const missing = want.filter((l) => {
+    const c = avatarCache.get(l);
+    if (c && Date.now() - c.at < AVATAR_TTL_MS) {
+      if (c.url) out[l] = c.url;
+      return false;
+    }
+    return true;
+  });
+  if (!missing.length) return out;
+  const query = new URLSearchParams(missing.map((l) => ["login", l]));
+  try {
+    for (const fresh of [false, true]) {
+      const token = await appToken(creds, fresh);
+      const res = await fetch(`${USERS_URL}?${query}`, {
+        headers: { "Client-Id": creds.id, Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+        next: { revalidate: 21600 },
+      });
+      if (res.status === 401 && !fresh) {
+        cachedToken = null;
+        continue;
+      }
+      if (!res.ok) throw new Error(`users Twitch: HTTP ${res.status}`);
+      const json = (await res.json()) as { data?: { login?: string; profile_image_url?: string }[] };
+      const now = Date.now();
+      for (const u of json.data ?? []) {
+        const login = (u.login ?? "").toLowerCase();
+        const url = typeof u.profile_image_url === "string" && u.profile_image_url.startsWith("https://") ? u.profile_image_url : null;
+        if (!login) continue;
+        avatarCache.set(login, { url, at: now });
+        if (url) out[login] = url;
+      }
+      for (const l of missing) if (!avatarCache.has(l)) avatarCache.set(l, { url: null, at: now });
+      break;
+    }
+  } catch (error) {
+    console.error("[twitch] foto degli eventi:", error instanceof Error ? error.message : error);
+  }
+  return out;
+}
+
+/**
+ * Quali canali di un evento sono in diretta adesso (qualunque categoria: durante l'evento contano tutti), tenuto un
+ * minuto in memoria. Senza chiavi o con Twitch giù: nessuno.
+ */
+export async function liveLogins(logins: readonly string[]): Promise<string[]> {
+  const creds = credentials();
+  if (!creds) return [];
+  const want = [...new Set(logins.map((l) => l.toLowerCase()))].filter((l) => LOGIN_RE.test(l)).slice(0, 100).sort();
+  if (!want.length) return [];
+  const key = want.join(",");
+  if (liveCache && liveCache.key === key && Date.now() - liveCache.at < LIVE_TTL_MS) return liveCache.logins;
+  try {
+    const streams = await streamsOf(creds, want);
+    const live = [...new Set(streams.map((s) => (s.user_login ?? "").toLowerCase()).filter(Boolean))];
+    liveCache = { key, logins: live, at: Date.now() };
+    return live;
+  } catch (error) {
+    console.error("[twitch] dirette degli eventi:", error instanceof Error ? error.message : error);
+    return liveCache?.key === key ? liveCache.logins : [];
+  }
+}
+
 /**
  * Chi fra i profili vetrina (ruolo Creator, Autore, Pro o Staff + canale Twitch nel profilo) è in diretta su Origins TCG adesso. Senza chiavi:
  * `enabled: false` e nessuna chiamata. Un errore di Twitch o del database sale: la rotta lo trasforma in "nessuno".

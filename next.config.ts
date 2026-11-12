@@ -64,6 +64,8 @@ const sections = [
   "deck-builder",
   "decks",
   "draft",
+  // eventi della community (10/11/2026, src/lib/event): la pagina è solo in italiano e le altre lingue ci rimandano
+  "events",
   "faq",
   // la pagina per i creator: strumenti con le guide passo passo e media kit (30/10/2026)
   "for-creators",
@@ -193,6 +195,9 @@ const nextConfig: NextConfig = {
       ...rootRedirect("/en"),
       // Sezioni senza lingua (/cards/merlin, /news/<slug>…): la stessa pagina nella lingua del browser.
       ...sectionRedirects(),
+      // Link breve dell'Attrix Showmatch dei creator italiani (16/11/2026), da dire in diretta e da mettere nei comandi dei bot:
+      // la pagina esiste solo in italiano. Tabella uguale a EVENT_SHORT_PATHS di src/lib/event/links.ts. Temporaneo (307).
+      { source: "/showmatch", destination: "/it/events/attrix-showmatch", permanent: false },
       // /tier-list/win-rate: dal 02 al 10/10/2026 era un 308 verso /analytics (tool in pausa dalla patch 0.7); tolto il
       // 10/10/2026, quando la pagina dei win rate è tornata (Pierluigi: "vanno riaperte"). Dal 12/10/2026 di nuovo un 308
       // verso /analytics, che ora è la pagina delle statistiche (Pierluigi: "non si chiama più win rate ma si chiama

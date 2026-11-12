@@ -45,11 +45,13 @@ describe("sitemap del profilo pubblico e della directory dei creator", () => {
     assert.ok(!few.some((p) => p.path === "/creators"));
     const none = sitemapPages(base);
     assert.ok(!none.some((p) => p.path === "/creators"), "senza dati del profilo pubblico (migrazione non applicata) niente directory");
-    const many = sitemapPages({ ...base, showcase: { creators: 4, latest: "2026-11-06T08:00:00+00:00", byUser: [] } });
+    // l'ultimo profilo cambiato dopo l'ultimo ritocco al modello della pagina (PAGE_UPDATED["/creators"], 12/11/2026: il
+    // riquadro verso la pagina per i creator), così nel lastmod si vede la data dei profili e non quella del modello
+    const many = sitemapPages({ ...base, showcase: { creators: 4, latest: "2026-11-20T08:00:00+00:00", byUser: [] } });
     for (const locale of ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"] as const) {
       const entry = sectionEntries(many, "pages", locale, TODAY).find((e) => e.url === `${SITE}/${locale}/creators`);
       assert.ok(entry, `manca /${locale}/creators`);
-      assert.equal(entry.lastmod, "2026-11-06");
+      assert.equal(entry.lastmod, "2026-11-20");
       assert.equal(Object.keys(entry.alternates ?? {}).length, 9, "hreflang delle otto lingue più x-default");
     }
   });
