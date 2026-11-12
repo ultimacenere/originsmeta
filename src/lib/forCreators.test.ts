@@ -8,7 +8,7 @@ import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { KIT_COLORS, KIT_FILES, KIT_ZIP, TOOL_IDS, TWITCH_EXTENSION_URL, creatorApplyPath, fillCode, isExternal, kitFilePath } from "./forCreators.ts";
+import { ENTRY_MENU_MAX_CHARS, FOR_CREATORS_PATH, FOR_CREATORS_PLACEMENTS, KIT_COLORS, KIT_FILES, KIT_ZIP, TOOL_IDS, TWITCH_EXTENSION_URL, creatorApplyPath, fillCode, forCreatorsTrack, isExternal, kitFilePath } from "./forCreators.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { en } from "./forCreatorsLabels-en.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
@@ -116,6 +116,10 @@ describe("testi nelle sette lingue", () => {
       assert.match(labels.unofficial, /Koin Games/);
       assert.match(labels.join.body, /\n/);
     });
+    test(`${locale}: la voce del menu dell'account è corta (sta su una riga)`, () => {
+      assert.ok([...labels.entry.menu].length <= ENTRY_MENU_MAX_CHARS, `${locale}: "${labels.entry.menu}" ha più di ${ENTRY_MENU_MAX_CHARS} caratteri`);
+      assert.doesNotMatch(labels.entry.menu, /\s{2,}|^\s|\s$/);
+    });
   }
 });
 
@@ -143,5 +147,39 @@ describe("media kit e costanti", () => {
   });
   test("la richiesta del ruolo Creator apre la casella con il messaggio già scritto", () => {
     assert.equal(creatorApplyPath, "/account/messages?topic=creator#messages");
+  });
+});
+
+describe("link verso la pagina (12/11/2026)", () => {
+  const read = (path: string) => readFileSync(new URL(path, root), "utf8");
+  test("forCreatorsTrack: l'evento for_creators_open con il posto del link", () => {
+    assert.deepEqual(forCreatorsTrack("account_menu"), { "data-om-event": "for_creators_open", "data-om-placement": "account_menu" });
+    assert.deepEqual(forCreatorsTrack("footer"), { "data-om-event": "for_creators_open", "data-om-placement": "footer" });
+    assert.equal(FOR_CREATORS_PATH, "/for-creators");
+    assert.ok(existsSync(new URL(`src/app/[locale]/(site)${FOR_CREATORS_PATH}/page.tsx`, root)));
+  });
+  test("i posti sono quelli del catalogo degli eventi, e l'evento c'è in EventParams e VERCEL_PROPS", () => {
+    const analytics = read("src/lib/analytics.ts");
+    const union = /export type ForCreatorsPlacement = ([^;]+);/.exec(analytics)?.[1] ?? "";
+    assert.deepEqual([...union.matchAll(/"([a-z_]+)"/g)].map((m) => m[1]), [...FOR_CREATORS_PLACEMENTS]);
+    assert.match(analytics, /^  for_creators_open: \{ placement: ForCreatorsPlacement \};/m);
+    assert.match(analytics, /^  for_creators_open: \["placement"\],/m);
+    // il menu dell'account sta nell'header: in home il suo clic non deve contare anche come smistamento della home
+    assert.match(analytics, /const OUTSIDE_HOME = new Set\(\[[^\]]*"account_menu"[^\]]*\]\)/);
+  });
+  test("ogni posto ha il suo link, e i due dell'account stanno dietro il ruolo con vetrina", () => {
+    const menu = read("src/components/AccountMenu.tsx");
+    const account = read("src/app/[locale]/(site)/account/page.tsx");
+    // il ruolo arriva con la lettura del profilo che il menu faceva già (mai select("*") su profiles)
+    assert.match(menu, /\.select\("username, display_name, avatar_url, badge"\)/);
+    assert.match(menu, /\{isShowcaseBadge\(profile\?\.badge\) \? \(\s*<div \{\.\.\.forCreatorsTrack\("account_menu"\)\}>/);
+    assert.match(account, /const creatorRole = isShowcaseBadge\(profile\?\.badge\) \?/);
+    assert.match(account, /\{creatorRole \? \(\s*<ForCreatorsCallout\s+locale=\{locale\}\s+placement="account"/);
+    assert.match(read("src/app/[locale]/(site)/creators/page.tsx"), /<ForCreatorsCallout locale=\{locale\} placement="creators"/);
+    assert.match(read("src/components/Footer.tsx"), /forCreatorsTrack\("footer"\)/);
+    for (const placement of FOR_CREATORS_PLACEMENTS) {
+      const used = [menu, account, read("src/app/[locale]/(site)/creators/page.tsx"), read("src/components/Footer.tsx")].some((src) => src.includes(`"${placement}"`));
+      assert.ok(used, `nessun link con il posto ${placement}`);
+    }
   });
 });

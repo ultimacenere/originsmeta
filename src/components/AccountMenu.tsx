@@ -6,7 +6,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseEnabled, supabaseUrl } from "@/lib/supabase/env";
 import { AnalyticsNavLink } from "./AnalyticsOnly";
-import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
+import { ANALYTICS_PUBLIC, isShowcaseBadge } from "@/lib/community/badges";
+// voce "Strumenti creator" per i ruoli con vetrina (12/11/2026): la pagina /for-creators e la misura del clic
+import { FOR_CREATORS_PATH, forCreatorsTrack } from "@/lib/forCreators";
 // foto profilo caricata dal sito prima di quella di Discord (pacchetto VETRINA, 27/09/2026)
 import { PROFILE_UPDATED_EVENT, avatarSrc } from "@/lib/community/profileMedia";
 import type { Profile } from "@/lib/community/types";
@@ -15,7 +17,8 @@ import { NavLink } from "./NavLink";
 // casella messaggi (26/09/2026, pacchetto INBOX): busta con i non letti (27/09/2026) e voci del menu, caricati nel browser
 import { InboxEnvelope, InboxMenuLinks, useInboxStatus } from "./inbox/InboxIndicator";
 
-export type AccountLabels = { login: string; account: string; builder: string; logout: string; player: string };
+/** `creators`: la voce verso la pagina per i creator, che compare solo a chi ha un ruolo con vetrina (12/11/2026). */
+export type AccountLabels = { login: string; account: string; builder: string; creators: string; logout: string; player: string };
 
 type Session = { id: string; email?: string } | null | undefined;
 
@@ -87,7 +90,9 @@ export function AccountMenu({ locale, labels }: { locale: string; labels: Accoun
       const u = session?.user;
       setUser(u ? { id: u.id, email: u.email } : null);
       if (u) {
-        const { data, error } = await sb.from("profiles").select("username, display_name, avatar_url").eq("id", u.id).maybeSingle();
+        // `badge` (12/11/2026): il ruolo decide la voce "Strumenti creator" del menu. Sta nella stessa lettura del profilo
+        // che il menu faceva già: nessuna richiesta in più, e l'header resta statico (il ruolo si sa solo nel browser).
+        const { data, error } = await sb.from("profiles").select("username, display_name, avatar_url, badge").eq("id", u.id).maybeSingle();
         if (!alive) return;
         setProfile((data as Profile | null) ?? null);
         // con un errore di rete il profilo potrebbe esistere: niente ripiego sull'email, resta il nome generico
@@ -173,6 +178,16 @@ function AccountDetails({
         <NavLink href={`/${locale}/deck-builder`} className="nav-link-block">
           {labels.builder}
         </NavLink>
+        {/* La pagina per i creator (12/11/2026, riunione per l'Attrix Showmatch: "se taggati creator, dovrebbe apparire un
+            tasto dedicato nell'interfaccia"): solo per chi ha un ruolo con vetrina (Creator, Autore, Pro, Staff), gli altri
+            la trovano in /creators e nel footer. Il contenitore porta gli attributi della misura (for_creators_open). */}
+        {isShowcaseBadge(profile?.badge) ? (
+          <div {...forCreatorsTrack("account_menu")}>
+            <NavLink href={`/${locale}${FOR_CREATORS_PATH}`} className="nav-link-block">
+              {labels.creators}
+            </NavLink>
+          </div>
+        ) : null}
         {/* OriginsMeta Tracker in prova (10/10/2026; nome del 12/10): la pagina dell'app con il download, solo per i ruoli ammessi */}
         {ANALYTICS_PUBLIC ? null : (
           <AnalyticsNavLink locale={locale} page="app" label="OriginsMeta Tracker" className="nav-link-block" />

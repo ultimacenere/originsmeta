@@ -326,6 +326,15 @@ export const pt: ForCreatorsLabels = {
       { q: "Algo não funciona?", a: "Escreva para nós no Discord ou pelo envelope no alto do site: diga qual ferramenta e qual passo." },
     ],
   },
-  entry: { footer: "Para criadores", creators: "Ferramentas e media kit para criadores" },
+  entry: {
+    footer: "Para criadores",
+    menu: "Para criadores",
+    cta: "Ver ferramentas",
+    creatorsText: "Você faz lives ou vídeos de Origins TCG? Ferramentas grátis com guia passo a passo, o media kit e como pedir a função Creator.",
+    account: {
+      title: "Ferramentas para criadores",
+      text: "Guias passo a passo para o OriginsMeta Tracker, a extensão da Twitch, o overlay do deck e o comando !deck, além do media kit com logos e um selo para a sua live.",
+    },
+  },
   unofficial: "OriginsMeta é um site de fãs não oficial, não afiliado à Koin Games.",
 };

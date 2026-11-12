@@ -13,6 +13,7 @@ import { PayPalButton } from "./PayPalButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { THEORY_DECKS_PATH, THEORY_PATH } from "@/lib/theoryCraftPaths";
+import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
 
 /**
  * `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale).
@@ -193,7 +194,15 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <DiscordIconLink href={ORIGINSMETA_DISCORD} label={dict.nav.discord} className="max-sm:!hidden" />
           <AccountMenu
             locale={locale}
-            labels={{ login: dict.nav.login, account: dict.nav.account, builder: dict.nav.builder, logout: dict.nav.logout, player: dict.nav.playerFallback }}
+            labels={{
+              login: dict.nav.login,
+              account: dict.nav.account,
+              builder: dict.nav.builder,
+              // la voce verso /for-creators, che il menu mostra solo a chi ha un ruolo con vetrina (12/11/2026)
+              creators: forCreatorsLabels[locale].entry.menu,
+              logout: dict.nav.logout,
+              player: dict.nav.playerFallback,
+            }}
           />
           <LocaleSwitcher locale={locale} label={dict.nav.language} className="hidden sm:block" />
           {/* "Dona ora" verso PayPal (Pierluigi, 06/10/2026: "in alto sul menu dopo i selettori"); sotto 640 px sta nel menu.
