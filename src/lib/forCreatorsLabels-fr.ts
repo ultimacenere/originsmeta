@@ -276,7 +276,7 @@ export const fr: ForCreatorsLabels = {
         chalk: { name: "Craie", use: "texte sur fond sombre" },
       },
     },
-    fonts: { title: "Polices", text: "Montserrat Black pour le symbole, Unbounded pour les titres du site, Manrope pour ses textes. Toutes gratuites sur Google Fonts." },
+    fonts: { title: "Polices", text: "Montserrat Black pour le symbole, Sofia Sans en trois largeurs pour les titres et les textes du site. Toutes gratuites sur Google Fonts." },
     lines: {
       title: "Phrases prêtes à l'emploi",
       intro: "Pour les descriptions de vidéos, votre bio Twitch ou un message dans le chat.",

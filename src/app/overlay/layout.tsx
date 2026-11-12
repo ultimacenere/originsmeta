@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Unbounded, Manrope, JetBrains_Mono } from "next/font/google";
 import "../globals.css";
+import { siteFontVariables } from "@/fonts";
 import { OverlayRefresh } from "@/components/stream/OverlayRefresh";
 import { OVERLAY_REFRESH_SECONDS } from "@/lib/stream";
 
@@ -19,10 +19,6 @@ import { OVERLAY_REFRESH_SECONDS } from "@/lib/stream";
  * il titolo della scheda, che è in inglese: la lingua del contenuto (?lang=) la dichiara il <main>, che la sovrascrive
  * (il layout non legge i parametri dell'indirizzo).
  */
-const unbounded = Unbounded({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-unbounded", display: "swap" });
-const manrope = Manrope({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-manrope", display: "swap" });
-const jet = JetBrains_Mono({ subsets: ["latin"], weight: ["500"], variable: "--font-jet", display: "swap" });
-
 export const metadata: Metadata = {
   title: "OriginsMeta · overlay",
   robots: { index: false, follow: false },
@@ -30,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function OverlayLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${unbounded.variable} ${manrope.variable} ${jet.variable}`} style={{ background: "transparent" }}>
+    <html lang="en" className={siteFontVariables} style={{ background: "transparent" }}>
       {/* lo sfondo del sito (feltro con gli aloni) è sul body in globals.css: qui si toglie, anche l'immagine */}
       <body style={{ background: "transparent", margin: 0, overflow: "hidden" }}>
         {children}

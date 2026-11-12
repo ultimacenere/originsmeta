@@ -224,15 +224,16 @@ export default async function StylePage({ params }: { params: LocaleParams }) {
         ) : null}
       </section>
 
-      {/* Font: le tre famiglie con il loro uso */}
+      {/* Font: Sofia Sans nelle sue tre larghezze, ognuna con il suo uso (src/fonts/index.ts) */}
       <section id="fonts" className="mt-16 scroll-mt-24">
         <SectionHead kicker={s.fonts.kicker} title={s.fonts.title} sub={s.fonts.sub} />
         <ul className="card-night divide-y-2 divide-night-3">
           {(
             [
-              ["font-display", "Unbounded", s.fonts.display],
-              ["font-body", "Manrope", s.fonts.body],
-              ["font-mono", "JetBrains Mono", s.fonts.mono],
+              ["font-title", "Sofia Sans Extra Condensed", s.fonts.heading],
+              ["font-display", "Sofia Sans Condensed", s.fonts.display],
+              ["font-body", "Sofia Sans", s.fonts.body],
+              ["font-mono", "Sofia Sans · 0123", s.fonts.mono],
             ] as const
           ).map(([cls, family, use]) => (
             <li key={cls} className="grid grid-cols-1 gap-3 p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-center">

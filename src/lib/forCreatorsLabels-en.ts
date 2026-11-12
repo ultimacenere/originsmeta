@@ -276,7 +276,7 @@ export const en: ForCreatorsLabels = {
         chalk: { name: "Chalk", use: "text on dark" },
       },
     },
-    fonts: { title: "Fonts", text: "Montserrat Black for the symbol, Unbounded for the site's titles, Manrope for its text. All free on Google Fonts." },
+    fonts: { title: "Fonts", text: "Montserrat Black for the symbol, Sofia Sans in three widths for the site's titles and text. All free on Google Fonts." },
     lines: {
       title: "Ready-made lines",
       intro: "For video descriptions, your Twitch bio or a chat message.",

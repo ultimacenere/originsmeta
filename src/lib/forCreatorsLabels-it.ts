@@ -276,7 +276,7 @@ export const it: ForCreatorsLabels = {
         chalk: { name: "Gesso", use: "testo su fondo scuro" },
       },
     },
-    fonts: { title: "Font", text: "Montserrat Black per il simbolo, Unbounded per i titoli del sito, Manrope per i suoi testi. Tutti gratis su Google Fonts." },
+    fonts: { title: "Font", text: "Montserrat Black per il simbolo, Sofia Sans in tre larghezze per i titoli e i testi del sito. Tutti gratis su Google Fonts." },
     lines: {
       title: "Frasi pronte",
       intro: "Per le descrizioni dei video, la bio di Twitch o un messaggio in chat.",

@@ -276,7 +276,7 @@ export const de: ForCreatorsLabels = {
         chalk: { name: "Kreide", use: "Text auf dunklem Grund" },
       },
     },
-    fonts: { title: "Schriften", text: "Montserrat Black für das Symbol, Unbounded für die Titel der Website, Manrope für ihre Texte. Alle kostenlos bei Google Fonts." },
+    fonts: { title: "Schriften", text: "Montserrat Black für das Symbol, Sofia Sans in drei Breiten für die Titel und Texte der Website. Alle kostenlos bei Google Fonts." },
     lines: {
       title: "Fertige Sätze",
       intro: "Für Videobeschreibungen, deine Twitch-Bio oder eine Nachricht im Chat.",

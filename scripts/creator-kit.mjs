@@ -189,8 +189,7 @@ COLOURS
 
 FONTS (free on Google Fonts)
 - Montserrat Black: the "OM." symbol
-- Unbounded: titles on the site
-- Manrope: text on the site
+- Sofia Sans, in three widths: titles and text on the site
 
 PLEASE
 - Do not stretch, recolour, crop or redraw the logo and the symbol; leave some space around them.

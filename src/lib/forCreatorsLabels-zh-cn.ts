@@ -280,7 +280,7 @@ export const zhCn: ForCreatorsLabels = {
         chalk: { name: "Chalk", use: "深色背景上的文字" },
       },
     },
-    fonts: { title: "字体", text: "图形符号使用 Montserrat Black，网站标题使用 Unbounded，正文使用 Manrope。全部可在 Google Fonts 上免费获取。" },
+    fonts: { title: "字体", text: "图形符号使用 Montserrat Black，网站标题和正文使用三种宽度的 Sofia Sans。全部可在 Google Fonts 上免费获取。" },
     lines: {
       title: "现成文案",
       intro: "用于视频简介、你的 Twitch 简介或聊天消息。",

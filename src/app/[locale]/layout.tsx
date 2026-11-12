@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Unbounded, Manrope, JetBrains_Mono, Noto_Sans, Caveat, Reenie_Beanie, Noto_Sans_SC, Long_Cang } from "next/font/google";
+import { JetBrains_Mono, Noto_Sans, Caveat, Reenie_Beanie, Noto_Sans_SC, Long_Cang } from "next/font/google";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
+import { siteFontVariables } from "@/fonts";
 import { getDictionary, href, htmlLang, isLocale, locales, ogLocale, siteUrl, type Locale } from "@/lib/i18n";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -20,12 +22,20 @@ import { TournamentPromoDialog } from "@/components/TournamentPromo";
 import { TOURNAMENT_PROMO, promoActive } from "@/lib/tournamentPromo";
 import { tournamentPromoText } from "@/lib/tournamentPromoLabels";
 
+/**
+ * I caratteri del sito sono ingranditi con `size-adjust` (src/fonts/index.ts). Safari prima della 17 non lo conosce e
+ * mostrerebbe i titoli piccolissimi: questa riga gira prima del codice del sito (next/script, beforeInteractive) e
+ * mette `data-no-sa` sull'<html>; globals.css lì usa il carattere del testo anche per titoli, tasti e nomi. L'<html> ha
+ * `suppressHydrationWarning` per questo attributo, che il server non conosce.
+ */
+const NO_SIZE_ADJUST = `try{var f=new FontFace("om","local(Arial)",{sizeAdjust:"120%"});if(f.sizeAdjust!=="120%")document.documentElement.setAttribute("data-no-sa","")}catch(e){document.documentElement.setAttribute("data-no-sa","")}`;
+
 /** ID misurazione GA4 (pubblico). Parte solo con il consenso "Accetta tutto" del banner cookie. */
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-9J5Q803XJS";
 
-const unbounded = Unbounded({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap" });
-const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap" });
-const jet = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jet", display: "swap" });
+// I caratteri del sito (Sofia Sans in tre larghezze, dal 12/11/2026) stanno in src/fonts: titoli, tasti e nomi, testo.
+// JetBrains Mono resta solo per il codice (comandi da copiare, <code>): niente preload, serve in poche pagine.
+const jet = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jet", display: "swap", preload: false });
 // Solo per i tasti Discord: è il fallback dichiarato da Discord al posto del loro "gg sans" (proprietario).
 const noto = Noto_Sans({ subsets: ["latin"], weight: ["600"], variable: "--font-noto", display: "swap" });
 // Solo per i post-it (note del 22/09/2026: "scritto a penna"): Caveat, una grafia a penna leggibile anche piccola,
@@ -36,11 +46,9 @@ const hand = Caveat({ subsets: ["latin"], variable: "--font-hand", display: "swa
 // scrivendo a penna", poi "scritte di fretta"): Reenie Beanie, una biro veloce e irregolare. Niente preload.
 const pen = Reenie_Beanie({ subsets: ["latin"], weight: ["400"], variable: "--font-pen", display: "swap", preload: false });
 
-// Pagine russe (20/10/2026): gli stessi font con il cirillico, istanze a parte senza preload, così le altre lingue non
-// scaricano i file cirillici. Reenie Beanie non ha il cirillico: in russo i post-it grandi ripiegano sul font di riserva.
-const unboundedCyr = Unbounded({ subsets: ["latin", "cyrillic"], weight: ["500", "700", "800"], variable: "--font-unbounded", display: "swap", preload: false });
-const manropeCyr = Manrope({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "700"], variable: "--font-manrope", display: "swap", preload: false });
-const jetCyr = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["400", "500"], variable: "--font-jet", display: "swap", preload: false });
+// Pagine russe (20/10/2026): il font dei tasti Discord e quello dei post-it con il cirillico, istanze a parte senza
+// preload, così le altre lingue non scaricano i file cirillici (i caratteri del sito lo hanno già diviso per gruppi di
+// lettere, vedi src/fonts). Reenie Beanie non ha il cirillico: in russo i post-it grandi ripiegano sul font di riserva.
 const notoCyr = Noto_Sans({ subsets: ["latin", "cyrillic"], weight: ["600"], variable: "--font-noto", display: "swap", preload: false });
 const handCyr = Caveat({ subsets: ["latin", "cyrillic"], variable: "--font-hand", display: "swap", preload: false });
 
@@ -98,9 +106,13 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html
       lang={htmlLang[l]}
-      className={`${l === "ru" ? `${unboundedCyr.variable} ${manropeCyr.variable} ${jetCyr.variable} ${notoCyr.variable} ${handCyr.variable}` : `${unbounded.variable} ${manrope.variable} ${jet.variable} ${noto.variable} ${hand.variable}`} ${l === "zh-cn" ? `${cjk.variable} ${cjkHand.variable}` : ""} ${pen.variable} h-full`}
+      suppressHydrationWarning
+      className={`${siteFontVariables} ${jet.variable} ${l === "ru" ? `${notoCyr.variable} ${handCyr.variable}` : `${noto.variable} ${hand.variable}`} ${l === "zh-cn" ? `${cjk.variable} ${cjkHand.variable}` : ""} ${pen.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
+        <Script id="om-no-size-adjust" strategy="beforeInteractive">
+          {NO_SIZE_ADJUST}
+        </Script>
         {/* Feed RSS delle news nella lingua della pagina (Ondata 2): React 19 porta i <link> nel <head>. Percorso e titolo
             dal modulo leggero newsFeedMeta.ts (non da newsFeed.ts, che legge news, autori e file). Non passa dai
             metadati perché `alternates` di `pageMeta` (canonical e hreflang di ogni pagina) sostituirebbe quello del layout. */}

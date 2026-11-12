@@ -276,7 +276,7 @@ export const ru: ForCreatorsLabels = {
         chalk: { name: "Мел", use: "текст на тёмном фоне" },
       },
     },
-    fonts: { title: "Шрифты", text: "Montserrat Black для символа, Unbounded для заголовков сайта, Manrope для его текстов. Все бесплатные, на Google Fonts." },
+    fonts: { title: "Шрифты", text: "Montserrat Black для символа, Sofia Sans в трёх ширинах для заголовков и текстов сайта. Все бесплатные, на Google Fonts." },
     lines: {
       title: "Готовые фразы",
       intro: "Для описаний видео, био на Twitch или сообщения в чате.",

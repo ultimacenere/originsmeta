@@ -276,7 +276,7 @@ export const es: ForCreatorsLabels = {
         chalk: { name: "Tiza", use: "texto sobre fondo oscuro" },
       },
     },
-    fonts: { title: "Tipografías", text: "Montserrat Black para el símbolo, Unbounded para los títulos del sitio, Manrope para sus textos. Todas gratis en Google Fonts." },
+    fonts: { title: "Tipografías", text: "Montserrat Black para el símbolo, Sofia Sans en tres anchos para los títulos y los textos del sitio. Todas gratis en Google Fonts." },
     lines: {
       title: "Frases listas",
       intro: "Para descripciones de videos, tu bio de Twitch o un mensaje en el chat.",

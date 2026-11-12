@@ -53,9 +53,19 @@
 
   /* var(--font-cjk…): gli ideogrammi delle pagine cinesi (04/11/2026, dal layout); nelle altre lingue la variabile non c'è e
      vale il nome di sistema, che per lettere e numeri non serve mai (il font latino viene prima) */
-  --font-display: var(--font-unbounded), var(--font-cjk, "PingFang SC"), "Arial Black", Impact, sans-serif;
-  --font-body: var(--font-manrope), var(--font-cjk, "PingFang SC"), "Segoe UI", Arial, sans-serif;
-  --font-mono: var(--font-jet), var(--font-cjk, "PingFang SC"), Consolas, "Courier New", monospace;
+  /* I caratteri (12/11/2026): Sofia Sans in tre larghezze; file e ingrandimenti (size-adjust) in src/fonts/index.ts.
+       --font-title    Extra Condensed: i titoli (h1-h4, .t-page, .t-section, .t-item; utility `font-title`)
+       --font-display  Condensed: tasti, menu, nomi di carte e mazzi, etichette (utility `font-display`)
+       --font-body     larghezza normale: il testo
+       --font-mono     lo stesso del testo con le cifre tabellari: numeri, date, etichette (non è più un monospaziato)
+       --font-code     JetBrains Mono, solo per il codice: comandi e indirizzi da copiare, <code>
+     Ogni variabile ha un ripiego, così restano validi anche i layout che non caricano i font. */
+  --font-title: var(--font-xc-l, "Arial Narrow"), var(--font-xc-le, "Arial Narrow"), var(--font-xc-c, "Arial Narrow"), var(--font-xc-ce, "Arial Narrow"), var(--font-cjk, "PingFang SC"), "Arial Narrow", Impact, sans-serif;
+  --font-display: var(--font-cd-l, "Arial Narrow"), var(--font-cd-le, "Arial Narrow"), var(--font-cd-c, "Arial Narrow"), var(--font-cd-ce, "Arial Narrow"), var(--font-cjk, "PingFang SC"), "Arial Narrow", Arial, sans-serif;
+  --font-body: var(--font-sf-l, "Segoe UI"), var(--font-sf-le, "Segoe UI"), var(--font-sf-c, "Segoe UI"), var(--font-sf-ce, "Segoe UI"), var(--font-cjk, "PingFang SC"), "Segoe UI", Arial, sans-serif;
+  --font-mono: var(--font-sf-l, "Segoe UI"), var(--font-sf-le, "Segoe UI"), var(--font-sf-c, "Segoe UI"), var(--font-sf-ce, "Segoe UI"), var(--font-cjk, "PingFang SC"), "Segoe UI", Arial, sans-serif;
+  --font-code: var(--font-jet, Consolas), Consolas, "Courier New", monospace;
+  --default-mono-font-family: var(--font-code);
 
   --shadow-card: 0 1px 0 rgba(22, 16, 42, 0.35), 0 10px 30px -12px rgba(0, 0, 0, 0.55);
   --shadow-lift: 0 2px 0 rgba(22, 16, 42, 0.35), 0 24px 40px -18px rgba(0, 0, 0, 0.7);
@@ -80,6 +90,9 @@
     --postit-comic: #b6e36a; /* Fumetto, lime (12,4:1; pacchetto FUMETTI, 29/09/2026) */
     --postit-interview: #ff9e7a; /* Intervista, corallo (9,3:1; intervista a SouL, 28/10/2026) */
     --postit-label: #ffe98a; /* Etichetta di sezione a penna, giallo canarino dei foglietti veri (15,1:1) */
+    /* Interlinea dei titoli, in rapporto alla misura SCRITTA: l'Extra Condensed è ingrandito del 162% (src/fonts), quindi
+       1,66 vale 1,02 volte la misura che si vede. Sotto 1,5 le righe di un titolo a capo si toccano. */
+    --title-leading: 1.66;
   }
   html {
     scroll-behavior: smooth;
@@ -138,9 +151,62 @@
     outline-offset: 3px;
   }
   h1, h2, h3, h4 {
-    font-family: var(--font-display);
+    font-family: var(--font-title);
     text-wrap: balance;
-    letter-spacing: -0.01em;
+  }
+  /*
+    Interlinea dei titoli (12/11/2026). Il carattere dei titoli è ingrandito con size-adjust, che non cambia la misura
+    calcolata: le interlinee scritte per Unbounded (1,2-1,5) sarebbero troppo strette e le righe si toccherebbero.
+    Qui i titoli prendono --title-leading, e la prendono anche le utility di Tailwind messe su un titolo: `text-sm`
+    porta con sé un'interlinea e `leading-tight` ne scrive una, tutte e due lette da variabili che qui si ridefiniscono.
+    Un titolo in un altro carattere (`font-display`, `font-body`…) resta fuori; una classe di componente che scrive la
+    sua interlinea vince, perché questo è il layer di base. Un'interlinea scritta a mano (`leading-[1.1]`) su un titolo
+    va moltiplicata per 1,62.
+  */
+  :where(h1, h2, h3, h4):not(.font-display, .font-body, .font-mono, .font-code),
+  .t-page,
+  .t-section,
+  .t-item,
+  .t-panel,
+  .font-title {
+    line-height: var(--title-leading);
+    --text-xs--line-height: var(--title-leading);
+    --text-sm--line-height: var(--title-leading);
+    --text-base--line-height: var(--title-leading);
+    --text-lg--line-height: var(--title-leading);
+    --text-xl--line-height: var(--title-leading);
+    --text-2xl--line-height: var(--title-leading);
+    --text-3xl--line-height: var(--title-leading);
+    --text-4xl--line-height: var(--title-leading);
+    --text-5xl--line-height: var(--title-leading);
+    --text-6xl--line-height: var(--title-leading);
+    --leading-none: calc(var(--title-leading) - 0.08);
+    --leading-tight: calc(var(--title-leading) - 0.04);
+    --leading-snug: calc(var(--title-leading) + 0.04);
+    --leading-normal: calc(var(--title-leading) + 0.1);
+    --leading-relaxed: calc(var(--title-leading) + 0.18);
+    --leading-loose: calc(var(--title-leading) + 0.3);
+  }
+  /* Pagine cinesi: i titoli sono ideogrammi alla misura scritta (Noto Sans SC). Le parole in lettere latine dentro un
+     titolo (i nomi delle carte) usano il Condensed, ingrandito del 130%: è alto quanto gli ideogrammi, l'Extra Condensed
+     li supererebbe. L'interlinea torna quella di un testo in ideogrammi. */
+  html:lang(zh-Hans) {
+    --font-title: var(--font-display);
+    --title-leading: 1.42;
+  }
+  /* Browser senza size-adjust (Safari prima della 17; lo segna il layout con data-no-sa): i due condensati alla misura
+     scritta sarebbero minuscoli, quindi titoli, tasti e nomi usano il carattere del testo e l'interlinea di prima. */
+  html[data-no-sa] {
+    --font-title: var(--font-body);
+    --font-display: var(--font-body);
+    --title-leading: 1.25;
+  }
+  /* Il codice resta monospaziato anche dove il markup porta la utility `font-mono` (vedi in fondo, layer utilities) */
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-code);
   }
 }
 
@@ -199,26 +265,27 @@
   .t-page,
   .t-section,
   .t-item {
-    font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    font-family: var(--font-title);
     text-wrap: balance;
   }
+  /* Dal 12/11/2026 il carattere dei titoli è Sofia Sans Extra Condensed ingrandito del 162% (src/fonts/index.ts): le
+     misure qui sotto sono quelle di prima e a schermo valgono 1,62 volte tanto (1,25rem si vede alto come 2rem). */
   .t-page {
     font-size: 1.25rem;
     font-weight: 800;
-    line-height: 1.2;
+    line-height: var(--title-leading);
     color: var(--color-sky);
   }
   .t-section {
     font-size: 1.125rem;
     font-weight: 800;
-    line-height: 1.25;
+    line-height: var(--title-leading);
     color: var(--color-chalk);
   }
   .t-item {
     font-size: 1.125rem;
-    font-weight: 700;
-    line-height: 1.25;
+    font-weight: 800;
+    line-height: var(--title-leading);
     color: var(--color-sky);
   }
   @media (min-width: 640px) {
@@ -239,9 +306,10 @@
      riquadri senza cornice (.card-inset), e le schede condivise (tornei, guide) annidate in un pannello hanno la cornice
      da 2 px invece di 3. */
   .t-panel {
+    font-family: var(--font-title);
     font-size: 0.9375rem;
     font-weight: 800;
-    line-height: 1.25;
+    line-height: var(--title-leading);
     color: var(--color-chalk);
   }
   .card-inset {
@@ -273,7 +341,7 @@
     align-items: center;
     gap: 0.5rem;
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.85rem;
     letter-spacing: 0.01em;
     border: 2px solid transparent;
@@ -493,7 +561,7 @@
     padding: 0.5rem 0.65rem;
     font-family: var(--font-display);
     font-size: 0.78rem;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--color-chalk);
     transition: color 120ms ease, background-color 120ms ease;
   }
@@ -1606,7 +1674,7 @@
     font-family: var(--font-display);
     font-size: 0.9rem;
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.3;
     color: var(--color-sky);
   }
   .deck-peek-tags {
@@ -1903,7 +1971,7 @@
     font-family: var(--font-display);
     font-size: 0.95rem;
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 1.3;
     color: var(--color-sky);
     text-wrap: balance;
     overflow-wrap: anywhere;
@@ -2000,7 +2068,7 @@
     font-family: var(--font-display);
     font-size: 0.95rem;
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 1.3;
     color: var(--color-sky);
     text-wrap: balance;
   }
@@ -2195,7 +2263,7 @@
     font-family: var(--font-display);
     font-size: 0.85rem;
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.3;
     color: var(--color-sky);
   }
 
@@ -2561,6 +2629,15 @@
 @layer utilities {
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+  /* `font-mono` non è più un monospaziato (12/11/2026): è il carattere del testo con le cifre tutte larghe uguali, così
+     numeri e date restano incolonnati. Il codice vero (<code>, <kbd>, <pre>) resta in JetBrains Mono anche con la utility. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+  :is(code, kbd, samp, pre).font-mono {
+    font-family: var(--font-code);
+    font-variant-numeric: normal;
   }
   .text-balance {
     text-wrap: balance;
@@ -6929,7 +7006,7 @@
     font-family: var(--font-display);
     font-size: 1rem;
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 1.25;
     text-align: center;
     color: #fff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
