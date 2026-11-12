@@ -1359,7 +1359,7 @@ export const de: Dictionary = {
     hiddenRule: "Die Decklists bleiben bis zur Top 4 verdeckt: Dein Gegner sieht nur deine Legendären. Die Listen der Halbfinalisten werden öffentlich, wenn sie die Top 4 erreichen, die aller anderen, wenn das Turnier endet.",
     top4Decklists: "Decklists der Top 4",
     noShowPill: "Nichterscheinen: {n} Min.",
-    noShowRule: "Sei pünktlich: Ab dem Moment, in dem dein Match bereit ist (ab Runde 2, wenn die beiden Matches davor vorbei sind), kann dein Gegner den Sieg kampflos beanspruchen, wenn du den Matchraum nicht innerhalb von {n} Minuten öffnest.",
+    noShowRule: "Sei pünktlich: Sobald dein Match bereit ist (ab Runde 2, wenn die beiden Matches davor vorbei sind), öffne seinen Matchraum, also die Seite des Matches: über „Zu meinem Match“ oben auf dieser Seite, über den Turnierbaum oder über die Benachrichtigung. Die Seite zu öffnen genügt. Tust du das nicht innerhalb von {n} Minuten, kann dein Gegner den Sieg kampflos beanspruchen.",
     withdraw: "Zurückziehen",
     withdrawConfirm: "Jetzt vom Turnier zurückziehen? Du verlierst dein aktuelles Match (oder das nächste, sobald dein Gegner feststeht).",
     checkin: {

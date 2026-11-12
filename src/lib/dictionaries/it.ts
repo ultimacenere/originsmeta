@@ -1431,7 +1431,7 @@ export const it: Dictionary = {
     hiddenRule: "Le liste restano segrete fino alla top 4: l'avversario vede solo le tue Leggendarie. Le liste dei semifinalisti diventano pubbliche quando arrivano in top 4, quelle di tutti a torneo finito.",
     top4Decklists: "Le liste della top 4",
     noShowPill: "Assenza: {n} min",
-    noShowRule: "Puntuali: da quando la tua partita è pronta (dal secondo turno, quando sono finite le due partite che la precedono), se non apri la stanza partita entro {n} minuti l'avversario può chiedere la vittoria a tavolino.",
+    noShowRule: "Puntuali: quando la tua partita è pronta (dal secondo turno, quando sono finite le due partite che la precedono), apri la sua stanza partita, cioè la pagina della partita: con “Vai alla mia partita” in cima a questa pagina, dal tabellone o dalla notifica. Basta aprire la pagina. Se non lo fai entro {n} minuti, l'avversario può chiedere la vittoria a tavolino.",
     withdraw: "Ritirati",
     withdrawConfirm: "Ti ritiri dal torneo adesso? Perdi la partita in corso (o la prossima, appena si conosce l'avversario).",
     checkin: {

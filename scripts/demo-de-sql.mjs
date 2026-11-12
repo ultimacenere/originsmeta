@@ -57,7 +57,8 @@ const WAIT = OPEN ? Number(opt("--waitlist") ?? 0) : 0;
 const NO_DECKS = OPEN ? Number(opt("--no-decks") ?? 0) : 0;
 if (!Number.isInteger(WAIT) || WAIT < 0 || WAIT > 200) throw new Error("--waitlist fra 0 e 200");
 if (!Number.isInteger(NO_DECKS) || NO_DECKS < 0 || NO_DECKS > N) throw new Error("--no-decks fra 0 e gli iscritti");
-const LEFT = Number(opt("--left") ?? 4);
+// il predefinito non supera le partite dell'ultimo turno dei perdenti (con pochi qualificati 4 erano troppe)
+const LEFT = Number(opt("--left") ?? Math.min(4, QUAL * POOLS));
 if (!Number.isInteger(LEFT) || LEFT < 0 || LEFT > QUAL * POOLS) throw new Error("--left fra 0 e le partite dell'ultimo turno dei perdenti");
 const ALL = N + WAIT;
 const DECK_POOL = Math.min(ALL, Number(opt("--deck-pool") ?? ALL));
