@@ -10477,8 +10477,10 @@ comment on column public.tournament_matches.stage is 'null = tabellone a elimina
 --                             versione; `control_token` è il link della regia (i caster) e lo staff entra senza link.
 --   community_event_mods      il link del mod di ogni canale del giveaway (uno per canale).
 --   community_event_codes     i codici del giveaway: liberi finché un mod non li dà a un vincitore (slot, canale, impronta
---                             del nome Twitch del vincitore), poi riscattati da un iscritto. Una vincita a persona in tutto
---                             l'evento (unique slug + impronta). L'impronta è sha256(slug:nome) e il nome non si salva.
+--                             del nome Twitch del vincitore), poi riscattati da un iscritto. Nello stesso passaggio una
+--                             vincita a persona (unique slug + slot + impronta); in tutto l'evento quante ne dice
+--                             config.maxWinsPerViewer (1 se manca: dal 12/11/2026, "ogni partecipante può vincere più
+--                             pacchetti"). L'impronta è sha256(slug:nome) e il nome non si salva.
 --   community_event_redeem_fails  i tentativi di riscatto sbagliati (10 l'ora per account), tenuti un giorno.
 --
 --   Nessun client legge o scrive le tabelle: tutto passa dalle funzioni qui sotto (security definer).
@@ -10498,7 +10500,8 @@ comment on column public.tournament_matches.stage is 'null = tabellone a elimina
 --   community_event_mods_sync(slug, token)    la regia crea i link dei mod per i canali degli slot;
 --   community_event_mod_view(slug, token)     il pannello del mod: slot, orologio e codici del suo canale;
 --   community_event_assign(slug, token, slot, nomi)  il mod dà i codici ai vincitori del suo slot: ok, dup (ha già
---                                              vinto), full (pacchetti dello slot finiti), none (codici finiti), invalid;
+--                                              vinto il massimo di volte), full (pacchetti dello slot finiti), none
+--                                              (codici finiti), invalid;
 --   community_event_swap(slug, token, codice, nome)  il codice non riscattato passa a un altro vincitore;
 --   community_event_release(slug, token, codice)     il codice non riscattato torna libero;
 --   community_event_redeem(slug, codice)      un iscritto riscatta: ok, mine, taken, invalid, limit, too_many, closed;
@@ -10546,9 +10549,13 @@ create table if not exists public.community_event_codes (
   assigned_at timestamptz,
   redeemed_by uuid references public.profiles(id) on delete set null,
   redeemed_at timestamptz,
-  created_at timestamptz not null default now(),
-  unique (slug, winner_hash)
+  created_at timestamptz not null default now()
 );
+-- 12/11/2026: si può vincere più volte (config.maxWinsPerViewer), ma una volta sola nello stesso passaggio. Il vincolo
+-- di prima (una vincita a persona in tutto l'evento) si toglie dove c'era.
+alter table public.community_event_codes drop constraint if exists community_event_codes_slug_winner_hash_key;
+create unique index if not exists community_event_codes_winner_slot_idx on public.community_event_codes (slug, slot, winner_hash) where winner_hash is not null;
+create index if not exists community_event_codes_winner_idx on public.community_event_codes (slug, winner_hash) where winner_hash is not null;
 create index if not exists community_event_codes_free_idx on public.community_event_codes (slug, id) where slot is null;
 create index if not exists community_event_codes_user_idx on public.community_event_codes (redeemed_by) where redeemed_by is not null;
 alter table public.community_event_codes enable row level security;
@@ -10804,9 +10811,10 @@ end $$;
 revoke all on function public.community_event_mod_view(text, text) from public;
 grant execute on function public.community_event_mod_view(text, text) to anon, authenticated;
 
--- Il mod dà i codici ai vincitori di uno slot del suo canale. Una vincita a persona in tutto l'evento; i pacchetti dello
--- slot (config.slots[slot].packs) sono il tetto. Lo stesso vincitore chiesto due volte nello stesso slot riceve lo stesso
--- codice (il pannello può ripetere la richiesta senza paura).
+-- Il mod dà i codici ai vincitori di uno slot del suo canale. Nello stesso slot una vincita a persona; in tutto l'evento
+-- al massimo config.maxWinsPerViewer (1 se manca). I pacchetti dello slot (config.slots[slot].packs) sono il tetto. Lo
+-- stesso vincitore chiesto due volte nello stesso slot riceve lo stesso codice (il pannello può ripetere la richiesta
+-- senza paura).
 create or replace function public.community_event_assign(p_slug text, p_token text, p_slot integer, p_logins text[])
 returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -10815,6 +10823,8 @@ declare
   slot_cfg jsonb;
   packs integer;
   used integer;
+  wins integer;
+  max_wins integer;
   lg text;
   h text;
   got record;
@@ -10831,6 +10841,7 @@ begin
   slot_cfg := cfg->'slots'->p_slot;
   if lower(coalesce(slot_cfg->>'channel', '')) <> ch then raise exception 'not_your_slot' using errcode = '42501'; end if;
   packs := case when coalesce(slot_cfg->>'packs', '') ~ '^[0-9]{1,3}$' then (slot_cfg->>'packs')::integer else 0 end;
+  max_wins := case when coalesce(cfg->>'maxWinsPerViewer', '') ~ '^[0-9]{1,2}$' then greatest((cfg->>'maxWinsPerViewer')::integer, 1) else 1 end;
   foreach lg in array p_logins loop
     lg := lower(trim(coalesce(lg, '')));
     if lg !~ '^[a-z0-9_]{3,25}$' then
@@ -10838,13 +10849,14 @@ begin
       continue;
     end if;
     h := encode(sha256(convert_to(p_slug || ':' || lg, 'UTF8')), 'hex');
-    select c.code, c.slot, c.redeemed_at into got from public.community_event_codes c where c.slug = p_slug and c.winner_hash = h;
+    select c.code, c.redeemed_at into got from public.community_event_codes c where c.slug = p_slug and c.winner_hash = h and c.slot = p_slot;
     if found then
-      if got.slot = p_slot then
-        out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'ok', 'code', got.code, 'redeemed', got.redeemed_at is not null));
-      else
-        out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'dup'));
-      end if;
+      out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'ok', 'code', got.code, 'redeemed', got.redeemed_at is not null));
+      continue;
+    end if;
+    select count(*) into wins from public.community_event_codes c where c.slug = p_slug and c.winner_hash = h;
+    if wins >= max_wins then
+      out := out || jsonb_build_array(jsonb_build_object('login', lg, 'status', 'dup'));
       continue;
     end if;
     select count(*) into used from public.community_event_codes c where c.slug = p_slug and c.slot = p_slot;
@@ -10868,7 +10880,8 @@ end $$;
 revoke all on function public.community_event_assign(text, text, integer, text[]) from public;
 grant execute on function public.community_event_assign(text, text, integer, text[]) to anon, authenticated;
 
--- Il codice (non ancora riscattato) passa a un altro vincitore: ok, dup, redeemed, invalid, not_found.
+-- Il codice (non ancora riscattato) passa a un altro vincitore: ok, dup (ha già un codice di quello slot, o ha già vinto
+-- il massimo di volte), redeemed, invalid, not_found.
 create or replace function public.community_event_swap(p_slug text, p_token text, p_code text, p_login text)
 returns text language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -10876,6 +10889,7 @@ declare
   lg text := lower(trim(coalesce(p_login, '')));
   h text;
   c record;
+  max_wins integer;
 begin
   if p_token is null or char_length(p_token) not between 32 and 200 then raise exception 'forbidden' using errcode = '42501'; end if;
   select m.channel into ch from public.community_event_mods m where m.slug = p_slug and m.token = p_token;
@@ -10886,7 +10900,10 @@ begin
   if not found then return 'not_found'; end if;
   if c.redeemed_at is not null then return 'redeemed'; end if;
   h := encode(sha256(convert_to(p_slug || ':' || lg, 'UTF8')), 'hex');
-  if exists (select 1 from public.community_event_codes x where x.slug = p_slug and x.winner_hash = h) then return 'dup'; end if;
+  if exists (select 1 from public.community_event_codes x where x.slug = p_slug and x.winner_hash = h and x.slot is not distinct from c.slot) then return 'dup'; end if;
+  select case when coalesce(e.config->>'maxWinsPerViewer', '') ~ '^[0-9]{1,2}$' then greatest((e.config->>'maxWinsPerViewer')::integer, 1) else 1 end
+    into max_wins from public.community_events e where e.slug = p_slug;
+  if (select count(*) from public.community_event_codes x where x.slug = p_slug and x.winner_hash = h) >= coalesce(max_wins, 1) then return 'dup'; end if;
   update public.community_event_codes x set winner_hash = h, assigned_at = now() where x.id = c.id;
   return 'ok';
 end $$;

@@ -6,7 +6,8 @@ import type { Rand } from "./engine";
  * Il pannello del mod legge la chat del suo canale dal browser, in sola lettura e senza account: la chat IRC di Twitch
  * accetta collegamenti anonimi (nick "justinfan" più cifre), che possono leggere e non scrivere. Nessun token, nessuna
  * richiesta dal nostro server a Twitch, niente nomi salvati: i partecipanti stanno solo nella memoria della pagina del
- * mod; al database va solo il nome dei vincitori, che lo salva come impronta (una vincita a persona in tutto l'evento).
+ * mod; al database va solo il nome dei vincitori, che lo salva come impronta (per contare le vincite della stessa persona: una per passaggio, in tutto l'evento
+ * quante ne dice `maxWinsPerViewer`).
  * Qui le parti pure: lettura delle righe IRC, chi partecipa, estrazione.
  */
 

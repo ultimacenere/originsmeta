@@ -128,6 +128,23 @@ export function slotsOfChannel(slots: readonly GiveawaySlot[], channel: string):
   return slots.flatMap((s, i) => (s.channel === channel ? [i] : []));
 }
 
+const romeClock = new Intl.DateTimeFormat("it-IT", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
+
+/**
+ * `startsAt` a mezzanotte (ora italiana) vuol dire "il giorno si sa, l'ora no" (11/11/2026: dell'Attrix Showmatch si
+ * sapeva il 16 novembre ma non l'orario): la pagina mostra solo la data e il conto alla rovescia solo i giorni.
+ */
+export function startHasTime(iso: string | null | undefined): boolean {
+  if (!iso) return false;
+  const t = Date.parse(iso);
+  return !Number.isNaN(t) && romeClock.format(t) !== "00:00";
+}
+
+/** Giorni di calendario che mancano a un inizio senza ora (domani = 1). */
+export function daysUntil(msLeft: number): number {
+  return Math.max(1, Math.ceil(msLeft / 86_400_000));
+}
+
 /** "4:05", "12:00", "1:02:03" */
 export function formatRemaining(msLeft: number): string {
   const total = Math.max(0, Math.ceil(msLeft / 1000));

@@ -659,6 +659,8 @@ Vocale di Dav del 29/10/2026: un ragazzo che fa video e dirette su YouTube o Twi
 
 ## Eventi della community: Attrix Showmatch del 16/11/2026 (10/11/2026)
 
+**Online ma non annunciato dal 12/11/2026** (Pierluigi: "metti online queste pagine, ovviamente non linkarle ai menu ma manteniamole non visibili"): nessun menu, calendario, sitemap, news, popup o informativa linka o nomina l'evento e la pagina è noindex finché lo slug non è in `EVENT_ANNOUNCED` (`src/lib/event/links.ts`, test in `event.test.ts`); chi ha l'indirizzo la apre. Dettagli in `docs/eventi.md`, "Online ma non annunciato".
+
 Pierluigi: "una royale rumble tra i creators italiani con giveaway di oltre 125 pacchetti di carte di origins, noi gestiamo tutta la infrastruttura". Pagina `/it/events/<slug>` (link breve originsmeta.com/showmatch, solo italiano), regia dei caster con la ruota dei mazzi e la svizzera, pannello dei mod che legge la chat di Twitch ed estrae i vincitori, codici del giveaway riscattati con l'iscrizione, overlay per OBS e comando di chat. Procedura, configurazione e codice in **`docs/eventi.md`**. SQL nel blocco `-- ===== 10/11/2026: EVENTI DELLA COMMUNITY =====`: **migrazione da lanciare** (prova a secco `node scripts/event-dry-run.mjs`, poi `db-migrate`); il sito regge senza.
 
 ## Diretta ufficiale di Origins TCG in home (18/10/2026)

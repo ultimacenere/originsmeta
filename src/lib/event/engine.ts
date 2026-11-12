@@ -14,6 +14,11 @@ import { pairsOf, standings, swissPairs } from "./swiss";
  * coppia di giocatori: la prossima delle coppie decise in configurazione (`pairs`) o, senza, due giocatori estratti a
  * caso fra quelli senza mazzo. I giri finiscono quando finiscono i mazzi o i giocatori. "Crea abbinamenti" fa un turno
  * svizzero (il primo a caso), evitando le rivincite e, con `mirror: "avoid"`, due giocatori con lo stesso mazzo.
+ *
+ * Dal 12/11/2026 (note della riunione dell'11/11: "ogni 3 partite si può fare uno spin per cambiare mazzo", "nessun
+ * giocatore può ricevere lo stesso mazzo due volte") le estrazioni possono essere più di una: "Nuova estrazione" rimette
+ * tutti i mazzi sulla ruota e ogni giro dà a una coppia un mazzo che nessuno dei due ha già avuto. Il mazzo di un
+ * giocatore è quello del suo ultimo giro.
  */
 
 export type Rand = () => number;
@@ -21,6 +26,8 @@ export type Rand = () => number;
 export type EngineError =
   | "no_decks_left"
   | "no_players_left"
+  | "no_new_deck"
+  | "draw_open"
   | "nothing_to_undo"
   | "matches_started"
   | "round_open"
@@ -43,7 +50,15 @@ export function normalizeState(x: unknown): EventState {
   const assignments: Assignment[] = Array.isArray(x.assignments)
     ? x.assignments.flatMap((a) =>
         isObj(a) && typeof a.deck === "string" && Array.isArray(a.players) && a.players.every((p) => typeof p === "string")
-          ? [{ deck: a.deck, players: a.players as string[], at: typeof a.at === "string" ? a.at : "" }]
+          ? [
+              {
+                deck: a.deck,
+                players: a.players as string[],
+                at: typeof a.at === "string" ? a.at : "",
+                ...(posInt(a.draw) ? { draw: a.draw as number } : {}),
+                ...(posInt(a.afterRound) || a.afterRound === 0 ? { afterRound: a.afterRound as number } : {}),
+              },
+            ]
           : [],
       )
     : [];
@@ -54,7 +69,12 @@ export function normalizeState(x: unknown): EventState {
           : [],
       )
     : [];
-  return { assignments, matches, giveaway: normalizeRun(x.giveaway) };
+  return { assignments, matches, giveaway: normalizeRun(x.giveaway), ...(posInt(x.draw) && (x.draw as number) > 1 ? { draw: x.draw as number } : {}) };
+}
+
+/** Numero intero da 1 a 99 (estrazioni e turni scritti nello stato). */
+function posInt(x: unknown): boolean {
+  return typeof x === "number" && Number.isInteger(x) && x >= 1 && x <= 99;
 }
 
 /** I giocatori dell'evento, nell'ordine della configurazione. */
@@ -66,6 +86,13 @@ export function playersOf(config: Pick<EventConfig, "talent">): Talent[] {
 export function deckByPlayer(state: Pick<EventState, "assignments">): Map<string, string> {
   const out = new Map<string, string>();
   for (const a of state.assignments) for (const p of a.players) out.set(p, a.deck);
+  return out;
+}
+
+/** Il mazzo di ogni giocatore nel turno `round`: quello dell'ultimo giro fatto prima che il turno nascesse. */
+export function deckByPlayerAt(state: Pick<EventState, "assignments">, round: number): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const a of state.assignments) if ((a.afterRound ?? 0) < round) for (const p of a.players) out.set(p, a.deck);
   return out;
 }
 
@@ -92,37 +119,147 @@ export function shuffle<T>(list: readonly T[], rand: Rand): T[] {
   return out;
 }
 
-/** Quanti giri della ruota restano: uno per mazzo, finché ci sono giocatori senza mazzo. */
-export function spinsLeft(config: EventConfig, state: EventState): number {
-  const usedDecks = new Set(state.assignments.map((a) => a.deck));
-  const decksLeft = config.decks.filter((d) => !usedDecks.has(d.id)).length;
-  const assigned = deckByPlayer(state);
-  const playersLeft = playersOf(config).filter((p) => !assigned.has(p.id)).length;
-  return playersLeft ? Math.min(decksLeft, Math.ceil(playersLeft / 2)) : 0;
+/** L'estrazione in corso (1 = la prima). */
+export function drawOf(state: Pick<EventState, "assignments" | "draw">): number {
+  return state.assignments.reduce((m, a) => Math.max(m, a.draw ?? 1), Math.max(1, state.draw ?? 1));
 }
 
-/** Un giro della ruota: un mazzo rimasto per la prossima coppia. */
+/** I giri dell'estrazione `draw` (quelli salvati prima del 12/11/2026, senza numero, sono della prima). */
+export function spinsOfDraw(state: Pick<EventState, "assignments">, draw: number): Assignment[] {
+  return state.assignments.filter((a) => (a.draw ?? 1) === draw);
+}
+
+/** I mazzi che ogni giocatore ha già avuto, in tutte le estrazioni. */
+export function decksHad(state: Pick<EventState, "assignments">): Map<string, Set<string>> {
+  const out = new Map<string, Set<string>>();
+  for (const a of state.assignments) {
+    for (const p of a.players) {
+      const set = out.get(p) ?? new Set<string>();
+      set.add(a.deck);
+      out.set(p, set);
+    }
+  }
+  return out;
+}
+
+/** Giocatori ancora senza mazzo e mazzi ancora sulla ruota, nell'estrazione in corso. */
+function openDraw(config: EventConfig, state: EventState): { draw: number; free: string[]; decks: string[] } {
+  const draw = drawOf(state);
+  const cur = spinsOfDraw(state, draw);
+  const usedDecks = new Set(cur.map((a) => a.deck));
+  const done = new Set(cur.flatMap((a) => a.players));
+  return {
+    draw,
+    free: playersOf(config)
+      .filter((p) => !done.has(p.id))
+      .map((p) => p.id),
+    decks: config.decks.filter((d) => !usedDecks.has(d.id)).map((d) => d.id),
+  };
+}
+
+/** Quanti giri della ruota restano nell'estrazione in corso: uno per mazzo, finché ci sono giocatori senza mazzo. */
+export function spinsLeft(config: EventConfig, state: EventState): number {
+  const { free, decks } = openDraw(config, state);
+  return free.length ? Math.min(decks.length, Math.ceil(free.length / 2)) : 0;
+}
+
+type Group = { players: string[]; deck: string };
+
+/**
+ * Dalla seconda estrazione: cerca un modo di dare un mazzo nuovo a tutti i giocatori rimasti (a coppie, uno da solo se
+ * sono dispari; se i mazzi finiscono prima, chi resta non ne riceve) e restituisce il primo gruppo. Il resto non si
+ * salva: il giro dopo rifà la ricerca, e quello che resta di una soluzione è ancora una soluzione, quindi la ruota non
+ * finisce mai in un vicolo cieco. Ricerca con ritorno indietro in ordine casuale e un tetto di passi (i casi veri, 8
+ * mazzi e due o tre estrazioni, si risolvono al primo tentativo). `first` è la coppia decisa in configurazione.
+ */
+function firstGroup(free: readonly string[], decks: readonly string[], had: ReadonlyMap<string, ReadonlySet<string>>, rand: Rand, first: readonly [string, string] | null): Group | null {
+  const isNew = (deck: string, group: readonly string[]) => group.every((p) => !had.get(p)?.has(deck));
+  for (let attempt = 0; attempt < 30; attempt++) {
+    let budget = 20_000;
+    const out: { group: Group | null } = { group: null };
+    const solve = (players: readonly string[], left: readonly string[], forced: string | null, depth: number): boolean => {
+      if (!players.length || !left.length) return true;
+      const a = players[0];
+      const rest = players.slice(1);
+      const partners: (string | null)[] = forced ? [forced] : players.length % 2 === 1 ? [...rest, null] : rest;
+      for (const b of partners) {
+        const group = b ? [a, b] : [a];
+        const others = b ? rest.filter((p) => p !== b) : rest;
+        for (const deck of left) {
+          if (!isNew(deck, group)) continue;
+          if (budget-- <= 0) return false;
+          if (
+            solve(
+              others,
+              left.filter((d) => d !== deck),
+              null,
+              depth + 1,
+            )
+          ) {
+            if (depth === 0) out.group = { players: group, deck };
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    const order = shuffle(free, rand);
+    const start = first ? [first[0], ...order.filter((p) => p !== first[0])] : order;
+    if (solve(start, shuffle(decks, rand), first ? first[1] : null, 0)) return out.group;
+  }
+  return null;
+}
+
+/** Un giro della ruota: un mazzo rimasto per la prossima coppia. Dalla seconda estrazione, un mazzo nuovo per tutti e due. */
 export function spin(config: EventConfig, state: EventState, rand: Rand, now: number): EngineResult<{ assignment: Assignment }> {
-  const usedDecks = new Set(state.assignments.map((a) => a.deck));
-  const decks = config.decks.filter((d) => !usedDecks.has(d.id));
+  const { draw, free, decks } = openDraw(config, state);
   if (!decks.length) return { ok: false, error: "no_decks_left" };
-  const assigned = deckByPlayer(state);
-  const free = playersOf(config).filter((p) => !assigned.has(p.id)).map((p) => p.id);
   if (!free.length) return { ok: false, error: "no_players_left" };
   const freeSet = new Set(free);
-  const planned = config.pairs.find(([a, b]) => freeSet.has(a) && freeSet.has(b));
-  // senza coppie decise (o finite quelle), due giocatori a caso fra quelli senza mazzo (l'ultimo, se è solo, da solo)
-  const players = planned ? [...planned] : shuffle(free, rand).slice(0, 2);
-  const deck = decks[pickIndex(decks.length, rand)];
-  const assignment: Assignment = { deck: deck.id, players, at: new Date(now).toISOString() };
+  const planned = config.pairs.find(([a, b]) => freeSet.has(a) && freeSet.has(b)) ?? null;
+  let group: Group | null;
+  if (draw === 1) {
+    // senza coppie decise (o finite quelle), due giocatori a caso fra quelli senza mazzo (l'ultimo, se è solo, da solo)
+    const players = planned ? [...planned] : shuffle(free, rand).slice(0, 2);
+    group = { players, deck: decks[pickIndex(decks.length, rand)] };
+  } else {
+    const had = decksHad(state);
+    // la coppia decisa resta insieme se c'è un mazzo nuovo per tutti e due, altrimenti le coppie si rimescolano
+    group = (planned ? firstGroup(free, decks, had, rand, planned) : null) ?? firstGroup(free, decks, had, rand, null);
+    if (!group) return { ok: false, error: "no_new_deck" };
+  }
+  const assignment: Assignment = { deck: group.deck, players: group.players, at: new Date(now).toISOString(), draw, afterRound: lastRound(state) };
   return { ok: true, state: { ...state, assignments: [...state.assignments, assignment] }, assignment };
 }
 
-/** Annulla l'ultimo giro della ruota (solo prima del primo turno). */
+/**
+ * Annulla l'ultimo giro della ruota, finché dopo quel giro non è nato un turno. Se l'estrazione in corso (dalla seconda)
+ * non ha ancora giri, la richiude.
+ */
 export function undoSpin(state: EventState): EngineResult {
-  if (state.matches.length) return { ok: false, error: "matches_started" };
-  if (!state.assignments.length) return { ok: false, error: "nothing_to_undo" };
+  const draw = drawOf(state);
+  if (!spinsOfDraw(state, draw).length) {
+    if (draw > 1) return { ok: true, state: { ...state, draw: draw - 1 } };
+    return { ok: false, error: state.matches.length ? "matches_started" : "nothing_to_undo" };
+  }
+  const last = state.assignments[state.assignments.length - 1];
+  if (lastRound(state) > (last.afterRound ?? 0)) return { ok: false, error: "matches_started" };
   return { ok: true, state: { ...state, assignments: state.assignments.slice(0, -1) } };
+}
+
+/**
+ * Apre una nuova estrazione: tutti i mazzi tornano sulla ruota e ogni giocatore ne riceve uno che non ha ancora avuto.
+ * Solo a estrazione finita e a turno chiuso, e solo se un modo di dare a tutti un mazzo nuovo esiste.
+ */
+export function newDraw(config: EventConfig, state: EventState, rand: Rand): EngineResult<{ draw: number }> {
+  if (!state.assignments.length || spinsLeft(config, state) > 0) return { ok: false, error: "draw_open" };
+  const last = lastRound(state);
+  if (last && !roundComplete(state, last)) return { ok: false, error: "round_open" };
+  const draw = drawOf(state) + 1;
+  const next: EventState = { ...state, draw };
+  const { free, decks } = openDraw(config, next);
+  if (!free.length || !decks.length || !firstGroup(free, decks, decksHad(next), rand, null)) return { ok: false, error: "no_new_deck" };
+  return { ok: true, state: next, draw };
 }
 
 /**

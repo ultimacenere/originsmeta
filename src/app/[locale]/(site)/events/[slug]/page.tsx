@@ -4,12 +4,13 @@ import { isLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/page";
 import { deckCards, readPublicEvent } from "@/lib/event/server";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";
-import { EVENT_LOCALE, eventPath } from "@/lib/event/links";
+import { EVENT_LOCALE, eventAnnounced, eventPath } from "@/lib/event/links";
 import { totalPacks } from "@/lib/event/config";
+import { startHasTime } from "@/lib/event/clock";
 import { CopyButton } from "@/components/CopyButton";
 import { EventLiveProvider } from "@/components/event/EventLive";
 import { EventClockBanner } from "@/components/event/EventClock";
-import { DeckFaces, PairingsList, StandingsTable, TalentSection } from "@/components/event/EventBoard";
+import { DeckFaces, DrawNote, PairingsList, StandingsTable, TalentSection } from "@/components/event/EventBoard";
 import { EventRedeem } from "@/components/event/EventRedeem";
 
 /*
@@ -20,6 +21,8 @@ import { EventRedeem } from "@/components/event/EventRedeem";
   Solo in italiano (l'evento è dei creator italiani): le altre lingue rimandano qui. ISR ogni 60 secondi (svelamento dei
   talent, mazzi); quello che cambia durante la diretta (orologio, ruota, risultati, dirette Twitch) il browser lo
   rilegge da /api/events/<slug> ogni 10 secondi. Link breve: originsmeta.com/showmatch (next.config.ts).
+  Online dal 12/11/2026 ma non annunciata: finché lo slug non è in EVENT_ANNOUNCED (links.ts) la pagina è noindex e
+  nessun menu, calendario o sitemap la linka.
 */
 
 export const revalidate = 60;
@@ -33,6 +36,8 @@ export function generateStaticParams() {
 type Params = Promise<{ locale: string; slug: string }>;
 
 const startFmt = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
+// startsAt a mezzanotte = l'ora non si sa ancora: solo la data
+const startDayFmt = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Rome" });
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -41,7 +46,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!event) return { robots: { index: false, follow: true } };
   const packs = totalPacks(event.config.slots);
   const vars = { name: event.config.name, packs };
-  return pageMeta(EVENT_LOCALE, `/events/${slug}`, fillEvent(L.meta.title, vars), fillEvent(packs ? L.meta.description : L.meta.descriptionNoPacks, vars), undefined, { languages: [EVENT_LOCALE] });
+  return pageMeta(EVENT_LOCALE, `/events/${slug}`, fillEvent(L.meta.title, vars), fillEvent(packs ? L.meta.description : L.meta.descriptionNoPacks, vars), undefined, { languages: [EVENT_LOCALE], noindex: !eventAnnounced(slug) });
 }
 
 export default async function EventPage({ params }: { params: Params }) {
@@ -75,7 +80,7 @@ export default async function EventPage({ params }: { params: Params }) {
             {packs ? <span className="stat-pill bg-gold font-bold text-ink">{fillEvent(L.hero.packs, { packs })}</span> : null}
             {!Number.isNaN(start) ? (
               <span className="stat-pill bg-night-3 text-pale">
-                {L.hero.starts}: {startFmt.format(start)}
+                {L.hero.starts}: {(startHasTime(config.startsAt) ? startFmt : startDayFmt).format(start)}
               </span>
             ) : null}
           </div>
@@ -113,6 +118,7 @@ export default async function EventPage({ params }: { params: Params }) {
             {L.decks.title}
           </h2>
           <p className="mt-2 text-pale">{L.decks.intro}</p>
+          <DrawNote />
           {decks.length ? (
             // strisce sottili, due per riga da 1024 px: nome, giocatori, "Copia codice" e "Lista" (deck builder in una nuova scheda)
             <ul className="mt-4 grid grid-cols-1 gap-2 lg:grid-cols-2">
@@ -180,7 +186,7 @@ export default async function EventPage({ params }: { params: Params }) {
               <li key={s}>{fillEvent(s, { keyword: config.keyword })}</li>
             ))}
           </ol>
-          <p className="mt-3 text-sm text-pale-muted">{L.giveaway.onePerPerson}</p>
+          <p className="mt-3 text-sm text-pale-muted">{config.maxWinsPerViewer > 1 ? L.giveaway.manyPerPerson : L.giveaway.onePerPerson}</p>
           {config.slots.length ? (
             <div className="mt-5">
               <h3 className="t-item text-chalk">{L.giveaway.schedule}</h3>

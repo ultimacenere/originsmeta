@@ -22,9 +22,5 @@ export default async function EventModPage({ params }: { params: Promise<{ local
   const { locale, slug } = await params;
   if (!isLocale(locale) || !isEventSlug(slug)) notFound();
   if (locale !== EVENT_LOCALE) redirect(eventPath(slug, "/mod"));
-  return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <EventModPanel slug={slug} />
-    </div>
-  );
+  return <EventModPanel slug={slug} />;
 }

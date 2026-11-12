@@ -27,7 +27,8 @@ export const LIMITS = {
   packs: 50,
   minutes: 60,
   rounds: 15,
-  maxCodesPerUser: 10,
+  maxCodesPerUser: 60,
+  maxWinsPerViewer: 60,
   pickup: 1500,
 } as const;
 
@@ -55,6 +56,7 @@ export function emptyConfig(name = "Evento"): EventConfig {
     slots: [],
     keyword: DEFAULT_KEYWORD,
     maxCodesPerUser: 1,
+    maxWinsPerViewer: 1,
     redeemUntil: null,
     pickup: "",
   };
@@ -84,6 +86,15 @@ export function httpsUrl(x: unknown): string | null {
   } catch {
     return null;
   }
+}
+
+/** File delle foto dei talent pubblicati dal sito (public/media/events/<evento>/). */
+export const EVENT_MEDIA_PATTERN = /^[/]media[/]events[/][a-z0-9-]{1,60}[/][A-Za-z0-9._-]{1,80}[.](webp|jpe?g|png)$/;
+
+/** Foto di un talent: un indirizzo https, o un file del sito in /media/events/ (12/11/2026: le foto mandate dai creator). */
+export function photoUrl(x: unknown): string | null {
+  if (typeof x === "string" && EVENT_MEDIA_PATTERN.test(x.trim()) && !x.includes("..")) return x.trim();
+  return httpsUrl(x);
 }
 
 /** Data ISO normalizzata, o null (stringa vuota o assente = null; una data che non si legge è un errore). */
@@ -143,8 +154,8 @@ export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedC
         else t.twitch = login;
       }
       if (raw.photo !== undefined && raw.photo !== null && raw.photo !== "") {
-        const u = httpsUrl(raw.photo);
-        if (!u) err(`${p}.photo`, "deve essere un indirizzo https");
+        const u = photoUrl(raw.photo);
+        if (!u) err(`${p}.photo`, "deve essere un indirizzo https o un file in /media/events/");
         else t.photo = u;
       }
       const bio = cleanText(raw.bio, true);
@@ -281,6 +292,15 @@ export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedC
     else maxCodesPerUser = n;
   }
 
+  // vincite per nome Twitch in tutto l'evento (11/11/2026: "ogni partecipante può vincere più pacchetti"); nello stesso
+  // passaggio resta una sola
+  let maxWinsPerViewer = 1;
+  if (input.maxWinsPerViewer !== undefined && input.maxWinsPerViewer !== null && input.maxWinsPerViewer !== "") {
+    const n = intIn(input.maxWinsPerViewer, 1, LIMITS.maxWinsPerViewer);
+    if (n === null) err("maxWinsPerViewer", `numero intero da 1 a ${LIMITS.maxWinsPerViewer}`);
+    else maxWinsPerViewer = n;
+  }
+
   const pickup = cleanText(input.pickup, true);
   if (pickup.length > LIMITS.pickup) err("pickup", `al massimo ${LIMITS.pickup} caratteri`);
 
@@ -297,6 +317,7 @@ export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedC
     slots,
     keyword,
     maxCodesPerUser,
+    maxWinsPerViewer,
     redeemUntil: dates.redeemUntil,
     pickup: pickup.slice(0, LIMITS.pickup),
   };
@@ -331,5 +352,8 @@ export function configWarnings(config: EventConfig, codesTotal: number | null = 
   if (strangers.length) out.push(`Slot su canali che non sono di nessun talent: ${strangers.join(", ")}.`);
   const packs = totalPacks(config.slots);
   if (codesTotal !== null && packs > codesTotal) out.push(`Gli slot danno ${packs} pacchetti ma i codici sono ${codesTotal}: generane altri.`);
+  if (config.maxWinsPerViewer > config.maxCodesPerUser) {
+    out.push(`Uno spettatore può vincere ${config.maxWinsPerViewer} volte ma un account riscatta al massimo ${config.maxCodesPerUser} codici: alza maxCodesPerUser.`);
+  }
   return out;
 }

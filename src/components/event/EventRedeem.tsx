@@ -71,7 +71,7 @@ function useSignedIn(): boolean | null {
 
 const fmt = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
 
-export function EventRedeem({ slug }: { slug: string }) {
+export function EventRedeem({ slug, kicker }: { slug: string; kicker?: string }) {
   const data = useEventData();
   const signedIn = useSignedIn();
   const [code, setCode] = useState("");
@@ -128,8 +128,9 @@ export function EventRedeem({ slug }: { slug: string }) {
   const good = status === "ok" || status === "mine";
 
   return (
-    <section ref={box} id="codice" className="card-night scroll-mt-24 p-5 sm:p-6" aria-labelledby="ev-redeem">
-      <h2 id="ev-redeem" className="t-section text-sky">
+    <section ref={box} id="codice" className="ev-redeem card-night scroll-mt-24 p-5 sm:p-6" aria-labelledby="ev-redeem">
+      {kicker ? <p className="ev-head-k">{kicker}</p> : null}
+      <h2 id="ev-redeem" className="ev-redeem-title t-section text-sky">
         {L.redeem.title}
       </h2>
       <p className="mt-2 text-pale">{L.redeem.intro}</p>

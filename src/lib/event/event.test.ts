@@ -163,6 +163,30 @@ describe("configurazione", () => {
     assert.equal(config.slots[2].channel, "p_uno");
     assert.equal(config.talent.find((t) => t.id === "p2")?.photo, undefined, "un indirizzo non https non diventa un link");
   });
+  test("foto dei talent: un indirizzo https o un file del sito in /media/events/", () => {
+    assert.equal(CFG.photoUrl("/media/events/attrix-showmatch/p-1a2b3c4d.webp"), "/media/events/attrix-showmatch/p-1a2b3c4d.webp");
+    assert.equal(CFG.photoUrl("https://example.org/a.png"), "https://example.org/a.png");
+    for (const bad of ["/media/events/../segreto.png", "/media/altro/x.webp", "media/events/a/b.webp", "/media/events/a/b.gif", "/media/events/a/b/c.webp", "http://example.org/a.png", "javascript:alert(1)", 5, null]) {
+      assert.equal(CFG.photoUrl(bad), null, String(bad));
+    }
+    const raw = sampleConfig();
+    (raw.talent as Record<string, unknown>[])[2].photo = "/media/events/attrix-showmatch/p-1a2b3c4d.webp";
+    const { config, errors } = CFG.parseConfig(raw, "strict");
+    assert.deepEqual(errors, []);
+    assert.equal(config.talent[2].photo, "/media/events/attrix-showmatch/p-1a2b3c4d.webp");
+  });
+  test("più vincite per spettatore: da 1 a 60, con l'avviso se un account ne riscatta di meno", () => {
+    const base = sampleConfig();
+    assert.equal(CFG.parseConfig(base, "strict").config.maxWinsPerViewer, 1);
+    const many = CFG.parseConfig({ ...base, maxWinsPerViewer: 60, maxCodesPerUser: 60 }, "strict");
+    assert.deepEqual(many.errors, []);
+    assert.equal(many.config.maxWinsPerViewer, 60);
+    assert.deepEqual(CFG.configWarnings(many.config), []);
+    assert.ok(CFG.parseConfig({ ...base, maxWinsPerViewer: 0 }, "strict").errors.some((e) => e.startsWith("maxWinsPerViewer")));
+    assert.ok(CFG.parseConfig({ ...base, maxWinsPerViewer: 61 }, "strict").errors.some((e) => e.startsWith("maxWinsPerViewer")));
+    const warn = CFG.configWarnings(CFG.parseConfig({ ...base, maxWinsPerViewer: 5 }, "strict").config);
+    assert.ok(warn.some((w) => w.includes("maxCodesPerUser")));
+  });
   test("coppie: solo giocatori, una volta ciascuno", () => {
     const raw = sampleConfig();
     raw.pairs = [["p1", "p2"], ["p3", "p4"]];
@@ -296,6 +320,87 @@ describe("ruota dei mazzi e svizzera", () => {
     const withRound = E.nextRound(c, r.state, E.seededRand(2));
     assert.ok(withRound.ok);
     if (withRound.ok) assert.deepEqual(E.undoSpin(withRound.state), { ok: false, error: "matches_started" });
+  });
+  test("nuova estrazione: tutti cambiano mazzo e nessuno riprende uno già avuto", () => {
+    // 8 giocatori e 4 mazzi: quattro estrazioni possibili (ognuno li gioca tutti), la quinta no
+    const c = parsed();
+    c.talent = Array.from({ length: 8 }, (_, i) => ({ id: `g${i + 1}`, name: `G${i + 1}`, role: "player" as const }));
+    c.decks = ["rosso", "blu", "verde", "giallo"].map((id, i) => ({ id, name: id, code: "", color: ["#e53935", "#1e88e5", "#43a047", "#fdd835"][i] }));
+    const rand = E.seededRand(11);
+    let s = E.emptyState();
+    const spinAll = () => {
+      while (E.spinsLeft(c, s) > 0) {
+        const r = E.spin(c, s, rand, T0);
+        assert.ok(r.ok, r.ok ? "" : r.error);
+        if (!r.ok) return;
+        s = r.state;
+      }
+    };
+    assert.deepEqual(E.newDraw(c, s, rand), { ok: false, error: "draw_open" });
+    spinAll();
+    assert.equal(E.spinsOfDraw(s, 1).length, 4);
+    assert.deepEqual(E.spin(c, s, rand, T0), { ok: false, error: "no_decks_left" });
+    const firstDecks = [...E.deckByPlayer(s)].sort();
+    // un turno aperto blocca la nuova estrazione
+    const r1 = E.nextRound(c, s, rand);
+    assert.ok(r1.ok);
+    if (!r1.ok) return;
+    s = r1.state;
+    assert.deepEqual(E.newDraw(c, s, rand), { ok: false, error: "round_open" });
+    for (const m of s.matches) {
+      const w = E.setWinner(s, m.id, m.a);
+      assert.ok(w.ok);
+      if (w.ok) s = w.state;
+    }
+    for (let draw = 2; draw <= 4; draw++) {
+      const n = E.newDraw(c, s, rand);
+      assert.ok(n.ok, n.ok ? "" : n.error);
+      if (!n.ok) return;
+      s = n.state;
+      assert.equal(E.drawOf(s), draw);
+      assert.equal(E.spinsLeft(c, s), 4, "la ruota torna piena");
+      spinAll();
+      const cur = E.spinsOfDraw(s, draw);
+      assert.equal(new Set(cur.map((a) => a.deck)).size, 4, "ogni mazzo una volta per estrazione");
+      assert.equal(new Set(cur.flatMap((a) => a.players)).size, 8, "tutti i giocatori hanno un mazzo");
+      for (const [p, decks] of E.decksHad(s)) assert.equal(decks.size, draw, `${p}: un mazzo diverso a ogni estrazione`);
+      for (const a of cur) for (const p of a.players) assert.equal(E.deckByPlayer(s).get(p), a.deck, "vale l'ultimo mazzo");
+    }
+    // nel turno 1 ognuno aveva il mazzo della prima estrazione
+    assert.deepEqual([...E.deckByPlayerAt(s, 1)].sort(), firstDecks);
+    assert.deepEqual(E.newDraw(c, s, rand), { ok: false, error: "no_new_deck" });
+    // lo stato riletto dal database tiene estrazione e turno di ogni giro
+    const again = E.normalizeState(JSON.parse(JSON.stringify(s)));
+    assert.equal(E.drawOf(again), 4);
+    assert.deepEqual(again.assignments, s.assignments);
+  });
+  test("annulla dopo la prima estrazione: il giro finché non nasce un turno, poi l'estrazione vuota si richiude", () => {
+    const c = parsed();
+    const rand = E.seededRand(5);
+    let s = E.emptyState();
+    while (E.spinsLeft(c, s) > 0) {
+      const r = E.spin(c, s, rand, T0);
+      assert.ok(r.ok);
+      if (!r.ok) return;
+      s = r.state;
+    }
+    const n = E.newDraw(c, s, rand);
+    assert.ok(n.ok);
+    if (!n.ok) return;
+    // estrazione aperta e ancora vuota: "annulla" la richiude
+    const closed = E.undoSpin(n.state);
+    assert.ok(closed.ok && E.drawOf(closed.state) === 1 && closed.state.assignments.length === s.assignments.length);
+    const sp = E.spin(c, n.state, rand, T0);
+    assert.ok(sp.ok);
+    if (!sp.ok) return;
+    assert.equal(sp.assignment.draw, 2);
+    for (const p of sp.assignment.players) assert.notEqual(E.deckByPlayer(s).get(p), sp.assignment.deck, "mazzo nuovo");
+    const undone = E.undoSpin(sp.state);
+    assert.ok(undone.ok && undone.state.assignments.length === s.assignments.length && E.drawOf(undone.state) === 2);
+    // nato un turno dopo il giro, il giro non si annulla più
+    const round = E.nextRound(c, sp.state, rand);
+    assert.ok(round.ok);
+    if (round.ok) assert.deepEqual(E.undoSpin(round.state), { ok: false, error: "matches_started" });
   });
   test("primo turno: tutti abbinati; dispari = un bye vinto; niente stesso mazzo quando si può", () => {
     const c = parsed();
@@ -466,6 +571,13 @@ describe("blocco SQL", () => {
     assert.ok(!/on public\.profiles/.test(BLOCK.replace(/references public\.profiles/g, "")), "nessuna grant né revoke su public.profiles");
     assert.ok(/security definer/.test(BLOCK));
   });
+  test("più vincite: una per passaggio nel vincolo, il tetto da maxWinsPerViewer", () => {
+    assert.ok(BLOCK.includes("create unique index if not exists community_event_codes_winner_slot_idx on public.community_event_codes (slug, slot, winner_hash)"));
+    assert.ok(BLOCK.includes("drop constraint if exists community_event_codes_slug_winner_hash_key"), "il vincolo di prima si toglie dove c'era");
+    assert.ok(!BLOCK.includes("unique (slug, winner_hash)"), "niente più una vincita a persona in tutto l'evento");
+    assert.equal(BLOCK.split("maxWinsPerViewer").length - 1 >= 4, true, "assign e swap leggono il tetto dalla configurazione");
+    assert.equal(CFG.LIMITS.maxWinsPerViewer <= 99 && CFG.LIMITS.maxCodesPerUser <= 99, true, "l'SQL legge numeri di una o due cifre");
+  });
   test("le funzioni del blocco sono nei tipi del database", () => {
     const types = readFileSync(new URL("../supabase/database.ts", import.meta.url), "utf8");
     const fns = [...BLOCK.matchAll(/create or replace function public\.(community_event_[a-z_]+)\(/g)].map((m) => m[1]);
@@ -476,7 +588,7 @@ describe("blocco SQL", () => {
 
 describe("testi e link", () => {
   test("ogni errore del motore e ogni esito del riscatto ha il suo testo", () => {
-    const engineErrors = ["no_decks_left", "no_players_left", "nothing_to_undo", "matches_started", "round_open", "not_enough_players", "round_has_results", "unknown_match", "bad_winner"];
+    const engineErrors = ["no_decks_left", "no_players_left", "no_new_deck", "draw_open", "nothing_to_undo", "matches_started", "round_open", "not_enough_players", "round_has_results", "unknown_match", "bad_winner"];
     for (const e of engineErrors) assert.ok((LB.eventLabels.control.errors as Record<string, string>)[e], e);
     for (const r of ["ok", "mine", "taken", "invalid", "limit", "too_many", "closed", "not_logged_in", "unavailable"]) assert.ok((LB.eventLabels.redeem.result as Record<string, string>)[r], r);
     for (const s of ["ok", "dup", "full", "none", "invalid"]) assert.ok((LB.eventLabels.mod.status as Record<string, string>)[s], s);
@@ -489,5 +601,20 @@ describe("testi e link", () => {
     }
     assert.equal(LK.eventShortLink("attrix-showmatch"), "originsmeta.com/showmatch");
     assert.equal(LK.eventShortLink("altro"), "originsmeta.com/it/events/altro");
+  });
+  test("un evento online ma non annunciato resta nascosto", () => {
+    assert.equal(LK.eventAnnounced("un-evento-qualunque"), false);
+    const page = readFileSync(new URL("../../app/[locale]/(site)/events/[slug]/page.tsx", import.meta.url), "utf8");
+    assert.ok(page.includes("noindex: !eventAnnounced(slug)"), "la pagina di un evento non annunciato è noindex");
+    // menu, footer, calendario, sitemap, popup dei tornei, informativa e llms.txt non ne scrivono l'indirizzo né il nome
+    const places = ["../../components/Header.tsx", "../../components/Footer.tsx", "../data/events.ts", "../sitemapEntries.ts", "../tournamentPromo.ts", "../eventPrivacy.ts", "../../../public/llms.txt"];
+    for (const [slug, short] of Object.entries(LK.EVENT_SHORT_PATHS)) {
+      if (LK.eventAnnounced(slug)) continue;
+      const words = [`events/${slug}`, short, slug.replace(/-/g, " ")];
+      for (const place of places) {
+        const text = readFileSync(new URL(place, import.meta.url), "utf8").toLowerCase();
+        for (const w of words) assert.ok(!text.includes(w.toLowerCase()), `${place}: ${w}`);
+      }
+    }
   });
 });

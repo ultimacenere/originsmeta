@@ -10,19 +10,20 @@ import { eventLabels as L, fillEvent } from "@/lib/event/labels";
 import { eventShortLink } from "@/lib/event/links";
 import type { AssignResult, ModEvent } from "@/lib/event/types";
 import { useTwitchChat } from "./useTwitchChat";
+import { ToolHead, ToolHero, ToolShell } from "./EventTool";
 
 /**
  * Pannello del mod di un canale (10/11/2026). Dalle note: "chat scrive comando (es. !codice) per 6 minuti, vincitori
  * estratti automaticamente", "Vincitori ricevono un codice univoco dal mod del canale". Il mod apre il suo link
  * (#k=<token>), collega la chat del suo canale (sola lettura, dal browser) e durante il suo slot il pannello raccoglie
- * chi scrive il comando; allo scadere estrae i vincitori, chiede i codici al sito (una vincita a persona in tutto
- * l'evento: chi ha già vinto altrove viene sostituito) e prepara il messaggio da mandare in privato a ognuno. I nomi
+ * chi scrive il comando; allo scadere estrae i vincitori, chiede i codici al sito (nello stesso passaggio una vincita a
+ * persona; in tutto l'evento quante ne dice `maxWinsPerViewer`, 1 se manca: chi è già al tetto viene sostituito) e
+ * prepara il messaggio da mandare in privato a ognuno. I nomi
  * della chat restano in questa scheda (sessionStorage); i nomi dei vincitori accanto ai codici restano in questo
  * browser (localStorage), il sito ne salva solo l'impronta.
+ * Dall'11/11/2026 ha la grafica della Locandina (EventTool.tsx, event-tools.css).
  */
 
-const card = "card-night space-y-3 p-4 sm:p-5";
-const h2 = "font-display text-lg font-extrabold text-sky";
 
 function tokenFromHash(): string | null {
   const m = /(?:^|[#&])k=([A-Za-z0-9_-]{32,200})/.exec(window.location.hash);
@@ -139,7 +140,7 @@ export function EventModPanel({ slug }: { slug: string }) {
     [winnersKey],
   );
 
-  /** Estrae e dà i codici per lo slot `slot`: chi ha già vinto altrove (dup) viene sostituito, fino a 5 giri. */
+  /** Estrae e dà i codici per lo slot `slot`: chi il sito rifiuta perché ha già vinto (dup) viene sostituito, fino a 5 giri. */
   const draw = useCallback(
     async (slot: number, extra: string[] = []) => {
       if (!ev || !token) return;
@@ -148,7 +149,9 @@ export function EventModPanel({ slug }: { slug: string }) {
       if (left <= 0) return;
       setBusy(true);
       setMsg(null);
-      const exclude = new Set<string>(Object.values(winners));
+      // fuori solo chi ha già un codice di questo slot: se può vincere ancora negli altri lo decide il sito (dup)
+      const slotCodes = new Set(codesOf(slot).map((c) => c.code));
+      const exclude = new Set<string>(Object.entries(winners).flatMap(([code, login]) => (slotCodes.has(code) ? [login] : [])));
       const pool = [...(entrants[String(slot)] ?? []), ...extra];
       const rand = cryptoRand();
       const got: Record<string, string> = { ...winners };
@@ -195,8 +198,18 @@ export function EventModPanel({ slug }: { slug: string }) {
     }
   }, [activeMine, draw]);
 
-  if (status === "loading") return <p className="text-pale">{L.mod.loading}</p>;
-  if (status === "forbidden" || !ev || !token) return <p className="card-night p-5 text-gold">{status === "unavailable" ? L.control.errors.unavailable : L.mod.noAccess}</p>;
+  if (status === "loading")
+    return (
+      <ToolShell>
+        <p className="ev-empty">{L.mod.loading}</p>
+      </ToolShell>
+    );
+  if (status === "forbidden" || !ev || !token)
+    return (
+      <ToolShell>
+        <p className="ev-tool-alert">{status === "unavailable" ? L.control.errors.unavailable : L.mod.noAccess}</p>
+      </ToolShell>
+    );
 
   const lastMine = activeMine ?? [...mine].reverse().find((i) => clock?.status === "done" || (clock?.index ?? -1) > i || (ev.giveaway.anchor !== null && i < ev.giveaway.anchorIndex)) ?? mine[0];
   const slotLabel = (i: number) => {
@@ -210,181 +223,183 @@ export function EventModPanel({ slug }: { slug: string }) {
   const whisper = (code: string) => fillEvent(L.mod.whisperText, { name: ev.name, code: formatCode(code), url: eventShortLink(slug) });
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-1">
-        <p className="kicker text-mint">{L.mod.title}</p>
-        <h1 className="t-page text-sky">{ev.name}</h1>
-        <p className="text-pale">
-          {L.mod.channel}: <span className="font-bold text-sky">{ev.channel}</span> · {fillEvent(L.mod.collecting, { keyword: ev.keyword })}
+    <div className="ev ev--a ev-tool">
+      <ToolHero kicker={L.mod.title} aside={`${L.mod.channel} ${ev.channel}`} name={ev.name}>
+        <p className="ev-tagline">
+          {L.mod.channel}: <b>{ev.channel}</b> · {fillEvent(L.mod.collecting, { keyword: ev.keyword })}
         </p>
-        <p role="status" className="min-h-5 text-sm font-bold text-gold">
+        <p role="status" className="ev-tool-status">
           {busy ? "…" : msg}
         </p>
-      </header>
+      </ToolHero>
 
-      <section className={card} aria-labelledby="mod-slots">
-        <h2 id="mod-slots" className={h2}>
-          {L.mod.yourSlots}
-        </h2>
-        <ul className="space-y-1">
-          {mine.map((i) => (
-            <li key={i} className={`flex flex-wrap items-center gap-x-3 rounded-lg border-2 px-3 py-2 text-sm ${activeMine === i ? "border-mint" : "border-night-3"}`}>
-              <span className="font-mono text-pale-muted">{fillEvent(L.control.giveaway.slot, { n: i + 1 })}</span>
-              <span className="text-pale">{ev.slots[i].packs === 1 ? L.clock.packsOne : fillEvent(L.clock.packs, { n: ev.slots[i].packs })}</span>
-              <span className="font-bold text-chalk">{slotLabel(i)}</span>
-              <span className="ml-auto text-xs text-pale-muted">
-                {fillEvent(L.mod.entrants, { n: (entrants[String(i)] ?? []).length })} · {codesOf(i).length}/{ev.slots[i].packs}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className={`btn ${chatOn ? "btn-ghost" : "btn-primary"}`} onClick={() => setChatOn((x) => !x)}>
-            {chatOn ? L.mod.disconnect : L.mod.connect}
-          </button>
-          <span className="text-sm text-pale">
-            {chat === "on" ? fillEvent(L.mod.connected, { channel: ev.channel }) : chat === "joining" ? fillEvent(L.mod.joining, { channel: ev.channel }) : chat === "connecting" ? L.mod.connecting : chat === "error" ? L.mod.disconnected : ""}
-          </span>
-        </div>
-        <p className="text-xs text-pale-muted">{activeMine === null ? L.mod.notCollecting : L.mod.drawAuto}</p>
-        {lastMine !== undefined ? (
-          <button type="button" className="btn btn-ink text-xs" disabled={busy || ev.slots[lastMine].packs - codesOf(lastMine).length <= 0 || !(entrants[String(lastMine)] ?? []).length} onClick={() => void draw(lastMine)}>
-            {fillEvent(L.mod.draw, { n: Math.max(0, ev.slots[lastMine].packs - codesOf(lastMine).length) })}
-          </button>
-        ) : null}
-      </section>
-
-      <section className={card} aria-labelledby="mod-winners">
-        <h2 id="mod-winners" className={h2}>
-          {L.mod.winners}
-        </h2>
-        {ev.codes.length ? (
-          <ul className="space-y-2">
-            {ev.codes.map((c) => {
-              const who = winners[c.code];
-              const pool = (entrants[String(c.slot)] ?? []).filter((x) => !Object.values(winners).includes(x));
-              return (
-                <li key={c.code} className="flex flex-wrap items-center gap-2 rounded-lg border-2 border-night-3 bg-night/60 p-2 text-sm">
-                  <span className="font-mono text-pale-muted">{fillEvent(L.control.giveaway.slot, { n: c.slot + 1 })}</span>
-                  <span className="font-bold text-sky">{who ?? "?"}</span>
-                  <span className="font-mono text-chalk">{formatCode(c.code)}</span>
-                  {c.redeemed ? <span className="rounded bg-mint px-1 text-[10px] font-bold text-ink">{L.mod.redeemed}</span> : null}
-                  <span className="ml-auto flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      className="btn btn-primary text-xs"
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(whisper(c.code));
-                          setMsg(L.control.mods.copied);
-                        } catch {
-                          window.prompt(L.mod.whisper, whisper(c.code));
-                        }
-                      }}
-                    >
-                      {L.mod.whisper}
-                    </button>
-                    {!c.redeemed && pool.length ? (
-                      <button
-                        type="button"
-                        className="btn btn-ghost text-xs"
-                        title={L.mod.replaceNote}
-                        disabled={busy}
-                        onClick={async () => {
-                          const [pick] = drawWinners(pool, 1, cryptoRand());
-                          if (!pick) return;
-                          setBusy(true);
-                          const r = await swapCode(slug, token, c.code, pick);
-                          setBusy(false);
-                          if (r.ok && r.status === "ok") saveWinners({ ...winners, [c.code]: pick });
-                          else setMsg(r.ok ? (L.mod.status[r.status as keyof typeof L.mod.status] ?? r.status) : r.error);
-                          await load(token);
-                        }}
-                      >
-                        {L.mod.replace}
-                      </button>
-                    ) : null}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <p className="text-sm text-pale-muted">—</p>
-        )}
-        {Object.keys(notes).length ? (
-          <ul className="text-xs text-pale-muted">
-            {Object.entries(notes).map(([who, note]) => (
-              <li key={who}>
-                {who}: {note}
+      <div className="ev-wrap ev-main ev-main--narrow">
+        <section className="ev-panel" aria-labelledby="mod-slots">
+          <ToolHead id="mod-slots" n="01" k={L.mod.kickers.slots}>
+            {L.mod.yourSlots}
+          </ToolHead>
+          <ul className="ev-ctl-slots">
+            {mine.map((i) => (
+              <li key={i} className={`ev-ctl-slot${activeMine === i ? " is-current" : ""}`}>
+                <span className="ev-ctl-slot-n">{fillEvent(L.control.giveaway.slot, { n: i + 1 })}</span>
+                <span className="ev-ctl-slot-ch">{ev.slots[i].packs === 1 ? L.clock.packsOne : fillEvent(L.clock.packs, { n: ev.slots[i].packs })}</span>
+                <span className="ev-ctl-slot-state">{slotLabel(i)}</span>
+                <span className="ev-ctl-slot-info ev-ctl-slot-end">
+                  {fillEvent(L.mod.entrants, { n: (entrants[String(i)] ?? []).length })} · {codesOf(i).length}/{ev.slots[i].packs}
+                </span>
               </li>
             ))}
           </ul>
-        ) : null}
-        {lastMine !== undefined ? (
-          <form
-            className="flex flex-wrap items-end gap-2"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const login = twitchLogin(manual);
-              if (!login) {
-                setMsg(L.mod.status.invalid);
-                return;
-              }
-              setBusy(true);
-              const r = await assignCodes(slug, token, lastMine, [login]);
-              setBusy(false);
-              if (r.ok) {
-                const x = r.results[0];
-                if (x?.status === "ok" && x.code) saveWinners({ ...winners, [x.code]: x.login });
-                else if (x) setMsg(`${x.login}: ${L.mod.status[x.status]}`);
-                setManual("");
-              } else setMsg(r.error);
-              await load(token);
-            }}
-          >
-            <label className="text-sm text-pale">
-              {L.mod.manual}
-              <input value={manual} onChange={(e) => setManual(e.target.value)} placeholder={L.mod.manualPlaceholder} className="mt-1 block w-56 rounded-lg border border-sky bg-night px-3 py-2 text-pale" />
-            </label>
-            <button type="submit" className="btn btn-ink text-xs" disabled={busy || !manual.trim()}>
-              {L.mod.add}
+          <div className="ev-cta ev-chat">
+            <button type="button" className={`btn ${chatOn ? "btn-ghost" : "btn-primary"}`} onClick={() => setChatOn((x) => !x)}>
+              {chatOn ? L.mod.disconnect : L.mod.connect}
             </button>
-          </form>
-        ) : null}
-      </section>
-
-      <section className={card} aria-labelledby="mod-test">
-        <h2 id="mod-test" className={h2}>
-          {L.mod.test}
-        </h2>
-        <p className="text-sm text-pale">{fillEvent(L.mod.testNote, { keyword: ev.keyword })}</p>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className="btn btn-ink text-xs"
-            onClick={() => {
-              setTest((t) => !t);
-              setChatOn(true);
-              setTestDraw(null);
-              setEntrants((cur) => ({ ...cur, test: [] }));
-            }}
-          >
-            {test ? L.mod.testStop : L.mod.test}
-          </button>
-          {test ? (
-            <>
-              <span className="text-sm text-pale">{fillEvent(L.mod.entrants, { n: (entrants.test ?? []).length })}</span>
-              <button type="button" className="btn btn-ghost text-xs" disabled={!(entrants.test ?? []).length} onClick={() => setTestDraw(drawWinners(entrants.test ?? [], 3, cryptoRand()))}>
-                {fillEvent(L.mod.draw, { n: 3 })}
+            <span className={`ev-chat-status is-${chat}`}>
+              {chat === "on" ? fillEvent(L.mod.connected, { channel: ev.channel }) : chat === "joining" ? fillEvent(L.mod.joining, { channel: ev.channel }) : chat === "connecting" ? L.mod.connecting : chat === "error" ? L.mod.disconnected : ""}
+            </span>
+          </div>
+          <p className="ev-note">{activeMine === null ? L.mod.notCollecting : L.mod.drawAuto}</p>
+          {lastMine !== undefined ? (
+            <div className="ev-cta">
+              <button type="button" className="btn btn-ink text-xs" disabled={busy || ev.slots[lastMine].packs - codesOf(lastMine).length <= 0 || !(entrants[String(lastMine)] ?? []).length} onClick={() => void draw(lastMine)}>
+                {fillEvent(L.mod.draw, { n: Math.max(0, ev.slots[lastMine].packs - codesOf(lastMine).length) })}
               </button>
-            </>
+            </div>
           ) : null}
-        </div>
-        {testDraw ? <p className="text-sm text-mint">{fillEvent(L.mod.testResult, { names: testDraw.join(", ") || "—" })}</p> : null}
-      </section>
+        </section>
 
-      <p className="text-xs text-pale-muted">{L.mod.privacy}</p>
+        <section className="ev-panel" aria-labelledby="mod-winners">
+          <ToolHead id="mod-winners" n="02" k={L.mod.kickers.winners}>
+            {L.mod.winners}
+          </ToolHead>
+          {ev.codes.length ? (
+            <ul className="ev-codes">
+              {ev.codes.map((c) => {
+                const who = winners[c.code];
+                const pool = (entrants[String(c.slot)] ?? []).filter((x) => !Object.values(winners).includes(x));
+                return (
+                  <li key={c.code} className={`ev-code${c.redeemed ? " is-redeemed" : ""}`}>
+                    <span className="ev-code-slot">{fillEvent(L.control.giveaway.slot, { n: c.slot + 1 })}</span>
+                    <span className="ev-code-who">{who ?? "?"}</span>
+                    <span className="ev-code-code">{formatCode(c.code)}</span>
+                    {c.redeemed ? <span className="ev-code-tag">{L.mod.redeemed}</span> : null}
+                    <span className="ev-code-actions">
+                      <button
+                        type="button"
+                        className="btn btn-primary text-xs"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(whisper(c.code));
+                            setMsg(L.control.mods.copied);
+                          } catch {
+                            window.prompt(L.mod.whisper, whisper(c.code));
+                          }
+                        }}
+                      >
+                        {L.mod.whisper}
+                      </button>
+                      {!c.redeemed && pool.length ? (
+                        <button
+                          type="button"
+                          className="btn btn-ghost text-xs"
+                          title={L.mod.replaceNote}
+                          disabled={busy}
+                          onClick={async () => {
+                            const [pick] = drawWinners(pool, 1, cryptoRand());
+                            if (!pick) return;
+                            setBusy(true);
+                            const r = await swapCode(slug, token, c.code, pick);
+                            setBusy(false);
+                            if (r.ok && r.status === "ok") saveWinners({ ...winners, [c.code]: pick });
+                            else setMsg(r.ok ? (L.mod.status[r.status as keyof typeof L.mod.status] ?? r.status) : r.error);
+                            await load(token);
+                          }}
+                        >
+                          {L.mod.replace}
+                        </button>
+                      ) : null}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="ev-empty">{L.mod.noWinners}</p>
+          )}
+          {Object.keys(notes).length ? (
+            <ul className="ev-tool-notes">
+              {Object.entries(notes).map(([who, note]) => (
+                <li key={who}>
+                  {who}: {note}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {lastMine !== undefined ? (
+            <form
+              className="ev-tool-row"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const login = twitchLogin(manual);
+                if (!login) {
+                  setMsg(L.mod.status.invalid);
+                  return;
+                }
+                setBusy(true);
+                const r = await assignCodes(slug, token, lastMine, [login]);
+                setBusy(false);
+                if (r.ok) {
+                  const x = r.results[0];
+                  if (x?.status === "ok" && x.code) saveWinners({ ...winners, [x.code]: x.login });
+                  else if (x) setMsg(`${x.login}: ${L.mod.status[x.status]}`);
+                  setManual("");
+                } else setMsg(r.error);
+                await load(token);
+              }}
+            >
+              <label className="ev-tool-label">
+                {L.mod.manual}
+                <input value={manual} onChange={(e) => setManual(e.target.value)} placeholder={L.mod.manualPlaceholder} className="ev-tool-input" />
+              </label>
+              <button type="submit" className="btn btn-ink text-xs" disabled={busy || !manual.trim()}>
+                {L.mod.add}
+              </button>
+            </form>
+          ) : null}
+        </section>
+
+        <section className="ev-panel" aria-labelledby="mod-test">
+          <ToolHead id="mod-test" k={L.mod.kickers.test}>
+            {L.mod.test}
+          </ToolHead>
+          <p className="ev-tool-text">{fillEvent(L.mod.testNote, { keyword: ev.keyword })}</p>
+          <div className="ev-cta ev-chat">
+            <button
+              type="button"
+              className="btn btn-ink text-xs"
+              onClick={() => {
+                setTest((t) => !t);
+                setChatOn(true);
+                setTestDraw(null);
+                setEntrants((cur) => ({ ...cur, test: [] }));
+              }}
+            >
+              {test ? L.mod.testStop : L.mod.test}
+            </button>
+            {test ? (
+              <>
+                <span className="ev-chat-status">{fillEvent(L.mod.entrants, { n: (entrants.test ?? []).length })}</span>
+                <button type="button" className="btn btn-ghost text-xs" disabled={!(entrants.test ?? []).length} onClick={() => setTestDraw(drawWinners(entrants.test ?? [], 3, cryptoRand()))}>
+                  {fillEvent(L.mod.draw, { n: 3 })}
+                </button>
+              </>
+            ) : null}
+          </div>
+          {testDraw ? <p className="ev-tool-ok">{fillEvent(L.mod.testResult, { names: testDraw.join(", ") || "—" })}</p> : null}
+        </section>
+
+        <p className="ev-foot">{L.mod.privacy}</p>
+      </div>
     </div>
   );
 }

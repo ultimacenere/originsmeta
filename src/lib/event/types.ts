@@ -77,6 +77,8 @@ export type EventConfig = {
   keyword: string;
   /** codici che un account può riscattare */
   maxCodesPerUser: number;
+  /** vincite per nome Twitch in tutto l'evento (nello stesso passaggio sempre una sola); 1 = si vince una volta */
+  maxWinsPerViewer: number;
   /** fino a quando si riscatta (null = sempre) */
   redeemUntil: string | null;
   /** che cosa fare dopo il riscatto per avere il pacchetto fisico */
@@ -94,8 +96,12 @@ export type EventMatch = {
   winner: string | null;
 };
 
-/** Un giro della ruota: il mazzo estratto e i giocatori che lo ricevono. */
-export type Assignment = { deck: string; players: string[]; at: string };
+/**
+ * Un giro della ruota: il mazzo estratto e i giocatori che lo ricevono. `draw` è il numero dell'estrazione (1 = la prima;
+ * manca nei giri salvati prima del 12/11/2026) e `afterRound` il turno più alto che esisteva in quel momento (serve ad
+ * annullare un giro solo finché non è nato un turno dopo).
+ */
+export type Assignment = { deck: string; players: string[]; at: string; draw?: number; afterRound?: number };
 
 /**
  * Orologio del giveaway: lo slot `anchorIndex` è partito in `anchor` e gli altri lo seguono uno dopo l'altro, ognuno con
@@ -108,6 +114,8 @@ export type EventState = {
   assignments: Assignment[];
   matches: EventMatch[];
   giveaway: GiveawayRun;
+  /** estrazione in corso, dalla seconda in poi (assente = la prima): la ruota ridà un mazzo a tutti, mai uno già avuto */
+  draw?: number;
 };
 
 /** Conteggio dei codici del giveaway (pubblico: nessun codice, nessun nome). */

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatRemaining, giveawayClock, type GiveawayClock } from "@/lib/event/clock";
+import { daysUntil, formatRemaining, giveawayClock, startHasTime, type GiveawayClock } from "@/lib/event/clock";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";
 import { twitchUrl } from "@/lib/event/codes";
 import { trackNamedEvent } from "@/lib/analytics";
@@ -13,12 +13,25 @@ import { FaceImg, faceOf, useEventData, useEventNow, type Face, type LiveEvent }
  * mancano.
  */
 
-function untilText(ms: number): string {
+function untilText(ms: number, timed = true): string {
+  // data senza ora (startsAt a mezzanotte): solo i giorni
+  if (!timed) {
+    const d = daysUntil(ms);
+    return `${d} ${d === 1 ? L.clock.units.d1 : L.clock.units.d}`;
+  }
   const days = Math.floor(ms / 86_400_000);
   return days > 0 ? `${days}${L.clock.days} ${formatRemaining(ms - days * 86_400_000)}` : formatRemaining(ms);
 }
 
 const packsText = (n: number) => (n === 1 ? L.clock.packsOne : fillEvent(L.clock.packs, { n }));
+
+const two = (n: number) => String(n).padStart(2, "0");
+
+/** Giorni, ore, minuti e secondi che mancano, per i riquadri del conto alla rovescia. */
+function untilParts(ms: number): { d: number; h: number; m: number; s: number } {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  return { d: Math.floor(total / 86_400), h: Math.floor((total % 86_400) / 3600), m: Math.floor((total % 3600) / 60), s: total % 60 };
+}
 
 type View =
   | { kind: "loading" }
@@ -48,18 +61,54 @@ function useView(): { view: View; data: LiveEvent } {
 
 const channelName = (f: Face | null) => (f ? f.name : "un canale da svelare");
 
-/** La fascia della pagina dell'evento. */
-export function EventClockBanner() {
+/**
+ * La fascia della pagina dell'evento. Con la grafica "da evento" (EventShow) la fascia ha due posti: `slot="top"`, sopra
+ * la testata, quando il giveaway è partito (chi arriva dalla chat di Twitch vede subito canale e tempo che manca), e
+ * `slot="body"` prima (conto alla rovescia a riquadri con `units`). Il posto si decide dallo stato salvato, non
+ * dall'ora, così l'HTML del server e il primo disegno del browser coincidono.
+ */
+export function EventClockBanner({ slot, units = false }: { slot?: "top" | "body"; units?: boolean } = {}) {
   const { view, data } = useView();
   const now = useEventNow();
   const keyword = data.config.keyword;
-  if (view.kind === "loading") return <div className="card-night min-h-24 p-4 sm:p-5" aria-hidden />;
+  const started = data.state.giveaway.anchor !== null;
+  if (slot === "top" && !started) return null;
+  if (slot === "body" && started) return null;
+  if (view.kind === "loading") return <div className="ev-clock card-night min-h-24 p-4 sm:p-5" aria-hidden />;
+  const timed = startHasTime(data.config.startsAt);
+  if (units && view.kind === "before") {
+    const p = untilParts(view.ms);
+    const days = daysUntil(view.ms);
+    const cells: [number, string][] = timed
+      ? [
+          [p.d, L.clock.units.d],
+          [p.h, L.clock.units.h],
+          [p.m, L.clock.units.m],
+          [p.s, L.clock.units.s],
+        ]
+      : [[days, days === 1 ? L.clock.units.d1 : L.clock.units.d]];
+    return (
+      // niente aria-live: i secondi cambiano di continuo. Ai lettori di schermo va una frase che cambia una volta al minuto.
+      <section aria-label={L.clock.startsIn} className="ev-clock is-before ev-count card-night relative overflow-hidden p-4 sm:p-5">
+        <p className="ev-count-label kicker text-mint">{L.clock.startsIn}</p>
+        <p className="sr-only">{timed ? fillEvent(L.clock.startsInLong, { d: p.d, h: p.h, m: p.m }) : days === 1 ? L.clock.startsTomorrow : fillEvent(L.clock.startsInDays, { d: days })}</p>
+        <div className="ev-count-row" aria-hidden>
+          {cells.map(([n, label]) => (
+            <span key={label} className="ev-count-u">
+              <b className="tabular-nums">{two(n)}</b>
+              <small>{label}</small>
+            </span>
+          ))}
+        </div>
+      </section>
+    );
+  }
   return (
-    <section aria-live="polite" aria-label={L.nav.giveaway} className={`card-night relative overflow-hidden p-4 sm:p-5 ${view.kind === "running" ? "!border-mint" : ""}`}>
+    <section aria-live="polite" aria-label={L.nav.giveaway} className={`ev-clock is-${view.kind} card-night relative overflow-hidden p-4 sm:p-5 ${view.kind === "running" ? "!border-mint" : ""}`}>
       {view.kind === "before" ? (
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           <p className="kicker text-mint">{L.clock.startsIn}</p>
-          <p className="font-mono text-3xl font-bold text-chalk sm:text-4xl">{untilText(view.ms)}</p>
+          <p className="ev-clock-time font-mono text-3xl font-bold text-chalk sm:text-4xl">{untilText(view.ms, timed)}</p>
         </div>
       ) : null}
       {view.kind === "running" || view.kind === "paused" ? (
@@ -77,7 +126,7 @@ export function EventClockBanner() {
           <div className="ml-auto flex flex-wrap items-center gap-4">
             <div className="text-right">
               <p className="text-xs uppercase tracking-wider text-pale-muted">{L.clock.left}</p>
-              <p className="font-mono text-4xl font-bold text-chalk tabular-nums">{formatRemaining(view.clock.remainingMs)}</p>
+              <p className="ev-clock-time font-mono text-4xl font-bold text-chalk tabular-nums">{formatRemaining(view.clock.remainingMs)}</p>
             </div>
             {view.face?.twitch ? (
               <a
@@ -108,7 +157,7 @@ export function EventClockBanner() {
                 <p className="kicker text-mint">{L.clock.nextAt}</p>
                 <p className="truncate font-display text-xl font-extrabold text-sky">{channelName(view.next)}</p>
               </div>
-              {view.nextAt && now ? <p className="font-mono text-3xl font-bold text-chalk tabular-nums">{formatRemaining(view.nextAt - now)}</p> : <p className="text-sm text-pale">{L.clock.soon}</p>}
+              {view.nextAt && now ? <p className="ev-clock-time font-mono text-3xl font-bold text-chalk tabular-nums">{formatRemaining(view.nextAt - now)}</p> : <p className="text-sm text-pale">{L.clock.soon}</p>}
             </div>
           ) : null}
           <p className="text-sm text-pale">{L.clock.waiting}</p>
@@ -148,7 +197,7 @@ export function EventClockOverlay() {
           <>
             <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-mint">{data.config.name}</p>
             <p className="font-display text-2xl font-extrabold text-sky">{L.overlay.startsIn}</p>
-            <p className="font-mono text-5xl font-bold tabular-nums">{untilText(view.ms)}</p>
+            <p className="font-mono text-5xl font-bold tabular-nums">{untilText(view.ms, startHasTime(data.config.startsAt))}</p>
           </>
         ) : null}
         {view.kind === "waiting" ? (

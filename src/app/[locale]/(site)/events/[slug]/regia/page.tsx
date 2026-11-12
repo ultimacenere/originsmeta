@@ -22,9 +22,5 @@ export default async function EventControlPage({ params }: { params: Promise<{ l
   const { locale, slug } = await params;
   if (!isLocale(locale) || !isEventSlug(slug)) notFound();
   if (locale !== EVENT_LOCALE) redirect(eventPath(slug, "/regia"));
-  return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <EventControl slug={slug} />
-    </div>
-  );
+  return <EventControl slug={slug} />;
 }

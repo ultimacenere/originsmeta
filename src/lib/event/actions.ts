@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import { parseConfig, configWarnings } from "./config";
 import { pauseRun, resumeRun, skipRun, startRun, stopRun } from "./clock";
-import { cryptoRand, nextRound, setWinner, spin, undoRound, undoSpin } from "./engine";
+import { cryptoRand, newDraw, nextRound, setWinner, spin, undoRound, undoSpin } from "./engine";
 import { isCodeShape, normalizeCode, twitchLogin } from "./codes";
 import { parseControlEvent, parseModEvent } from "./view";
 import type { AssignResult, AssignStatus, Assignment, ControlEvent, EventConfig, EventState, ModEvent, RedeemStatus } from "./types";
@@ -56,6 +56,7 @@ export async function loadControl(slug: string, token: string | null): Promise<{
 export type ControlOp =
   | { type: "spin" }
   | { type: "undoSpin" }
+  | { type: "newDraw" }
   | { type: "nextRound" }
   | { type: "undoRound" }
   | { type: "winner"; match: string; winner: string | null }
@@ -95,9 +96,17 @@ export async function controlAction(
         break;
       }
       case "undoSpin":
+      case "newDraw":
       case "nextRound":
       case "undoRound": {
-        const r = op.type === "undoSpin" ? undoSpin(ev.state) : op.type === "nextRound" ? nextRound(ev.config, ev.state, cryptoRand()) : undoRound(ev.state);
+        const r =
+          op.type === "undoSpin"
+            ? undoSpin(ev.state)
+            : op.type === "newDraw"
+              ? newDraw(ev.config, ev.state, cryptoRand())
+              : op.type === "nextRound"
+                ? nextRound(ev.config, ev.state, cryptoRand())
+                : undoRound(ev.state);
         if (!r.ok) return { ok: false, error: r.error };
         state = r.state;
         break;
