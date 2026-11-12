@@ -10,7 +10,7 @@ import { formatMatchNames, formatRoundTitle, formatView } from "@/lib/tournament
 import { formatLabels } from "@/lib/tournament/formatLabels";
 import { FormatControls } from "@/components/FormatControls";
 import { DoubleElimControls } from "@/components/DoubleElimControls";
-import { DoubleElimBracket, dePanelOf } from "@/components/DoubleElimBracket";
+import { DeQualified, DoubleElimBracket, dePanelOf } from "@/components/DoubleElimBracket";
 import { doubleElimLabels } from "@/lib/tournament/doubleElimLabels";
 import { deMinPlayers, poolCounts } from "@/lib/tournament/doubleElim";
 import { FormatRounds } from "@/components/FormatRounds";
@@ -152,7 +152,9 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
       ? fo.de_pools && fo.de_qualify
         ? eligibleN < deMinPlayers(fo.de_pools, fo.de_qualify) || Math.min(...poolCounts(eligibleN, fo.de_pools)) <= 2 * fo.de_qualify
           ? dl.errors.doubleElim
-          : fill(dl.startNote, { n: eligibleN, pools: fo.de_pools, k: fo.de_qualify })
+          : fo.de_pools === 1
+            ? fill(dl.startNoteOne, { n: eligibleN, k: fo.de_qualify })
+            : fill(dl.startNote, { n: eligibleN, pools: fo.de_pools, k: fo.de_qualify })
         : undefined
     : t.format === "swiss"
       ? `${fill(fl.startSwiss, { n: eligibleN, rounds: fo.swiss_rounds ?? defaultSwissRounds(eligibleN) })}${eligibleN % 2 ? ` ${fl.startSwissBye}` : ""}`
@@ -164,7 +166,10 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
   const stageList = fv ? matches.filter((mt) => mt.stage === "swiss" || mt.stage === "group") : [];
   const curRound = fv ? fv.stageRounds : 0;
   const curList = t.format === "swiss" ? stageList.filter((mt) => mt.round === curRound) : stageList;
-  const finishReady = fv ? (fv.bracket.length ? undefined : t.format === "swiss" && !stages.top_cut && curRound >= 1 && openStageMatches(matches).length === 0) : undefined;
+  // una qualificazione senza fase finale (11/11/2026) si chiude quando tutte le sue partite sono chiuse
+  const finishReady = fv ? (fv.qualifier ? matches.length > 0 && fv.open === 0 : fv.bracket.length ? undefined : t.format === "swiss" && !stages.top_cut && curRound >= 1 && openStageMatches(matches).length === 0) : undefined;
+  // ... e in fondo alla pagina il riquadro "Chiudi il torneo" dice che finisce con i qualificati
+  const panelLabels = fv?.qualifier ? { ...x, manage: { ...x.manage, finishTitle: dl.closeTitle, finishHint: dl.closeHint, finish: dl.close } } : x;
   const allErrors: Record<string, string> = { ...(sl.errors as Record<string, string>), ...(fl.errors as Record<string, string>), ...(dl.errors as Record<string, string>) };
   const deMatches = matches.filter((mt) => mt.stage === "upper" || mt.stage === "lower");
 
@@ -210,6 +215,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
             labels={dl}
             warnOpen={fl.roundOpenWarn}
             errors={{ ...(x.errors as Record<string, string>), ...allErrors }}
+            qualifier={fv.qualifier}
           />
         </div>
       ) : null}
@@ -247,7 +253,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
           players={managed}
           matches={matches}
           tournamentHref={back}
-          labels={x}
+          labels={panelLabels}
           visibility={t.visibility}
           inviteLink={inviteLink}
           invites={invitedList}
@@ -282,22 +288,26 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
         <section id="de" className="card-night mt-6 scroll-mt-24 p-5">
           <h2 className="t-section">
             {x.bracket}
-            {t.status === "running" ? <span className="ml-2 text-sm font-normal text-pale-muted">· {x.manage.swapTitle}</span> : null}
+            {/* gli scambi a due clic valgono nel tabellone a eliminazione diretta: nella doppia eliminazione solo nella fase finale, quando c'è */}
+            {t.status === "running" && !(t.format === "double_elim" && !fv?.bracket.length) ? <span className="ml-2 text-sm font-normal text-pale-muted">· {x.manage.swapTitle}</span> : null}
           </h2>
           {fv ? (
             /* svizzera e gironi (09/11/2026): turni con le stanze, poi il tabellone della fase finale (scambi solo lì e nel turno svizzero in corso) */
             <>
               {t.format === "double_elim" && fv.de ? (
-                <DoubleElimBracket
-                  matches={matches}
-                  plan={fv.de}
-                  names={names}
-                  dict={d}
-                  labels={dl}
-                  panel={dePanelOf(typeof sp.b === "string" ? sp.b : undefined, fv.de, matches, null)}
-                  hrefFor={(id) => `${back}/manage?b=${id}#de`}
-                  open={{ linkBase: `${back}/match/`, viewer: null, all: true }}
-                />
+                <>
+                  {fv.qualifier ? <DeQualified matches={matches} plan={fv.de} names={names} labels={dl} /> : null}
+                  <DoubleElimBracket
+                    matches={matches}
+                    plan={fv.de}
+                    names={names}
+                    dict={d}
+                    labels={dl}
+                    panel={dePanelOf(typeof sp.b === "string" ? sp.b : undefined, fv.de, matches, null)}
+                    hrefFor={(id) => `${back}/manage?b=${id}#de`}
+                    open={{ linkBase: `${back}/match/`, viewer: null, all: true }}
+                  />
+                </>
               ) : (
                 <FormatRounds matches={matches} names={names} total={t.format === "swiss" ? fv.plannedRounds : 0} groups={t.format === "groups"} dict={d} labels={fl} open={{ linkBase: `${back}/match/`, viewer: null, all: true }} />
               )}
@@ -407,6 +417,7 @@ export default async function ManageTournamentPage({ params, searchParams }: { p
                 sideboard: fo.sideboard,
                 de_pools: fo.de_pools,
                 de_qualify: fo.de_qualify,
+                de_qualifier: fo.de_qualifier,
                 lang: t.lang,
                 description: t.description,
                 rules: t.rules,

@@ -32,10 +32,12 @@ export type FormatView = {
   open: number;
   /** doppia eliminazione (10/11/2026): il piano della qualificazione, null prima dell'avvio e negli altri formati */
   de: DePlan | null;
+  /** doppia eliminazione senza fase finale (11/11/2026): il torneo finisce con i suoi qualificati, che sono `cut` */
+  qualifier: boolean;
 };
 
 export function formatView(
-  t: { format: string; top_cut?: number | null; top_cut_hold?: boolean; top_cut_released_at?: string | null; swiss_rounds?: number | null; group_advance?: number | null; de_pools?: number | null; de_qualify?: number | null; de_pool_size?: number | null },
+  t: { format: string; top_cut?: number | null; top_cut_hold?: boolean; top_cut_released_at?: string | null; swiss_rounds?: number | null; group_advance?: number | null; de_pools?: number | null; de_qualify?: number | null; de_pool_size?: number | null; de_qualifier?: boolean },
   matches: TournamentMatch[],
 ): FormatView {
   const { matches: bracket, base } = bracketRenumbered(matches);
@@ -50,11 +52,11 @@ export function formatView(
     const pools = t.de_pools ?? 1;
     const q = t.de_qualify ?? 1;
     const de = dePlanOf(matches, pools, q);
-    return { stageRounds: sr, plannedRounds: de ? de.upperRounds + de.lowerRounds : sr, bracket, base, finalRound, holdFrom, cut: pools * q * 2, qualify: q, top4, champion: null, open: openStageMatches(matches).length, de };
+    return { stageRounds: sr, plannedRounds: de ? de.upperRounds + de.lowerRounds : sr, bracket, base, finalRound, holdFrom, cut: pools * q * 2, qualify: q, top4, champion: null, open: openStageMatches(matches).length, de, qualifier: Boolean(t.de_qualifier) };
   }
   const qualify = t.format === "groups" ? (t.group_advance ?? null) : (t.top_cut ?? null);
   const cut = t.format === "groups" ? (firstRound.length ? firstRound.filter((m) => m.player_a).length + firstRound.filter((m) => m.player_b).length : null) : (t.top_cut ?? null);
-  return { stageRounds: sr, plannedRounds, bracket, base, finalRound, holdFrom, cut, qualify, top4, champion: championOf(matches), open: openStageMatches(matches).length, de: null };
+  return { stageRounds: sr, plannedRounds, bracket, base, finalRound, holdFrom, cut, qualify, top4, champion: championOf(matches), open: openStageMatches(matches).length, de: null, qualifier: false };
 }
 
 function plain(x: Dictionary["tournaments"], r: number, size: number): string {
@@ -74,7 +76,10 @@ export function formatMatchName(locale: Locale, x: Dictionary["tournaments"], fo
     const s = deSlotOf(view.de, { stage: m.stage, round: m.round, position: (m as { position?: number }).position ?? 0 });
     const last = m.stage === "upper" ? view.de.upperRounds : view.de.lowerRounds;
     const local = s?.local ?? m.round;
-    return fill(l.matchName, { letter: groupLetter(s?.pool ?? m.grp ?? 0), side: m.stage === "upper" ? l.upper : l.lower, round: local === last ? l.qualifyingRound : fill(l.round, { n: local }) });
+    const side = m.stage === "upper" ? l.upper : l.lower;
+    const round = local === last ? l.qualifyingRound : fill(l.round, { n: local });
+    // con un solo tabellone (11/11/2026) la lettera non serve: "Vincenti · Turno 2"
+    return view.de.pools === 1 ? fill(l.matchNameOne, { side, round }) : fill(l.matchName, { letter: groupLetter(s?.pool ?? m.grp ?? 0), side, round });
   }
   if (m.stage === "swiss" || m.stage === "champion") return fill(fl.swissMatch, { n: m.round });
   if (m.stage === "group") return fill(fl.groupMatch, { letter: groupLetter(m.grp ?? 0), n: m.round });

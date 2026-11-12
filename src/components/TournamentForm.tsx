@@ -51,6 +51,8 @@ export type TournamentInitial = {
   /** 10/11/2026 (blocco DOPPIA ELIMINAZIONE): tabelloni e qualificati per lato */
   de_pools?: number | null;
   de_qualify?: number | null;
+  /** 11/11/2026 (blocco QUALIFICAZIONE SENZA FASE FINALE): la doppia eliminazione finisce con i suoi qualificati */
+  de_qualifier?: boolean;
   lang: Locale;
   description: string;
   rules: string;
@@ -216,7 +218,10 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
     setBracketsApplied(false);
   };
   const [deApplied, setDeApplied] = useState(false);
+  // 11/11/2026: qualificazione senza fase finale (la pausa prima della fase finale non ha senso e la casella si spegne)
+  const [deQualifier, setDeQualifier] = useState<boolean>(initial?.de_qualifier ?? false);
   const applyDe = () => {
+    setDeQualifier(false);
     setFormat("double_elim");
     setDeckMode("free");
     setRules((r) => ({ ...r, ...DE_PRESET }));
@@ -353,6 +358,7 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
           <input type="hidden" name="sideboard" value={initial.sideboard ?? ""} />
           <input type="hidden" name="de_pools" value={initial.de_pools ?? ""} />
           <input type="hidden" name="de_qualify" value={initial.de_qualify ?? ""} />
+          <input type="hidden" name="de_qualifier" value={initial.de_qualifier ? "on" : ""} />
         </>
       ) : null}
 
@@ -525,11 +531,25 @@ function TournamentFormInner({ locale, userId, canList, labels, loginHref, mode 
                     </select>
                   </label>
                   <p className="text-xs text-pale-muted sm:col-span-2">{dl.formHint}</p>
+                  <label className="flex items-start gap-2 text-sm sm:col-span-2">
+                    <input type="checkbox" name="de_qualifier" checked={deQualifier} onChange={(e) => setDeQualifier(e.target.checked)} disabled={lockRules} className="mt-1 accent-mint" />
+                    <span>
+                      <span className="font-semibold text-pale">{dl.formQualifier}</span>
+                      <span className="mt-0.5 block text-xs text-pale-muted">{dl.formQualifierHint}</span>
+                    </span>
+                  </label>
                 </div>
               ) : null}
               {format !== "single_elim" && sl ? (
                 <label className="flex items-start gap-2 text-sm">
-                  <input key={`fh-${rulesKey}-${format}`} type="checkbox" name="top_cut_hold" defaultChecked={rules.top_cut_hold} disabled={lockRules || (format === "swiss" && topCut === null)} className="mt-1 accent-mint" />
+                  <input
+                    key={`fh-${rulesKey}-${format}-${deQualifier ? 1 : 0}`}
+                    type="checkbox"
+                    name="top_cut_hold"
+                    defaultChecked={rules.top_cut_hold && !(format === "double_elim" && deQualifier)}
+                    disabled={lockRules || (format === "swiss" && topCut === null) || (format === "double_elim" && deQualifier)}
+                    className="mt-1 accent-mint"
+                  />
                   <span>
                     <span className="font-semibold text-pale">{sl.formHold}</span>
                     <span className="mt-0.5 block text-xs text-pale-muted">{sl.formHoldHint}</span>

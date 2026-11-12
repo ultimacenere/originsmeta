@@ -301,6 +301,8 @@ export type TournamentRow = {
   de_pools?: number | null;
   de_qualify?: number | null;
   de_pool_size?: number | null;
+  /** 11/11/2026 (blocco QUALIFICAZIONE SENZA FASE FINALE): doppia eliminazione che finisce con i suoi qualificati */
+  de_qualifier?: boolean;
   created_at: string;
   updated_at: string;
 };

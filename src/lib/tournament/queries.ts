@@ -195,8 +195,8 @@ export async function listInvites(client: Db, tid: string): Promise<TournamentIn
 
 /* ---------- 09/11/2026: svizzera, gironi e sideboard (blocco SVIZZERA, GIRONI E SIDEBOARD di schema.sql) ---------- */
 
-export type FormatOptions = { swiss_rounds: number | null; group_size: number | null; group_advance: number | null; group_seeding: "snake" | "random" | null; sideboard: number | null; de_pools: number | null; de_qualify: number | null; de_pool_size: number | null };
-export const NO_FORMAT_OPTIONS: FormatOptions = { swiss_rounds: null, group_size: null, group_advance: null, group_seeding: null, sideboard: null, de_pools: null, de_qualify: null, de_pool_size: null };
+export type FormatOptions = { swiss_rounds: number | null; group_size: number | null; group_advance: number | null; group_seeding: "snake" | "random" | null; sideboard: number | null; de_pools: number | null; de_qualify: number | null; de_pool_size: number | null; de_qualifier: boolean };
+export const NO_FORMAT_OPTIONS: FormatOptions = { swiss_rounds: null, group_size: null, group_advance: null, group_seeding: null, sideboard: null, de_pools: null, de_qualify: null, de_pool_size: null, de_qualifier: false };
 
 /** Opzioni dei formati nuovi, lette a parte come getStageOptions: colonne mancanti = nessuna opzione (database non migrato). */
 export async function getFormatOptions(client: Db | null, tid: string): Promise<FormatOptions> {
@@ -207,7 +207,10 @@ export async function getFormatOptions(client: Db | null, tid: string): Promise<
   // 10/11/2026: le colonne della doppia eliminazione a parte, così un database migrato solo al 09/11 regge ancora
   const { data: de } = await client.from("tournaments").select("de_pools, de_qualify, de_pool_size").eq("id", tid).maybeSingle();
   const d = (de ?? {}) as Partial<FormatOptions>;
-  return { swiss_rounds: r.swiss_rounds ?? null, group_size: r.group_size ?? null, group_advance: r.group_advance ?? null, group_seeding: r.group_seeding ?? null, sideboard: r.sideboard ?? null, de_pools: d.de_pools ?? null, de_qualify: d.de_qualify ?? null, de_pool_size: d.de_pool_size ?? null };
+  // 11/11/2026: la qualificazione senza fase finale, letta a parte e solo per la doppia eliminazione (colonna mancante = spenta)
+  const { data: dq } = d.de_pools ? await client.from("tournaments").select("de_qualifier").eq("id", tid).maybeSingle() : { data: null };
+  const qualifier = Boolean((dq as { de_qualifier?: boolean } | null)?.de_qualifier);
+  return { swiss_rounds: r.swiss_rounds ?? null, group_size: r.group_size ?? null, group_advance: r.group_advance ?? null, group_seeding: r.group_seeding ?? null, sideboard: r.sideboard ?? null, de_pools: d.de_pools ?? null, de_qualify: d.de_qualify ?? null, de_pool_size: d.de_pool_size ?? null, de_qualifier: qualifier };
 }
 
 /**

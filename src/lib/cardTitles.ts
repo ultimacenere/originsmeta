@@ -54,9 +54,11 @@ export type TextSource = {
 export function textOutdated(card: Pick<Card, "status" | "type" | "since" | "history">, src: TextSource): boolean {
   // come `checkedInGame` di cards.ts: una carta entrata nel gioco con una patch dopo la verifica non è stata letta nel gioco
   const inCollection = card.status === "active" && card.type !== "token" && !(card.since && (src.dates[card.since] ?? "") > src.verified);
+  // dall'11/11/2026 anche i testi delle carte create in gioco vengono dai file del gioco, letti il giorno della verifica
+  const read = inCollection || (card.status === "active" && card.type === "token");
   return card.history.some((h) => {
     if (h.kind === "deck" || h.fix || (h.from && h.to) || h.alignment) return false;
-    return inCollection ? (src.dates[h.patch] ?? "") > src.verified : true;
+    return read ? (src.dates[h.patch] ?? "") > src.verified : true;
   });
 }
 

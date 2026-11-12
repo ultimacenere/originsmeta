@@ -134,7 +134,7 @@ export const en = {
     stats: "Stats",
     unknownStats: "stats not yet published",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats as of the patch of 4 November 2026: the 122 cards of the game's collection were checked in the game on 22 September, balance changes come from the official patch notes, and the eight cards that came into the game with the 4 November patch have not been checked in the game yet.",
+    asOf: "Stats as of the patch of 4 November 2026: the 130 cards of the game's collection were checked in the game on 11 November 2026, on Early Access version 0.8.2, and balance changes come from the official patch notes.",
     alignment: "Alignment",
     good: "Good",
     evil: "Evil",
@@ -290,7 +290,7 @@ export const en = {
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Costs, stats, alignments and texts of the playable cards were checked in the game, in English, Italian, Spanish, French, Portuguese, German and Russian, except the eight cards that came into the game with the patch of 4 November 2026; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game. Card text © Koin Games. Sagas, origin notes and the Italian, Spanish, French, Portuguese, German and Russian text of created and removed cards, and of the eight cards of 4 November, are by OriginsMeta.",
+      "Costs, stats, rarities, alignments and texts of the playable cards were checked in the game on 11 November 2026, in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game; the text of created cards is the one in the game's files. Card text © Koin Games. Sagas, origin notes and the text of removed cards in languages other than English are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",
@@ -1449,7 +1449,7 @@ export const en = {
     hiddenRule: "Decklists stay hidden until the top 4: your opponent only sees your Legendaries. Semifinalists' lists go public when they reach the top 4, everyone's when the tournament ends.",
     top4Decklists: "Top 4 decklists",
     noShowPill: "No-show: {n} min",
-    noShowRule: "Be on time: from the moment your match is ready (from round 2, when the two matches before it are over), if you don't open the match room within {n} minutes your opponent can claim the win by forfeit.",
+    noShowRule: "Be on time: when your match is ready (from round 2, when the two matches before it are over), open its match room, the page of your match: use “Go to my match” at the top of this page, click your match in the bracket or open the notification. Opening the page is enough. If you don't within {n} minutes, your opponent can claim the win by forfeit.",
     withdraw: "Withdraw",
     withdrawConfirm: "Withdraw from the tournament now? You lose your current match (or the next one, as soon as your opponent is known).",
     checkin: {

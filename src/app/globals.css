@@ -538,6 +538,30 @@
     font-size: 0.875rem;
   }
   /*
+    Pannello di una tendina dell'header (AutoCloseDetails: Menu del telefono, menu dell'account, lingua): mai più alto
+    dello schermo (12/11/2026). La tendina "Menu" era alta 923 px, l'header è fisso in cima e il pannello non scorreva:
+    su un telefono da 667 px gli ultimi 290 px non si raggiungevano (selettore lingua, Discord, "Dona ora"). Ora scorre
+    dentro. L'altezza massima è lo spazio vero fra il tasto e il fondo dello schermo, che AutoCloseDetails scrive in
+    --drop-max-h (sopra l'header può esserci la barra del Kickstarter, che scorre via); senza JavaScript vale la riserva,
+    calcolata per l'header già in cima (4,5rem = riga dell'header, distacco e margine). Dove il pannello ci sta già non
+    cambia niente. overscroll-behavior: arrivati in fondo all'elenco la pagina dietro non si muove. overflow-x nascosto:
+    con lo scorrimento verticale il browser aggiungerebbe anche quello orizzontale, e le voci non vanno a capo. Barra di
+    scorrimento sottile e del colore del bordo (sui telefoni non occupa spazio).
+  */
+  .drop-fit {
+    max-height: var(--drop-max-h, calc(100vh - 4.5rem));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-felt-line) transparent;
+  }
+  @supports (height: 100dvh) {
+    .drop-fit {
+      max-height: var(--drop-max-h, calc(100dvh - 4.5rem));
+    }
+  }
+  /*
     Sottomenu del menu desktop (01/10/2026, Pierluigi: "tasto tierlist in mouseover si apre un sottomenu con le varie
     opzioni"): le quattro tier list sotto "Tier list". Si apre al passaggio del mouse e col fuoco da tastiera
     (focus-within: Tab sulla voce lo apre, Tab ancora entra nelle voci), niente JavaScript. Il pannello esterno è
@@ -7085,5 +7109,13 @@
     .promo-dialog[open]::backdrop {
       transition: none;
     }
+  }
+}
+
+/* Riquadro navigabile dei tabelloni (BracketViewport, 11/11/2026): barre di scorrimento scure, del colore delle cornici. */
+@layer components {
+  .bracket-view-scroll {
+    color-scheme: dark;
+    scrollbar-color: color-mix(in srgb, var(--color-sky) 55%, var(--color-night-2)) var(--color-night-2);
   }
 }

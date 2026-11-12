@@ -136,7 +136,7 @@ export const pt: Dictionary = {
     stats: "Stats",
     unknownStats: "stats ainda não publicadas",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats do patch de 4 de novembro de 2026: as 122 cartas da coleção do jogo foram verificadas no jogo em 22 de setembro, as notas de balanceamento vêm das notas oficiais dos patches, e as oito cartas que entraram no jogo com o patch de 4 de novembro ainda não foram verificadas no jogo.",
+    asOf: "Stats do patch de 4 de novembro de 2026: as 130 cartas da coleção do jogo foram verificadas no jogo em 11 de novembro de 2026, na versão 0.8.2 do Acesso Antecipado, e as notas de balanceamento vêm das notas oficiais dos patches.",
     alignment: "Alinhamento",
     good: "Good",
     evil: "Evil",
@@ -292,7 +292,7 @@ export const pt: Dictionary = {
     legendNote: "As cartas Lendárias lideram um deck: uma por deck, marcadas com a estrela. As sagas são um agrupamento do OriginsMeta pela lenda de origem; o jogo não as mostra.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Custos, stats, alinhamentos e textos das cartas jogáveis foram verificados no jogo, em inglês, italiano, espanhol, francês, português, alemão e russo, exceto as oito cartas que entraram no jogo com o patch de 4 de novembro de 2026; as mudanças de balanceamento vêm das notas oficiais dos patches. As cartas criadas e removidas não estão na coleção do jogo, então não foram verificadas no jogo. Texto das cartas © Koin Games. As sagas, as notas de origem e o texto em italiano, espanhol, francês, português, alemão e russo das cartas criadas e removidas, e das oito cartas de 4 de novembro, são do OriginsMeta.",
+      "Custos, stats, raridades, alinhamentos e textos das cartas jogáveis foram verificados no jogo em 11 de novembro de 2026, em inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado; as mudanças de balanceamento vêm das notas oficiais dos patches. As cartas criadas e removidas não estão na coleção do jogo, então não foram verificadas no jogo; o texto das cartas criadas é o dos arquivos do jogo. Texto das cartas © Koin Games. As sagas, as notas de origem e o texto das cartas removidas nos idiomas além do inglês são do OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta colecionável",
     changesTitle: "Histórico de balanceamento",
@@ -1441,7 +1441,7 @@ export const pt: Dictionary = {
     hiddenRule: "As decklists ficam ocultas até o top 4: o seu oponente só vê as suas Lendárias. As listas dos semifinalistas ficam públicas quando eles chegam ao top 4, as de todos quando o torneio termina.",
     top4Decklists: "Decklists do top 4",
     noShowPill: "Ausência: {n} min",
-    noShowRule: "Chegue na hora: a partir do momento em que a sua partida está pronta (a partir da rodada 2, quando as duas partidas anteriores terminam), se você não abrir a sala da partida em {n} minutos, o seu oponente pode pedir a vitória por W.O.",
+    noShowRule: "Chegue na hora: quando a sua partida está pronta (a partir da rodada 2, quando as duas partidas anteriores terminam), abra a sala da partida, ou seja, a página dessa partida: com “Ir para minha partida” no topo desta página, pelo chaveamento ou pela notificação. Basta abrir a página. Se você não fizer isso em {n} minutos, o seu oponente pode pedir a vitória por W.O.",
     withdraw: "Desistir",
     withdrawConfirm: "Desistir do torneio agora? Você perde a partida atual (ou a próxima, assim que o seu oponente for conhecido).",
     checkin: {

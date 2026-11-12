@@ -4,6 +4,7 @@ import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { linkLabels } from "@/lib/linkLabels";
 import { creatorLabels } from "@/lib/creatorLabels";
 import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
+import { FOR_CREATORS_PATH, forCreatorsTrack } from "@/lib/forCreators";
 import { Wordmark } from "./Wordmark";
 import { navItems } from "./Header";
 import { LockMark } from "./LockMark";
@@ -38,7 +39,7 @@ const linkCls = "text-chalk transition-colors hover:text-mint";
  * fuori dal menu finché Pierluigi non decide (decisione 7 del 25/09); i Luoghi dall'11/10/2026 sono nel sottomenu di
  * Guide e arrivano nella colonna dei link del footer da navItems, quindi qui non si ripetono.
  */
-function exploreItems(locale: Locale): { label: string; path: string }[] {
+function exploreItems(locale: Locale): { label: string; path: string; track?: ReturnType<typeof forCreatorsTrack> }[] {
   const x = linkLabels[locale].explore;
   return [
     { label: x.metashifting, path: "/metashifting" },
@@ -48,8 +49,9 @@ function exploreItems(locale: Locale): { label: string; path: string }[] {
     { label: x.authors, path: "/authors" },
     // directory "Creator e autori" (pacchetto CREATOR, 26/09/2026; nome del 27/09/2026)
     { label: creatorLabels[locale].footer, path: "/creators" },
-    // la pagina per i creator: strumenti con le guide passo passo e media kit (30/10/2026)
-    { label: forCreatorsLabels[locale].entry.footer, path: "/for-creators" },
+    // la pagina per i creator: strumenti con le guide passo passo e media kit (30/10/2026); dal 12/11/2026 il clic si
+    // misura con il posto (for_creators_open, placement footer), per confrontarlo con il menu dell'account e /creators
+    { label: forCreatorsLabels[locale].entry.footer, path: FOR_CREATORS_PATH, track: forCreatorsTrack("footer") },
   ];
 }
 
@@ -124,7 +126,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <ul className="space-y-1.5 text-sm">
             {exploreItems(locale).map((it) => (
               <li key={it.path}>
-                <Link className={linkCls} href={href(locale, it.path)}>
+                <Link className={linkCls} href={href(locale, it.path)} {...it.track}>
                   {it.label}
                 </Link>
               </li>

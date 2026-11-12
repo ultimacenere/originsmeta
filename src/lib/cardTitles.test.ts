@@ -254,22 +254,23 @@ describe("cardDescription", () => {
     for (const locale of locales) assert.ok(cardDescription(renamed, locale, cards, src).includes(renamed.formerName ?? ""), locale);
   });
 
-  test("un testo superato da una patch non si cita: Silver Bullet (danno da 3 a 1, poi anche le barriere)", () => {
+  test("Silver Bullet: costo e testo del gioco (1 danno a un personaggio o a una barriera, 0 mana, letti l'11/11/2026)", () => {
     for (const locale of locales) {
       const d = cardDescription(card("silver-bullet"), locale, cards, src);
       assert.doesNotMatch(d, /\b3 (?:damage|danni|de daño|dégâts|de dano|Schaden)\b|\b3 (?:ед\. )?урон|3 点伤害/, d);
       // restano gli altri pezzi: chi la crea e le statistiche
       assert.match(d, /Van Helsing's Tools/, d);
-      assert.match(d, locale === "zh-cn" ? /^Silver Bullet，.*：1 费。/ : /^Silver Bullet, .*: 1 (?:de |ед\. )?(?:mana|maná|Mana|маны)\./, d);
+      assert.match(d, locale === "zh-cn" ? /^Silver Bullet，.*：0 费。/ : /^Silver Bullet, .*: 0 (?:de |ед\. )?(?:mana|maná|Mana|маны)\./, d);
     }
   });
 });
 
 describe("textOutdated", () => {
-  test("oggi hanno il testo superato da una modifica dello storico due carte create e Twister Toss, rifatta dalla 0.7", () => {
+  test("dalla verifica dell'11/11/2026 nessuna carta in gioco ha il testo superato", () => {
     // Se l'elenco cambia, va ricontrollato a mano il testo delle carte nuove (e magari corretto in card-lore.ts).
-    // Twister Toss esce dall'elenco quando il testo nuovo è letto nel gioco e `cardsVerified.date` passa il 29/09/2026.
-    assert.deepEqual(cards.filter((c) => textOutdated(c, src)).map((c) => c.slug).sort(), ["silver-bullet", "twister-toss", "wooden-stake"]);
+    // Fino al 10/11/2026 c'erano Twister Toss (rifatta dalla 0.7, letta nel gioco l'11/11) e due carte create, Silver Bullet e
+    // Wooden Stake, il cui testo dall'11/11 viene dai file del gioco.
+    assert.deepEqual(cards.filter((c) => c.status === "active" && textOutdated(c, src)).map((c) => c.slug).sort(), []);
   });
   test("le correzioni (`fix`) non rendono superato il testo: Heroic Charge e Humpty nella 0.7", () => {
     for (const slug of ["heroic-charge", "humpty"]) {
@@ -277,12 +278,13 @@ describe("textOutdated", () => {
       assert.equal(textOutdated(card(slug), src), false, slug);
     }
   });
-  test("Silver Bullet è superata già dalla 0.6.2, uscita prima dell'import: il database dice ancora 3 danni", () => {
-    // Senza la patch della demo del 21/09 resta la sola 0.6.2 (danno da 3 a 1): basta quella
+  test("Silver Bullet: le modifiche della 0.6.2 e della demo vengono prima della lettura dei file del gioco, il testo è attuale", () => {
+    // Fino al 10/11/2026 bastava la sola 0.6.2 (danno da 3 a 1) a dirla superata: il testo era quello importato, 3 danni
     const silver = card("silver-bullet");
     const only062 = { ...silver, history: silver.history.filter((h) => h.patch === "0.6.2") };
     assert.equal(only062.history.length, 1);
-    assert.equal(textOutdated(only062, src), true);
+    assert.equal(textOutdated(only062, src), false);
+    assert.equal(textOutdated(silver, src), false);
   });
   test("le carte della collezione lette nel gioco dopo la patch citano il testo: Don Quixote", () => {
     // Don Quixote prende Difensore con la patch della demo del 21/09, ma il testo è quello letto nel gioco il 22/09
@@ -299,9 +301,10 @@ describe("textOutdated", () => {
     const token = (history: History) => ({ status: "active" as const, type: "token" as const, history });
     assert.equal(textOutdated(unit(text("0.6.3")), source), true);
     assert.equal(textOutdated(unit(text("0.6.2")), source), false);
-    // carte create e rimosse: nessuno le ha rilette nel gioco, e il testo importato può essere rimasto indietro
+    // carte create in gioco: dall'11/11/2026 il loro testo viene dai file del gioco, letti alla verifica, come la collezione
     assert.equal(textOutdated(token(text("0.6.3")), source), true);
-    assert.equal(textOutdated(token(text("0.6.2")), source), true);
+    assert.equal(textOutdated(token(text("0.6.2")), source), false);
+    // carte rimosse: nessuno le ha rilette nel gioco, e il testo importato può essere rimasto indietro
     assert.equal(textOutdated({ ...unit(text("0.6.2")), status: "removed" }, source), true);
     // statistiche, allineamento e modifiche ai mazzi non toccano il testo
     assert.equal(textOutdated(unit([{ patch: "0.6.3", kind: "nerf", from: { mana: 2 }, to: { mana: 3 }, note }]), source), false);

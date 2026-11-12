@@ -138,7 +138,7 @@ export const fr: Dictionary = {
     stats: "Stats",
     unknownStats: "stats pas encore publiées",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats du patch du 4 novembre 2026 : les 122 cartes de la collection du jeu ont été vérifiées dans le jeu le 22 septembre 2026, les équilibrages viennent des patch notes officielles, et les huit cartes entrées dans le jeu avec le patch du 4 novembre n'ont pas encore été vérifiées dans le jeu.",
+    asOf: "Stats du patch du 4 novembre 2026 : les 130 cartes de la collection du jeu ont été vérifiées dans le jeu le 11 novembre 2026, sur la version 0.8.2 de l'Accès anticipé, et les équilibrages viennent des patch notes officielles.",
     alignment: "Alignement",
     good: "Good",
     evil: "Evil",
@@ -294,7 +294,7 @@ export const fr: Dictionary = {
     legendNote: "Les cartes Légendaires mènent le deck : une par deck, marquée de l'étoile. Les sagas sont un classement propre à OriginsMeta, par légende d'origine ; le jeu ne les affiche pas.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Les coûts, les stats, les alignements et les textes des cartes jouables ont été vérifiés dans le jeu, en français, anglais, italien, espagnol, portugais, allemand et russe, sauf les huit cartes entrées dans le jeu avec le patch du 4 novembre 2026 ; les changements d'équilibrage viennent des patch notes officielles. Les cartes créées et retirées ne sont pas dans la collection du jeu : elles n'y ont donc pas été vérifiées. Texte des cartes © Koin Games. Les sagas, les notes d'origine et le texte français, italien, espagnol, portugais, allemand et russe des cartes créées et retirées, et des huit cartes du 4 novembre, sont d'OriginsMeta.",
+      "Les coûts, les stats, les raretés, les alignements et les textes des cartes jouables ont été vérifiés dans le jeu le 11 novembre 2026, en français, anglais, italien, espagnol, portugais, allemand, russe et chinois simplifié ; les changements d'équilibrage viennent des patch notes officielles. Les cartes créées et retirées ne sont pas dans la collection du jeu : elles n'y ont donc pas été vérifiées, et le texte des cartes créées est celui des fichiers du jeu. Texte des cartes © Koin Games. Les sagas, les notes d'origine et le texte des cartes retirées dans les langues autres que l'anglais sont d'OriginsMeta.",
     detailKicker: "Carte",
     collectible: "Carte à collectionner",
     changesTitle: "Historique des équilibrages",
@@ -1444,7 +1444,7 @@ export const fr: Dictionary = {
     hiddenRule: "Les listes restent cachées jusqu'au top 4 : votre adversaire ne voit que vos Légendaires. Les listes des demi-finalistes deviennent publiques quand ils atteignent le top 4, celles de tout le monde à la fin du tournoi.",
     top4Decklists: "Listes du top 4",
     noShowPill: "Absence : {n} min",
-    noShowRule: "Soyez à l'heure : dès que votre match est prêt (à partir de la manche 2, quand les deux matchs précédents sont finis), si vous n'ouvrez pas la salle de match dans les {n} minutes, votre adversaire peut réclamer la victoire par forfait.",
+    noShowRule: "Soyez à l'heure : dès que votre match est prêt (à partir de la manche 2, quand les deux matchs précédents sont finis), ouvrez sa salle de match, c'est-à-dire la page du match : avec « Aller à mon match » en haut de cette page, depuis l'arbre ou depuis la notification. Il suffit d'ouvrir la page. Si vous ne le faites pas dans les {n} minutes, votre adversaire peut réclamer la victoire par forfait.",
     withdraw: "Se retirer",
     withdrawConfirm: "Vous retirer du tournoi maintenant ? Vous perdez votre match en cours (ou le suivant, dès que votre adversaire est connu).",
     checkin: {

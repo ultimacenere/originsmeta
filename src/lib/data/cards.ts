@@ -33,7 +33,7 @@ export type L10n = Record<Locale, string>;
  * nel gioco i 122 testi (docs/testi-ufficiali/de.tsv, `node scripts/official-texts.mjs de --apply`). Il russo
  * (card-lore-ru.ts) come il tedesco: provvisorio il pomeriggio del 20/10/2026, letti nel gioco la notte stessa (docs/testi-ufficiali/ru.tsv).
  */
-export const officialTextLocales: readonly Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru"];
+export const officialTextLocales: readonly Locale[] = ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"];
 export type CardType = "unit" | "spell" | "token";
 export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
 /**
@@ -180,11 +180,13 @@ export function patchAt(date: string): PatchId | undefined {
 }
 
 /**
- * Ultima verifica carta per carta sul gioco (collezione della demo, My Decks → Cards; le patch notes della 0.8 del 27/10/2026,
- * prima versione dell'Accesso anticipato, non citano modifiche alle carte): data e numero di
- * carte confrontate. Il deck builder la mostra nel disclaimer sui dati; va aggiornata a ogni nuova verifica.
+ * Ultima verifica carta per carta sul gioco: data e numero di carte confrontate. Il deck builder la mostra nel disclaimer
+ * sui dati; va aggiornata a ogni nuova verifica. Prima: 22/09/2026, 122 carte della collezione della demo. L'11/11/2026
+ * (Accesso anticipato 0.8.2): le 130 carte della collezione, otto di Dr. Frank comprese, rilette a vista nella collezione in
+ * italiano (Crea mazzi → I miei deck → Carte, "Non posseduto" acceso, un costo alla volta) e confrontate con i dati e le
+ * tabelle delle traduzioni del gioco in tutte le lingue del sito; testi in card-lore*.ts e docs/testi-ufficiali/.
  */
-export const cardsVerified = { date: "2026-09-22", count: 122 };
+export const cardsVerified = { date: "2026-11-11", count: 130 };
 
 /**
  * Carte entrate nel gioco con una patch, quando i dati importati le danno ancora fra le rimosse (05/11/2026, Pierluigi:
@@ -348,6 +350,8 @@ export const cards: Card[] = data.cards.map((w) => {
   }
   if (w.legendary) card.legendary = true;
   if (w.mana !== undefined) card.mana = w.mana;
+  // costo letto nel gioco quando l'import sbaglia da sempre (card-lore.ts, `mana`); le patch dopo l'import, qui sotto, vincono
+  if (lore?.mana !== undefined) card.mana = lore.mana;
   if (w.power !== undefined) card.power = w.power;
   if (w.health !== undefined) card.health = w.health;
   if (w.alignment) card.alignment = w.alignment;
@@ -359,6 +363,8 @@ export const cards: Card[] = data.cards.map((w) => {
     if (ch.alignment) card.alignment = ch.alignment.to;
   }
   if (w.rarity && !w.tokenOnly) card.rarity = w.rarity;
+  // rarità letta nel gioco quando l'import sbaglia (card-lore.ts, `rarity`: Lancelot è Rara, 11/11/2026)
+  if (lore?.rarity && card.rarity) card.rarity = lore.rarity;
   // Le parole chiave corrette in `card-lore.ts` vincono su quelle di World of Origins, come il testo qui sotto.
   const keywords = lore?.keywords ?? w.keywords;
   if (keywords.length) card.keywords = keywords;
@@ -372,7 +378,7 @@ export const cards: Card[] = data.cards.map((w) => {
   const de = deLore[w.slug];
   // Il russo (card-lore-ru.ts, dal 20/10/2026) come il tedesco: testo ufficiale letto nel gioco (dalla notte del 20/10), traduzione nostra per create e rimosse.
   const ru = ruLore[w.slug];
-  // Il cinese semplificato (card-lore-zh-cn.ts, dal 04/11/2026): traduzione nostra PROVVISORIA di tutte le carte, finché i testi del gioco (patch 0.7) non sono letti; "zh-cn" resta fuori da officialTextLocales.
+  // Il cinese semplificato (card-lore-zh-cn.ts, dal 04/11/2026): dall'11/11/2026 testi ufficiali del gioco (Accesso anticipato 0.8.2) per collezione e carte create; "zh-cn" è in officialTextLocales.
   const zh = zhCnLore[w.slug];
   if (abilityEn) card.ability = { en: abilityEn, it: lore?.it ?? abilityEn, es: lore?.es ?? abilityEn, fr: fr?.text ?? abilityEn, pt: pt?.text ?? abilityEn, de: de?.text ?? abilityEn, ru: ru?.text ?? abilityEn, "zh-cn": zh?.text ?? abilityEn };
   if (lore?.origin) card.origin = { ...lore.origin, fr: fr?.origin ?? lore.origin.en, pt: pt?.origin ?? lore.origin.en, de: de?.origin ?? lore.origin.en, ru: ru?.origin ?? lore.origin.en, "zh-cn": zh?.origin ?? lore.origin.en };

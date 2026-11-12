@@ -649,7 +649,7 @@ export const cardLabels: Record<Locale, CardLabels> = {
     sameSagaDemo: "游戏中的同一传说",
     buildRoot: "用 {roots} 构筑卡组",
     buildRootText: "{name} 是衍生卡，无法在卡组构筑器中加入卡组：想在对局中见到它，就把 {roots} 放进你的卡组。",
-    legendaryPower: "传说之力",
+    legendaryPower: "传奇之力",
     alt: "{name}，{kind}：Origins TCG 官方卡牌，画师 {illus}，© Koin Games",
     altNoCredit: "{name}，{kind}：Origins TCG 官方卡牌，© Koin Games",
     kind: { unit: "角色", spell: "法术", token: "衍生卡", legendaryUnit: "传说角色", legendarySpell: "传说法术" },
@@ -983,6 +983,11 @@ function verifiedOn(locale: Locale): string {
   return formatDate(locale, cardsVerified.date);
 }
 
+/** Una data italiana con l'articolo: "il 22 settembre 2026", ma "l'8 ottobre" e "l'11 novembre 2026". */
+function itDay(date: string): string {
+  return /^(?:8|11) /.test(date) ? `l'${date}` : `il ${date}`;
+}
+
 /**
  * La frase d'attacco della scheda (CARDS-05, GEO-07): quello che un assistente copia per rispondere a "che cos'è
  * Merlin in Origins TCG". Tre modelli:
@@ -1068,7 +1073,7 @@ export function cardLead(card: LeadCard, facts: CardFacts, locale: Locale): Part
   // Nella collezione del gioco, con il giorno della verifica (fatta nella demo, il 22/09/2026: resta al passato)
   const inGame = {
     en: `It is a playable card (checked in the game on ${verifiedOn(locale)}).`,
-    it: `È nella collezione del gioco (verificata il ${verifiedOn(locale)}).`,
+    it: `È nella collezione del gioco (verificata ${itDay(verifiedOn(locale))}).`,
     es: `Está en la colección del juego (${esMasculine(card) ? "verificado" : "verificada"} el ${verifiedOn(locale)}).`,
     fr: `${cap(frIl(card))} est dans la collection du jeu (${frMasculine(card) ? "vérifié" : "vérifiée"} le ${verifiedOn(locale)}).`,
     pt: `Está na coleção do jogo (${ptMasculine(card) ? "verificado" : "verificada"} em ${verifiedOn(locale)}).`,
@@ -1543,8 +1548,131 @@ export function asOfLine(card: Pick<Card, "type" | "status" | "since">, locale: 
 // ---------- Potere leggendario ----------
 
 /**
- * Potere leggendario delle 11 Leggendarie (SCHEDE-13), da leggere nel gioco ("Game Start: …") e trascrivere qui
- * nelle sei lingue, con il testo ufficiale del gioco: la scheda lo mostra in una sezione sua appena c'è. Resta vuoto
- * finché nessuno lo ha letto nel gioco: mai copiarlo da altri siti (CLAUDE.md, "niente dati inventati").
+ * Potere leggendario delle Leggendarie (SCHEDE-13), con il testo ufficiale del gioco nelle otto lingue del sito: la scheda
+ * lo mostra in una sezione sua. Letto l'11/11/2026 (Accesso anticipato 0.8.2) nella finestra che il gioco apre sulla
+ * carta nella collezione ("POTERE LEGGENDARIO / Inizio partita: …") e, per tutte le lingue, nelle tabelle delle traduzioni
+ * del gioco (`StringKey_Keyword_LegendaryPower_<chiave>_Description`). Mai copiarlo da altri siti (CLAUDE.md, "niente
+ * dati inventati"); una Leggendaria nuova si aggiunge solo leggendola nel gioco.
  */
-export const legendaryPowers: Readonly<Partial<Record<string, Record<Locale, string>>>> = {};
+export const legendaryPowers: Readonly<Partial<Record<string, Record<Locale, string>>>> = {
+  dorothy: {
+    en: "Game Start: Add a Twister Toss to your hand.",
+    it: "Inizio partita: Aggiungi Twister Toss alla tua mano.",
+    es: "Inicio de partida: Añade Twister Toss a tu mano.",
+    fr: "Début de partie : Ajoute Twister Toss à ta main.",
+    pt: "Início de partida: Adiciona Twister Toss à sua mão.",
+    de: "Spielbeginn: Füge deiner Hand Twister Toss hinzu.",
+    ru: "Начало партии: Добавляет Twister Toss в вашу руку.",
+    "zh-cn": "对战开始：将一张Twister Toss加入你的手牌。",
+  },
+  "dr-frank": {
+    en: "Game Start: Add It's Alive! to your hand.",
+    it: "Inizio partita: Aggiungi It's Alive! alla tua mano.",
+    es: "Inicio de partida: Añade It's Alive! a tu mano.",
+    fr: "Début de partie : Ajoute It's Alive! à ta main.",
+    pt: "Início de partida: Adiciona It's Alive! à sua mão.",
+    de: "Spielbeginn: Füge deiner Hand It's Alive! hinzu.",
+    ru: "Начало партии: Добавляет It's Alive! в вашу руку.",
+    "zh-cn": "对战开始：将It's Alive!加入你的手牌。",
+  },
+  dracula: {
+    en: "Game Start: Add Brides of Dracula to your hand.",
+    it: "Inizio partita: Aggiungi Brides of Dracula alla tua mano.",
+    es: "Inicio de partida: Añade Brides of Dracula a tu mano.",
+    fr: "Début de partie : Ajoute Brides of Dracula à ta main.",
+    pt: "Início de partida: Adiciona Brides of Dracula à sua mão.",
+    de: "Spielbeginn: Füge deiner Hand Brides of Dracula hinzu.",
+    ru: "Начало партии: Добавляет Brides of Dracula в вашу руку.",
+    "zh-cn": "对战开始：将Brides of Dracula加入你的手牌。",
+  },
+  "king-arthur": {
+    en: "Game Start: Add a Defense Matrix to your hand. It costs 1 less.",
+    it: "Inizio partita: Aggiungi Defense Matrix alla tua mano. Essa costa 1 in meno.",
+    es: "Inicio de partida: Añade Defense Matrix a tu mano. Esta cuesta 1 menos.",
+    fr: "Début de partie : Ajoute Defense Matrix à ta main. Elle coûte 1 de moins.",
+    pt: "Início de partida: Adiciona Defense Matrix à sua mão. Esta custa 1 menos.",
+    de: "Spielbeginn: Füge deiner Hand Defense Matrix hinzu. Sie kostet 1 weniger.",
+    ru: "Начало партии: Добавляет Defense Matrix в вашу руку. Она стоит на 1 меньше.",
+    "zh-cn": "对战开始：将一张Defense Matrix加入你的手牌。它的费用减少1点。",
+  },
+  "legion-of-the-dead": {
+    en: "Game Start: Summon a Zombie [2⚔️/2❤️] on a random space.",
+    it: "Inizio partita: Evoca uno Zombie [2⚔️/2❤️] su uno spazio casuale.",
+    es: "Inicio de partida: Invoca un Zombie [2⚔️/2❤️] en un espacio aleatorio.",
+    fr: "Début de partie : Invoque un Zombie [2⚔️/2❤️] sur un espace aléatoire.",
+    pt: "Início de partida: Invoca um Zombie [2⚔️/2❤️] em um espaço aleatório.",
+    de: "Spielbeginn: Beschwöre einen Zombie [2⚔️/2❤️] auf einem zufälligen Feld.",
+    ru: "Начало партии: Призывает Zombie [2⚔️/2❤️] в случайную ячейку.",
+    "zh-cn": "对战开始：在一个随机格子上召唤 Zombie [2⚔️/2❤️]。",
+  },
+  merlin: {
+    en: "Game Start: Add Merlin's Prophecy to your hand.",
+    it: "Inizio partita: Aggiungi Merlin's Prophecy alla tua mano.",
+    es: "Inicio de partida: Añade Merlin's Prophecy a tu mano.",
+    fr: "Début de partie : Ajoute Merlin's Prophecy à ta main.",
+    pt: "Início de partida: Adiciona Merlin's Prophecy à sua mão.",
+    de: "Spielbeginn: Füge deiner Hand Merlin's Prophecy hinzu.",
+    ru: "Начало партии: Добавляет Merlin's Prophecy в вашу руку.",
+    "zh-cn": "对战开始：将Merlin's Prophecy加入你的手牌。",
+  },
+  mulan: {
+    en: "Game Start: Add a Reflection to your hand.",
+    it: "Inizio partita: Aggiungi Reflection alla tua mano.",
+    es: "Inicio de partida: Añade Reflection a tu mano.",
+    fr: "Début de partie : Ajoute Reflection à ta main.",
+    pt: "Início de partida: Adiciona Reflection à sua mão.",
+    de: "Spielbeginn: Füge deiner Hand Reflection hinzu.",
+    ru: "Начало партии: Добавляет Reflection в вашу руку.",
+    "zh-cn": "对战开始：将一张Reflection加入你的手牌。",
+  },
+  "queen-of-hearts": {
+    en: "Game Start: Add Off With Your Head! to your hand.",
+    it: "Inizio partita: Aggiungi Off With Your Head! alla tua mano.",
+    es: "Inicio de partida: Añade Off With Your Head! a tu mano.",
+    fr: "Début de partie : Ajoute Off With Your Head! à ta main.",
+    pt: "Início de partida: Adiciona Off With Your Head! à sua mão.",
+    de: "Spielbeginn: Füge deiner Hand Off With Your Head! hinzu.",
+    ru: "Начало партии: Добавляет Off With Your Head! в вашу руку.",
+    "zh-cn": "对战开始：将Off With Your Head!加入你的手牌。",
+  },
+  "robin-hood": {
+    en: "Game Start: Add a Bullseye to your hand. It costs 1 less.",
+    it: "Inizio partita: Aggiungi Bullseye alla tua mano. Essa costa 1 in meno.",
+    es: "Inicio de partida: Añade Bullseye a tu mano. Esta cuesta 1 menos.",
+    fr: "Début de partie : Ajoute Bullseye à ta main. Elle coûte 1 de moins.",
+    pt: "Início de partida: Adiciona Bullseye à sua mão. Esta custa 1 menos.",
+    de: "Spielbeginn: Füge deiner Hand Bullseye hinzu. Sie kostet 1 weniger.",
+    ru: "Начало партии: Добавляет Bullseye в вашу руку. Она стоит на 1 меньше.",
+    "zh-cn": "对战开始：将一张Bullseye加入你的手牌。它的费用减少1点。",
+  },
+  "three-not-so-little-pigs": {
+    en: "Game Start: Summon a Little Pig [1⚔️/1❤️] at each location.",
+    it: "Inizio partita: Evoca un Little Pig [1⚔️/1❤️] in ogni luogo.",
+    es: "Inicio de partida: Invoca un Little Pig [1⚔️/1❤️] en cada ubicación.",
+    fr: "Début de partie : Invoque un Little Pig [1⚔️/1❤️] à chaque lieu.",
+    pt: "Início de partida: Invoca um Little Pig [1⚔️/1❤️] em cada localização.",
+    de: "Spielbeginn: Beschwöre ein Little Pig [1⚔️/1❤️] an jedem Ort.",
+    ru: "Начало партии: Призывает Little Pig [1⚔️/1❤️] в каждой локации.",
+    "zh-cn": "对战开始：在每个地点各召唤一个 Little Pig [1⚔️/1❤️]。",
+  },
+  "van-helsing": {
+    en: "Game Start: Add Van Helsing's Tools to your hand.",
+    it: "Inizio partita: Aggiungi Van Helsing's Tools alla tua mano.",
+    es: "Inicio de partida: Añade Van Helsing's Tools a tu mano.",
+    fr: "Début de partie : Ajoute Van Helsing's Tools à ta main.",
+    pt: "Início de partida: Adiciona Van Helsing's Tools à sua mão.",
+    de: "Spielbeginn: Füge deiner Hand Van Helsing's Tools hinzu.",
+    ru: "Начало партии: Добавляет Van Helsing's Tools в вашу руку.",
+    "zh-cn": "对战开始：将Van Helsing's Tools加入你的手牌。",
+  },
+  "wicked-stepmother": {
+    en: "Game Start: Add Poison Apple to your hand. It costs 1 less.",
+    it: "Inizio partita: Aggiungi Poison Apple alla tua mano. Essa costa 1 in meno.",
+    es: "Inicio de partida: Añade Poison Apple a tu mano. Esta cuesta 1 menos.",
+    fr: "Début de partie : Ajoute Poison Apple à ta main. Elle coûte 1 de moins.",
+    pt: "Início de partida: Adiciona Poison Apple à sua mão. Esta custa 1 menos.",
+    de: "Spielbeginn: Füge deiner Hand Poison Apple hinzu. Sie kostet 1 weniger.",
+    ru: "Начало партии: Добавляет Poison Apple в вашу руку. Оно стоит на 1 меньше.",
+    "zh-cn": "对战开始：将Poison Apple加入你的手牌。它的费用减少1点。",
+  },
+};

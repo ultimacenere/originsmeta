@@ -13,6 +13,7 @@ import { PayPalButton } from "./PayPalButton";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import { ANALYTICS_PUBLIC } from "@/lib/community/badges";
 import { THEORY_DECKS_PATH, THEORY_PATH } from "@/lib/theoryCraftPaths";
+import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
 
 /**
  * `mobile`: le voci del sottomenu che vanno anche nella tendina del telefono e nel footer (oltre a quella principale).
@@ -143,7 +144,11 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   return (
     // Fondo dello stesso colore della pagina (23/09/2026): con `felt-deep` la barra fissa era una fascia più scura
     // in cima, che non combaciava con lo sfondo sotto (riunione: "sfondo header e sfondo sotto non sincronizzati").
-    <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt/85 backdrop-blur supports-[backdrop-filter]:bg-felt/70">
+    // has-[details[open]] (12/11/2026): con una tendina aperta (Menu, account, lingua) l'header sale sopra quello che sta
+    // fisso in basso (tasto dei feedback, che ha il suo stesso z-40 e viene dopo nel documento, banner dei cookie, invito
+    // dopo la copia): ora che la tendina arriva fino in fondo allo schermo, quei riquadri ne coprirebbero le ultime voci.
+    // A tendina chiusa l'ordine è quello di sempre.
+    <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt/85 backdrop-blur supports-[backdrop-filter]:bg-felt/70 has-[details[open]]:z-[60]">
       {/* da 1280 px la riga ospita menu completo, Discord, Accedi, lingua e "Dona ora": spazi più stretti, anche sopra i
           1536 px (il contenitore resta di 1280); sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti,
           altrimenti la riga sbordava di 18 px. La ricerca delle carte, che stava qui dal 15/09/2026 (fra 768 e 1279 px da
@@ -193,7 +198,15 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <DiscordIconLink href={ORIGINSMETA_DISCORD} label={dict.nav.discord} className="max-sm:!hidden" />
           <AccountMenu
             locale={locale}
-            labels={{ login: dict.nav.login, account: dict.nav.account, builder: dict.nav.builder, logout: dict.nav.logout, player: dict.nav.playerFallback }}
+            labels={{
+              login: dict.nav.login,
+              account: dict.nav.account,
+              builder: dict.nav.builder,
+              // la voce verso /for-creators, che il menu mostra solo a chi ha un ruolo con vetrina (12/11/2026)
+              creators: forCreatorsLabels[locale].entry.menu,
+              logout: dict.nav.logout,
+              player: dict.nav.playerFallback,
+            }}
           />
           <LocaleSwitcher locale={locale} label={dict.nav.language} className="hidden sm:block" />
           {/* "Dona ora" verso PayPal (Pierluigi, 06/10/2026: "in alto sul menu dopo i selettori"); sotto 640 px sta nel menu.
@@ -209,7 +222,13 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           summaryLabel={dict.nav.menu}
           summary={dict.nav.menu}
         >
-          <nav className="absolute right-0 mt-2 w-60 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label={dict.nav.menu}>
+          {/* drop-fit (12/11/2026): la tendina non esce dallo schermo e scorre dentro; prima, sui telefoni, le ultime voci
+              (lingua, Discord, "Dona ora") non si raggiungevano. Vedi AutoCloseDetails e .drop-fit in globals.css.
+              Sotto i 640 px è larga 304 px invece di 240: la fila delle otto lingue su una riga ne chiede 252 più i margini
+              (294 in tutto). Dal cinese (04/11/2026) non ci stava più: "ZH-CN" si spezzava su due righe e la fila sporgeva
+              dal pannello di 16 px, fino al bordo dello schermo, allargando la pagina di 3. Da 640 px la fila non c'è (il
+              selettore sta nell'header) e la tendina resta di 240. Mai più larga dello schermo (a 320 px è di 296). */}
+          <nav className="drop-fit absolute right-0 mt-2 w-76 max-w-[calc(100vw-1.5rem)] rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift sm:w-60" aria-label={dict.nav.menu}>
             {/* nella tendina la pagina corrente ha la barra verticale di .nav-link-block */}
             {items.flatMap((it) => [
               <NavLink key={it.path} href={href(locale, it.path)} className="nav-link-block">

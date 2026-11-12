@@ -10464,6 +10464,161 @@ comment on column public.tournaments.de_qualify is 'Doppia eliminazione: qualifi
 comment on column public.tournaments.de_pool_size is 'Doppia eliminazione: posti di ogni tabellone, scritti all''avvio (10/11/2026).';
 comment on column public.tournament_matches.stage is 'null = tabellone a eliminazione diretta; swiss, group (con grp), champion (vincitore di una svizzera senza Top), upper o lower (doppia eliminazione, con grp = tabellone): 10/11/2026.';
 
+-- =====================================================================================================
+-- ===== 11/11/2026: QUALIFICAZIONE SENZA FASE FINALE =====
+-- =====================================================================================================
+-- Risposta di apix dell'11/11/2026 al torneo di prova a doppia eliminazione: il 28/11 sono DUE qualificazioni separate,
+-- ognuna un torneo con le sue iscrizioni e il suo orario ("2 separate tournaments with 512 players each. Each of them
+-- is its own Double elimination bracket. And from each tournament, 64 people advance"); la Top 128 del 29/11 è un
+-- torneo a parte. Quindi una doppia eliminazione deve poter finire con i suoi qualificati, senza fase finale dentro.
+--   - `de_qualifier` (solo con format = 'double_elim'): il torneo è una qualificazione. Niente fase finale: non ha la
+--     pausa `top_cut_hold`, start_final_stage la rifiuta ('no_final_stage') e finish_tournament la chiude quando tutte
+--     le partite sono chiuse, senza un vincitore: il risultato sono i qualificati (i vincitori dell'ultimo turno dei
+--     vincenti e dei perdenti di ogni tabellone, come li legge deQualifiers di doubleElim.ts).
+--   - Bloccata a torneo avviato, come le altre opzioni del formato.
+-- Portare i qualificati nel torneo della fase finale è un lavoro a parte (da fare): qui c'è solo la qualificazione.
+-- Il sito regge senza la colonna (lettura a parte in getFormatOptions, scritture che la tolgono quando è spenta).
+-- =====================================================================================================
+
+alter table public.tournaments add column if not exists de_qualifier boolean not null default false;
+alter table public.tournaments drop constraint if exists tournaments_de_qualifier_check;
+alter table public.tournaments add constraint tournaments_de_qualifier_check check (not de_qualifier or (format = 'double_elim' and not top_cut_hold));
+
+-- Formato e opzioni bloccati a torneo avviato (come nel blocco DOPPIA ELIMINAZIONE) più la qualificazione senza fase finale.
+create or replace function public.guard_tournament_format()
+returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin
+  if old.status <> 'open' and (
+    new.format is distinct from old.format or new.swiss_rounds is distinct from old.swiss_rounds
+    or new.group_size is distinct from old.group_size or new.group_advance is distinct from old.group_advance
+    or new.group_seeding is distinct from old.group_seeding or new.sideboard is distinct from old.sideboard
+    or new.top_cut is distinct from old.top_cut
+    or new.de_pools is distinct from old.de_pools or new.de_qualify is distinct from old.de_qualify or new.de_pool_size is distinct from old.de_pool_size
+    or new.de_qualifier is distinct from old.de_qualifier
+  ) then
+    raise exception 'format_locked';
+  end if;
+  return new;
+end $$;
+revoke all on function public.guard_tournament_format() from public, anon, authenticated;
+
+-- "Chiudi la qualificazione e avvia la fase finale" (come nel blocco DOPPIA ELIMINAZIONE) più: una qualificazione senza
+-- fase finale (de_qualifier) non ne ha una da avviare.
+create or replace function public.start_final_stage(tid uuid)
+returns int language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  q uuid[];
+  n int;
+  size int := 2;
+  rounds int := 0;
+  base int;
+  ord int[];
+  pos int;
+  a uuid;
+  b uuid;
+  mid uuid;
+  u int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if t.format not in ('swiss', 'groups', 'double_elim') then raise exception 'no_final_stage'; end if;
+  if t.format = 'swiss' and t.top_cut is null then raise exception 'no_final_stage'; end if;
+  if t.format = 'double_elim' and t.de_qualifier then raise exception 'no_final_stage'; end if;
+  if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and (m.stage is null or m.stage = 'champion')) then raise exception 'already_started'; end if;
+  if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.status in ('pending', 'reported', 'disputed')) then raise exception 'round_open'; end if;
+  if t.format = 'swiss' then
+    select array_agg(s.user_id order by s.rank) into q
+      from (select x.user_id, x.rank from public.tm_standings(tid) x where not x.dropped order by x.rank limit t.top_cut) s;
+  elsif t.format = 'groups' then
+    select array_agg(s.user_id order by s.place, s.mw desc, s.gw desc, s.omw desc, s.grp) into q
+      from (
+        select x.user_id, x.grp, x.mw, x.gw, x.omw, row_number() over (partition by x.grp order by x.rank) as place
+          from public.tm_standings(tid) x where not x.dropped
+      ) s
+     where s.place <= t.group_advance;
+  else
+    u := public.tm_de_upper(t.de_pool_size, t.de_qualify);
+    select array_agg(m.winner order by random()) into q
+      from public.tournament_matches m
+     where m.tournament_id = tid and m.winner is not null and m.status in ('confirmed', 'bye')
+       and ((m.stage = 'upper' and m.round = u) or (m.stage = 'lower' and m.round = u + 2 * u - 2))
+       and not exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id = m.winner and p.status = 'dropped');
+  end if;
+  n := coalesce(array_length(q, 1), 0);
+  if n < 2 then raise exception 'too_few_players'; end if;
+  while size < n loop size := size * 2; end loop;
+  while (1 << rounds) < size loop rounds := rounds + 1; end loop;
+  select coalesce(max(m.round), 0) into base from public.tournament_matches m where m.tournament_id = tid;
+  ord := public.bracket_order(size);
+  insert into public.tournament_matches (tournament_id, round, position)
+  select tid, base + r.r, p.p
+    from generate_series(1, rounds) as r(r)
+    cross join lateral generate_series(0, (size >> r.r) - 1) as p(p);
+  for pos in 0 .. size / 2 - 1 loop
+    a := case when ord[2 * pos + 1] <= n then q[ord[2 * pos + 1]] end;
+    b := case when ord[2 * pos + 2] <= n then q[ord[2 * pos + 2]] end;
+    if b is null then
+      update public.tournament_matches set player_a = a, winner = a, status = 'bye' where tournament_id = tid and round = base + 1 and position = pos returning id into mid;
+      perform public.tm_propagate(mid);
+    else
+      update public.tournament_matches set player_a = a, player_b = b where tournament_id = tid and round = base + 1 and position = pos;
+    end if;
+  end loop;
+  perform public.tm_ready_round(tid, base + 1);
+  return n;
+end $$;
+revoke all on function public.start_final_stage(uuid) from public, anon;
+grant execute on function public.start_final_stage(uuid) to authenticated;
+
+-- Chiusura (come nel blocco DOPPIA ELIMINAZIONE) più: una qualificazione senza fase finale si chiude quando tutte le
+-- sue partite sono chiuse e almeno un giocatore si è qualificato; non ha finale né vincitore.
+create or replace function public.finish_tournament(tid uuid, report text default null)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  t public.tournaments%rowtype;
+  last_round int;
+  f public.tournament_matches%rowtype;
+  champ uuid;
+  u int;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into t from public.tournaments where id = tid for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_tournament_staff(tid) then raise exception 'forbidden'; end if;
+  if t.status <> 'running' then raise exception 'not_running'; end if;
+  if t.format = 'double_elim' and t.de_qualifier then
+    if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.status in ('pending', 'reported', 'disputed')) then raise exception 'round_open'; end if;
+    u := public.tm_de_upper(t.de_pool_size, t.de_qualify);
+    if not exists (
+      select 1 from public.tournament_matches m
+       where m.tournament_id = tid and m.winner is not null and m.status in ('confirmed', 'bye')
+         and ((m.stage = 'upper' and m.round = u) or (m.stage = 'lower' and m.round = u + 2 * u - 2))
+    ) then raise exception 'final_not_played'; end if;
+  elsif t.format in ('swiss', 'groups', 'double_elim') and not exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.stage is null) then
+    if t.format <> 'swiss' or t.top_cut is not null then raise exception 'final_not_played'; end if;
+    if exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.status in ('pending', 'reported', 'disputed')) then raise exception 'round_open'; end if;
+    if not exists (select 1 from public.tournament_matches m where m.tournament_id = tid and m.stage = 'champion') then
+      select s.user_id into champ from public.tm_standings(tid) s where not s.dropped order by s.rank limit 1;
+      if champ is null then raise exception 'final_not_played'; end if;
+      insert into public.tournament_matches (tournament_id, round, position, stage, player_a, winner, status)
+      select tid, max(m.round) + 1, 0, 'champion', champ, champ, 'bye' from public.tournament_matches m where m.tournament_id = tid;
+    end if;
+  else
+    select max(round) into last_round from public.tournament_matches where tournament_id = tid and (stage is null or t.format = 'single_elim');
+    select * into f from public.tournament_matches where tournament_id = tid and round = last_round and position = 0 and (stage is null or t.format = 'single_elim');
+    if not found or f.winner is null or f.status not in ('confirmed', 'bye') then raise exception 'final_not_played'; end if;
+  end if;
+  update public.tournaments set status = 'finished', report = left(coalesce(finish_tournament.report, ''), 2000) where id = tid;
+end $$;
+revoke all on function public.finish_tournament(uuid, text) from public, anon;
+grant execute on function public.finish_tournament(uuid, text) to authenticated;
+
+comment on column public.tournaments.de_qualifier is 'Doppia eliminazione: il torneo è una qualificazione senza fase finale, finisce con i suoi qualificati (11/11/2026).';
+
 -- ===== 10/11/2026: EVENTI DELLA COMMUNITY =====
 -- =====================================================================================================
 -- 10/11/2026 — EVENTI DELLA COMMUNITY: L'ATTRIX SHOWMATCH DEL 16/11/2026 (PRIMA "ROYALE RUMBLE") (Pierluigi: "una royale rumble tra i creators

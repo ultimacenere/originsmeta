@@ -113,6 +113,24 @@ Stile del gioco da imitare nei testi nostri:
 
 ## Come si rifà la verifica (dopo ogni patch)
 
+**Dall'11/11/2026 si parte dai file del gioco** (Accesso anticipato 0.8.2, verifica di quel giorno: 130 carte, otto lingue):
+
+1. Aprire il gioco una volta dopo la patch, così scarica i dati nuovi delle carte in
+   `%USERPROFILE%\AppData\LocalLow\Koin Games\Origins TCG\Data\production\<id>\<versione>\CardBaseData`.
+2. `node scripts/game-texts.mjs` legge in sola lettura quei dati e le tabelle delle traduzioni nella cartella del gioco
+   (Steam), e riscrive `docs/testi-ufficiali/<lingua>.tsv` per italiano, spagnolo, francese, portoghese, tedesco, russo e
+   cinese semplificato, nella notazione del sito; con `--json <file>` scrive anche costo, statistiche, rarità, testi delle
+   carte create e potere leggendario (quello della finestra della carta nella collezione, per `legendaryPowers` di
+   `cardPage.ts`) di tutte le carte, da confrontare con `cards.ts`.
+3. `node scripts/official-texts.mjs <lingua>` dice quali testi del sito sono diversi e `--apply` li scrive. L'inglese, le
+   carte entrate con una patch (`enteredGame`) e le carte create non passano da lì: si correggono nei file dei testi a
+   mano, come l'11/11/2026.
+4. Poi si riguarda la collezione nel gioco, un costo alla volta (filtri 0-1 … 8+), per i nomi, le statistiche e le carte
+   che i dati non dicono; le differenze dei dati che non vengono da una patch (rarità, costo) vanno in `card-lore.ts`,
+   campi `mana` e `rarity`. Refusi del gioco che il sito non copia: Boogeyman in inglese ("its me").
+
+**Prima dell'11/11/2026 la verifica era solo a vista**, così:
+
 1. Nel gioco, lingua italiana o spagnola: "I miei deck" / "Mis mazos" → scheda Carte, filtro "Non posseduto" /
    "No poseído" acceso (le carte non possedute sono sbiadite, conviene ingrandirle), ordine per mana. Otto carte per
    schermata; tre scatti della rotella scorrono di una fila.

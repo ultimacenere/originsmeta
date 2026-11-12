@@ -34,7 +34,10 @@ import { AccountComics } from "@/components/comics/AccountComics";
 import { ComicStatsPanel } from "@/components/comics/ComicStatsPanel";
 import { TRACKER_ACCOUNT_LINK_PUBLIC, trackerLabels } from "@/lib/trackerLabels";
 import { trackerInstallHref } from "@/lib/analyticsLabels";
-import { canSeeAnalytics } from "@/lib/community/badges";
+import { canSeeAnalytics, isShowcaseBadge, shownBadge } from "@/lib/community/badges";
+import { badgePill, badgeStyle } from "@/lib/cardArt";
+import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
+import { ForCreatorsCallout } from "@/components/creators/ForCreatorsCallout";
 import { SteamAccountSection } from "@/components/SteamAccountSection";
 import { parseSteamOutcome } from "@/lib/steam/link";
 import { isSteamAccountEmail } from "@/lib/steam/account";
@@ -87,6 +90,9 @@ export default async function AccountPage({ params, searchParams }: { params: Lo
   // solo Creator, Autore, Pro, Staff e admin (canSeeAnalytics di badges.ts), con il link al download
   const showTracker = TRACKER_ACCOUNT_LINK_PUBLIC || canSeeAnalytics(profile?.badge, profile?.role);
   const name = profile?.display_name || profile?.username || user.email?.split("@")[0] || "player";
+  // il ruolo con vetrina (Creator, Autore, Pro, Staff) accende il riquadro verso la pagina per i creator; null per gli altri
+  const creatorRole = isShowcaseBadge(profile?.badge) ? shownBadge(profile?.badge) : null;
+  const FC = forCreatorsLabels[locale].entry;
   const FL = favoriteLabels[locale];
   // I mazzi privati ("Salva privato" del deck builder, stato 'draft') hanno la loro sezione: niente voti né scheda pubblica.
   const decks = allDecks.filter((deck) => deck.status !== "draft");
@@ -99,7 +105,22 @@ export default async function AccountPage({ params, searchParams }: { params: Lo
       <h1 className="t-page mt-2">{c.account.title}</h1>
       <p className="mt-4 max-w-2xl text-chalk-muted">{c.account.intro}</p>
 
-      <section className="card-night mt-8 flex flex-wrap items-center gap-4 p-6">
+      {/* Strumenti per i creator (12/11/2026, riunione per l'Attrix Showmatch: "se taggati creator, dovrebbe apparire un tasto
+          dedicato nell'interfaccia"): in cima, prima della scheda del profilo, solo per chi ha un ruolo con vetrina; porta a
+          /for-creators come la voce del menu dell'account. Chi non ha il ruolo non lo vede. */}
+      {creatorRole ? (
+        <ForCreatorsCallout
+          locale={locale}
+          placement="account"
+          title={FC.account.title}
+          text={FC.account.text}
+          cta={FC.cta}
+          pill={<span className={`${badgePill} ${badgeStyle[creatorRole]}`}>{c.badges[creatorRole]}</span>}
+          className="mt-8"
+        />
+      ) : null}
+
+      <section className={`card-night flex flex-wrap items-center gap-4 p-6 ${creatorRole ? "mt-4" : "mt-8"}`}>
         <Avatar profile={profile} name={name} size={56} />
         <div className="min-w-0 flex-1">
           <p className="kicker text-pale-muted">{c.account.signedInAs}</p>

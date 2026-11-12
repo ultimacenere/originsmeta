@@ -165,6 +165,19 @@ describe("giorno del torneo (06/11/2026, prova di EndGame First Blood)", () => {
     assert.deepEqual(submittedPlayerIds([row("a", "registered", true), row("b", "registered", false), row("c", "waitlist", true), row("d", "waitlist", false), row("e", "dropped", true)]), ["a", "c"]);
   });
 
+  test("la regola dell'assenza dice come si apre la stanza partita (12/11/2026, domanda di apix)", () => {
+    for (const lang of ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"]) {
+      const dict = readFileSync(new URL(`../dictionaries/${lang}.ts`, import.meta.url), "utf8");
+      const rule = /^\s+noShowRule: "(.*)",\r?$/m.exec(dict)?.[1] ?? "";
+      const banner = dict.slice(dict.indexOf("    liveBanner: {"));
+      const cta = /^\s+cta: "(.*)",\r?$/m.exec(banner)?.[1] ?? "";
+      assert.ok(cta.length > 3, `${lang}: tasto del riquadro non trovato`);
+      assert.ok(rule.includes("{n}"), `${lang}: noShowRule senza {n}`);
+      // la regola nomina il tasto che porta alla stanza partita con le sue parole esatte
+      assert.ok(rule.includes(cta), `${lang}: noShowRule non nomina "${cta}"`);
+    }
+  });
+
   test("referto e coda dello staff hanno i segnaposto in tutte le lingue", () => {
     for (const lang of ["en", "it", "es", "fr", "pt", "de", "ru", "zh-cn"]) {
       const dict = readFileSync(new URL(`../dictionaries/${lang}.ts`, import.meta.url), "utf8");

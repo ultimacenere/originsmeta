@@ -21,7 +21,9 @@ export function LocaleSwitcher({ locale, label, className = "", variant = "dropd
   const rest = useRest(locale);
   if (variant === "pills") {
     return (
-      <nav aria-label={label} className={`${className} flex items-center gap-0.5 rounded-full border border-felt-line p-0.5`}>
+      // flex-wrap e rounded-2xl (12/11/2026): su una riga il riquadro è la stessa pastiglia di prima; se le lingue non ci
+      // stanno (schermo strettissimo, una lingua in più) vanno a capo dentro il riquadro invece di uscire dalla tendina
+      <nav aria-label={label} className={`${className} flex flex-wrap items-center gap-0.5 rounded-2xl border border-felt-line p-0.5`}>
         {locales.map((l) => {
           const active = l === locale;
           return (
@@ -30,7 +32,8 @@ export function LocaleSwitcher({ locale, label, className = "", variant = "dropd
               href={`/${l}${rest}`}
               hrefLang={l}
               aria-current={active ? "page" : undefined}
-              className={`rounded-full px-1.5 py-1 font-mono text-[11px] uppercase tracking-wider transition ${active ? "bg-mint text-ink" : "text-chalk-muted hover:text-chalk"}`}
+              // whitespace-nowrap: "zh-cn" non si spezza sul trattino quando la fila è stretta
+              className={`whitespace-nowrap rounded-full px-1.5 py-1 font-mono text-[11px] uppercase tracking-wider transition ${active ? "bg-mint text-ink" : "text-chalk-muted hover:text-chalk"}`}
             >
               {l}
             </Link>
@@ -57,7 +60,8 @@ export function LocaleSwitcher({ locale, label, className = "", variant = "dropd
         </>
       }
     >
-      <nav aria-label={label} className="absolute right-0 z-50 mt-2 w-44 rounded-xl border border-felt-line bg-felt-deep p-1.5 shadow-lift">
+      {/* drop-fit (12/11/2026): mai più alto dello schermo, scorre dentro (telefono in orizzontale); vedi AutoCloseDetails */}
+      <nav aria-label={label} className="drop-fit absolute right-0 z-50 mt-2 w-44 rounded-xl border border-felt-line bg-felt-deep p-1.5 shadow-lift">
         {locales.map((l) => {
           const active = l === locale;
           return (

@@ -140,7 +140,7 @@ export const zhCn: Dictionary = {
     stats: "数据",
     unknownStats: "数据尚未公布",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "数据截至 2026年11月4日的补丁：游戏收藏中的 122 张卡牌已于 9月22日在游戏中核对，平衡说明来自官方补丁说明；随 11月4日补丁加入游戏的八张卡牌尚未在游戏中核对。",
+    asOf: "数据截至 2026年11月4日的补丁：游戏收藏中的 130 张卡牌已于 2026年11月11日在游戏中核对（抢先体验 0.8.2 版本），平衡说明来自官方补丁说明。",
     alignment: "阵营",
     good: "Good",
     evil: "Evil",
@@ -296,7 +296,7 @@ export const zhCn: Dictionary = {
     legendNote: "传说卡是卡组的核心：每套卡组一张，以星标标记。系列是 OriginsMeta 按传说来源做的分组，游戏中并不显示。",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "可用卡牌的费用、数据、阵营和文本已在游戏中核对（英语、意大利语、西班牙语、法语、葡萄牙语、德语和俄语），随 2026年11月4日补丁加入游戏的八张卡牌除外；平衡改动来自官方补丁说明。衍生卡和已移除的卡牌不在游戏收藏中，因此未在游戏中核对。卡牌文本 © Koin Games。系列、来源说明、所有卡牌的简体中文文本，以及衍生卡、已移除卡牌和这八张新卡牌的意大利语、西班牙语、法语、葡萄牙语、德语和俄语文本均由 OriginsMeta 编写。",
+      "可用卡牌的费用、数据、稀有度、阵营和文本已于 2026年11月11日在游戏中核对（英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文）；平衡改动来自官方补丁说明。衍生卡和已移除的卡牌不在游戏收藏中，因此未在游戏中核对；衍生卡的文本来自游戏文件。卡牌文本 © Koin Games。系列、来源说明，以及已移除卡牌除英语外各语言的文本均由 OriginsMeta 编写。",
     detailKicker: "卡牌",
     collectible: "可收藏卡牌",
     changesTitle: "平衡调整历史",
@@ -1453,7 +1453,7 @@ export const zhCn: Dictionary = {
     hiddenRule: "卡表在四强之前保密：对手只能看到你的传说卡。半决赛选手的卡表在进入四强时公开，所有人的卡表在锦标赛结束时公开。",
     top4Decklists: "四强卡表",
     noShowPill: "缺席判负：{n} 分钟",
-    noShowRule: "请准时：从你的对局就绪起（从第 2 轮起，即在它之前的两场对局结束后），如果你在 {n} 分钟内没有打开对局房间，对手可以申请判你弃权负。",
+    noShowRule: "请准时：你的对局就绪后（从第 2 轮起，即在它之前的两场对局结束后），请打开它的对局房间，也就是该对局的页面：点击本页顶部的“前往我的对局”，或从对阵表、通知进入。打开页面即可。如果你在 {n} 分钟内没有打开，对手可以申请判你弃权负。",
     withdraw: "退赛",
     withdrawConfirm: "现在退出锦标赛？你会输掉当前对局（或者下一场，一旦对手确定）。",
     checkin: {

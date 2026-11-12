@@ -389,6 +389,15 @@ describe("etichette", () => {
       }
     }
   });
+  test("la sideboard non chiede di dichiarare gli scambi (12/11/2026, apix)", () => {
+    const old = ["declared in the match room", "dichiarate nella stanza partita", "declaradas en la sala", "déclarées dans la salle", "declaradas na sala", "angegeben im Matchraum", "указывается в комнате матча", "并在对局房间中声明"];
+    for (const [loc, l] of Object.entries(formatLabels)) {
+      for (const o of old) assert.ok(!l.sideboardRule.includes(o), `${loc}: ${o}`);
+      assert.ok(l.sideNote.trim().length > 0, `${loc}: sideNote`);
+    }
+    // il francese tiene lo spazio insecabile prima dei due punti
+    assert.ok(formatLabels.fr.sideHint.includes("échanges\u00a0: les noter"));
+  });
   test("ogni errore delle RPC nuove ha un testo", () => {
     for (const code of FORMAT_RPC_ERRORS) {
       assert.ok(block.includes(`raise exception '${code}'`), `${code} non è nel blocco`);
