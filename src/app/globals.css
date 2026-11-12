@@ -7172,3 +7172,150 @@
     scrollbar-color: color-mix(in srgb, var(--color-sky) 55%, var(--color-night-2)) var(--color-night-2);
   }
 }
+
+/*
+  Home ricomposta (12/11/2026, prototipo design/home/01-pulizia): la mano di carte e i segni a penna. Servono a togliere
+  i riquadri dentro i riquadri (una chip con cornice per ogni carta, una pastiglia per ogni esito) senza perdere niente:
+  le carte restano immagini intere che portano alla scheda, l'esito resta una parola.
+*/
+@layer components {
+  /* Una mano di carte (CardHand in CardChip.tsx): carte piccole e intere, sovrapposte e aperte a ventaglio come tenute in
+     mano; `.is-row` le mette in fila dritta (le fasce della tier list), `.is-small` le rimpicciolisce. La rotazione sta
+     sulla carta e non sul `li`, che porta il pannello dell'anteprima e deve restare dritto. */
+  .card-hand {
+    display: flex;
+    align-items: flex-end;
+    padding-left: 3px;
+  }
+  .card-hand > li + li {
+    margin-left: -7px;
+  }
+  .card-hand > li:hover,
+  .card-hand > li:focus-within {
+    z-index: 3;
+  }
+  .card-hand-card {
+    position: relative;
+    display: block;
+    width: 40px;
+    height: 57px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: var(--color-night-3);
+    box-shadow: 0 2px 5px rgba(8, 4, 18, 0.7);
+    transition: translate 140ms ease;
+  }
+  .card-hand-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-hand-card > span {
+    display: grid;
+    height: 100%;
+    place-items: center;
+    font: 800 0.7rem/1 var(--font-display);
+    color: var(--color-chalk-muted);
+  }
+  /* Leggendaria: il filo oro intorno, come la cornice oro delle altre viste */
+  .card-hand-card.is-legendary {
+    box-shadow: 0 0 0 2px var(--color-gold), 0 2px 5px rgba(8, 4, 18, 0.7);
+  }
+  .card-hand > li:hover .card-hand-card,
+  .card-hand-card:focus-visible,
+  a:hover > .card-hand-card {
+    translate: 0 -5px;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n + 1) .card-hand-card {
+    top: 3px;
+    rotate: -8deg;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n + 2) .card-hand-card {
+    top: 1px;
+    rotate: -4.5deg;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n + 3) .card-hand-card {
+    rotate: -1.5deg;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n + 4) .card-hand-card {
+    rotate: 2deg;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n + 5) .card-hand-card {
+    top: 1px;
+    rotate: 5deg;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n + 6) .card-hand-card {
+    top: 3px;
+    rotate: 8deg;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n + 7) .card-hand-card {
+    top: 2px;
+    rotate: -3deg;
+  }
+  .card-hand:not(.is-row) > li:nth-child(8n) .card-hand-card {
+    top: 4px;
+    rotate: 4deg;
+  }
+  .card-hand.is-small .card-hand-card {
+    width: 32px;
+    height: 46px;
+  }
+  .card-hand.is-row > li + li {
+    margin-left: 6px;
+  }
+  /* una carta sola non fa ventaglio: resta appena storta */
+  .card-hand:not(.is-row) > li:only-child .card-hand-card {
+    top: 0;
+    rotate: -3deg;
+  }
+  .card-hand > li.card-hand-more {
+    align-self: center;
+    margin-left: 14px;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-chalk-muted);
+  }
+
+  /* Nota a penna: una riga scritta a mano accanto a un contenuto (la data dell'ultima tier list), col giallo dei foglietti */
+  .pen-note {
+    display: inline-block;
+    font-family: var(--font-hand, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--postit-label);
+    rotate: -3deg;
+  }
+  /* la stessa scrittura in grigio, per una frase che non deve farsi notare (la chiusura del piede di pagina) */
+  .pen-note.is-quiet {
+    font-size: 1.35rem;
+    color: var(--color-chalk-muted);
+    rotate: -1.5deg;
+  }
+  /* Numero scritto a penna: l'ordine di lettura delle guide di "Parti da qui". Ogni numero un po' storto a modo suo. */
+  .pen-num {
+    font-family: var(--font-pen, "Segoe Print"), var(--font-cjk-hand, "Segoe Print"), "Segoe Print", "Bradley Hand", cursive;
+    font-size: 3.4rem;
+    line-height: 0.74;
+    color: var(--postit-label);
+    -webkit-text-stroke: 1.1px currentColor;
+    rotate: -7deg;
+  }
+  li:nth-child(2) > div > .pen-num {
+    rotate: 4deg;
+  }
+  li:nth-child(3) > div > .pen-num {
+    rotate: -3deg;
+  }
+  /* Freccia tirata a penna (buff in su, nerf in giù): il tratto prende il colore del testo */
+  .pen-arrow {
+    width: 12px;
+    height: 17px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}

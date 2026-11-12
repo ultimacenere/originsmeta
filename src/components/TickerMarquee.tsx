@@ -69,7 +69,7 @@ function LiveChip({ live, hidden }: { live: TickerLive; hidden: boolean }) {
           <span className="live-dot" aria-hidden="true" />
           {live.title}
         </span>
-        <span className="block font-mono text-[11px] uppercase tracking-wider text-chalk-muted">{line}</span>
+        <span className="block text-xs text-chalk-muted">{line}</span>
       </span>
     </Link>
   );
@@ -256,7 +256,7 @@ export function TickerMarquee({ items: base, empty, ariaLabel, nextLabel, prevLa
                   </span>
                   <span className="min-w-0">
                     <span className={`block font-display text-sm font-bold ${it.isNext ? "text-gold" : "text-sky"}`}>{it.title}</span>
-                    <span className="block font-mono text-[11px] uppercase tracking-wider text-chalk-muted">
+                    <span className="block text-xs text-chalk-muted">
                       {it.isNext ? `${nextLabel} · ` : ""}
                       {it.where}
                     </span>

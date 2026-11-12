@@ -62,7 +62,7 @@ export function KickstarterBar({
             data-om-event="kickstarter_landing_open"
             data-om-placement={placement === "home" ? "home_bar" : "site_bar"}
           >
-            {cta} →
+            {cta}
           </Link>
         </p>
         <button

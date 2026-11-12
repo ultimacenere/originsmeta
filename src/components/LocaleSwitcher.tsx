@@ -42,7 +42,7 @@ export function LocaleSwitcher({ locale, label, className = "", variant = "dropd
   return (
     <AutoCloseDetails
       className={`relative shrink-0 ${className}`}
-      summaryClassName="flex cursor-pointer list-none items-center gap-1 rounded-full border border-felt-line px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-chalk transition hover:border-mint hover:text-mint [&::-webkit-details-marker]:hidden"
+      summaryClassName="flex cursor-pointer list-none items-center gap-1 px-1.5 py-1 text-xs font-bold uppercase text-chalk transition hover:text-mint [&::-webkit-details-marker]:hidden"
       summaryLabel={`${label}: ${localeNames[locale]}`}
       summary={
         <>

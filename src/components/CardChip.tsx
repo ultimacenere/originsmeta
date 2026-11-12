@@ -121,6 +121,52 @@ export function CardChipList({ slugs, locale, max }: { slugs: string[]; locale: 
 }
 
 /**
+ * Una mano di carte (home, 12/11/2026): le carte in piccolo e intere, una accanto all'altra come appoggiate sul tavolo, al
+ * posto delle chip con cornice (un riquadro per carta dentro il riquadro della news). Con `fan` (di default) stanno
+ * sovrapposte e aperte a ventaglio; senza, in fila dritta (le fasce della tier list). Leggendarie per prime, con il filo
+ * oro. Ogni carta porta alla sua scheda e al passaggio del mouse apre la stessa anteprima delle chip (`CardPeek`); il nome
+ * sta nel nome accessibile del link, l'immagine è decorativa. Oltre `max` resta il "+N", come in `CardChipList`.
+ * La rotazione sta sul link e non sul `li`: il pannello dell'anteprima è figlio del `li` e deve restare dritto.
+ */
+export function CardHand({ slugs, locale, max = 6, small = false, fan = true }: { slugs: string[]; locale: Locale; max?: number; small?: boolean; fan?: boolean }) {
+  const cards = legendaryFirst(slugs, (s) => Boolean(getCard(s)?.legendary))
+    .map((s) => getCard(s))
+    .filter((c): c is Card => c !== undefined);
+  if (!cards.length) return null;
+  const shown = cards.slice(0, max);
+  const legendaryLabel = getDictionary(locale).common.legendary;
+  return (
+    <ul className={`card-hand${small ? " is-small" : ""}${fan ? "" : " is-row"}`}>
+      {shown.map((card) => {
+        const peek = peekOf(card, locale);
+        const withPeek = hasPeek(peek);
+        const src = card.thumb ?? card.image;
+        return (
+          <li key={card.slug} className={`deck-card-wrap ${withPeek ? "has-peek" : ""}`}>
+            <Link
+              href={href(locale, `/cards/${card.slug}`)}
+              prefetch={false}
+              className={`card-hand-card ${card.legendary ? "is-legendary" : ""}`}
+              title={withPeek ? undefined : card.name}
+              aria-label={card.legendary ? `${card.name} (${legendaryLabel})` : card.name}
+            >
+              {src ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={src} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <span aria-hidden="true">{initials(card.name)}</span>
+              )}
+            </Link>
+            {withPeek ? <CardPeek card={peek} /> : null}
+          </li>
+        );
+      })}
+      {cards.length > shown.length ? <li className="card-hand-more">+{cards.length - shown.length}</li> : null}
+    </ul>
+  );
+}
+
+/**
  * Dati della carta che si gira (`FlipCard`), nella lingua della pagina: gli stessi per il database /cards, la
  * scheda di un mazzo e /style, così il retro dice le stesse cose ovunque. Solo quello che serve, niente database
  * nel browser (CardExplorer li riceve già pronti dalla pagina).

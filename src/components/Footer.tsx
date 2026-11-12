@@ -74,8 +74,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
         <div className="mx-auto max-w-7xl px-4 pt-12 sm:px-6">
           <section aria-labelledby="footer-cta-title" className="card-night flex flex-wrap items-center gap-x-8 gap-y-5 p-5 sm:p-7">
             <div className="min-w-0 flex-1 basis-72">
-              <p className="kicker text-mint">{dict.footer.ctaKicker}</p>
-              <h2 id="footer-cta-title" className="t-section mt-2">
+              <h2 id="footer-cta-title" className="t-section">
                 {dict.footer.ctaTitle}
               </h2>
               <p className="mt-2 max-w-2xl text-sm text-pale">{dict.footer.ctaText}</p>
@@ -105,7 +104,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <p className="mt-2 text-xs text-chalk-muted">{dict.common.imageCredit}</p>
         </div>
         <div>
-          <h2 className="kicker mb-3 text-mint">{dict.footer.links}</h2>
+          <h2 className="mb-3 font-body text-[13.5px] font-bold text-chalk">{dict.footer.links}</h2>
           <ul className="space-y-1.5 text-sm">
             {navItems(dict, locale)
               .flatMap((it) => [it, ...(it.sub ?? []).filter((s) => s.mobile)])
@@ -120,7 +119,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           </ul>
         </div>
         <div>
-          <h2 className="kicker mb-3 text-mint">{linkLabels[locale].explore.title}</h2>
+          <h2 className="mb-3 font-body text-[13.5px] font-bold text-chalk">{linkLabels[locale].explore.title}</h2>
           <ul className="space-y-1.5 text-sm">
             {exploreItems(locale).map((it) => (
               <li key={it.path}>
@@ -132,7 +131,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           </ul>
         </div>
         <div>
-          <h2 className="kicker mb-3 text-mint">{dict.footer.official}</h2>
+          <h2 className="mb-3 font-body text-[13.5px] font-bold text-chalk">{dict.footer.official}</h2>
           <ul className="space-y-1.5 text-sm">
             <li>
               <OfficialLink url={officialLinks.steam} newTab={dict.footer.newTab}>
@@ -169,7 +168,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           </ul>
         </div>
         <div>
-          <h2 className="kicker mb-3 text-mint">{dict.footer.legal}</h2>
+          <h2 className="mb-3 font-body text-[13.5px] font-bold text-chalk">{dict.footer.legal}</h2>
           <ul className="space-y-1.5 text-sm">
             <li><Link className={linkCls} href={href(locale, "/about")}>{dict.nav.about}</Link></li>
             <li><Link className={linkCls} href={href(locale, "/privacy")}>{dict.footer.privacy}</Link></li>
@@ -179,7 +178,8 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               <CookiePreferencesButton label={dict.cookies.manage} className={`cursor-pointer ${linkCls}`} />
             </li>
           </ul>
-          <p className="mt-6 font-mono text-[11px] uppercase tracking-wider text-chalk-muted">{dict.footer.built}</p>
+          {/* la frase di chiusura scritta a penna (12/11/2026), non più in maiuscolo spaziato */}
+          <p className="pen-note is-quiet mt-6">{dict.footer.built}</p>
         </div>
       </div>
       {/* Avviso richiamato con aria-describedby dai tasti Steam e Discord di tutto il sito (vedi SteamButton.tsx):

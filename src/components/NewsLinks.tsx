@@ -35,20 +35,24 @@ function linkDomain(url: string): string {
  * ogni clic su una fonte chiudeva la visita al sito. `newTabProps` è la regola unica dei link esterni del sito
  * (SteamButton.tsx): nuova scheda, `noopener` e l'avviso per i lettori di schermo.
  */
-export function NewsSourceLink({ item, locale, dict, className = "" }: Props & { className?: string }) {
+export function NewsSourceLink({ item, locale, dict, className = "", plain = false }: Props & { className?: string; plain?: boolean }) {
   // senza `url` (news di stampa senza una fonte pubblica citabile) non c'è nessun link "Fonte" da mostrare
   if (isSiteNews(item) || !item.url) return null;
+  // `plain` (home, 12/11/2026): lo stesso link senza la freccina in fondo
+  const arrow = plain ? "" : " →";
   if (isDeckNews(item)) {
     return (
       <Link href={href(locale, item.url)} className={className}>
-        {dict.common.openDeck} →
+        {dict.common.openDeck}
+        {arrow}
       </Link>
     );
   }
   const domain = linkDomain(item.url);
   return (
     <a href={item.url} {...newTabProps} className={className}>
-      {domain ? `${dict.common.source} · ${domain}` : dict.common.source} →
+      {domain ? `${dict.common.source} · ${domain}` : dict.common.source}
+      {arrow}
     </a>
   );
 }

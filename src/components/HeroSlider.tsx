@@ -200,7 +200,7 @@ export function HeroSlider({ slides, labels, interval = 4500, autoplay = true }:
 
         {/* Sul telefono: credito in alto a sinistra (mai tolto sulle immagini ufficiali; non c'è sugli screenshot nostri), puntini e pausa in basso a destra */}
         {credit ? (
-          <span className="absolute left-2 top-2 z-10 rounded bg-felt-deep/60 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-chalk-muted sm:hidden">
+          <span className="absolute left-2 top-2 z-10 rounded bg-felt-deep/60 px-1.5 py-0.5 text-[10px] text-chalk-muted sm:hidden">
             {credit}
           </span>
         ) : null}
@@ -236,7 +236,7 @@ export function HeroSlider({ slides, labels, interval = 4500, autoplay = true }:
                   aria-hidden={on ? undefined : true}
                   inert={!on}
                 >
-                  <p className="kicker truncate text-mint">{s.kicker}</p>
+                  <p className="truncate text-[13px] font-bold text-mint">{s.kicker}</p>
                   {/* Non è un titolo di sezione: l'unico H1 della pagina è quello (nascosto alla vista) in cima al main della home */}
                   <p className="mt-1 line-clamp-1 font-display text-xl font-extrabold leading-tight text-sky sm:line-clamp-2 sm:text-3xl">{s.title}</p>
                   <p className="mt-1 line-clamp-2 text-sm text-chalk-muted sm:line-clamp-none">{s.text}</p>
@@ -269,7 +269,7 @@ export function HeroSlider({ slides, labels, interval = 4500, autoplay = true }:
           </p>
           <div className="hidden items-center gap-3 sm:flex">
             {controls}
-            {credit ? <span className="font-mono text-[10px] uppercase tracking-wider text-chalk-muted/70">{credit}</span> : null}
+            {credit ? <span className="text-[11px] text-chalk-muted/80">{credit}</span> : null}
           </div>
         </div>
       </div>

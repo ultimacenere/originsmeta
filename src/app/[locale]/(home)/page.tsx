@@ -1,16 +1,16 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { href, formatDate, formatDateShort } from "@/lib/i18n";
+import { href, formatDate, formatDateShort, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
-import { latestPatch, movers, patchLabel, patches } from "@/lib/data/cards";
+import { latestPatch, movers, patchLabel, patches, type ChangeKind } from "@/lib/data/cards";
 import { tierList, tierIds } from "@/lib/data/tierlist";
+import { tierTone } from "@/lib/tiercode";
 import { getGuide, type Guide } from "@/lib/content/guides";
 import { newsInLocale, newsPath, type NewsItem } from "@/lib/data/news";
-import { SectionHead } from "@/components/SectionHead";
-import { ChangeChip, StatDelta } from "@/components/ChangeChip";
-import { CardChipList, CardName, legendaryFirst } from "@/components/CardChip";
+import { StatDelta } from "@/components/ChangeChip";
+import { CardHand, CardName, legendaryFirst } from "@/components/CardChip";
 import { officialLinks } from "@/components/Footer";
 import { HeroSlider, type Slide } from "@/components/HeroSlider";
 import { OfficialLiveHero } from "@/components/OfficialLiveHero";
@@ -19,7 +19,7 @@ import { creatorLabels } from "@/lib/creatorLabels";
 import { EventTicker } from "@/components/EventTicker";
 import { NewsCover } from "@/components/NewsCover";
 import { Postit, type PostitKind } from "@/components/Postit";
-import { NewsDeckButton, NewsGuideLinks, NewsSourceLink, isDeckNews, newsCardsLabel } from "@/components/NewsLinks";
+import { NewsDeckButton, NewsSourceLink, isDeckNews, newsCardsLabel } from "@/components/NewsLinks";
 import { changeLabel } from "@/lib/linkLabels";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
@@ -77,56 +77,77 @@ function postitOf(item: NewsItem): NewsPostit {
 }
 
 /**
- * Post-it grandi delle tre news in evidenza (note del 22/09/2026: "più grandi, storti, un po' invasivi
- * sull'immagine, disordinati"): rotazioni diverse e non allineate, e ognuno appoggiato in un punto un po' diverso
- * dell'angolo della copertina (uno sull'angolo destro), così sembrano attaccati a mano. La copertina comincia 24 px
- * sotto il bordo interno della scheda (p-6): con top fra -6 e 0 px il post-it sborda appena dalla scheda e copre
- * 20-30 px dell'angolo in alto della copertina, lontano dal soggetto e dai crediti (che stanno in basso).
- * Ogni posizione ha anche fase e durate sue (--delay, --flap-dur, --sway-dur): due post-it dello stesso tipo
- * affiancati non si muovono all'unisono. Le classi sono utility Tailwind, che vincono su `.postit-corner` e sulle
- * varianti (layer components); scritte per intero perché Tailwind le trovi nel sorgente.
- */
-const FEATURED_POSTITS = [
-  { tilt: -6, place: "postit-corner -top-1 left-3 [--delay:-0.4s] [--flap-dur:2.6s] [--sway-dur:7.5s]" },
-  { tilt: 4, place: "postit-corner top-0 left-auto right-4 [--delay:-1.3s] [--flap-dur:2.9s] [--sway-dur:8.8s]" },
-  { tilt: -3, place: "postit-corner -top-1.5 left-7 [--delay:-2.1s] [--flap-dur:2.3s] [--sway-dur:6.4s]" },
-] as const;
-
-/**
  * Guide per chi arriva adesso: che cos'è il gioco, come si comincia a giocare, come funziona la classificata. Fino al
  * 27/10/2026 la terza era la guida allo Steam Next Fest (finito il 26/10); lo slug di play-the-demo resta per i link.
  */
 const START_GUIDES = ["origins-tcg-explained", "play-the-demo", "origins-tcg-ranked"] as const;
 
-/* Icone del blocco "Fai la tua mossa": tratti semplici in menta, decorative (il testo accanto dice tutto) */
-const moveIcon = "h-7 w-7 shrink-0 fill-none stroke-mint stroke-[1.8]";
-const MOVE_ICONS: Record<"build" | "publish" | "host", ReactNode> = {
-  build: (
-    <svg viewBox="0 0 24 24" className={moveIcon} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="7" width="11" height="14" rx="2" />
-      <path d="M8 3.5h10.5A2 2 0 0 1 20.5 5.5V17" />
-      <path d="M8.5 11v6M5.5 14h6" />
-    </svg>
-  ),
-  publish: (
-    <svg viewBox="0 0 24 24" className={moveIcon} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" />
-      <path d="M4 14.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3.5" />
-    </svg>
-  ),
-  host: (
-    <svg viewBox="0 0 24 24" className={moveIcon} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M8 21h8M12 16.5V21" />
-      <path d="M7 4h10v5a5 5 0 0 1-10 0V4Z" />
-      <path d="M17 5.5h3V7a3 3 0 0 1-3 3M7 5.5H4V7a3 3 0 0 0 3 3" />
-    </svg>
-  ),
+/** Una delle tre in evidenza, news o fumetto, con quello che serve a disegnarla (le carte e le guide solo dalle news). */
+type Featured = {
+  key: string;
+  href: string;
+  /** giorno, AAAA-MM-GG */
+  day: string;
+  /** data intera, per la freschezza del post-it */
+  date: string;
+  title: string;
+  titleLang?: Locale;
+  summary: string;
+  summaryLang?: Locale;
+  image: string | null;
+  postit: PostitKind;
+  byline?: string;
+  item?: NewsItem;
 };
+
+/** Cornice celeste delle copertine: è l'unica cornice della notizia, il testo sta sul feltro (12/11/2026) */
+const COVER_LG = "rounded-xl! border-[3px]! border-sky!";
+const COVER_SM = "rounded-[10px]! border-2! border-sky!";
+/** Etichetta piccola sopra un gruppo (carte, guide): testo normale, non più il kicker in maiuscolo spaziato */
+const LABEL = "mb-2 text-[12.5px] font-bold text-pale-muted";
+
+/** Titolo di sezione della home: il titolo e, a destra, un link di testo. Niente sottotitolo che ripete il titolo, niente freccia. */
+function HomeHead({ id, title, link, className = "mb-5" }: { id?: string; title: string; link?: { href: string; label: string }; className?: string }) {
+  return (
+    <div className={`flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 ${className}`}>
+      <h2 id={id} className="t-section">
+        {title}
+      </h2>
+      {link ? (
+        <Link href={link.href} className="link-mint text-sm font-bold">
+          {link.label}
+        </Link>
+      ) : null}
+    </div>
+  );
+}
+
+/* Freccia tirata a penna accanto a un buff o a un nerf: tre tratti diversi, così tre righe vicine non sembrano fotocopie */
+const PEN_ARROWS = [
+  "M8.2 20.5C7.6 15 8.6 9.5 7.9 3.2M2.4 8.6C4.6 6.6 6.2 4.6 7.9 2.2 9.6 4.4 11.6 6.4 13.8 8.2",
+  "M7.6 20.6C8.4 14.6 7.2 9 8.1 3M2.2 8.9C4.2 7 6.4 4.9 8.1 2.3 9.5 4.7 11.9 6.6 13.9 8.6",
+  "M8 20.4C7.5 15.2 8.8 8.8 7.8 3.4M2.6 8.2C4.8 6.9 6 4.4 7.8 2.4 9.8 4.2 11.2 6.8 13.6 8.4",
+] as const;
+const PEN_TONE: Record<ChangeKind, string> = { buff: "text-mint", nerf: "text-crimson-soft", rework: "text-gold", deck: "text-pale" };
+
+/** Esito di una modifica scritto a penna: la freccia in su o in giù e la parola, al posto della pastiglia piena */
+function PenMark({ kind, label, n }: { kind: ChangeKind; label: string; n: number }) {
+  return (
+    <span className={`inline-flex items-center gap-1 text-[12.5px] font-bold ${PEN_TONE[kind]}`}>
+      {kind === "buff" || kind === "nerf" ? (
+        <svg viewBox="0 0 16 22" className={`pen-arrow${kind === "nerf" ? " rotate-180" : ""}`} aria-hidden="true">
+          <path d={PEN_ARROWS[n % PEN_ARROWS.length]} />
+        </svg>
+      ) : null}
+      {label}
+    </span>
+  );
+}
 
 /**
  * Ordine della home (note 7.0 del 16/09/2026, rivisto il 21 e il 22/09/2026): slider, calendario, subito le prime
- * tre news "aperte" con i post-it grandi, il blocco "Fai la tua mossa" (costruisci, pubblica, organizza), la tier
- * list a striscia, MetaShifting a striscia della stessa misura, poi la bacheca con le altre news (patch note
+ * tre news "aperte" con i post-it, i video dei creator, il blocco "Fai la tua mossa" (costruisci, pubblica, organizza),
+ * la tier list a striscia, MetaShifting a striscia della stessa misura, poi la bacheca con le altre news (patch note
  * comprese), tre guide per chi inizia e lo stato del gioco. La sezione con i mazzi della community è stata tolta
  * (ridondante).
  *
@@ -137,7 +158,18 @@ const MOVE_ICONS: Record<"build" | "publish" | "host", ReactNode> = {
  *
  * Scala dei titoli (21/09/2026): .t-section per i titoli di sezione (gesso, non più celesti), .t-item per i nomi
  * degli elementi (news, guide, carte), così sezione ed elemento non hanno più lo stesso colore. Tier list e
- * MetaShifting hanno invece l'etichetta a penna su post-it (`.postit-label`, 22/09/2026).
+ * MetaShifting hanno invece l'etichetta a penna su post-it (22/09/2026).
+ *
+ * Ricomposta il 12/11/2026 (Pierluigi, sul prototipo design/home/01-pulizia: stessa identità, senza le abitudini che si
+ * ripetevano in ogni blocco). Stesse sezioni nello stesso ordine e stessi testi dei dizionari, ma:
+ * - in evidenza una notizia grande con il testo accanto e due piccole sotto, al posto di tre schede uguali; la cornice
+ *   celeste resta solo sulla copertina e il testo sta sul feltro; le carte citate sono una mano di carte (`CardHand`);
+ * - niente kicker in maiuscolo sopra i titoli, niente freccine in fondo a tasti e link, niente sottotitoli che ripetono
+ *   il titolo della sezione (`HomeHead`);
+ * - un solo livello di cornice: nei pannelli (mossa, strisce) non ci sono più riquadri col bordo;
+ * - nella striscia della tier list le fasce vere con le carte e la data scritta a penna; in MetaShifting la freccia a
+ *   penna al posto della pastiglia; bacheca e stato del gioco sono righe, "Parti da qui" è numerata a penna.
+ * Gli aloni dello sfondo e il gradiente dei tasti restano (scelta di Pierluigi dello stesso giorno).
  */
 export default async function Home({ params }: { params: LocaleParams }) {
   const { locale, dict: d } = await resolveLocale(params);
@@ -164,6 +196,10 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const rankedIn = (s: (typeof tierList.sections)[number]) => tierIds.reduce((acc, t) => acc + s.tiers[t].length, 0);
   /* la promessa datata resta finché nessuna sezione ha una fascia: sparisce da sola alla prima classifica */
   const nothingRanked = tierList.sections.every((s) => rankedIn(s) === 0);
+  // Le fasce che la striscia fa vedere: quelle delle Leggendarie, la prima sezione classificata (09/11/2026). Mazzi e carte
+  // base, quando avranno le loro fasce, restano un link: sono troppi per una striscia.
+  const legendarySection = tierList.sections.find((s) => s.id === "legendaries");
+  const legendaryTiers = legendarySection ? tierIds.filter((t) => legendarySection.tiers[t].length > 0) : [];
   // Invito a salvare la propria tier list (Ondata 3, TOOL-01): dal 12/10/2026 solo la frase senza numeri (mai il numero di
   // persone). Con la community spenta (NEXT_PUBLIC_COMMUNITY=off) non si salva niente: la riga non c'è.
   const ti = d.home.tierInvite;
@@ -209,6 +245,37 @@ export default async function Home({ params }: { params: LocaleParams }) {
    */
   const newsHref = (item: NewsItem) => href(locale, newsPath(item));
 
+  /* Le tre in evidenza in una forma sola: la prima è la notizia grande, le altre due stanno sotto */
+  const featuredItems: Featured[] = featured.map((entry) =>
+    entry.kind === "comic"
+      ? {
+          key: `comic-${entry.comic.slug}`,
+          href: comicHref(entry.comic),
+          day: entry.comic.date.slice(0, 10),
+          date: entry.comic.date,
+          title: entry.comic.title,
+          titleLang: entry.comic.titleLang,
+          summary: entry.comic.summary,
+          summaryLang: entry.comic.summaryLang,
+          image: entry.comic.image,
+          postit: "comic",
+          byline: fillLabel(C.by, { name: entry.comic.author.name }),
+        }
+      : {
+          key: entry.item.slug,
+          href: newsHref(entry.item),
+          day: entry.item.date,
+          date: entry.item.date,
+          title: entry.item.title[locale],
+          summary: entry.item.summary[locale],
+          image: entry.item.image,
+          postit: postitOf(entry.item),
+          item: entry.item,
+        },
+  );
+  const [lead, ...seconds] = featuredItems;
+  const leadGuides = (lead?.item?.guides ?? []).map((s) => getGuide(locale, s)).filter((g): g is Guide => g !== undefined);
+
   return (
     <>
       {/* Slider a tutta larghezza con le immagini ufficiali del media kit: fa da hero */}
@@ -226,106 +293,128 @@ export default async function Home({ params }: { params: LocaleParams }) {
         {/* Unico H1 della pagina: invisibile, ma letto dai motori e dagli screen reader (il blocco titolo visibile è stato tolto il 22/09/2026) */}
         <h1 className="sr-only">{d.home.h1}</h1>
         {/*
-          pt-7 e non meno: i post-it grandi sporgono appena sopra le schede (pochi px, più il nastro adesivo, la
-          rotazione e il bollino "Nuovo") e non devono toccare la striscia del calendario.
-          `div` e non `section`: il contenitore raggruppa quattro sezioni con i loro titoli, non ne ha uno suo.
+          pt-10 e non meno: il post-it grande sporge sopra la copertina (14 px, più il nastro adesivo, la rotazione e il
+          bollino "Nuovo") e non deve toccare la striscia del calendario.
+          `div` e non `section`: il contenitore raggruppa più sezioni con i loro titoli, non ne ha uno suo.
         */}
-        <div className="mx-auto max-w-7xl px-4 pt-7 sm:px-6">
-          {/* Le prime tre news "aperte" subito sotto il calendario (note 7.0 e 22/09/2026), ciascuna con il suo post-it grande */}
+        <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
+          {/* Le prime tre news subito sotto il calendario (note 7.0 e 22/09/2026): una grande e due piccole, ognuna con il suo post-it */}
           <section aria-labelledby="home-featured" data-om-placement="home_featured">
             <h2 id="home-featured" className="sr-only">
               {d.home.featured}
             </h2>
-            <div className="grid grid-cols-1 gap-x-5 gap-y-10 md:grid-cols-3">
-              {featured.map((entry, i) => {
-                const note = FEATURED_POSTITS[i % FEATURED_POSTITS.length];
-                if (entry.kind === "comic") {
-                  const c = entry.comic;
-                  return (
-                    <article key={`comic-${c.slug}`} className="card-night relative flex flex-col p-6">
-                      <Postit kind="comic" label={d.home.postit.comic} date={c.date} size="lg" tilt={note.tilt} className={note.place} />
-                      {c.image ? <NewsCover src={c.image} className="mb-4" /> : null}
-                      <p className="kicker text-mint">
-                        {i === 0 ? d.home.latestNews : d.home.featured} · {formatDate(locale, c.date.slice(0, 10))}
+            {lead ? (
+              <article className="grid grid-cols-1 items-start gap-x-11 gap-y-5 lg:grid-cols-[minmax(0,1.18fr)_minmax(0,1fr)]">
+                {/* Il post-it è figlio diretto del contenitore `relative` (contratto di .postit in globals.css), a cavallo
+                    dell'angolo in alto a sinistra della copertina: lontano dal soggetto e dai crediti, che stanno in basso */}
+                <div className="relative">
+                  <Postit kind={lead.postit} label={d.home.postit[lead.postit as keyof typeof d.home.postit]} date={lead.date} size="lg" tilt={-6} className="postit-corner [--flap-dur:2.6s]" />
+                  {lead.image ? (
+                    <Link href={lead.href} tabIndex={-1} aria-hidden="true" className="block">
+                      <NewsCover src={lead.image} className={COVER_LG} />
+                    </Link>
+                  ) : (
+                    <div className={`aspect-[16/9] bg-night ${COVER_LG}`} />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] text-pale-muted">
+                    <time dateTime={lead.day}>{formatDate(locale, lead.day)}</time>
+                  </p>
+                  <h3 className="t-item mt-1.5 sm:text-[1.45rem]" lang={lead.titleLang}>
+                    <Link href={lead.href} className="hover:underline">
+                      {lead.title}
+                    </Link>
+                  </h3>
+                  {lead.byline ? <p className="mt-1.5 text-sm text-pale-muted">{lead.byline}</p> : null}
+                  {/* Riassunto a quattro righe (08/10/2026, Pierluigi: "in home le news hanno un anteprima troppo lunga"): il
+                      testo intero resta nell'HTML e nell'articolo */}
+                  <p className="mt-3 line-clamp-4 text-[15px] leading-relaxed text-pale" lang={lead.summaryLang}>
+                    {lead.summary}
+                  </p>
+                  {/* UX-2: il mazzo si apre subito, non dopo tutte le carte (per le altre news non rende nulla) */}
+                  {lead.item ? <NewsDeckButton item={lead.item} locale={locale} dict={d} className="mt-4 text-xs" /> : null}
+                  {lead.item?.cards?.length || leadGuides.length ? (
+                    <div className="mt-5 grid gap-4 border-t-2 border-felt-line pt-4">
+                      {lead.item?.cards?.length ? (
+                        <div>
+                          <p className={LABEL}>{newsCardsLabel(lead.item, d)}</p>
+                          <CardHand slugs={lead.item.cards} locale={locale} max={8} />
+                        </div>
+                      ) : null}
+                      {leadGuides.length ? (
+                        <div>
+                          <p className={LABEL}>{d.common.relatedGuides}</p>
+                          <ul className="space-y-1 text-[13.5px]">
+                            {leadGuides.map((g) => (
+                              <li key={g.slug}>
+                                <Link href={href(locale, `/guides/${g.slug}`)} className="link-mint">
+                                  {g.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {/* sui mazzi il tasto "Apri il mazzo" sta già sopra: qui resta solo la fonte delle altre news */}
+                  {lead.item && !isDeckNews(lead.item) ? (
+                    <p className="mt-4 text-[13px]">
+                      <NewsSourceLink item={lead.item} locale={locale} dict={d} plain className="link-mint" />
+                    </p>
+                  ) : null}
+                </div>
+              </article>
+            ) : null}
+            {seconds.length ? (
+              <div className="mt-9 grid grid-cols-1 gap-x-14 gap-y-9 border-t-2 border-felt-line pt-9 lg:grid-cols-2">
+                {seconds.map((f, i) => (
+                  <article key={f.key} className="grid grid-cols-[7.4rem_minmax(0,1fr)] items-start gap-x-4 sm:grid-cols-[13.25rem_minmax(0,1fr)] sm:gap-x-6">
+                    <div className="relative">
+                      <Postit
+                        kind={f.postit}
+                        label={d.home.postit[f.postit as keyof typeof d.home.postit]}
+                        date={f.date}
+                        tilt={i % 2 ? -3 : 4}
+                        className={`postit-corner [--nudge-x:-24px] ${i % 2 ? "[--delay:-2.1s] [--flap-dur:2.3s] [--sway-dur:6.4s]" : "[--delay:-1.3s] [--flap-dur:2.9s] [--sway-dur:8.8s]"}`}
+                      />
+                      {f.image ? (
+                        <Link href={f.href} tabIndex={-1} aria-hidden="true" className="block">
+                          <NewsCover src={f.image} className={COVER_SM} />
+                        </Link>
+                      ) : (
+                        <div className={`aspect-[16/9] bg-night ${COVER_SM}`} />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[13px] text-pale-muted">
+                        <time dateTime={f.day}>{formatDate(locale, f.day)}</time>
                       </p>
-                      <h3 className="t-item mt-2" lang={c.titleLang}>
-                        <Link href={comicHref(c)} className="hover:underline">
-                          {c.title}
+                      <h3 className="t-item mt-1 text-[0.86rem] sm:text-[0.97rem]" lang={f.titleLang}>
+                        <Link href={f.href} className="hover:underline">
+                          {f.title}
                         </Link>
                       </h3>
-                      <p className="mt-1 text-sm text-pale-muted">{fillLabel(C.by, { name: c.author.name })}</p>
-                      <p className="mt-3 line-clamp-3 text-sm text-pale" lang={c.summaryLang}>
-                        {c.summary}
+                      {f.byline ? <p className="mt-1 text-[13px] text-pale-muted">{f.byline}</p> : null}
+                      <p className="mt-2 line-clamp-3 text-[13.5px] leading-normal text-pale max-sm:hidden" lang={f.summaryLang}>
+                        {f.summary}
                       </p>
-                      <p className="mt-3">
-                        <Link href={comicHref(c)} className="text-sm font-bold text-mint hover:underline">
-                          {C.read} →
-                        </Link>
-                      </p>
-                      <p className="mt-auto flex flex-wrap gap-x-4 gap-y-2 pt-4 text-sm">
-                        <Link href={href(locale, "/news")} className="text-pale-muted hover:text-sky">
-                          {d.common.viewAll} →
-                        </Link>
-                      </p>
-                    </article>
-                  );
-                }
-                const item = entry.item;
-                const kind = postitOf(item);
-                const deck = isDeckNews(item);
-                return (
-                  <article key={item.slug} className="card-night relative flex flex-col p-6">
-                    {/*
-                      Figlio diretto della scheda (contratto di .postit in globals.css), a cavallo del bordo e sopra
-                      l'angolo della copertina. Con la data della news: nelle prime 72 ore il post-it diventa "isterico".
-                    */}
-                    <Postit kind={kind} label={d.home.postit[kind]} date={item.date} size="lg" tilt={note.tilt} className={note.place} />
-                    <NewsCover src={item.image} className="mb-4" />
-                    {/* UX-2: il mazzo si apre subito, sotto la copertina, non dopo tutte le carte (per le altre news non rende nulla) */}
-                    <NewsDeckButton item={item} locale={locale} dict={d} className="mb-4 self-start text-xs" />
-                    {/* "Ultima notizia" è sempre vera; "News del giorno" su una notizia di giorni prima non lo era */}
-                    <p className="kicker text-mint">
-                      {i === 0 ? d.home.latestNews : d.home.featured} · {formatDate(locale, item.date)}
-                    </p>
-                    <h3 className="t-item mt-2">
-                      <Link href={newsHref(item)} className="hover:underline">
-                        {item.title[locale]}
-                      </Link>
-                    </h3>
-                    {/*
-                      Riassunto a tre righe a ogni misura (08/10/2026, Pierluigi: "in home le news hanno un anteprima troppo
-                      lunga"; prima da lg in su era intero, 9-10 righe), tre carte sotto lg (con il "+N"); il testo intero resta
-                      nell'HTML e nell'articolo. Prima: sul telefono e sul tablet le schede diventavano lunghissime.
-                    */}
-                    <p className="mt-3 line-clamp-3 text-sm text-pale">{item.summary[locale]}</p>
-                    <p className="mt-3">
-                      <Link href={newsHref(item)} className="text-sm font-bold text-mint hover:underline">
-                        {d.news.readArticle} →
-                      </Link>
-                    </p>
-                    {item.cards?.length ? (
-                      <div className="mt-4">
-                        <p className="kicker mb-2 text-pale-muted">{newsCardsLabel(item, d)}</p>
-                        <div className="lg:hidden">
-                          <CardChipList slugs={item.cards} locale={locale} max={3} />
+                      {f.item?.cards?.length ? (
+                        <div className="mt-3">
+                          <CardHand slugs={f.item.cards} locale={locale} max={6} small />
                         </div>
-                        <div className="hidden lg:block">
-                          <CardChipList slugs={item.cards} locale={locale} max={6} />
-                        </div>
-                      </div>
-                    ) : null}
-                    <NewsGuideLinks item={item} locale={locale} dict={d} />
-                    <p className="mt-auto flex flex-wrap gap-x-4 gap-y-2 pt-4 text-sm">
-                      {/* sui mazzi il tasto "Apri il mazzo" sta già in alto: qui resta solo la fonte delle altre news */}
-                      {deck ? null : <NewsSourceLink item={item} locale={locale} dict={d} className="text-mint hover:underline" />}
-                      <Link href={href(locale, "/news")} className="text-pale-muted hover:text-sky">
-                        {d.common.viewAll} →
-                      </Link>
-                    </p>
+                      ) : null}
+                    </div>
                   </article>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : null}
+            <p className="mt-7 text-right text-sm font-bold">
+              <Link href={href(locale, "/news")} className="link-mint">
+                {d.common.viewAll}
+              </Link>
+            </p>
           </section>
 
           {/*
@@ -334,32 +423,22 @@ export default async function Home({ params }: { params: LocaleParams }) {
             canali YouTube dei profili vetrina (src/lib/creatorVideos.ts). Senza video la sezione non c'è.
           */}
           {railVideos.length ? (
-            <section className="mt-12" aria-labelledby="home-creator-videos" data-om-placement="home_creator_videos">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div className="max-w-2xl">
-                  <h2 id="home-creator-videos" className="t-section">
-                    {VL.title}
-                  </h2>
-                  <p className="mt-2 text-chalk-muted">{VL.sub}</p>
-                </div>
-                <Link href={href(locale, "/creators")} className="btn btn-ghost text-xs">
-                  {VL.all} →
-                </Link>
-              </div>
+            <section className="mt-14" aria-labelledby="home-creator-videos" data-om-placement="home_creator_videos">
+              <HomeHead id="home-creator-videos" title={VL.title} link={{ href: href(locale, "/creators"), label: VL.all }} className="mb-0" />
               <CreatorVideoRail videos={railVideos} labels={VL} player={videoLabels[locale].player} privacyHref={`${href(locale, "/privacy")}#video`} />
             </section>
           ) : null}
 
           {/*
             Fai la tua mossa (UX-1, 21/09/2026): la home non conteneva un solo invito a costruire, pubblicare o
-            organizzare. Tre colonne (una sul telefono), ognuna con un verbo, una riga e un'azione.
+            organizzare. Tre colonne (una sul telefono) in un pannello solo, divise da un filo: un verbo, una riga e un
+            link di testo. Dal 12/11/2026 senza i tre riquadri, le icone e i tasti (era lo stampo "tre schede uguali").
           */}
-          <section className="card-night mt-8 p-5 sm:p-7" aria-labelledby="home-moves" data-om-placement="home_moves">
-            <p className="kicker text-mint">{mv.kicker}</p>
+          <section className="card-night mt-12 px-5 pb-6 pt-5 sm:px-8 sm:pb-8 sm:pt-6" aria-labelledby="home-moves" data-om-placement="home_moves">
             {/* Il titolo resta "Fai la tua mossa" e accanto, a destra, un pezzo di scotch di carta storto con
                 "Unisciti!" scritto con la penna dei post-it (Pierluigi, 23/09/2026). Lo scotch è un segno, non un
                 titolo: aria-hidden, così chi ascolta la pagina sente solo il nome della sezione. */}
-            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <h2 id="home-moves" className="t-section">
                 {mv.title}
               </h2>
@@ -367,17 +446,17 @@ export default async function Home({ params }: { params: LocaleParams }) {
                 {mv.tape}
               </span>
             </div>
-            <ul className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
-              {moves.map((m) => (
-                <li key={m.id} className="flex flex-col rounded-xl border-2 border-sky/50 bg-night-2/80 p-4 md:p-5">
-                  {/* icona accanto al verbo sul telefono (colonna più corta), sopra da md in su */}
-                  <div className="flex items-center gap-3 md:block">
-                    {MOVE_ICONS[m.id]}
-                    <h3 className="t-item md:mt-3">{m.title}</h3>
-                  </div>
-                  <p className="mt-2 flex-1 text-sm text-pale">{m.text}</p>
-                  <Link href={href(locale, m.to)} className="btn btn-primary mt-4 self-start text-xs">
-                    {m.cta} →
+            <ul className="mt-4 grid grid-cols-1 md:grid-cols-3">
+              {moves.map((m, i) => (
+                <li key={m.id} className={`py-4 md:px-8 md:py-1 md:first:pl-0 md:last:pr-0 ${i ? "border-t-2 border-sky/30 md:border-l-2 md:border-t-0" : ""}`}>
+                  <h3 className="t-item">
+                    <Link href={href(locale, m.to)} className="hover:underline">
+                      {m.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-2 max-w-[36ch] text-sm text-pale">{m.text}</p>
+                  <Link href={href(locale, m.to)} className="link-mint mt-3 inline-block text-sm font-bold">
+                    {m.cta}
                   </Link>
                 </li>
               ))}
@@ -385,188 +464,185 @@ export default async function Home({ params }: { params: LocaleParams }) {
           </section>
 
           {/*
-            Tier list: striscia a tutta larghezza sotto le news (note 7.0). Finché nessuna sezione ha una fascia, al
-            posto di "0 · Non ancora classificato" c'è la promessa datata (Steam Next Fest, 19–26 ottobre).
-            Il titolo è un post-it grande attaccato al bordo sinistro della striscia, che la invade sopra e sotto
-            (disegno di Pierluigi del 22/09/2026: "TIER" a penna, nastro adesivo in cima). È l'H2 stesso: le parole a
-            penna sono decorative (aria-hidden) e il nome intero della sezione resta per i lettori di schermo.
+            Tier list: striscia a tutta larghezza (note 7.0). Il titolo è un post-it grande attaccato al bordo sinistro
+            della striscia, che la invade sopra e sotto (disegno di Pierluigi del 22/09/2026: "TIER" a penna, nastro
+            adesivo in cima). È l'H2 stesso: le parole a penna sono decorative (aria-hidden) e il nome intero della
+            sezione resta per i lettori di schermo.
+            Dal 12/11/2026 dentro la striscia ci sono le fasce vere delle Leggendarie con le carte (prima tre riquadri
+            con il nome delle sezioni) e la data dell'ultimo aggiornamento scritta a penna.
           */}
-          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-tier" data-om-placement="home_tier">
+          <section className="strip-labeled card-night mt-10 flex flex-col justify-center" aria-labelledby="home-tier" data-om-placement="home_tier">
             <h2 id="home-tier" className="strip-postit strip-postit-pink strip-postit-tape" style={{ "--tilt": "-5deg", "--scrawl": "-3deg" } as CSSProperties}>
               <span className="strip-postit-text" aria-hidden="true">{d.home.tierPostit1} {d.home.tierPostit2}</span>
               <span className="sr-only">{d.home.tierTitle}</span>
             </h2>
-            <div className="min-w-[220px] flex-1">
-              <p className="text-sm text-pale-muted">{d.home.tierSub}</p>
-              {nothingRanked ? (
-                <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-chalk">
-                  <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 fill-none stroke-mint stroke-[1.6]" aria-hidden="true">
-                    <rect x="2" y="3" width="12" height="11" rx="2" />
-                    <path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" strokeLinecap="round" />
-                  </svg>
-                  {d.home.tierStatus}
-                </p>
-              ) : null}
-              {/* Invito a salvare la propria tier list (Ondata 3, TOOL-01), senza conteggi dal 12/10/2026 */}
-              {supabaseEnabled ? (
-                <TierInvite
-                  text={ti.intro.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS))}
-                  cta={ti.cta}
-                  href={href(locale, "/tier-list/create")}
-                />
-              ) : null}
-            </div>
-            <ul className="flex flex-wrap gap-2">
-              {tierList.sections.map((s) => {
-                const ranked = rankedIn(s);
-                return (
-                  <li key={s.id}>
-                    {/* Finché le fasce sono vuote ogni riquadro porta alla sua sezione di "Le più giocate" (24/09/2026):
-                        prima prometteva "dopo il Next Fest" e portava a una pagina senza classifica */}
-                    <Link
-                      href={href(locale, ranked > 0 ? `/tier-list#${s.id}` : `/tier-list/most-played#${s.id}`)}
-                      className="block rounded-lg border-2 border-sky px-3 py-2 text-pale hover:bg-night-3 hover:text-chalk"
-                    >
-                      <span className="t-item block text-sm">{sectionTitle[s.id]}</span>
-                      <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">{ranked > 0 ? `${ranked} ${d.common.ranked}` : d.home.tierSoon}</span>
-                    </Link>
+            {legendarySection && legendaryTiers.length ? (
+              <ul className="flex flex-wrap items-center gap-x-6 gap-y-3" aria-label={sectionTitle.legendaries}>
+                {legendaryTiers.map((t) => (
+                  <li key={t} className="flex items-center gap-2">
+                    <span className={`tier-letter ${tierTone[t]}`} title={d.tier.tiers[t]}>
+                      {t}
+                    </span>
+                    <CardHand slugs={legendarySection.tiers[t]} locale={locale} max={6} fan={false} />
                   </li>
-                );
-              })}
-            </ul>
-            {/* Tasti delle due strisce col gradiente come il resto del sito (note del 22/09/2026), non più "ghost";
-                accanto, la tier list personalizzabile, che finché le fasce sono vuote è l'unica cosa da fare qui */}
-            <p className="flex flex-wrap gap-2">
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-pale-muted">{d.home.tierSub}</p>
+            )}
+            {nothingRanked ? <p className="mt-2 text-xs font-semibold text-chalk">{d.home.tierStatus}</p> : null}
+            <p className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
               <Link href={href(locale, "/tier-list")} className="btn btn-primary text-xs">
-                {d.common.viewAll} →
+                {d.common.viewAll}
               </Link>
-              <Link href={href(locale, "/tier-list/create")} className="btn btn-ghost text-xs">
-                {d.tier.makerCta} →
+              {/* Le sezioni senza fasce portano alla loro parte di "Le più giocate" (24/09/2026) */}
+              {tierList.sections
+                .filter((s) => rankedIn(s) === 0)
+                .map((s) => (
+                  <Link key={s.id} href={href(locale, `/tier-list/most-played#${s.id}`)} className="link-mint font-bold">
+                    {sectionTitle[s.id]} · {d.home.tierSoon}
+                  </Link>
+                ))}
+              <Link href={href(locale, "/tier-list/create")} className="link-mint font-bold">
+                {d.tier.makerCta}
               </Link>
+              {nothingRanked ? null : <span className="pen-note">{d.tier.sourceOfficialUpdated.replace("{date}", formatDate(locale, tierList.updated))}</span>}
             </p>
+            {/* Invito a salvare la propria tier list (Ondata 3, TOOL-01), senza conteggi dal 12/10/2026 */}
+            {supabaseEnabled ? <TierInvite text={ti.intro.replace(/\{min\}/g, String(COMMUNITY_MIN_LISTS))} cta={ti.cta} href={href(locale, "/tier-list/create")} /> : null}
           </section>
 
           {/* MetaShifting: striscia della stessa misura e dello stesso stile della tier list (note 7.0), con il post-it
               grande "META" ruotato dall'altra parte, così le due etichette non sembrano fotocopie (disegno del 22/09/2026) */}
-          <section className="strip-labeled card-night mt-8 flex flex-wrap items-center gap-4" aria-labelledby="home-metashift" data-om-placement="home_metashift">
+          <section className="strip-labeled card-night mt-8 flex flex-col justify-center" aria-labelledby="home-metashift" data-om-placement="home_metashift">
             <h2 id="home-metashift" className="strip-postit strip-postit-mint strip-postit-bang" style={{ "--tilt": "4deg", "--scrawl": "-1.5deg" } as CSSProperties}>
               <span className="strip-postit-text" aria-hidden="true">{d.home.metaPostit1} {d.home.metaPostit2}</span>
               <span className="postit-smile" aria-hidden="true" />
               <span className="sr-only">{d.common.metashift}</span>
             </h2>
-            <div className="min-w-[220px] max-w-xs flex-1">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-chalk-muted">
-                {d.common.patch} {patchLabel(latestPatch, locale)}
+            <p className="text-sm text-pale">
+              {d.home.metashiftSub}{" "}
+              <span className="text-pale-muted">
+                ({d.common.patch} {patchLabel(latestPatch, locale)})
               </span>
-              <p className="mt-2 text-sm text-pale-muted">{d.home.metashiftSub}</p>
-            </div>
+            </p>
             {/* Leggendarie per prime con la stella gialla, poi le altre (note del 22/09/2026: "★ Dorothy, ★ Wicked Stepmother, poi carte normali") */}
-            <ol className="flex basis-full flex-wrap gap-2 xl:basis-auto xl:flex-1">
-              {legendaryFirst(top, (x) => Boolean(x.card.legendary)).map(({ card, change }) => (
-                <li key={`${card.slug}-${change.patch}`}>
-                  {/* sm:whitespace-nowrap: da 640 px ogni chip resta su una riga (nome, statistiche, esito) e se lo spazio
-                      manca va a capo il chip intero; sul telefono può andare a capo dentro, per non sbordare dallo schermo */}
-                  <Link href={href(locale, `/cards/${card.slug}`)} className="flex items-center gap-2 rounded-lg border-2 border-sky px-2.5 py-1.5 text-xs hover:bg-night-3 sm:whitespace-nowrap">
-                    <span className="t-item text-xs">
-                      <CardName name={card.name} legendary={card.legendary} legendaryLabel={d.common.legendary} />
-                    </span>
-                    <StatDelta from={change.from} to={change.to} />
-                    <ChangeChip kind={change.kind} label={changeLabel(change.kind, locale, d.common)} />
-                  </Link>
-                </li>
-              ))}
+            <ol className="mt-3 flex flex-wrap gap-x-9 gap-y-4">
+              {legendaryFirst(top, (x) => Boolean(x.card.legendary)).map(({ card, change }, i) => {
+                const src = card.thumb ?? card.image;
+                return (
+                  <li key={`${card.slug}-${change.patch}`}>
+                    <Link href={href(locale, `/cards/${card.slug}`)} className="group flex items-center gap-3">
+                      <span className={`card-hand-card shrink-0 ${card.legendary ? "is-legendary" : ""}`}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        {src ? <img src={src} alt="" loading="lazy" decoding="async" /> : null}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block font-display text-sm font-extrabold text-sky group-hover:underline">
+                          <CardName name={card.name} legendary={card.legendary} legendaryLabel={d.common.legendary} />
+                        </span>
+                        <span className="mt-1 flex flex-wrap items-center gap-x-2">
+                          <StatDelta from={change.from} to={change.to} />
+                          <PenMark kind={change.kind} label={changeLabel(change.kind, locale, d.common)} n={i} />
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ol>
             {/* Il tasto promette il tracker delle patch: dal 24/09/2026 ha una pagina sua, /metashifting */}
-            <Link href={href(locale, "/metashifting")} className="btn btn-primary text-xs">
-              {d.tier.trackerTitle} →
-            </Link>
+            <p className="mt-4">
+              <Link href={href(locale, "/metashifting")} className="btn btn-primary text-xs">
+                {d.tier.trackerTitle}
+              </Link>
+            </p>
           </section>
         </div>
 
-        {/* Bacheca news (patch note comprese) */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" data-om-placement="home_news">
-          <SectionHead title={d.home.newsBoardTitle} sub={d.home.newsBoardSub} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
-          <ul className="felt-panel divide-y divide-felt-line">
-            {board.map((entry) =>
-              entry.kind === "comic" ? (
-                <li key={`comic-${entry.comic.slug}`} className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[110px_140px_1fr]">
-                  <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, entry.comic.date.slice(0, 10))}</p>
-                  {entry.comic.image ? <NewsCover src={entry.comic.image} /> : <span aria-hidden="true" />}
-                  <div>
-                    <h3 className="t-item text-base" lang={entry.comic.titleLang}>
-                      <Link href={comicHref(entry.comic)} className="hover:underline">
-                        {entry.comic.title}
+        {/* Bacheca news (patch note comprese): un elenco a righe, senza riquadro, con la data in testa a ogni riga */}
+        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" aria-labelledby="home-board" data-om-placement="home_news">
+          <HomeHead id="home-board" title={d.home.newsBoardTitle} link={{ href: href(locale, "/news"), label: d.common.viewAll }} />
+          <ul className="border-b-2 border-felt-line">
+            {board.map((entry) => {
+              const comic = entry.kind === "comic" ? entry.comic : null;
+              const item = entry.kind === "comic" ? null : entry.item;
+              const day = comic ? comic.date.slice(0, 10) : item!.date;
+              const image = comic ? comic.image : item!.image;
+              return (
+                <li key={comic ? `comic-${comic.slug}` : item!.slug} className="grid grid-cols-[5.75rem_minmax(0,1fr)] gap-x-4 gap-y-1.5 border-t-2 border-felt-line py-4 sm:grid-cols-[4rem_8.25rem_minmax(0,1fr)] sm:gap-x-5">
+                  <p className="col-span-2 font-mono text-[13px] text-mint sm:col-span-1 sm:pt-0.5">
+                    <time dateTime={day}>{formatDateShort(locale, day)}</time>
+                  </p>
+                  {image ? <NewsCover src={image} className={COVER_SM} /> : <span aria-hidden="true" />}
+                  <div className="min-w-0">
+                    {/* Il titolo porta all'articolo; la fonte resta il link piccolo sotto il riassunto */}
+                    <h3 className="t-item text-[0.86rem] sm:text-[0.94rem]" lang={comic?.titleLang}>
+                      <Link href={comic ? comicHref(comic) : newsHref(item!)} className="hover:underline">
+                        {comic ? comic.title : item!.title[locale]}
                       </Link>
                     </h3>
-                    <p className="mt-1 line-clamp-2 text-sm text-chalk-muted" lang={entry.comic.summaryLang}>
-                      {entry.comic.summary}
+                    <p className="mt-1 line-clamp-2 text-[13.5px] text-chalk-muted max-sm:hidden" lang={comic?.summaryLang}>
+                      {comic ? comic.summary : item!.summary[locale]}
                     </p>
-                    <p className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-                      <span className="stat-pill pill-comic text-[10px] font-semibold uppercase">{C.pill}</span>
-                      <span className="text-pale-muted">{fillLabel(C.by, { name: entry.comic.author.name })}</span>
-                    </p>
+                    {comic ? (
+                      <p className="mt-1 text-xs text-pale-muted">{fillLabel(C.by, { name: comic.author.name })}</p>
+                    ) : (
+                      <NewsSourceLink item={item!} locale={locale} dict={d} plain className="link-mint mt-1 inline-block text-xs" />
+                    )}
                   </div>
                 </li>
-              ) : (
-                <li key={entry.item.slug} className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[110px_140px_1fr]">
-                  <p className="font-mono text-sm tabular text-mint">{formatDateShort(locale, entry.item.date)}</p>
-                  <NewsCover src={entry.item.image} />
-                  <div>
-                    {/* Il titolo porta all'articolo; la fonte (o la scheda del mazzo) resta il link piccolo sotto il riassunto */}
-                    <h3 className="t-item text-base">
-                      <Link href={newsHref(entry.item)} className="hover:underline">
-                        {entry.item.title[locale]}
-                      </Link>
-                    </h3>
-                    <p className="mt-1 line-clamp-2 text-sm text-chalk-muted">{entry.item.summary[locale]}</p>
-                    <NewsSourceLink item={entry.item} locale={locale} dict={d} className="mt-1 inline-block text-xs text-mint hover:underline" />
-                  </div>
-                </li>
-              ),
-            )}
+              );
+            })}
           </ul>
         </section>
 
-        {/* Parti da qui: tre guide per chi arriva adesso, non tutte le undici (il 34% della pagina sul telefono) */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" data-om-placement="home_guides">
-          <SectionHead title={d.home.guidesTitle} sub={d.home.guidesStartSub} link={{ href: href(locale, "/guides"), label: d.common.viewAll }} />
-          <ul className="grid grid-cols-1 gap-5 md:grid-cols-3">
-            {startGuides.map((g) => (
+        {/* Parti da qui: tre guide per chi arriva adesso, in ordine di lettura, numerate a penna */}
+        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" aria-labelledby="home-start" data-om-placement="home_guides">
+          <HomeHead id="home-start" title={d.home.guidesTitle} link={{ href: href(locale, "/guides"), label: d.common.viewAll }} />
+          <ol className="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-3">
+            {startGuides.map((g, i) => (
               <li key={g.slug}>
-                <Link href={href(locale, `/guides/${g.slug}`)} className="card-night card-night-hover flex h-full flex-col overflow-hidden">
-                  {g.image ? (
-                    <Image src={g.image} alt="" width={1200} height={675} sizes="(max-width: 768px) 90vw, 30vw" className="aspect-[16/9] w-full object-cover" />
-                  ) : null}
-                  <div className="flex flex-1 flex-col p-5">
-                    <p className="kicker text-pale-muted">
+                {g.image ? (
+                  <Link href={href(locale, `/guides/${g.slug}`)} tabIndex={-1} aria-hidden="true" className="block">
+                    <Image src={g.image} alt="" width={1200} height={675} sizes="(max-width: 768px) 90vw, 30vw" className="aspect-[16/9] w-full rounded-xl border-[3px] border-sky object-cover" />
+                  </Link>
+                ) : null}
+                <div className="mt-3.5 grid grid-cols-[2.1rem_minmax(0,1fr)] gap-x-1.5">
+                  <span className="pen-num" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-[12.5px] text-pale-muted">
                       {d.guides.categories[g.category]} · {g.readTime} {d.guides.readTime}
                     </p>
-                    <h3 className="t-item mt-1">{g.title}</h3>
-                    <p className="mt-2 flex-1 text-sm text-pale-muted">{g.excerpt}</p>
-                    <span className="mt-4 font-display text-sm font-bold text-mint">{d.common.readMore} →</span>
+                    <h3 className="t-item mt-0.5 text-base">
+                      <Link href={href(locale, `/guides/${g.slug}`)} className="hover:underline">
+                        {g.title}
+                      </Link>
+                    </h3>
+                    <p className="mt-1.5 text-sm text-pale">{g.excerpt}</p>
                   </div>
-                </Link>
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
         </section>
 
         {/* Stato del gioco + collezionismo */}
-        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" data-om-placement="home_status">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1.1fr]">
+        <section className="mx-auto max-w-7xl px-4 pt-16 sm:px-6" aria-labelledby="home-status" data-om-placement="home_status">
+          <HomeHead id="home-status" title={d.home.statusTitle} />
+          <div className="grid grid-cols-1 items-start gap-x-14 gap-y-9 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
             <div>
-              <SectionHead title={d.home.statusTitle} />
               {/* In breve (decisione di Pierluigi del 25/09/2026, piano SEO/GEO): due frasi visibili su che cos'è il gioco
                   e che cos'è il sito, per chi arriva cercando "origins tcg" e per le risposte degli assistenti. Sta
                   dentro Stato del gioco, piccolo, così l'ordine della home non cambia. */}
-              <p className="-mt-2 mb-5 max-w-2xl text-sm leading-relaxed text-pale">
-                <span className="kicker mr-2 text-mint">{d.news.inBrief}</span>
-                {d.home.inBrief}
-              </p>
-              <dl className="grid grid-cols-2 gap-3">
-                {/* Ogni dato porta alla guida che lo spiega (analisi SEO del 25/09/2026): la home è la pagina più
-                    linkata del sito e le guide evergreen avevano 2–5 link interni. L'ultima riga, se dispari, va a
-                    tutta larghezza. */}
+              <p className="text-[13px] font-bold text-chalk">{d.news.inBrief}</p>
+              <p className="mt-1 max-w-[70ch] text-[15px] leading-relaxed text-pale">{d.home.inBrief}</p>
+              {/* Ogni dato porta alla guida che lo spiega (analisi SEO del 25/09/2026): la home è la pagina più
+                  linkata del sito e le guide evergreen avevano 2–5 link interni. Dal 12/11/2026 una scheda a righe,
+                  non più sette riquadri. */}
+              <dl className="mt-5 border-t-2 border-felt-line">
                 {(
                   [
                     [d.home.status.demo, d.home.status.demoValue, "/guides/play-the-demo"],
@@ -578,12 +654,12 @@ export default async function Home({ params }: { params: LocaleParams }) {
                     [d.home.status.languages, d.home.status.languagesValue, "/faq#languages"],
                     [d.home.status.kickstarter, d.home.status.kickstarterValue, "/guides/origins-tcg-kickstarter"],
                   ] as [string, string, string?][]
-                ).map(([k, v, to], i, all) => (
-                  <div key={k} className={`felt-panel min-w-0 p-4${i === all.length - 1 && all.length % 2 ? " col-span-2" : ""}`}>
-                    <dt className="kicker text-chalk-muted">{k}</dt>
-                    <dd className="mt-1 hyphens-auto break-words font-display text-lg font-bold text-sky">
+                ).map(([k, v, to]) => (
+                  <div key={k} className="grid grid-cols-1 gap-x-4 gap-y-0.5 border-b-2 border-felt-line py-2.5 sm:grid-cols-[13rem_minmax(0,1fr)]">
+                    <dt className="text-[13.5px] text-pale-muted">{k}</dt>
+                    <dd className="min-w-0 break-words text-sm font-bold text-chalk">
                       {to ? (
-                        <Link href={href(locale, to)} className="underline decoration-mint/50 underline-offset-4 hover:text-mint">
+                        <Link href={href(locale, to)} className="link-mint">
                           {v}
                         </Link>
                       ) : (
@@ -596,15 +672,19 @@ export default async function Home({ params }: { params: LocaleParams }) {
               <p className="mt-3 text-xs text-chalk-muted/80">{d.home.statusNote}</p>
             </div>
             {economyGuide ? (
-              <Link href={href(locale, "/guides/collector-economy")} className="card-night card-night-hover block overflow-hidden">
-                {/* Copertina della scheda guida: decorativa, il titolo e il riassunto accanto dicono già tutto (come nella griglia delle guide) */}
-                <Image src="/media/ls-two-ways.webp" alt="" width={1600} height={900} sizes="(max-width: 1024px) 90vw, 50vw" className="w-full" />
-                <div className="p-5">
-                  <p className="kicker text-pale-muted">{d.guides.title}</p>
-                  <h3 className="t-item mt-1">{economyGuide.title}</h3>
-                  <p className="mt-2 text-sm text-pale-muted">{economyGuide.excerpt}</p>
-                </div>
-              </Link>
+              <div>
+                {/* Copertina della guida: decorativa, il titolo e il riassunto sotto dicono già tutto */}
+                <Link href={href(locale, "/guides/collector-economy")} tabIndex={-1} aria-hidden="true" className="block">
+                  <Image src="/media/ls-two-ways.webp" alt="" width={1600} height={900} sizes="(max-width: 1024px) 90vw, 40vw" className="w-full rounded-xl border-[3px] border-sky" />
+                </Link>
+                <p className="mt-3.5 text-[12.5px] text-pale-muted">{d.guides.title}</p>
+                <h3 className="t-item mt-0.5 text-base">
+                  <Link href={href(locale, "/guides/collector-economy")} className="hover:underline">
+                    {economyGuide.title}
+                  </Link>
+                </h3>
+                <p className="mt-1.5 text-sm text-pale">{economyGuide.excerpt}</p>
+              </div>
             ) : null}
           </div>
         </section>

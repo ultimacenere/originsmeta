@@ -143,7 +143,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   return (
     // Fondo dello stesso colore della pagina (23/09/2026): con `felt-deep` la barra fissa era una fascia più scura
     // in cima, che non combaciava con lo sfondo sotto (riunione: "sfondo header e sfondo sotto non sincronizzati").
-    <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt/85 backdrop-blur supports-[backdrop-filter]:bg-felt/70">
+    <header className="sticky top-0 z-40 border-b border-felt-line/70 bg-felt">
       {/* da 1280 px la riga ospita menu completo, Discord, Accedi, lingua e "Dona ora": spazi più stretti, anche sopra i
           1536 px (il contenitore resta di 1280); sotto i 360 px (telefoni da 320) margini, spazi e tasto Menu più stretti,
           altrimenti la riga sbordava di 18 px. La ricerca delle carte, che stava qui dal 15/09/2026 (fra 768 e 1279 px da
