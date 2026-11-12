@@ -24,7 +24,7 @@ import { ru as fcRu } from "./forCreatorsLabels-ru.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { zhCn as fcZhCn } from "./forCreatorsLabels-zh-cn.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { FULL_GUIDES_PATH, PC_STEPS, SETUP_CONTACTS, TWITCH_SETUP_PATH, TWITCH_STEPS, isDiscordUsername, stepNumber, twitchSetupTrack } from "./twitchSetup.ts";
+import { FULL_GUIDES_PATH, LOGIN_PATH, PC_STEPS, SETUP_CONTACTS, SITE_STEPS, TWITCH_SETUP_PATH, TWITCH_STEPS, isDiscordUsername, stepNumber, twitchSetupTrack } from "./twitchSetup.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { fillName, twitchSetupLabels, type TwitchSetupLabels } from "./twitchSetupLabels.ts";
 
@@ -60,16 +60,22 @@ test("le otto lingue hanno le stesse chiavi e nessun testo vuoto", () => {
   });
 });
 
-test("ogni lingua ha i sette passi, numerati da 1 a 7 nell'ordine in cui si fanno", () => {
-  assert.deepEqual([...PC_STEPS, ...TWITCH_STEPS].map(stepNumber), [1, 2, 3, 4, 5, 6, 7]);
+test("ogni lingua ha il passo zero e i sette passi, numerati da 0 a 7 nell'ordine in cui si fanno", () => {
+  assert.deepEqual([...SITE_STEPS, ...PC_STEPS, ...TWITCH_STEPS].map(stepNumber), [0, 1, 2, 3, 4, 5, 6, 7]);
   each((l, L) => {
+    assert.deepEqual(Object.keys(L.site.steps).sort(), [...SITE_STEPS].sort(), `passo zero in ${l}`);
     assert.deepEqual(Object.keys(L.pc.steps).sort(), [...PC_STEPS].sort(), `passi del PC in ${l}`);
     assert.deepEqual(Object.keys(L.twitch.steps).sort(), [...TWITCH_STEPS].sort(), `passi di Twitch in ${l}`);
   });
 });
 
-test("poco testo: titoli dei passi entro 30 caratteri, righe entro 190, presentazione entro 170", () => {
+test("poco testo: titoli dei passi entro 30 caratteri (44 il passo zero, che è largo quanto il pannello), righe entro 190, presentazione entro 170", () => {
   each((l, L) => {
+    for (const step of Object.values(L.site.steps)) {
+      assert.ok(step.title.length <= 44, `${l}: titolo del passo zero lungo "${step.title}" (${step.title.length})`);
+      assert.ok(step.text.length <= 190, `${l}: riga del passo zero lunga (${step.text.length})`);
+      assert.ok(!/[.:;,]$/.test(step.title), `${l}: titolo con la punteggiatura in fondo "${step.title}"`);
+    }
     for (const step of [...Object.values(L.pc.steps), ...Object.values(L.twitch.steps)]) {
       assert.ok(step.title.length <= 30, `${l}: titolo lungo "${step.title}" (${step.title.length})`);
       assert.ok(step.text.length <= 190, `${l}: riga lunga "${step.text.slice(0, 40)}…" (${step.text.length})`);
@@ -149,4 +155,24 @@ test("francese: spazio insecabile prima di : ? ! ; e dentro le virgolette", () =
 
 test("la misura dei link porta l'evento e il posto", () => {
   assert.deepEqual(twitchSetupTrack("extension"), { "data-om-event": "twitch_setup_click", "data-om-target": "extension" });
+  assert.deepEqual(twitchSetupTrack("login"), { "data-om-event": "twitch_setup_click", "data-om-target": "login" });
+});
+
+test("passo zero: accesso e ruolo Creator con le parole di /for-creators", () => {
+  assert.equal(LOGIN_PATH, "/login");
+  each((l, L) => {
+    const step = L.site.steps.account;
+    // il ruolo si chiama come nel tasto della richiesta di /for-creators ("Chiedi il ruolo Creator")
+    const apply = (forCreatorsLabels[l] as unknown as { apply: string }).apply;
+    assert.match(apply, /Creator/, `${l}: il tasto della richiesta non nomina il ruolo`);
+    assert.match(step.title, /Creator/, `${l}: il titolo del passo zero non nomina il ruolo`);
+    assert.match(step.text, /Creator/, `${l}: la riga del passo zero non nomina il ruolo`);
+    assert.match(step.text, /Discord/, `${l}: la riga del passo zero non dice come si accede`);
+    assert.match(step.text, /Aldry/, `${l}: la riga del passo zero non dice a chi chiedere`);
+    // il link dell'accesso è scritto come nel primo passo della guida del Tracker
+    const tracker = forCreatorsLabels[l].tools.items.find((t) => t.id === "tracker");
+    assert.equal(L.site.signIn, (tracker?.steps[0].link as { label?: string } | undefined)?.label, `${l}: "${L.site.signIn}" non è l'etichetta dell'accesso delle guide`);
+    // il download non ripete più che serve l'account: lo dice il passo zero
+    assert.ok(L.pc.steps.download.text.length <= 60, `${l}: il passo 1 è tornato lungo`);
+  });
 });

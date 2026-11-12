@@ -25,18 +25,28 @@ export const FULL_GUIDES_PATH = "/for-creators#tools";
 /** L'immagine della pagina: i pannelli del Tracker sopra una partita (screenshot nostro, lo stesso di /for-creators). */
 export const TWITCH_SETUP_IMAGE = "/media/analytics/tracker-cover.webp";
 
-/** I passi, nell'ordine in cui si fanno. Quattro sul PC, tre su Twitch: i testi hanno un passo per ogni id. */
+/**
+ * I passi, nell'ordine in cui si fanno: i testi hanno un passo per ogni id.
+ * Il passo zero, sul sito (12/11/2026, Pierluigi: "aggiungi come step zero, registrarsi e chiedermi il tag creator"):
+ * l'accesso e la richiesta del ruolo Creator, che parte dalla casella dello staff con il messaggio già scritto
+ * (`creatorApplyPath` di forCreators.ts, la stessa di /for-creators). Poi quattro passi sul PC e tre su Twitch.
+ */
+export const SITE_STEPS = ["account"] as const;
 export const PC_STEPS = ["download", "run", "link", "layout"] as const;
 export const TWITCH_STEPS = ["install", "activate", "connect"] as const;
+export type SiteStepId = (typeof SITE_STEPS)[number];
 export type PcStepId = (typeof PC_STEPS)[number];
 export type TwitchStepId = (typeof TWITCH_STEPS)[number];
-export type SetupStepId = PcStepId | TwitchStepId;
+export type SetupStepId = SiteStepId | PcStepId | TwitchStepId;
 
-/** Il numero di un passo sulla pagina (1–7): prima quelli del PC, poi quelli di Twitch. */
+/** Il numero di un passo sulla pagina (0–7): lo zero sul sito, poi quelli del PC, poi quelli di Twitch. */
 export function stepNumber(id: SetupStepId): number {
-  const all: readonly SetupStepId[] = [...PC_STEPS, ...TWITCH_STEPS];
-  return all.indexOf(id) + 1;
+  const all: readonly SetupStepId[] = [...SITE_STEPS, ...PC_STEPS, ...TWITCH_STEPS];
+  return all.indexOf(id);
 }
+
+/** La pagina di accesso del sito (Discord, email): il primo link del passo zero. */
+export const LOGIN_PATH = "/login";
 
 /**
  * A chi scrivere se ci si blocca: i due fondatori, con il nome utente Discord (non c'è un indirizzo che apra un profilo
@@ -57,7 +67,7 @@ export function isDiscordUsername(v: string): boolean {
 }
 
 /** Dove sta chi clicca, per la misura (evento twitch_setup_click, parametro target). */
-export type TwitchSetupTarget = "extension" | "code" | "twitch_code" | "guides";
+export type TwitchSetupTarget = "extension" | "code" | "twitch_code" | "guides" | "login";
 
 /** Attributi di misura di un link della pagina (src/lib/analytics.ts li legge dal markup). */
 export function twitchSetupTrack(target: TwitchSetupTarget): { "data-om-event": "twitch_setup_click"; "data-om-target": TwitchSetupTarget } {

@@ -6,13 +6,15 @@ import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { imageSizeOf } from "@/lib/imageSize";
 import { analyticsLabels, trackerDownloadHref } from "@/lib/analyticsLabels";
-import { TWITCH_EXTENSION_URL } from "@/lib/forCreators";
+import { TWITCH_EXTENSION_URL, creatorApplyPath } from "@/lib/forCreators";
 import { forCreatorsLabels } from "@/lib/forCreatorsLabels";
 import { ORIGINSMETA_DISCORD } from "@/lib/discord";
 import {
   FULL_GUIDES_PATH,
+  LOGIN_PATH,
   PC_STEPS,
   SETUP_CONTACTS,
+  SITE_STEPS,
   TRACKER_ACCOUNT_PATH,
   TWITCH_SETUP_IMAGE,
   TWITCH_SETUP_PATH,
@@ -32,7 +34,10 @@ import { JsonLd, breadcrumbs } from "@/components/JsonLd";
   /twitch (12/11/2026): il "layout di Twitch" in una schermata. Pierluigi: "una landing page verticale sul layout di
   twitch: una presentazione rapida e le istruzioni a prova di demente ma poco testo e chiaro, se riesci a stare in una
   schermata standard senza scroll sarebbe ideale e aggiungi i contatti miei e di dav". Vuol dire OriginsMeta Tracker più
-  l'estensione Twitch (scelta sua): quattro passi sul PC, tre su Twitch, a chi scrivere se ci si blocca.
+  l'estensione Twitch (scelta sua): quattro passi sul PC, tre su Twitch, a chi scrivere se ci si blocca. Lo stesso
+  giorno: "aggiungi come step zero, registrarsi e chiedermi il tag creator", cioè il passo zero in cima al pannello,
+  largo quanto le due colonne: l'accesso al sito e la richiesta del ruolo Creator (la casella dello staff con il messaggio
+  già scritto, la stessa di /for-creators; il ruolo lo dà lo staff).
 
   Sta fuori dal gruppo (site) per non avere la striscia del calendario sopra: su un portatile da 768 px di altezza quei
   75 px fanno la differenza fra una schermata e una schermata e mezza. Testata e piede del sito restano (layout della
@@ -134,6 +139,25 @@ export default async function TwitchSetupPage({ params }: { params: LocaleParams
         </header>
 
         <div className="card-night setup-panel">
+          <ol className="setup-steps setup-first" start={0}>
+            {SITE_STEPS.map((id) => (
+              <Step
+                key={id}
+                id={id}
+                step={L.site.steps[id]}
+                button={
+                  <span className="setup-links">
+                    <Link href={href(locale, LOGIN_PATH)} prefetch={false} className={link} {...twitchSetupTrack("login")}>
+                      {L.site.signIn}
+                    </Link>
+                    <Link href={href(locale, creatorApplyPath)} prefetch={false} className={link} data-om-event="creator_apply_click" data-om-placement="twitch">
+                      {forCreatorsLabels[locale].apply}
+                    </Link>
+                  </span>
+                }
+              />
+            ))}
+          </ol>
           <section aria-labelledby="setup-pc" className="setup-col">
             <h2 id="setup-pc" className="setup-col-title">
               <span className="t-item text-sky">{L.pc.title}</span>

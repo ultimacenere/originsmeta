@@ -142,8 +142,8 @@
  *                         di una scheda carta (27/10/2026; card dal 02/11/2026;
  *                         le visite alla landing sono le pagine viste
  *                         di /xx/kickstarter)
- *     creator_apply_click clic su "Chiedi il ruolo Creator" della pagina      placement (hero | join)
- *                         /for-creators (30/10/2026; apre la casella dello staff
+ *     creator_apply_click clic su "Chiedi il ruolo Creator" della pagina      placement (hero | join | twitch: il passo
+ *                         /for-creators (30/10/2026; apre la casella dello staff     zero della pagina /twitch, 12/11/2026)
  *                         con la richiesta già scritta: il messaggio inviato è message_sent)
  *   ★ creator_kit_download clic su "Scarica" di un file del media kit o       file (zip | logo | logoDark | symbol |
  *                         dello zip intero, pagina /for-creators (30/10/2026)    symbolTransparent | badge | panel), placement
@@ -158,8 +158,10 @@
  *     twitch_setup_click  clic su un link della pagina /twitch, il layout di      target (extension: la scheda dell'estensione
  *                         Twitch in una schermata (12/11/2026; attributi sul       su Twitch | code: il codice dell'app |
  *                         link, `twitchSetupTrack` di src/lib/twitchSetup.ts).     twitch_code: il codice per Twitch | guides:
- *                         Il download del passo 1 è analytics_download con         le guide di /for-creators)
- *                         placement=twitch; le visite sono le pagine viste di /xx/twitch.
+ *                         Il download del passo 1 è analytics_download con         le guide di /for-creators | login: l'accesso
+ *                         placement=twitch, la richiesta del ruolo del passo zero   del passo zero)
+ *                         è creator_apply_click con placement=twitch;
+ *                         le visite sono le pagine viste di /xx/twitch.
  *     tournament_promo_view  il popup di un torneo si apre da solo (05/11/2026,     tournament (il tag, OM-XXXX)
  *                         TournamentPromo.tsx, src/lib/tournamentPromo.ts): una volta per browser
  *     tournament_promo_click clic su "Iscriviti al torneo" del popup, verso la     tournament
@@ -311,7 +313,7 @@ export type EventParams = {
   creator_apply_click: { placement: string };
   creator_kit_download: { file: string; placement: string };
   for_creators_open: { placement: ForCreatorsPlacement };
-  twitch_setup_click: { target: "extension" | "code" | "twitch_code" | "guides" };
+  twitch_setup_click: { target: "extension" | "code" | "twitch_code" | "guides" | "login" };
   tournament_promo_view: { tournament: string };
   tournament_promo_click: { tournament: string };
   tournament_promo_close: { tournament: string; method: "close" | "later" | "esc" | "backdrop" };

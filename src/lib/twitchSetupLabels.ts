@@ -1,5 +1,5 @@
 import type { Locale } from "./i18n";
-import type { PcStepId, TwitchStepId } from "./twitchSetup";
+import type { PcStepId, SiteStepId, TwitchStepId } from "./twitchSetup";
 
 /**
  * Testi della pagina /twitch (12/11/2026, src/lib/twitchSetup.ts), nelle otto lingue. Questo file non importa niente a
@@ -14,7 +14,9 @@ import type { PcStepId, TwitchStepId } from "./twitchSetup";
  *   "Link"), la configurazione dell'estensione in inglese, italiano, spagnolo e francese;
  * - "layout" è la parola dell'app ("Crea il tuo layout") e resta così dove gli streamer la usano; in russo e in cinese
  *   si dice con le parole loro;
- * - niente promesse, niente numeri che non siano i sette passi e i minuti; "non affiliato a Koin Games" lo dice il
+ * - il passo zero (registrarsi e chiedere il ruolo Creator) usa le parole di /for-creators: "ruolo Creator", e il
+ *   link della richiesta è il suo (`apply` di forCreatorsLabels); il ruolo lo dà lo staff, la pagina non promette niente;
+ * - niente promesse, niente numeri che non siano i passi e i minuti; "non affiliato a Koin Games" lo dice il
  *   piede di ogni pagina del sito.
  */
 
@@ -28,6 +30,8 @@ export type TwitchSetupLabels = {
   needs: string;
   /** scritta a penna accanto all'immagine */
   imageNote: string;
+  /** il passo zero, sul sito: accesso e richiesta del ruolo Creator; `signIn` è il link verso l'accesso */
+  site: { steps: Record<SiteStepId, SetupStep>; signIn: string };
   pc: { title: string; time: string; steps: Record<PcStepId, SetupStep>; codeLink: string };
   twitch: { title: string; time: string; steps: Record<TwitchStepId, SetupStep>; extLink: string; codeLink: string };
   done: { label: string; text: string };
@@ -48,17 +52,18 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   en: {
     meta: {
       title: "Twitch layout for Origins TCG: Tracker and extension",
-      description: "Put your Origins TCG deck live on Twitch: OriginsMeta Tracker on your PC and the extension for your viewers, set up in seven steps and ten minutes. Free.",
+      description: "Put your Origins TCG deck live on Twitch: OriginsMeta Tracker on your PC and the extension for your viewers, set up step by step in ten minutes. Free.",
     },
     h1: "Your Twitch layout for Origins TCG",
     lead: "OriginsMeta Tracker shows your deck live and, with the Twitch extension, your viewers open it over the video. Free, ready in 10 minutes.",
     needs: "You need a Windows PC, Origins TCG on Steam and your Twitch channel.",
     imageNote: "what your viewers see",
+    site: { steps: { account: { title: "Sign up and ask for the Creator role", text: "Sign in to the site with Discord or your email, no password. Then ask Aldry for the Creator role." } }, signIn: "Sign in" },
     pc: {
       title: "On your PC",
       time: "5 minutes",
       steps: {
-        download: { title: "Download the Tracker", text: "You need a free account on the site. A .zip file arrives." },
+        download: { title: "Download the Tracker", text: "Press the button: a .zip file arrives." },
         run: { title: "Extract and run", text: "Right-click the zip, “Extract All…”. Open “OriginsMeta Tracker.exe”. If Windows warns you: “More info”, then “Run anyway”." },
         link: { title: "Link the app", text: "Press “Create a code” and type it in the app." },
         layout: { title: "Pick your layout", text: "In the app press “Create your layout” and choose the style of the panels." },
@@ -90,17 +95,18 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   it: {
     meta: {
       title: "Layout Twitch per Origins TCG: Tracker ed estensione",
-      description: "Metti il tuo mazzo di Origins TCG in diretta su Twitch: OriginsMeta Tracker sul PC e l'estensione per chi ti guarda, in sette passi e dieci minuti. Gratis.",
+      description: "Metti il tuo mazzo di Origins TCG in diretta su Twitch: OriginsMeta Tracker sul PC e l'estensione per chi ti guarda, passo per passo, in dieci minuti. Gratis.",
     },
     h1: "Il tuo layout Twitch per Origins TCG",
     lead: "OriginsMeta Tracker mostra il tuo mazzo dal vivo e, con l'estensione Twitch, chi ti guarda lo apre sopra il video. Gratis, pronto in 10 minuti.",
     needs: "Ti servono un PC Windows, Origins TCG su Steam e il tuo canale Twitch.",
     imageNote: "quello che vede chi ti guarda",
+    site: { steps: { account: { title: "Registrati e chiedi il ruolo Creator", text: "Accedi al sito con Discord o con la tua email, senza password. Poi chiedi ad Aldry il ruolo Creator." } }, signIn: "Accedi" },
     pc: {
       title: "Sul PC",
       time: "5 minuti",
       steps: {
-        download: { title: "Scarica il Tracker", text: "Serve un account gratuito sul sito. Arriva un file .zip." },
+        download: { title: "Scarica il Tracker", text: "Premi il tasto: arriva un file .zip." },
         run: { title: "Estrai e avvia", text: "Tasto destro sullo zip, «Estrai tutto…». Apri «OriginsMeta Tracker.exe». Se Windows avvisa: «Ulteriori informazioni», poi «Esegui comunque»." },
         link: { title: "Collega l'app", text: "Premi «Crea un codice» e scrivilo nell'app." },
         layout: { title: "Scegli il layout", text: "Nell'app premi «Crea il tuo layout» e scegli lo stile dei pannelli." },
@@ -132,17 +138,18 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   es: {
     meta: {
       title: "Layout de Twitch para Origins TCG: Tracker y extensión",
-      description: "Lleva tu mazo de Origins TCG a tu directo de Twitch: OriginsMeta Tracker en tu PC y la extensión para tu público, en siete pasos y diez minutos. Gratis.",
+      description: "Lleva tu mazo de Origins TCG a tu directo de Twitch: OriginsMeta Tracker en tu PC y la extensión para tu público, paso a paso, en diez minutos. Gratis.",
     },
     h1: "Tu layout de Twitch para Origins TCG",
     lead: "OriginsMeta Tracker muestra tu mazo en directo y, con la extensión de Twitch, tu público lo abre sobre el video. Gratis, listo en 10 minutos.",
     needs: "Necesitas un PC con Windows, Origins TCG en Steam y tu canal de Twitch.",
     imageNote: "lo que ve tu público",
+    site: { steps: { account: { title: "Regístrate y pide el rol Creator", text: "Inicia sesión en el sitio con Discord o con tu email, sin contraseña. Luego pídele a Aldry el rol Creator." } }, signIn: "Acceder" },
     pc: {
       title: "En tu PC",
       time: "5 minutos",
       steps: {
-        download: { title: "Descarga el Tracker", text: "Necesitas una cuenta gratuita en el sitio. Llega un archivo .zip." },
+        download: { title: "Descarga el Tracker", text: "Pulsa el botón: llega un archivo .zip." },
         run: { title: "Extrae y abre", text: "Clic derecho en el zip, «Extraer todo…». Abre «OriginsMeta Tracker.exe». Si Windows avisa: «Más información» y luego «Ejecutar de todas formas»." },
         link: { title: "Vincula la app", text: "Pulsa «Crear un código» y escríbelo en la app." },
         layout: { title: "Elige tu layout", text: "En la app pulsa «Crea tu layout» y elige el estilo de los paneles." },
@@ -174,22 +181,23 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   fr: {
     meta: {
       title: "Layout Twitch pour Origins TCG : Tracker et extension",
-      description: "Affichez votre deck Origins TCG en direct sur Twitch : OriginsMeta Tracker sur PC et l'extension pour votre public, en sept étapes et dix minutes. Gratuit.",
+      description: "Affichez votre deck Origins TCG en direct sur Twitch : OriginsMeta Tracker sur PC et l'extension pour votre public, pas à pas, en dix minutes. Gratuit.",
     },
     h1: "Votre layout Twitch pour Origins TCG",
     lead: "OriginsMeta Tracker affiche votre deck en direct et, avec l'extension Twitch, votre public l'ouvre par-dessus la vidéo. Gratuit, prêt en 10 minutes.",
     needs: "Il vous faut un PC sous Windows, Origins TCG sur Steam et votre chaîne Twitch.",
     imageNote: "ce que voit votre public",
+    site: { steps: { account: { title: "Inscrivez-vous et demandez le rôle Creator", text: "Connectez-vous au site avec Discord ou votre e-mail, sans mot de passe. Demandez ensuite le rôle Creator à Aldry." } }, signIn: "Connexion" },
     pc: {
       title: "Sur votre PC",
       time: "5 minutes",
       steps: {
-        download: { title: "Téléchargez le Tracker", text: "Il faut un compte gratuit sur le site. Un fichier .zip arrive." },
+        download: { title: "Téléchargez le Tracker", text: "Appuyez sur le bouton : un fichier .zip arrive." },
         run: {
           title: "Extrayez et lancez",
           text: "Clic droit sur le zip, « Extraire tout… ». Ouvrez « OriginsMeta Tracker.exe ». Windows bloque ? « Informations complémentaires », puis « Exécuter quand même ».",
         },
-        link: { title: "Associez l'application", text: "Appuyez sur « Créer un code » et saisissez-le dans l'application (elle est en anglais : « Link »)." },
+        link: { title: "Associez l'application", text: "Appuyez sur « Créer un code » et saisissez-le dans l'application." },
         layout: { title: "Choisissez votre layout", text: "Dans l'application : « Create your layout », puis le style des panneaux." },
       },
       codeLink: "Créer le code",
@@ -219,19 +227,20 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   pt: {
     meta: {
       title: "Layout da Twitch para Origins TCG: Tracker e extensão",
-      description: "Coloque o seu deck de Origins TCG ao vivo na Twitch: OriginsMeta Tracker no seu PC e a extensão para quem assiste, em sete passos e dez minutos. Grátis.",
+      description: "Coloque o seu deck de Origins TCG ao vivo na Twitch: OriginsMeta Tracker no seu PC e a extensão para quem assiste, passo a passo, em dez minutos. Grátis.",
     },
     h1: "O seu layout da Twitch para Origins TCG",
     lead: "O OriginsMeta Tracker mostra o seu deck ao vivo e, com a extensão da Twitch, quem assiste abre o deck sobre o vídeo. Grátis, pronto em 10 minutos.",
     needs: "Você precisa de um PC com Windows, do Origins TCG na Steam e do seu canal da Twitch.",
     imageNote: "o que quem assiste vê",
+    site: { steps: { account: { title: "Cadastre-se e peça a função Creator", text: "Entre no site com o Discord ou com o seu e-mail, sem senha. Depois peça a função Creator ao Aldry." } }, signIn: "Entrar" },
     pc: {
       title: "No seu PC",
       time: "5 minutos",
       steps: {
-        download: { title: "Baixe o Tracker", text: "É preciso uma conta gratuita no site. Chega um arquivo .zip." },
+        download: { title: "Baixe o Tracker", text: "Aperte o botão: chega um arquivo .zip." },
         run: { title: "Extraia e abra", text: "Botão direito no zip, “Extrair Tudo…”. Abra “OriginsMeta Tracker.exe”. Se o Windows avisar: “Mais informações” e depois “Executar assim mesmo”." },
-        link: { title: "Vincule o app", text: "Aperte “Criar um código” e digite o código no app (ele está em inglês: “Link”)." },
+        link: { title: "Vincule o app", text: "Aperte “Criar um código” e digite o código no app." },
         layout: { title: "Escolha o seu layout", text: "No app, aperte “Create your layout” e escolha o estilo dos painéis." },
       },
       codeLink: "Criar o código",
@@ -261,19 +270,20 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   de: {
     meta: {
       title: "Twitch-Layout für Origins TCG: Tracker und Erweiterung",
-      description: "Bring dein Deck aus Origins TCG live auf Twitch: OriginsMeta Tracker auf dem PC und die Erweiterung für deine Zuschauer, in sieben Schritten und zehn Minuten.",
+      description: "Bring dein Deck aus Origins TCG live auf Twitch: OriginsMeta Tracker auf dem PC und die Erweiterung für deine Zuschauer, Schritt für Schritt in zehn Minuten.",
     },
     h1: "Dein Twitch-Layout für Origins TCG",
     lead: "OriginsMeta Tracker zeigt dein Deck live, und mit der Twitch-Erweiterung öffnen es deine Zuschauer über dem Video. Kostenlos, in 10 Minuten fertig.",
     needs: "Du brauchst einen Windows-PC, Origins TCG auf Steam und deinen Twitch-Kanal.",
     imageNote: "das sehen deine Zuschauer",
+    site: { steps: { account: { title: "Anmelden und Rolle Creator anfragen", text: "Melde dich auf der Website mit Discord oder deiner E-Mail an, ohne Passwort. Frag dann bei Aldry die Rolle Creator an." } }, signIn: "Anmelden" },
     pc: {
       title: "Auf deinem PC",
       time: "5 Minuten",
       steps: {
-        download: { title: "Lade den Tracker herunter", text: "Mit einem kostenlosen Konto auf der Website. Es kommt eine .zip-Datei." },
+        download: { title: "Lade den Tracker herunter", text: "Drück auf den Button: Es kommt eine .zip-Datei." },
         run: { title: "Entpacken und starten", text: "Rechtsklick auf das ZIP, „Alle extrahieren…“. Öffne „OriginsMeta Tracker.exe“. Windows warnt? „Weitere Informationen“, dann „Trotzdem ausführen“." },
-        link: { title: "Verknüpfe die App", text: "Drück auf „Code erstellen“ und gib ihn in der App ein (sie ist auf Englisch: „Link“)." },
+        link: { title: "Verknüpfe die App", text: "Drück auf „Code erstellen“ und gib ihn in der App ein." },
         layout: { title: "Wähl dein Layout", text: "Drück in der App auf „Create your layout“ und wähl den Stil der Panels." },
       },
       codeLink: "Code erstellen",
@@ -303,19 +313,20 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   ru: {
     meta: {
       title: "Оверлей для Twitch по Origins TCG: Tracker и расширение",
-      description: "Покажите свою колоду Origins TCG в эфире на Twitch: OriginsMeta Tracker на вашем ПК и расширение для зрителей, семь шагов и десять минут. Бесплатно.",
+      description: "Покажите свою колоду Origins TCG в эфире на Twitch: OriginsMeta Tracker на вашем ПК и расширение для зрителей, шаг за шагом, за десять минут. Бесплатно.",
     },
     h1: "Ваш оверлей для Twitch по Origins TCG",
     lead: "OriginsMeta Tracker показывает вашу колоду в реальном времени, а с расширением для Twitch зрители открывают её поверх видео. Бесплатно, настройка за 10 минут.",
     needs: "Понадобятся ПК с Windows, Origins TCG в Steam и ваш канал на Twitch.",
     imageNote: "так это видят зрители",
+    site: { steps: { account: { title: "Войдите и запросите роль Creator", text: "Войдите на сайт через Discord или по email, без пароля. Затем запросите у Aldry роль Creator." } }, signIn: "Войти" },
     pc: {
       title: "На ПК",
       time: "5 минут",
       steps: {
-        download: { title: "Скачайте Tracker", text: "Нужен бесплатный аккаунт на сайте. Придёт zip-файл." },
+        download: { title: "Скачайте Tracker", text: "Нажмите кнопку: придёт zip-файл." },
         run: { title: "Распакуйте и запустите", text: "Правой кнопкой по zip, «Извлечь все…». Откройте «OriginsMeta Tracker.exe». Windows предупреждает? «Подробнее», затем «Выполнить в любом случае»." },
-        link: { title: "Привяжите приложение", text: "Нажмите «Создать код» и введите его в приложении (оно на английском: «Link»)." },
+        link: { title: "Привяжите приложение", text: "Нажмите «Создать код» и введите его в приложении." },
         layout: { title: "Выберите оформление", text: "В приложении нажмите «Create your layout» и выберите стиль панелей." },
       },
       codeLink: "Создать код",
@@ -345,19 +356,20 @@ export const twitchSetupLabels: Record<Locale, TwitchSetupLabels> = {
   "zh-cn": {
     meta: {
       title: "Origins TCG 的 Twitch 直播布局：Tracker 与扩展",
-      description: "把你的 Origins TCG 卡组搬上 Twitch 直播：电脑上装 OriginsMeta Tracker，再给观众装上扩展，七个步骤、十分钟搞定，完全免费。",
+      description: "把你的 Origins TCG 卡组搬上 Twitch 直播：电脑上装 OriginsMeta Tracker，再给观众装上扩展，一步一步来，十分钟搞定，完全免费。",
     },
     h1: "你的 Origins TCG Twitch 直播布局",
     lead: "OriginsMeta Tracker 实时显示你的卡组；装上 Twitch 扩展后，观众可以在视频上方打开它。免费，10 分钟就能弄好。",
     needs: "你需要一台 Windows 电脑、Steam 上的 Origins TCG 和你的 Twitch 频道。",
     imageNote: "观众看到的就是这样",
+    site: { steps: { account: { title: "注册并申请 Creator 角色", text: "用 Discord 或你的电子邮件登录网站，无需密码。然后向 Aldry 申请 Creator 角色。" } }, signIn: "登录" },
     pc: {
       title: "在电脑上",
       time: "5 分钟",
       steps: {
-        download: { title: "下载 Tracker", text: "需要一个免费的网站账号。你会得到一个 .zip 文件。" },
+        download: { title: "下载 Tracker", text: "按下按钮：你会得到一个 .zip 文件。" },
         run: { title: "解压并运行", text: "右键点击 zip，选“全部解压缩……”。打开“OriginsMeta Tracker.exe”。如果 Windows 弹出提示：点“更多信息”，再点“仍要运行”。" },
-        link: { title: "关联应用", text: "按“生成代码”，然后在应用里输入（应用是英文的：“Link”）。" },
+        link: { title: "关联应用", text: "按“生成代码”，然后在应用里输入。" },
         layout: { title: "选择你的布局", text: "在应用里按“Create your layout”，选择面板样式。" },
       },
       codeLink: "生成代码",

@@ -7410,6 +7410,20 @@
     margin-top: 1.5rem;
     padding: 1.1rem 1.1rem 1.2rem;
   }
+  /* il passo zero (registrarsi e chiedere il ruolo Creator) sta sopra le due colonne, con una riga sotto.
+     Due classi nel selettore: .setup-steps, più in basso, azzera margini e padding di tutti gli elenchi dei passi. */
+  .setup-steps.setup-first {
+    margin-bottom: 1.1rem;
+    border-bottom: 2px solid rgb(63 196 232 / 0.3);
+    padding-bottom: 0.7rem;
+  }
+  .setup-links {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1.25rem;
+    font-size: 0.9rem;
+  }
   .setup-col {
     min-width: 0;
   }
@@ -7549,6 +7563,11 @@
       grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
       padding: 1.1rem 0 1.15rem;
     }
+    .setup-steps.setup-first {
+      grid-column: 1 / -1;
+      margin: 0 1.75rem 0.9rem;
+      padding-bottom: 0.5rem;
+    }
     .setup-col {
       padding-inline: 1.75rem;
     }
@@ -7574,10 +7593,10 @@
   /* portatili: finestra bassa, tutto più stretto e immagine piccola accanto al titolo (non aggiunge altezza) */
   @media (min-width: 1024px) and (max-height: 820px) {
     .setup {
-      padding-block: 0.75rem 1rem;
+      padding-block: 0.5rem 1rem;
     }
     .setup-head {
-      grid-template-columns: minmax(0, 1fr) 13rem;
+      grid-template-columns: minmax(0, 1fr) 11rem;
       gap: 2rem;
     }
     .setup-title {
@@ -7591,16 +7610,33 @@
     .setup-needs {
       margin-top: 0.25rem;
     }
+    /* qui la nota sta sotto l'immagine, dentro la figura: appesa all'angolo finirebbe sopra il bordo del pannello,
+       che con il passo zero è più vicino. Immagine e nota insieme sono alte come il blocco del titolo. */
     .setup-shot-note {
-      bottom: -0.9rem;
-      font-size: 1.1rem;
+      position: static;
+      display: block;
+      margin-top: 0.1rem;
+      text-align: right;
+      font-size: 1.05rem;
+      rotate: -2deg;
     }
     .setup-panel {
-      margin-top: 0.8rem;
-      padding-block: 0.7rem 0.75rem;
+      margin-top: 0.6rem;
+      padding-block: 0.5rem 0.55rem;
+    }
+    .setup-steps.setup-first {
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.3rem;
+    }
+    .setup-col-title {
+      margin-bottom: 0.1rem;
     }
     .setup-step {
-      padding-block: 0.3rem;
+      padding-block: 0.2rem;
+    }
+    .setup-step-text {
+      font-size: 0.875rem;
+      line-height: 1.35;
     }
     .setup-num {
       font-size: 2.25rem;
@@ -7609,7 +7645,7 @@
       margin-top: 0.3rem;
     }
     .setup-help {
-      margin-top: 0.7rem;
+      margin-top: 0.5rem;
     }
   }
 }
