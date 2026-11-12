@@ -169,7 +169,8 @@ function AccountDetails({
         </>
       }
     >
-      <nav className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label={labels.account}>
+      {/* drop-fit (12/11/2026): mai più alto dello schermo, scorre dentro (telefono in orizzontale); vedi AutoCloseDetails */}
+      <nav className="drop-fit absolute right-0 z-50 mt-2 w-56 rounded-xl border border-felt-line bg-felt-deep p-2 shadow-lift" aria-label={labels.account}>
         <p className="truncate px-3 py-1 font-mono text-[11px] text-chalk-muted">{profile?.username ? `@${profile.username}` : profileReady ? user.email : ""}</p>
         <NavLink href={`/${locale}/account`} className="nav-link-block">
           {labels.account}
