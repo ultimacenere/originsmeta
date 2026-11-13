@@ -92,3 +92,10 @@ html, body { margin: 0; background: transparent; color: var(--chalk); font-famil
 
 /* finestra sopra il gioco: "Sposta" acceso (non lascia passare i clic) = si trascina */
 .in-window.moving .ov { -webkit-app-region: drag; border-style: dashed; cursor: move; }
+
+/* Bordo come il campo di gioco (13/11/2026; la stessa regola di deck.css, "Bordi come il campo di gioco") */
+.ov {
+  border-color: #78fcff;
+  corner-shape: bevel;
+  box-shadow: inset 0 0 0 1px rgba(18, 105, 122, 0.95), 0 0 0 1px rgba(18, 105, 122, 0.95), 0 0 8px rgba(80, 235, 245, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.9);
+}
