@@ -356,7 +356,11 @@
         health: health,
         legendary: c[6] === 1,
         text: typeof c[7] === "string" ? c[7].replace(/[\u0000-\u0009\u000b-\u001f\u007f-\u009f‪-‮⁦-⁩]/g, "").slice(0, 1200) : "",
-        image: image
+        image: image,
+        // dal 13/11/2026 (carta di dettaglio nello stile del gioco, game/card.js): l'allineamento (decimo campo, assente
+        // nelle risposte di prima) e la sola finestra d'arte del sito, ricavata dallo slug già controllato
+        alignment: c[9] === "good" || c[9] === "evil" || c[9] === "neutral" ? c[9] : null,
+        art: BASE + "/cards/art/" + c[1] + ".webp"
       };
     });
     return out;

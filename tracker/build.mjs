@@ -40,6 +40,12 @@ for (const page of ["renderer", "overlay"]) {
   for (const f of fs.readdirSync(path.join(root, "assets/fonts"))) fs.copyFileSync(path.join(root, "assets/fonts", f), path.join(dist, page, "fonts", f));
   for (const f of ["logo-originsmeta.webp", "logo-originsmeta-sm.webp"]) fs.copyFileSync(path.join(root, "assets", f), path.join(dist, page, f));
 }
+// La carta del gioco (13/11/2026, ../src/game-card/): stile e font accanto alla finestra principale, per l'anteprima al
+// passaggio del mouse (src/overlay/cardPeek.ts), gli stessi del sito e dell'estensione Twitch
+const gameSrc = path.join(root, "..", "src", "game-card");
+fs.mkdirSync(path.join(dist, "renderer", "game", "fonts"), { recursive: true });
+for (const f of ["theme.css", "card.css"]) fs.copyFileSync(path.join(gameSrc, f), path.join(dist, "renderer", "game", f));
+for (const f of fs.readdirSync(path.join(gameSrc, "fonts"))) fs.copyFileSync(path.join(gameSrc, "fonts", f), path.join(dist, "renderer", "game", "fonts", f));
 
 // L'OCR di Windows senza PowerShell (03/11/2026, src/main/ocr.ts): dist/ocr/originsmeta-tracker-ocr.exe, compilato con
 // il csc.exe di .NET Framework 4 che c'è in ogni Windows, contro i metadati di System32\WinMetadata, con la versione e

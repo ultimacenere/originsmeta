@@ -1,0 +1,77 @@
+/*
+ * Tema della carta di gioco di Origins TCG: font e colori, l'unico file da cambiare quando arrivano gli asset di Koin
+ * (13/11/2026: via libera di Koin Games alla grafica del gioco; Pierluigi: "le carte sul sito, sul tracker e
+ * sull'overlay devono risultare identiche a quelle in gioco"). Lo usano il sito (src/components/GameCard.tsx), l'app
+ * OriginsMeta Tracker e l'estensione Twitch (copiato in twitch-extension/game/ da tracker/scripts/twitch-panels.mjs).
+ *
+ * 1. FONT. Il gioco usa Montserrat (font asset TextMeshPro "Montserrat-Regular SDF" e "Montserrat-Bold SDF" nei file
+ *    del gioco, letti il 13/11/2026): nome molto pesante, testo Regular, parole chiave Bold, numeri Black con il
+ *    contorno. Qui Montserrat variabile di Google Fonts (SIL OFL, fonts/OFL.txt). Se Koin (Sylvermyst) manda i suoi file,
+ *    si sostituiscono i due in fonts/ con lo stesso nome (o si cambiano i due src qui sotto) e si aggiorna
+ *    fonts/OFL.txt; famiglie diverse per nome, testo e numeri hanno ognuna la sua variabile (--omg-font-name, -text, -num).
+ * 2. COLORI E FORME misurati sulla carta di dettaglio dei fotogrammi del gioco salvati dal Tracker (playtest
+ *    dell'11/10/2026, 2560 × 1440) e sulle carte "con statistiche" di Dr. Frank mandate da Koin (02/11/2026): --omg-*.
+ * 3. IMMAGINI: oggi cornice, gemma, spada, cuore e ali sono CSS e SVG (model.ts, card.css): con i file di Koin si
+ *    sostituiscono lì.
+ */
+@font-face {
+  font-family: "OM Game";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/game-card-text.woff2") format("woff2");
+}
+@font-face {
+  font-family: "OM Game";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/game-card-text-italic.woff2") format("woff2");
+}
+
+.omg-card {
+  --omg-font-name: "OM Game", "Montserrat", "Segoe UI", system-ui, sans-serif;
+  --omg-font-text: "OM Game", "Montserrat", "Segoe UI", system-ui, sans-serif;
+  --omg-font-num: "OM Game", "Montserrat", "Segoe UI", system-ui, sans-serif;
+
+  /* cornice argento della carta di dettaglio del gioco */
+  --omg-frame-hi: #ffffff;
+  --omg-frame: #f1f0f5;
+  --omg-frame-lo: #c4c1cf;
+  /* corpo e targa del nome (viola del gioco) */
+  --omg-body-top: #2a1945;
+  --omg-body: #21133a;
+  --omg-body-low: #1a0f2e;
+  --omg-plate: #34205a;
+  --omg-plate-edge: #4a3274;
+  /* testo */
+  --omg-ink: #ffffff;
+  --omg-shadow: #120a20;
+  --omg-damage: #ff2d2d;
+  --omg-heal: #2cf05c;
+  --omg-buff: #ffd84a;
+  /* allineamenti: fascia scura, bordi a sbarre accesi, scritta */
+  --omg-evil-band: #6a1316;
+  --omg-evil-bar: #e8232f;
+  --omg-evil-text: #ff3a3f;
+  --omg-good-band: #13706d;
+  --omg-good-bar: #2fd6c3;
+  --omg-good-text: #7af6e8;
+  --omg-neutral-band: #3b3550;
+  --omg-neutral-bar: #a9a3c2;
+  --omg-neutral-text: #d2cde6;
+  /* magie: la riga a trattini sotto il nome */
+  --omg-dash: #8a3fc0;
+  /* gemma del mana */
+  --omg-gem-ring-hi: #5fe9f0;
+  --omg-gem-ring: #20b7c9;
+  --omg-gem-ring-lo: #0d7d93;
+  --omg-gem-fill: #12203c;
+  --omg-gem-gold-hi: #ffe873;
+  --omg-gem-gold: #f3b51c;
+  --omg-gem-gold-lo: #b9790a;
+  /* spada e cuore */
+  --omg-stat-hi: #ff8af7;
+  --omg-stat: #e05ef0;
+  --omg-stat-lo: #a632c4;
+}

@@ -210,7 +210,7 @@ export default async function CardPage({ params }: { params: Params }) {
         <div className="flex flex-col items-center gap-4">
           {/* A sinistra la carta come si legge in partita (disegnata da noi, dati nostri), sotto l'oggetto
               da collezione ufficiale con i crediti impressi: il gioco è anche collezionismo. */}
-          <GameCard card={card} locale={locale} priority className="w-full max-w-[230px]" />
+          <GameCard card={card} locale={locale} priority className="w-full max-w-[270px]" />
           {card.image ? (
             <div className="flex items-start gap-3">
               <CardCollectible card={card} alt={cardImageAlt(card, locale)} className="!h-[112px] !w-[80px] shrink-0 text-base" />

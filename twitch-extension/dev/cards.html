@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <!-- Solo prove locali, fuori dallo zip: la carta di dettaglio (game/) accanto ai ritagli del gioco in dev/local/
+         (ref-*.png, fotogrammi salvati dal Tracker: fuori dal repo). ?w=354 larghezza della carta, ?lang=it. -->
+    <meta charset="utf-8" />
+    <title>Carte · confronto con il gioco</title>
+    <link rel="stylesheet" href="../game/theme.css" />
+    <link rel="stylesheet" href="../game/card.css" />
+    <style>
+      body { margin: 0; padding: 40px; background: #1b1530; font: 14px system-ui; color: #ccc; }
+      .row { display: flex; gap: 48px; align-items: flex-start; margin-bottom: 60px; flex-wrap: wrap; }
+      .pair { display: flex; gap: 24px; align-items: flex-start; }
+      .slot { width: var(--w); padding: 26px 0 0 26px; }
+      .ref { display: block; }
+      figcaption { margin-top: 6px; }
+    </style>
+  </head>
+  <body>
+    <div id="out" class="row"></div>
+    <script src="../game/card.js"></script>
+    <script>
+      (function () {
+        var q = new URLSearchParams(location.search);
+        var w = Number(q.get("w")) || 354;
+        var lang = q.get("lang") || "it";
+        var IT = {
+          C00021_MB: ["Big Bad Wolf", "Dopo il combattimento, ottengo +1⚔️/+1❤️."],
+          C00126_MB: ["Mowgli", "Alla rivelazione: Evoca Baloo [6⚔️/6❤️] in un altro luogo casuale."],
+          C00015_SB: ["Axe Throw", "Infliggi 4 danni a QUALSIASI personaggio."]
+        };
+        var pairs = (q.get("keys") || "C00021_MB:ref-bbw,C00126_MB:ref-mowgli,C00015_SB:ref-axe,C00046_MC:,C00118_MC:,C00162_SB:").split(",");
+        fetch("cards-en.json").then(function (r) { return r.json(); }).then(function (t) {
+          var out = document.getElementById("out");
+          out.style.setProperty("--w", w + "px");
+          pairs.forEach(function (p) {
+            var k = p.split(":")[0];
+            var ref = p.split(":")[1];
+            var c = t[k];
+            if (!c) return;
+            var data = { slug: c[1], name: c[0], type: c[2], cost: c[3], power: c[4], health: c[5], legendary: c[6] === 1, text: lang === "it" && IT[k] ? IT[k][1] : c[7], alignment: c[9], art: "https://originsmeta.com/cards/art/" + c[1] + ".webp" };
+            var pair = document.createElement("div");
+            pair.className = "pair";
+            var slot = document.createElement("div");
+            slot.className = "slot";
+            slot.appendChild(window.OMGameCard.build(data, lang));
+            pair.appendChild(slot);
+            if (ref) {
+              var img = document.createElement("img");
+              img.className = "ref";
+              img.src = "local/" + ref + ".png";
+              pair.appendChild(img);
+            }
+            out.appendChild(pair);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

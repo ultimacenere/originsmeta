@@ -654,3 +654,84 @@ body.om-mode-app .om-tab, body.om-mode-app .om-panel { display: none; }
 /* i pannelli "come l'app" si trascinano dalla linguetta del logo */
 .om-app .tab, .om-app .chead { cursor: grab; touch-action: none; }
 .om-app.is-dragging .tab, .om-app.is-dragging .chead { cursor: grabbing; }
+
+/* ---------- carta di dettaglio nello stile del gioco (13/11/2026, game/card.js) ---------- */
+/* Via libera di Koin Games alla grafica del gioco: l'anteprima è la carta come la mostra il gioco, da sola, senza il
+   riquadro del sito. Accanto al pannello è larga quanto ci sta in altezza; sopra le zone del video (mano e tabellone)
+   overlay.js la mette dove la mette il gioco (placeAt) e la dimensiona come lui. */
+.om-preview.om-preview--game {
+  gap: 10px;
+  width: min(250px, calc((100vh - var(--safe-top) - var(--safe-bottom) - 40px) / 1.62), calc(100vw - 330px));
+  min-width: 120px;
+  padding: 7.5% 0 0 7%;
+  overflow: visible;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.om-preview.om-preview--game.is-pinned {
+  padding-top: 7.5%;
+}
+.om-gcard {
+  position: relative;
+  width: 100%;
+  animation: omg-pop 0.11s cubic-bezier(0.2, 0.8, 0.3, 1);
+  transform-origin: 30% 50%;
+}
+@keyframes omg-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* sopra il video: posizione e larghezza da overlay.js, niente margini (la gemma sporge come nel gioco) */
+.om-preview.om-preview--game.is-free {
+  position: fixed;
+  z-index: 5;
+  padding: 0;
+  min-width: 0;
+  pointer-events: none;
+}
+.om-preview.om-preview--game.is-free.is-pinned {
+  pointer-events: auto;
+}
+.om-preview.is-free.is-hand .om-gcard {
+  transform-origin: 50% 100%;
+}
+.om-preview.is-free.is-board .om-gcard {
+  transform-origin: 0 0;
+}
+.om-gactions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--panel);
+  border-radius: 8px;
+}
+.om-preview--game .om-preview-close {
+  position: static;
+  flex: none;
+}
+.om-preview--game .om-link {
+  justify-self: auto;
+}
+body[data-view="mobile"] .om-preview.om-preview--game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 12px 12px;
+  background: rgba(14, 7, 31, 0.92);
+}
+body[data-view="mobile"] .om-preview--game .om-gcard {
+  width: min(70vw, 280px);
+}
+/* come nel gioco: passando su una carta del video non si disegna nessun riquadro (resta quello del focus da tastiera) */
+.om-zone:hover { outline: none; }
+.om-zone:focus-visible { outline: 2px solid var(--mint); outline-offset: 1px; }

@@ -7,15 +7,19 @@
 import { cards } from "@/lib/data/cards";
 import type { Locale } from "@/lib/i18n";
 
-/** [nome, slug, tipo, costo, forza, salute, leggendaria (0/1), testo, immagine 480 px o null] */
-export type ExtCard = [string, string, "unit" | "spell" | "token", number | null, number | null, number | null, 0 | 1, string, string | null];
+/**
+ * [nome, slug, tipo, costo, forza, salute, leggendaria (0/1), testo, immagine 480 px o null, allineamento o null]. L'allineamento
+ * (13/11/2026) serve alla carta di dettaglio nello stile del gioco (twitch-extension/game/card.js): sta in fondo, così
+ * le versioni dell'estensione già pubblicate, che leggono i primi nove campi, non cambiano.
+ */
+export type ExtCard = [string, string, "unit" | "spell" | "token", number | null, number | null, number | null, 0 | 1, string, string | null, "good" | "evil" | "neutral" | null];
 
 export function extCardTable(locale: Locale): Record<string, ExtCard> {
   const out: Record<string, ExtCard> = {};
   for (const c of cards) {
     if (!c.key) continue;
     const text = c.ability?.[locale] || c.ability?.en || "";
-    out[c.key] = [c.name, c.slug, c.type, c.mana ?? null, c.power ?? null, c.health ?? null, c.legendary ? 1 : 0, text, c.image ?? null];
+    out[c.key] = [c.name, c.slug, c.type, c.mana ?? null, c.power ?? null, c.health ?? null, c.legendary ? 1 : 0, text, c.image ?? null, c.alignment ?? null];
   }
   return out;
 }

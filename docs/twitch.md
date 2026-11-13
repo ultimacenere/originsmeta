@@ -89,6 +89,15 @@ tracker scelto dall'utente?", poi "sì procedi, con la scelta nella configurazio
   con la stessa geometria (`handRects`). Provate su un fotogramma vero.
 - **Anteprima sempre a destra** (Pierluigi: "il puntatore del mouse è uno per persona, non ha senso sta divisione").
 
+## Carta del gioco (13/11/2026)
+
+Via libera di Koin Games (Sylvermyst, 13/11/2026) alla grafica del gioco per l'overlay; Pierluigi lo stesso giorno: "le
+carte sul sito, sul tracker e sull'overlay devono risultare identiche a quelle in gioco". Un solo modello in
+`src/game-card/` (model.ts puro, dom.ts per l'app e l'estensione, theme.css con font e colori, card.css, Montserrat che
+è il font del gioco), disegnato dal sito (`GameCard`, scheda carta), dall'app (anteprima al passaggio del mouse nella
+finestra principale, `tracker/src/overlay/cardPeek.ts`) e dall'estensione (`twitch-extension/game/`, generata). Dettagli
+in twitch-extension/README.md, "Carta del gioco".
+
 ## Da fare per andare online
 
 1. **Migrazione**: prova a secco `node scripts/twitch-dry-run.mjs` (serve `CRON_SECRET` in `.env.local`), poi

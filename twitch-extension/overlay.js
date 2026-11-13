@@ -402,10 +402,10 @@
     if (key === zoneKey) return;
     zoneKey = key;
     clear(zoneLayer);
-    function addZone(k, r, side) {
+    function addZone(k, r, side, kind) {
       var zone = el("button", {
         cls: "om-zone",
-        attrs: { type: "button", "data-key": k, "data-side": side, "aria-label": nameOf(k) }
+        attrs: { type: "button", "data-key": k, "data-side": side, "data-kind": kind, "aria-label": nameOf(k) }
       });
       zone.style.left = Math.round(r.x) + "px";
       zone.style.top = Math.round(r.y) + "px";
@@ -417,7 +417,7 @@
     if (hand.length) {
       var hr = window.OMPanels.handRects(v, hand.map(function (c) { return c[1]; }));
       hand.forEach(function (c, i) {
-        if (card(c[0])) addZone(c[0], hr[i], "me");
+        if (card(c[0])) addZone(c[0], hr[i], "me", "hand");
       });
     }
     if (!board) return;
@@ -425,23 +425,20 @@
     board.forEach(function (k, i) {
       if (!k || !card(k)) return;
       var r = rects[i];
-      var zone = el("button", {
-        cls: "om-zone",
-        attrs: { type: "button", "data-key": k, "data-side": r.side === "opp" ? "opp" : "me", "aria-label": nameOf(k) }
-      });
-      zone.style.left = Math.round(r.x) + "px";
-      zone.style.top = Math.round(r.y) + "px";
-      zone.style.width = Math.round(r.w) + "px";
-      zone.style.height = Math.round(r.h) + "px";
-      zoneLayer.appendChild(zone);
+      addZone(k, r, r.side === "opp" ? "opp" : "me", "board");
     });
   }
 
+  /** La zona come ancora della carta di dettaglio: mano o tabellone, e il suo rettangolo nella pagina. */
+  function zoneAnchor(z) {
+    var r = z.getBoundingClientRect();
+    return { kind: z.getAttribute("data-kind") === "hand" ? "hand" : "board", rect: { x: r.left, y: r.top, w: r.width, h: r.height } };
+  }
   zoneLayer.addEventListener("pointerover", function (e) {
     var z = e.target && e.target.closest ? e.target.closest(".om-zone") : null;
     if (!z || pinned) return;
-    placePreviewNear(z);
-    showPreview(z.getAttribute("data-key"), z.getAttribute("data-side"), false);
+    if (!window.OMGameCard) placePreviewNear(z); // la carta del gioco ha la sua posizione (placeAt)
+    showPreview(z.getAttribute("data-key"), z.getAttribute("data-side"), false, zoneAnchor(z));
   });
   zoneLayer.addEventListener("pointerleave", function () {
     if (!pinned) hidePreview(false);
@@ -455,15 +452,15 @@
       hidePreview(true);
       return;
     }
-    placePreviewNear(z);
-    pinned = { key: key, side: side };
-    showPreview(key, side, true);
+    if (!window.OMGameCard) placePreviewNear(z); // la carta del gioco ha la sua posizione (placeAt)
+    pinned = { key: key, side: side, anchor: zoneAnchor(z) };
+    showPreview(key, side, true, pinned.anchor);
   });
   zoneLayer.addEventListener("focusin", function (e) {
     var z = e.target && e.target.closest ? e.target.closest(".om-zone") : null;
     if (!z || pinned) return;
-    placePreviewNear(z);
-    showPreview(z.getAttribute("data-key"), z.getAttribute("data-side"), false);
+    if (!window.OMGameCard) placePreviewNear(z); // la carta del gioco ha la sua posizione (placeAt)
+    showPreview(z.getAttribute("data-key"), z.getAttribute("data-side"), false, zoneAnchor(z));
   });
 
   // ---------- disegno ----------
@@ -614,21 +611,48 @@
     return c.type === "spell" ? t("spell") : c.type === "token" ? t("token") : t("unit");
   }
 
+  /**
+   * L'anteprima della carta (13/11/2026): la carta di dettaglio del gioco (game/card.js, via libera di Koin Games alla
+   * grafica del gioco), da sola come quando si passa sopra una carta in partita. Fissata (clic) o sul telefono, sotto la
+   * carta ci sono il link alla scheda su originsmeta.com e la ×. Senza game/card.js resta l'anteprima di prima.
+   */
   function fillPreview(key, side, isPinned) {
     var c = card(key);
     clear(preview);
     preview.classList.toggle("is-pinned", isPinned);
     preview.classList.toggle("is-opp", side === "opp");
+    var game = !!(c && window.OMGameCard);
+    preview.classList.toggle("om-preview--game", game);
     var isLeg = !!(c && c.legendary);
+    var closeX = null;
     if (isPinned || MOBILE) {
-      var x = el("button", { cls: "om-preview-close", text: "×", attrs: { type: "button", "aria-label": t("closeCard"), title: t("closeCard") } });
-      x.addEventListener("click", function () {
+      closeX = el("button", { cls: "om-preview-close", text: "×", attrs: { type: "button", "aria-label": t("closeCard"), title: t("closeCard") } });
+      closeX.addEventListener("click", function () {
         var back = pinned;
         hidePreview(true);
         refocusRow(back);
       });
-      preview.appendChild(x);
     }
+
+    if (game) {
+      var shell = el("div", { cls: "om-gcard" });
+      shell.appendChild(window.OMGameCard.build(c, OM.lang));
+      preview.appendChild(shell);
+      // per i lettori di schermo il riassunto in parole (gemma, spada e cuore sono disegni)
+      var sr = [c.name, typeLabel(c) + (isLeg ? ", " + t("legendary") : "")];
+      if (c.cost !== null) sr.push(t("cost") + " " + c.cost);
+      if (c.power !== null) sr.push(t("power") + " " + c.power);
+      if (c.health !== null) sr.push(t("health") + " " + c.health);
+      preview.appendChild(el("p", { cls: "om-sr", text: sr.join(", ") }));
+      if (isPinned || MOBILE) {
+        var actions = el("div", { cls: "om-gactions" });
+        if (OM.slugOk(c.slug)) actions.appendChild(OM.siteLink("/cards/" + c.slug, t("cardPage"), "om-link"));
+        actions.appendChild(closeX);
+        preview.appendChild(actions);
+      }
+      return;
+    }
+    if (closeX) preview.appendChild(closeX);
 
     // la carta intera, mai ritagliata né coperta (crediti stampati); senza immagine, una scheda di testo
     var art = el("div", { cls: "om-art" + (isLeg ? " is-leg" : "") });
@@ -667,10 +691,67 @@
     preview.appendChild(info);
   }
 
-  function showPreview(key, side, isPinned) {
+  /**
+   * Dove compare la carta (13/11/2026, "posizioni come nel gioco"), misurato sui fotogrammi del gioco (2560 × 1440):
+   * passando su una carta in mano il gioco mostra la carta di dettaglio grande sopra di lei, centrata, larga il 21% del
+   * gioco e con il fondo poco sopra il fondo della mano; passando su una carta del tabellone la mostra piccola in alto a
+   * sinistra (bordo a 3,7% e 14,3% del gioco, larga il 13,9%). Le misure valgono nell'area 16:9 del gioco dentro il
+   * video. Senza zona (righe del pannello, pannelli dell'app) l'anteprima resta accanto al pannello.
+   */
+  var GAME_SPOT = {
+    hand: { w: 0.211, bottom: 0.9 },
+    board: { x: 0.0367, y: 0.143, w: 0.139 }
+  };
+  var CARD_RATIO = 1.475; // altezza / larghezza della carta di dettaglio (game/card.css)
+  var GEM_OVER = 0.07; // quanto sporge la gemma, in larghezze della carta
+
+  function placeAt(anchor) {
+    var free = !!(anchor && preview.classList.contains("om-preview--game") && !MOBILE);
+    preview.classList.toggle("is-free", free);
+    preview.classList.remove("is-hand", "is-board");
+    if (!free) {
+      preview.style.left = "";
+      preview.style.top = "";
+      preview.style.width = "";
+      return;
+    }
+    var v = videoRect();
+    // l'area 16:9 del gioco al centro del video (layoutFor(...).ui di tracker/src/shared/recognize.ts)
+    var uw = Math.min(v.w, (v.h * 16) / 9);
+    var uh = (uw * 9) / 16;
+    var ui = { x: v.x + (v.w - uw) / 2, y: v.y + (v.h - uh) / 2, w: uw, h: uh };
+    var W = window.innerWidth;
+    var top0 = 70; // fascia dei controlli del player in alto (--safe-top)
+    var bottom0 = window.innerHeight - 90; // e in basso (--safe-bottom)
+    var spot = anchor.kind === "hand" ? GAME_SPOT.hand : GAME_SPOT.board;
+    var w = Math.min(spot.w * ui.w, (bottom0 - top0) / (CARD_RATIO + GEM_OVER));
+    var x;
+    var y;
+    if (anchor.kind === "hand") {
+      var r = anchor.rect;
+      x = r.x + r.w / 2 - w / 2;
+      y = r.y + r.h * spot.bottom - w * CARD_RATIO;
+    } else {
+      x = ui.x + spot.x * ui.w;
+      y = ui.y + spot.y * ui.h;
+    }
+    preview.classList.add(anchor.kind === "hand" ? "is-hand" : "is-board");
+    var gem = w * GEM_OVER;
+    x = Math.max(gem + 4, Math.min(W - w - 4, x));
+    y = Math.max(top0 + gem, Math.min(bottom0 - w * CARD_RATIO, y));
+    preview.style.left = Math.round(x) + "px";
+    preview.style.top = Math.round(y) + "px";
+    preview.style.width = Math.round(w) + "px";
+  }
+
+  function showPreview(key, side, isPinned, anchor) {
     if (!OM.isKey(key)) return;
-    if (shown && shown.key === key && shown.side === side && preview.classList.contains("is-pinned") === isPinned && !preview.hidden) return;
+    if (shown && shown.key === key && shown.side === side && preview.classList.contains("is-pinned") === isPinned && !preview.hidden) {
+      placeAt(anchor);
+      return;
+    }
     fillPreview(key, side, isPinned);
+    placeAt(anchor);
     shown = { key: key, side: side };
     preview.hidden = false;
     document.body.classList.add("om-has-preview");
@@ -679,7 +760,7 @@
 
   function hidePreview(force) {
     if (pinned && !force) {
-      showPreview(pinned.key, pinned.side, true);
+      showPreview(pinned.key, pinned.side, true, pinned.anchor);
       return;
     }
     pinned = null;

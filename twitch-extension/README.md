@@ -23,6 +23,7 @@ Solo questi file vanno nello zip, alla radice (niente cartelle):
 | `style.css` | grafica "ink & mint" del sito e del Deck tracker dell'app |
 | `panels.js`, `panels.css`, `fonts/` | modalità "come l'app" (14/10/2026): i pannelli di OriginsMeta Tracker, generati con `npm run twitch-panels` nella cartella `tracker/` dallo stesso codice dell'app (deckRender.ts, deck.css); non si modificano a mano |
 | `config.css` | grafica della pagina di configurazione |
+| `game/` (`card.js`, `theme.css`, `card.css`, `fonts/`) | la carta del gioco (13/11/2026): l'anteprima di una carta è la carta di dettaglio come la mostra il gioco, la stessa del sito e dell'app (`src/game-card/`), generata con `npm run twitch-panels` nella cartella `tracker/`; non si modifica a mano |
 
 `dev/` (prove in locale), `README.md` e `.gitignore` restano fuori dallo zip.
 
@@ -145,3 +146,15 @@ streamer, fuori dalle fasce dei controlli del player; chi guarda li nasconde con
 passando su una carta ne vede l'anteprima. Senza stile (app più vecchia) o sul telefono resta la linguetta. Lo
 streamer deve togliere i pannelli dell'app dalla scena di OBS, per non mostrarli due volte. Prova: `dev/mock.html?mode=app`
 (tasti Come l'app, Linguetta, Classico, Minimal, Strutturato, Personalizzato, Fuori partita).
+
+## Carta del gioco (13/11/2026)
+
+Via libera di Koin Games alla grafica del gioco (gruppo Discord con Sylvermyst, 13/11/2026: mano, tabellone e hover
+delle carte indistinguibili dal gioco). Passando su una carta (righe del pannello, pannelli dell'app, zone di mano e
+tabellone sopra il video) compare la carta di dettaglio del gioco, costruita da `game/card.js` con lo stesso modello del
+sito e dell'app (`src/game-card/model.ts`). Sopra il video sta dove la mette il gioco (`placeAt` di overlay.js, misure
+dai fotogrammi del gioco): passando su una carta in mano, grande e centrata sopra di lei; su una carta del tabellone,
+piccola in alto a sinistra. Accanto al pannello resta di fianco al pannello. Fissata con un clic, sotto ci sono il link
+alla scheda e la ×. Le carte arrivano da `/api/twitch/cards/<lingua>` con un decimo campo, l'allineamento (le versioni
+già pubblicate leggono i primi nove). Prova: `dev/mock.html?language=it&scene=playtest&bg=<fotogramma>` (un fotogramma
+del gioco in `dev/local/`, fuori dal repo) e `dev/cards.html` (le carte accanto ai ritagli del gioco).

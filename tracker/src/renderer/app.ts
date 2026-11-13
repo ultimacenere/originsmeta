@@ -25,6 +25,7 @@
  * del sito, non copiate nell'app); senza rete resta il nome della carta dentro la cornice.
  */
 import cardsTable from "../cards.json";
+import { attachCardPeek } from "../overlay/cardPeek";
 import { PANEL_TEMPLATES, type AppState, type LinkProblem, type PanelCustom, type PanelCustomChange, type PanelTemplate, type SyncProblem, type TrackedMatch, type TrackerApi } from "../shared/types";
 
 declare global {
@@ -39,6 +40,8 @@ const CARDS = cardsTable as Record<string, CardRow>;
 type Lang = "en" | "it" | "es";
 const lang: Lang = /^it\b/i.test(navigator.language) ? "it" : /^es\b/i.test(navigator.language) ? "es" : "en";
 document.documentElement.lang = lang;
+// la carta del gioco al passaggio del mouse sulle carte (13/11/2026, ../overlay/cardPeek.ts)
+attachCardPeek(document.body, lang);
 
 const LABELS = {
   en: {
@@ -640,7 +643,9 @@ function cardArt(key: string | null, width: number, opts: { mana?: boolean; link
     `<span class="fallback">${esc(name)}</span>` +
     (opts.mana !== false && c?.m != null ? `<span class="mana">${c.m}</span>` : "") +
     (c?.l ? '<span class="cstar" aria-hidden="true">★</span>' : "");
-  const attrs = `class="${cls}" style="--w:${width}px" title="${esc(name)}"`;
+  // `data-gc-key` (13/11/2026): al passaggio del mouse la carta del gioco accanto (../overlay/cardPeek.ts)
+  const gcKey = c && key && /^C\d{5}_[A-Z]{2}(?:_V\d+)?$/.test(key) ? ` data-gc-key="${esc(key)}"` : "";
+  const attrs = `class="${cls}" style="--w:${width}px" title="${esc(name)}"${gcKey}`;
   return c?.a && opts.link !== false ? `<a ${attrs} href="${SITE}/${lang}/cards/${esc(c.s)}" data-link aria-label="${esc(name)}">${inner}</a>` : `<span ${attrs} role="img" aria-label="${esc(name)}">${inner}</span>`;
 }
 /** Le carte di un mazzo nell'ordine del sito: la Leggendaria per prima, poi per costo e per nome. */

@@ -56,6 +56,13 @@
   };
   var configCbs = [];
   var params = new URLSearchParams(location.search);
+  // ?scene=playtest: tabellone e mano del fotogramma del gioco messo come sfondo (mock.html ?bg=…), per provare le zone e
+  // la carta di dettaglio sopra un video vero (13/11/2026)
+  if (params.get("scene") === "playtest") {
+    state.live.board = [null, null, null, null, null, "C00193_MB", null, null, null, null, null, "C00155_MB", "C00113_MB", "C00113_MB", null, null, null, null];
+    state.live.hand = [["C00074_MB", 0.319], ["C00162_SB", 0.403], ["C00046_MC", 0.506], ["C00074_MB", 0.588], ["C00021_MB", 0.671]];
+    state.ui.screen = { w: 2560, h: 1440 };
+  }
   var broadcaster = { version: "1", content: JSON.stringify({ view: params.get("mode") === "app" ? "app" : "tab" }) };
   var at = Date.now();
 

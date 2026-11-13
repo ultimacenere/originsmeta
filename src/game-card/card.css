@@ -1,0 +1,356 @@
+/*
+ * La carta di dettaglio di Origins TCG, come la mostra il gioco quando si passa sopra una carta (13/11/2026, via libera
+ * di Koin Games alla grafica del gioco per l'overlay Twitch). Struttura in model.ts (la stessa per sito, app ed estensione), colori e font in
+ * theme.css. Tutte le misure sono in cqw (centesimi della larghezza della carta): la carta si ridimensiona
+ * cambiando solo la larghezza del contenitore, come nel gioco.
+ *
+ * Misure prese sulla carta di dettaglio dei fotogrammi del gioco (Big Bad Wolf, Mowgli, Axe Throw a 2560 × 1440:
+ * cornice larga 354 px, alta 522): proporzioni 1 : 1,475, cornice argento di 10 px, gemma esagonale che sporge in
+ * alto a sinistra, finestra d'arte, targa viola con nome, fascia dell'allineamento (magie: riga a trattini), testo
+ * centrato, numeri grandi con spada e cuore sul bordo basso.
+ */
+.omg-card {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 100 / 147.5;
+  font-family: var(--omg-font-text);
+  color: var(--omg-ink);
+  line-height: 1.2;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* ---------- cornice e corpo ---------- */
+.omg-frame,
+.omg-body {
+  position: absolute;
+  clip-path: polygon(0% 4.41%, 0.87% 2.2%, 3.25% 0.59%, 6.5% 0%, 93.5% 0%, 96.75% 0.59%, 99.13% 2.2%, 100% 4.41%, 100% 62%, 98.4% 63.08%, 98.4% 68.92%, 100% 70%, 100% 95.59%, 99.13% 97.8%, 96.75% 99.41%, 93.5% 100%, 6.5% 100%, 3.25% 99.41%, 0.87% 97.8%, 0% 95.59%, 0% 70%, 1.6% 68.92%, 1.6% 63.08%, 0% 62%);
+}
+.omg-frame {
+  inset: 0;
+  background: linear-gradient(170deg, var(--omg-frame-hi) 0%, var(--omg-frame) 60%, var(--omg-frame-lo) 100%);
+  filter: drop-shadow(0 1.2cqw 2.4cqw rgba(8, 4, 18, 0.55));
+}
+.omg-body {
+  inset: 3.4cqw;
+  background: linear-gradient(180deg, var(--omg-body-top) 0%, var(--omg-body) 55%, var(--omg-body-low) 100%);
+  box-shadow: inset 0 0 0 0.5cqw rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.omg-card--spell .omg-frame {
+  clip-path: polygon(0% 4.41%, 0.87% 2.2%, 3.25% 0.59%, 6.5% 0%, 66% 0%, 100% 23%, 100% 97.5%, 97.5% 100%, 25% 100%, 0% 84.6%);
+}
+.omg-card--spell .omg-body {
+  bottom: 13cqw;
+  clip-path: polygon(0% 4%, 0.8% 2%, 3% 0.5%, 6% 0%, 64% 0%, 100% 25%, 100% 100%, 21% 100%, 0% 86%);
+}
+
+/* ---------- arte ---------- */
+.omg-art {
+  position: absolute;
+  left: 5cqw;
+  right: 5cqw;
+  top: 5cqw;
+  height: 48cqw;
+  border-radius: 1.8cqw;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #4a2f7c, var(--omg-body-low));
+}
+.omg-card--spell .omg-art {
+  height: 44cqw;
+  clip-path: polygon(0 0, 66% 0, 100% 40%, 100% 100%, 0 100%);
+}
+.omg-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+.omg-art.is-noimg img {
+  display: none;
+}
+/* la targa che sale sull'arte: viola pieno sotto, dissolvenza sopra */
+.omg-plate {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50cqw;
+  bottom: 0;
+  background:
+    linear-gradient(180deg, rgba(52, 32, 90, 0) 0, rgba(52, 32, 90, 0.85) 2.4cqw, var(--omg-plate) 3.6cqw, var(--omg-plate) 30cqw, var(--omg-body) 52cqw, var(--omg-body-low) 100%);
+}
+
+/* ---------- nome e fascia ---------- */
+.omg-name {
+  position: absolute;
+  left: 3cqw;
+  right: 3cqw;
+  top: 59.5cqw;
+  margin: 0;
+  font-family: var(--omg-font-name);
+  font-weight: 800;
+  font-size: 9cqw;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  text-shadow: 0 0.55cqw 0 var(--omg-shadow), 0 0 0.9cqw rgba(0, 0, 0, 0.6);
+}
+.omg-name.is-long {
+  font-size: 7.4cqw;
+  top: 60.4cqw;
+}
+.omg-name.is-xlong {
+  font-size: 6.2cqw;
+  top: 61cqw;
+}
+
+.omg-band {
+  --band: var(--omg-neutral-band);
+  --bar: var(--omg-neutral-bar);
+  --label: var(--omg-neutral-text);
+  position: absolute;
+  left: 2.5cqw;
+  right: 2.5cqw;
+  top: 70.5cqw;
+  height: 6cqw;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(115deg, transparent 0 1.4cqw, var(--bar) 1.4cqw 2.6cqw, transparent 2.6cqw 3.5cqw, var(--bar) 3.5cqw 4.7cqw, transparent 4.7cqw) left / 7cqw 100% no-repeat,
+    linear-gradient(115deg, transparent 0 2.3cqw, var(--bar) 2.3cqw 3.5cqw, transparent 3.5cqw 4.4cqw, var(--bar) 4.4cqw 5.6cqw, transparent 5.6cqw) right / 7cqw 100% no-repeat,
+    linear-gradient(180deg, color-mix(in srgb, var(--band) 80%, #000) 0%, var(--band) 45%, color-mix(in srgb, var(--band) 75%, #000) 100%);
+  font-family: var(--omg-font-text);
+  font-weight: 600;
+  font-size: 5cqw;
+  color: var(--label);
+}
+.omg-band[data-align="evil"] {
+  --band: var(--omg-evil-band);
+  --bar: var(--omg-evil-bar);
+  --label: var(--omg-evil-text);
+}
+.omg-band[data-align="good"] {
+  --band: var(--omg-good-band);
+  --bar: var(--omg-good-bar);
+  --label: var(--omg-good-text);
+}
+/* magie: niente allineamento, una riga a trattini */
+.omg-dash {
+  position: absolute;
+  left: 8cqw;
+  right: 8cqw;
+  top: 71.5cqw;
+  height: 1.4cqw;
+  background: repeating-linear-gradient(115deg, var(--omg-dash) 0 1.6cqw, transparent 1.6cqw 3cqw);
+  opacity: 0.9;
+}
+
+/* personaggi neutrali: il gioco non scrive "Neutral"; la riga a trattini nel grigio del neutrale (da verificare) */
+.omg-dash.is-neutral {
+  background: repeating-linear-gradient(115deg, var(--omg-neutral-bar) 0 1.6cqw, transparent 1.6cqw 3cqw);
+  opacity: 0.55;
+}
+
+/* ---------- testo ---------- */
+.omg-text {
+  position: absolute;
+  left: 7cqw;
+  right: 7cqw;
+  top: 78cqw;
+  bottom: 25cqw;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  align-items: center;
+  font-weight: 400;
+  font-size: 7.2cqw;
+  line-height: 1.13;
+  white-space: pre-line;
+  overflow: hidden;
+  text-wrap: balance;
+}
+.omg-card--spell .omg-text {
+  top: 76cqw;
+  bottom: 4cqw;
+}
+.omg-text.is-long {
+  font-size: 6.3cqw;
+}
+.omg-text.is-xlong {
+  font-size: 5.5cqw;
+}
+.omg-text.is-xxlong {
+  font-size: 4.7cqw;
+}
+.omg-nowrap {
+  white-space: nowrap;
+}
+.omg-text p {
+  margin: 0;
+}
+.omg-kw {
+  font-weight: 800;
+}
+.omg-dmg {
+  font-weight: 800;
+  color: var(--omg-damage);
+}
+.omg-heal {
+  font-weight: 800;
+  color: var(--omg-heal);
+}
+.omg-any {
+  font-style: italic;
+}
+.omg-ico {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.95em;
+  margin: 0 0.04em;
+  vertical-align: -0.16em;
+}
+.omg-ico--atk {
+  fill: var(--omg-buff);
+}
+.omg-ico--hp {
+  width: 0.9em;
+  height: 0.8em;
+  vertical-align: -0.08em;
+  fill: var(--omg-damage);
+}
+
+/* ---------- statistiche ---------- */
+.omg-stats {
+  position: absolute;
+  left: 9cqw;
+  right: 10cqw;
+  bottom: 1.2cqw;
+  height: 24cqw;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.omg-stat {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6cqw;
+}
+.omg-num {
+  font-family: var(--omg-font-num);
+  font-weight: 900;
+  font-size: 26cqw;
+  line-height: 0.8;
+  color: var(--omg-ink);
+  -webkit-text-stroke: 2.4cqw var(--omg-shadow);
+  paint-order: stroke fill;
+  text-shadow: 0.4cqw 1.2cqw 0 var(--omg-shadow);
+  font-variant-numeric: tabular-nums;
+}
+.omg-sword,
+.omg-heart {
+  display: block;
+  overflow: visible;
+}
+.omg-sword {
+  width: 11cqw;
+  height: 20cqw;
+  margin-bottom: 1.4cqw;
+}
+.omg-heart {
+  width: 14cqw;
+  height: 12cqw;
+  margin-bottom: 4.4cqw;
+}
+.omg-stat-fill {
+  stroke: var(--omg-shadow);
+  stroke-linejoin: round;
+}
+/* numeri cambiati dalla partita (non usato oggi: l'estensione mostra la carta base) */
+.omg-num.is-up {
+  color: var(--omg-heal);
+}
+.omg-num.is-down {
+  color: var(--omg-damage);
+}
+
+/* ---------- gemma del mana ---------- */
+.omg-gem {
+  position: absolute;
+  left: -6cqw;
+  top: -8.5cqw;
+  width: 25cqw;
+  height: 27cqw;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+.omg-gem svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.omg-gem-num {
+  position: relative;
+  font-family: var(--omg-font-num);
+  font-weight: 900;
+  font-size: 17cqw;
+  line-height: 1;
+  color: var(--omg-ink);
+  -webkit-text-stroke: 1.3cqw var(--omg-shadow);
+  paint-order: stroke fill;
+  text-shadow: 0 0.6cqw 0 var(--omg-shadow);
+  margin-top: 0.6cqw;
+}
+.omg-card.is-leg .omg-gem {
+  left: -18.5cqw;
+  width: 50cqw;
+}
+
+/* contenitore che lascia lo spazio alla gemma che sporge (e alle ali delle Leggendarie): sito e app */
+.omg-wrap {
+  padding: 9% 0 0 7%;
+}
+.omg-wrap.is-leg {
+  padding-left: 19%;
+}
+
+/* l'anteprima al passaggio del mouse nell'app Tracker (tracker/src/overlay/cardPeek.ts): posizione da script */
+.omg-peek {
+  position: fixed;
+  z-index: 1000;
+  width: var(--peek-w, 220px);
+  pointer-events: none;
+}
+.omg-peek[hidden] {
+  display: none;
+}
+.omg-peek .omg-card {
+  animation: omg-peek-in 0.11s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+@keyframes omg-peek-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .omg-peek .omg-card {
+    animation: none;
+  }
+}

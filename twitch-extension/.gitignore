@@ -1,6 +1,7 @@
 # prove locali: generati, mai nel repo né nello zip
 dev/cards-en.json
 dev/certs/
+dev/local/
 *.zip
 
 # screenshot della diretta per la scheda di Twitch: si caricano nella console, non nel repo
