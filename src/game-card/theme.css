@@ -4,16 +4,17 @@
  * sull'overlay devono risultare identiche a quelle in gioco"). Lo usano il sito (src/components/GameCard.tsx), l'app
  * OriginsMeta Tracker e l'estensione Twitch (copiato in twitch-extension/game/ da tracker/scripts/twitch-panels.mjs).
  *
- * 1. FONT. Il gioco usa Montserrat (font asset TextMeshPro "Montserrat-Regular SDF" e "Montserrat-Bold SDF" nei file
- *    del gioco, letti il 13/11/2026): nome molto pesante, testo Regular, parole chiave Bold, numeri Black con il
- *    contorno; il riquadro delle parole chiave usa Oswald (condensato, anche lui nei file del gioco). Qui le versioni
- *    variabili di Google Fonts (SIL OFL, fonts/OFL.txt). Se Koin (Sylvermyst) manda i suoi file, si cambiano i `src` qui
- *    sotto e fonts/OFL.txt; famiglie diverse per nome, testo, numeri e interfaccia hanno ognuna la sua variabile
- *    (--omg-font-name, -text, -num, -ui).
+ * 1. FONT, confermati dal pacchetto di asset di Koin Games del 13/11/2026 (Sylvermyst, Fonts/CardText_Style.txt;
+ *    archiviato in 10_Materiale_Koin/2026-11-13_overlay-assets sul Drive): tutta la carta in Montserrat, testo
+ *    Regular 400, nome ExtraBold 800, forza e salute Bold 700, mana Black 900; il riquadro delle parole chiave in Oswald
+ *    Bold. Koin dice che è la stessa famiglia di Google Fonts: qui restano le versioni variabili di Google divise per
+ *    alfabeto (più leggere dei loro .ttf interi; SIL OFL, fonts/OFL.txt). Famiglie diverse per nome, testo, numeri e
+ *    interfaccia hanno ognuna la sua variabile (--omg-font-name, -text, -num, -ui).
  * 2. COLORI E FORME misurati sulla carta di dettaglio dei fotogrammi del gioco salvati dal Tracker (playtest
  *    dell'11/10/2026, 2560 × 1440) e sulle carte "con statistiche" di Dr. Frank mandate da Koin (02/11/2026): --omg-*.
- * 3. IMMAGINI: oggi cornice, gemma, spada, cuore e ali sono CSS e SVG (model.ts, card.css): con i file di Koin si
- *    sostituiscono lì.
+ * 3. IMMAGINI: le icone delle parole chiave e quelle di forza, salute e mana nel testo sono i PNG di Koin (icons/, in
+ *    fondo a questo file). Cornice, gemma, spada e cuore grandi e ali sono ancora CSS e SVG (model.ts, card.css): Koin
+ *    manderà i render interi delle carte (1040 × 1170, testo e numeri già stampati) quando il loro server avrà il CORS.
  */
 /* Montserrat (carte) e Oswald (riquadro delle parole chiave e scritte dell'interfaccia del gioco): latino, latino esteso e
    cirillico, come le pagine del sito; il cinese usa i font del sistema. */
@@ -133,10 +134,16 @@
   --omg-plate-edge: #4a3274;
   /* testo */
   --omg-ink: #ffffff;
-  --omg-shadow: #120a20;
+  /* l'ombra netta del testo del gioco (CardText_Style.txt) */
+  --omg-shadow: #030008;
   --omg-damage: #ff2d2d;
   --omg-heal: #2cf05c;
-  --omg-buff: #ffd84a;
+  /* statistiche cambiate in partita (CardText_Style.txt): forza o salute massima su, forza giù o salute ferita,
+     mana giù, mana su */
+  --omg-stat-up: #00ff5f;
+  --omg-stat-down: #ff002b;
+  --omg-mana-down: #00ff5f;
+  --omg-mana-up: #ff0800;
   /* allineamenti: fascia scura, bordi a sbarre accesi, scritta */
   --omg-evil-band: #6a1316;
   --omg-evil-bar: #e8232f;
@@ -165,3 +172,18 @@
   --omg-stat: #e05ef0;
   --omg-stat-lo: #a632c4;
 }
+
+/* ---------- icone del gioco (asset di Koin Games, 13/11/2026: PNG 128 × 128 trasparenti) ---------- */
+.omg-ico--atk { background-image: url("icons/stat-power.png"); }
+.omg-ico--hp { background-image: url("icons/stat-health.png"); }
+.omg-ico--mana { background-image: url("icons/stat-mana.png"); }
+.omg-kwi--move { background-image: url("icons/kw-move.png"); }
+.omg-kwi--deathtouch { background-image: url("icons/kw-deathtouch.png"); }
+.omg-kwi--defender { background-image: url("icons/kw-defender.png"); }
+.omg-kwi--double-attack { background-image: url("icons/kw-double-attack.png"); }
+.omg-kwi--first-strike { background-image: url("icons/kw-first-strike.png"); }
+.omg-kwi--rebirth { background-image: url("icons/kw-rebirth.png"); }
+.omg-kwi--shield { background-image: url("icons/kw-shield.png"); }
+.omg-kwi--snipe { background-image: url("icons/kw-snipe.png"); }
+.omg-kwi--stun { background-image: url("icons/kw-stun.png"); }
+.omg-kwi--trample { background-image: url("icons/kw-trample.png"); }

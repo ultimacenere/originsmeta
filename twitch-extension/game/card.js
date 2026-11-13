@@ -793,6 +793,36 @@
       else if (l === "zh-cn") KEYWORDS_ZH.push(n);
       else KEYWORDS.push(n);
     }
+  var KW_ICON = {
+    Move: "move",
+    Deathtouch: "deathtouch",
+    Defender: "defender",
+    DoubleAttack: "double-attack",
+    FirstStrike: "first-strike",
+    Rebirth: "rebirth",
+    Shield: "shield",
+    Snipe: "snipe",
+    Stun: "stun",
+    Stunned: "stun",
+    Trample: "trample"
+  };
+  var ICON_BY_NAME = /* @__PURE__ */ new Map();
+  var ICON_BY_RU_STEM = /* @__PURE__ */ new Map();
+  for (const [id, ico] of Object.entries(KW_ICON))
+    for (const [l, { n }] of Object.entries(KEYWORD_INFO[id] ?? {})) {
+      ICON_BY_NAME.set(n.toLowerCase(), ico);
+      if (l === "ru") ICON_BY_RU_STEM.set(n.split(" ")[0].slice(0, 4).toLowerCase(), ico);
+    }
+  function keywordIcon(word) {
+    const w = word.replace(/:$/, "").trim().toLowerCase();
+    const hit = ICON_BY_NAME.get(w);
+    if (hit) return hit;
+    if (!/^[а-яё]/.test(w)) return null;
+    const first = w.split(" ")[0];
+    for (const [stem, ico] of ICON_BY_RU_STEM) if (first.startsWith(stem)) return ico;
+    return null;
+  }
+  var kwIcon = (ico) => ({ tag: "i", cls: `omg-kwi omg-kwi--${ico}`, attrs: { "aria-hidden": "true" } });
   var escRe = (k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   var longFirst = (a, b) => b.length - a.length;
   var KW = [
@@ -813,11 +843,7 @@
   var txt = (text) => ({ text });
   var svgEl = (tag, attrs, style, kids) => ({ tag, svg: true, attrs, style, kids });
   function icon(kind) {
-    return svgEl("svg", { class: `omg-ico omg-ico--${kind}`, viewBox: kind === "atk" ? "0 0 40 72" : "0 0 60 52", "aria-hidden": "true" }, void 0, [
-      svgEl("path", {
-        d: kind === "atk" ? "M20 1 L31 13 L31 46 L9 46 L9 13 Z M1.5 45 H38.5 V54 H1.5 Z M14.5 53 H25.5 V65 H14.5 Z" : "M30 50 C22 42 4 31 4 17 C4 8 11 3 18 3 C24 3 28 7 30 11 C32 7 36 3 42 3 C49 3 56 8 56 17 C56 31 38 42 30 50 Z"
-      })
-    ]);
+    return { tag: "i", cls: `omg-ico omg-ico--${kind}`, attrs: { "aria-hidden": "true" } };
   }
   function abilityNodes(text) {
     return String(text || "").split("\n").map((line) => {
@@ -843,7 +869,8 @@
         if (new RegExp(`^(?:${ANY})$`).test(part)) return void kids.push(el("i", "omg-any", [txt(part)]));
         if (new RegExp(`^${HEAL}$`).test(part)) return void kids.push(el("b", "omg-heal", [txt(part)]));
         if (/^\d/.test(part)) return void kids.push(el("b", "omg-dmg", [txt(part)]));
-        kids.push(el("b", "omg-kw", [txt(part)]));
+        const ico = keywordIcon(part);
+        kids.push(ico ? el("b", "omg-kw omg-nowrap", [kwIcon(ico), txt(part)]) : el("b", "omg-kw", [txt(part)]));
       });
       return el("p", void 0, kids);
     });
@@ -951,7 +978,10 @@
     return el(
       "div",
       "omg-tips",
-      tips.map((k) => el("div", "omg-tip", [el("p", "omg-tip-title", [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))])),
+      tips.map((k) => {
+        const ico = keywordIcon(k.n);
+        return el("div", "omg-tip", [el("p", "omg-tip-title", ico ? [kwIcon(ico), txt(k.n)] : [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))]);
+      }),
       { attrs: { lang } }
     );
   }

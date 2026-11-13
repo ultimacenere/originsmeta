@@ -172,7 +172,12 @@
   align-items: center;
   font-weight: 400;
   font-size: 7.2cqw;
-  line-height: 1.13;
+  /* come il gioco (CardText_Style.txt di Koin): interlinea 1,1 e ombra netta in basso a destra. Koin scrive anche
+     "tracking -6 di TextMeshPro, circa -0.06em", ma sovrapposta allo screenshot della 0.8.2 (Billy, 13/11/2026) la
+     carta coincide con lo spazio normale e con -0.06em le parole si attaccano: si tiene 0 (variabile per riprovare) */
+  letter-spacing: var(--omg-text-tracking, 0);
+  line-height: 1.1;
+  text-shadow: 0.04em 0.04em 0 var(--omg-shadow);
   white-space: pre-line;
   overflow: hidden;
 }
@@ -196,34 +201,35 @@
   margin: 0;
 }
 .omg-kw {
-  font-weight: 800;
+  font-weight: 700;
 }
 .omg-dmg {
-  font-weight: 800;
+  font-weight: 700;
   color: var(--omg-damage);
 }
 .omg-heal {
-  font-weight: 800;
+  font-weight: 700;
   color: var(--omg-heal);
 }
 .omg-any {
   font-style: italic;
 }
-.omg-ico {
+/* icone del gioco nel testo (le immagini in theme.css): forza, salute e mana, e quella davanti al nome di una parola
+   chiave */
+.omg-ico,
+.omg-kwi {
   display: inline-block;
-  width: 0.62em;
-  height: 0.95em;
-  margin: 0 0.04em;
-  vertical-align: -0.16em;
+  width: 1em;
+  height: 1em;
+  margin: 0 0.05em;
+  vertical-align: -0.18em;
+  /* proprietà separate: lo shorthand `background` cancellerebbe l'immagine messa da theme.css */
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
-.omg-ico--atk {
-  fill: var(--omg-buff);
-}
-.omg-ico--hp {
-  width: 0.9em;
-  height: 0.8em;
-  vertical-align: -0.08em;
-  fill: var(--omg-damage);
+.omg-kwi {
+  margin: 0 0.18em 0 0;
 }
 
 /* ---------- statistiche ---------- */
@@ -246,7 +252,7 @@
 }
 .omg-num {
   font-family: var(--omg-font-num);
-  font-weight: 900;
+  font-weight: 700;
   font-size: 26cqw;
   line-height: 0.8;
   color: var(--omg-ink);
@@ -325,6 +331,21 @@
   padding-left: 19%;
 }
 
+/* statistiche cambiate in partita, coi colori del gioco (CardText_Style.txt): classi pronte per quando l'overlay
+   riceverà lo stato della partita */
+.omg-num.is-up {
+  color: var(--omg-stat-up);
+}
+.omg-num.is-down {
+  color: var(--omg-stat-down);
+}
+.omg-gem-num.is-down {
+  color: var(--omg-mana-down);
+}
+.omg-gem-num.is-up {
+  color: var(--omg-mana-up);
+}
+
 /* l'anteprima al passaggio del mouse nell'app Tracker (tracker/src/overlay/cardPeek.ts): posizione da script */
 .omg-peek {
   position: fixed;
@@ -375,6 +396,8 @@
   box-shadow: 0 2cqw 5cqw rgba(6, 3, 16, 0.55);
   color: var(--omg-ink);
   text-align: left;
+  /* la stessa ombra netta del testo della carta (screenshot della 0.8.2) */
+  text-shadow: 0.04em 0.04em 0 var(--omg-shadow);
   -webkit-font-smoothing: antialiased;
 }
 .omg-tip {
@@ -386,7 +409,7 @@
 .omg-tip-title {
   margin: 0 0 1.6cqw;
   font-family: var(--omg-font-ui);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 11.5cqw;
   line-height: 1.05;
   text-transform: uppercase;
@@ -395,10 +418,7 @@
 .omg-tip-text {
   margin: 0;
   font-family: var(--omg-font-ui);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 8.6cqw;
   line-height: 1.22;
-}
-.omg-tip-text .omg-ico {
-  width: 0.55em;
 }

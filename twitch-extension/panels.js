@@ -130,7 +130,10 @@
       noScanner: "Turn on the screen scanner in the app for live updates.",
       close: "Close",
       legendary: "Legendary",
-      brand: "Tracker \xB7 not affiliated with Koin Games"
+      brand: "Tracker \xB7 not affiliated with Koin Games",
+      graveyard: "Graveyard",
+      graveTip: "Estimate: your characters the tracker saw die or be discarded this match",
+      graveTipOpp: "Estimate: the opponent's characters the tracker saw die this match (cards they discard don't show)"
     },
     it: {
       choose: "Scegli un mazzo nel gioco",
@@ -153,7 +156,10 @@
       noScanner: "Accendi lo scanner dello schermo nell'app per gli aggiornamenti dal vivo.",
       close: "Chiudi",
       legendary: "Leggendaria",
-      brand: "Tracker \xB7 non affiliato a Koin Games"
+      brand: "Tracker \xB7 non affiliato a Koin Games",
+      graveyard: "Cimitero",
+      graveTip: "Stima: i tuoi personaggi che il tracker ha visto morire o scartare in questa partita",
+      graveTipOpp: "Stima: i personaggi dell'avversario che il tracker ha visto morire in questa partita (le carte che scarta non si vedono)"
     },
     es: {
       choose: "Elige un mazo en el juego",
@@ -176,7 +182,10 @@
       noScanner: "Activa el esc\xE1ner de pantalla en la app para las actualizaciones en vivo.",
       close: "Cerrar",
       legendary: "Legendaria",
-      brand: "Tracker \xB7 sin afiliaci\xF3n con Koin Games"
+      brand: "Tracker \xB7 sin afiliaci\xF3n con Koin Games",
+      graveyard: "Cementerio",
+      graveTip: "Estimaci\xF3n: tus personajes que el tracker vio morir o descartar en esta partida",
+      graveTipOpp: "Estimaci\xF3n: los personajes del rival que el tracker vio morir en esta partida (las cartas que descarta no se ven)"
     }
   };
   var esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -212,6 +221,14 @@
       </div>`;
     }
     const seenCard = (c) => `<li class="gc" title="${esc(c.name)}"${keyAttr(c)}>${cardImg(c)}${c.copies > 1 ? `<span class="left">\xD7${c.copies}</span>` : ""}</li>`;
+    const graveIcon = `<svg class="gicon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 15V7.5a4.5 4.5 0 0 1 9 0V15z" /><path class="gcross" d="M8 5.5v5M6 7.5h4" /></svg>`;
+    function graveSection(v, names = false) {
+      if (!v.showGraveyard || !v.live) return "";
+      const list = v.live.graveyard[view];
+      const total = list.reduce((n, c) => n + c.copies, 0);
+      const items = names ? `<ul class="nlist">${list.map((c) => nameRow(c, false, true)).join("")}</ul>` : `<ul class="ggrid">${list.map((c) => `<li class="gc gcard" title="${esc(c.name)}"${keyAttr(c)}>${cardImg(c)}${c.copies > 1 ? `<span class="gx">\xD7${c.copies}</span>` : ""}</li>`).join("")}</ul>`;
+      return `<section class="grave" title="${esc(view === "opp" ? L.graveTipOpp : L.graveTip)}"><div class="ghead">${graveIcon}<span>${esc(L.graveyard)}</span><b>${total}</b></div>${list.length ? items : ""}</section>`;
+    }
     const miniLogo = `<span class="om-word"><i class="om-mark" aria-hidden="true"></i>OriginsMeta</span>`;
     function myCards(v, zoom) {
       const leg = v.deck?.legendary ?? null;
@@ -229,7 +246,7 @@
     function stripPanel(v, zoom, grip, fine) {
       const seen = v.live?.opponent.seen.length ?? 0;
       const row = view === "opp" ? `${oppCards(v)}${seen ? "" : `<li class="swait">${esc(L.oppWaiting)}</li>`}` : v.deck ? myCards(v, zoom) : `<li class="swait">${esc(L.choose)}</li>`;
-      return `<div class="tab stab">${tabContent()}</div><ul class="srow">${row}</ul>${fine}${grip}`;
+      return `<div class="tab stab">${tabContent()}</div><ul class="srow">${row}</ul>${graveSection(v)}${fine}${grip}`;
     }
     function legBand(c, mine, live, zoom = "") {
       if (!c) return `<div class="legband unknown"><span class="ngem">?</span><span class="lb-name">${esc(L.legendary)}</span></div>`;
@@ -251,7 +268,7 @@
         const total = (v.deck.legendary?.copies ?? 0) + v.deck.cards.reduce((n, c) => n + c.copies, 0);
         body = `${v.deck.legendary ? legBand(v.deck.legendary, true, Boolean(live), zoom) : ""}<ul class="cgrid">${v.deck.cards.map((c) => myCard(c, Boolean(live))).join("")}</ul>${deckLeftStat(live?.deckLeft ?? null, total)}`;
       } else body = `<p class="muted pad">${esc(L.choose)}</p>`;
-      return `<div class="tab ctab">${tabContent()}</div>${body}${fine}${grip}`;
+      return `<div class="tab ctab">${tabContent()}</div>${body}${graveSection(v)}${fine}${grip}`;
     }
     function nameRow(c, mine, live, cls = "") {
       const left = mine ? live ? Math.max(0, c.copies - c.drawn) : c.copies : c.copies;
@@ -290,7 +307,7 @@
         if (c.me.life) stats.push(stat(lifePips(live ? live.life.me : null), L.life));
       } else waiting = `<p class="muted pad">${esc(L.choose)}</p>`;
       const list = items.length ? `<ul class="${names ? "nlist" : "cgrid"} ccards">${items.join("")}</ul>` : "";
-      return `<div class="chead">${miniLogo}${close}</div><div class="cust or-${c.orientation === "horizontal" ? "h" : "v"}"><div class="cmain">${list}${waiting}</div>${stats.length ? `<div class="cstats">${stats.join("")}</div>` : ""}</div>${fine}${grip}`;
+      return `<div class="chead">${miniLogo}${close}</div><div class="cust or-${c.orientation === "horizontal" ? "h" : "v"}"><div class="cmain">${list}${waiting}${graveSection(v, names)}</div>${stats.length ? `<div class="cstats">${stats.join("")}</div>` : ""}</div>${fine}${grip}`;
     }
     function paint(root, layout, v, zoom) {
       const shape = shapeOf(layout, view);
@@ -372,6 +389,8 @@
   function inside(outer, inner) {
     return { x: outer.x + inner.x * outer.w, y: outer.y + inner.y * outer.h, w: inner.w * outer.w, h: inner.h * outer.h };
   }
+  var START_OPP_LEGENDARY = { x: 1680 / 1920, y: 88 / 1080, w: 188 / 1920, h: 274 / 1080 };
+  var SLAB_CARD = { x: 47 / 480, y: 147 / 770, w: 390 / 480, h: 566 / 770 };
   var MANA_TEXT = { x: 1800 / SW, y: 578 / SH, w: 100 / SW, h: 36 / SH };
   var GLYPHS = [
     ["/", 0.52, "....####|...#####|...####.|...####.|..####..|..####..|..####..|.####...|.####...|####....|####....|####...."],
@@ -446,7 +465,9 @@
           deckLeft: live.opp.deckLeft,
           legendary: live.opp.legendary ? deckCard(table, live.opp.legendary, 1, 1, 1) : null,
           seen: live.opp.seen.map(([k, n]) => deckCard(table, k, n, n, n))
-        }
+        },
+        // i cimiteri (05/11/2026) non arrivano ancora all'estensione: lo stato dal vivo non li porta
+        graveyard: { me: [], opp: [] }
       } : null,
       custom: s.ui?.custom ?? null,
       hidden: s.ui?.hidden ?? false,

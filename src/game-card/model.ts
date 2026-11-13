@@ -96,6 +96,44 @@ for (const byLang of Object.values(KEYWORD_INFO))
     else KEYWORDS.push(n);
   }
 
+/**
+ * Le icone che il gioco mette davanti al nome di una parola chiave, nel testo della carta e nel riquadro (asset di Koin
+ * Games del 13/11/2026, src/game-card/icons/kw-*.png; le classi con il file stanno in theme.css). Stun e Stunned,
+ * DoubleAttack e la vecchia DoubleStrike, Move e CanMove hanno la stessa immagine.
+ */
+const KW_ICON: Record<string, string> = {
+  Move: "move",
+  Deathtouch: "deathtouch",
+  Defender: "defender",
+  DoubleAttack: "double-attack",
+  FirstStrike: "first-strike",
+  Rebirth: "rebirth",
+  Shield: "shield",
+  Snipe: "snipe",
+  Stun: "stun",
+  Stunned: "stun",
+  Trample: "trample",
+};
+const ICON_BY_NAME = new Map<string, string>();
+const ICON_BY_RU_STEM = new Map<string, string>();
+for (const [id, ico] of Object.entries(KW_ICON))
+  for (const [l, { n }] of Object.entries(KEYWORD_INFO[id] ?? {})) {
+    ICON_BY_NAME.set(n.toLowerCase(), ico);
+    // il russo declina: "Щитом", "Пробивным ударом" prendono l'icona dalla radice della prima parola
+    if (l === "ru") ICON_BY_RU_STEM.set(n.split(" ")[0].slice(0, 4).toLowerCase(), ico);
+  }
+/** L'icona di una parola chiave trovata nel testo (con o senza i due punti), o null. */
+export function keywordIcon(word: string): string | null {
+  const w = word.replace(/:$/, "").trim().toLowerCase();
+  const hit = ICON_BY_NAME.get(w);
+  if (hit) return hit;
+  if (!/^[а-яё]/.test(w)) return null;
+  const first = w.split(" ")[0];
+  for (const [stem, ico] of ICON_BY_RU_STEM) if (first.startsWith(stem)) return ico;
+  return null;
+}
+const kwIcon = (ico: string): GcNode => ({ tag: "i", cls: `omg-kwi omg-kwi--${ico}`, attrs: { "aria-hidden": "true" } });
+
 const escRe = (k: string) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const longFirst = (a: string, b: string) => b.length - a.length;
 const KW = [
@@ -124,13 +162,9 @@ const el = (tag: string, cls?: string, kids?: GcNode[], extra?: Partial<GcNode>)
 const txt = (text: string): GcNode => ({ text });
 const svgEl = (tag: string, attrs: Record<string, string>, style?: Record<string, string>, kids?: GcNode[]): GcNode => ({ tag, svg: true, attrs, style, kids });
 
-/** Le icone nel testo: la spada d'oro e il cuore rosso. */
+/** Le icone nel testo: la spada d'oro e il cuore rosso del gioco (icons/stat-power.png e stat-health.png, asset di Koin). */
 function icon(kind: "atk" | "hp"): GcNode {
-  return svgEl("svg", { class: `omg-ico omg-ico--${kind}`, viewBox: kind === "atk" ? "0 0 40 72" : "0 0 60 52", "aria-hidden": "true" }, undefined, [
-    svgEl("path", {
-      d: kind === "atk" ? "M20 1 L31 13 L31 46 L9 46 L9 13 Z M1.5 45 H38.5 V54 H1.5 Z M14.5 53 H25.5 V65 H14.5 Z" : "M30 50 C22 42 4 31 4 17 C4 8 11 3 18 3 C24 3 28 7 30 11 C32 7 36 3 42 3 C49 3 56 8 56 17 C56 31 38 42 30 50 Z",
-    }),
-  ]);
+  return { tag: "i", cls: `omg-ico omg-ico--${kind}`, attrs: { "aria-hidden": "true" } };
 }
 
 /** Il testo dell'abilità con le evidenziazioni del gioco: un paragrafo per riga. */
@@ -160,7 +194,9 @@ export function abilityNodes(text: string): GcNode[] {
         if (new RegExp(`^(?:${ANY})$`).test(part)) return void kids.push(el("i", "omg-any", [txt(part)]));
         if (new RegExp(`^${HEAL}$`).test(part)) return void kids.push(el("b", "omg-heal", [txt(part)]));
         if (/^\d/.test(part)) return void kids.push(el("b", "omg-dmg", [txt(part)]));
-        kids.push(el("b", "omg-kw", [txt(part)]));
+        const ico = keywordIcon(part);
+        // icona e parola chiave sulla stessa riga
+        kids.push(ico ? el("b", "omg-kw omg-nowrap", [kwIcon(ico), txt(part)]) : el("b", "omg-kw", [txt(part)]));
       });
       return el("p", undefined, kids);
     });
@@ -286,7 +322,10 @@ export function gameCardTipsTree(c: GameCardInput, lang: GameCardLang): GcNode |
   return el(
     "div",
     "omg-tips",
-    tips.map((k) => el("div", "omg-tip", [el("p", "omg-tip-title", [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))])),
+    tips.map((k) => {
+      const ico = keywordIcon(k.n);
+      return el("div", "omg-tip", [el("p", "omg-tip-title", ico ? [kwIcon(ico), txt(k.n)] : [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))]);
+    }),
     { attrs: { lang } },
   );
 }

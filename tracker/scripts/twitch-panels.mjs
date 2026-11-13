@@ -37,7 +37,7 @@ fs.writeFileSync(path.join(out, "panels.css"), `/* OriginsMeta Deck tracker: il 
 fs.mkdirSync(path.join(out, "fonts"), { recursive: true });
 for (const f of fs.readdirSync(path.join(root, "assets/fonts"))) fs.copyFileSync(path.join(root, "assets/fonts", f), path.join(out, "fonts", f));
 // La carta del gioco (13/11/2026, src/game-card/): lo stesso modello del sito e dell'app, in twitch-extension/game/
-// (card.js da browser.ts, theme.css, card.css e i font). Da rilanciare quando cambia qualcosa in src/game-card/.
+// (card.js da browser.ts, theme.css, card.css, i font e le icone del gioco). Da rilanciare quando cambia qualcosa in src/game-card/.
 const gameSrc = path.resolve(root, "..", "src", "game-card");
 const gameOut = path.join(out, "game");
 fs.mkdirSync(path.join(gameOut, "fonts"), { recursive: true });
@@ -54,5 +54,8 @@ await build({
   logLevel: "warning",
 });
 for (const f of ["theme.css", "card.css"]) fs.copyFileSync(path.join(gameSrc, f), path.join(gameOut, f));
-for (const f of fs.readdirSync(path.join(gameSrc, "fonts"))) fs.copyFileSync(path.join(gameSrc, "fonts", f), path.join(gameOut, "fonts", f));
+for (const dir of ["fonts", "icons"]) {
+  fs.mkdirSync(path.join(gameOut, dir), { recursive: true });
+  for (const f of fs.readdirSync(path.join(gameSrc, dir))) fs.copyFileSync(path.join(gameSrc, dir, f), path.join(gameOut, dir, f));
+}
 console.log("pannelli per l'estensione Twitch: twitch-extension/panels.js, panels.css, fonts/, game/");
