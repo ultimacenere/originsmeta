@@ -15,6 +15,13 @@ export const UPDATE_TAG_PREFIX = "analytics-v";
 export const UPDATE_ASSET = "OriginsMeta-Tracker-win-x64.zip";
 /** Lo zip col nome di prima della 0.4.0: lo cercano le app 0.3.x per aggiornarsi. */
 export const LEGACY_UPDATE_ASSET = "OriginsMeta-Analytics-win-x64.zip";
+/**
+ * L'AppImage per Linux (0.6.0, 13/11/2026), nella stessa release dello zip di Windows: lo costruisce e lo aggiunge
+ * GitHub Actions quando la release viene pubblicata (.github/workflows/tracker-linux.yml).
+ */
+export const LINUX_UPDATE_ASSET = "OriginsMeta-Tracker-linux-x86_64.AppImage";
+/** Il file da cercare nelle release per questa piattaforma. */
+export const updateAssetFor = (platform: NodeJS.Platform): string => (platform === "linux" ? LINUX_UPDATE_ASSET : UPDATE_ASSET);
 export const UPDATE_API = `https://api.github.com/repos/${UPDATE_REPO}/releases?per_page=20`;
 
 export type Version = [number, number, number];
@@ -34,16 +41,17 @@ export function isNewer(a: string, b: string): boolean {
   return false;
 }
 
-/** L'indirizzo dello zip è quello di una release del nostro repo su github.com, con il nome fisso. */
-export function trustedAssetUrl(url: unknown, version: string): boolean {
-  return url === `https://github.com/${UPDATE_REPO}/releases/download/${UPDATE_TAG_PREFIX}${version}/${UPDATE_ASSET}`;
+/** L'indirizzo del file è quello di una release del nostro repo su github.com, con il nome fisso. */
+export function trustedAssetUrl(url: unknown, version: string, asset = UPDATE_ASSET): boolean {
+  return url === `https://github.com/${UPDATE_REPO}/releases/download/${UPDATE_TAG_PREFIX}${version}/${asset}`;
 }
 
 /**
  * La release più nuova dell'app fra quelle che restituisce l'API di GitHub (array di release): tag `analytics-v…`,
- * pubblicata, non prerelease, con lo zip dal nome fisso. Null se non ce n'è una valida.
+ * pubblicata, non prerelease, con il file dal nome fisso (lo zip di Windows o, su Linux, l'AppImage). Null se non ce
+ * n'è una valida: una release ancora senza il file di questa piattaforma si salta.
  */
-export function pickRelease(data: unknown): Release | null {
+export function pickRelease(data: unknown, assetName = UPDATE_ASSET): Release | null {
   if (!Array.isArray(data)) return null;
   let best: Release | null = null;
   for (const r of data) {
@@ -52,11 +60,11 @@ export function pickRelease(data: unknown): Release | null {
     if (rel.draft !== false || rel.prerelease !== false || typeof rel.tag_name !== "string" || !rel.tag_name.startsWith(UPDATE_TAG_PREFIX)) continue;
     const version = rel.tag_name.slice(UPDATE_TAG_PREFIX.length);
     if (!parseVersion(version)) continue;
-    const asset = Array.isArray(rel.assets) ? (rel.assets as { name?: unknown; size?: unknown; browser_download_url?: unknown; state?: unknown }[]).find((a) => a && a.name === UPDATE_ASSET) : undefined;
+    const asset = Array.isArray(rel.assets) ? (rel.assets as { name?: unknown; size?: unknown; browser_download_url?: unknown; state?: unknown }[]).find((a) => a && a.name === assetName) : undefined;
     if (!asset || (asset.state !== undefined && asset.state !== "uploaded")) continue;
     const size = Number(asset.size);
     if (!Number.isInteger(size) || size < 10_000_000 || size > 600_000_000) continue;
-    if (!trustedAssetUrl(asset.browser_download_url, version)) continue;
+    if (!trustedAssetUrl(asset.browser_download_url, version, assetName)) continue;
     if (!best || isNewer(version, best.version)) best = { version, url: asset.browser_download_url as string, size };
   }
   return best;
@@ -107,6 +115,23 @@ export function installScript(input: { pid: number; source: string; target: stri
     "endlocal",
     "",
   ].join("\r\n");
+}
+
+/**
+ * Un AppImage vero (Linux, 0.6.0): un programma ELF con il segno "AI" e il tipo 2 all'ottavo byte (specifica AppImage).
+ * Basta guardare i primi 16 byte del file scaricato.
+ */
+export function isAppImage(head: Uint8Array): boolean {
+  return head.length >= 11 && head[0] === 0x7f && head[1] === 0x45 && head[2] === 0x4c && head[3] === 0x46 && head[8] === 0x41 && head[9] === 0x49 && head[10] === 0x02;
+}
+
+/**
+ * Linux (0.6.0): la riga di comando che, chiusa l'app, riapre l'AppImage aggiornato. Una shell di sistema aspetta che il
+ * processo dell'app (`$1`) sia finito e poi apre l'AppImage (`$2`), che a quel punto è già quello nuovo (updater.ts lo
+ * mette al posto del vecchio prima di chiudere). Percorsi e pid passano come argomenti, mai dentro lo script.
+ */
+export function relaunchCommand(pid: number, appImage: string): string[] {
+  return ["/bin/sh", "-c", 'n=0; while kill -0 "$1" 2>/dev/null && [ "$n" -lt 120 ]; do sleep 0.5; n=$((n+1)); done; exec "$2"', "originsmeta-update", String(Math.trunc(pid)), appImage];
 }
 
 /**

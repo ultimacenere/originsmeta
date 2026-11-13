@@ -14,13 +14,18 @@
  * partita, perché "in partita" lo diceva lo scanner e in una finestra piccola il mana si legge a tratti; e la console
  * dello script si vedeva. Adesso si installa solo a gioco chiuso (`canInstall`) e lo script parte nascosto
  * (`launcherScript`).
+ *
+ * **Linux** (0.6.0, 13/11/2026): solo l'AppImage si aggiorna da sé (`APPIMAGE`, il suo file). Scarica l'AppImage nuovo
+ * accanto a quello in uso (stesso disco), controlla dimensione e primi byte, e a gioco chiuso lo mette al posto del
+ * vecchio con un rename: l'app in uso continua dal file vecchio, che il sistema tiene finché è aperto. Poi una shell di
+ * sistema aspetta la chiusura dell'app e riapre l'AppImage (`relaunchCommand`). Niente script sul disco.
  */
 import { app, net } from "electron";
 import { execFile, spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { installScript, isNewer, launcherScript, pickRelease, UPDATE_API, UPDATE_ASSET, type Release, type UpdateNotice } from "./updateRules";
+import { installScript, isAppImage, isNewer, launcherScript, pickRelease, relaunchCommand, UPDATE_API, UPDATE_ASSET, updateAssetFor, type Release, type UpdateNotice } from "./updateRules";
 import { EXE_NAME, LEGACY_EXE_NAME, exeAfterUpdate } from "./appIdentity";
 
 /** Primo controllo dopo l'avvio (ORIGINSMETA_UPDATE_DELAY_MS per le prove). */
@@ -28,6 +33,14 @@ export const UPDATE_FIRST_MS = Number(process.env.ORIGINSMETA_UPDATE_DELAY_MS) |
 export const UPDATE_EVERY_MS = 3 * 60 * 60_000;
 /** Con il gioco aperto non si riavvia: si riprova fra 2 minuti. */
 export const UPDATE_RETRY_MS = 2 * 60_000;
+
+const LINUX = process.platform === "linux";
+
+/** Linux: l'AppImage in uso (il file, non la cartella montata), o null se l'app non gira da un AppImage. */
+function appImageFile(): string | null {
+  const file = process.env.APPIMAGE;
+  return LINUX && file && path.isAbsolute(file) ? file : null;
+}
 
 export type UpdateState = { state: "idle" | "downloading" | "ready" | "installing" | "error"; version: string | null };
 
@@ -55,7 +68,9 @@ export class Updater {
   }
 
   get enabled(): boolean {
-    return (app.isPackaged || Boolean(process.env.ORIGINSMETA_UPDATE_FROM)) && process.env.ORIGINSMETA_NO_UPDATE !== "1" && process.platform === "win32";
+    const wanted = (app.isPackaged || Boolean(process.env.ORIGINSMETA_UPDATE_FROM)) && process.env.ORIGINSMETA_NO_UPDATE !== "1";
+    // su Linux solo l'AppImage: un'app installata in un altro modo la aggiorna chi l'ha installata
+    return wanted && (process.platform === "win32" || Boolean(appImageFile()));
   }
 
   start(): void {
@@ -84,14 +99,14 @@ export class Updater {
     try {
       const res = await net.fetch(UPDATE_API, { headers: { accept: "application/vnd.github+json", "user-agent": `OriginsMeta-Tracker/${this.current}` } });
       if (!res.ok) throw new Error(`github ${res.status}`);
-      const rel = pickRelease(await res.json());
+      const rel = pickRelease(await res.json(), updateAssetFor(process.platform));
       if (!rel || !isNewer(rel.version, this.current)) {
         this.again(UPDATE_EVERY_MS);
         return;
       }
       // avviso subito, così chi apre l'app solo per giocare sa che deve aspettare a lanciare il gioco
       this.deps.notify?.("found", rel.version);
-      const dir = await this.download(rel);
+      const dir = LINUX ? await this.downloadAppImage(rel) : await this.download(rel);
       this.set({ state: "ready", version: rel.version });
       await this.installWhenIdle(dir, rel.version);
     } catch {
@@ -102,6 +117,27 @@ export class Updater {
     }
   }
 
+  /** Scarica il file della release in `file`, fermandosi se supera la dimensione dichiarata da GitHub. */
+  private async fetchTo(rel: Release, file: string): Promise<void> {
+    const res = await net.fetch(rel.url, { headers: { "user-agent": `OriginsMeta-Tracker/${this.current}` } });
+    if (!res.ok || !res.body) throw new Error(`download ${res.status}`);
+    const out = fs.createWriteStream(file);
+    let got = 0;
+    try {
+      const reader = res.body.getReader();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        got += value.length;
+        if (got > rel.size) throw new Error("file più grande del previsto");
+        if (!out.write(Buffer.from(value))) await new Promise<void>((r) => out.once("drain", () => r()));
+      }
+    } finally {
+      await new Promise<void>((resolve, reject) => out.end((e?: Error | null) => (e ? reject(e) : resolve())));
+    }
+    if (got !== rel.size || fs.statSync(file).size !== rel.size) throw new Error("dimensione del file diversa");
+  }
+
   /** Scarica e scompatta; restituisce la cartella con l'app nuova (quella che contiene l'exe). */
   private async download(rel: Release): Promise<string> {
     this.set({ state: "downloading", version: rel.version });
@@ -109,20 +145,7 @@ export class Updater {
     fs.rmSync(base, { recursive: true, force: true });
     fs.mkdirSync(base, { recursive: true });
     const zip = path.join(base, UPDATE_ASSET);
-    const res = await net.fetch(rel.url, { headers: { "user-agent": `OriginsMeta-Tracker/${this.current}` } });
-    if (!res.ok || !res.body) throw new Error(`download ${res.status}`);
-    const out = fs.createWriteStream(zip);
-    let got = 0;
-    const reader = res.body.getReader();
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      got += value.length;
-      if (got > rel.size) throw new Error("zip più grande del previsto");
-      if (!out.write(Buffer.from(value))) await new Promise<void>((r) => out.once("drain", () => r()));
-    }
-    await new Promise<void>((resolve, reject) => out.end((e?: Error | null) => (e ? reject(e) : resolve())));
-    if (got !== rel.size || fs.statSync(zip).size !== rel.size) throw new Error("dimensione dello zip diversa");
+    await this.fetchTo(rel, zip);
     const unpacked = path.join(base, "app");
     fs.mkdirSync(unpacked, { recursive: true });
     const tar = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "tar.exe");
@@ -135,6 +158,34 @@ export class Updater {
     return found;
   }
 
+  /**
+   * Linux: scarica l'AppImage nuovo accanto a quello in uso, con un nome nascosto (così il cambio è un rename sullo
+   * stesso disco), e lo rende eseguibile; restituisce il suo percorso. Un file che non è un AppImage si butta.
+   */
+  private async downloadAppImage(rel: Release): Promise<string> {
+    this.set({ state: "downloading", version: rel.version });
+    const target = appImageFile();
+    if (!target) throw new Error("l'app non gira da un AppImage");
+    const file = path.join(path.dirname(target), `.${path.basename(target)}.${rel.version}.download`);
+    fs.rmSync(file, { force: true });
+    try {
+      await this.fetchTo(rel, file);
+      const head = Buffer.alloc(16);
+      const fd = fs.openSync(file, "r");
+      try {
+        fs.readSync(fd, head, 0, head.length, 0);
+      } finally {
+        fs.closeSync(fd);
+      }
+      if (!isAppImage(head)) throw new Error("il file scaricato non è un AppImage");
+      fs.chmodSync(file, 0o755);
+      return file;
+    } catch (e) {
+      fs.rmSync(file, { force: true });
+      throw e;
+    }
+  }
+
   private async installWhenIdle(source: string, version: string): Promise<void> {
     if (!(await this.deps.canInstall().catch(() => false))) {
       if (this.askedToClose !== version) {
@@ -145,6 +196,16 @@ export class Updater {
       return;
     }
     this.set({ state: "installing", version });
+    if (LINUX) {
+      try {
+        this.installAppImage(source);
+      } catch {
+        // AppImage in una cartella in sola lettura, file sparito: si riprova al prossimo giro
+        this.set({ state: "error", version });
+        this.again(UPDATE_EVERY_MS);
+      }
+      return;
+    }
     const target = path.dirname(process.execPath);
     const script = path.join(path.dirname(source), "install.cmd");
     const exe = exeAfterUpdate(target, fs.existsSync(path.join(source, EXE_NAME)), process.execPath);
@@ -164,6 +225,23 @@ export class Updater {
     const child = spawn(wscript, ["//B", "//Nologo", launcher], { detached: true, stdio: "ignore", windowsHide: true });
     child.on("error", (e) => note(`errore dello script: ${e.message}`));
     note(`script avviato (pid ${child.pid ?? "?"}), app ${process.pid} ${this.current} -> ${version}`);
+    child.unref();
+    setTimeout(() => this.deps.quit(), 1500);
+  }
+
+  /**
+   * Linux: l'AppImage nuovo al posto di quello in uso (rename sullo stesso disco: l'app che gira continua dal file
+   * vecchio), poi una shell di sistema lo riapre appena l'app è chiusa (`relaunchCommand`).
+   */
+  private installAppImage(file: string): void {
+    const target = appImageFile();
+    if (!target) throw new Error("l'app non gira da un AppImage");
+    fs.renameSync(file, target);
+    const [cmd, ...args] = relaunchCommand(process.pid, target);
+    const child = spawn(cmd, args, { detached: true, stdio: "ignore" });
+    child.on("error", () => {
+      // la shell non parte: l'app si chiude lo stesso e il giocatore la riapre già aggiornata
+    });
     child.unref();
     setTimeout(() => this.deps.quit(), 1500);
   }

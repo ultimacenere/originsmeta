@@ -1,0 +1,103 @@
+# OriginsMeta Tracker per Linux (0.6.0, 13/11/2026; docs/tracker.md, "Linux"). L'AppImage si costruisce qui, su Ubuntu:
+# sul PC di sviluppo (Windows) mancano gli strumenti.
+#
+# - A ogni push che tocca l'app (qualunque branch): test dell'app su Linux, AppImage e prove su un X11 virtuale
+#   (tracker/scripts/linux-smoke.sh: apertura da una sessione Wayland, avvio "con il gioco", voci del desktop, ripresa di
+#   una finestra "Origins TCG", screenshot). AppImage, screenshot e registri restano fra gli artifact del run.
+# - Quando si pubblica una release `analytics-vX.Y.Z` (lo zip di Windows lo carica chi la crea, come sempre): lo stesso
+#   giro sul tag, poi l'AppImage va nella release con il nome fisso, quello che cercano l'aggiornamento automatico
+#   dell'app e il download del sito. La versione di tracker/package.json deve essere quella del tag, se no si ferma:
+#   un'app che si crede più vecchia della sua release si riscaricherebbe all'infinito.
+# - A mano (workflow_dispatch, da main): ricostruisce e ricarica l'AppImage di una release già pubblicata.
+#
+# Nessun secret: per caricare il file nella release basta il GITHUB_TOKEN del job, con il permesso di scrivere.
+name: Tracker per Linux
+
+on:
+  push:
+    # solo i branch: il tag della release lo segue l'evento `release`
+    branches: ["**"]
+    paths:
+      - "tracker/**"
+      - "src/lib/tracker/**"
+      - "src/lib/data/cards.ts"
+      - ".github/workflows/tracker-linux.yml"
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag della release (analytics-vX.Y.Z)"
+        required: true
+
+concurrency:
+  group: tracker-linux-${{ github.event.release.tag_name || inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'analytics-v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Versione dell'app uguale a quella della release
+        if: env.TAG != ''
+        run: |
+          v="$(node -p "require('./tracker/package.json').version")"
+          if [ "analytics-v$v" != "$TAG" ]; then
+            echo "::error::tracker/package.json dice $v, la release è $TAG"
+            exit 1
+          fi
+      - name: Dipendenze dell'app
+        working-directory: tracker
+        run: npm ci --no-audit --no-fund
+      - name: Test dell'app su Linux
+        working-directory: tracker
+        run: npm test
+      - name: Strumenti per le prove (X11 virtuale e window manager)
+        run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends xvfb openbox
+      - name: AppImage
+        working-directory: tracker
+        run: npm run package:linux
+      - name: Prove dell'AppImage
+        working-directory: tracker
+        run: bash scripts/linux-smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tracker-linux-${{ github.run_id }}
+          path: |
+            tracker/out/OriginsMeta-Tracker-linux-x86_64.AppImage
+            tracker/out/ci/
+          retention-days: 14
+          if-no-files-found: warn
+
+  publish:
+    needs: build
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tracker-linux-${{ github.run_id }}
+      - name: AppImage nella release
+        run: |
+          test -s OriginsMeta-Tracker-linux-x86_64.AppImage
+          gh release upload "$TAG" OriginsMeta-Tracker-linux-x86_64.AppImage --clobber --repo "$GITHUB_REPOSITORY"

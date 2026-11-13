@@ -21,6 +21,9 @@ test("il nome visibile è OriginsMeta Tracker, la cartella dei dati resta Origin
   assert.equal(dataDir(APPDATA), path.join(APPDATA, "OriginsMeta Analytics"));
   assert.equal(dataDir(APPDATA, ""), path.join(APPDATA, "OriginsMeta Analytics"));
   assert.equal(dataDir(APPDATA, "D:\\prove\\dati"), "D:\\prove\\dati", "ORIGINSMETA_TRACKER_DATA per le prove");
+  // su Linux (0.6.0) nessuna app di prima: la cartella ha il nome dell'app, e moveOldData non copia niente
+  assert.equal(dataDir("/home/gio/.config", null, "linux"), path.join("/home/gio/.config", "OriginsMeta Tracker"));
+  assert.equal(dataDir("/home/gio/.config", "/prove/dati", "linux"), "/prove/dati");
   // la cartella di prima del 01/10 da cui moveOldData copia: mai quella dei dati
   assert.equal(OLD_DATA_FOLDER, "OriginsMeta Tracker");
   assert.notEqual(OLD_DATA_FOLDER, DATA_FOLDER);

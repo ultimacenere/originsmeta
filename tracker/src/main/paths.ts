@@ -6,18 +6,29 @@
  * esiste più"): la sua cache resta sui PC e il watcher, che segue la cartella scritta più di recente, la prendeva per
  * buona quando non riconosceva le statistiche della release.
  *
- * Per i test e le prove: ORIGINSMETA_TRACKER_CACHE e ORIGINSMETA_TRACKER_REPLAYS (cartelle separate da `;`).
+ * Su Linux (0.6.0, 13/11/2026) le stesse cartelle stanno dentro il prefisso di Proton del gioco, in ogni libreria di
+ * Steam (linux.ts, `linuxGameDirs`).
+ *
+ * Per i test e le prove: ORIGINSMETA_TRACKER_CACHE e ORIGINSMETA_TRACKER_REPLAYS (cartelle separate da `;`, su Linux
+ * da `:`).
  */
 import path from "node:path";
+import { linuxGameDirs } from "./linux";
 
 export const PRODUCTS = ["Origins TCG", "Origins TCG Playtest"] as const;
 
 export type GameDirs = { cacheRoots: string[]; replayDirs: string[] };
 
-export function gameDirs(home: string, documents: string, env: Record<string, string | undefined> = process.env): GameDirs {
+export function gameDirs(home: string, documents: string, env: Record<string, string | undefined> = process.env, platform: NodeJS.Platform = process.platform): GameDirs {
   const list = (v: string | undefined) => (v ? v.split(path.delimiter).filter(Boolean) : null);
+  const cache = list(env.ORIGINSMETA_TRACKER_CACHE);
+  const replays = list(env.ORIGINSMETA_TRACKER_REPLAYS);
+  if (platform === "linux") {
+    const proton = cache && replays ? null : linuxGameDirs(home, PRODUCTS, env);
+    return { cacheRoots: cache ?? proton!.cacheRoots, replayDirs: replays ?? proton!.replayDirs };
+  }
   return {
-    cacheRoots: list(env.ORIGINSMETA_TRACKER_CACHE) ?? PRODUCTS.map((p) => path.join(home, "AppData", "LocalLow", "Koin Games", p, "beamable", "cache")),
-    replayDirs: list(env.ORIGINSMETA_TRACKER_REPLAYS) ?? PRODUCTS.map((p) => path.join(documents, "My Games", p, "Replays")),
+    cacheRoots: cache ?? PRODUCTS.map((p) => path.join(home, "AppData", "LocalLow", "Koin Games", p, "beamable", "cache")),
+    replayDirs: replays ?? PRODUCTS.map((p) => path.join(documents, "My Games", p, "Replays")),
   };
 }

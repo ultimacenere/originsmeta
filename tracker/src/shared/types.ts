@@ -148,6 +148,8 @@ export type OverlayState = {
 
 export type AppState = {
   version: string;
+  /** Dove gira l'app (0.6.0, Linux): alcuni testi e opzioni cambiano. */
+  platform: "win32" | "linux";
   /** Solo con l'account (0.4.0): con `open: false` partite, storico e mazzo arrivano vuoti. */
   access: AccessView;
   status: TrackerStatus;

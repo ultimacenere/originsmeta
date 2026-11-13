@@ -33,6 +33,8 @@ fs.copyFileSync(path.join(root, "src/overlay/deck.html"), path.join(dist, "overl
 fs.copyFileSync(path.join(root, "src/overlay/deck.css"), path.join(dist, "overlay/deck.css"));
 fs.copyFileSync(path.join(root, "src/frames/frames.html"), path.join(dist, "frames/frames.html"));
 fs.copyFileSync(path.join(root, "assets/icon.ico"), path.join(dist, "icon.ico"));
+// su Linux (0.6.0) finestre, barra e voce del menu vogliono il PNG: le immagini .ico lì non si leggono
+fs.copyFileSync(path.join(root, "assets/icon.png"), path.join(dist, "icon.png"));
 // Logo e font del sito (01/10/2026): accanto a ciascuna pagina, così i percorsi relativi valgono sia nella finestra
 // (file://) sia nella sorgente per OBS, che il server locale serve solo da /overlay/ (overlay.ts)
 for (const page of ["renderer", "overlay"]) {

@@ -29,9 +29,19 @@ export const DATA_FOLDER = "OriginsMeta Analytics";
 /** La cartella di prima del 01/10/2026: `moveOldData` di main.ts ne copia i dati se quella nuova è vuota. */
 export const OLD_DATA_FOLDER = "OriginsMeta Tracker";
 
-/** La cartella dei dati: `ORIGINSMETA_TRACKER_DATA` per le prove, altrimenti `<AppData>\OriginsMeta Analytics`. */
-export function dataDir(appData: string, override?: string | null): string {
-  return override ? override : path.join(appData, DATA_FOLDER);
+/**
+ * La cartella dei dati su Linux (0.6.0, 13/11/2026): `~/.config/OriginsMeta Tracker`. Lì non ci sono app di prima da
+ * non perdere, quindi ha il nome dell'app; `moveOldData` di main.ts la riconosce come la cartella di adesso e non copia.
+ */
+export const LINUX_DATA_FOLDER = APP_NAME;
+
+/**
+ * La cartella dei dati: `ORIGINSMETA_TRACKER_DATA` per le prove, altrimenti `<AppData>\OriginsMeta Analytics` (su
+ * Linux `~/.config/OriginsMeta Tracker`).
+ */
+export function dataDir(appData: string, override?: string | null, platform: NodeJS.Platform = "win32"): string {
+  if (override) return override;
+  return path.join(appData, platform === "linux" ? LINUX_DATA_FOLDER : DATA_FOLDER);
 }
 
 const sameFile = (a: string, b: string) => path.win32.normalize(a).toLowerCase() === path.win32.normalize(b).toLowerCase();

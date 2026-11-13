@@ -52,7 +52,7 @@
  *   anche un'app bloccata riceve le correzioni. `--capture-unlocked` (solo fuori dall'app impacchettata) fotografa
  *   l'app sbloccata per le verifiche; `--capture-setup` apre la pagina Setup.
  */
-import { app, BrowserWindow, clipboard, desktopCapturer, ipcMain, Menu, nativeImage, net, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
+import { app, BrowserWindow, clipboard, desktopCapturer, ipcMain, Menu, nativeImage, net, Notification, safeStorage, screen, session, shell, Tray, type IpcMainEvent, type IpcMainInvokeEvent } from "electron";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -81,8 +81,26 @@ import { PANEL_TEMPLATES } from "../shared/types";
 import { clampWidth, DEFAULT_CUSTOM, defaultSpot, panelShape, readCustom, readTemplate, WIDTH_LIMITS, type PanelKind } from "./panelLayout";
 import { layerAction } from "./panelVisibility";
 import { gameRunning, GAME_POLL_MS, initialStartMode, loginItemFix, readStartMode, START_MODES, startArgs, WAIT_GAME_ARG, type StartMode } from "./startup";
+import { autostartFile, desktopEntry, gameRunningLinux, linuxAutostartOff, menuFile, menuIconFile, writeIfChanged, x11Relaunch } from "./linux";
 import { execFile } from "node:child_process";
 import type { GameDeck } from "../../../src/lib/tracker/profile";
+
+const LINUX = process.platform === "linux";
+const WINDOWS = process.platform === "win32";
+
+/**
+ * Linux (0.6.0, linux.ts): l'app gira in X11 come il gioco di Proton, se no non vede la sua finestra e non tiene i
+ * pannelli sopra. Il lanciatore dell'AppImage la fa partire già così; aperta in un altro modo in una sessione Wayland,
+ * riparte subito in X11 (Chromium sceglie prima di questo file) e qui non fa nient'altro.
+ */
+const X11_ARGS = LINUX ? x11Relaunch(process.argv, process.env) : null;
+if (X11_ARGS) {
+  delete process.env.WAYLAND_DISPLAY;
+  process.env.XDG_SESSION_TYPE = "x11";
+  process.env.GDK_BACKEND = "x11";
+  app.relaunch({ args: X11_ARGS });
+  app.exit(0);
+}
 
 const HIDDEN = process.argv.includes("--hidden");
 /** Avvio automatico "con il gioco" (startup.ts): aspetta il gioco prima di partire. */
@@ -100,9 +118,9 @@ const CAPTURE_UNLOCKED = Boolean(CAPTURE) && !app.isPackaged && process.argv.inc
 // la cartella dei dati è fissa (%APPDATA%\OriginsMeta Analytics), qualunque sia il nome dell'app: senza, col nome
 // "OriginsMeta Tracker" Electron userebbe %APPDATA%\OriginsMeta Tracker e il collegamento (chiave di safeStorage in
 // Local State), lo storico e le impostazioni non si troverebbero più (appIdentity.ts)
-app.setPath("userData", dataDir(app.getPath("appData"), process.env.ORIGINSMETA_TRACKER_DATA));
-// fisso anche lui: è il nome della voce di "Avvia con Windows" nel registro
-app.setAppUserModelId(APP_USER_MODEL_ID);
+app.setPath("userData", dataDir(app.getPath("appData"), process.env.ORIGINSMETA_TRACKER_DATA, process.platform));
+// fisso anche lui: è il nome della voce di "Avvia con Windows" nel registro (l'API c'è solo su Windows)
+if (WINDOWS) app.setAppUserModelId(APP_USER_MODEL_ID);
 
 /** I file dei dati dell'app (store.ts, sync.ts, account.ts, overlay.json). */
 const DATA_FILES = ["matches.jsonl", "state.json", "sync.json", "account.json", "overlay.json"];
@@ -134,7 +152,8 @@ moveOldData();
 
 const SITE = "https://originsmeta.com/";
 const SITE_ORIGIN = siteBase(process.env.ORIGINSMETA_TRACKER_SITE);
-const ICON = path.join(__dirname, "icon.ico");
+// su Linux le immagini .ico non si leggono: icona di finestre e barra in PNG (build.mjs copia tutte e due)
+const ICON = path.join(__dirname, WINDOWS ? "icon.ico" : "icon.png");
 const SYNC_EVERY_MS = 5 * 60_000;
 
 let win: BrowserWindow | null = null;
@@ -221,13 +240,73 @@ const loginArgs = () => (app.isPackaged ? startArgs() : [app.getAppPath(), ...st
  */
 function applyStartMode(mode: StartMode, enabled = true): StartMode {
   try {
-    app.setLoginItemSettings({ openAtLogin: mode !== "off", path: process.execPath, args: loginArgs(), enabled });
+    if (LINUX) linuxAutostart(mode);
+    else app.setLoginItemSettings({ openAtLogin: mode !== "off", path: process.execPath, args: loginArgs(), enabled });
     startMode = mode;
     fs.writeFileSync(path.join(app.getPath("userData"), START_FILE), JSON.stringify({ mode }));
   } catch {
     // non essenziale: resta la scelta di prima
   }
   return startMode;
+}
+
+/** Linux: l'AppImage che gira adesso (il file, non la cartella montata, che cambia a ogni avvio); null in sviluppo. */
+function appImage(): string | null {
+  const file = process.env.APPIMAGE;
+  return LINUX && app.isPackaged && file && path.isAbsolute(file) ? file : null;
+}
+
+/**
+ * Linux (0.6.0): "Con il gioco" è una voce di `~/.config/autostart` con l'AppImage e `--hidden --wait-game` (linux.ts),
+ * "Mai" la toglie. In sviluppo nessuna voce (registrerebbe electron).
+ */
+function linuxAutostart(mode: StartMode) {
+  const exe = appImage();
+  if (!exe) return;
+  const file = autostartFile(app.getPath("home"), process.env);
+  if (mode === "off") fs.rmSync(file, { force: true });
+  else writeIfChanged(file, desktopEntry("autostart", [exe, ...startArgs()]));
+}
+
+/**
+ * Linux: la prima volta "con il gioco", come su Windows; poi la voce si riscrive a ogni avvio (l'AppImage può essere
+ * stato spostato o rinominato). Se il giocatore l'ha tolta o spenta dalle impostazioni del desktop la scelta diventa
+ * "Mai" e la voce resta com'è (`linuxAutostartOff`), come la voce spenta in Gestione attività su Windows.
+ */
+function loadLinuxStartMode(saved: StartMode | null) {
+  if (!appImage()) return;
+  if (!saved) return void applyStartMode("game");
+  if (saved === "off") return;
+  let entry: string | null = null;
+  try {
+    entry = fs.readFileSync(autostartFile(app.getPath("home"), process.env), "utf8");
+  } catch {
+    // tolta
+  }
+  if (!linuxAutostartOff(entry)) return void applyStartMode("game");
+  startMode = "off";
+  try {
+    fs.writeFileSync(path.join(app.getPath("userData"), START_FILE), JSON.stringify({ mode: startMode }));
+  } catch {
+    // non essenziale
+  }
+}
+
+/**
+ * Linux: la voce "OriginsMeta Tracker" nel menu delle applicazioni, con l'icona (linux.ts), riscritta a ogni avvio se
+ * l'AppImage ha cambiato posto. Serve dove la barra di sistema non mostra l'icona (GNOME senza AppIndicator): l'app
+ * avviata con il gioco resta invisibile e la si apre dal menu (la seconda copia porta avanti la prima).
+ */
+function linuxMenuEntry() {
+  const exe = appImage();
+  if (!exe) return;
+  try {
+    const home = app.getPath("home");
+    writeIfChanged(menuIconFile(home, process.env), fs.readFileSync(ICON));
+    writeIfChanged(menuFile(home, process.env), desktopEntry("menu", [exe]));
+  } catch {
+    // non essenziale: l'app si apre anche dall'AppImage
+  }
 }
 
 /**
@@ -237,7 +316,7 @@ function applyStartMode(mode: StartMode, enabled = true): StartMode {
  * PC). In sviluppo niente scelta automatica (registrerebbe electron.exe).
  */
 function loadStartMode() {
-  if (CAPTURE || process.platform !== "win32") return;
+  if (CAPTURE || (!WINDOWS && !LINUX)) return;
   let raw: unknown;
   try {
     raw = (JSON.parse(fs.readFileSync(path.join(app.getPath("userData"), START_FILE), "utf8")) as { mode?: unknown }).mode;
@@ -247,6 +326,7 @@ function loadStartMode() {
   const saved = readStartMode(raw);
   if (saved) startMode = saved;
   if (!app.isPackaged) return;
+  if (LINUX) return loadLinuxStartMode(saved);
   const items = app.getLoginItemSettings({ path: process.execPath, args: loginArgs() }).launchItems ?? [];
   if (!saved) {
     applyStartMode(initialStartMode(items));
@@ -256,9 +336,15 @@ function loadStartMode() {
   if (fix || raw !== saved) applyStartMode(saved, fix?.enabled ?? true);
 }
 
+/** Il gioco è aperto? Su Windows con `tasklist`, su Linux leggendo /proc (linux.ts: nessun programma lanciato). */
+function checkGameOpen(done: (open: boolean) => void) {
+  if (LINUX) return done(gameRunningLinux());
+  execFile("tasklist", ["/FO", "CSV", "/NH"], { windowsHide: true, maxBuffer: 4 * 1024 * 1024 }, (err, out) => done(!err && gameRunning(String(out))));
+}
+
 /**
- * Avviata con `--wait-game`: niente icona, finestre né letture finché il gioco non è aperto (controllo ogni 10 secondi
- * con `tasklist`). Se nel frattempo il giocatore apre l'app (seconda copia), parte subito con la finestra.
+ * Avviata con `--wait-game`: niente icona, finestre né letture finché il gioco non è aperto (controllo ogni 10 secondi,
+ * `checkGameOpen`). Se nel frattempo il giocatore apre l'app (seconda copia), parte subito con la finestra.
  */
 let waitingForGame: (() => void) | null = null;
 let openRequested = false;
@@ -272,9 +358,9 @@ function waitForGame(): Promise<void> {
     };
     waitingForGame = done;
     const check = () =>
-      execFile("tasklist", ["/FO", "CSV", "/NH"], { windowsHide: true, maxBuffer: 4 * 1024 * 1024 }, (err, out) => {
+      checkGameOpen((open) => {
         if (!waitingForGame) return;
-        if (!err && gameRunning(String(out))) return done();
+        if (open) return done();
         timer = setTimeout(check, GAME_POLL_MS);
       });
     check();
@@ -446,6 +532,8 @@ function state(): AppState {
   const open = access.open;
   return {
     version: app.getVersion(),
+    // Linux (0.6.0): l'interfaccia cambia i testi su portachiavi e barra di sistema e toglie "Nascondi i pannelli dalla diretta"
+    platform: LINUX ? "linux" : "win32",
     access: accessView(),
     status: watcher.status,
     matches: open ? [...store.matches].reverse() : [],
@@ -576,6 +664,8 @@ setInterval(syncPanelVisibility, 1500);
  */
 let panelsHideFromStream = false;
 function applyHideFromStream(win: BrowserWindow) {
+  // su Linux le riprese dello schermo non si possono escludere (l'API c'è solo su Windows e Mac): l'opzione non si mostra
+  if (LINUX) return;
   try {
     win.setContentProtection(panelsHideFromStream);
   } catch {
@@ -1441,8 +1531,11 @@ async function boot() {
   session.defaultSession.setPermissionRequestHandler((_wc, _perm, callback) => callback(false));
   registerIpc();
   if (!CAPTURE) {
-    tray = new Tray(nativeImage.createFromPath(ICON));
+    // su Linux l'icona della barra arriva a 256 px: la si riduce (i pannelli dei desktop la vogliono intorno ai 22–48)
+    const trayImage = nativeImage.createFromPath(ICON);
+    tray = new Tray(LINUX && !trayImage.isEmpty() ? trayImage.resize({ width: 64, height: 64 }) : trayImage);
     tray.on("click", showWindow);
+    linuxMenuEntry();
     setInterval(() => void runSync(false), SYNC_EVERY_MS);
     // il mazzo scelto: una magia che non c'è è dell'avversario (13/10/2026, `spellPlays` di reconstruct.ts)
     // e il ruolo delle carte per i cimiteri (05/11/2026: Dr. Frank, It's Alive, Rinascita, Koschei…)
@@ -1452,15 +1545,19 @@ async function boot() {
     // aggiornamento automatico (11/10/2026): solo nell'app impacchettata e, dall'11/10 sera, solo a gioco chiuso (prima
     // "fuori partita" secondo lo scanner, che in una finestra piccola sbagliava e riavviava l'app in partita)
     // avvisi di Windows dell'aggiornamento (13/10/2026): dal fumetto dell'icona, che non chiede collegamenti nel menu Start
+    // su Linux il fumetto dell'icona non c'è: una notifica del desktop (0.6.0)
     const notifyUpdate = (kind: UpdateNotice, version: string) => {
       const n = updateNotice(lang(), kind, version);
-      tray?.displayBalloon({ title: n.title, content: n.content, iconType: "info", respectQuietTime: false });
+      if (WINDOWS) tray?.displayBalloon({ title: n.title, content: n.content, iconType: "info", respectQuietTime: false });
+      else if (Notification.isSupported()) new Notification({ title: n.title, body: n.content, icon: ICON, silent: true }).show();
     };
     noteVersion(notifyUpdate);
     updater = new Updater({
       notify: notifyUpdate,
       canInstall: async () => {
         if (frames?.running && frames.live()?.inMatch) return false;
+        // su Linux il gioco aperto si vede da /proc, anche ridotto a icona
+        if (LINUX) return !gameRunningLinux();
         const sources = await desktopCapturer.getSources({ types: ["window"], thumbnailSize: { width: 0, height: 0 } });
         return !pickGameWindow(sources.map((s) => ({ id: s.id, name: s.name })));
       },
@@ -1484,7 +1581,9 @@ async function boot() {
   createWindow(openRequested || !HIDDEN || (!access.open && access.reason !== "verify"));
 }
 
-if (!CAPTURE && !app.requestSingleInstanceLock()) {
+if (X11_ARGS) {
+  // sta ripartendo in X11 (inizio del file): niente altro
+} else if (!CAPTURE && !app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   // in attesa del gioco (startup.ts) il giocatore che apre l'app la fa partire subito, con la finestra

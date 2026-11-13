@@ -108,6 +108,14 @@ const LABELS = {
     openStats: "Your stats on originsmeta.com",
     openWinrates: "Win rates on originsmeta.com",
     notPersisted: "Windows data protection isn't available: the link lasts until you close the app.",
+    // Linux (0.6.0): portachiavi al posto della protezione di Windows, area di notifica e menu delle applicazioni
+    linux: {
+      notPersisted: "The system keyring (GNOME Keyring or KWallet) isn't available: the link lasts until you close the app.",
+      startNote: "With the game: the app doesn't open when your PC starts. It waits invisibly and, when you open Origins TCG, it starts by itself in the system tray (if your desktop shows one) and records your matches; the window, overlay and panels open only when you open the app from the applications menu.",
+      reopen: "The X on this window closes the app: minimize it to keep it running. OriginsMeta Tracker in the applications menu (or the tray icon, if your desktop shows it) opens it again, and you can see this tutorial again from Setup.",
+      // su Linux niente OCR (ocr.ts usa quello di Windows): lo scanner non legge nessun nome
+      scannerIntro: "Since patch 0.7 the game no longer saves match replays: the scanner reads the cards from the game window instead (board, Legendaries, mana). It only watches the Origins TCG window, never other windows. Images stay in this PC's memory and are never sent anywhere: only the card ids go to your account.",
+    },
     unlinkedNotice: "The site unlinked this PC (or the account no longer exists): link it again with a new code.",
     relinkNotice: "The link saved on this PC can no longer be read: link the app again with a new code.",
     lockTitle: "Link the app to your OriginsMeta account",
@@ -299,6 +307,12 @@ const LABELS = {
     openStats: "Le tue statistiche su originsmeta.com",
     openWinrates: "Win rate su originsmeta.com",
     notPersisted: "La protezione dei dati di Windows non è disponibile: il collegamento vale fino alla chiusura dell'app.",
+    linux: {
+      notPersisted: "Il portachiavi del sistema (GNOME Keyring o KWallet) non è disponibile: il collegamento vale fino alla chiusura dell'app.",
+      startNote: "Con il gioco: l'app non si apre all'avvio del PC. Resta in attesa, invisibile, e quando apri Origins TCG parte da sola nell'area di notifica (se il tuo desktop la mostra) e registra le tue partite; finestra, overlay e pannelli si aprono solo quando apri l'app dal menu delle applicazioni.",
+      reopen: "La X di questa finestra chiude l'app: per tenerla accesa riducila a icona. OriginsMeta Tracker nel menu delle applicazioni (o l'icona nell'area di notifica, se il desktop la mostra) la riapre, e il tutorial lo rivedi da Setup.",
+      scannerIntro: "Dalla patch 0.7 il gioco non salva più i replay delle partite: lo scanner legge le carte dalla finestra del gioco (tabellone, Leggendarie, mana). Guarda solo la finestra di Origins TCG, mai altre finestre. Le immagini restano nella memoria di questo PC e non vengono mai inviate: al tuo account arrivano solo gli id delle carte.",
+    },
     unlinkedNotice: "Il sito ha scollegato questo PC (o l'account non esiste più): collegalo di nuovo con un codice nuovo.",
     relinkNotice: "Il collegamento salvato su questo PC non si legge più: collega di nuovo l'app con un codice nuovo.",
     lockTitle: "Collega l'app al tuo account OriginsMeta",
@@ -490,6 +504,12 @@ const LABELS = {
     openStats: "Tus estadísticas en originsmeta.com",
     openWinrates: "Win rate en originsmeta.com",
     notPersisted: "La protección de datos de Windows no está disponible: la vinculación dura hasta que cierres la app.",
+    linux: {
+      notPersisted: "El llavero del sistema (GNOME Keyring o KWallet) no está disponible: la vinculación dura hasta que cierres la app.",
+      startNote: "Con el juego: la app no se abre al iniciar el PC. Espera invisible y, cuando abres Origins TCG, se inicia sola en la bandeja del sistema (si tu escritorio la muestra) y registra tus partidas; la ventana, el overlay y los paneles se abren solo cuando abres la app desde el menú de aplicaciones.",
+      reopen: "La X de esta ventana cierra la app: minimízala para que siga abierta. OriginsMeta Tracker en el menú de aplicaciones (o el icono de la bandeja, si tu escritorio lo muestra) la vuelve a abrir, y el tutorial lo vuelves a ver desde Setup.",
+      scannerIntro: "Desde el parche 0.7 el juego ya no guarda las repeticiones de las partidas: el escáner lee las cartas de la ventana del juego (tablero, Legendarias, maná). Solo mira la ventana de Origins TCG, nunca otras ventanas. Las imágenes se quedan en la memoria de este PC y nunca se envían: a tu cuenta solo llegan los id de las cartas.",
+    },
     unlinkedNotice: "El sitio desvinculó este PC (o la cuenta ya no existe): vuelve a vincularlo con un código nuevo.",
     relinkNotice: "La vinculación guardada en este PC ya no se puede leer: vuelve a vincular la app con un código nuevo.",
     lockTitle: "Vincula la app a tu cuenta de OriginsMeta",
@@ -616,6 +636,8 @@ const LABELS = {
   },
 } as const;
 const L = LABELS[lang];
+/** La piattaforma dell'app (0.6.0): su Linux alcuni testi cambiano e "Nascondi i pannelli dalla diretta" non c'è. */
+let platform: AppState["platform"] = "win32";
 
 /* ---------- aiuti ---------- */
 
@@ -836,7 +858,7 @@ function accountPanel(s: AppState) {
       <p><span class="linked">${esc(L.linkedAs(a.username))}</span></p>
       <p class="sub">${esc(a.running ? L.sending : L.pending(a.pending))} · ${esc(L.lastSync)}: ${esc(a.lastSyncAt ? when(a.lastSyncAt) : L.never)}</p>
       ${offline ? `<p class="problem">${esc(offline)}</p>` : a.problem && a.problem !== "unlinked" ? `<p class="problem">${esc(SYNC_PROBLEMS[a.problem])}</p>` : ""}
-      ${a.persisted ? "" : `<p class="fine">${esc(L.notPersisted)}</p>`}
+      ${a.persisted ? "" : `<p class="fine">${esc(platform === "linux" ? L.linux.notPersisted : L.notPersisted)}</p>`}
       <div class="row">
         <button type="button" class="btn btn-primary" id="sync-now"${a.running || !a.pending ? " disabled" : ""}>${esc(L.syncNow)}</button>
         <a href="${codeUrl}" data-link>${esc(L.openStats)}</a>
@@ -924,7 +946,7 @@ function scannerNotice(s: AppState) {
 function scannerPanel(s: AppState) {
   const sc = s.scanner;
   const state = sc.on ? (sc.capturing ? L.scannerWatching : L.scannerWaiting) : L.scannerOffNote;
-  return section("scanner", L.scannerTitle, state, `<p class="sub">${esc(L.scannerIntro)}</p>
+  return section("scanner", L.scannerTitle, state, `<p class="sub">${esc(platform === "linux" ? L.linux.scannerIntro : L.scannerIntro)}</p>
       <div class="row"><label class="switch"><input type="checkbox" id="scanner-on"${sc.on ? " checked" : ""} /> ${esc(L.scannerSwitch)}</label></div>
       <p class="fine${sc.on && sc.capturing ? " live" : ""}">${esc(state)}</p>`);
 }
@@ -1008,8 +1030,13 @@ function overlayPanel(s: AppState) {
       <p class="fine">${esc(L.inMatchNote)}</p>
       <div class="row"><label class="switch"><input type="checkbox" id="panels-graveyard"${o.graveyard ? " checked" : ""} /> ${esc(L.graveyard)}</label></div>
       <p class="fine">${esc(L.graveyardNote)}</p>
-      <div class="row"><label class="switch"><input type="checkbox" id="panels-hide-stream"${o.hideFromStream ? " checked" : ""} /> ${esc(L.hideStream)}</label></div>
-      <p class="fine">${esc(L.hideStreamNote)}</p>
+      ${
+        // su Linux le riprese dello schermo non escludono le finestre (0.6.0): l'opzione non c'è
+        platform === "linux"
+          ? ""
+          : `<div class="row"><label class="switch"><input type="checkbox" id="panels-hide-stream"${o.hideFromStream ? " checked" : ""} /> ${esc(L.hideStream)}</label></div>
+      <p class="fine">${esc(L.hideStreamNote)}</p>`
+      }
       ${o.deckObsUrl ? `<div class="row"><span class="sub">${esc(L.deckObs)}</span><code class="code">${esc(o.deckObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.deckObsUrl)}">${esc(L.copy)}</button></div>` : ""}
       ${o.oppObsUrl ? `<div class="row"><span class="sub">${esc(L.oppObs)}</span><code class="code">${esc(o.oppObsUrl)}</code><button type="button" class="btn" data-copy-text="${esc(o.oppObsUrl)}">${esc(L.copy)}</button></div>` : ""}`);
 }
@@ -1020,7 +1047,7 @@ function appPanel(s: AppState) {
     .map((m) => `<label class="seg"><input type="radio" name="startup" value="${m}"${s.startMode === m ? " checked" : ""} /><span>${esc(L.start[m])}</span></label>`)
     .join("");
   return section("app", L.general, `v${s.version}`, `<div class="row"><span class="sub">${esc(L.startup)}</span><span class="segs">${start}</span></div>
-      <p class="fine">${esc(L.startNote)}</p>
+      <p class="fine">${esc(platform === "linux" ? L.linux.startNote : L.startNote)}</p>
       <div class="row"><button type="button" class="btn" id="folder">${esc(L.dataFolder)}</button></div>
       <p class="fine"><button type="button" class="link" id="tour-again">${esc(L.tour.again)}</button> · <a href="${guideUrl}" data-link>${esc(L.guide)}</a></p>
       <p class="fine">${esc(L.privacy)}</p>`);
@@ -1123,7 +1150,7 @@ function drawTour() {
     <div class="tour-tip" role="dialog" aria-modal="true" aria-labelledby="tour-title">
       <p class="tour-count">${tourStep + 1} / ${steps.length}</p>
       <h2 id="tour-title">${esc(st.title)}</h2>
-      ${st.text.map((t) => `<p>${esc(t)}</p>`).join("")}
+      ${(platform === "linux" && lastStep ? [st.text[0], L.linux.reopen] : st.text).map((t) => `<p>${esc(t)}</p>`).join("")}
       <div class="tour-dots" aria-hidden="true">${steps.map((_, i) => `<i${i === tourStep ? ` class="on"` : ""}></i>`).join("")}</div>
       <div class="tour-actions">
         <button type="button" class="link" data-tour="skip">${esc(L.tour.skip)}</button>
@@ -1190,6 +1217,7 @@ let holdRender = false;
 let heldState = false;
 function render(s: AppState) {
   last = s;
+  platform = s.platform;
   if (holdRender) {
     heldState = true;
     return;

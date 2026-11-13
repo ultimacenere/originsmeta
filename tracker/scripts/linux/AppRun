@@ -1,0 +1,32 @@
+#!/bin/sh
+# OriginsMeta Tracker, lanciatore dell'AppImage (0.6.0, 13/11/2026; docs/tracker.md, "Linux"). Lo copia nell'AppImage
+# scripts/package-linux.mjs.
+#
+# - X11: su Linux Origins TCG gira con Proton, cioè in X11 (XWayland nelle sessioni Wayland), e anche l'app parte in
+#   X11: in Wayland non vedrebbe la finestra del gioco (lo scanner non registrerebbe niente) e non saprebbe tenere i
+#   pannelli sopra il gioco. Chromium sceglie fra X11 e Wayland prima che parta l'app, quindi si decide qui. Senza
+#   DISPLAY (niente XWayland) resta com'è. ORIGINSMETA_KEEP_WAYLAND=1 la lascia in Wayland, per le prove.
+# - Sandbox di Chromium: dentro un AppImage il suo aiutante setuid non vale (il disco montato è nosuid) e la sandbox
+#   usa i namespace utente. Dove il sistema li vieta (Ubuntu dalla 24.04 con AppArmor, kernel che li spengono) Electron
+#   non partirebbe affatto: lì l'app parte senza sandbox.
+HERE="$(dirname "$(readlink -f "$0")")"
+BIN="$HERE/usr/lib/originsmeta-tracker/originsmeta-tracker"
+
+if [ -n "$DISPLAY" ] && [ "${ORIGINSMETA_KEEP_WAYLAND:-0}" != "1" ]; then
+  unset WAYLAND_DISPLAY
+  export XDG_SESSION_TYPE=x11
+  export GDK_BACKEND=x11
+  set -- --ozone-platform=x11 "$@"
+fi
+
+userns_blocked() {
+  [ "$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns 2>/dev/null)" = "1" ] && return 0
+  [ "$(cat /proc/sys/kernel/unprivileged_userns_clone 2>/dev/null)" = "0" ] && return 0
+  [ "$(cat /proc/sys/user/max_user_namespaces 2>/dev/null)" = "0" ] && return 0
+  return 1
+}
+if userns_blocked; then
+  set -- --no-sandbox "$@"
+fi
+
+exec "$BIN" "$@"
