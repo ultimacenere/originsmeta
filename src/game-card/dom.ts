@@ -2,7 +2,7 @@
  * La carta del gioco nel DOM (app OriginsMeta Tracker ed estensione Twitch): l'albero di ./model.ts costruito con
  * createElement/textContent, mai innerHTML (regole di Twitch e CSP dell'app). Lo stile è in ./theme.css e ./card.css.
  */
-import { gameCardTree, type GameCardInput, type GameCardLang, type GcNode } from "./model";
+import { gameCardTipsTree, gameCardTree, type GameCardInput, type GameCardLang, type GcNode } from "./model";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -30,9 +30,21 @@ export function fit(card: Element) {
   }
 }
 
-/** La carta pronta da mettere nella pagina; il testo si adatta al primo fotogramma dopo l'inserimento. */
-export function build(c: GameCardInput, lang: GameCardLang, className = ""): HTMLElement {
+/**
+ * La carta pronta da mettere nella pagina; il testo si adatta al primo fotogramma dopo l'inserimento. Con `tips` accanto
+ * c'è il riquadro delle parole chiave del testo, come nel gioco (a destra; a sinistra con la classe `is-tips-left` su un
+ * contenitore).
+ */
+export function build(c: GameCardInput, lang: GameCardLang, className = "", opts: { tips?: boolean } = {}): HTMLElement {
   const card = make(gameCardTree(c, lang, className)) as HTMLElement;
+  const tips = opts.tips ? gameCardTipsTree(c, lang) : null;
+  if (tips) {
+    const host = document.createElement("div");
+    host.className = "omg-tips-host";
+    host.setAttribute("aria-hidden", "true");
+    host.appendChild(make(tips));
+    card.appendChild(host);
+  }
   card.querySelector(".omg-art img")?.addEventListener("error", (e) => (e.target as HTMLElement).parentElement?.classList.add("is-noimg"));
   // e di nuovo quando il font è arrivato (prima del font il testo di riserva occupa meno spazio)
   if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => fit(card));

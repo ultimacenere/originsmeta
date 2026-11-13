@@ -636,7 +636,7 @@
 
     if (game) {
       var shell = el("div", { cls: "om-gcard" });
-      shell.appendChild(window.OMGameCard.build(c, OM.lang));
+      shell.appendChild(window.OMGameCard.build(c, OM.lang, "", { tips: !MOBILE }));
       preview.appendChild(shell);
       // per i lettori di schermo il riassunto in parole (gemma, spada e cuore sono disegni)
       var sr = [c.name, typeLabel(c) + (isLeg ? ", " + t("legendary") : "")];
@@ -692,23 +692,25 @@
   }
 
   /**
-   * Dove compare la carta (13/11/2026, "posizioni come nel gioco"), misurato sui fotogrammi del gioco (2560 × 1440):
-   * passando su una carta in mano il gioco mostra la carta di dettaglio grande sopra di lei, centrata, larga il 21% del
-   * gioco e con il fondo poco sopra il fondo della mano; passando su una carta del tabellone la mostra piccola in alto a
-   * sinistra (bordo a 3,7% e 14,3% del gioco, larga il 13,9%). Le misure valgono nell'area 16:9 del gioco dentro il
-   * video. Senza zona (righe del pannello, pannelli dell'app) l'anteprima resta accanto al pannello.
+   * Dove compare la carta (13/11/2026, "posizioni come nel gioco"), misurato sugli screenshot della 0.8.2 mandati da
+   * Pierluigi: passando su una carta in mano il gioco mostra la carta di dettaglio sopra di lei, centrata, larga il
+   * 22,5% del gioco, con il fondo all'89,4% dell'altezza; passando su una carta del tabellone la mostra accanto, a destra
+   * (a sinistra se non ci sta), staccata del 2% e centrata in verticale sulla carta, larga il 19%. Il riquadro delle
+   * parole chiave sta a destra della carta (a sinistra se non ci sta). Le misure valgono nell'area 16:9 del gioco dentro
+   * il video. Senza zona (righe del pannello, pannelli dell'app) l'anteprima resta accanto al pannello.
    */
   var GAME_SPOT = {
-    hand: { w: 0.211, bottom: 0.9 },
-    board: { x: 0.0367, y: 0.143, w: 0.139 }
+    hand: { w: 0.225, bottom: 0.894 },
+    board: { w: 0.19, gap: 0.02 }
   };
-  var CARD_RATIO = 1.475; // altezza / larghezza della carta di dettaglio (game/card.css)
+  var CARD_RATIO = 1.445; // altezza / larghezza della carta di dettaglio (game/card.css)
   var GEM_OVER = 0.07; // quanto sporge la gemma, in larghezze della carta
+  var TIPS_W = 1.05; // il riquadro delle parole chiave e il suo stacco, in larghezze della carta (card.css)
 
   function placeAt(anchor) {
     var free = !!(anchor && preview.classList.contains("om-preview--game") && !MOBILE);
     preview.classList.toggle("is-free", free);
-    preview.classList.remove("is-hand", "is-board");
+    preview.classList.remove("is-hand", "is-board", "is-tips-left");
     if (!free) {
       preview.style.left = "";
       preview.style.top = "";
@@ -725,20 +727,25 @@
     var bottom0 = window.innerHeight - 90; // e in basso (--safe-bottom)
     var spot = anchor.kind === "hand" ? GAME_SPOT.hand : GAME_SPOT.board;
     var w = Math.min(spot.w * ui.w, (bottom0 - top0) / (CARD_RATIO + GEM_OVER));
+    var h = w * CARD_RATIO;
+    var r = anchor.rect;
     var x;
     var y;
     if (anchor.kind === "hand") {
-      var r = anchor.rect;
       x = r.x + r.w / 2 - w / 2;
-      y = r.y + r.h * spot.bottom - w * CARD_RATIO;
+      y = ui.y + spot.bottom * ui.h - h;
     } else {
-      x = ui.x + spot.x * ui.w;
-      y = ui.y + spot.y * ui.h;
+      var gap = spot.gap * ui.w;
+      x = r.x + r.w + gap;
+      if (x + w > W - 4) x = r.x - gap - w;
+      y = r.y + r.h / 2 - h / 2;
     }
     preview.classList.add(anchor.kind === "hand" ? "is-hand" : "is-board");
     var gem = w * GEM_OVER;
     x = Math.max(gem + 4, Math.min(W - w - 4, x));
-    y = Math.max(top0 + gem, Math.min(bottom0 - w * CARD_RATIO, y));
+    y = Math.max(top0 + gem, Math.min(bottom0 - h, y));
+    // come il gioco, il riquadro resta a destra anche se esce un po' dallo schermo; a sinistra solo se ne uscirebbe più di metà
+    if (x + w + (TIPS_W * w) / 2 > W) preview.classList.add("is-tips-left");
     preview.style.left = Math.round(x) + "px";
     preview.style.top = Math.round(y) + "px";
     preview.style.width = Math.round(w) + "px";

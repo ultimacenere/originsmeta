@@ -1,9 +1,10 @@
-Font segnaposto della carta di gioco (game/theme.css), finché Koin Games non manda il font del testo delle carte.
+Font della carta di gioco (src/game-card/theme.css), gli stessi che usa il gioco (font asset TextMeshPro nei file del
+gioco, letti il 13/11/2026). Sottoinsiemi latino, latino esteso, cirillico e cirillico esteso da Google Fonts.
 
-game-card-text.woff2, game-card-text-italic.woff2: Montserrat (variabile, pesi 100-900, sottoinsieme latino da Google
-Fonts, v31)
+montserrat-*.woff2: Montserrat (variabile, pesi 100-900, normale e corsivo, v31)
   Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)
 
-  https://scripts.sil.org/OFL
+oswald-*.woff2: Oswald (variabile, pesi 200-700)
+  Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont)
 
-Testo completo della licenza: SIL Open Font License, Version 1.1 — https://openfontlicense.org
+Licenza di entrambi: SIL Open Font License, Version 1.1 — https://openfontlicense.org

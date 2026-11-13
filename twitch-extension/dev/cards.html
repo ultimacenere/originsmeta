@@ -30,7 +30,7 @@
           C00015_SB: ["Axe Throw", "Infliggi 4 danni a QUALSIASI personaggio."]
         };
         var pairs = (q.get("keys") || "C00021_MB:ref-bbw,C00126_MB:ref-mowgli,C00015_SB:ref-axe,C00046_MC:,C00118_MC:,C00162_SB:").split(",");
-        fetch("cards-en.json").then(function (r) { return r.json(); }).then(function (t) {
+        fetch("cards-" + lang + ".json").then(function (r) { return r.json(); }).then(function (t) {
           var out = document.getElementById("out");
           out.style.setProperty("--w", w + "px");
           pairs.forEach(function (p) {

@@ -12,6 +12,11 @@
  * ingresso: i testi diventano sempre nodi di testo.
  */
 
+// con l'estensione: lo carica anche Node nei test (model.test.ts)
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- @ts-expect-error romperebbe il tracker, che ammette .ts
+// @ts-ignore TS5097 sul sito (nel tracker gli import con .ts sono ammessi): l'estensione serve a Node nei test
+import { KEYWORD_INFO } from "./keywords.ts";
+
 export type GameCardLang = "en" | "it" | "es" | "fr" | "pt" | "de" | "ru" | "zh-cn";
 
 export type GameCardInput = {
@@ -82,6 +87,14 @@ const KEYWORDS_RU = [
   ...["Меткий выстрел", "Метким выстрелом", "Меткого выстрела", "Оглушает", "Оглушение", "Оглушения"],
 ];
 const KEYWORDS_ZH = ["展示时", "揭示时", "死亡时", "击杀时", "先攻", "连击", "双重攻击", "死触", "守护者", "守卫", "重生", "护盾", "践踏", "狙击", "眩晕", "持续"];
+
+/** I nomi ufficiali delle parole chiave in tutte le lingue (keywords.ts, letti nei file del gioco) si aggiungono all'elenco. */
+for (const byLang of Object.values(KEYWORD_INFO))
+  for (const [l, { n }] of Object.entries(byLang)) {
+    if (l === "ru") KEYWORDS_RU.push(n);
+    else if (l === "zh-cn") KEYWORDS_ZH.push(n);
+    else KEYWORDS.push(n);
+  }
 
 const escRe = (k: string) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const longFirst = (a: string, b: string) => b.length - a.length;
@@ -248,4 +261,32 @@ export function gameCardLabel(c: GameCardInput, words: { cost: string; power: st
   if (c.power !== null) out.push(`${words.power} ${c.power}`);
   if (c.health !== null) out.push(`${words.health} ${c.health}`);
   return out.join(", ");
+}
+
+/**
+ * Il riquadro delle parole chiave accanto alla carta, come nel gioco (13/11/2026, screenshot della 0.8.2): per ogni parola
+ * chiave che compare nel testo, nell'ordine in cui compare, il nome e la spiegazione ufficiali nella lingua (keywords.ts).
+ */
+export function keywordTips(text: string, lang: GameCardLang): { n: string; d: string }[] {
+  const found: { at: number; n: string; d: string }[] = [];
+  const t = String(text || "");
+  for (const byLang of Object.values(KEYWORD_INFO)) {
+    const k = byLang[lang] ?? byLang.en;
+    if (!k) continue;
+    const re = lang === "zh-cn" ? new RegExp(escRe(k.n)) : new RegExp(`(?<![\\p{L}])${escRe(k.n)}(?![\\p{L}])`, "iu");
+    const m = re.exec(t);
+    if (m && !found.some((f) => f.n === k.n)) found.push({ at: m.index, n: k.n, d: k.d });
+  }
+  return found.sort((a, b) => a.at - b.at).map(({ n, d }) => ({ n, d }));
+}
+
+export function gameCardTipsTree(c: GameCardInput, lang: GameCardLang): GcNode | null {
+  const tips = keywordTips(c.text, lang);
+  if (!tips.length) return null;
+  return el(
+    "div",
+    "omg-tips",
+    tips.map((k) => el("div", "omg-tip", [el("p", "omg-tip-title", [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))])),
+    { attrs: { lang } },
+  );
 }

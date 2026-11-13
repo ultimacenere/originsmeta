@@ -2,7 +2,7 @@
  * La carta del gioco al passaggio del mouse nell'app (13/11/2026; Pierluigi: "le carte sul sito, sul tracker e
  * sull'overlay devono risultare identiche a quelle in gioco"): passando su un elemento con `data-key` (le carte dei
  * pannelli del mazzo, deckRender.ts) o `data-gc-key` (le carte della finestra principale, app.ts) compare accanto la
- * carta di dettaglio del gioco, costruita con lo stesso modello del sito e dell'estensione Twitch (../../../src/game-card/).
+ * carta di dettaglio del gioco con il riquadro delle parole chiave, costruita con lo stesso modello del sito e dell'estensione Twitch (../../../src/game-card/).
  * I dati vengono da cards.json (testo en/it/es, statistiche, allineamento: scripts/cards.mjs); l'arte dal sito.
  */
 import cardsTable from "../cards.json";
@@ -48,16 +48,18 @@ export function attachCardPeek(root: HTMLElement, lang: "en" | "it" | "es", widt
     const input = peekInput(key, lang);
     if (!input) return hide();
     if (key !== shownKey) {
-      box.replaceChildren(build(input, lang));
+      box.replaceChildren(build(input, lang, "", { tips: true }));
       shownKey = key;
     }
     const r = el.getBoundingClientRect();
     const w = Math.min(width, window.innerWidth - 24);
-    const h = w * 1.475;
+    const h = w * 1.445;
     const gem = w * 0.09;
     let x = r.right + 12 + gem;
     if (x + w > window.innerWidth - 8) x = Math.max(8 + gem, r.left - 12 - w);
     const y = Math.max(8 + gem, Math.min(window.innerHeight - h - 8, r.top + r.height / 2 - h / 2));
+    // il riquadro delle parole chiave a destra della carta, a sinistra se non ci sta (come nel gioco)
+    box.classList.toggle("is-tips-left", x + w * 2.05 > window.innerWidth);
     box.style.setProperty("--peek-w", `${Math.round(w)}px`);
     box.style.left = `${Math.round(x)}px`;
     box.style.top = `${Math.round(y)}px`;

@@ -5,7 +5,7 @@
  * cambiando solo la larghezza del contenitore, come nel gioco.
  *
  * Misure prese sulla carta di dettaglio dei fotogrammi del gioco (Big Bad Wolf, Mowgli, Axe Throw a 2560 × 1440:
- * cornice larga 354 px, alta 522): proporzioni 1 : 1,475, cornice argento di 10 px, gemma esagonale che sporge in
+ * cornice larga 354 px, alta 522; nella 0.8.2, screenshot del 13/11, 270 × 390): proporzioni 1 : 1,445, cornice argento di 10 px, gemma esagonale che sporge in
  * alto a sinistra, finestra d'arte, targa viola con nome, fascia dell'allineamento (magie: riga a trattini), testo
  * centrato, numeri grandi con spada e cuore sul bordo basso.
  */
@@ -13,7 +13,7 @@
   container-type: inline-size;
   position: relative;
   width: 100%;
-  aspect-ratio: 100 / 147.5;
+  aspect-ratio: 100 / 144.5;
   font-family: var(--omg-font-text);
   color: var(--omg-ink);
   line-height: 1.2;
@@ -52,8 +52,8 @@
   position: absolute;
   left: 5cqw;
   right: 5cqw;
-  top: 5cqw;
-  height: 48cqw;
+  top: 4.4cqw;
+  height: 50cqw;
   border-radius: 1.8cqw;
   overflow: hidden;
   background: radial-gradient(circle at 50% 35%, #4a2f7c, var(--omg-body-low));
@@ -77,7 +77,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 50cqw;
+  top: 51.5cqw;
   bottom: 0;
   background:
     linear-gradient(180deg, rgba(52, 32, 90, 0) 0, rgba(52, 32, 90, 0.85) 2.4cqw, var(--omg-plate) 3.6cqw, var(--omg-plate) 30cqw, var(--omg-body) 52cqw, var(--omg-body-low) 100%);
@@ -88,7 +88,7 @@
   position: absolute;
   left: 3cqw;
   right: 3cqw;
-  top: 59.5cqw;
+  top: 61.5cqw;
   margin: 0;
   font-family: var(--omg-font-name);
   font-weight: 800;
@@ -102,11 +102,11 @@
 }
 .omg-name.is-long {
   font-size: 7.4cqw;
-  top: 60.4cqw;
+  top: 62.4cqw;
 }
 .omg-name.is-xlong {
   font-size: 6.2cqw;
-  top: 61cqw;
+  top: 63cqw;
 }
 
 .omg-band {
@@ -116,7 +116,7 @@
   position: absolute;
   left: 2.5cqw;
   right: 2.5cqw;
-  top: 70.5cqw;
+  top: 72.5cqw;
   height: 6cqw;
   margin: 0;
   display: flex;
@@ -146,7 +146,7 @@
   position: absolute;
   left: 8cqw;
   right: 8cqw;
-  top: 71.5cqw;
+  top: 73.5cqw;
   height: 1.4cqw;
   background: repeating-linear-gradient(115deg, var(--omg-dash) 0 1.6cqw, transparent 1.6cqw 3cqw);
   opacity: 0.9;
@@ -163,8 +163,8 @@
   position: absolute;
   left: 7cqw;
   right: 7cqw;
-  top: 78cqw;
-  bottom: 25cqw;
+  top: 80cqw;
+  bottom: 23cqw;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -175,10 +175,9 @@
   line-height: 1.13;
   white-space: pre-line;
   overflow: hidden;
-  text-wrap: balance;
 }
 .omg-card--spell .omg-text {
-  top: 76cqw;
+  top: 78cqw;
   bottom: 4cqw;
 }
 .omg-text.is-long {
@@ -353,4 +352,53 @@
   .omg-peek .omg-card {
     animation: none;
   }
+}
+
+/* ---------- riquadro delle parole chiave accanto alla carta (screenshot della 0.8.2, 13/11/2026) ---------- */
+/* Pannello blu notte con il bordo appena più chiaro, una sezione per parola chiave separata da una riga, titolo in
+   maiuscolo e testo in Oswald (condensato), bianchi. Largo poco meno della carta, un po' più in basso del suo bordo. */
+.omg-tips-host {
+  position: absolute;
+  left: calc(100% + 5%);
+  top: 7%;
+  width: 100%;
+  pointer-events: none;
+}
+.is-tips-left .omg-tips-host {
+  left: auto;
+  right: calc(100% + 12%);
+}
+.omg-tips {
+  container-type: inline-size;
+  background: var(--omg-tip-bg);
+  border: 0.5cqw solid var(--omg-tip-edge);
+  box-shadow: 0 2cqw 5cqw rgba(6, 3, 16, 0.55);
+  color: var(--omg-ink);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+.omg-tip {
+  padding: 5.5cqw 7cqw 6cqw;
+}
+.omg-tip + .omg-tip {
+  border-top: 1cqw solid var(--omg-tip-edge);
+}
+.omg-tip-title {
+  margin: 0 0 1.6cqw;
+  font-family: var(--omg-font-ui);
+  font-weight: 600;
+  font-size: 11.5cqw;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+.omg-tip-text {
+  margin: 0;
+  font-family: var(--omg-font-ui);
+  font-weight: 400;
+  font-size: 8.6cqw;
+  line-height: 1.22;
+}
+.omg-tip-text .omg-ico {
+  width: 0.55em;
 }

@@ -153,8 +153,10 @@ Via libera di Koin Games alla grafica del gioco (gruppo Discord con Sylvermyst, 
 delle carte indistinguibili dal gioco). Passando su una carta (righe del pannello, pannelli dell'app, zone di mano e
 tabellone sopra il video) compare la carta di dettaglio del gioco, costruita da `game/card.js` con lo stesso modello del
 sito e dell'app (`src/game-card/model.ts`). Sopra il video sta dove la mette il gioco (`placeAt` di overlay.js, misure
-dai fotogrammi del gioco): passando su una carta in mano, grande e centrata sopra di lei; su una carta del tabellone,
-piccola in alto a sinistra. Accanto al pannello resta di fianco al pannello. Fissata con un clic, sotto ci sono il link
+dagli screenshot della 0.8.2 del 13/11/2026): passando su una carta in mano, sopra di lei e centrata; su una carta del
+tabellone, accanto a destra (a sinistra se non ci sta) e centrata in verticale; a destra della carta il riquadro delle
+parole chiave con nome e spiegazione ufficiali (src/game-card/keywords.ts, `node scripts/game-texts.mjs --parole-chiave`).
+Accanto al pannello resta di fianco al pannello. Fissata con un clic, sotto ci sono il link
 alla scheda e la ×. Le carte arrivano da `/api/twitch/cards/<lingua>` con un decimo campo, l'allineamento (le versioni
 già pubblicate leggono i primi nove). Prova: `dev/mock.html?language=it&scene=playtest&bg=<fotogramma>` (un fotogramma
 del gioco in `dev/local/`, fuori dal repo) e `dev/cards.html` (le carte accanto ai ritagli del gioco).

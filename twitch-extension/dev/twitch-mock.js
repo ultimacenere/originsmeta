@@ -1,6 +1,6 @@
 /*
  * Finto window.Twitch.ext per le prove locali (dev/, fuori dallo zip). Simula onAuthorized, onContext e listen
- * ("broadcast") e intercetta fetch verso https://originsmeta.com/api/twitch/*: carte da dev/cards-en.json (node
+ * ("broadcast") e intercetta fetch verso https://originsmeta.com/api/twitch/*: carte da dev/cards-<lingua>.json (node
  * dev/make-cards.mjs), stato d'esempio, collegamento (ABCD-EFGH riesce, NOPE-NOPE = forbidden, DOWN-DOWN = unavailable,
  * il resto invalid_code). Le immagini delle carte arrivano davvero da originsmeta.com.
  * Comandi in window.Mock (anche dalla barra di prova di mock.html).
@@ -58,6 +58,19 @@
   var params = new URLSearchParams(location.search);
   // ?scene=playtest: tabellone e mano del fotogramma del gioco messo come sfondo (mock.html ?bg=…), per provare le zone e
   // la carta di dettaglio sopra un video vero (13/11/2026)
+  // ?scene=ea-mano / ea-tabellone: gli screenshot della 0.8.2 di Pierluigi (13/11/2026) come sfondo (bg=ea-mano.webp…)
+  if (params.get("scene") === "ea-mano") {
+    state.live.board = Array(18).fill(null);
+    state.live.hand = [["C00273_SB", 0.32], ["C00029_MB", 0.407], ["C00036_MB", 0.496], ["C00002_MB", 0.584], ["C00032_MB", 0.672]];
+    state.ui.screen = { w: 1890, h: 1024 };
+  }
+  if (params.get("scene") === "ea-tabellone") {
+    state.live.board = Array(18).fill(null);
+    state.live.board[1] = "C00245_MB";
+    state.live.board[9] = "C00032_MB";
+    state.live.hand = [];
+    state.ui.screen = { w: 1778, h: 1056 };
+  }
   if (params.get("scene") === "playtest") {
     state.live.board = [null, null, null, null, null, "C00193_MB", null, null, null, null, null, "C00155_MB", "C00113_MB", "C00113_MB", null, null, null, null];
     state.live.hand = [["C00074_MB", 0.319], ["C00162_SB", 0.403], ["C00046_MC", 0.506], ["C00074_MB", 0.588], ["C00021_MB", 0.671]];
@@ -76,7 +89,8 @@
   window.fetch = function (input, init) {
     var url = typeof input === "string" ? input : input.url;
     if (url.indexOf("https://originsmeta.com/api/twitch/cards/") === 0) {
-      return realFetch("/dev/cards-en.json");
+      var lg = url.slice("https://originsmeta.com/api/twitch/cards/".length).split(/[/?]/)[0];
+      return realFetch("/dev/cards-" + (/^(en|it|es|fr)$/.test(lg) ? lg : "en") + ".json");
     }
     if (url.indexOf("https://originsmeta.com/api/twitch/state") === 0) {
       return json(window.Mock.noState ? { state: null } : { state: state, at: iso(at) });

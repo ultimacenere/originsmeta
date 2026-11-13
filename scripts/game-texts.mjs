@@ -148,6 +148,29 @@ for (const [site, game] of Object.entries(LANGS)) {
 }
 const raw = (lang, key) => (key && shared.has(key) ? tables[lang].get(shared.get(key)) : undefined);
 
+// --parole-chiave (13/11/2026): nome e spiegazione ufficiali delle parole chiave in otto lingue, per il riquadro accanto
+// alla carta del gioco (src/game-card/keywords.ts, model.ts). La spiegazione nella notazione del sito (render).
+if (args.includes("--parole-chiave")) {
+  const out = {};
+  for (const k of [...shared.keys()].sort()) {
+    const m = k.match(/^StringKey_Keyword_([A-Za-z]+)_Name$/);
+    if (!m) continue;
+    for (const l of Object.keys(LANGS)) {
+      const n = raw(l, k);
+      const d = raw(l, `StringKey_Keyword_${m[1]}_Description`);
+      if (n && d) (out[m[1]] ??= {})[l] = { n: n.trim(), d: render(l, d, {}).trim() };
+    }
+  }
+  const file = path.join(ROOT, "src", "game-card", "keywords.ts");
+  const head =
+    "/**\n * Nome e spiegazione ufficiali delle parole chiave di Origins TCG in otto lingue, letti nei file del gioco (generato da\n" +
+    " * `node scripts/game-texts.mjs --parole-chiave`, da rilanciare dopo una patch; non modificare a mano). Li usa il riquadro\n" +
+    " * delle parole chiave accanto alla carta del gioco (model.ts).\n */\n";
+  writeFileSync(file, `${head}export const KEYWORD_INFO: Record<string, Record<string, { n: string; d: string }>> = ${JSON.stringify(out, null, 1)};\n`);
+  console.log(`parole chiave: ${Object.keys(out).length} in ${path.relative(ROOT, file)}`);
+  process.exit(0);
+}
+
 /** Il testo del gioco nella notazione del sito. */
 function render(lang, text, args) {
   if (text == null) return undefined;
