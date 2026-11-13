@@ -64,12 +64,33 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Test dell'app su Linux
         working-directory: tracker
-        run: npm test
+        # la tabella carte (src/cards.json) non sta nel repository: la genera scripts/cards.mjs dal database del sito.
+        # Un test fallito diventa un'annotazione del job (i registri si leggono solo con l'accesso al repository).
+        run: |
+          node scripts/cards.mjs
+          set +e
+          npm test > test.log 2>&1
+          code=$?
+          tail -n 12 test.log
+          [ "$code" -eq 0 ] || node scripts/ci-annotate.mjs test.log
+          exit "$code"
       - name: Strumenti per le prove (X11 virtuale e window manager)
         run: sudo apt-get update -q && sudo apt-get install -y -q --no-install-recommends xvfb openbox
       - name: AppImage
         working-directory: tracker
-        run: npm run package:linux
+        run: |
+          set +e
+          npm run package:linux > package.log 2>&1
+          code=$?
+          tail -n 15 package.log
+          if [ "$code" -ne 0 ]; then
+            msg="$(tail -n 40 package.log)"
+            msg="${msg//'%'/'%25'}"
+            msg="${msg//$'\r'/}"
+            msg="${msg//$'\n'/'%0A'}"
+            echo "::error title=AppImage::${msg:0:3500}"
+          fi
+          exit "$code"
       - name: Prove dell'AppImage
         working-directory: tracker
         run: bash scripts/linux-smoke.sh

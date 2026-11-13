@@ -17,9 +17,17 @@ ID="com.originsmeta.tracker"
 mkdir -p "$OUT"
 [ -x "$APP" ] || { echo "::error::manca $APP (npm run package:linux)"; exit 1; }
 
+# un errore diventa un'annotazione del job con la coda dei registri (i registri di Actions si leggono solo con l'accesso)
 fail() {
-  echo "::error::$1"
-  for f in "$OUT"/*.log; do [ -f "$f" ] && { echo "--- $f"; tail -n 40 "$f"; }; done
+  local msg="$1" logs=""
+  msg="${msg//'%'/'%25'}"
+  msg="${msg//':'/'%3A'}"
+  msg="${msg//','/'%2C'}"
+  for f in "$OUT"/*.log "$OUT"/*.json; do [ -s "$f" ] && logs="$logs--- $(basename "$f")"$'\n'"$(tail -n 25 "$f")"$'\n'; done
+  logs="${logs//'%'/'%25'}"
+  logs="${logs//$'\r'/}"
+  logs="${logs//$'\n'/'%0A'}"
+  echo "::error title=$msg::${logs:0:3500}"
   exit 1
 }
 
