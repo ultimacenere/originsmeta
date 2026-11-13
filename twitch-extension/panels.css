@@ -309,6 +309,35 @@ body.spot.layout-custom .dt.panel-x { animation: spot-pulse 1.1s ease-in-out inf
 }
 .legband { corner-shape: bevel; }
 
+/*
+ * Fondo come l'interno del campo (13/11/2026, Pierluigi: "Sì, anche lo sfondo"): il blu notte del campo della 0.8.2
+ * (rgb 35 46 85, media dei pixel di uno screenshot) al posto dell'indaco e del viola; le caselle interne un po' più scure,
+ * come gli spazi delle carte. Il personalizzato tiene l'opacità scelta.
+ */
+.om-app {
+  --field-bg: rgba(35, 46, 85, 0.94);
+  --field-box: rgba(22, 31, 60, 0.92);
+}
+.dt,
+.tab,
+.layout-strips .tab,
+.layout-columns .tab {
+  background: var(--field-bg);
+}
+.layout-strips .dt.panel-x,
+.layout-columns .dt.panel-x {
+  background: var(--field-bg);
+}
+.layout-custom .dt.panel-x {
+  background: rgba(35, 46, 85, var(--bg-alpha, 0.85));
+}
+.stat,
+.manabox,
+.nrow,
+.grave {
+  background: var(--field-box);
+}
+
 
 /* ---------- sopra il video di Twitch (twitch-panels.mjs) ---------- */
 /* le regole di pagina dell'app (html, body) non servono: i pannelli stanno in un contenitore scalato da overlay.js */
