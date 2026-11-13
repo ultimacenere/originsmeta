@@ -23,7 +23,11 @@ fail() {
   msg="${msg//'%'/'%25'}"
   msg="${msg//':'/'%3A'}"
   msg="${msg//','/'%2C'}"
-  for f in "$OUT"/*.log "$OUT"/*.json; do [ -s "$f" ] && logs="$logs--- $(basename "$f")"$'\n'"$(tail -n 25 "$f")"$'\n'; done
+  # prima i risultati delle prove, poi i registri dell'app; quelli di Xvfb e openbox sono solo rumore
+  for f in "$OUT"/*.json "$OUT"/*.log; do
+    case "$(basename "$f")" in xvfb.log | openbox.log) continue ;; esac
+    [ -s "$f" ] && logs="$logs--- $(basename "$f")"$'\n'"$(grep -v 'dbus/' "$f" | tail -n 25)"$'\n'
+  done
   logs="${logs//'%'/'%25'}"
   logs="${logs//$'\r'/}"
   logs="${logs//$'\n'/'%0A'}"
@@ -84,8 +88,15 @@ cp "$MENU" "$OUT/menu.desktop"
 echo "   ok"
 
 echo "3) Ripresa di una finestra \"Origins TCG\" in X11"
-timeout 90 npx --no-install electron --ozone-platform=x11 --no-sandbox scripts/linux-capture-check.cjs | tee "$OUT/ripresa.json" \
-  || fail "Electron in X11 non vede o non riprende la finestra del gioco"
+set +e
+timeout 90 npx --no-install electron --ozone-platform=x11 --no-sandbox scripts/linux-capture-check.cjs >"$OUT/ripresa.json" 2>"$OUT/ripresa.log"
+code=$?
+set -e
+cat "$OUT/ripresa.json"
+# il risultato si vede sempre fra le annotazioni, anche quando la prova passa
+r="$(cat "$OUT/ripresa.json")"
+echo "::notice title=Ripresa della finestra::${r//$'\n'/'%0A'}"
+[ "$code" -eq 0 ] || fail "Electron in X11 non vede o non riprende la finestra del gioco"
 
 echo "4) Setup con i testi di Linux (app di sviluppo sbloccata)"
 H4="$(mktemp -d)"
