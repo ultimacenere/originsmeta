@@ -972,16 +972,37 @@
     }
     return found.sort((a, b) => a.at - b.at).map(({ n, d }) => ({ n, d }));
   }
-  function gameCardTipsTree(c, lang) {
-    const tips = keywordTips(c.text, lang);
-    if (!tips.length) return null;
+  function gameCardTipsTree(c, lang, opts = { keywords: true }) {
+    const blocks = [];
+    if (opts.ability && String(c.text || "").trim()) blocks.push(el("div", "omg-tip omg-tip--ability", abilityNodes(c.text)));
+    if (opts.keywords ?? true)
+      for (const k of keywordTips(c.text, lang)) {
+        const ico = keywordIcon(k.n);
+        blocks.push(el("div", "omg-tip", [el("p", "omg-tip-title", ico ? [kwIcon(ico), txt(k.n)] : [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))]));
+      }
+    if (!blocks.length) return null;
+    return el("div", "omg-tips", blocks, { attrs: { lang } });
+  }
+  var RENDER_BASE = "https://cdn.origins-tcg.com/images/";
+  function renderUrl(key) {
+    const k = String(key ?? "");
+    if (/^C\d{5}_[A-Z]{2}_V\d{5}$/.test(k)) return `${RENDER_BASE}${k}.webp`;
+    if (/^C\d{5}_[A-Z]{2}$/.test(k)) return `${RENDER_BASE}${k}_V00000.webp`;
+    return null;
+  }
+  function renderShape(c) {
+    return c.type === "spell" ? "spell" : c.legendary ? "legendary" : "unit";
+  }
+  function gameCardRenderTree(c, lang, className = "") {
+    const src = renderUrl(c.key);
+    if (!src) return null;
     return el(
       "div",
-      "omg-tips",
-      tips.map((k) => {
-        const ico = keywordIcon(k.n);
-        return el("div", "omg-tip", [el("p", "omg-tip-title", ico ? [kwIcon(ico), txt(k.n)] : [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))]);
-      }),
+      `omg-rcard omg-rcard--${renderShape(c)} is-loading${className ? " " + className : ""}`,
+      [
+        el("div", "omg-rcard-fallback", [gameCardTree(c, lang)]),
+        el("div", "omg-render", [el("img", void 0, void 0, { attrs: { src, alt: "", decoding: "async", draggable: "false" } })])
+      ],
       { attrs: { lang } }
     );
   }
@@ -998,6 +1019,34 @@
     for (const k of n.kids ?? []) e.appendChild(make(k));
     return e;
   }
+  function tipsHost(tips) {
+    const host = document.createElement("div");
+    host.className = "omg-tips-host";
+    host.setAttribute("aria-hidden", "true");
+    host.appendChild(make(tips));
+    return host;
+  }
+  function buildRender(c, lang, tree, keywords) {
+    const card = make(tree);
+    const tips = gameCardTipsTree(c, lang, { ability: true, keywords });
+    const host = tips ? tipsHost(tips) : null;
+    if (host) card.appendChild(host);
+    const fallback = card.querySelector(".omg-card");
+    const img = card.querySelector(".omg-render img");
+    const done = () => card.classList.remove("is-loading");
+    img?.addEventListener("load", done);
+    img?.addEventListener("error", () => {
+      card.classList.add("is-failed");
+      done();
+      host?.querySelector(".omg-tip--ability")?.remove();
+      if (host && !host.querySelector(".omg-tip")) host.remove();
+    });
+    if (img?.complete && img.naturalWidth) done();
+    fallback?.querySelector(".omg-art img")?.addEventListener("error", (e) => e.target.parentElement?.classList.add("is-noimg"));
+    if (fallback && typeof requestAnimationFrame === "function") requestAnimationFrame(() => fit(fallback));
+    if (fallback && typeof document !== "undefined" && document.fonts) void document.fonts.ready.then(() => fit(fallback));
+    return card;
+  }
   function fit(card) {
     const box = card.querySelector(".omg-text");
     if (!box || !box.isConnected || !box.clientHeight) return;
@@ -1010,15 +1059,11 @@
     }
   }
   function build(c, lang, className = "", opts = {}) {
+    const rtree = opts.render ? gameCardRenderTree(c, lang, className) : null;
+    if (rtree) return buildRender(c, lang, rtree, !!opts.tips);
     const card = make(gameCardTree(c, lang, className));
     const tips = opts.tips ? gameCardTipsTree(c, lang) : null;
-    if (tips) {
-      const host = document.createElement("div");
-      host.className = "omg-tips-host";
-      host.setAttribute("aria-hidden", "true");
-      host.appendChild(make(tips));
-      card.appendChild(host);
-    }
+    if (tips) card.appendChild(tipsHost(tips));
     card.querySelector(".omg-art img")?.addEventListener("error", (e) => e.target.parentElement?.classList.add("is-noimg"));
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => fit(card));
     if (typeof document !== "undefined" && document.fonts) void document.fonts.ready.then(() => fit(card));

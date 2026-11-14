@@ -422,3 +422,60 @@
   font-size: 8.6cqw;
   line-height: 1.22;
 }
+
+/* ---------- carta "render + testo" (14/11/2026, scelta di Pierluigi per la carta al passaggio del mouse) ----------
+   Il render di Koin (2048 × 2048, sfondo grigio pieno) ritagliato come la carta disegnata: l'elemento è grande quanto la
+   cornice del personaggio nel render (x 444–1653, y 191–1964), la gemma sporge come nella carta disegnata. Ritaglio
+   comune alle tre forme (x 330, y 78, 1387 × 1892) e maschere da scripts/game-card-masks.mjs (immagini in theme.css).
+   Il testo dell'abilità sta nel riquadro accanto (.omg-tip--ability); la carta disegnata resta sotto finché il render
+   non è arrivato o se non arriva. */
+.omg-rcard {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1210 / 1774;
+  user-select: none;
+}
+.omg-render {
+  position: absolute;
+  left: -9.421%;
+  top: -6.37%;
+  width: 114.628%;
+  height: 106.652%;
+  overflow: hidden;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  filter: drop-shadow(0 1.2cqw 2.4cqw rgba(8, 4, 18, 0.55));
+}
+.omg-render img {
+  position: absolute;
+  left: -23.792%;
+  top: -4.123%;
+  width: 147.657%;
+  height: auto;
+  display: block;
+}
+.omg-rcard.is-loading .omg-render,
+.omg-rcard.is-failed .omg-render,
+.omg-rcard:not(.is-loading):not(.is-failed) .omg-rcard-fallback {
+  visibility: hidden;
+}
+.omg-rcard-fallback {
+  position: absolute;
+  inset: 0 0 auto;
+}
+/* il testo dell'abilità nel riquadro: Montserrat come sulla carta, bianco, ombra netta */
+.omg-tip--ability {
+  font-family: var(--omg-font-text);
+  font-weight: 400;
+  font-size: 8.6cqw;
+  line-height: 1.1;
+}
+.omg-tip--ability p {
+  margin: 0;
+}
+.omg-tip--ability p + p {
+  margin-top: 0.35em;
+}

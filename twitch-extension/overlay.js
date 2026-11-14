@@ -636,7 +636,8 @@
 
     if (game) {
       var shell = el("div", { cls: "om-gcard" });
-      shell.appendChild(window.OMGameCard.build(c, OM.lang, "", { tips: !MOBILE }));
+      // il render della carta di Koin con il testo accanto (14/11/2026), la carta disegnata finché non arriva
+      shell.appendChild(window.OMGameCard.build(Object.assign({ key: key }, c), OM.lang, "", { tips: !MOBILE, render: true }));
       preview.appendChild(shell);
       // per i lettori di schermo il riassunto in parole (gemma, spada e cuore sono disegni)
       var sr = [c.name, typeLabel(c) + (isLeg ? ", " + t("legendary") : "")];
@@ -744,8 +745,9 @@
     var gem = w * GEM_OVER;
     x = Math.max(gem + 4, Math.min(W - w - 4, x));
     y = Math.max(top0 + gem, Math.min(bottom0 - h, y));
-    // come il gioco, il riquadro resta a destra anche se esce un po' dallo schermo; a sinistra solo se ne uscirebbe più di metà
-    if (x + w + (TIPS_W * w) / 2 > W) preview.classList.add("is-tips-left");
+    // il riquadro sta a destra come nel gioco; dal 14/11/2026 ha in cima il testo della carta (il render di Koin non lo
+    // ha), che deve leggersi tutto: a sinistra appena non ci sta per intero
+    if (x + w + TIPS_W * w > W) preview.classList.add("is-tips-left");
     preview.style.left = Math.round(x) + "px";
     preview.style.top = Math.round(y) + "px";
     preview.style.width = Math.round(w) + "px";

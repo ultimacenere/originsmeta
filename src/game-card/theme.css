@@ -187,3 +187,8 @@
 .omg-kwi--snipe { background-image: url("icons/kw-snipe.png"); }
 .omg-kwi--stun { background-image: url("icons/kw-stun.png"); }
 .omg-kwi--trample { background-image: url("icons/kw-trample.png"); }
+
+/* maschere dei render di Koin (scripts/game-card-masks.mjs): tolgono lo sfondo grigio, una per forma */
+.omg-rcard--unit .omg-render { -webkit-mask-image: url("icons/mask-unit.png"); mask-image: url("icons/mask-unit.png"); }
+.omg-rcard--spell .omg-render { -webkit-mask-image: url("icons/mask-spell.png"); mask-image: url("icons/mask-spell.png"); }
+.omg-rcard--legendary .omg-render { -webkit-mask-image: url("icons/mask-legendary.png"); mask-image: url("icons/mask-legendary.png"); }

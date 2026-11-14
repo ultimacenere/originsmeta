@@ -33,6 +33,8 @@ export type GameCardInput = {
   text: string;
   /** indirizzo della sola finestra d'arte (/cards/art/<slug>.webp) o null */
   art: string | null;
+  /** chiave della carta o della variante (C00032_MB, C00032_MB_V00050): serve per il render di Koin */
+  key?: string;
 };
 
 /** Un nodo dell'albero: elemento HTML, elemento SVG (`svg: true`) o testo (`text` senza `tag`). */
@@ -316,16 +318,53 @@ export function keywordTips(text: string, lang: GameCardLang): { n: string; d: s
   return found.sort((a, b) => a.at - b.at).map(({ n, d }) => ({ n, d }));
 }
 
-export function gameCardTipsTree(c: GameCardInput, lang: GameCardLang): GcNode | null {
-  const tips = keywordTips(c.text, lang);
-  if (!tips.length) return null;
+/**
+ * Il riquadro accanto alla carta: con `ability` in cima il testo dell'abilità (la carta "render + testo", dove il render
+ * di Koin non ha il testo), con `keywords` le parole chiave del testo come nel gioco.
+ */
+export function gameCardTipsTree(c: GameCardInput, lang: GameCardLang, opts: { ability?: boolean; keywords?: boolean } = { keywords: true }): GcNode | null {
+  const blocks: GcNode[] = [];
+  if (opts.ability && String(c.text || "").trim()) blocks.push(el("div", "omg-tip omg-tip--ability", abilityNodes(c.text)));
+  if (opts.keywords ?? true)
+    for (const k of keywordTips(c.text, lang)) {
+      const ico = keywordIcon(k.n);
+      blocks.push(el("div", "omg-tip", [el("p", "omg-tip-title", ico ? [kwIcon(ico), txt(k.n)] : [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))]));
+    }
+  if (!blocks.length) return null;
+  return el("div", "omg-tips", blocks, { attrs: { lang } });
+}
+
+/**
+ * I render delle carte di Koin Games (risposta di Scorpio del 14/11/2026: pubblici, stessa chiave della variante del
+ * feed). Senza variante si usa la base _V00000. Null se la chiave non ha la forma del gioco.
+ */
+export const RENDER_BASE = "https://cdn.origins-tcg.com/images/";
+export function renderUrl(key: string | undefined): string | null {
+  const k = String(key ?? "");
+  if (/^C\d{5}_[A-Z]{2}_V\d{5}$/.test(k)) return `${RENDER_BASE}${k}.webp`;
+  if (/^C\d{5}_[A-Z]{2}$/.test(k)) return `${RENDER_BASE}${k}_V00000.webp`;
+  return null;
+}
+/** La forma della carta nel render, per la maschera che toglie lo sfondo grigio (scripts/game-card-masks.mjs). */
+export function renderShape(c: GameCardInput): "unit" | "spell" | "legendary" {
+  return c.type === "spell" ? "spell" : c.legendary ? "legendary" : "unit";
+}
+
+/**
+ * La carta "render + testo" (14/11/2026, scelta di Pierluigi per la carta al passaggio del mouse): il render di Koin,
+ * ritagliato e senza lo sfondo grigio, grande come la carta disegnata (stessa larghezza della cornice, la gemma sporge).
+ * Sotto c'è la carta disegnata, che resta finché il render non è arrivato e se non arriva (dom.ts). Null senza chiave.
+ */
+export function gameCardRenderTree(c: GameCardInput, lang: GameCardLang, className = ""): GcNode | null {
+  const src = renderUrl(c.key);
+  if (!src) return null;
   return el(
     "div",
-    "omg-tips",
-    tips.map((k) => {
-      const ico = keywordIcon(k.n);
-      return el("div", "omg-tip", [el("p", "omg-tip-title", ico ? [kwIcon(ico), txt(k.n)] : [txt(k.n)]), el("p", "omg-tip-text", abilityNodes(k.d).flatMap((r) => r.kids ?? []))]);
-    }),
+    `omg-rcard omg-rcard--${renderShape(c)} is-loading${className ? " " + className : ""}`,
+    [
+      el("div", "omg-rcard-fallback", [gameCardTree(c, lang)]),
+      el("div", "omg-render", [el("img", undefined, undefined, { attrs: { src, alt: "", decoding: "async", draggable: "false" } })]),
+    ],
     { attrs: { lang } },
   );
 }

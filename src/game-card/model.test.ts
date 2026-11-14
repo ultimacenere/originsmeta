@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { abilityNodes, gameCardTipsTree, gameCardTree, keywordIcon, type GameCardInput, type GcNode } from "./model.ts";
+import { abilityNodes, gameCardRenderTree, gameCardTipsTree, gameCardTree, keywordIcon, renderShape, renderUrl, type GameCardInput, type GcNode } from "./model.ts";
 
 const base: GameCardInput = { slug: "big-bad-wolf", name: "Big Bad Wolf", type: "unit", cost: 3, power: 3, health: 3, legendary: false, alignment: "evil", text: "", art: "/cards/art/big-bad-wolf.webp" };
 const flat = (n: GcNode): GcNode[] => [n, ...(n.kids ?? []).flatMap(flat)];
@@ -94,5 +94,34 @@ describe("copia per l'estensione Twitch", () => {
       const b = readFileSync(join(root, "twitch-extension", "game", f), "utf8").replace(/\r\n/g, "\n");
       assert.equal(b, a, `${f} diverso: rilanciare npm run twitch-panels nella cartella tracker/`);
     }
+  });
+});
+
+describe("carta render + testo (14/11/2026)", () => {
+  test("indirizzo del render: variante base senza variante, mai con chiavi strane", () => {
+    assert.equal(renderUrl("C00032_MB"), "https://cdn.origins-tcg.com/images/C00032_MB_V00000.webp");
+    assert.equal(renderUrl("C00147_MB_V00050"), "https://cdn.origins-tcg.com/images/C00147_MB_V00050.webp");
+    assert.equal(renderUrl("../x"), null);
+    assert.equal(renderUrl(undefined), null);
+  });
+  test("forma per la maschera e niente render senza chiave", () => {
+    assert.equal(renderShape({ ...base, type: "spell" }), "spell");
+    assert.equal(renderShape({ ...base, legendary: true }), "legendary");
+    assert.equal(gameCardRenderTree(base, "en"), null);
+    const t = gameCardRenderTree({ ...base, key: "C00021_MB" }, "it")!;
+    assert.ok(t.cls?.includes("omg-rcard--unit"));
+    assert.equal(byCls(t, "omg-card").length, 1, "la carta disegnata di riserva");
+  });
+  test("il riquadro accanto ha prima il testo dell'abilità, poi le parole chiave", () => {
+    const tips = gameCardTipsTree({ ...base, text: "Trample\nOn Death: Deal 2 damage." }, "en", { ability: true, keywords: true })!;
+    const blocks = tips.kids ?? [];
+    assert.equal(blocks[0].cls, "omg-tip omg-tip--ability");
+    assert.equal(blocks.length, 3);
+    assert.equal(gameCardTipsTree({ ...base, text: "" }, "en", { ability: true, keywords: true }), null);
+  });
+  test("le tre maschere esistono e il CSS le usa", () => {
+    const root = join(import.meta.dirname, "..", "..");
+    const theme = readFileSync(join(root, "src", "game-card", "theme.css"), "utf8");
+    for (const s of ["unit", "spell", "legendary"]) assert.ok(theme.includes(`.omg-rcard--${s} .omg-render`), s);
   });
 });

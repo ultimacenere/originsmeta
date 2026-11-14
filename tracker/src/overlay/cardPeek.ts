@@ -29,6 +29,7 @@ export function peekInput(key: string, lang: "en" | "it" | "es"): GameCardInput 
     alignment: r.al ?? null,
     text: r.x?.[lang] ?? "",
     art: r.art ? `https://originsmeta.com/cards/art/${r.s}.webp` : null,
+    key: k,
   };
 }
 
@@ -48,7 +49,8 @@ export function attachCardPeek(root: HTMLElement, lang: "en" | "it" | "es", widt
     const input = peekInput(key, lang);
     if (!input) return hide();
     if (key !== shownKey) {
-      box.replaceChildren(build(input, lang, "", { tips: true }));
+      // il render della carta di Koin con il testo accanto (14/11/2026), la carta disegnata finché non arriva
+      box.replaceChildren(build(input, lang, "", { tips: true, render: true }));
       shownKey = key;
     }
     const r = el.getBoundingClientRect();
