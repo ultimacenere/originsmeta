@@ -148,7 +148,9 @@ Nota Granola "riunione per attrix" dell'11/11/2026 (18:26). Nel codice dal 12/11
   `public/media/events/attrix-showmatch/` con nomi che non dicono chi sono (`p-<impronta del file>.webp`) e scrive
   `photo` nella configurazione sul Drive e nell'anteprima locale. Chi non è nella mappa tiene la foto di Twitch. I dieci
   file sono nel repository dal 12/11/2026, quando Pierluigi ha detto di mettere online le pagine (i nomi dei file non
-  dicono chi sono). Il repository è pubblico: la foto di un creator ancora da svelare non si committa prima del reveal.
+  dicono chi sono). Dal 14/11 sono undici: una foto arrivata in chat fuori dall'archivio si aggiunge agli originali, si
+  ritaglia da sola con `ritaglia-una.mjs` e si copia qui con lo stesso tipo di nome (`trova-foto.mjs` dice prima se è già
+  nell'archivio). Il repository è pubblico: la foto di un creator ancora da svelare non si committa prima del reveal.
 - **Il codice in privato su Twitch lo manda il mod, non il sito**: il pannello prepara il messaggio ("Copia il
   messaggio") e il mod lo incolla nel sussurro. Le note dicono "il sito invia automaticamente": non è così. L'invio
   automatico vorrebbe l'accesso con Twitch di ogni mod (permesso per i sussurri) e ha i limiti di Twitch sui sussurri.
