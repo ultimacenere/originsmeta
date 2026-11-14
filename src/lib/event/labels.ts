@@ -8,6 +8,25 @@ export function fillEvent(text: string, vars: Record<string, string | number>): 
   return text.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
 }
 
+/** "A", "A e B", "A, B e C" (i canali di un passaggio con più canali insieme). */
+export function joinNames(names: readonly string[]): string {
+  if (names.length <= 1) return names[0] ?? "";
+  return `${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
+}
+
+/** Durata da leggere: "2 ore", "1 ora e 30 minuti", "7 minuti e 30 secondi". */
+export function formatDuration(minutes: number): string {
+  const sec = Math.round(Math.max(0, minutes) * 60);
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  const parts: string[] = [];
+  if (h) parts.push(h === 1 ? "1 ora" : `${h} ore`);
+  if (m) parts.push(m === 1 ? "1 minuto" : `${m} minuti`);
+  if (s) parts.push(s === 1 ? "1 secondo" : `${s} secondi`);
+  return parts.length ? joinNames(parts) : "0 minuti";
+}
+
 export const eventLabels = {
   meta: {
     title: "{name}: i creator italiani di Origins TCG",
@@ -44,9 +63,12 @@ export const eventLabels = {
     waiting: "Il giveaway parte durante la diretta: la pagina ti dice dove e quanto manca.",
     done: "Il giveaway è finito: grazie a tutti! Hai vinto un codice? Riscattalo qui sotto.",
     goTo: "Vai al canale",
+    goToName: "Vai da {name}",
     days: "g",
     packs: "{n} pacchetti",
     packsOne: "1 pacchetto",
+    packsEach: "{n} pacchetti per canale",
+    channelSoon: "un canale da svelare",
     units: { d: "giorni", d1: "giorno", h: "ore", m: "min", s: "sec" },
     startsInDays: "L'evento inizia tra {d} giorni",
     startsTomorrow: "L'evento inizia domani",
@@ -114,15 +136,23 @@ export const eventLabels = {
       "Vai su quel canale e scrivi {keyword} in chat finché il tempo non scade: una volta basta.",
       "Allo scadere i vincitori vengono estratti a caso fra chi ha scritto il comando, e il mod del canale manda a ognuno un codice in privato su Twitch.",
       "Riscatta il codice qui sotto: serve un account gratuito su OriginsMeta (Discord, email o Steam).",
-      "Dopo il riscatto il sito ti dice come ricevere il pacchetto fisico.",
     ],
+    /** l'ultimo passo, quando la configurazione non dice come si riceve il pacchetto (`pickup`) */
+    stepPickup: "Dopo il riscatto il sito ti dice come ricevere il pacchetto.",
     schedule: "I passaggi del giveaway",
     slot: "{channel}: {packs}, {minutes} min",
     onePerPerson: "Si vince una volta sola in tutto l'evento: chi ha già vinto non viene più estratto.",
     manyPerPerson: "Puoi vincere più di una volta durante la serata, ma non due volte nello stesso passaggio.",
     total: "{packs} pacchetti in {slots} passaggi",
+    totalTime: "{packs} pacchetti in {slots} passaggi, {duration} in tutto.",
+    totalEach: "{packs} pacchetti in {slots} passaggi da {each}, {duration} in tutto.",
+    together: "Quando un passaggio ha due canali, il giveaway gira su tutti e due insieme, ognuno con i suoi pacchetti.",
+    packsSplit: "{list} pacchetti",
     minutes: "{n} min",
     channelSoon: "Canale da svelare",
+    finalTitle: "Dopo l'evento",
+    finalName: "OriginsMeta",
+    finalPlus: "Più {packs} all'estrazione dopo l'evento.",
   },
   redeem: {
     title: "Riscatta il codice",
@@ -136,7 +166,7 @@ export const eventLabels = {
     shape: "Il codice ha 10 tra lettere e cifre, come ABCDE-FGHJK.",
     mine: "I tuoi codici riscattati",
     pickup: "Come ricevere il pacchetto",
-    pickupPending: "Le istruzioni per ricevere il pacchetto fisico arrivano qui a breve: ti scriveremo anche nella casella messaggi del sito.",
+    pickupPending: "Le istruzioni per ricevere il pacchetto arrivano qui a breve: ti scriveremo anche nella casella messaggi del sito.",
     result: {
       ok: "Codice riscattato: il pacchetto è tuo!",
       mine: "Questo codice l'hai già riscattato tu.",
@@ -210,6 +240,7 @@ export const eventLabels = {
       stop: "Ferma tutto",
       stopConfirm: "Fermare il giveaway? L'orologio torna al primo slot.",
       slot: "Slot {n}",
+      with: "insieme allo slot {n}",
       codes: "codici dati {assigned}/{packs}, riscattati {redeemed}",
     },
     codes: {
@@ -217,7 +248,7 @@ export const eventLabels = {
       stats: "{total} codici: {assigned} dati, {redeemed} riscattati.",
       add: "Genera codici",
       howMany: "Quanti",
-      packsHint: "Gli slot danno {packs} pacchetti: tieni qualche codice in più (le note dicono 150 per 125).",
+      packsHint: "Il giveaway dà {packs} pacchetti in tutto: tieni qualche codice in più (le note dicono 150 per 125).",
     },
     mods: {
       title: "Link dei mod",

@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
-import { eventLabels as L, fillEvent } from "@/lib/event/labels";
-import { totalPacks } from "@/lib/event/config";
-import { startHasTime } from "@/lib/event/clock";
+import { eventLabels as L, fillEvent, formatDuration, joinNames } from "@/lib/event/labels";
+import { eventPacks, totalMinutes, totalPacks } from "@/lib/event/config";
+import { formatSlotMinutes, slotGroups, startHasTime } from "@/lib/event/clock";
 import { isHidden, type EventDeck } from "@/lib/event/types";
 import type { DeckCards, PublicEventView } from "@/lib/event/server";
 import { SECTION_KICKERS, inkOn, splitEventName, type EventSectionId } from "@/lib/event/looks";
@@ -120,7 +120,7 @@ function Tape({ items, n }: { items: string[]; n: 1 | 2 }) {
 
 export function EventShow({ slug, event, decks }: { slug: string; event: PublicEventView; decks: DeckView[] }) {
   const { config } = event;
-  const packs = totalPacks(config.slots);
+  const packs = eventPacks(config);
   const [first, last] = splitEventName(config.name);
   const start = config.startsAt ? Date.parse(config.startsAt) : NaN;
   const date = Number.isNaN(start) ? null : { day: dayFmt.format(start), month: monthFmt.format(start).replace(".", ""), monthLong: monthLongFmt.format(start), time: startHasTime(config.startsAt) ? timeFmt.format(start) : null };
@@ -135,6 +135,22 @@ export function EventShow({ slug, event, decks }: { slug: string; event: PublicE
     const t = config.talent.find((x) => !isHidden(x) && x.twitch === ch);
     return t && !isHidden(t) ? t.name : ch;
   };
+  // i passaggi come li vede chi guarda: gli slot con `together` stanno nella riga di quello con cui partono
+  const groups = slotGroups(config.slots);
+  const packsLabel = (n: number) => (n === 1 ? L.clock.packsOne : fillEvent(L.clock.packs, { n }));
+  const groupPacks = (g: number[]) => (g.length === 1 ? packsLabel(config.slots[g[0]].packs) : fillEvent(L.giveaway.packsSplit, { list: g.map((i) => config.slots[i].packs).join(" + ") }));
+  const groupMinutes = groups.map((g) => config.slots[g[0]].minutes);
+  const scheduleNote = [
+    fillEvent(groupMinutes.every((m) => m === groupMinutes[0]) ? L.giveaway.totalEach : L.giveaway.totalTime, {
+      packs: totalPacks(config.slots),
+      slots: groups.length,
+      each: formatSlotMinutes(groupMinutes[0] ?? 0),
+      duration: formatDuration(totalMinutes(config.slots)),
+    }),
+    config.finalDraw ? fillEvent(L.giveaway.finalPlus, { packs: config.finalDraw.packs }) : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const nav: { id: EventSectionId; label: string }[] = [
     { id: "giocatori", label: L.nav.talent },
     { id: "mazzi", label: L.nav.decks },
@@ -285,26 +301,35 @@ export function EventShow({ slug, event, decks }: { slug: string; event: PublicE
 
           <Section id="giveaway" labelId="ev-giveaway" n="05" title={L.giveaway.title}>
             <ol className="ev-steps">
-              {L.giveaway.steps.map((s) => (
+              {/* l'ultimo passo è come si riceve il pacchetto: il testo dell'evento (`pickup`), se c'è */}
+              {[...L.giveaway.steps.map((s) => fillEvent(s, { keyword: config.keyword })), config.pickup || L.giveaway.stepPickup].map((s) => (
                 <li key={s} className="ev-step">
-                  {fillEvent(s, { keyword: config.keyword })}
+                  {s}
                 </li>
               ))}
             </ol>
             <p className="ev-note">{config.maxWinsPerViewer > 1 ? L.giveaway.manyPerPerson : L.giveaway.onePerPerson}</p>
-            {config.slots.length ? (
+            {groups.length ? (
               <div className="ev-schedule">
                 <h3 className="ev-h3">{L.giveaway.schedule}</h3>
-                <p className="ev-note">{fillEvent(L.giveaway.total, { packs, slots: config.slots.length })}</p>
+                <p className="ev-note">{scheduleNote}</p>
                 <ol className="ev-slots">
-                  {config.slots.map((s, i) => (
-                    <li key={i} className="ev-slot">
-                      <span className="ev-slot-ch">{channelName(s.channel)}</span>
-                      <span className="ev-slot-packs">{s.packs === 1 ? L.clock.packsOne : fillEvent(L.clock.packs, { n: s.packs })}</span>
-                      <span className="ev-slot-min">{fillEvent(L.giveaway.minutes, { n: s.minutes })}</span>
+                  {groups.map((g) => (
+                    <li key={g[0]} className="ev-slot">
+                      <span className="ev-slot-ch">{joinNames(g.map((i) => channelName(config.slots[i].channel)))}</span>
+                      <span className="ev-slot-packs">{groupPacks(g)}</span>
+                      <span className="ev-slot-min">{formatSlotMinutes(config.slots[g[0]].minutes)}</span>
                     </li>
                   ))}
                 </ol>
+                {groups.some((g) => g.length > 1) ? <p className="ev-note">{L.giveaway.together}</p> : null}
+                {config.finalDraw ? (
+                  <div className="ev-final">
+                    <span className="ev-final-t">{L.giveaway.finalTitle}</span>
+                    <span className="ev-slot-packs">{packsLabel(config.finalDraw.packs)}</span>
+                    {config.finalDraw.text ? <p className="ev-final-text">{config.finalDraw.text}</p> : null}
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </Section>

@@ -1,7 +1,7 @@
 "use client";
 
 import { daysUntil, formatRemaining, giveawayClock, startHasTime, type GiveawayClock } from "@/lib/event/clock";
-import { eventLabels as L, fillEvent } from "@/lib/event/labels";
+import { eventLabels as L, fillEvent, joinNames } from "@/lib/event/labels";
 import { twitchUrl } from "@/lib/event/codes";
 import { trackNamedEvent } from "@/lib/analytics";
 import { FaceImg, faceOf, useEventData, useEventNow, type Face, type LiveEvent } from "./EventLive";
@@ -33,11 +33,17 @@ function untilParts(ms: number): { d: number; h: number; m: number; s: number } 
   return { d: Math.floor(total / 86_400), h: Math.floor((total % 86_400) / 3600), m: Math.floor((total % 3600) / 60), s: total % 60 };
 }
 
+/**
+ * I canali di un passaggio: uno solo di solito, più di uno quando gli slot partono insieme (14/11/2026: i due caster).
+ * `count` sono gli slot del passaggio, compresi quelli di un canale ancora da svelare (che non hanno una faccia).
+ */
+type Group = { faces: Face[]; count: number; packs: number[] };
+
 type View =
   | { kind: "loading" }
   | { kind: "before"; ms: number }
-  | { kind: "running" | "paused"; clock: GiveawayClock; face: Face | null }
-  | { kind: "waiting"; next: Face | null; nextAt: number | null }
+  | { kind: "running" | "paused"; clock: GiveawayClock; group: Group }
+  | { kind: "waiting"; next: Group | null; nextAt: number | null }
   | { kind: "done" };
 
 function faceForChannel(data: LiveEvent, channel: string): Face | null {
@@ -47,19 +53,43 @@ function faceForChannel(data: LiveEvent, channel: string): Face | null {
   return { id: channel, name: channel, img: null, twitch: channel, live: data.live.includes(channel), hidden: false };
 }
 
+function groupFor(data: LiveEvent, slots: readonly number[]): Group {
+  const faces = slots.flatMap((i) => {
+    const f = faceForChannel(data, data.config.slots[i]?.channel ?? "");
+    return f ? [f] : [];
+  });
+  return { faces, count: slots.length, packs: slots.map((i) => data.config.slots[i]?.packs ?? 0) };
+}
+
 function useView(): { view: View; data: LiveEvent } {
   const data = useEventData();
   const now = useEventNow();
   if (now === null) return { view: { kind: "loading" }, data };
   const clock = giveawayClock(data.config.slots, data.state.giveaway, now);
-  if (clock.status === "running" || clock.status === "paused") return { view: { kind: clock.status, clock, face: faceForChannel(data, clock.slot?.channel ?? "") }, data };
+  if (clock.status === "running" || clock.status === "paused") return { view: { kind: clock.status, clock, group: groupFor(data, clock.group) }, data };
   if (clock.status === "done") return { view: { kind: "done" }, data };
   const start = data.config.startsAt ? Date.parse(data.config.startsAt) : NaN;
   if (!Number.isNaN(start) && start > now && clock.next?.startsAt == null) return { view: { kind: "before", ms: start - now }, data };
-  return { view: { kind: "waiting", next: clock.next ? faceForChannel(data, clock.next.slot.channel) : null, nextAt: clock.next?.startsAt ?? null }, data };
+  return { view: { kind: "waiting", next: clock.next ? groupFor(data, clock.next.group) : null, nextAt: clock.next?.startsAt ?? null }, data };
 }
 
-const channelName = (f: Face | null) => (f ? f.name : "un canale da svelare");
+/** "NerDeku e Nimer"; un canale ancora da svelare resta "un canale da svelare". */
+const groupName = (g: Group) => joinNames([...g.faces.map((f) => f.name), ...Array.from({ length: Math.max(0, g.count - g.faces.length) }, () => L.clock.channelSoon)]) || L.clock.channelSoon;
+
+/** "5 pacchetti", "5 pacchetti per canale", "7 + 3 pacchetti". */
+const groupPacksText = (g: Group) =>
+  g.packs.length <= 1 ? packsText(g.packs[0] ?? 0) : g.packs.every((p) => p === g.packs[0]) ? fillEvent(L.clock.packsEach, { n: g.packs[0] }) : fillEvent(L.giveaway.packsSplit, { list: g.packs.join(" + ") });
+
+function GroupFaces({ group, size }: { group: Group; size: number }) {
+  if (!group.faces.length) return null;
+  return (
+    <span className="flex shrink-0 -space-x-3">
+      {group.faces.map((f) => (
+        <FaceImg key={f.id} face={f} size={size} />
+      ))}
+    </span>
+  );
+}
 
 /**
  * La fascia della pagina dell'evento. Con la grafica "da evento" (EventShow) la fascia ha due posti: `slot="top"`, sopra
@@ -114,12 +144,12 @@ export function EventClockBanner({ slot, units = false }: { slot?: "top" | "body
       {view.kind === "running" || view.kind === "paused" ? (
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <div className="flex min-w-0 items-center gap-3">
-            {view.face ? <FaceImg face={view.face} size={56} /> : null}
+            <GroupFaces group={view.group} size={56} />
             <div className="min-w-0">
               <p className="kicker text-mint">{view.kind === "running" ? L.clock.live : L.clock.paused}</p>
-              <p className="truncate font-display text-xl font-extrabold text-sky sm:text-3xl">{channelName(view.face)}</p>
+              <p className="truncate font-display text-xl font-extrabold text-sky sm:text-3xl">{groupName(view.group)}</p>
               <p className="text-sm text-pale">
-                {fillEvent(L.clock.write, { keyword })} · {packsText(view.clock.slot?.packs ?? 0)}
+                {fillEvent(L.clock.write, { keyword })} · {groupPacksText(view.group)}
               </p>
             </div>
           </div>
@@ -128,21 +158,24 @@ export function EventClockBanner({ slot, units = false }: { slot?: "top" | "body
               <p className="text-xs uppercase tracking-wider text-pale-muted">{L.clock.left}</p>
               <p className="ev-clock-time font-mono text-4xl font-bold text-chalk tabular-nums">{formatRemaining(view.clock.remainingMs)}</p>
             </div>
-            {view.face?.twitch ? (
-              <a
-                href={twitchUrl(view.face.twitch)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-                onClick={() => trackNamedEvent("event_channel_click", { placement: "clock", channel: view.face?.twitch ?? "" })}
-              >
-                {L.clock.goTo}
-              </a>
-            ) : null}
+            {view.group.faces
+              .filter((f) => f.twitch)
+              .map((f) => (
+                <a
+                  key={f.id}
+                  href={twitchUrl(f.twitch ?? "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                  onClick={() => trackNamedEvent("event_channel_click", { placement: "clock", channel: f.twitch ?? "" })}
+                >
+                  {view.group.faces.length > 1 ? fillEvent(L.clock.goToName, { name: f.name }) : L.clock.goTo}
+                </a>
+              ))}
           </div>
           {view.clock.next ? (
             <p className="w-full text-sm text-pale-muted">
-              {L.clock.next} {channelName(faceForChannel(data, view.clock.next.slot.channel))}
+              {L.clock.next} {groupName(groupFor(data, view.clock.next.group))}
               {view.clock.next.startsAt && now ? ` (${formatRemaining(view.clock.next.startsAt - now)})` : ""}
             </p>
           ) : null}
@@ -152,10 +185,10 @@ export function EventClockBanner({ slot, units = false }: { slot?: "top" | "body
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
           {view.next ? (
             <div className="flex min-w-0 items-center gap-3">
-              <FaceImg face={view.next} size={44} />
+              <GroupFaces group={view.next} size={44} />
               <div className="min-w-0">
                 <p className="kicker text-mint">{L.clock.nextAt}</p>
-                <p className="truncate font-display text-xl font-extrabold text-sky">{channelName(view.next)}</p>
+                <p className="truncate font-display text-xl font-extrabold text-sky">{groupName(view.next)}</p>
               </div>
               {view.nextAt && now ? <p className="ev-clock-time font-mono text-3xl font-bold text-chalk tabular-nums">{formatRemaining(view.nextAt - now)}</p> : <p className="text-sm text-pale">{L.clock.soon}</p>}
             </div>
@@ -181,14 +214,14 @@ export function EventClockOverlay() {
           <>
             <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-mint">{view.kind === "running" ? L.overlay.live : L.clock.paused}</p>
             <div className="flex items-center gap-3">
-              {view.face ? <FaceImg face={view.face} size={52} /> : null}
-              <p className="truncate font-display text-4xl font-extrabold text-sky">{channelName(view.face)}</p>
+              <GroupFaces group={view.group} size={52} />
+              <p className="truncate font-display text-4xl font-extrabold text-sky">{groupName(view.group)}</p>
               <p className="ml-auto pl-4 font-mono text-5xl font-bold tabular-nums">{formatRemaining(view.clock.remainingMs)}</p>
             </div>
             <p className="font-display text-xl font-bold">{fillEvent(L.overlay.write, { keyword })}</p>
             {view.clock.next ? (
               <p className="text-base text-pale">
-                {L.overlay.next}: {channelName(faceForChannel(data, view.clock.next.slot.channel))}
+                {L.overlay.next}: {groupName(groupFor(data, view.clock.next.group))}
               </p>
             ) : null}
           </>
@@ -205,7 +238,7 @@ export function EventClockOverlay() {
             <p className="font-mono text-sm font-bold uppercase tracking-[0.18em] text-mint">{L.overlay.waiting}</p>
             {view.next ? (
               <p className="font-display text-3xl font-extrabold text-sky">
-                {L.overlay.next}: {channelName(view.next)}
+                {L.overlay.next}: {groupName(view.next)}
               </p>
             ) : null}
             <p className="font-display text-xl font-bold">{fillEvent(L.overlay.write, { keyword })}</p>

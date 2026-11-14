@@ -1,4 +1,4 @@
-import { MIRROR_MODES, TALENT_ROLES, type EventConfig, type EventDeck, type GiveawaySlot, type MirrorMode, type Talent, type TalentLink, type TalentRole } from "./types";
+import { MIRROR_MODES, TALENT_ROLES, type EventConfig, type EventDeck, type FinalDraw, type GiveawaySlot, type MirrorMode, type Talent, type TalentLink, type TalentRole } from "./types";
 import { twitchLogin } from "./codes";
 
 /**
@@ -30,6 +30,7 @@ export const LIMITS = {
   maxCodesPerUser: 60,
   maxWinsPerViewer: 60,
   pickup: 1500,
+  finalText: 300,
 } as const;
 
 export const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
@@ -54,6 +55,7 @@ export function emptyConfig(name = "Evento"): EventConfig {
     mirror: "avoid",
     rounds: null,
     slots: [],
+    finalDraw: null,
     keyword: DEFAULT_KEYWORD,
     maxCodesPerUser: 1,
     maxWinsPerViewer: 1,
@@ -108,6 +110,14 @@ function isoOrNull(x: unknown): { ok: boolean; value: string | null } {
 function intIn(x: unknown, min: number, max: number): number | null {
   const n = typeof x === "number" ? x : typeof x === "string" && x.trim() !== "" ? Number(x) : NaN;
   return Number.isInteger(n) && n >= min && n <= max ? n : null;
+}
+
+/** Minuti di uno slot, anche con i secondi (7.5 = 7 minuti e 30, 14/11/2026); ai secondi interi. */
+function minutesIn(x: unknown, min: number, max: number): number | null {
+  const n = typeof x === "number" ? x : typeof x === "string" && x.trim() !== "" ? Number(x) : NaN;
+  if (!Number.isFinite(n) || n < min || n > max) return null;
+  const sec = n * 60;
+  return Math.abs(sec - Math.round(sec)) < 1e-6 ? Math.round(sec) / 60 : null;
 }
 
 export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedConfig {
@@ -259,23 +269,48 @@ export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedC
   if (!Array.isArray(rawSlots)) err("slots", "deve essere un elenco");
   else {
     if (rawSlots.length > LIMITS.slots) err("slots", `al massimo ${LIMITS.slots}`);
+    // canali del gruppo in corso (gli slot con `together` partono insieme a quello prima)
+    let groupChannels = new Set<string>();
     rawSlots.slice(0, LIMITS.slots).forEach((raw, i) => {
       const p = `slots[${i}]`;
+      const prev: GiveawaySlot | undefined = slots[slots.length - 1];
       if (!isObj(raw)) {
         err(p, "deve essere un oggetto");
         if (mode === "lenient") slots.push({ channel: "", packs: 0, minutes: 6 });
         return;
       }
+      if (raw.together !== undefined && typeof raw.together !== "boolean") err(`${p}.together`, "true o false");
+      const together = raw.together === true && i > 0;
+      if (raw.together === true && i === 0) err(`${p}.together`, "il primo passaggio non può partire insieme a un altro");
       const channel = typeof raw.channel === "string" ? twitchLogin(raw.channel) : null;
       const packs = intIn(raw.packs, 1, LIMITS.packs);
-      const minutes = intIn(raw.minutes ?? 6, 1, LIMITS.minutes);
+      const minutes = minutesIn(raw.minutes ?? (together && prev ? prev.minutes : 6), 1, LIMITS.minutes);
       if (!channel) err(`${p}.channel`, "nome del canale Twitch non valido");
       if (packs === null) err(`${p}.packs`, `pacchetti da 1 a ${LIMITS.packs}`);
-      if (minutes === null) err(`${p}.minutes`, `minuti da 1 a ${LIMITS.minutes}`);
-      if (channel && packs !== null && minutes !== null) slots.push({ channel, packs, minutes });
+      if (minutes === null) err(`${p}.minutes`, `minuti da 1 a ${LIMITS.minutes}, anche con i secondi (7.5 = 7 minuti e 30)`);
+      if (together && prev && minutes !== null && minutes !== prev.minutes) err(`${p}.minutes`, "uguali a quelli del passaggio con cui parte insieme");
+      if (!together) groupChannels = new Set();
+      if (channel && groupChannels.has(channel)) err(`${p}.channel`, "lo stesso canale due volte nello stesso passaggio");
+      if (channel) groupChannels.add(channel);
+      const extra = together ? { together: true } : {};
+      if (channel && packs !== null && minutes !== null) slots.push({ channel, packs, minutes, ...extra });
       // in lettura lo slot resta al suo posto anche se è scritto male: l'orologio del giveaway conta gli slot per indice
-      else if (mode === "lenient") slots.push({ channel: channel ?? "", packs: packs ?? 0, minutes: minutes ?? 6 });
+      else if (mode === "lenient") slots.push({ channel: channel ?? "", packs: packs ?? 0, minutes: minutes ?? 6, ...extra });
     });
+  }
+
+  // estrazione dopo l'evento (14/11/2026, schema di Dav: 10 pacchetti fra tutti gli iscritti a OriginsMeta)
+  let finalDraw: FinalDraw | null = null;
+  if (input.finalDraw !== undefined && input.finalDraw !== null) {
+    if (!isObj(input.finalDraw)) err("finalDraw", "deve essere un oggetto { packs, text }");
+    else {
+      const packs = intIn(input.finalDraw.packs, 1, LIMITS.packs);
+      const text = cleanText(input.finalDraw.text);
+      if (packs === null) err("finalDraw.packs", `pacchetti da 1 a ${LIMITS.packs}`);
+      if (!text) err("finalDraw.text", "chi partecipa e come (una frase)");
+      if (text.length > LIMITS.finalText) err("finalDraw.text", `al massimo ${LIMITS.finalText} caratteri`);
+      if (packs !== null) finalDraw = { packs, text: text.slice(0, LIMITS.finalText) };
+    }
   }
 
   let keyword = DEFAULT_KEYWORD;
@@ -315,6 +350,7 @@ export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedC
     mirror: MIRROR_MODES.includes(mirror) ? mirror : "avoid",
     rounds,
     slots,
+    finalDraw,
     keyword,
     maxCodesPerUser,
     maxWinsPerViewer,
@@ -329,9 +365,14 @@ export function totalPacks(slots: readonly GiveawaySlot[]): number {
   return slots.reduce((s, x) => s + x.packs, 0);
 }
 
-/** Minuti di tutti gli slot. */
+/** Tutti i pacchetti in palio: gli slot più l'estrazione dopo l'evento. */
+export function eventPacks(config: Pick<EventConfig, "slots" | "finalDraw">): number {
+  return totalPacks(config.slots) + (config.finalDraw?.packs ?? 0);
+}
+
+/** Minuti del giveaway: gli slot uno dopo l'altro (quelli con `together` non aggiungono tempo). */
 export function totalMinutes(slots: readonly GiveawaySlot[]): number {
-  return slots.reduce((s, x) => s + x.minutes, 0);
+  return slots.reduce((s, x) => s + (x.together ? 0 : x.minutes), 0);
 }
 
 /**
@@ -350,8 +391,8 @@ export function configWarnings(config: EventConfig, codesTotal: number | null = 
   const channels = new Set(config.talent.map((t) => t.twitch).filter(Boolean));
   const strangers = [...new Set(config.slots.map((s) => s.channel).filter((c) => !channels.has(c)))];
   if (strangers.length) out.push(`Slot su canali che non sono di nessun talent: ${strangers.join(", ")}.`);
-  const packs = totalPacks(config.slots);
-  if (codesTotal !== null && packs > codesTotal) out.push(`Gli slot danno ${packs} pacchetti ma i codici sono ${codesTotal}: generane altri.`);
+  const packs = eventPacks(config);
+  if (codesTotal !== null && packs > codesTotal) out.push(`Il giveaway dà ${packs} pacchetti ma i codici sono ${codesTotal}: generane altri.`);
   if (config.maxWinsPerViewer > config.maxCodesPerUser) {
     out.push(`Uno spettatore può vincere ${config.maxWinsPerViewer} volte ma un account riscatta al massimo ${config.maxCodesPerUser} codici: alza maxCodesPerUser.`);
   }

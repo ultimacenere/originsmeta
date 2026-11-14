@@ -43,11 +43,17 @@ export function parsePublicEvent(raw: unknown): PublicEvent | null {
   }
   // gli slot dei canali da svelare arrivano con il canale vuoto: restano al loro posto (l'orologio li conta per indice)
   const rawSlots = Array.isArray(cfgRaw.slots) ? cfgRaw.slots : [];
-  const slots = rawSlots.map((s) => {
+  const slots = rawSlots.map((s, i) => {
     const o = isObj(s) ? s : {};
     const packs = num(o.packs);
+    // minuti anche con i secondi (7.5 = 7 minuti e 30, 14/11/2026), al secondo
     const minutes = num(o.minutes, 6);
-    return { channel: typeof o.channel === "string" ? (twitchLogin(o.channel) ?? "") : "", packs: Number.isInteger(packs) && packs > 0 ? packs : 0, minutes: Number.isInteger(minutes) && minutes > 0 ? minutes : 6 };
+    return {
+      channel: typeof o.channel === "string" ? (twitchLogin(o.channel) ?? "") : "",
+      packs: Number.isInteger(packs) && packs > 0 ? packs : 0,
+      minutes: Number.isFinite(minutes) && minutes > 0 && minutes <= 60 ? Math.round(minutes * 60) / 60 : 6,
+      ...(o.together === true && i > 0 ? { together: true } : {}),
+    };
   });
   const { pairs: _pairs, ...rest } = config;
   void _pairs;

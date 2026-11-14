@@ -203,6 +203,40 @@ describe("configurazione", () => {
     assert.ok(w.some((x) => x.includes("estraneo")));
     assert.ok(w.some((x) => x.includes("25 pacchetti ma i codici sono 10")));
   });
+  test("passaggi con i secondi e passaggi che partono insieme (14/11/2026)", () => {
+    const raw = sampleConfig();
+    raw.slots = [
+      { channel: "atrix", packs: 7, minutes: 7.5 },
+      { channel: "p_uno", packs: 5, minutes: 7.5 },
+      { channel: "p_due", packs: 5, minutes: 7.5, together: true },
+    ];
+    const { config, errors } = CFG.parseConfig(raw, "strict");
+    assert.deepEqual(errors, []);
+    assert.equal(config.slots[0].minutes, 7.5);
+    assert.equal(config.slots[2].together, true);
+    assert.equal("together" in config.slots[1], false);
+    assert.equal(CFG.totalMinutes(config.slots), 15, "il passaggio insieme non aggiunge tempo");
+    const bad = (slots: unknown[]) => CFG.parseConfig({ ...sampleConfig(), slots }, "strict").errors;
+    assert.ok(bad([{ channel: "atrix", packs: 1, minutes: 7.123 }]).some((e) => e.startsWith("slots[0].minutes")), "solo secondi interi");
+    assert.ok(bad([{ channel: "atrix", packs: 1, minutes: 6, together: true }]).some((e) => e.startsWith("slots[0].together")), "il primo non parte insieme a nessuno");
+    assert.ok(bad([{ channel: "atrix", packs: 1, minutes: 6 }, { channel: "p_uno", packs: 1, minutes: 5, together: true }]).some((e) => e.startsWith("slots[1].minutes")), "stessa durata del gruppo");
+    assert.ok(bad([{ channel: "atrix", packs: 1, minutes: 6 }, { channel: "atrix", packs: 1, together: true }]).some((e) => e.startsWith("slots[1].channel")), "un canale una volta per passaggio");
+    assert.ok(bad([{ channel: "atrix", packs: 1, minutes: 6, together: "sì" }]).some((e) => e.startsWith("slots[0].together")));
+    assert.deepEqual(bad([{ channel: "atrix", packs: 1, minutes: 6 }, { channel: "p_uno", packs: 1, together: true }]), [], "senza minuti prende quelli del gruppo");
+  });
+  test("estrazione dopo l'evento: pacchetti nel totale e negli avvisi sui codici", () => {
+    const text = "Tutti gli iscritti a OriginsMeta partecipano.";
+    const { config, errors } = CFG.parseConfig({ ...sampleConfig(), finalDraw: { packs: 10, text } }, "strict");
+    assert.deepEqual(errors, []);
+    assert.deepEqual(config.finalDraw, { packs: 10, text });
+    assert.equal(CFG.totalPacks(config.slots), 22);
+    assert.equal(CFG.eventPacks(config), 32);
+    assert.ok(CFG.configWarnings(config, 30).some((w) => w.includes("32 pacchetti ma i codici sono 30")));
+    assert.deepEqual(CFG.configWarnings(config, 32).filter((w) => w.includes("codici")), []);
+    assert.equal(CFG.parseConfig(sampleConfig(), "strict").config.finalDraw, null);
+    assert.ok(CFG.parseConfig({ ...sampleConfig(), finalDraw: { packs: 0, text } }, "strict").errors.some((e) => e.startsWith("finalDraw.packs")));
+    assert.ok(CFG.parseConfig({ ...sampleConfig(), finalDraw: { packs: 3, text: "" } }, "strict").errors.some((e) => e.startsWith("finalDraw.text")));
+  });
   test("testi puliti dai caratteri invisibili", () => {
     assert.equal(CFG.cleanText("a\u200bb\u0007c  d"), "ab c d");
     assert.equal(CFG.cleanText("riga\r\n\r\n\r\n\r\naltra", true), "riga\n\naltra");
@@ -271,6 +305,41 @@ describe("orologio del giveaway", () => {
     assert.equal(K.slotWindow(slots, run, 0), null, "prima della partenza");
     assert.deepEqual(K.slotWindow(slots, run, 2), { start: T0 + 6 * MIN, end: T0 + 10 * MIN });
     assert.deepEqual(K.slotsOfChannel([...slots, { channel: "a", packs: 1, minutes: 1 }], "a"), [0, 3]);
+  });
+  test("slot che partono insieme: stesso orario, il gruppo conta una volta (14/11/2026)", () => {
+    const g = [
+      { channel: "a", packs: 7, minutes: 7.5 },
+      { channel: "b", packs: 5, minutes: 7.5 },
+      { channel: "c", packs: 5, minutes: 7.5, together: true },
+      { channel: "d", packs: 3, minutes: 7.5 },
+    ];
+    assert.deepEqual(K.slotGroups(g), [[0], [1, 2], [3]]);
+    assert.equal(K.leaderOf(g, 2), 1);
+    const run = K.startRun(T0);
+    const c0 = K.giveawayClock(g, run, T0 + MIN);
+    assert.deepEqual(c0.group, [0]);
+    assert.equal(c0.remainingMs, 6.5 * MIN);
+    assert.deepEqual(c0.next?.group, [1, 2]);
+    assert.equal(c0.next?.startsAt, T0 + 7.5 * MIN);
+    const c1 = K.giveawayClock(g, run, T0 + 8 * MIN);
+    assert.equal(c1.index, 1);
+    assert.deepEqual(c1.group, [1, 2]);
+    assert.equal(c1.remainingMs, 7 * MIN);
+    assert.deepEqual(c1.next?.group, [3]);
+    assert.equal(c1.next?.startsAt, T0 + 15 * MIN);
+    assert.deepEqual(K.slotWindow(g, run, 2), { start: T0 + 7.5 * MIN, end: T0 + 15 * MIN }, "lo slot insieme ha gli orari del gruppo");
+    assert.deepEqual(K.slotWindow(g, run, 3), { start: T0 + 15 * MIN, end: T0 + 22.5 * MIN });
+    assert.equal(K.giveawayClock(g, run, T0 + 22.5 * MIN).status, "done");
+    const skipped = K.skipRun(g, run, T0 + 8 * MIN);
+    assert.deepEqual(K.giveawayClock(g, skipped, T0 + 8 * MIN).group, [3], "salta tutto il gruppo");
+    assert.equal(K.startRun(T0, 2, g).anchorIndex, 1, "ripartire da uno slot del gruppo fa ripartire il gruppo");
+    assert.equal(K.formatSlotMinutes(7.5), "7 min 30 s");
+    assert.equal(K.formatSlotMinutes(6), "6 min");
+    assert.equal(LB.formatDuration(120), "2 ore");
+    assert.equal(LB.formatDuration(90), "1 ora e 30 minuti");
+    assert.equal(LB.formatDuration(7.5), "7 minuti e 30 secondi");
+    assert.equal(LB.joinNames(["NerDeku", "Nimer"]), "NerDeku e Nimer");
+    assert.equal(LB.joinNames(["a", "b", "c"]), "a, b e c");
   });
   test("tempo che resta scritto bene", () => {
     assert.equal(K.formatRemaining(0), "0:00");
@@ -569,6 +638,36 @@ describe("lettura pubblica", () => {
     assert.ok(!("pairs" in ev.config));
     assert.equal(V.parsePublicEvent({ nope: 1 }), null);
     assert.deepEqual(V.talentOfRole([ev.config.talent[1], ev.config.talent[0]], "player").map((t) => t.id), ["p1", "hidden-2"], "i nascosti in fondo");
+  });
+  test("slot con i secondi, slot insieme ed estrazione finale arrivano alla pagina (14/11/2026)", () => {
+    const ev = V.parsePublicEvent({
+      slug: "attrix-showmatch",
+      version: 1,
+      now: "2026-11-14T10:00:00Z",
+      stats: { codes: 125, assigned: 0, redeemed: 0 },
+      state: { assignments: [], matches: [], giveaway: { anchor: null, anchorIndex: 0, paused: null } },
+      config: {
+        ...sampleConfig(),
+        slots: [
+          { channel: "p_uno", packs: 5, minutes: 7.5, together: true },
+          { channel: "p_due", packs: 5, minutes: 7.5 },
+          { channel: "p_quattro", packs: 5, minutes: 7.5, together: true },
+        ],
+        finalDraw: { packs: 10, text: "Fra tutti gli iscritti." },
+      },
+    });
+    assert.ok(ev);
+    if (!ev) return;
+    assert.deepEqual(
+      ev.config.slots.map((s) => [s.minutes, s.together === true]),
+      [
+        [7.5, false],
+        [7.5, false],
+        [7.5, true],
+      ],
+      "il primo slot non parte insieme a nessuno",
+    );
+    assert.deepEqual(ev.config.finalDraw, { packs: 10, text: "Fra tutti gli iscritti." });
   });
 });
 

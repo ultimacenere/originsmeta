@@ -5,7 +5,7 @@ import { pageMeta } from "@/lib/page";
 import { deckCards, readPublicEvent } from "@/lib/event/server";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";
 import { EVENT_LOCALE, eventAnnounced, eventPath } from "@/lib/event/links";
-import { totalPacks } from "@/lib/event/config";
+import { eventPacks } from "@/lib/event/config";
 import { EventShow } from "@/components/event/EventShow";
 
 /*
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!isLocale(locale) || locale !== EVENT_LOCALE) return { robots: { index: false, follow: true } };
   const event = await readPublicEvent(slug, { twitch: false }).catch(() => null);
   if (!event) return { robots: { index: false, follow: true } };
-  const packs = totalPacks(event.config.slots);
+  const packs = eventPacks(event.config);
   const vars = { name: event.config.name, packs };
   return pageMeta(EVENT_LOCALE, `/events/${slug}`, fillEvent(L.meta.title, vars), fillEvent(packs ? L.meta.description : L.meta.descriptionNoPacks, vars), undefined, { languages: [EVENT_LOCALE], noindex: !eventAnnounced(slug) });
 }

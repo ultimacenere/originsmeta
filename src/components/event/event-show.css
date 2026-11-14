@@ -554,6 +554,28 @@
   font-size: 0.75rem;
   color: var(--ev-muted);
 }
+/* l'estrazione dopo l'evento (14/11/2026): fuori dalla numerazione dei passaggi, con il bordo tratteggiato */
+.ev-final {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 2px dashed var(--ev-gold);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ev-night) 60%, transparent);
+  font-size: 0.875rem;
+}
+.ev-final-t {
+  font-weight: 700;
+  color: var(--ev-chalk);
+}
+.ev-final-text {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--ev-pale);
+}
 
 /* ---------- riscatto ---------- */
 .ev-redeem {

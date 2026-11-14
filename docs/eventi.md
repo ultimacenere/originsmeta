@@ -52,7 +52,7 @@ Date in ISO con il fuso (`+01:00` a novembre). I nomi da svelare stanno solo nel
   "redeemUntil": null,
   "mirror": "avoid",
   "rounds": null,
-  "pickup": "Testo da mostrare dopo il riscatto: come si riceve il pacchetto fisico (da definire con Koin).",
+  "pickup": "Per ricevere il pacchetto nel gioco, quando Koin Games lo rilascerà, collega il tuo account Steam al profilo di OriginsMeta (Il mio profilo, sezione Steam).",
   "talent": [
     { "id": "atrix", "name": "Atrix", "role": "host", "twitch": "nome_canale", "bio": "…", "photo": "https://…" },
     { "id": "caster-1", "name": "…", "role": "caster", "twitch": "…", "revealAt": "2026-11-15T18:00:00+01:00" },
@@ -63,8 +63,11 @@ Date in ISO con il fuso (`+01:00` a novembre). I nomi da svelare stanno solo nel
   ],
   "pairs": [],
   "slots": [
-    { "channel": "nome_canale", "packs": 7, "minutes": 6 }
-  ]
+    { "channel": "nome_canale", "packs": 7, "minutes": 7.5 },
+    { "channel": "caster_uno", "packs": 5, "minutes": 7.5 },
+    { "channel": "caster_due", "packs": 5, "minutes": 7.5, "together": true }
+  ],
+  "finalDraw": { "packs": 10, "text": "A fine evento tutti gli iscritti a OriginsMeta partecipano in automatico all'estrazione di 10 pacchetti." }
 }
 ```
 
@@ -73,7 +76,9 @@ Date in ISO con il fuso (`+01:00` a novembre). I nomi da svelare stanno solo nel
 - `decks[].code`: il codice del gioco (quello che si copia dal deck builder); `color`: il colore dello spicchio della ruota.
 - `pairs`: coppie decise prima (`[["id1", "id2"], …]`); vuoto = la ruota estrae anche le coppie.
 - `mirror`: `avoid` evita negli abbinamenti due giocatori con lo stesso mazzo; `allow` no.
-- `slots`: i passaggi del giveaway in ordine, con canale, pacchetti e minuti; si susseguono senza pause.
+- `slots`: i passaggi del giveaway in ordine, con canale, pacchetti e minuti; si susseguono senza pause. I minuti possono avere i secondi (`7.5` = 7 minuti e 30, dal 14/11/2026: lo schema di Dav per l'Attrix Showmatch è di 16 blocchi da 7:30, due ore in tutto). `"together": true` fa partire lo slot insieme a quello prima, con la stessa durata: è il blocco dei due caster, ognuno con il suo canale, i suoi pacchetti e il suo mod. Pagina, overlay, comando di chat e regia lo mostrano come un passaggio solo ("NerDeku e Nimer", "5 pacchetti per canale"); nel database restano due slot, quindi il pannello di ogni mod e i codici funzionano come sempre, senza migrazione.
+- `finalDraw`: facoltativo, l'estrazione dopo l'evento (`packs` e `text`, una frase su chi partecipa). La pagina la mostra dopo i passaggi e la conta nei pacchetti in palio; i codici che servono sono quelli dei passaggi più questi. Il sito non fa l'estrazione: la fa lo staff dopo l'evento.
+- `pickup`: come si riceve il pacchetto; è anche l'ultimo passo di "Come funziona il giveaway".
 
 ## Durante
 

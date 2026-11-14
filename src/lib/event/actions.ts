@@ -124,7 +124,7 @@ export async function controlAction(
         const run = ev.state.giveaway;
         const index = Number.isInteger(op.index) && (op.index as number) >= 0 && (op.index as number) < slots.length ? (op.index as number) : 0;
         const next =
-          op.op === "start" ? startRun(now, index) : op.op === "skip" ? skipRun(slots, run, now) : op.op === "pause" ? pauseRun(slots, run, now) : op.op === "resume" ? resumeRun(run, now) : stopRun();
+          op.op === "start" ? startRun(now, index, slots) : op.op === "skip" ? skipRun(slots, run, now) : op.op === "pause" ? pauseRun(slots, run, now) : op.op === "resume" ? resumeRun(run, now) : stopRun();
         state = { ...ev.state, giveaway: next };
         break;
       }

@@ -111,7 +111,8 @@ export function EventModPanel({ slug }: { slug: string }) {
 
   const clock = ev ? giveawayClock(ev.slots, ev.giveaway, now) : null;
   const mine = useMemo(() => (ev ? slotsOfChannel(ev.slots, ev.channel) : []), [ev]);
-  const activeMine = clock && clock.status === "running" && clock.index !== null && ev && ev.slots[clock.index]?.channel === ev.channel ? clock.index : null;
+  // lo slot del mio canale fra quelli in corso (più di uno quando partono insieme, 14/11/2026: i due caster)
+  const activeMine = clock && clock.status === "running" && ev ? (clock.group.find((i) => ev.slots[i]?.channel === ev.channel) ?? null) : null;
   const collectKey = test ? "test" : activeMine !== null ? String(activeMine) : null;
 
   const onMessage = useCallback(
@@ -213,8 +214,8 @@ export function EventModPanel({ slug }: { slug: string }) {
 
   const lastMine = activeMine ?? [...mine].reverse().find((i) => clock?.status === "done" || (clock?.index ?? -1) > i || (ev.giveaway.anchor !== null && i < ev.giveaway.anchorIndex)) ?? mine[0];
   const slotLabel = (i: number) => {
-    if (clock?.index === i && clock.status === "running") return fillEvent(L.mod.slotLive, { left: formatRemaining(clock.remainingMs) });
-    if (clock?.index === i && clock.status === "paused") return L.mod.slotPaused;
+    if (clock?.group.includes(i) && clock.status === "running") return fillEvent(L.mod.slotLive, { left: formatRemaining(clock.remainingMs) });
+    if (clock?.group.includes(i) && clock.status === "paused") return L.mod.slotPaused;
     if (clock?.status === "done" || (clock?.index !== null && clock?.index !== undefined && i < clock.index) || (ev.giveaway.anchor && i < ev.giveaway.anchorIndex)) return L.mod.slotDone;
     const w = slotWindow(ev.slots, ev.giveaway, i);
     if (w && clock?.status === "running" && w.start > now) return fillEvent(L.mod.slotNext, { left: formatRemaining(w.start - now) });

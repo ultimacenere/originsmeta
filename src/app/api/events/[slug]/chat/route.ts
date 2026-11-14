@@ -1,6 +1,7 @@
 import { isEventSlug, readPublicEvent } from "@/lib/event/server";
 import { formatRemaining, giveawayClock } from "@/lib/event/clock";
 import { eventShortLink } from "@/lib/event/links";
+import { joinNames } from "@/lib/event/labels";
 
 /**
  * Comando di chat di un evento (10/11/2026), per Nightbot, StreamElements e Fossabot, come /api/chat/deck: una riga di
@@ -26,11 +27,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const c = giveawayClock(config.slots, event.state.giveaway, now);
   const where = (ch: string) => (ch ? `twitch.tv/${ch}` : "un canale da svelare");
   const packs = (n: number) => (n === 1 ? "1 pacchetto" : `${n} pacchetti`);
+  // un passaggio può avere più canali insieme (14/11/2026: i due caster)
+  const whereAll = (group: number[]) => joinNames(group.map((i) => where(config.slots[i]?.channel ?? "")));
+  const packsAll = (group: number[]) => {
+    const ps = group.map((i) => config.slots[i]?.packs ?? 0);
+    if (ps.length <= 1) return packs(ps[0] ?? 0);
+    return ps.every((p) => p === ps[0]) ? `${packs(ps[0])} per canale` : `${ps.join(" + ")} pacchetti`;
+  };
   let text: string;
   if (c.status === "running" && c.slot) {
-    text = `Giveaway ora su ${where(c.slot.channel)}: scrivi ${config.keyword} in chat, mancano ${formatRemaining(c.remainingMs)} (${packs(c.slot.packs)}).${c.next ? ` Poi su ${where(c.next.slot.channel)}.` : ""} Info e codici: ${link}`;
+    text = `Giveaway ora su ${whereAll(c.group)}: scrivi ${config.keyword} in chat, mancano ${formatRemaining(c.remainingMs)} (${packsAll(c.group)}).${c.next ? ` Poi su ${whereAll(c.next.group)}.` : ""} Info e codici: ${link}`;
   } else if (c.status === "paused" && c.slot) {
-    text = `Giveaway in pausa su ${where(c.slot.channel)}: riparte a breve. Info e codici: ${link}`;
+    text = `Giveaway in pausa su ${whereAll(c.group)}: riparte a breve. Info e codici: ${link}`;
   } else if (c.status === "done") {
     text = `Il giveaway di ${config.name} è finito. Hai vinto un codice? Riscattalo su ${link}`;
   } else {

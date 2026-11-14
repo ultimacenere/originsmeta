@@ -52,8 +52,15 @@ export type EventDeck = {
   note?: string;
 };
 
-/** Un passaggio del giveaway: il canale dove la chat scrive il comando, quanti pacchetti, quanti minuti. */
-export type GiveawaySlot = { channel: string; packs: number; minutes: number };
+/**
+ * Un passaggio del giveaway: il canale dove la chat scrive il comando, quanti pacchetti, quanti minuti (anche con i
+ * secondi: 7.5 = 7 minuti e 30). `together`: parte insieme al passaggio prima e dura quanto lui (14/11/2026, schema di
+ * Dav: i due caster fanno il giveaway nello stesso blocco, ognuno sul suo canale e con i suoi pacchetti).
+ */
+export type GiveawaySlot = { channel: string; packs: number; minutes: number; together?: boolean };
+
+/** Estrazione dopo l'evento (14/11/2026: 10 pacchetti fra tutti gli iscritti a OriginsMeta). La fa lo staff. */
+export type FinalDraw = { packs: number; text: string };
 
 export const MIRROR_MODES = ["avoid", "allow"] as const;
 export type MirrorMode = (typeof MIRROR_MODES)[number];
@@ -73,6 +80,8 @@ export type EventConfig = {
   /** turni svizzeri previsti (solo indicativo: la regia crea un turno alla volta) */
   rounds: number | null;
   slots: GiveawaySlot[];
+  /** estrazione dopo l'evento, fuori dai passaggi (null = nessuna) */
+  finalDraw: FinalDraw | null;
   /** comando che la chat scrive per partecipare al giveaway */
   keyword: string;
   /** codici che un account può riscattare */
@@ -81,7 +90,7 @@ export type EventConfig = {
   maxWinsPerViewer: number;
   /** fino a quando si riscatta (null = sempre) */
   redeemUntil: string | null;
-  /** che cosa fare dopo il riscatto per avere il pacchetto fisico */
+  /** che cosa fare dopo il riscatto per avere il pacchetto */
   pickup: string;
 };
 
@@ -105,7 +114,7 @@ export type Assignment = { deck: string; players: string[]; at: string; draw?: n
 
 /**
  * Orologio del giveaway: lo slot `anchorIndex` è partito in `anchor` e gli altri lo seguono uno dopo l'altro, ognuno con
- * i suoi minuti. `paused` ferma il tempo. Tutto il resto (slot in corso, minuti che restano, prossimo canale) si calcola
+ * i suoi minuti (gli slot con `together` insieme a quello prima). `paused` ferma il tempo. Tutto il resto (slot in corso, minuti che restano, prossimo canale) si calcola
  * da qui (clock.ts), quindi il database cambia solo quando la regia preme un tasto.
  */
 export type GiveawayRun = { anchor: string | null; anchorIndex: number; paused: string | null };

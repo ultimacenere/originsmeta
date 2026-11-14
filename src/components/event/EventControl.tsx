@@ -3,8 +3,8 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { addCodes, controlAction, createEvent, forgetWinners, loadControl, rotateControl, syncMods, type ControlOp } from "@/lib/event/actions";
 import { deckByPlayer, drawOf, lastRound, roundComplete, spinsLeft, spinsOfDraw } from "@/lib/event/engine";
-import { formatRemaining, giveawayClock } from "@/lib/event/clock";
-import { emptyConfig, totalPacks } from "@/lib/event/config";
+import { formatRemaining, formatSlotMinutes, giveawayClock, leaderOf } from "@/lib/event/clock";
+import { emptyConfig, eventPacks } from "@/lib/event/config";
 import { pct, standings } from "@/lib/event/swiss";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";
 import { eventPath, overlayPath } from "@/lib/event/links";
@@ -218,7 +218,9 @@ export function EventControl({ slug }: { slug: string }) {
   const deckName = (id: string | undefined) => config.decks.find((d) => d.id === id)?.name ?? "—";
   const rows = standings(config.talent.filter((t) => t.role === "player").map((t) => t.id), state.matches);
   const slotCodes = new Map(event.slotCodes.map((s) => [s.slot, s]));
-  const packs = totalPacks(config.slots);
+  const packs = eventPacks(config);
+  // i canali di un passaggio (più di uno quando gli slot partono insieme)
+  const channelsOf = (group: number[]) => group.map((i) => config.slots[i]?.channel ?? "").join(" + ");
   const controlLink = event.controlToken ? `${origin}${eventPath(slug, "/regia")}#k=${event.controlToken}` : null;
 
   return (
@@ -411,12 +413,12 @@ export function EventControl({ slug }: { slug: string }) {
           <p className={`ev-ctl-clock is-${clock.status}`}>
             {clock.status === "running" || clock.status === "paused" ? (
               <>
-                <span className="ev-ctl-clock-ch">{clock.slot?.channel}</span>
+                <span className="ev-ctl-clock-ch">{channelsOf(clock.group)}</span>
                 {clock.status === "paused" ? <span className="ev-ctl-clock-note">{L.control.giveaway.pause}</span> : null}
                 <span className="ev-ctl-clock-time">{formatRemaining(clock.remainingMs)}</span>
               </>
             ) : (
-              <span className="ev-ctl-clock-ch">{clock.status === "done" ? L.overlay.done : clock.next ? `${L.overlay.next}: ${clock.next.slot.channel}` : "—"}</span>
+              <span className="ev-ctl-clock-ch">{clock.status === "done" ? L.overlay.done : clock.next ? `${L.overlay.next}: ${channelsOf(clock.next.group)}` : "—"}</span>
             )}
           </p>
           <div className="ev-cta">
@@ -446,17 +448,19 @@ export function EventControl({ slug }: { slug: string }) {
           <ol className="ev-ctl-slots">
             {config.slots.map((s, i) => {
               const sc = slotCodes.get(i);
-              const current = clock.index === i;
+              const current = clock.group.includes(i);
               return (
                 <li key={i} className={`ev-ctl-slot${current ? " is-current" : ""}`}>
                   <span className="ev-ctl-slot-n">{fillEvent(L.control.giveaway.slot, { n: i + 1 })}</span>
                   <span className="ev-ctl-slot-ch">{s.channel}</span>
                   <span className="ev-ctl-slot-info">
-                    {s.packs} · {s.minutes} min · {fillEvent(L.control.giveaway.codes, { assigned: sc?.assigned ?? 0, packs: s.packs, redeemed: sc?.redeemed ?? 0 })}
+                    {s.packs} · {s.together ? fillEvent(L.control.giveaway.with, { n: leaderOf(config.slots, i) + 1 }) : formatSlotMinutes(s.minutes)} · {fillEvent(L.control.giveaway.codes, { assigned: sc?.assigned ?? 0, packs: s.packs, redeemed: sc?.redeemed ?? 0 })}
                   </span>
-                  <button type="button" className="btn btn-ghost text-[11px]" disabled={busy} onClick={() => act({ type: "giveaway", op: "start", index: i })}>
-                    {L.control.giveaway.startFrom}
-                  </button>
+                  {s.together ? null : (
+                    <button type="button" className="btn btn-ghost text-[11px]" disabled={busy} onClick={() => act({ type: "giveaway", op: "start", index: i })}>
+                      {L.control.giveaway.startFrom}
+                    </button>
+                  )}
                 </li>
               );
             })}
