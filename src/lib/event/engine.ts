@@ -33,6 +33,7 @@ export type EngineError =
   | "round_open"
   | "not_enough_players"
   | "round_has_results"
+  | "giveaway_on"
   | "unknown_match"
   | "bad_winner";
 
@@ -306,6 +307,16 @@ export function undoRound(state: EventState): EngineResult {
   if (!last) return { ok: false, error: "nothing_to_undo" };
   if (state.matches.some((m) => m.round === last && m.b !== null && m.winner !== null)) return { ok: false, error: "round_has_results" };
   return { ok: true, state: { ...state, matches: state.matches.filter((m) => m.round !== last) } };
+}
+
+/**
+ * Azzera le prove (14/11/2026, Pierluigi: "resetta pagina regia ed evento che facciamo prove"): ruota, turni e risultati
+ * tornano all'inizio. Configurazione e codici non stanno nello stato e restano come sono. Mai a giveaway avviato, anche
+ * in pausa o finito: prima "Ferma tutto". Che lo possa fare solo lo staff lo decide la Server Action.
+ */
+export function resetState(state: EventState): EngineResult {
+  if (state.giveaway.anchor !== null) return { ok: false, error: "giveaway_on" };
+  return { ok: true, state: emptyState() };
 }
 
 /** Il vincitore di una partita (null lo toglie). I bye non si cambiano. */

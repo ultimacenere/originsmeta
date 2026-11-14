@@ -170,6 +170,13 @@ export const eventLabels = {
     forgetNote: "Solo staff, a pacchetti consegnati: toglie dai codici le impronte dei nomi Twitch e gli account che li hanno riscattati (lo promette l'informativa privacy). Restano i conteggi e la pagina.",
     forgetConfirm: "Togliere impronte e account da tutti i codici di questo evento? Non si torna indietro.",
     forgetDone: "Dati tolti da {n} codici.",
+    reset: {
+      title: "Azzera le prove",
+      note: "Solo staff, per le prove prima della diretta: ruota, turni e risultati tornano all'inizio. Configurazione, codici e link dei mod restano come sono, e i codici già dati restano dati. Con il giveaway avviato non si può: prima «Ferma tutto».",
+      button: "Azzera le prove",
+      confirm: "Azzerare ruota, turni e risultati? Si riparte da zero e non si torna indietro.",
+      done: "Prove azzerate: si riparte da zero.",
+    },
     wheel: {
       title: "Ruota dei mazzi",
       spin: "Gira la ruota",
@@ -244,6 +251,7 @@ export const eventLabels = {
       round_open: "Il turno in corso ha ancora partite senza risultato.",
       not_enough_players: "Servono almeno due giocatori.",
       round_has_results: "Il turno ha già dei risultati: togli prima quelli.",
+      giveaway_on: "Prima ferma il giveaway (Ferma tutto).",
       unknown_match: "Partita non trovata.",
       bad_winner: "Vincitore non valido.",
       forbidden: "Link non valido.",

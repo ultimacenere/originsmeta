@@ -124,7 +124,12 @@ export function EventControl({ slug }: { slug: string }) {
           setRevealSpin(false);
           setSpin({ deck: r.assignment.deck, key: Date.now() });
         }
-        setMsg(L.control.saved);
+        if (op.type === "reset") {
+          setLastSpin(null);
+          setSpin(null);
+          setRevealSpin(true);
+        }
+        setMsg(op.type === "reset" ? L.control.reset.done : L.control.saved);
       } else {
         setMsg(errText(r.error));
         if (r.errors) setErrors(r.errors);
@@ -614,6 +619,27 @@ export function EventControl({ slug }: { slug: string }) {
                   }}
                 >
                   {L.control.forget}
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {event.controlToken ? (
+            <section className="ev-panel is-wide" aria-labelledby="ctl-reset">
+              <ToolHead id="ctl-reset" k={L.control.kickers.backstage}>
+                {L.control.reset.title}
+              </ToolHead>
+              <p className="ev-tool-text">{L.control.reset.note}</p>
+              <div className="ev-cta">
+                <button
+                  type="button"
+                  className="btn btn-danger text-xs"
+                  disabled={busy || state.giveaway.anchor !== null}
+                  onClick={() => {
+                    if (window.confirm(L.control.reset.confirm)) void act({ type: "reset" });
+                  }}
+                >
+                  {L.control.reset.button}
                 </button>
               </div>
             </section>

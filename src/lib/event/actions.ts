@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import { parseConfig, configWarnings } from "./config";
 import { pauseRun, resumeRun, skipRun, startRun, stopRun } from "./clock";
-import { cryptoRand, newDraw, nextRound, setWinner, spin, undoRound, undoSpin } from "./engine";
+import { cryptoRand, newDraw, nextRound, resetState, setWinner, spin, undoRound, undoSpin } from "./engine";
 import { isCodeShape, normalizeCode, twitchLogin } from "./codes";
 import { parseControlEvent, parseModEvent } from "./view";
 import type { AssignResult, AssignStatus, Assignment, ControlEvent, EventConfig, EventState, ModEvent, RedeemStatus } from "./types";
@@ -61,6 +61,7 @@ export type ControlOp =
   | { type: "undoRound" }
   | { type: "winner"; match: string; winner: string | null }
   | { type: "giveaway"; op: "start" | "skip" | "pause" | "resume" | "stop"; index?: number }
+  | { type: "reset" }
   | { type: "config"; config: unknown };
 
 /** Una mossa della regia. Con "spin" torna anche il giro della ruota, per l'animazione. */
@@ -125,6 +126,14 @@ export async function controlAction(
         const next =
           op.op === "start" ? startRun(now, index) : op.op === "skip" ? skipRun(slots, run, now) : op.op === "pause" ? pauseRun(slots, run, now) : op.op === "resume" ? resumeRun(run, now) : stopRun();
         state = { ...ev.state, giveaway: next };
+        break;
+      }
+      case "reset": {
+        // solo lo staff: il database restituisce il link della regia solo a lui, a chi entra con il link dei caster no
+        if (!ev.controlToken) return { ok: false, error: "forbidden" };
+        const r = resetState(ev.state);
+        if (!r.ok) return { ok: false, error: r.error };
+        state = r.state;
         break;
       }
       default:
