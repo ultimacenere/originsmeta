@@ -82,7 +82,13 @@ export type EventConfig = {
   slots: GiveawaySlot[];
   /** estrazione dopo l'evento, fuori dai passaggi (null = nessuna) */
   finalDraw: FinalDraw | null;
-  /** comando che la chat scrive per partecipare al giveaway */
+  /**
+   * Codici consegnati a mano (14/11/2026, nota della riunione: "abbandonato il sistema automatico via chat Twitch"):
+   * ogni streamer riceve i suoi codici e fa l'estrazione con il suo bot. Niente comando né pannello dei mod; la regia
+   * prepara i codici per streamer e i testi della pagina lo spiegano.
+   */
+  manualCodes: boolean;
+  /** comando che la chat scrive per partecipare al giveaway (solo con i codici automatici) */
   keyword: string;
   /** codici che un account può riscattare */
   maxCodesPerUser: number;

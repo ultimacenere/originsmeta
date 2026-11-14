@@ -309,6 +309,22 @@ export function undoRound(state: EventState): EngineResult {
   return { ok: true, state: { ...state, matches: state.matches.filter((m) => m.round !== last) } };
 }
 
+/** Quanto la ruota della regia impiega a fermarsi (4,6 secondi), più un margine. */
+export const SPIN_REVEAL_MS = 6000;
+
+/**
+ * Lo stato senza i giri della ruota usciti da meno di `ms` (14/11/2026, nota della riunione: "la ruota mostra il
+ * risultato prima di fermarsi"): la pagina pubblica non anticipa il mazzo mentre la ruota della regia gira ancora.
+ */
+export function holdNewAssignments(state: EventState, now: number, ms = SPIN_REVEAL_MS): EventState {
+  if (!Number.isFinite(now)) return state;
+  const assignments = state.assignments.filter((a) => {
+    const t = Date.parse(a.at);
+    return Number.isNaN(t) || t <= now - ms;
+  });
+  return assignments.length === state.assignments.length ? state : { ...state, assignments };
+}
+
 /**
  * Azzera le prove (14/11/2026, Pierluigi: "resetta pagina regia ed evento che facciamo prove"): ruota, turni e risultati
  * tornano all'inizio. Configurazione e codici non stanno nello stato e restano come sono. Mai a giveaway avviato, anche

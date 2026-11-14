@@ -149,7 +149,7 @@ export function EventClockBanner({ slot, units = false }: { slot?: "top" | "body
               <p className="kicker text-mint">{view.kind === "running" ? L.clock.live : L.clock.paused}</p>
               <p className="truncate font-display text-xl font-extrabold text-sky sm:text-3xl">{groupName(view.group)}</p>
               <p className="text-sm text-pale">
-                {fillEvent(L.clock.write, { keyword })} · {groupPacksText(view.group)}
+                {data.config.manualCodes ? L.clock.writeManual : fillEvent(L.clock.write, { keyword })} · {groupPacksText(view.group)}
               </p>
             </div>
           </div>
@@ -218,7 +218,7 @@ export function EventClockOverlay() {
               <p className="truncate font-display text-4xl font-extrabold text-sky">{groupName(view.group)}</p>
               <p className="ml-auto pl-4 font-mono text-5xl font-bold tabular-nums">{formatRemaining(view.clock.remainingMs)}</p>
             </div>
-            <p className="font-display text-xl font-bold">{fillEvent(L.overlay.write, { keyword })}</p>
+            <p className="font-display text-xl font-bold">{data.config.manualCodes ? L.overlay.writeManual : fillEvent(L.overlay.write, { keyword })}</p>
             {view.clock.next ? (
               <p className="text-base text-pale">
                 {L.overlay.next}: {groupName(groupFor(data, view.clock.next.group))}
@@ -241,7 +241,7 @@ export function EventClockOverlay() {
                 {L.overlay.next}: {groupName(view.next)}
               </p>
             ) : null}
-            <p className="font-display text-xl font-bold">{fillEvent(L.overlay.write, { keyword })}</p>
+            <p className="font-display text-xl font-bold">{data.config.manualCodes ? L.overlay.writeManual : fillEvent(L.overlay.write, { keyword })}</p>
           </>
         ) : null}
         {view.kind === "done" ? <p className="font-display text-3xl font-extrabold text-sky">{L.overlay.done}</p> : null}

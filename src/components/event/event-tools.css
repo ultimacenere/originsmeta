@@ -545,6 +545,27 @@
   font-size: 0.75rem;
   color: var(--ev-muted);
 }
+/* codici per gli streamer (14/11/2026): una riga per blocco, i codici in fila */
+.ev-streamer-codes {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  margin: 0.1rem 0 0;
+  font-size: 0.75rem;
+  color: var(--ev-muted);
+}
+.ev-streamer-codes code {
+  font-family: var(--ev-mono);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ev-gold);
+}
+.ev-streamer-codes code.is-redeemed {
+  color: var(--ev-mint);
+  text-decoration: line-through;
+}
 
 /* ---------- pannello del mod: vincitori e codici ---------- */
 .ev-codes {

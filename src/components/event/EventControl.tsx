@@ -1,14 +1,15 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { addCodes, controlAction, createEvent, forgetWinners, loadControl, rotateControl, syncMods, type ControlOp } from "@/lib/event/actions";
+import { addCodes, controlAction, createEvent, forgetWinners, loadControl, rotateControl, streamerCodes, syncMods, type ControlOp, type StreamerCodes } from "@/lib/event/actions";
 import { deckByPlayer, drawOf, lastRound, roundComplete, spinsLeft, spinsOfDraw } from "@/lib/event/engine";
-import { formatRemaining, formatSlotMinutes, giveawayClock, leaderOf } from "@/lib/event/clock";
-import { emptyConfig, eventPacks } from "@/lib/event/config";
+import { formatRemaining, formatSlotMinutes, giveawayClock, leaderOf, slotGroups } from "@/lib/event/clock";
+import { emptyConfig, eventPacks, totalPacks } from "@/lib/event/config";
+import { formatCode } from "@/lib/event/codes";
 import { pct, standings } from "@/lib/event/swiss";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";
-import { eventPath, overlayPath } from "@/lib/event/links";
-import type { Assignment, ControlEvent } from "@/lib/event/types";
+import { eventPath, eventShortLink, overlayPath } from "@/lib/event/links";
+import type { Assignment, ControlEvent, EventConfig } from "@/lib/event/types";
 import { EventWheel } from "./EventWheel";
 import { ToolHead, ToolHero, ToolShell } from "./EventTool";
 
@@ -31,6 +32,110 @@ function tokenFromHash(): string | null {
 
 function errText(code: string): string {
   return (L.control.errors as Record<string, string>)[code] ?? fillEvent(L.control.error, { msg: code });
+}
+
+/**
+ * I codici di ogni streamer, da consegnare a mano (14/11/2026, nota della riunione: lo streamer fa l'estrazione con il
+ * suo bot e dà i codici in privato). Solo per lo staff: la regia lo mostra quando la configurazione ha `manualCodes`.
+ */
+function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfig }) {
+  const [busy, setBusy] = useState(false);
+  const [list, setList] = useState<StreamerCodes[] | null>(null);
+  const [free, setFree] = useState(0);
+  const [msg, setMsg] = useState<string | null>(null);
+  const run = useCallback(
+    async (prepare: boolean) => {
+      setBusy(true);
+      setMsg(null);
+      try {
+        const r = await streamerCodes(slug, prepare);
+        if (r.ok) {
+          setList(r.streamers);
+          setFree(r.free);
+          if (prepare) setMsg(L.control.streamers.prepared);
+        } else setMsg(errText(r.error));
+      } catch {
+        setMsg(errText("unavailable"));
+      } finally {
+        setBusy(false);
+      }
+    },
+    [slug],
+  );
+  /* eslint-disable react-hooks/set-state-in-effect -- lettura una tantum all'apertura (le altre le fanno i tasti) */
+  useEffect(() => {
+    void run(false);
+  }, [run]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const groups = slotGroups(config.slots);
+  const blockOf = (slot: number) => groups.findIndex((g) => g.includes(slot)) + 1;
+  const talentOf = (ch: string) => config.talent.find((t) => t.twitch === ch);
+  const ready = (list ?? []).reduce((n, s) => n + s.codes.length, 0);
+  const message = (s: StreamerCodes) =>
+    [
+      fillEvent(L.control.streamers.messageHead, { name: config.name }),
+      ...s.slots.flatMap((slot) => [
+        "",
+        fillEvent(L.control.streamers.block, { n: blockOf(slot), packs: config.slots[slot].packs }),
+        ...s.codes.filter((c) => c.slot === slot).map((c) => formatCode(c.code)),
+      ]),
+      "",
+      fillEvent(L.control.streamers.messageEnd, { url: `https://${eventShortLink(slug)}` }),
+    ].join("\n");
+
+  return (
+    <section className="ev-panel is-wide" aria-labelledby="ctl-streamers">
+      <ToolHead id="ctl-streamers" k={L.control.kickers.backstage}>
+        {L.control.streamers.title}
+      </ToolHead>
+      <p className="ev-tool-text">{L.control.streamers.intro}</p>
+      <div className="ev-cta">
+        <button type="button" className="btn btn-primary text-xs" disabled={busy} onClick={() => void run(true)}>
+          {L.control.streamers.prepare}
+        </button>
+        <button type="button" className="btn btn-ghost text-xs" disabled={busy} onClick={() => void run(false)}>
+          {L.control.streamers.refresh}
+        </button>
+      </div>
+      <p role="status" className="ev-tool-status">
+        {busy ? "…" : msg}
+      </p>
+      {list ? <p className="ev-note">{fillEvent(L.control.streamers.total, { ready, packs: totalPacks(config.slots), free })}</p> : null}
+      {list && !ready ? <p className="ev-note">{L.control.streamers.none}</p> : null}
+      {list && ready ? (
+        <ul className="ev-list ev-list--two">
+          {list.map((s) => {
+            const t = talentOf(s.channel);
+            return (
+              <li key={s.channel} className="ev-streamer">
+                <span className="ev-list-name">{t?.name ?? s.channel}</span>
+                <span className="ev-list-sub">{fillEvent(L.control.streamers.count, { ready: s.codes.length, packs: s.packs, redeemed: s.codes.filter((c) => c.redeemed).length })}</span>
+                {t?.user ? (
+                  <a className="ev-list-sub underline" href={`/it/u/${t.user}`} target="_blank" rel="noopener noreferrer">
+                    {L.control.streamers.profile}
+                  </a>
+                ) : null}
+                <CopyLink text={message(s)} label={L.control.streamers.copy} />
+                {s.slots.map((slot) => (
+                  <p key={slot} className="ev-streamer-codes">
+                    <b>{fillEvent(L.control.streamers.block, { n: blockOf(slot), packs: config.slots[slot].packs })}</b>{" "}
+                    {s.codes
+                      .filter((c) => c.slot === slot)
+                      .map((c) => (
+                        <code key={c.code} className={c.redeemed ? "is-redeemed" : undefined} title={c.redeemed ? L.control.streamers.redeemed : undefined}>
+                          {formatCode(c.code)}
+                        </code>
+                      ))}
+                  </p>
+                ))}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </section>
+  );
 }
 
 function CopyLink({ text, label }: { text: string; label: string }) {
@@ -203,6 +308,11 @@ export function EventControl({ slug }: { slug: string }) {
   const assigned = deckByPlayer(state);
   const draw = drawOf(state);
   const drawSpins = spinsOfDraw(state, draw);
+  // finché la ruota gira, il giro appena uscito non compare né nell'elenco né nei giri rimasti (14/11/2026, nota della
+  // riunione: "la ruota mostra il risultato prima di fermarsi")
+  const isSpinning = (a: Assignment) => Boolean(lastSpin && !revealSpin && a.deck === lastSpin.deck && a.at === lastSpin.at);
+  const shownSpins = drawSpins.filter((a) => !isSpinning(a));
+  const shownLeft = left + (drawSpins.length - shownSpins.length);
   const lastAssignment = state.assignments[state.assignments.length - 1];
   // l'ultimo giro si annulla finché dopo non è nato un turno; un'estrazione aperta e ancora vuota si richiude
   const canUndoSpin = drawSpins.length ? last <= (lastAssignment?.afterRound ?? 0) : draw > 1;
@@ -273,7 +383,7 @@ export function EventControl({ slug }: { slug: string }) {
             <div className="ev-wheel-side">
               <p className="ev-wheel-left">
                 {draw > 1 ? `${fillEvent(L.control.wheel.draw, { n: draw })} · ` : ""}
-                {left ? fillEvent(L.control.wheel.left, { n: left }) : L.control.wheel.none}
+                {shownLeft ? fillEvent(L.control.wheel.left, { n: shownLeft }) : L.control.wheel.none}
               </p>
               {lastSpin && revealSpin ? <p className="ev-result">{fillEvent(L.control.wheel.result, { players: lastSpin.players.map(name).join(" e "), deck: deckName(lastSpin.deck) })}</p> : null}
               <div className="ev-cta">
@@ -284,8 +394,8 @@ export function EventControl({ slug }: { slug: string }) {
                   {drawSpins.length || draw === 1 ? L.control.wheel.undo : fillEvent(L.control.wheel.undoDraw, { n: draw })}
                 </button>
               </div>
-              {drawSpins.length ? <ol className="ev-decks ev-assigned">{drawSpins.map(assignedRow)}</ol> : null}
-              {!left && state.assignments.length ? (
+              {shownSpins.length ? <ol className="ev-decks ev-assigned">{shownSpins.map(assignedRow)}</ol> : null}
+              {!shownLeft && state.assignments.length ? (
                 <div className="ev-newdraw">
                   <button
                     type="button"
@@ -498,6 +608,10 @@ export function EventControl({ slug }: { slug: string }) {
             </div>
           </section>
 
+          {/* codici consegnati a mano (14/11/2026): al posto dei link dei mod, i codici di ogni streamer, solo per lo staff */}
+          {config.manualCodes ? (
+            event.controlToken ? <StreamerCodesPanel slug={slug} config={config} /> : null
+          ) : (
           <section className="ev-panel" aria-labelledby="ctl-mods">
             <ToolHead id="ctl-mods" k={L.control.kickers.backstage}>
               {L.control.mods.title}
@@ -532,6 +646,7 @@ export function EventControl({ slug }: { slug: string }) {
               <p className="ev-note">{L.control.mods.none}</p>
             )}
           </section>
+          )}
 
           <section className="ev-panel is-wide" aria-labelledby="ctl-redeem">
             <ToolHead id="ctl-redeem" k={L.control.kickers.backstage}>

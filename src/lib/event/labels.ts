@@ -56,6 +56,8 @@ export const eventLabels = {
     live: "Giveaway in corso su",
     paused: "Giveaway in pausa su",
     write: "Scrivi {keyword} in chat",
+    /** con i codici consegnati a mano (14/11/2026): ogni streamer usa il suo bot */
+    writeManual: "Partecipa al giveaway in chat",
     left: "Mancano",
     next: "Poi su",
     nextAt: "Prossimo giveaway su",
@@ -137,6 +139,14 @@ export const eventLabels = {
       "Allo scadere i vincitori vengono estratti a caso fra chi ha scritto il comando, e il mod del canale manda a ognuno un codice in privato su Twitch.",
       "Riscatta il codice qui sotto: serve un account gratuito su OriginsMeta (Discord, email o Steam).",
     ],
+    /** con i codici consegnati a mano (14/11/2026): ogni streamer fa l'estrazione con il bot del suo canale */
+    stepsManual: [
+      "Durante la diretta il giveaway passa da un canale all'altro: in cima alla pagina vedi su quale canale è attivo e quanto manca.",
+      "Vai su quel canale e partecipa al giveaway in chat: lo streamer ti dice come.",
+      "Allo scadere il bot del canale estrae i vincitori, e ognuno riceve un codice in privato su Twitch.",
+      "Riscatta il codice qui sotto: serve un account gratuito su OriginsMeta (Discord, email o Steam), anche fatto dopo aver vinto.",
+    ],
+    codeOnce: "Ogni codice vale un pacchetto e si riscatta una volta sola.",
     /** l'ultimo passo, quando la configurazione non dice come si riceve il pacchetto (`pickup`) */
     stepPickup: "Dopo il riscatto il sito ti dice come ricevere il pacchetto.",
     schedule: "I passaggi del giveaway",
@@ -157,6 +167,7 @@ export const eventLabels = {
   redeem: {
     title: "Riscatta il codice",
     intro: "Hai vinto nel giveaway? Scrivi qui il codice che ti ha mandato il mod del canale.",
+    introManual: "Hai vinto nel giveaway? Scrivi qui il codice che ti hanno mandato in privato su Twitch.",
     label: "Il tuo codice",
     placeholder: "ABCDE-FGHJK",
     submit: "Riscatta",
@@ -250,6 +261,22 @@ export const eventLabels = {
       howMany: "Quanti",
       packsHint: "Il giveaway dà {packs} pacchetti in tutto: tieni qualche codice in più (le note dicono 150 per 125).",
     },
+    streamers: {
+      title: "Codici per gli streamer",
+      intro: "Ogni streamer riceve i suoi codici, uno per pacchetto dei suoi blocchi, e li dà ai vincitori estratti con il bot del suo canale; chi vince li riscatta sulla pagina dell'evento, anche iscrivendosi dopo. «Prepara i codici» li assegna ai passaggi: si può premere più volte, quelli già pronti restano gli stessi.",
+      prepare: "Prepara i codici",
+      refresh: "Aggiorna",
+      prepared: "Codici pronti",
+      total: "{ready} codici pronti per {packs} pacchetti dei passaggi · {free} codici liberi",
+      count: "{ready}/{packs} pronti · {redeemed} riscattati",
+      block: "Blocco {n} · {packs}",
+      copy: "Copia i codici",
+      profile: "Profilo sul sito",
+      none: "Nessun codice pronto: premi «Prepara i codici».",
+      redeemed: "riscattato",
+      messageHead: "{name}: i tuoi codici per il giveaway, uno per vincitore.",
+      messageEnd: "Dai ogni codice a un solo vincitore, in privato su Twitch: si riscatta su {url} con un account gratuito su OriginsMeta, anche fatto dopo aver vinto. Non mostrare i codici in diretta.",
+    },
     mods: {
       title: "Link dei mod",
       intro: "Ogni canale del giveaway ha il suo link: il mod lo apre durante il suo slot, collega la chat e il pannello estrae i vincitori e gli dà i codici.",
@@ -341,6 +368,7 @@ export const eventLabels = {
   overlay: {
     live: "GIVEAWAY ORA SU",
     write: "Scrivi {keyword} in chat",
+    writeManual: "Partecipa al giveaway in chat",
     next: "Prossimo",
     startsIn: "Si parte tra",
     waiting: "Giveaway in arrivo",

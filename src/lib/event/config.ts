@@ -56,6 +56,7 @@ export function emptyConfig(name = "Evento"): EventConfig {
     rounds: null,
     slots: [],
     finalDraw: null,
+    manualCodes: false,
     keyword: DEFAULT_KEYWORD,
     maxCodesPerUser: 1,
     maxWinsPerViewer: 1,
@@ -313,6 +314,10 @@ export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedC
     }
   }
 
+  // codici consegnati a mano agli streamer (14/11/2026)
+  if (input.manualCodes !== undefined && input.manualCodes !== null && typeof input.manualCodes !== "boolean") err("manualCodes", "true o false");
+  const manualCodes = input.manualCodes === true;
+
   let keyword = DEFAULT_KEYWORD;
   if (input.keyword !== undefined && input.keyword !== null && input.keyword !== "") {
     const k = typeof input.keyword === "string" ? input.keyword.trim().toLowerCase() : "";
@@ -351,6 +356,7 @@ export function parseConfig(input: unknown, mode: ParseMode = "strict"): ParsedC
     rounds,
     slots,
     finalDraw,
+    manualCodes,
     keyword,
     maxCodesPerUser,
     maxWinsPerViewer,

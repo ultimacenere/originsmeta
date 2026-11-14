@@ -133,7 +133,7 @@ export function EventRedeem({ slug, kicker }: { slug: string; kicker?: string })
       <h2 id="ev-redeem" className="ev-redeem-title t-section text-sky">
         {L.redeem.title}
       </h2>
-      <p className="mt-2 text-pale">{L.redeem.intro}</p>
+      <p className="mt-2 text-pale">{data.config.manualCodes ? L.redeem.introManual : L.redeem.intro}</p>
       <form onSubmit={submit} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <label className="block min-w-0 flex-1 text-sm text-pale">
           {L.redeem.label}

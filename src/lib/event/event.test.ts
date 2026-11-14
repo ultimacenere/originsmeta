@@ -224,6 +224,29 @@ describe("configurazione", () => {
     assert.ok(bad([{ channel: "atrix", packs: 1, minutes: 6, together: "sì" }]).some((e) => e.startsWith("slots[0].together")));
     assert.deepEqual(bad([{ channel: "atrix", packs: 1, minutes: 6 }, { channel: "p_uno", packs: 1, together: true }]), [], "senza minuti prende quelli del gruppo");
   });
+  test("codici consegnati a mano: interruttore manualCodes, spento di default (14/11/2026)", () => {
+    assert.equal(CFG.parseConfig(sampleConfig(), "strict").config.manualCodes, false);
+    const on = CFG.parseConfig({ ...sampleConfig(), manualCodes: true }, "strict");
+    assert.deepEqual(on.errors, []);
+    assert.equal(on.config.manualCodes, true);
+    assert.ok(CFG.parseConfig({ ...sampleConfig(), manualCodes: "sì" }, "strict").errors.some((e) => e.startsWith("manualCodes")));
+    // i testi della consegna a mano non parlano di un comando da scrivere
+    for (const s of [...LB.eventLabels.giveaway.stepsManual, LB.eventLabels.clock.writeManual, LB.eventLabels.overlay.writeManual, LB.eventLabels.redeem.introManual]) {
+      assert.ok(!s.includes("{keyword}") && !s.includes("!codice"), s);
+    }
+  });
+  test("vincitori di comodo dei codici per gli streamer: nomi Twitch validi, uno per slot e pacchetto", () => {
+    assert.equal(C.staffWinnerLogin(0, 6), "om01x07");
+    const all = new Set<string>();
+    for (let slot = 0; slot < CFG.LIMITS.slots; slot++) {
+      for (let k = 0; k < CFG.LIMITS.packs; k++) {
+        const login = C.staffWinnerLogin(slot, k);
+        assert.match(login, C.TWITCH_LOGIN_PATTERN);
+        all.add(login);
+      }
+    }
+    assert.equal(all.size, CFG.LIMITS.slots * CFG.LIMITS.packs, "mai due slot o due pacchetti con lo stesso nome");
+  });
   test("estrazione dopo l'evento: pacchetti nel totale e negli avvisi sui codici", () => {
     const text = "Tutti gli iscritti a OriginsMeta partecipano.";
     const { config, errors } = CFG.parseConfig({ ...sampleConfig(), finalDraw: { packs: 10, text } }, "strict");
@@ -389,6 +412,17 @@ describe("ruota dei mazzi e svizzera", () => {
     const withRound = E.nextRound(c, r.state, E.seededRand(2));
     assert.ok(withRound.ok);
     if (withRound.ok) assert.deepEqual(E.undoSpin(withRound.state), { ok: false, error: "matches_started" });
+  });
+  test("il giro appena uscito non compare sulla pagina finché la ruota della regia gira (14/11/2026)", () => {
+    const c = parsed();
+    const r = E.spin(c, E.emptyState(), E.seededRand(5), T0);
+    assert.ok(r.ok);
+    if (!r.ok) return;
+    assert.equal(E.holdNewAssignments(r.state, T0 + 1000).assignments.length, 0, "durante il giro");
+    assert.equal(E.holdNewAssignments(r.state, T0 + E.SPIN_REVEAL_MS).assignments.length, 1, "a ruota ferma");
+    assert.equal(E.holdNewAssignments(r.state, NaN), r.state, "senza ora non toglie niente");
+    const old = { ...r.state, assignments: [{ ...r.state.assignments[0], at: "" }] };
+    assert.equal(E.holdNewAssignments(old, T0).assignments.length, 1, "un giro senza ora resta");
   });
   test("azzerare le prove: ruota, turni e risultati da capo, mai a giveaway avviato", () => {
     const c = parsed();

@@ -36,7 +36,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   };
   let text: string;
   if (c.status === "running" && c.slot) {
-    text = `Giveaway ora su ${whereAll(c.group)}: scrivi ${config.keyword} in chat, mancano ${formatRemaining(c.remainingMs)} (${packsAll(c.group)}).${c.next ? ` Poi su ${whereAll(c.next.group)}.` : ""} Info e codici: ${link}`;
+    // con i codici consegnati a mano (14/11/2026) ogni streamer usa il suo bot: niente comando da scrivere
+    const how = config.manualCodes ? "partecipa in chat" : `scrivi ${config.keyword} in chat`;
+    text = `Giveaway ora su ${whereAll(c.group)}: ${how}, mancano ${formatRemaining(c.remainingMs)} (${packsAll(c.group)}).${c.next ? ` Poi su ${whereAll(c.next.group)}.` : ""} Info e codici: ${link}`;
   } else if (c.status === "paused" && c.slot) {
     text = `Giveaway in pausa su ${whereAll(c.group)}: riparte a breve. Info e codici: ${link}`;
   } else if (c.status === "done") {

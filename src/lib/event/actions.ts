@@ -5,7 +5,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { parseConfig, configWarnings } from "./config";
 import { pauseRun, resumeRun, skipRun, startRun, stopRun } from "./clock";
 import { cryptoRand, newDraw, nextRound, resetState, setWinner, spin, undoRound, undoSpin } from "./engine";
-import { isCodeShape, normalizeCode, twitchLogin } from "./codes";
+import { isCodeShape, normalizeCode, staffWinnerLogin, twitchLogin } from "./codes";
 import { parseControlEvent, parseModEvent } from "./view";
 import type { AssignResult, AssignStatus, Assignment, ControlEvent, EventConfig, EventState, ModEvent, RedeemStatus } from "./types";
 
@@ -204,6 +204,69 @@ export async function syncMods(slug: string, token: string | null): Promise<{ ok
   const { error } = await sb.rpc("community_event_mods_sync", { p_slug: slug, p_token: tokenOrNull(token) });
   if (error) return { ok: false, error: errorCode(error) };
   return { ok: true };
+}
+
+/* ---------- codici per gli streamer (14/11/2026) ---------- */
+
+export type StreamerCodes = { channel: string; packs: number; slots: number[]; codes: { code: string; slot: number; redeemed: boolean }[] };
+
+/**
+ * I codici di ogni streamer, per consegnarli a mano (14/11/2026, nota della riunione di Pierluigi e Dav: "generare 125
+ * codici dal sistema, distribuirli manualmente agli streamer", che fanno l'estrazione con il loro bot). Solo lo staff
+ * (la regia senza link). Con `prepare` ogni slot riceve un codice per pacchetto: il database li dà solo attraverso il
+ * link del mod del canale (community_event_assign), a un vincitore di comodo per pacchetto (`staffWinnerLogin`), e un
+ * codice si riscatta solo se è stato dato a uno slot. Si può rifare: gli stessi nomi riprendono gli stessi codici.
+ * Nessuna migrazione: sono le funzioni del 10/11.
+ */
+export async function streamerCodes(slug: string, prepare: boolean): Promise<{ ok: true; streamers: StreamerCodes[]; free: number } | ActionError> {
+  if (!okSlug(slug)) return { ok: false, error: "not_found" };
+  const sb = await supabaseServer();
+  if (!sb) return { ok: false, error: "unavailable" };
+  const first = await readControl(slug, null);
+  if (!first.ok) return first;
+  if (!first.event.controlToken) return { ok: false, error: "forbidden" };
+  let event = first.event;
+  const channels = [...new Set(event.config.slots.map((s) => s.channel).filter(Boolean))];
+  // i link dei mod servono a chiedere i codici al database: quelli che mancano si creano
+  if (channels.some((ch) => !first.event.mods.some((m) => m.channel === ch))) {
+    const { error } = await sb.rpc("community_event_mods_sync", { p_slug: slug, p_token: null });
+    if (error) return { ok: false, error: errorCode(error) };
+    const again = await readControl(slug, null);
+    if (!again.ok) return again;
+    event = again.event;
+  }
+  const slots = event.config.slots;
+  const tokenOf = new Map(event.mods.map((m) => [m.channel, m.token]));
+  if (prepare) {
+    for (const [i, s] of slots.entries()) {
+      const token = tokenOf.get(s.channel);
+      if (!token || s.packs < 1) continue;
+      const logins = Array.from({ length: s.packs }, (_, k) => staffWinnerLogin(i, k));
+      const { error } = await sb.rpc("community_event_assign", { p_slug: slug, p_token: token, p_slot: i, p_logins: logins });
+      if (error) return { ok: false, error: errorCode(error) };
+    }
+  }
+  const views = await Promise.all(
+    channels.map(async (ch) => {
+      const token = tokenOf.get(ch);
+      if (!token) return { ch, codes: [] as ModEvent["codes"] };
+      const { data, error } = await sb.rpc("community_event_mod_view", { p_slug: slug, p_token: token });
+      if (error) throw new Error(errorCode(error));
+      return { ch, codes: parseModEvent(data)?.codes ?? [] };
+    }),
+  ).catch((e: Error) => e);
+  if (views instanceof Error) return { ok: false, error: views.message };
+  const streamers = views.map(({ ch, codes }) => {
+    const mine = slots.flatMap((s, i) => (s.channel === ch ? [i] : []));
+    return {
+      channel: ch,
+      packs: mine.reduce((n, i) => n + slots[i].packs, 0),
+      slots: mine,
+      codes: codes.map((c) => ({ code: c.code, slot: c.slot, redeemed: c.redeemed })).sort((a, b) => a.slot - b.slot || a.code.localeCompare(b.code)),
+    };
+  });
+  const fresh = await readControl(slug, null);
+  return { ok: true, streamers, free: fresh.ok ? Math.max(0, fresh.event.codes.total - fresh.event.codes.assigned) : 0 };
 }
 
 /* ---------- mod ---------- */

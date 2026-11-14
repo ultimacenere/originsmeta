@@ -302,13 +302,14 @@ export function EventShow({ slug, event, decks }: { slug: string; event: PublicE
           <Section id="giveaway" labelId="ev-giveaway" n="05" title={L.giveaway.title}>
             <ol className="ev-steps">
               {/* l'ultimo passo è come si riceve il pacchetto: il testo dell'evento (`pickup`), se c'è */}
-              {[...L.giveaway.steps.map((s) => fillEvent(s, { keyword: config.keyword })), config.pickup || L.giveaway.stepPickup].map((s) => (
+              {[...(config.manualCodes ? L.giveaway.stepsManual : L.giveaway.steps).map((s) => fillEvent(s, { keyword: config.keyword })), config.pickup || L.giveaway.stepPickup].map((s) => (
                 <li key={s} className="ev-step">
                   {s}
                 </li>
               ))}
             </ol>
-            <p className="ev-note">{config.maxWinsPerViewer > 1 ? L.giveaway.manyPerPerson : L.giveaway.onePerPerson}</p>
+            {/* con i codici a mano il sito non sa chi vince: resta solo la regola del codice */}
+            <p className="ev-note">{config.manualCodes ? L.giveaway.codeOnce : config.maxWinsPerViewer > 1 ? L.giveaway.manyPerPerson : L.giveaway.onePerPerson}</p>
             {groups.length ? (
               <div className="ev-schedule">
                 <h3 className="ev-h3">{L.giveaway.schedule}</h3>

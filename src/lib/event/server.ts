@@ -5,6 +5,7 @@ import { baseKey, decodeGameCode, encodeOmCode } from "@/lib/deckcode";
 import { liveLogins, twitchAvatars } from "@/lib/twitch";
 import { isHidden, type EventDeck, type PublicEvent } from "./types";
 import { parsePublicEvent } from "./view";
+import { holdNewAssignments } from "./engine";
 
 /**
  * Letture degli eventi della community sul server (10/11/2026): la pagina dell'evento (ISR), la rotta
@@ -45,8 +46,10 @@ export async function readPublicEvent(slug: string, opts: { fresh?: boolean; twi
     if (isMissingFunction(error)) return null;
     throw new Error(`evento ${slug}: ${error.message}`);
   }
-  const event = parsePublicEvent(data);
-  if (!event) return null;
+  const parsed = parsePublicEvent(data);
+  if (!parsed) return null;
+  // un giro della ruota appena uscito compare solo quando la ruota della regia si è fermata (14/11/2026)
+  const event = { ...parsed, state: holdNewAssignments(parsed.state, Date.parse(parsed.now)) };
   if (opts.twitch === false) return { ...event, avatars: {}, live: [] };
   const visible = event.config.talent.filter((t) => !isHidden(t));
   const logins = visible.flatMap((t) => (!isHidden(t) && t.twitch ? [t.twitch] : []));

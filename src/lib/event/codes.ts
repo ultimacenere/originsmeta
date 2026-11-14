@@ -46,3 +46,13 @@ export function twitchLogin(input: string): string | null {
 export function twitchUrl(login: string): string {
   return `https://www.twitch.tv/${login}`;
 }
+
+/**
+ * Il vincitore di comodo del pacchetto `k` dello slot `slot` (da 0), per i codici consegnati a mano agli streamer
+ * (14/11/2026): il database dà un codice a uno slot solo per un nome Twitch (community_event_assign) e lo fa riscattare
+ * solo se è stato dato a uno slot. "om01x07" = slot 1, pacchetto 7; sempre lo stesso nome, quindi sempre lo stesso codice.
+ */
+export function staffWinnerLogin(slot: number, k: number): string {
+  const two = (n: number) => String(Math.max(0, Math.floor(n)) + 1).padStart(2, "0");
+  return `om${two(slot)}x${two(k)}`;
+}
