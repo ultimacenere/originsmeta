@@ -213,9 +213,9 @@ export const eventLabels = {
     forgetDone: "Dati tolti da {n} codici.",
     reset: {
       title: "Azzera le prove",
-      note: "Solo staff, per le prove prima della diretta: ruota, turni e risultati tornano all'inizio. Configurazione, codici e link dei mod restano come sono, e i codici già dati restano dati. Con il giveaway avviato non si può: prima «Ferma tutto».",
+      note: "Solo staff, per le prove prima della diretta: ruota, turni e risultati tornano all'inizio e il giveaway si ferma. Configurazione e codici restano come sono, e i codici già dati restano dati.",
       button: "Azzera le prove",
-      confirm: "Azzerare ruota, turni e risultati? Si riparte da zero e non si torna indietro.",
+      confirm: "Azzerare le prove? Ruota, turni e risultati tornano all'inizio e il giveaway si ferma. Configurazione e codici restano. Non si torna indietro.",
       done: "Prove azzerate: si riparte da zero.",
     },
     wheel: {
@@ -309,7 +309,6 @@ export const eventLabels = {
       round_open: "Il turno in corso ha ancora partite senza risultato.",
       not_enough_players: "Servono almeno due giocatori.",
       round_has_results: "Il turno ha già dei risultati: togli prima quelli.",
-      giveaway_on: "Prima ferma il giveaway (Ferma tutto).",
       unknown_match: "Partita non trovata.",
       bad_winner: "Vincitore non valido.",
       forbidden: "Link non valido.",

@@ -341,6 +341,20 @@ export function EventControl({ slug }: { slug: string }) {
             {L.control.publicPage}
           </a>
           <CopyLink text={`${origin}${overlayPath(slug)}`} label={L.control.overlay} />
+          {/* in cima e sempre attivo (14/11/2026, Pierluigi: "il tasto è invisibile": in fondo e spento a giveaway avviato) */}
+          {event.controlToken ? (
+            <button
+              type="button"
+              className="btn btn-danger text-xs"
+              disabled={busy}
+              title={L.control.reset.note}
+              onClick={() => {
+                if (window.confirm(L.control.reset.confirm)) void act({ type: "reset" });
+              }}
+            >
+              {L.control.reset.button}
+            </button>
+          ) : null}
         </div>
         <p role="status" className="ev-tool-status">
           {busy ? "…" : msg}
@@ -738,27 +752,6 @@ export function EventControl({ slug }: { slug: string }) {
                   }}
                 >
                   {L.control.forget}
-                </button>
-              </div>
-            </section>
-          ) : null}
-
-          {event.controlToken ? (
-            <section className="ev-panel is-wide" aria-labelledby="ctl-reset">
-              <ToolHead id="ctl-reset" k={L.control.kickers.backstage}>
-                {L.control.reset.title}
-              </ToolHead>
-              <p className="ev-tool-text">{L.control.reset.note}</p>
-              <div className="ev-cta">
-                <button
-                  type="button"
-                  className="btn btn-danger text-xs"
-                  disabled={busy || state.giveaway.anchor !== null}
-                  onClick={() => {
-                    if (window.confirm(L.control.reset.confirm)) void act({ type: "reset" });
-                  }}
-                >
-                  {L.control.reset.button}
                 </button>
               </div>
             </section>

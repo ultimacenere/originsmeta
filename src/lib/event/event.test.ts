@@ -424,7 +424,7 @@ describe("ruota dei mazzi e svizzera", () => {
     const old = { ...r.state, assignments: [{ ...r.state.assignments[0], at: "" }] };
     assert.equal(E.holdNewAssignments(old, T0).assignments.length, 1, "un giro senza ora resta");
   });
-  test("azzerare le prove: ruota, turni e risultati da capo, mai a giveaway avviato", () => {
+  test("azzerare le prove: ruota, turni e risultati da capo, e il giveaway si ferma", () => {
     const c = parsed();
     const r = E.spin(c, E.emptyState(), E.seededRand(3), T0);
     assert.ok(r.ok);
@@ -443,10 +443,11 @@ describe("ruota dei mazzi e svizzera", () => {
       assert.deepEqual(z.state, E.emptyState());
       assert.equal(E.spinsLeft(c, z.state), E.spinsLeft(c, E.emptyState()), "la ruota torna piena");
     }
+    // dalla sera del 14/11 si azzera anche a giveaway avviato (prima il tasto era spento e sembrava sparito)
     const live = { ...won.state, giveaway: K.startRun(T0) };
-    assert.deepEqual(E.resetState(live), { ok: false, error: "giveaway_on" });
-    assert.deepEqual(E.resetState({ ...live, giveaway: K.pauseRun(c.slots, live.giveaway, T0 + 1000) }), { ok: false, error: "giveaway_on" }, "anche in pausa");
-    assert.ok(E.resetState({ ...live, giveaway: K.stopRun() }).ok, "dopo «Ferma tutto» si può");
+    const z2 = E.resetState(live);
+    assert.ok(z2.ok);
+    if (z2.ok) assert.deepEqual(z2.state.giveaway, K.IDLE_RUN, "il giveaway si ferma");
   });
   test("nuova estrazione: tutti cambiano mazzo e nessuno riprende uno già avuto", () => {
     // 8 giocatori e 4 mazzi: quattro estrazioni possibili (ognuno li gioca tutti), la quinta no

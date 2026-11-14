@@ -33,7 +33,6 @@ export type EngineError =
   | "round_open"
   | "not_enough_players"
   | "round_has_results"
-  | "giveaway_on"
   | "unknown_match"
   | "bad_winner";
 
@@ -327,11 +326,13 @@ export function holdNewAssignments(state: EventState, now: number, ms = SPIN_REV
 
 /**
  * Azzera le prove (14/11/2026, Pierluigi: "resetta pagina regia ed evento che facciamo prove"): ruota, turni e risultati
- * tornano all'inizio. Configurazione e codici non stanno nello stato e restano come sono. Mai a giveaway avviato, anche
- * in pausa o finito: prima "Ferma tutto". Che lo possa fare solo lo staff lo decide la Server Action.
+ * tornano all'inizio e il giveaway si ferma. Configurazione e codici non stanno nello stato e restano come sono. Fino
+ * alla sera del 14/11 con il giveaway avviato non si poteva (prima "Ferma tutto"), ma il tasto spento sembrava sparito
+ * (Pierluigi: "il tasto è invisibile"): ora c'è solo la conferma. Che lo possa fare solo lo staff lo decide la Server
+ * Action.
  */
 export function resetState(state: EventState): EngineResult {
-  if (state.giveaway.anchor !== null) return { ok: false, error: "giveaway_on" };
+  void state;
   return { ok: true, state: emptyState() };
 }
 
