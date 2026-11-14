@@ -11,6 +11,14 @@ import type { NextConfig } from "next";
 const spamKeys = ["r", "channel"] as const;
 
 /**
+ * Pubblicità con Nitro (14/11/2026): l'id del sito nel pannello di Nitro, lo stesso di `NITRO_SITE_ID` in
+ * src/lib/ads/nitro.ts (il test li confronta; `null` = annunci spenti). Con l'id, /ads.txt porta con un 301 al file che
+ * Nitro tiene aggiornato (guida "Setting up your ads.txt file": un 301, per la regola "one hop" dell'IAB; `permanent:
+ * true` darebbe un 308, quindi qui `statusCode`).
+ */
+const NITRO_SITE_ID: string | null = null;
+
+/**
  * Lingua del visitatore per i redirect senza lingua (la radice e le sezioni): italiano; spagnolo anche per catalano,
  * galiziano e basco, che leggono lo spagnolo; francese (dal 07/10/2026); portoghese, anche europeo, tedesco e russo (dal 20/10/2026); cinese, semplificato e tradizionale (dal 04/11/2026); altrimenti inglese (la regola senza `has`, sempre per ultima). Si guarda
  * solo la prima lingua dell'header (è un'espressione regolare); i link brevi dei tornei pesano tutto l'elenco
@@ -206,6 +214,10 @@ const nextConfig: NextConfig = {
         destination: "https://originsmeta.com/:path",
         permanent: true,
       },
+      // ads.txt della pubblicità con Nitro (14/11/2026): solo con l'id del sito (NITRO_SITE_ID qui sopra)
+      ...(NITRO_SITE_ID
+        ? [{ source: "/ads.txt", destination: `https://api.nitropay.com/v1/ads-${NITRO_SITE_ID}.txt`, statusCode: 301 as const }]
+        : []),
       // Radice del sito: manda alla lingua del browser (`browserLocales`). Redirect temporanei (307), mai permanenti:
       // la radice deve poter cambiare lingua a ogni visita, e x-default resta /en.
       ...browserLocales.flatMap(({ locale, acceptLanguage: language }) => rootRedirect(`/${locale}`, language)),

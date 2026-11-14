@@ -21,6 +21,8 @@ import { kickstarterLabels } from "@/lib/kickstarterLabels";
 import { TournamentPromoDialog } from "@/components/TournamentPromo";
 import { TOURNAMENT_PROMO, promoActive } from "@/lib/tournamentPromo";
 import { tournamentPromoText } from "@/lib/tournamentPromoLabels";
+import { NitroAds } from "@/components/ads/NitroAds";
+import { adsEnabled } from "@/lib/ads/nitro";
 
 /**
  * I caratteri del sito sono ingranditi con `size-adjust` (src/fonts/index.ts). Safari prima della 17 non lo conosce e
@@ -160,6 +162,10 @@ export default async function LocaleLayout({ children, params }: Props) {
             labels={tournamentPromoText(l, d.tournaments, promo)}
           />
         ) : null}
+        {/* Pubblicità con Nitro (14/11/2026): script, spazi di tutte le pagine e finestra del consenso per l'UE, solo con
+            gli annunci accesi (NITRO_SITE_ID in src/lib/ads/nitro.ts) e prima del nostro banner, che dove vale il GDPR lascia
+            il posto alla finestra di Nitro */}
+        {adsEnabled() ? <NitroAds /> : null}
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
         {/* Il grafo del sito su ogni pagina (Ondata 2, GEO-08): il sito nella lingua, OriginsMeta con i fondatori, Koin
             Games come entità propria e il gioco, che la usa per @id come sviluppatore ed editore */}

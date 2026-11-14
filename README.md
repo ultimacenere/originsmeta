@@ -754,6 +754,27 @@ Prezzo più basso in vendita e offerte di ogni carta, variante e oggetto di Orig
 - **Prova in locale senza migrazione**: `MARKET_FIXTURE=<file.json>` in `.env.development.local` (solo `next dev`): le letture arrivano da un file con la forma del database (`queries.ts`).
 - **Test**: `src/lib/market/market.test.ts` in `npm test` (pagine di Steam anche sporche, slug, classificazione, cursore, cambio, valute, variazioni, storico, grafico, testi nelle quattro lingue con i limiti di Google, blocco SQL).
 
+## Pubblicità con Nitro (dal 14/11/2026)
+
+Nitro (NitroPay, la rete pubblicitaria di Overwolf) ha approvato originsmeta.com il 14/11/2026, e Pierluigi ha deciso di partire subito ("dobbiamo partire subito per coprire i costi"). A Koin non si chiede nessuna autorizzazione. Condizioni e procedura di Nitro sono nella KB, `_nitro_onboarding_2026-11-14.md`.
+
+- **Interruttore**: `NITRO_SITE_ID` sta in `src/lib/ads/nitro.ts` e in `next.config.ts`, con lo stesso valore (lo controlla il test). Con `null` gli annunci sono spenti: niente script, niente spazi, niente `/ads.txt`; banner dei cookie, piede e informativa restano come prima.
+- **Script**: lo mette nel `<head>` `NitroAds` (`src/components/ads/NitroAds.tsx`, nel layout della lingua): `s.nitropay.com/ads-<id>.js` con `data-spa="auto"`, perché Next cambia pagina senza ricaricarla. Fuori da originsmeta.com aggiunge `data-demo="true"`, quindi nelle anteprime di Vercel e in locale gli annunci sono finti. La coda di `nitroAds` è la nostra, senza `addUserToken`: i dati degli iscritti non vanno mai a Nitro, e il test lo controlla.
+- **Pagine**: gli annunci compaiono solo nelle pagine da leggere (`adsAllowedPath`): home, news, guide, carte, luoghi, tier list, MetaShifting, mazzi, Analytics, creator, FAQ, autori, profili e mazzi del Theory craft. Mai in strumenti, moduli, account, tornei, eventi, landing, `/live`, pagine legali e overlay.
+- **Spazi**: su ogni pagina ammessa ci sono l'anchor in fondo allo schermo (si può chiudere, solo per quella pagina), la colonna a destra da 1700 px di larghezza e il video flottante (`GLOBAL_PLACEMENTS`). Nel testo c'è `AdSlot`, con la scritta "Pubblicità" e 280 px già riservati: per ora dopo l'articolo nelle news, dopo la guida e sotto la scheda delle carte (`IN_CONTENT_SLOTS`). L'anchor scrive la sua altezza in `--ad-anchor-h`, così il fondo della pagina resta libero e banner dei cookie, tasto dei feedback e invito dopo la copia salgono sopra l'annuncio.
+- **Consenso**: dove vale il GDPR, lo script porta la finestra del consenso di Nitro (IAB TCF). Se `NITRO_GA_CONSENT_ID` è impostato (il consenso personalizzato `ga` del pannello), quella finestra chiede anche il consenso per Google Analytics: la scelta torna nel nostro consenso (`syncGaConsentFromNitro`) e il nostro banner non compare. Altrove, o con un ad blocker, resta il nostro banner, che aspetta lo script al massimo 3,5 secondi. "Preferenze cookie" nel piede riapre la finestra di Nitro dove c'è (`window.__cmp('showModal')`). Il link "Do Not Sell My Personal Information" della CCPA (solo California) sta nel piede e nell'informativa (`<span data-ccpa-link="1">`). L'informativa ha il paragrafo `#ads` (testi in `src/lib/adsLabels.ts`, otto lingue), che compare solo con gli annunci accesi.
+- **ads.txt**: `/ads.txt` porta con un 301 a `https://api.nitropay.com/v1/ads-<id>.txt` (`next.config.ts` usa `statusCode: 301`, perché `permanent: true` darebbe un 308).
+
+**Per andare online, quando arriva l'accesso al pannello di Nitro:**
+
+1. Nel pannello: prendere l'id del sito. In Sites › il sito › "(EU) Custom Consents" creare un consenso con Internal ID `ga` e Name "Google Analytics Consent", e segnarne l'id numerico.
+2. Scrivere `NITRO_SITE_ID` in `src/lib/ads/nitro.ts` e in `next.config.ts`, e `NITRO_GA_CONSENT_ID` in `nitro.ts`. Se il Placement Builder dà opzioni diverse, incollarle in `GLOBAL_PLACEMENTS` e `IN_CONTENT_OPTIONS`.
+3. `npm test`, build e push del branch: nell'anteprima di Vercel gli annunci sono finti. Per le prove: `?gdpr_debug=1` (la finestra del consenso fuori dall'UE), `?usp_debug=1` (il link della CCPA), `?nitroads_debug=1` (i log in console). Il link dell'anteprima va a Isaac e Madison di Nitro per la revisione.
+4. Dopo l'ok di Nitro e di Pierluigi: push su main. Poi, nel pannello, spuntare le caselle della CCPA nella configurazione del sito (guida "US Privacy law compliance steps") e controllare `https://originsmeta.com/ads.txt`.
+5. Google MCM: Nitro manda l'invito di Google all'indirizzo che gli diamo (non abbiamo né Ad Manager né AdSense), e lo accetta Pierluigi.
+
+Test: `src/lib/ads/nitro.test.ts`.
+
 ## Creator e messaggi: istruzioni e migrazione (dal 26/09/2026)
 
 Le "funzioni per i creator" chieste da Pierluigi sono cinque pacchetti: profilo pubblico e directory (CREATOR), video e risorse (VIDEO), strumenti per le dirette (STREAM), statistiche dei mazzi (STATS), casella messaggi (INBOX). Dettagli tecnici nelle sezioni di ciascuno qui sopra; qui le istruzioni da dare a chi le usa e la procedura per il database.
@@ -929,6 +950,7 @@ I primi quattro (online con a9400e8) hanno tenuto nome e parametri quando è arr
 ## Cookie e GDPR
 
 - Banner cookie (`src/components/CookieBanner.tsx`, testi in `cookies` dei dizionari) in fondo a tutte le pagine finché l'utente non sceglie "Accetta tutto" o "Solo necessari"; la scelta sta in `localStorage` (`originsmeta.consent.v1`) e si riapre da "Preferenze cookie" nel footer. Nella memoria locale sta anche l'ora dell'ultima iscrizione fatta dal browser (`originsmeta.signup.v1`, solo per non contare due volte `sign_up`, anche senza consenso perché serve a Vercel; mai inviata): l'informativa lo dice nelle tre lingue. Senza consenso il sito usa solo cookie tecnici (sessione Supabase dopo il login) e le statistiche senza cookie di Vercel; GA4 e i suoi eventi partono solo se `getConsent() === "all"` (`src/lib/consent.ts`, `src/lib/analytics.ts`), e ritirare il consenso, anche da un'altra scheda, spegne GA4 e cancella i cookie _ga. La pagina Privacy elenca cookie, storage e YouTube in modalità nocookie.
+- Con gli annunci di Nitro accesi (dal 14/11/2026, vedi "Pubblicità con Nitro"), dove vale il GDPR il banner è la finestra del consenso di Nitro (IAB TCF), che chiede anche il consenso per Google Analytics; altrove resta il nostro.
 
 ## Analytics, Search Console e SEO
 

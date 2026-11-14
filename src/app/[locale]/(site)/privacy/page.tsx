@@ -18,6 +18,8 @@ import { deckCommentLabels } from "@/lib/deckCommentLabels";
 import { profileNameLabels } from "@/lib/profileNameLabels";
 import { steamLabels } from "@/lib/steamLabels";
 import { eventPrivacy } from "@/lib/eventPrivacy";
+import { adsLabels } from "@/lib/adsLabels";
+import { adsEnabled } from "@/lib/ads/nitro";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -34,6 +36,13 @@ export default async function PrivacyPage({ params }: { params: LocaleParams }) 
         <p>{d.privacy.body}</p>
         <p className="mt-6">{d.privacy.accounts}</p>
         <p className="mt-6">{d.privacy.cookies}</p>
+        {/* Pubblicità con Nitro (14/11/2026): solo con gli annunci accesi (src/lib/ads/nitro.ts), testo in
+            src/lib/adsLabels.ts. Lo span è il link "Do Not Sell" della CCPA, che lo script mette solo per la California. */}
+        {adsEnabled() ? (
+          <p id="ads" className="mt-6 scroll-mt-24">
+            {adsLabels[locale].privacy} <span data-ccpa-link="1" className="ccpa-link" />
+          </p>
+        ) : null}
         {/* Video a clic di YouTube e Twitch e risorse dei mazzi (26/09/2026): l'ancora #video è il link "Privacy" sotto
             ogni lettore (VideoEmbed). Il testo sta in src/lib/videoLabels.ts. */}
         <p id="video" className="mt-6 scroll-mt-24">

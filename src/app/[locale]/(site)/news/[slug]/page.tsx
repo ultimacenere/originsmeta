@@ -23,6 +23,8 @@ import { JsonLd, breadcrumbs, organizationId, personRef, videoGameId } from "@/c
 import { events } from "@/lib/data/events";
 import { entityLabels } from "@/lib/entityLabels";
 import { eventNode } from "@/lib/jsonld/events";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { adsLabels } from "@/lib/adsLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -286,6 +288,9 @@ export default async function NewsArticlePage({ params }: { params: Params }) {
         </p>
         <p className="mt-2 text-xs text-pale-muted">{d.common.notAffiliated}</p>
       </article>
+
+      {/* Spazio pubblicitario di Nitro dopo l'articolo (14/11/2026): solo con gli annunci accesi, src/lib/ads/nitro.ts */}
+      <AdSlot slot="news" label={adsLabels[locale].label} />
 
       {/* Invito al NOSTRO Discord in fondo a ogni news (Pierluigi, 24/09/2026), prima delle altre news */}
       <section aria-labelledby="news-discord" className="card-night mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 p-5 sm:p-6">

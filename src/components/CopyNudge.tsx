@@ -76,6 +76,8 @@ export function CopyNudge({ locale }: { locale: Locale }) {
       aria-live="polite"
       data-om-placement="copy_nudge"
       className="card-night fixed inset-x-4 bottom-24 z-50 p-4 shadow-2xl sm:inset-x-auto sm:right-6 sm:bottom-24 sm:w-96"
+      // sopra l'anchor pubblicitario di Nitro quando c'è (--ad-anchor-h, NitroAds.tsx, 14/11/2026); senza annunci vale 0
+      style={{ bottom: "calc(6rem + var(--ad-anchor-h, 0px))" }}
     >
       <div className="flex items-start justify-between gap-3">
         <p className="t-panel text-sky">✓ {L.title}</p>

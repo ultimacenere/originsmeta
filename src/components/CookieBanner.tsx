@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "@/components/IntentLink";
 import { useMounted } from "@/lib/useMounted";
 import { PREFERENCES_EVENT, getConsent, openCookiePreferences, setConsent, type Consent } from "@/lib/consent";
+import { NITRO_GA_CONSENT_ID, adsEnabled } from "@/lib/ads/nitro";
+import { watchNitroCmp } from "@/lib/ads/nitroClient";
 
 export type CookieLabels = { title: string; text: string; accept: string; necessary: string; privacy: string; manage: string };
 
@@ -20,6 +22,10 @@ export function CookieBanner({ labels, privacyHref }: { labels: CookieLabels; pr
   const [reopened, setReopened] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  // Con gli annunci di Nitro (14/11/2026): dove vale il GDPR la loro finestra chiede anche il consenso per Google
+  // Analytics (consenso personalizzato `ga`, NITRO_GA_CONSENT_ID), quindi il nostro banner non compare; altrove, o se lo
+  // script di Nitro non arriva (ad blocker), resta il nostro. `null` = si aspetta lo script (al massimo 3,5 secondi).
+  const [nitroCmp, setNitroCmp] = useState<boolean | null>(adsEnabled() ? null : false);
 
   useEffect(() => {
     const open = () => setReopened(true);
@@ -27,8 +33,13 @@ export function CookieBanner({ labels, privacyHref }: { labels: CookieLabels; pr
     return () => window.removeEventListener(PREFERENCES_EVENT, open);
   }, []);
 
+  useEffect(() => {
+    if (!adsEnabled()) return;
+    return watchNitroCmp((active) => setNitroCmp(active && NITRO_GA_CONSENT_ID !== null));
+  }, []);
+
   const stored = mounted ? getConsent() : null;
-  const visible = mounted && (reopened || (!stored && !decided));
+  const visible = mounted && nitroCmp === false && (reopened || (!stored && !decided));
 
   // Alla comparsa: ricorda l'elemento attivo e porta il focus sul banner.
   useEffect(() => {
@@ -54,6 +65,8 @@ export function CookieBanner({ labels, privacyHref }: { labels: CookieLabels; pr
       ref={dialogRef}
       tabIndex={-1}
       className="fixed inset-x-0 bottom-0 z-50 p-3 outline-none sm:p-4"
+      // sopra l'anchor pubblicitario di Nitro quando c'è (--ad-anchor-h, NitroAds.tsx); senza annunci vale 0
+      style={{ bottom: "var(--ad-anchor-h, 0px)" }}
       role="dialog"
       aria-labelledby="cookie-title"
       aria-describedby="cookie-text"

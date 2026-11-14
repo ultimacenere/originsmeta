@@ -13,6 +13,7 @@ import { DiscordButton, DiscordLogo } from "./DiscordButton";
 import { CookiePreferencesButton } from "./CookieBanner";
 import { termsLabels } from "@/lib/termsLabels";
 import { HideOnPath } from "./HideOnPath";
+import { adsEnabled } from "@/lib/ads/nitro";
 
 export const officialLinks = {
   steam: "https://store.steampowered.com/app/4429430/Origins_TCG/",
@@ -178,6 +179,9 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             <li><Link className={linkCls} href={href(locale, "/terms")}>{termsLabels[locale].footer}</Link></li>
             <li>
               <CookiePreferencesButton label={dict.cookies.manage} className={`cursor-pointer ${linkCls}`} />
+              {/* Con gli annunci di Nitro (14/11/2026): link "Do Not Sell My Personal Information" della CCPA, che lo
+                  script mette qui solo per chi è in California (guida "US Privacy law compliance steps") */}
+              {adsEnabled() ? <span data-ccpa-link="1" className="ccpa-link" /> : null}
             </li>
           </ul>
           {/* la frase di chiusura scritta a penna (12/11/2026), non più in maiuscolo spaziato */}

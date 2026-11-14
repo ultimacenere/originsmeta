@@ -7673,3 +7673,41 @@
     }
   }
 }
+
+/* Pubblicità con Nitro (14/11/2026, src/lib/ads/, src/components/ads/): lo spazio nel testo ha la scritta "Pubblicità" e
+   l'altezza già riservata (niente salti della pagina); l'anchor in fondo allo schermo scrive la sua altezza in
+   --ad-anchor-h (NitroAds.tsx), che lascia libero il fondo della pagina e alza banner, tasti e inviti fissi. Senza
+   annunci la variabile non c'è e tutto resta come prima. Il link della CCPA lo mette lo script di Nitro (solo California). */
+@layer components {
+  body {
+    padding-bottom: var(--ad-anchor-h, 0px);
+  }
+  .ad-slot {
+    margin-block: 2.5rem;
+    text-align: center;
+  }
+  .ad-slot-label {
+    margin-bottom: 0.375rem;
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--color-pale-muted);
+  }
+  .ad-slot-box {
+    display: flex;
+    min-height: 280px;
+    align-items: center;
+    justify-content: center;
+  }
+  .ccpa-link a {
+    display: block;
+    margin-top: 0.375rem;
+    color: var(--color-chalk);
+    transition: color 150ms;
+  }
+  .ccpa-link a:hover {
+    color: var(--color-mint);
+  }
+  .ccpa-link:empty {
+    display: none;
+  }
+}

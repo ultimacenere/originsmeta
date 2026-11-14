@@ -10,6 +10,8 @@ import { authorOfGuide } from "@/lib/data/authors";
 import { getCard } from "@/lib/data/cards";
 import { getDeck, archetypeLabels } from "@/lib/data/decks";
 import { encodeOmCode } from "@/lib/deckcode";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { adsLabels } from "@/lib/adsLabels";
 import { RULES } from "@/lib/deckrules";
 import { GuideBody, GuideVideoList } from "@/components/GuideVideos";
 import { guideVideoLayout, guideVideosLd } from "@/lib/videos";
@@ -256,6 +258,9 @@ export default async function GuidePage({ params }: { params: Params }) {
         </p>
         <p className="mt-2 text-xs text-pale-muted">{d.common.notAffiliated}</p>
       </article>
+
+      {/* Spazio pubblicitario di Nitro dopo la guida (14/11/2026): solo con gli annunci accesi, src/lib/ads/nitro.ts */}
+      <AdSlot slot="guide" label={adsLabels[locale].label} />
 
       {relatedDecks.length || relatedCommunity.length || relatedCards.length ? (
         <section className="mt-10">

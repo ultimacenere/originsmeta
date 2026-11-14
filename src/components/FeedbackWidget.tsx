@@ -476,7 +476,8 @@ function Widget({ locale, labels }: Props) {
           aria-controls={panelId}
           onClick={() => (open ? close(true) : openPanel("manual"))}
           className={`btn btn-ink fixed right-4 z-40 text-xs shadow-lift print:hidden ${onBuilder ? "max-lg:hidden" : ""}`}
-          style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+          // + l'anchor pubblicitario di Nitro quando c'è (--ad-anchor-h, NitroAds.tsx, 14/11/2026); senza annunci vale 0
+          style={{ bottom: "calc(1rem + env(safe-area-inset-bottom) + var(--ad-anchor-h, 0px))" }}
         >
           <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4 shrink-0 fill-current">
             <path d="M4 3h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-5.6l-3.7 2.9A.75.75 0 0 1 5.5 16.3V14H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 4.25a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
@@ -495,7 +496,10 @@ function Widget({ locale, labels }: Props) {
         tabIndex={-1}
         hidden={!open}
         className="card-night fixed inset-x-4 z-[45] overflow-y-auto overscroll-contain p-5 outline-none transition-[opacity,translate] duration-200 ease-out starting:translate-y-3 starting:opacity-0 motion-reduce:transition-none sm:left-auto sm:w-[23rem] print:hidden"
-        style={{ bottom: "calc(4.25rem + env(safe-area-inset-bottom))", maxHeight: "calc(100dvh - 5.5rem - env(safe-area-inset-bottom))" }}
+        style={{
+          bottom: "calc(4.25rem + env(safe-area-inset-bottom) + var(--ad-anchor-h, 0px))",
+          maxHeight: "calc(100dvh - 5.5rem - env(safe-area-inset-bottom) - var(--ad-anchor-h, 0px))",
+        }}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">

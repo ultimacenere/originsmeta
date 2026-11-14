@@ -49,6 +49,8 @@ import { CardCrimson } from "@/components/card/CardCrimson";
 import { CardAltArt } from "@/components/card/CardAltArt";
 import { altArtCount, cardAltArts } from "@/lib/cardVariants";
 import { cardVariantLabels } from "@/lib/cardVariantLabels";
+import { AdSlot } from "@/components/ads/AdSlot";
+import { adsLabels } from "@/lib/adsLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -339,6 +341,9 @@ export default async function CardPage({ params }: { params: Params }) {
           <p className="mt-4 text-[11px] leading-snug text-chalk-muted/80">{asOf}</p>
         </aside>
       </article>
+
+      {/* Spazio pubblicitario di Nitro sotto la scheda (14/11/2026): solo con gli annunci accesi, src/lib/ads/nitro.ts */}
+      <AdSlot slot="card" label={adsLabels[locale].label} />
 
       {/* Carte create: prima come si ottengono, poi i mazzi con la carta che le genera */}
       {token ? <CardRelations card={card} locale={locale} rel={rel} /> : null}
