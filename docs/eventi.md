@@ -19,9 +19,9 @@ Richiesta di Pierluigi del 10/11/2026: "una royale rumble tra i creators italian
 
 ## Online ma non annunciato (12/11/2026)
 
-Pierluigi: "metti online queste pagine, ovviamente non linkarle ai menu ma manteniamole non visibili" ("questa sera con dav ci lavoriamo"). Dal 12/11/2026 il codice dell'evento è su main: pagina, regia, pannello del mod, overlay, comando di chat e le tre prove di grafica (`/it/events/<slug>/prova/a`, `b`, `c`; la pagina vera resta quella di prima finché Pierluigi non sceglie un taglio).
+Pierluigi: "metti online queste pagine, ovviamente non linkarle ai menu ma manteniamole non visibili" ("questa sera con dav ci lavoriamo"). Dal 12/11/2026 il codice dell'evento è su main: pagina (dal 14/11 con la grafica Locandina), regia, pannello del mod, overlay e comando di chat.
 
-- **Nascosto vuol dire**: nessun menu, footer, calendario, sitemap, news, popup o informativa linka o nomina l'evento, e la pagina è noindex finché lo slug non è in `EVENT_ANNOUNCED` (`src/lib/event/links.ts`). Lo controlla `event.test.ts`. Regia, pannello del mod e prove di grafica sono noindex da sempre; l'overlay ha `X-Robots-Tag`.
+- **Nascosto vuol dire**: nessun menu, footer, calendario, sitemap, news, popup o informativa linka o nomina l'evento, e la pagina è noindex finché lo slug non è in `EVENT_ANNOUNCED` (`src/lib/event/links.ts`). Lo controlla `event.test.ts`. Regia e pannello del mod sono noindex da sempre; l'overlay ha `X-Robots-Tag`.
 - **Non è una pagina chiusa**: chi ha l'indirizzo, o `originsmeta.com/showmatch`, la apre. Finché l'evento non è creato nel database (migrazione, poi "Crea l'evento" dalla regia) la pagina risponde 404.
 - **Per annunciarlo**: lo slug in `EVENT_ANNOUNCED` e, nello stesso commit, i link dal sito (calendario, news, popup: decide Pierluigi). L'informativa `#event-giveaway` non nomina nessun evento e può restare così.
 
@@ -90,19 +90,16 @@ Date in ISO con il fuso (`+01:00` a novembre). I nomi da svelare stanno solo nel
 
 Regole pure in `src/lib/event/` (`config.ts`, `engine.ts`, `swiss.ts` con gli abbinamenti della svizzera del Tournament Organizer, `src/lib/tournament/formats.ts`, `clock.ts`, `codes.ts`, `chat.ts`, `view.ts`, test in `event.test.ts`), letture in `server.ts`, Server Action in `actions.ts`, testi in `labels.ts` (solo italiano), indirizzi in `links.ts`; componenti in `src/components/event/`; pagine in `src/app/[locale]/(site)/events/[slug]/` e `src/app/overlay/event/[slug]/`; rotte in `src/app/api/events/[slug]/`. SQL nel blocco `-- ===== 10/11/2026: EVENTI DELLA COMMUNITY =====` di `supabase/schema.sql`, prova a secco `scripts/event-dry-run.mjs`. Informativa in `src/lib/eventPrivacy.ts` (otto lingue). Eventi di misura: `event_channel_click`, `event_code_redeem`, `event_redeem_signin`.
 
-## Prove di grafica (11/11/2026)
+## Grafica della pagina: la Locandina (14/11/2026)
 
-Pierluigi, sulla pagina dell'evento: "riusciamo a dargli un taglio e una grafica più accattivante? rendiamola più bella e divertente, fai qualche tentativo". Tre tagli della stessa pagina, con gli stessi dati e le stesse sezioni, da guardare su `/it/events/<slug>/prova/<a|b|c>` (pagine provvisorie, noindex, con una barra in basso per passare dall'uno all'altro); la pagina vera `/it/events/<slug>` resta com'era finché Pierluigi non sceglie.
+L'11/11 Pierluigi aveva chiesto "un taglio e una grafica più accattivante" e le prove erano tre (A Locandina, B Ruota, C Arcade, su `/it/events/<slug>/prova/<a|b|c>`). Il 14/11 ha scelto: "per la pagina pubblica importa la grafica locandina". Da allora la pagina vera `/it/events/<slug>` è la Locandina e le prove non ci sono più: gli indirizzi `/prova/…` rimandano alla pagina (redirect in `next.config.ts`).
 
-- **A · Locandina**: manifesto da serata di gala. Titolo enorme col gradiente, seconda parola su una fascia menta storta, bollo giallo con la data, raggi dal basso, muro delle facce a destra, due nastri che scorrono; sezioni con il numero a contorno, cartellini dei giocatori con la foto quadrata, strisce dei mazzi inclinate, "VS" nei tavoli.
-- **B · Ruota**: game show. La ruota dei mazzi (uno spicchio per mazzo, i colori della ruota dei caster) che gira piano accanto al titolo, lettere a rilievo, adesivi storti, coriandoli, scritte a penna sopra i titoli, giocatori a bolle, biglietto d'oro per il riscatto.
-- **C · Arcade**: schermata di un cabinato. Titolo al neon, pavimento a griglia che scorre, numeri in cima come un HUD, giocatori come la selezione del personaggio con il cursore giallo, classifica da record.
+- **Com'è**: manifesto da serata di gala. Titolo enorme col gradiente, seconda parola su una fascia menta storta, bollo giallo con la data, raggi dal basso, muro delle facce a destra, due nastri che scorrono; sezioni con il numero a contorno, cartellini dei talent con la foto quadrata, strisce dei mazzi inclinate, "VS" nei tavoli.
+- **Com'è fatta**: `events/[slug]/page.tsx` legge l'evento e passa tutto a `EventShow.tsx` (la pagina con le classi `ev-*`); `event-show.css` è la struttura, `event-look-a.css` la pelle (regole fuori dai layer di Tailwind, così vincono sulle utility dei componenti condivisi), `src/lib/event/looks.ts` ha le righe piccole sopra i titoli, `inkOn` e `splitEventName`. Regia e pannello del mod usano la stessa pelle (`EventTool`). Solo palette e font del sito, nessun materiale Koin; decorazioni nascoste ai lettori di schermo; con "riduci animazioni" tutto fermo; nessuno scorrimento orizzontale a 375 px.
+- **La fascia dell'orologio**: prima dell'evento, sotto la testata, c'è un conto alla rovescia a riquadri (giorni, ore, minuti, secondi; ai lettori di schermo una frase che cambia una volta al minuto); quando il giveaway è partito la fascia sale sopra la testata (`EventClockBanner` con `slot="top"`), così chi arriva dalla chat di Twitch vede subito canale e tempo che manca.
+- **Le sezioni dei talent** seguono i ruoli della configurazione, in quest'ordine: chi conduce (`host`), caster, giocatori, ospiti. Una sezione senza nessuno non compare.
 
-Come sono fatte: `EventShow.tsx` (la pagina con le classi `ev-*`, una testata per taglio), `event-show.css` (struttura comune) e `event-look-<a|b|c>.css` (la pelle di ogni taglio, regole fuori dai layer di Tailwind così vincono sulle utility dei componenti condivisi), `src/lib/event/looks.ts` (nomi, righe piccole sopra i titoli, `inkOn`), rotta `events/[slug]/prova/[look]/page.tsx`. Solo palette e font del sito, nessun materiale Koin; decorazioni nascoste ai lettori di schermo; con "riduci animazioni" tutto fermo; nessuno scorrimento orizzontale a 375 px.
-
-Due cose valgono per tutti e tre i tagli: prima dell'evento la fascia sotto la testata è un **conto alla rovescia a riquadri** (giorni, ore, minuti, secondi; ai lettori di schermo una frase che cambia una volta al minuto); quando il giveaway è partito la fascia sale **sopra la testata** (`EventClockBanner` con `slot="top"`), così chi arriva dalla chat di Twitch vede subito canale e tempo che manca.
-
-**Quando Pierluigi sceglie**: `events/[slug]/page.tsx` passa a `EventShow` con il taglio scelto, si cancellano la cartella `prova/`, i due fogli di stile non scelti, i rami degli altri tagli in `EventShow.tsx` e `looks.ts`, la barra `.ev-switch` di `event-show.css` e questa sezione si riscrive al presente. Scatti delle tre prove in `design/eventi/` (cartella non tracciata).
+I tagli B e C sono nella storia del repository (fino al commit e8f888c). Scatti delle tre prove in `design/eventi/` (cartella non tracciata).
 
 ### Regia e pannello del mod nello stile della Locandina (11/11/2026)
 

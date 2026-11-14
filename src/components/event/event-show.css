@@ -1,8 +1,8 @@
 /*
   Pagina di un evento della community con una grafica sua (prove dell'11/11/2026, Pierluigi: "riusciamo a dargli un
-  taglio e una grafica più accattivante? rendiamola più bella e divertente, fai qualche tentativo").
-  Qui la struttura comune ai tre tagli (classi ev-*); la pelle di ognuno sta in event-look-a.css (Locandina),
-  event-look-b.css (Ruota) ed event-look-c.css (Arcade), sotto .ev--a / .ev--b / .ev--c.
+  taglio e una grafica più accattivante? rendiamola più bella e divertente, fai qualche tentativo"; il 14/11/2026 ha
+  scelto la Locandina per la pagina pubblica). Qui la struttura (classi ev-*); la pelle sta in event-look-a.css, sotto
+  .ev--a. Delle tre prove sono rimaste solo queste due parti: i tagli "Ruota" e "Arcade" non ci sono più.
   Regole fuori dai layer di Tailwind: vincono sulle utility dei componenti condivisi con la pagina di oggi (talent,
   classifica, abbinamenti, orologio, riscatto), che così non cambiano markup.
   Colori: solo la palette del sito, con il valore di riserva (Tailwind non emette le variabili che nessuno usa). Niente
@@ -558,51 +558,6 @@
 /* ---------- riscatto ---------- */
 .ev-redeem {
   scroll-margin-top: 6rem;
-}
-
-/* ---------- barra delle prove (solo sugli indirizzi /prova/<taglio>) ---------- */
-.ev-switch {
-  position: fixed;
-  z-index: 60;
-  left: 50%;
-  bottom: 12px;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  max-width: calc(100vw - 24px);
-  padding: 5px;
-  border: 2px solid var(--color-sky, #3fc4e8);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-felt-deep, #0e071f) 92%, transparent);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.7);
-  font-family: var(--font-mono, monospace);
-  font-size: 0.75rem;
-}
-.ev-switch span {
-  padding: 0 0.5rem 0 0.6rem;
-  color: var(--color-pale-muted, #8e9bb1);
-  white-space: nowrap;
-}
-.ev-switch a {
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
-  font-weight: 700;
-  color: var(--color-chalk, #d9dfe8);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.ev-switch a:hover {
-  background: color-mix(in srgb, var(--color-sky, #3fc4e8) 18%, transparent);
-}
-.ev-switch a[aria-current="page"] {
-  background: var(--color-gold, #f2d23c);
-  color: var(--color-ink, #16102a);
-}
-@media (max-width: 520px) {
-  .ev-switch span {
-    display: none;
-  }
 }
 
 /* ---------- animazioni comuni ---------- */

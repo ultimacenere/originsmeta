@@ -4,7 +4,7 @@ import { totalPacks } from "@/lib/event/config";
 import { startHasTime } from "@/lib/event/clock";
 import { isHidden, type EventDeck } from "@/lib/event/types";
 import type { DeckCards, PublicEventView } from "@/lib/event/server";
-import { LOOK_KICKERS, inkOn, splitEventName, type EventLook, type EventSectionId } from "@/lib/event/looks";
+import { SECTION_KICKERS, inkOn, splitEventName, type EventSectionId } from "@/lib/event/looks";
 import { getCard } from "@/lib/data/cards";
 import { CopyButton } from "@/components/CopyButton";
 import { EventLiveProvider } from "./EventLive";
@@ -13,15 +13,13 @@ import { DeckFaces, DrawNote, HeroCast, PairingsList, StandingsTable, TalentSect
 import { EventRedeem } from "./EventRedeem";
 import "./event-show.css";
 import "./event-look-a.css";
-import "./event-look-b.css";
-import "./event-look-c.css";
 
 /*
-  La pagina di un evento con una grafica sua (prove dell'11/11/2026, Pierluigi: "riusciamo a dargli un taglio e una
-  grafica più accattivante? rendiamola più bella e divertente, fai qualche tentativo"). Stessi dati e stesse sezioni
-  della pagina di oggi; cambia la testata (una per taglio: locandina, ruota, arcade) e la pelle delle sezioni, tutta nei
-  fogli di stile event-look-<a|b|c>.css appesi alle classi `ev-*`. Solo palette e font del sito, niente materiale Koin;
-  le decorazioni sono nascoste ai lettori di schermo e con "riduci animazioni" tutto resta fermo (regola del sito).
+  La pagina pubblica di un evento, con la grafica "Locandina": manifesto da serata di gala, titolo enorme col
+  gradiente, bollo con la data, muro delle facce, due nastri che scorrono. Scelta da Pierluigi il 14/11/2026 fra tre
+  prove dell'11/11 ("per la pagina pubblica importa la grafica locandina"). Struttura in event-show.css, pelle in
+  event-look-a.css (classi ev-* sotto .ev--a, le stesse di regia e pannello del mod). Solo palette e font del sito,
+  niente materiale Koin; le decorazioni sono nascoste ai lettori di schermo e con "riduci animazioni" tutto resta fermo.
 */
 
 type DeckView = { deck: EventDeck; cards: DeckCards };
@@ -76,7 +74,7 @@ const ICONS: Record<EventSectionId, ReactNode> = {
   ),
 };
 
-function Section({ id, labelId, n, look, title, intro, children }: { id: EventSectionId; labelId: string; n: string; look: EventLook; title: string; intro?: string; children: ReactNode }) {
+function Section({ id, labelId, n, title, intro, children }: { id: EventSectionId; labelId: string; n: string; title: string; intro?: string; children: ReactNode }) {
   return (
     <section id={id} className="ev-sec" aria-labelledby={labelId}>
       <div className="ev-head">
@@ -87,7 +85,7 @@ function Section({ id, labelId, n, look, title, intro, children }: { id: EventSe
           {ICONS[id]}
         </span>
         <div className="ev-head-t">
-          <p className="ev-head-k">{LOOK_KICKERS[look][id]}</p>
+          <p className="ev-head-k">{SECTION_KICKERS[id]}</p>
           <h2 id={labelId} className="ev-h2">
             {title}
           </h2>
@@ -99,7 +97,7 @@ function Section({ id, labelId, n, look, title, intro, children }: { id: EventSe
   );
 }
 
-/** Taglio A: due nastri che scorrono in fondo alla testata (decorazione: le stesse parole stanno già nella pagina). */
+/** Due nastri che scorrono in fondo alla testata (decorazione: le stesse parole stanno già nella pagina). */
 function Tape({ items, n }: { items: string[]; n: 1 | 2 }) {
   const run = Array.from({ length: 5 }, () => items).flat();
   return (
@@ -120,70 +118,7 @@ function Tape({ items, n }: { items: string[]; n: 1 | 2 }) {
   );
 }
 
-const WHEEL_FALLBACK = ["#3fc4e8", "#ff3d9a", "#f2d23c", "#31e3bd", "#c4b0ff", "#ffb454", "#c81e7a", "#1a9ec4"];
-
-/** Taglio B: la ruota dei mazzi come disegno (la ruota vera la girano i caster dalla regia). Uno spicchio per mazzo. */
-function WheelArt({ decks }: { decks: EventDeck[] }) {
-  const wedges = decks.length >= 2 ? decks.map((d) => ({ color: d.color, name: d.name })) : WHEEL_FALLBACK.map((color) => ({ color, name: "" }));
-  const n = wedges.length;
-  const C = 200;
-  const R = 166;
-  const at = (deg: number, r: number): [number, number] => {
-    const a = ((deg - 90) * Math.PI) / 180;
-    return [Math.round((C + r * Math.cos(a)) * 100) / 100, Math.round((C + r * Math.sin(a)) * 100) / 100];
-  };
-  const bulbs = 24;
-  return (
-    <div className="ev-wheel" aria-hidden>
-      <svg viewBox="0 0 400 400" className="ev-wheel-disc">
-        <circle cx={C} cy={C} r={197} fill="#16102a" />
-        <circle cx={C} cy={C} r={191} fill="none" stroke="#f2d23c" strokeWidth={3} />
-        {wedges.map((w, i) => {
-          const [x0, y0] = at((360 / n) * i, R);
-          const [x1, y1] = at((360 / n) * (i + 1), R);
-          const mid = (360 / n) * (i + 0.5);
-          const [tx, ty] = at(mid, R * 0.62);
-          return (
-            <g key={i}>
-              <path d={`M ${C} ${C} L ${x0} ${y0} A ${R} ${R} 0 0 1 ${x1} ${y1} Z`} fill={w.color} stroke="#16102a" strokeWidth={4} strokeLinejoin="round" />
-              {w.name && n <= 12 ? (
-                <text x={tx} y={ty} fill={inkOn(w.color)} fontSize={13} fontWeight={700} textAnchor="middle" dominantBaseline="middle" transform={`rotate(${mid > 180 ? mid + 90 : mid - 90} ${tx} ${ty})`} style={{ fontFamily: "var(--font-manrope), sans-serif" }}>
-                  {w.name.length > 15 ? `${w.name.slice(0, 14)}…` : w.name}
-                </text>
-              ) : null}
-            </g>
-          );
-        })}
-        {Array.from({ length: bulbs }, (_, i) => {
-          const [x, y] = at((360 / bulbs) * i, 181);
-          return <circle key={i} className="ev-bulb" cx={x} cy={y} r={5} fill={i % 2 ? "#31e3bd" : "#f2d23c"} />;
-        })}
-        <circle cx={C} cy={C} r={34} fill="#16102a" stroke="#3fc4e8" strokeWidth={5} />
-        <path d="M200 178l6.5 14.5 15.8 1.6-11.8 10.6 3.4 15.5L200 212.6l-13.9 7.6 3.4-15.5-11.8-10.6 15.8-1.6z" fill="#f2d23c" />
-      </svg>
-      <svg viewBox="0 0 400 400" className="ev-wheel-pin">
-        <path d="M176 4h48l-24 50z" fill="#ff3d9a" stroke="#16102a" strokeWidth={5} strokeLinejoin="round" />
-      </svg>
-    </div>
-  );
-}
-
-const CONFETTI: { x: number; y: number; s: number; r: number; c: string; k: "dot" | "sq" | "tri" | "ring" }[] = [
-  { x: 3, y: 12, s: 14, r: 0, c: "gold", k: "dot" },
-  { x: 9, y: 78, s: 16, r: 24, c: "pink", k: "sq" },
-  { x: 16, y: 4, s: 18, r: -12, c: "mint", k: "tri" },
-  { x: 27, y: 88, s: 20, r: 0, c: "sky", k: "ring" },
-  { x: 38, y: 6, s: 12, r: 40, c: "violet", k: "sq" },
-  { x: 47, y: 92, s: 14, r: 0, c: "gold", k: "dot" },
-  { x: 52, y: 10, s: 22, r: 0, c: "pink", k: "ring" },
-  { x: 58, y: 70, s: 16, r: 18, c: "mint", k: "tri" },
-  { x: 71, y: 3, s: 14, r: -20, c: "orange", k: "sq" },
-  { x: 82, y: 90, s: 18, r: 30, c: "gold", k: "tri" },
-  { x: 91, y: 8, s: 12, r: 0, c: "sky", k: "dot" },
-  { x: 96, y: 64, s: 16, r: 12, c: "violet", k: "sq" },
-];
-
-export function EventShow({ slug, event, decks, look }: { slug: string; event: PublicEventView; decks: DeckView[]; look: EventLook }) {
+export function EventShow({ slug, event, decks }: { slug: string; event: PublicEventView; decks: DeckView[] }) {
   const { config } = event;
   const packs = totalPacks(config.slots);
   const [first, last] = splitEventName(config.name);
@@ -208,23 +143,15 @@ export function EventShow({ slug, event, decks, look }: { slug: string; event: P
     { id: "giveaway", label: L.nav.giveaway },
     { id: "codice", label: L.nav.redeem },
   ];
-  const k = LOOK_KICKERS[look];
+  const k = SECTION_KICKERS;
 
   return (
     <EventLiveProvider slug={slug} initial={event}>
-      <div className={`ev ev--${look}`}>
+      <div className="ev ev--a">
         <div className="ev-wrap ev-top">
           <EventClockBanner slot="top" units />
         </div>
         <header className="ev-hero">
-          {look === "b" ? (
-            <div className="ev-confetti" aria-hidden>
-              {CONFETTI.map((c, i) => (
-                <i key={i} className={`ev-conf ev-conf--${c.k}`} style={{ left: `${c.x}%`, top: `${c.y}%`, "--s": `${c.s}px`, "--r": `${c.r}deg`, "--c": `var(--ev-${c.c})`, "--d": `${(i % 5) * -1.3}s` } as CSSProperties} />
-              ))}
-            </div>
-          ) : null}
-          {look === "c" ? <div className="ev-grid" aria-hidden /> : null}
           <div className="ev-wrap ev-hero-in">
             <p className="ev-kicker">
               <i aria-hidden />
@@ -274,14 +201,9 @@ export function EventShow({ slug, event, decks, look }: { slug: string; event: P
               </a>
             </div>
             <HeroCast label={L.hero.cast} />
-            {look === "b" ? <WheelArt decks={config.decks} /> : null}
           </div>
-          {look === "a" ? (
-            <>
-              <Tape items={tape} n={1} />
-              <Tape items={[...tape].reverse()} n={2} />
-            </>
-          ) : null}
+          <Tape items={tape} n={1} />
+          <Tape items={[...tape].reverse()} n={2} />
         </header>
 
         <div className="ev-wrap ev-main">
@@ -296,11 +218,11 @@ export function EventShow({ slug, event, decks, look }: { slug: string; event: P
             </nav>
           </div>
 
-          <Section id="giocatori" labelId="ev-talent" n="01" look={look} title={L.talent.title}>
+          <Section id="giocatori" labelId="ev-talent" n="01" title={L.talent.title}>
             <TalentSection />
           </Section>
 
-          <Section id="mazzi" labelId="ev-decks" n="02" look={look} title={L.decks.title} intro={L.decks.intro}>
+          <Section id="mazzi" labelId="ev-decks" n="02" title={L.decks.title} intro={L.decks.intro}>
             <DrawNote />
             {decks.length ? (
               <ul className="ev-decks">
@@ -353,15 +275,15 @@ export function EventShow({ slug, event, decks, look }: { slug: string; event: P
             )}
           </Section>
 
-          <Section id="classifica" labelId="ev-standings" n="03" look={look} title={L.standings.title} intro={L.standings.intro}>
+          <Section id="classifica" labelId="ev-standings" n="03" title={L.standings.title} intro={L.standings.intro}>
             <StandingsTable />
           </Section>
 
-          <Section id="abbinamenti" labelId="ev-pairings" n="04" look={look} title={L.pairings.title}>
+          <Section id="abbinamenti" labelId="ev-pairings" n="04" title={L.pairings.title}>
             <PairingsList />
           </Section>
 
-          <Section id="giveaway" labelId="ev-giveaway" n="05" look={look} title={L.giveaway.title}>
+          <Section id="giveaway" labelId="ev-giveaway" n="05" title={L.giveaway.title}>
             <ol className="ev-steps">
               {L.giveaway.steps.map((s) => (
                 <li key={s} className="ev-step">
