@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { Fragment } from "react";
 import { href, type Locale } from "@/lib/i18n";
 import type { Part } from "@/lib/cardPage";

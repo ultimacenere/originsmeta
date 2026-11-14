@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Dictionary, type Locale } from "@/lib/i18n";
 import { cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitle, resolveLocale, type PageMetaOptions } from "@/lib/page";
@@ -11,10 +11,10 @@ import { authors } from "@/lib/data/authors";
 import { RULES } from "@/lib/deckrules";
 import { encodeOmCode } from "@/lib/deckcode";
 import { deckGameCode } from "@/lib/deckGameCode";
-import { getCommunityDeck, listDeckPopularity, listDeckVersions, listPublishedDecks } from "@/lib/community/queries";
+import { deckData, deckSideData, relatedPool } from "@/lib/community/deckPageData";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { favoriteLabels } from "@/lib/favoriteLabels";
-import { deckCardsDate, deckCardsDiff, deckCardsUpdated, deckOutdated, deckUpdateHref, type DeckCards } from "@/lib/community/deckVersions";
+import { deckCardsDate, deckCardsDiff, deckCardsUpdated, deckOutdated, deckUpdateHref, type DeckCards, type DeckVersion } from "@/lib/community/deckVersions";
 import { deckVersionLabels } from "@/lib/deckVersionLabels";
 import { DeckVersions, type VersionCard, type VersionView } from "@/components/DeckVersions";
 import { guideSections, type CommunityDeck } from "@/lib/community/types";
@@ -51,10 +51,9 @@ import { DeckArtImage } from "@/components/DeckArtImage";
 import { deckArtUrl } from "@/lib/community/deckArt";
 import { deckArtLabels } from "@/lib/deckArtLabels";
 import { supabaseUrl } from "@/lib/supabase/env";
-import { readDeckWinrate } from "@/lib/community/trackerStatsQueries";
 import { ANALYTICS_PUBLIC, DECK_WINRATE_PUBLIC } from "@/lib/community/badges";
 import { deckListKey, percent } from "@/lib/tracker/stats";
-import { THEORY_DECKS_PATH, builderPathFor, isTheoryDeck, splitTheory, theorySlugsOf } from "@/lib/theoryCraft";
+import { THEORY_DECKS_PATH, builderPathFor, isTheoryDeck, theorySlugsOf } from "@/lib/theoryCraft";
 import { theoryCraftLabels } from "@/lib/theoryCraftLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
@@ -66,10 +65,13 @@ const sectionStyle: Record<string, { box: string; title: string }> = {
 };
 
 /**
- * Pagine generate alla prima richiesta e rigenerate al massimo ogni minuto (voti e modifiche).
+ * Pagine generate alla prima richiesta e rigenerate al massimo ogni 12 ore (dal 14/11/2026, piano costi: prima ogni
+ * minuto, la route con più ISR Writes). Modifiche, voti, salvataggi e traduzioni le rigenerano subito, in tutte le
+ * lingue: le letture passano da `deckPageData.ts`, che spiega perché e cosa resta indietro fino a 12 ore. Il numero è
+ * `DECK_PAGE_REVALIDATE` scritto per esteso: Next vuole qui un valore letterale (test in deckPageData.test.ts).
  * generateStaticParams vuoto + dynamicParams: senza di esso Next renderizzerebbe la pagina a ogni richiesta.
  */
-export const revalidate = 60;
+export const revalidate = 43200;
 export const dynamicParams = true;
 export function generateStaticParams() {
   return [];
@@ -109,7 +111,7 @@ function deckDescription(deck: CommunityDeck, locale: Locale, dict: Dictionary, 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const { locale, dict } = await resolveLocale(params);
-  const deck = await getCommunityDeck(slug);
+  const deck = (await deckData(slug))?.deck;
   if (!deck) return {};
   const star = legendaryName(deck);
   // Immagine social: la lista del mazzo disegnata da /api/deck-image (pacchetto STREAM, 26/09/2026: anteprima quando il
@@ -143,8 +145,9 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const { slug } = await params;
   const { locale, dict: d } = await resolveLocale(params);
   const c = d.community;
-  const deck = await getCommunityDeck(slug);
-  if (!deck) notFound();
+  const data = await deckData(slug);
+  if (!data) notFound();
+  const deck = data.deck;
 
   const legendary = deck.legendary ? getCard(deck.legendary) : undefined;
   const customLegendary = !legendary ? deck.custom_cards.find((x) => x.slug === deck.legendary) : undefined;
@@ -164,8 +167,8 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   const cardsUpdated = deckCardsUpdated(deck);
   const handle = authorHandle(deck.profile);
   const L = communityPageLabels[locale];
-  // Tutti i mazzi pubblicati, con il limite di default: la stessa lettura di /decks e delle tier list, che la cache dei
-  // dati di Next condivide (una al minuto), invece di una query per scheda. Accanto, il win rate del mazzo nelle
+  // Tutti i mazzi pubblicati, ridotti a quello che serve qui, in una voce della cache condivisa da tutte le schede (12 ore,
+  // `relatedPool` in deckPageData.ts) invece di una query per scheda. Accanto, il win rate del mazzo nelle
   // partite registrate con OriginsMeta Tracker quando qualcuno gioca le sue stesse 13 carte (30/09/2026; tolto dal 02
   // al 10/10/2026, quando la patch 0.7 aveva tolto i replay): null sotto la soglia, prima della migrazione o con un
   // errore (il riquadro è facoltativo). Dall'11/10/2026 per tutti anche con Analytics in prova (`DECK_WINRATE_PUBLIC`, Pierluigi:
@@ -175,14 +178,18 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // briciole verso /theory-craft/decks e "altri mazzi" fra i theory craft.
   const theory = isTheoryDeck(deck);
   const TL = theoryCraftLabels[locale];
-  const [published, winrate] = await Promise.all([
-    listPublishedDecks(),
-    DECK_WINRATE_PUBLIC && !theory ? readDeckWinrate(deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key)) : null,
-  ]);
+  const [published, side] = await Promise.all([relatedPool(), deckSideData()]);
+  const listKey = DECK_WINRATE_PUBLIC && !theory ? deckListKey({ legendary: deck.legendary, cards: deck.cards }, (s) => getCard(s)?.key) : null;
+  const winrateList = listKey && side.winrates ? side.winrates.lists[listKey] : undefined;
+  const winrate = winrateList && side.winrates ? { ...winrateList, patch: side.winrates.patch } : null;
   // Altri mazzi con la stessa Leggendaria, poi altri mazzi (DECKS-11, 25/09/2026): prima erano gli 8 più recenti, e i
   // link seguivano la data invece dell'argomento. Scelta deterministica in `relatedDecks` (deckQuality.ts): i vicini in
-  // ordine di pubblicazione, così ogni mazzo riceve link, e prima i mazzi che si indicizzano.
-  const related = relatedDecks(deck, theory ? splitTheory(published).theory : splitTheory(published).official);
+  // ordine di pubblicazione, così ogni mazzo riceve link, e prima i mazzi che si indicizzano. Theory craft con theory
+  // craft, gli altri con gli altri (`theory` è calcolato con `isTheoryDeck`, come faceva `splitTheory`).
+  const related = relatedDecks(
+    deck,
+    published.filter((x) => x.theory === theory),
+  );
   // L'autore editoriale dietro l'account, se authors.ts lo dichiara (nome utente o mazzi: Davdas è luigidavdasragoni).
   const editorial = editorialAuthor(
     authors,
@@ -197,11 +204,10 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
   // Versioni delle carte (pacchetto VERSIONI, 30/09/2026): quella in vigore più le precedenti, dalla più recente.
   const VL = deckVersionLabels[locale].deck;
   const version = typeof deck.version === "number" ? deck.version : null;
-  const oldVersions = version && version > 1 ? await listDeckVersions(deck.id) : [];
+  const oldVersions = data.versions;
   const versionViews = versionsView(deck, oldVersions, locale);
   // "Salva" (blocco PREFERITI E TENDENZA, 30/09/2026): quante persone l'hanno salvato; null senza la migrazione (niente tasto)
-  const popularity = await listDeckPopularity();
-  const favoriteCount = popularity ? (popularity.get(deck.id)?.favorites ?? 0) : null;
+  const favoriteCount = side.favorites ? (side.favorites[deck.id] ?? 0) : null;
   // tasto "Aggiorna alla versione …" per il proprietario, quando il mazzo è fermo a una patch di prima (solo con la migrazione)
   const ownerUpdate =
     version && deckOutdated(deckPatch, patchOrder)
@@ -657,7 +663,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
                   <Link href={href(locale, `/decks/community/${x.slug}`)} className="btn btn-ghost text-xs">
                     {x.name}
                     <span className="font-mono font-normal text-chalk-muted">
-                      {x.rating?.votes ? ` ★ ${x.rating.avg.toFixed(1)}` : ""} · {authorName(x.profile)}
+                      {x.rating?.votes ? ` ★ ${x.rating.avg.toFixed(1)}` : ""} · {x.author}
                     </span>
                   </Link>
                 </li>
@@ -682,7 +688,7 @@ export default async function CommunityDeckPage({ params }: { params: Params }) 
  * dalla più recente, con periodo, patch (dalla data delle carte, come la scheda), voti e cambi rispetto alla precedente.
  * Una sola versione: niente selettore.
  */
-function versionsView(deck: CommunityDeck, old: Awaited<ReturnType<typeof listDeckVersions>>, locale: Locale): VersionView[] {
+function versionsView(deck: CommunityDeck, old: readonly DeckVersion[], locale: Locale): VersionView[] {
   if (!old.length || typeof deck.version !== "number") return [];
   const L = deckVersionLabels[locale].deck;
   const customs = [...deck.custom_cards, ...old.flatMap((v) => v.custom_cards ?? [])] as { slug: string; name?: string }[];

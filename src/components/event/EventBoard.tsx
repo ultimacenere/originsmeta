@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { deckByPlayer, deckByPlayerAt, drawOf, lastRound, playersOf, spinsOfDraw } from "@/lib/event/engine";
 import { pct, standings } from "@/lib/event/swiss";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";

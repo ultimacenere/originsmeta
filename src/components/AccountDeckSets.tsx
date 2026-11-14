@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { formatDate, href, type Dictionary, type Locale } from "@/lib/i18n";
 import { getCard } from "@/lib/data/cards";
 import type { Db } from "@/lib/supabase/public";

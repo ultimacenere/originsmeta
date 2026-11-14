@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { notFound, redirect } from "next/navigation";
 import { href, type Locale } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/page";

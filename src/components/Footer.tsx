@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { linkLabels } from "@/lib/linkLabels";
 import { creatorLabels } from "@/lib/creatorLabels";

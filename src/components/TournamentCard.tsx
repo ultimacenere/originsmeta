@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { authorName } from "@/lib/community/util";
 import { bestOfLabel, type Tournament } from "@/lib/tournament/types";

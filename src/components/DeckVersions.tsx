@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 
 /** Una carta da mostrare: il nome e, se è nel nostro database, la sua scheda. */
 export type VersionCard = { name: string; href?: string };

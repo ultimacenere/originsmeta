@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useMemo, useState } from "react";
 
 /** Un mazzo torneo pronto per l'elenco, già nella lingua della pagina (lo prepara /decks/tournament sul server). */

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { notFound } from "next/navigation";
 import { formatDate, href, type Locale } from "@/lib/i18n";
 import { pageMeta, pageTitleWith } from "@/lib/page";

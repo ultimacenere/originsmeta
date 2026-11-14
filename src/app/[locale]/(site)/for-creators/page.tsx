@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { statSync } from "node:fs";
 import path from "node:path";
 import type { ReactNode } from "react";

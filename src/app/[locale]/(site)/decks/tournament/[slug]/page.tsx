@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { notFound } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Locale } from "@/lib/i18n";
 import { TITLE_MAX, cleanDescription, defaultOgImage, DESCRIPTION_MAX, pageMeta, pageTitle, pageTitleWith, resolveLocale } from "@/lib/page";
@@ -7,7 +7,7 @@ import { archetypeLabels } from "@/lib/data/decks";
 import { getCard, patchAt, patchLabel } from "@/lib/data/cards";
 import { differentCards } from "@/lib/deckrules";
 import { deckGameCode } from "@/lib/deckGameCode";
-import { getDeckSet, listPublishedDeckSets } from "@/lib/community/deckSetQueries";
+import { deckSetPageData, otherDeckSets } from "@/lib/community/communityPageCache";
 import {
   DECK_SET_GUIDE_SECTIONS,
   DECK_SET_MIN_DIFFERENT,
@@ -47,8 +47,12 @@ import { streamLabels } from "@/lib/streamLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
-/** Pagine generate alla prima richiesta e rigenerate al massimo ogni minuto (voti e modifiche), come i mazzi singoli. */
-export const revalidate = 60;
+/**
+ * Pagine generate alla prima richiesta e rigenerate al massimo ogni 12 ore, come i mazzi singoli (dal 14/11/2026, piano
+ * costi: prima ogni minuto). Voti, modifiche e traduzioni le rinnovano subito in tutte le lingue; le letture passano da
+ * communityPageCache.ts e il numero è il suo `COMMUNITY_PAGE_REVALIDATE`, scritto per esteso (Next vuole un letterale).
+ */
+export const revalidate = 43200;
 export const dynamicParams = true;
 export function generateStaticParams() {
   return [];
@@ -89,7 +93,7 @@ function setDescription(set: CommunityDeckSet, locale: Locale, max: number = DES
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const { locale } = await resolveLocale(params);
-  const set = await getDeckSet(slug);
+  const set = await deckSetPageData(slug);
   if (!set) return {};
   // Immagine social: i tre mazzi disegnati da /api/deck-set-image (strumenti per le dirette, 04/10/2026), 1200×630 con la
   // versione dalla data di modifica, come la scheda dei mazzi singoli (`deckOgImage`); prima era la copertina della prima
@@ -111,7 +115,7 @@ export default async function DeckSetPage({ params }: { params: Params }) {
   const { locale, dict: d } = await resolveLocale(params);
   const c = d.community;
   const S = deckSetLabels[locale];
-  const set = await getDeckSet(slug);
+  const set = await deckSetPageData(slug);
   if (!set) notFound();
 
   const path = href(locale, `/decks/tournament/${set.slug}`);
@@ -135,7 +139,7 @@ export default async function DeckSetPage({ params }: { params: Params }) {
   ].map(([a, b]) => ({ a, b, n: differentCards(states[a], states[b]) }));
   const sections = DECK_SET_GUIDE_SECTIONS.filter((k) => !k.startsWith("deck_") && view.text[k]) as Exclude<(typeof DECK_SET_GUIDE_SECTIONS)[number], "deck_1" | "deck_2" | "deck_3">[];
   const videos = deckVideos(set);
-  const others = (await listPublishedDeckSets()).filter((x) => x.id !== set.id).slice(0, 8);
+  const others = (await otherDeckSets()).filter((x) => x.id !== set.id).slice(0, 8);
   const legendaries = set.decks.map((deck) => getCard(deck.legendary));
 
   const article = deckArticle({
@@ -390,7 +394,7 @@ export default async function DeckSetPage({ params }: { params: Params }) {
                 <Link href={href(locale, `/decks/tournament/${x.slug}`)} className="btn btn-ghost text-xs">
                   {x.name}
                   <span className="font-mono font-normal text-chalk-muted">
-                    {x.rating?.votes ? ` ★ ${x.rating.avg.toFixed(1)}` : ""} · {authorName(x.profile)}
+                    {x.rating?.votes ? ` ★ ${x.rating.avg.toFixed(1)}` : ""} · {x.author}
                   </span>
                 </Link>
               </li>

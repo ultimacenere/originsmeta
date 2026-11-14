@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
 import type { Db } from "@/lib/supabase/public";
 import { guideRoleOf, listOwnGuides } from "@/lib/community/guideQueries";

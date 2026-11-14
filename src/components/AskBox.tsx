@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { Turnstile } from "@/components/Turnstile";
 import { DiscordButton } from "@/components/DiscordButton";
 import { turnstileEnabled } from "@/lib/turnstile";

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import type { Badge } from "@/lib/community/badges";
 import { useLiveUsers } from "@/lib/liveClient";
@@ -43,7 +43,8 @@ export function LiveNow({
   profileBase: string;
   privacyHref: string;
 }) {
-  const state = useLiveUsers(60_000);
+  // ogni 2 minuti a scheda visibile (dal 14/11/2026, piano costi: prima 1)
+  const state = useLiveUsers(120_000);
   if (!state) return <p className="card-night mt-8 p-6 text-pale-muted">{labels.loading}</p>;
   if (!state.enabled) return <p className="card-night mt-8 p-6 text-pale-muted">{labels.off}</p>;
   const names = liveOrder(state.users);

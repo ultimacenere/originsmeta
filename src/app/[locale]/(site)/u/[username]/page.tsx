@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { notFound, permanentRedirect } from "next/navigation";
 import { cache } from "react";
 import { formatDate, href, siteUrl } from "@/lib/i18n";

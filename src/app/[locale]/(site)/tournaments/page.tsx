@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { pastEvents, upcomingEvents } from "@/lib/data/events";
 import { dayNumber, monthShort } from "@/lib/i18n";

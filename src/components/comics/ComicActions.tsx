@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { deleteComic, setComicStatus } from "@/lib/community/comicActions";
 import type { ComicLabels } from "@/lib/comicLabels";
 import { ConfirmButton } from "../ConfirmButton";

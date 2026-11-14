@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { ReactNode } from "react";
 import { getDictionary, href, type Dictionary, type Locale } from "@/lib/i18n";
 import { getCard, sagas, type Card } from "@/lib/data/cards";

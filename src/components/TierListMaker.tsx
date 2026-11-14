@@ -2,7 +2,7 @@
 
 import { useEffect, useEffectEvent, useMemo, useRef, useState, useTransition } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { initials } from "@/lib/cardArt";
 import { saveTierList, type TierActionState } from "@/lib/community/tierActions";
 import { trackEvent } from "@/lib/analytics";

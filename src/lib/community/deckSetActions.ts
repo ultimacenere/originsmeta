@@ -15,6 +15,7 @@ import { mediaErrorField, readDeckMedia } from "@/lib/videos";
 import { checkDeck, cleanDeckName, isUuid, newSlug } from "./util";
 import { notifyFollowers } from "./notify";
 import { deckSetLimit } from "./deckSetQueries";
+import { revalidateInAllLocales } from "./revalidateLocales";
 import { announceDeckSet } from "./deckSetDiscord";
 import { translateDeckSetLater } from "./deckSetTranslate";
 import { DECK_SET_SIZE, deckSetErrorCode, deckSetIndexableLocales, deckSetIssue, decodeSetCodes, readDeckSetGuide, type DeckSetDeck, type DeckSetGuide } from "./deckSets";
@@ -179,7 +180,8 @@ export async function voteDeckSet(setId: string, stars: number, path: string): P
   const { error } = await supabase.from("deck_set_votes").upsert({ set_id: setId, user_id: user.id, stars: n }, { onConflict: "set_id,user_id" });
   if (error) return { error: error.code === "42501" ? "ownDeck" : "db" };
   const { data } = await supabase.from("deck_set_ratings").select("avg_stars, votes").eq("set_id", setId).maybeSingle();
-  if (typeof path === "string" && path.startsWith("/")) revalidatePath(path);
+  // la pagina in tutte le lingue (14/11/2026): si rigenera ogni 12 ore, quindi le altre lingue non devono aspettare
+  revalidateInAllLocales(path);
   const r = data as { avg_stars: number | string; votes: number | string } | null;
   return { avg: r ? Number(r.avg_stars) : n, votes: r ? Number(r.votes) : 1 };
 }

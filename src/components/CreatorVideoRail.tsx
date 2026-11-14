@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { VideoLabels } from "@/lib/videoLabels";
 import type { CreatorVideoLabels } from "@/lib/creatorVideoLabels";
 import { VideoEmbed } from "./VideoEmbed";

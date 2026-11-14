@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, useTransition } from "react";
 import { initials } from "@/lib/cardArt";
 import { RULES, emptyDeck, isComplete, manaCurve, maxSharedFor, sharedBaseCards, validateConquest, validateConquestShared, validateDeck, type BuilderCard, type DeckState } from "@/lib/deckrules";

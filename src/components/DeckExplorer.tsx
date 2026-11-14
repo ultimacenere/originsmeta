@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { deckPeekOf, sharedPeeks } from "@/lib/cardPeek";
 import { CardPeek, hasPeek } from "./CardPeek";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { getDictionary, href, type Locale } from "@/lib/i18n";
 import { cards, sagas, statLine, type Card, type SagaId } from "@/lib/data/cards";
 import { CardName, legendaryFirst } from "./CardChip";

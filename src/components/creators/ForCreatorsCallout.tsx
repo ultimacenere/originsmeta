@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { ReactNode } from "react";
 import type { ForCreatorsPlacement } from "@/lib/analytics";
 import { FOR_CREATORS_PATH, forCreatorsTrack } from "@/lib/forCreators";

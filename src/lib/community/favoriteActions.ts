@@ -46,6 +46,14 @@ export async function removeFavorite(formData: FormData): Promise<void> {
     const { error } = await supabase.from("deck_favorites").delete().eq("user_id", user.id).eq("deck_id", deckId);
     if (error) console.error("[community] removeFavorite:", error.message);
     for (const l of locales) revalidatePath(`/${l}/account`);
+    // Anche la scheda del mazzo, che mostra quante persone l'hanno salvato (14/11/2026): si rigenera ogni 12 ore e prima
+    // questa azione non la toccava. Il form manda solo l'id, quindi lo slug si legge (un mazzo nascosto non si legge: la
+    // sua scheda non c'è).
+    if (!error) {
+      const { data } = await supabase.from("community_decks").select("slug").eq("id", deckId).maybeSingle();
+      const slug = (data as { slug?: string } | null)?.slug;
+      if (slug && /^[a-z0-9-]{1,120}$/.test(slug)) for (const l of locales) revalidatePath(`/${l}/decks/community/${slug}`);
+    }
   }
   redirect(`/${locale}/account#saved`);
 }

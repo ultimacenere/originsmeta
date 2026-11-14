@@ -24,6 +24,7 @@ import { PROFILE_MEDIA_BUCKET } from "./profileMedia";
 import { deckArtErrorCode, deckArtPathOk, missingArtColumn, readDeckArtField } from "./deckArt";
 import { sameDeckCards, type DeckCards } from "./deckVersions";
 import { THEORY_DECKS_PATH } from "@/lib/theoryCraft";
+import { revalidateInAllLocales } from "./revalidateLocales";
 
 /**
  * Esito delle azioni dei mazzi. `created` lo mette solo `saveDeckPrivate` quando inserisce un mazzo privato nuovo:
@@ -421,7 +422,8 @@ export async function voteDeck(deckId: string, stars: number, path: string): Pro
     ({ error } = await supabase.from("deck_votes").upsert(vote, { onConflict: "deck_id,user_id" }));
   if (error) return { error: error.code === "42501" ? "ownDeck" : "db" };
   const { data } = await supabase.from("deck_ratings").select("avg_stars, votes").eq("deck_id", deckId).maybeSingle();
-  if (typeof path === "string" && path.startsWith("/")) revalidatePath(path);
+  // la scheda in tutte le lingue (14/11/2026): si rigenera ogni 12 ore, quindi le altre lingue non devono aspettare
+  revalidateInAllLocales(path);
   const r = data as { avg_stars: number | string; votes: number | string } | null;
   return { avg: r ? Number(r.avg_stars) : n, votes: r ? Number(r.votes) : 1 };
 }

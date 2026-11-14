@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { Dictionary } from "@/lib/i18n";
 import { roundLabel, roundsOf } from "@/lib/tournament/bracket";
 import { fill, type TournamentMatch } from "@/lib/tournament/types";

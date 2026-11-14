@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { Dictionary } from "@/lib/i18n";
 import { submitDecks, type TournamentActionState } from "@/lib/tournament/actions";
 import { fill } from "@/lib/tournament/types";

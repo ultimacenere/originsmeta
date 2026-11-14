@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, type Locale } from "@/lib/i18n";
 import type { Card } from "@/lib/data/cards";
 import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";

@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useRouter } from "next/navigation";
 import { localeNames, locales, type Dictionary, type Locale } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase/client";

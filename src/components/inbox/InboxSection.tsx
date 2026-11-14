@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { ReactNode } from "react";
 import type { Locale } from "@/lib/i18n";
 import type { Db } from "@/lib/supabase/public";

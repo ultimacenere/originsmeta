@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { formatDateShort, formatDate, href, type Dictionary, type Locale } from "@/lib/i18n";
 import type { Event } from "@/lib/data/events";
 import { NEW_TAB_REL, NewTabIcon, SteamButton, isSteamUrl } from "./SteamButton";

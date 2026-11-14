@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { usePathname } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
 import { CONSENT_EVENT, PREFERENCES_EVENT, getConsent, type Consent } from "@/lib/consent";

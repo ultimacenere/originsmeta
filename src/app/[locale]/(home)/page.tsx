@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, formatDate, formatDateShort, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { latestPatch, movers, patchLabel, patches, type ChangeKind } from "@/lib/data/cards";
@@ -24,7 +24,7 @@ import { changeLabel } from "@/lib/linkLabels";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { COMMUNITY_MIN_LISTS } from "@/lib/tierstats";
 import { TierInvite } from "@/components/TierInvite";
-import { listPublishedComics } from "@/lib/community/comicQueries";
+import { homeComics } from "@/lib/community/communityPageCache";
 import { comicFeedCards, mergeFeed, splitHomeFeed, type ComicFeedCard } from "@/lib/community/comics";
 import { fillLabel } from "@/lib/community/deckQuality";
 import { authorName } from "@/lib/community/util";
@@ -40,11 +40,12 @@ import { KickstarterBar } from "@/components/KickstarterBar";
 
 /**
  * Dal 29/09/2026 (pacchetto FUMETTI, Pierluigi: i fumetti di Vega "come news") le news in evidenza e la bacheca mostrano
- * anche i fumetti dei creator, che stanno nel database: la home è in ISR (ogni 5 minuti, e le Server Action dei fumetti
+ * anche i fumetti dei creator, che stanno nel database: la home è in ISR (ogni 30 minuti dal 14/11/2026, prima 5 sulla
+ * carta e 1 di fatto per la fetch dei fumetti a 60 s, vedi `HOME_REVALIDATE` in communityPageCache.ts; le Server Action dei fumetti
  * la rinnovano subito). Un errore del database lancia e resta la pagina di prima; con la community spenta o la tabella
  * che non c'è, solo le news del sito come prima.
  */
-export const revalidate = 300;
+export const revalidate = 1800;
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -179,7 +180,7 @@ export default async function Home({ params }: { params: LocaleParams }) {
   const economyGuide = getGuide(locale, "collector-economy");
   // News del sito e fumetti in un solo elenco, dal più recente (mergeFeed in comics.ts): tre in evidenza, con al massimo
   // un fumetto (splitHomeFeed, 19/10/2026), e sei in bacheca
-  const feed = mergeFeed(newsInLocale(locale), comicFeedCards(await listPublishedComics(9), locale, supabaseUrl, authorName));
+  const feed = mergeFeed(newsInLocale(locale), comicFeedCards(await homeComics(9), locale, supabaseUrl, authorName));
   const { featured, board } = splitHomeFeed(feed);
   const C = comicLabels[locale];
   // Video dei creator sotto le news in evidenza (08/10/2026): dai feed YouTube dei profili vetrina, cache di mezz'ora

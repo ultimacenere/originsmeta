@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 
 /**
  * Elenco esplorabile dei Luoghi (23/09/2026, richiesta di Pierluigi: "i competitor hanno inserito tutte le

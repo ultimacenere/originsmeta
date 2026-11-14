@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { formatDate, getDictionary, href, type Locale } from "@/lib/i18n";
 import { guideShapeSummary, guideShapeTitle, readMinutes, type CommunityGuideListItem } from "@/lib/community/guides";
 import { fillLabel } from "@/lib/community/deckQuality";

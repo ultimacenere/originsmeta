@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type KeyboardEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { CellKind, Dir, Verdict } from "@/lib/tracker/snapshot";
 import { CardArt, Delta, Interval, Star, type DeltaInfo } from "./parts";
 

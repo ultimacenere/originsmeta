@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { deleteDeck, setDeckStatus } from "@/lib/community/actions";
 import { deleteDeckSet, setDeckSetStatus } from "@/lib/community/deckSetActions";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 
 /*
   Una partita del tabellone dei playoff della Crimson Cup (25/10/2026), uguale nella pagina (server) e nell'esploratore

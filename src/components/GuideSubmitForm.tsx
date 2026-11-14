@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ChangeEvent, type FormEvent, type RefObject } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { Locale } from "@/lib/i18n";
 import { turnstileEnabled } from "@/lib/turnstile";
 import { Turnstile } from "@/components/Turnstile";

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { notFound, permanentRedirect } from "next/navigation";
 import { formatDate, href, locales, siteUrl, type Locale } from "@/lib/i18n";
 import { cleanDescription, DESCRIPTION_MAX, pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";

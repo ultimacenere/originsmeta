@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, type Locale } from "@/lib/i18n";
 import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { alignStyle, badgePill, badgeStyle, sagaHue } from "@/lib/cardArt";

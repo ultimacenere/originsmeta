@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useMemo, useState } from "react";
 import { MARKET_SORT_KEYS, defaultSortDir, iconUrl, movers, sortBoard, type BoardItem, type MarketKind, type MarketSortDir, type MarketSortKey } from "@/lib/market/market";
 import { fillMarket, type MarketLabels } from "@/lib/marketLabels";

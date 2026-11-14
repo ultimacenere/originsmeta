@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { badgeStyle } from "@/lib/cardArt";
 import type { Dictionary } from "@/lib/i18n";
 import type { TierDeckEntry } from "@/lib/tierTypes";

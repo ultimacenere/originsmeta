@@ -229,8 +229,10 @@ export async function readDeckWinrate(listKey: string | null): Promise<(ListStat
 /**
  * Il win rate di tutte le liste esatte giocate, per chiave della lista (11/10/2026, pastiglia dei mazzi in /decks): una
  * sola lettura per pagina, con la stessa cache di 5 minuti. null prima della migrazione, sotto la soglia o con un errore.
+ * `throwOnError` (schede dei mazzi, deckPageData.ts, 14/11/2026): con un errore lancia invece di dire null, così chi tiene
+ * la risposta per ore in una cache non ci salva un "nessun win rate" dovuto a un guasto.
  */
-export async function readListWinrates(): Promise<{ patch: PatchId; lists: Map<string, ListStat> } | null> {
+export async function readListWinrates(opts: { throwOnError?: boolean } = {}): Promise<{ patch: PatchId; lists: Map<string, ListStat> } | null> {
   const db = statsClient();
   if (!db) return null;
   try {
@@ -240,6 +242,7 @@ export async function readListWinrates(): Promise<{ patch: PatchId; lists: Map<s
     if (data === "missing") return null;
     return { patch: picked.patch, lists: new Map(parseListStats(data).map((l) => [l.list, l])) };
   } catch (error) {
+    if (opts.throwOnError) throw error;
     console.error(error instanceof Error ? error.message : error);
     return null;
   }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, type Locale } from "@/lib/i18n";
 import { crimsonQualifiers } from "@/lib/data/crimsonCup";
 import { cardCrimsonFacts, fillCrimson as fmt } from "@/lib/crimsonCup";

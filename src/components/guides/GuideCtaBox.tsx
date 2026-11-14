@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useGuideViewer } from "./useGuideViewer";
 
 type Box = { title: string; text: string; button: string; href: string };

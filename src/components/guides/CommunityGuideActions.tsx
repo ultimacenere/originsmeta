@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { deleteCommunityGuide, setCommunityGuideStatus } from "@/lib/community/guideActions";
 import type { CommunityGuideLabels } from "@/lib/communityGuideLabels";
 import { ConfirmButton } from "../ConfirmButton";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, type Dictionary, type Locale } from "@/lib/i18n";
 import { safeCover } from "@/lib/community/achievements";
 import { readFeaturedTournaments } from "@/lib/community/achievementQueries";

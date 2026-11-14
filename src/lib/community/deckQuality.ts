@@ -588,7 +588,17 @@ export function profileDescription(f: ProfileFacts, locale: Locale): string {
 /** Quanti mazzi collega una scheda (prima erano gli 8 più recenti). */
 export const RELATED_DECKS = 8;
 
-type RelDeck = { slug: string; legendary: string | null; created_at: string; guide: Guide };
+/**
+ * Un mazzo fra cui scegliere i collegati: con la guida, oppure già ridotto, con `indexable` calcolato prima (la lettura
+ * condivisa e leggera delle schede dei mazzi in `deckPageData.ts`, 14/11/2026: le guide intere di 200 mazzi non vanno
+ * tenute nella cache dei dati).
+ */
+type RelDeck = { slug: string; legendary: string | null; created_at: string } & ({ guide: Guide } | { indexable: boolean });
+
+/** Il mazzo supera la soglia di parole della guida (`deckIndexable`); se il campo è già calcolato, si legge quello. */
+function relIndexable(d: RelDeck): boolean {
+  return "indexable" in d ? d.indexable : deckIndexable(d);
+}
 
 /** Dal più vecchio; a parità di data vince lo slug, così l'ordine non dipende da come arrivano le righe. */
 function oldestFirst(a: RelDeck, b: RelDeck): number {
@@ -629,12 +639,12 @@ function ringNeighbors<T extends RelDeck>(current: RelDeck, pool: readonly T[], 
 function pickRelated<T extends RelDeck>(current: RelDeck, pool: readonly T[], n: number): T[] {
   const good = ringNeighbors(
     current,
-    pool.filter((d) => deckIndexable(d)),
+    pool.filter((d) => relIndexable(d)),
     n,
   );
   const thin = ringNeighbors(
     current,
-    pool.filter((d) => !deckIndexable(d)),
+    pool.filter((d) => !relIndexable(d)),
     n - good.length,
   );
   return [...good.sort(newestFirst), ...thin.sort(newestFirst)];

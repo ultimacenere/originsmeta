@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { alignStyle } from "@/lib/cardArt";
 import { tierTone, type Tier } from "@/lib/tiercode";
 

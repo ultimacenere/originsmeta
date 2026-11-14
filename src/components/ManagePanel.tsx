@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useRouter } from "next/navigation";
 import type { Dictionary } from "@/lib/i18n";
 import { bracketSize, roundsOf } from "@/lib/tournament/bracket";

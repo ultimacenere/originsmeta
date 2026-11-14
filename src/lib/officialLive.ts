@@ -50,8 +50,8 @@ export const HERO_STREAMS: readonly HeroStream[] = [
 
 /** Il nome utente del profilo OriginsTCG sul sito. */
 export const OFFICIAL_LIVE_USERNAME = "originstcg";
-/** Ogni quanto la home ricontrolla la diretta a scheda visibile (la rotta tiene la risposta 90 secondi). */
-export const OFFICIAL_LIVE_REFRESH_MS = 60_000;
+/** Ogni quanto la home ricontrolla la diretta a scheda visibile (la rotta tiene la risposta 90 secondi): 3 minuti dal 14/11/2026 (piano costi), prima 1. */
+export const OFFICIAL_LIVE_REFRESH_MS = 180_000;
 
 export type HeroLive = { id: HeroStreamId; name: string; channel: string; viewers: number; title: string | null };
 

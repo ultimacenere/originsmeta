@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useLiveUsers } from "@/lib/liveClient";
 import { liveOrder } from "@/lib/twitchLive";
 import { fillCreator, type LiveStripLabels } from "@/lib/creatorLabels";
@@ -42,11 +42,12 @@ type Props = {
  * "Ora live" (28/09/2026, idea di Davdas ripresa da Pierluigi: "nel calendario, di fianco al logo di Origins, prima che
  * parta il giro di date"): subito dopo il blocco col logo, un cubetto magenta con quanti creator sono in diretta su
  * Origins TCG e il link alla pagina /live. Lo stato arriva nel browser da /api/live (`useLiveUsers`, stessa promessa
- * del badge LIVE, riletta ogni due minuti a scheda visibile): il layout resta statico. Nessuno in diretta, nessuna voce.
+ * del badge LIVE, riletta ogni cinque minuti a scheda visibile dal 14/11/2026): il layout resta statico. Nessuno in diretta, nessuna voce.
  * Le due copie del nastro la mostrano insieme (stessa promessa), la seconda nascosta ai lettori di schermo come le date.
  */
 function LiveChip({ live, hidden }: { live: TickerLive; hidden: boolean }) {
-  const state = useLiveUsers(120_000);
+  // ogni 5 minuti a scheda visibile (dal 14/11/2026, piano costi: prima 2; la striscia è su ogni pagina)
+  const state = useLiveUsers(300_000);
   const names = state ? liveOrder(state.users) : [];
   if (!names.length) return null;
   const line = names.length === 1 ? fillCreator(live.one, { name: names[0] }) : fillCreator(live.many, { n: names.length });

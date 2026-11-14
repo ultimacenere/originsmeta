@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { Dictionary } from "@/lib/i18n";
 import { deCount, deRound, deSlotOf, deWinnerTo, type DePlan, type DeStage } from "@/lib/tournament/doubleElim";
 import type { DoubleElimLabels } from "@/lib/tournament/doubleElimLabels";

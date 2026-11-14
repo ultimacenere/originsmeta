@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 
 /**
  * Invito a salvare la propria tier list, nella striscia della tier list della home (Ondata 3 del piano SEO/GEO, TOOL-01).

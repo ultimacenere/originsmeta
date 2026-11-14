@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { href, type Locale } from "@/lib/i18n";
 import { theoryCraftLabels } from "@/lib/theoryCraftLabels";
 import { THEORY_DECKS_PATH, THEORY_PATH } from "@/lib/theoryCraftPaths";

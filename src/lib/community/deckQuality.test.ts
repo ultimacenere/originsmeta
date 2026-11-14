@@ -357,6 +357,24 @@ describe("altri mazzi", () => {
     for (const current of pool) assert.deepEqual(q.relatedDecks(current, pool, 3), q.relatedDecks(current, [...pool].reverse(), 3));
   });
 
+  test("mazzi ridotti con `indexable` già calcolato (deckPageData.ts, 14/11/2026): stessa scelta che con le guide", () => {
+    const mixed = [deck("a", "merlin", 1), deck("b", "merlin", 2, THIN), deck("c", "merlin", 3), deck("z", "dracula", 24, THIN), deck("y", "dracula", 23), deck("w", null, 5)];
+    const slim = mixed.map(({ guide: g, ...rest }) => ({ ...rest, indexable: q.deckIndexable({ guide: g }) }));
+    for (const current of mixed)
+      for (const limit of [2, 3, 5]) {
+        const full = q.relatedDecks(current, mixed, limit);
+        const reduced = q.relatedDecks(current, slim, limit);
+        assert.deepEqual(
+          reduced.sameLegendary.map((d) => d.slug),
+          full.sameLegendary.map((d) => d.slug),
+        );
+        assert.deepEqual(
+          reduced.others.map((d) => d.slug),
+          full.others.map((d) => d.slug),
+        );
+      }
+  });
+
   test("prima i mazzi che si indicizzano, in ogni blocco; i sottili solo se mancano", () => {
     const mixed = [deck("a", "merlin", 1), deck("b", "merlin", 2, THIN), deck("c", "merlin", 3), deck("z", "dracula", 24, THIN), deck("y", "dracula", 23)];
     const r = q.relatedDecks(mixed[0], mixed, 3);

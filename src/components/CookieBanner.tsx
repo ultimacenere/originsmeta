@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useMounted } from "@/lib/useMounted";
 import { PREFERENCES_EVENT, getConsent, openCookiePreferences, setConsent, type Consent } from "@/lib/consent";
 

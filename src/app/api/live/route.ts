@@ -8,7 +8,8 @@ import type { LiveResponse } from "@/lib/twitchLive";
  * /api/calendar: le pagine (profili, directory, mazzi) restano ISR e non aspettano Twitch.
  *
  * Cache: la risposta si rigenera al massimo ogni 90 secondi (ISR della rotta) e la CDN la tiene 90 secondi, quindi a
- * Twitch arriva una richiesta ogni minuto e mezzo al massimo, qualunque sia il traffico. Senza TWITCH_CLIENT_ID e
+ * Twitch arriva una richiesta ogni minuto e mezzo al massimo, qualunque sia il traffico. Il browser la tiene 60 secondi
+ * (dal 14/11/2026, piano costi: prima 30), così chi apre più pagine di fila non la richiede alla CDN a ogni pagina. Senza TWITCH_CLIENT_ID e
  * TWITCH_CLIENT_SECRET risponde {enabled: false, users: {}}: nessun badge e nessun errore. Un guasto di Twitch o di
  * Supabase vale "nessuno in diretta" (lo si legge nei log), mai una pagina rotta.
  */
@@ -26,5 +27,5 @@ export async function GET() {
     console.error("[live]", error instanceof Error ? error.message : error);
     body = { enabled: twitchConfigured(), users: {} };
   }
-  return NextResponse.json(body, { headers: { "Cache-Control": "public, max-age=30, s-maxage=90, stale-while-revalidate=60" } });
+  return NextResponse.json(body, { headers: { "Cache-Control": "public, max-age=60, s-maxage=90, stale-while-revalidate=60" } });
 }

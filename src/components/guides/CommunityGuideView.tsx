@@ -1,9 +1,9 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { formatDate, getDictionary, href, locales, siteUrl, type Locale } from "@/lib/i18n";
 import { pageTitle, pageTitleWith } from "@/lib/page";
 import { getCard } from "@/lib/data/cards";
 import { authors } from "@/lib/data/authors";
-import { listPublishedGuides } from "@/lib/community/guideQueries";
+import { guideListForPage } from "@/lib/community/communityPageCache";
 import { absoluteCover, communityGuideCover, communityGuideWords, guideShapeIndexing, localizedCommunityGuide, localizedGuideTitle, readMinutes, type CommunityGuide } from "@/lib/community/guides";
 import { supabaseUrl } from "@/lib/supabase/env";
 import { editorialAuthor, fillLabel } from "@/lib/community/deckQuality";
@@ -71,8 +71,8 @@ export async function CommunityGuideView({ guide, locale }: { guide: CommunityGu
   const videos = deckVideos(guide);
   const links = deckLinks(guide);
   // Altre guide della community: prima quelle che si leggono in questa lingua e della stessa categoria (link a pagine
-  // indicizzabili), poi le più recenti. Stessa lettura leggera della sezione di /guides (cache dei dati di Next, 60 s).
-  const others = (await listPublishedGuides())
+  // indicizzabili), poi le più recenti. Stessa lettura leggera della sezione di /guides, in una voce della cache tenuta 12 ore (communityPageCache.ts, 14/11/2026).
+  const others = (await guideListForPage())
     .filter((g) => g.id !== guide.id)
     .map((g) => ({ g, score: (guideShapeIndexing(g, locales, locale).noindex ? 0 : 2) + (g.category === guide.category ? 1 : 0) }))
     .sort((a, b) => b.score - a.score || (b.g.published_at ?? "").localeCompare(a.g.published_at ?? ""))

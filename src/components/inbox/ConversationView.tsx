@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { getDictionary, href, type Locale } from "@/lib/i18n";
 import { badgePill, badgeStyle } from "@/lib/cardArt";
 import { normalizeBadge } from "@/lib/community/badges";

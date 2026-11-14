@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { usePathname } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { badgeCount, badgeText, envelopeHref, envelopeLabel, fillInbox, parseInboxStatus, staffInboxPath, type InboxStatus } from "@/lib/community/messages";
@@ -18,16 +18,16 @@ import { followNavLabelsFor } from "@/lib/followNavLabels";
  * primo montaggio, al cambio di pagina e al ritorno sulla scheda (se l'ultima lettura ha più di `NAV_GAP_MS`: una raffica
  * di clic non fa una raffica di richieste) e, mentre la scheda è visibile, `POLL_MS` dopo l'ultima lettura, chiunque
  * l'abbia fatta (dal 27/09/2026, per la busta dell'header: il giro si riallinea all'ultima lettura, quindi chi resta
- * fermo su una pagina vede il numero aggiornarsi ogni minuto circa); subito dopo un messaggio mandato o letto
+ * fermo su una pagina vede il numero aggiornarsi ogni tre minuti circa dal 14/11/2026, prima ogni minuto); subito dopo un messaggio mandato o letto
  * (`announceInboxChange`, evento `originsmeta:inbox`). Legata all'utente: se cambia account nella stessa scheda, il
  * numero di prima sparisce.
  */
 
 const EVENT = "originsmeta:inbox";
-/** Cambio di pagina o ritorno sulla scheda: si rilegge se l'ultima lettura ha più di 10 s. */
-const NAV_GAP_MS = 10_000;
-/** Mentre la scheda è visibile si rilegge un minuto dopo l'ultima lettura (busta dell'header, 27/09/2026). */
-const POLL_MS = 60_000;
+/** Cambio di pagina o ritorno sulla scheda: si rilegge se l'ultima lettura ha più di 60 s (dal 14/11/2026, piano costi: prima 10 s). */
+const NAV_GAP_MS = 60_000;
+/** Mentre la scheda è visibile si rilegge tre minuti dopo l'ultima lettura (busta dell'header, 27/09/2026; 3 minuti dal 14/11/2026, prima 1). */
+const POLL_MS = 180_000;
 /** Margine del giro: un timer che scatta qualche ms prima del minuto non salta la lettura. */
 const POLL_SLACK_MS = 1_000;
 /** Il giro non scatta mai prima di così (per esempio mentre la prima lettura non è ancora partita). */

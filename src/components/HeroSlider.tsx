@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { SteamButton } from "./SteamButton";
 
 export type Slide = {

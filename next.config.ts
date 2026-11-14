@@ -137,6 +137,21 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Immagini di public/ (illustrazioni delle carte, icone degli archetipi, key art, loghi), 14/11/2026, piano costi
+      // intervento 2: Vercel le serve con "max-age=0, must-revalidate", quindi a ogni pagina il browser le richiedeva tutte
+      // (risposta 304) e ognuna era una richiesta CDN pagata: /decks e /cards ne caricano 140–160. Un giorno nel browser,
+      // poi una settimana in cui può usarle mentre le ricontrolla. Il prezzo, accettato: un file sostituito con lo stesso
+      // nome (è successo con le icone degli archetipi il 12/10) arriva a chi l'ha già visto entro un giorno. Per un cambio
+      // che deve vedersi subito, un nome di file nuovo. Di /cards solo i file .webp: /cards/<carta> senza lingua è anche un
+      // redirect verso la lingua del browser (`sectionRedirects`), che non deve restare in cache.
+      {
+        source: "/media/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+      },
+      {
+        source: "/cards/:file([a-z0-9-]+\\.webp)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+      },
       // Le pagine del sito non si mostrano dentro un iframe di un altro sito (clickjacking): /account ha azioni vere
       // (profilo pubblico, "Scrivi allo staff", nascondi ed elimina mazzo), l'area staff pure. Nessuna pagina del sito
       // viene incorniciata altrove; il sito incornicia altri (YouTube, Twitch, Turnstile), e questo non cambia.

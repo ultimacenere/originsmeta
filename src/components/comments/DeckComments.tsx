@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition, type FormEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { Locale } from "@/lib/i18n";
 import { supabaseEnabled } from "@/lib/supabase/env";
 import { trackEvent } from "@/lib/analytics";

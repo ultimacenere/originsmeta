@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import type { Locale } from "@/lib/i18n";
 import { inboxLabels } from "@/lib/inboxLabels";
 import { staffThreadPath, withSafeAvatar } from "@/lib/community/messages";

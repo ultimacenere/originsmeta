@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useEffect, useState } from "react";
 import { CopyButton } from "@/components/CopyButton";
 import { fillCode } from "@/lib/forCreators";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type FormEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { useRouter, useSearchParams } from "next/navigation";
 import { isLocale, localeNames, locales, type Locale } from "@/lib/i18n";
 import { encodeOmCode } from "@/lib/deckcode";

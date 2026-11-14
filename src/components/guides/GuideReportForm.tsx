@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { reportCommunityGuide, type GuideActionState } from "@/lib/community/guideActions";
 import { REPORT_REASON_MAX } from "@/lib/community/guides";
 import type { CommunityGuideLabels } from "@/lib/communityGuideLabels";

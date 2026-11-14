@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { usePathname } from "next/navigation";
 import { localeNames, locales, type Locale } from "@/lib/i18n";
 import { AutoCloseDetails } from "./AutoCloseDetails";

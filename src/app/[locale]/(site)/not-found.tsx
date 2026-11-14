@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { locale as rootLocale } from "next/root-params";
 import { getDictionary, href, isLocale, defaultLocale } from "@/lib/i18n";
 import { notFoundTitle } from "./[...rest]/notFoundHtml";

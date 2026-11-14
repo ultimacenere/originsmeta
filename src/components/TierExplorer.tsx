@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
-import Link from "next/link";
+import Link from "@/components/IntentLink";
 import { CardPeek, type PeekCard } from "./CardPeek";
 import { tierTone } from "@/lib/tiercode";
 import { TIER_ORDER, communityOrder, usageOrder, type Tier } from "@/lib/tierstats";
