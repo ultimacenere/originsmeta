@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "@/components/IntentLink";
-import { deckByPlayer, deckByPlayerAt, drawOf, lastRound, playersOf, spinsOfDraw } from "@/lib/event/engine";
+import { deckByPlayer, drawOf, lastRound, playersOf, spinsOfDraw } from "@/lib/event/engine";
 import { pct, standings } from "@/lib/event/swiss";
 import { eventLabels as L, fillEvent } from "@/lib/event/labels";
 import { twitchUrl } from "@/lib/event/codes";
@@ -256,28 +256,23 @@ export function StandingsTable() {
   );
 }
 
+/**
+ * Gli abbinamenti, senza il mazzo dei giocatori (16/11/2026, riunione del 15/11: non compariva per tutti i tavoli, e i
+ * mazzi di ognuno stanno già nella sezione dei mazzi in alto).
+ */
 export function PairingsList() {
   const data = useEventData();
   const face = useFaces();
-  const deckOf = new Map(data.config.decks.map((d) => [d.id, d]));
   const last = lastRound(data.state);
   if (!last) return <p className="ev-empty text-pale">{L.pairings.empty}</p>;
   const rounds = Array.from({ length: last }, (_, i) => last - i);
-  // con più estrazioni ogni turno mostra il mazzo che il giocatore aveva in quel turno
-  const decksAt = new Map(rounds.map((r) => [r, deckByPlayerAt(data.state, r)]));
-  const side = (id: string, won: boolean, round: number) => {
+  const side = (id: string, won: boolean) => {
     const f = face(id);
-    const d = deckOf.get(decksAt.get(round)?.get(id) ?? "");
     return (
       <div className={`ev-side flex min-w-0 flex-1 items-center gap-2 rounded-lg border-2 p-2 ${won ? "is-won border-mint bg-mint/10" : "border-night-3"}`}>
         <FaceImg face={f} size={32} />
         <div className="min-w-0">
           <p className="truncate font-display text-sm font-bold text-sky">{f.name}</p>
-          {d ? (
-            <p className="text-xs text-pale-muted">
-              <DeckDot color={d.color} name={d.name} />
-            </p>
-          ) : null}
         </div>
         {won ? <span className="ev-won ml-auto shrink-0 font-mono text-[11px] font-bold uppercase text-mint">{L.pairings.winner}</span> : null}
       </div>
@@ -300,12 +295,12 @@ export function PairingsList() {
                   </p>
                   {m.b ? (
                     <div className="ev-match-row flex flex-col gap-2 sm:flex-row sm:items-center">
-                      {side(m.a, m.winner === m.a, m.round)}
+                      {side(m.a, m.winner === m.a)}
                       <span className="ev-vs text-center text-xs text-pale-muted">{L.pairings.vs}</span>
-                      {side(m.b, m.winner === m.b, m.round)}
+                      {side(m.b, m.winner === m.b)}
                     </div>
                   ) : (
-                    side(m.a, true, m.round)
+                    side(m.a, true)
                   )}
                 </li>
               ))}

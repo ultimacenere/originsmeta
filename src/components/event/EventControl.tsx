@@ -599,27 +599,34 @@ export function EventControl({ slug }: { slug: string }) {
               {L.control.codes.title}
             </ToolHead>
             <p className="ev-tool-text">{fillEvent(L.control.codes.stats, event.codes)}</p>
-            {packs ? <p className="ev-note">{fillEvent(L.control.codes.packsHint, { packs })}</p> : null}
-            <div className="ev-tool-row">
-              <label className="ev-tool-label">
-                {L.control.codes.howMany}
-                <input type="number" min={1} max={500} value={codeCount} onChange={(e) => setCodeCount(Math.max(1, Math.min(500, Number(e.target.value) || 1)))} className="ev-tool-input ev-tool-input--num" />
-              </label>
-              <button
-                type="button"
-                className="btn btn-primary text-xs"
-                disabled={busy}
-                onClick={async () => {
-                  setBusy(true);
-                  const r = await addCodes(slug, token, codeCount);
-                  setBusy(false);
-                  setMsg(r.ok ? `${L.control.saved}: ${r.total}` : errText(r.error));
-                  await load(token);
-                }}
-              >
-                {L.control.codes.add}
-              </button>
-            </div>
+            {/* "Genera codici" solo per lo staff (16/11/2026, riunione del 15/11: un clic per sbaglio dei caster in diretta) */}
+            {event.controlToken ? (
+              <>
+                {packs ? <p className="ev-note">{fillEvent(L.control.codes.packsHint, { packs })}</p> : null}
+                <div className="ev-tool-row">
+                  <label className="ev-tool-label">
+                    {L.control.codes.howMany}
+                    <input type="number" min={1} max={500} value={codeCount} onChange={(e) => setCodeCount(Math.max(1, Math.min(500, Number(e.target.value) || 1)))} className="ev-tool-input ev-tool-input--num" />
+                  </label>
+                  <button
+                    type="button"
+                    className="btn btn-primary text-xs"
+                    disabled={busy}
+                    onClick={async () => {
+                      setBusy(true);
+                      const r = await addCodes(slug, codeCount);
+                      setBusy(false);
+                      setMsg(r.ok ? `${L.control.saved}: ${r.total}` : errText(r.error));
+                      await load(token);
+                    }}
+                  >
+                    {L.control.codes.add}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="ev-note">{L.control.codes.staffOnly}</p>
+            )}
           </section>
 
           {/* codici consegnati a mano (14/11/2026): al posto dei link dei mod, i codici di ogni streamer, solo per lo staff */}

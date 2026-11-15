@@ -186,12 +186,16 @@ export async function forgetWinners(slug: string): Promise<{ ok: true; cleared: 
   return { ok: true, cleared: data };
 }
 
-/** La regia genera `count` codici in più (al massimo 500 per evento). */
-export async function addCodes(slug: string, token: string | null, count: number): Promise<{ ok: true; total: number } | ActionError> {
+/**
+ * Lo staff genera `count` codici in più (al massimo 500 per evento). Dal 16/11/2026 solo lo staff (riunione del 15/11:
+ * "accesso alla generazione codici va rimosso dalla vista dei caster", un clic per sbaglio in diretta): il link della
+ * regia non si passa più, quindi il database lo permette solo a chi ha l'accesso fatto da staff.
+ */
+export async function addCodes(slug: string, count: number): Promise<{ ok: true; total: number } | ActionError> {
   if (!okSlug(slug) || !Number.isInteger(count) || count < 1 || count > 500) return { ok: false, error: "bad_count" };
   const sb = await supabaseServer();
   if (!sb) return { ok: false, error: "unavailable" };
-  const { data, error } = await sb.rpc("community_event_codes_add", { p_slug: slug, p_token: tokenOrNull(token), p_count: count });
+  const { data, error } = await sb.rpc("community_event_codes_add", { p_slug: slug, p_token: null, p_count: count });
   if (error || typeof data !== "number") return { ok: false, error: errorCode(error) };
   return { ok: true, total: data };
 }

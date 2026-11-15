@@ -260,6 +260,7 @@ export const eventLabels = {
       add: "Genera codici",
       howMany: "Quanti",
       packsHint: "Il giveaway dà {packs} pacchetti in tutto: tieni qualche codice in più (le note dicono 150 per 125).",
+      staffOnly: "I codici li genera e li consegna lo staff.",
     },
     streamers: {
       title: "Codici per gli streamer",
