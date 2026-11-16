@@ -42,17 +42,24 @@ function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfi
   const [busy, setBusy] = useState(false);
   const [list, setList] = useState<StreamerCodes[] | null>(null);
   const [free, setFree] = useState(0);
+  const [misplaced, setMisplaced] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
   const run = useCallback(
     async (prepare: boolean) => {
       setBusy(true);
       setMsg(null);
       try {
-        const r = await streamerCodes(slug, prepare);
+        let r = await streamerCodes(slug, prepare);
+        // passaggi cambiati (16/11/2026): i codici rimasti su quelli di prima si riallineano solo dopo la conferma
+        if (r.ok && prepare && r.misplaced > 0 && window.confirm(fillEvent(L.control.streamers.realignConfirm, { n: r.misplaced }))) {
+          r = await streamerCodes(slug, true, true);
+        }
         if (r.ok) {
           setList(r.streamers);
           setFree(r.free);
-          if (prepare) setMsg(L.control.streamers.prepared);
+          setMisplaced(r.misplaced);
+          if (prepare && r.released > 0) setMsg(fillEvent(L.control.streamers.realigned, { n: r.released }));
+          else if (prepare && r.misplaced === 0) setMsg(L.control.streamers.prepared);
         } else setMsg(errText(r.error));
       } catch {
         setMsg(errText("unavailable"));
@@ -62,20 +69,25 @@ function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfi
     },
     [slug],
   );
-  /* eslint-disable react-hooks/set-state-in-effect -- lettura una tantum all'apertura (le altre le fanno i tasti) */
+  // si rilegge all'apertura e quando cambiano i passaggi (16/11/2026: con l'elenco letto sui passaggi di prima la regia
+  // andava in errore appena salvata una configurazione con meno slot)
+  const slotsKey = config.slots.map((s) => `${s.channel}:${s.packs}`).join(",");
+  /* eslint-disable react-hooks/set-state-in-effect -- lettura all'apertura e a passaggi cambiati (le altre le fanno i tasti) */
   useEffect(() => {
     void run(false);
-  }, [run]);
+  }, [run, slotsKey]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const groups = slotGroups(config.slots);
   const blockOf = (slot: number) => groups.findIndex((g) => g.includes(slot)) + 1;
   const talentOf = (ch: string) => config.talent.find((t) => t.twitch === ch);
+  // gli slot dell'elenco che esistono ancora e sono di quel canale (l'elenco può essere di una lettura di prima)
+  const slotsOf = (s: StreamerCodes) => s.slots.filter((slot) => config.slots[slot]?.channel === s.channel);
   const ready = (list ?? []).reduce((n, s) => n + s.codes.length, 0);
   const message = (s: StreamerCodes) =>
     [
       fillEvent(L.control.streamers.messageHead, { name: config.name }),
-      ...s.slots.flatMap((slot) => [
+      ...slotsOf(s).flatMap((slot) => [
         "",
         fillEvent(L.control.streamers.block, { n: blockOf(slot), packs: config.slots[slot].packs }),
         ...s.codes.filter((c) => c.slot === slot).map((c) => formatCode(c.code)),
@@ -102,6 +114,7 @@ function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfi
         {busy ? "…" : msg}
       </p>
       {list ? <p className="ev-note">{fillEvent(L.control.streamers.total, { ready, packs: totalPacks(config.slots), free })}</p> : null}
+      {list && misplaced > 0 ? <p className="ev-note">{fillEvent(L.control.streamers.misplaced, { n: misplaced })}</p> : null}
       {list && !ready ? <p className="ev-note">{L.control.streamers.none}</p> : null}
       {list && ready ? (
         <ul className="ev-list ev-list--two">
@@ -117,7 +130,7 @@ function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfi
                   </a>
                 ) : null}
                 <CopyLink text={message(s)} label={L.control.streamers.copy} />
-                {s.slots.map((slot) => (
+                {slotsOf(s).map((slot) => (
                   <p key={slot} className="ev-streamer-codes">
                     <b>{fillEvent(L.control.streamers.block, { n: blockOf(slot), packs: config.slots[slot].packs })}</b>{" "}
                     {s.codes

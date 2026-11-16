@@ -56,3 +56,32 @@ export function staffWinnerLogin(slot: number, k: number): string {
   const two = (n: number) => String(Math.max(0, Math.floor(n)) + 1).padStart(2, "0");
   return `om${two(slot)}x${two(k)}`;
 }
+
+/** Un codice dato a un canale, come lo legge il pannello del mod (community_event_mod_view). */
+export type PlacedCode = { code: string; slot: number; redeemed: boolean };
+
+/**
+ * I codici di un canale che non stanno più al loro posto dopo un cambio dei passaggi (16/11/2026, schema finale di Dav:
+ * da 17 slot a 14, quasi tutti spostati). Il database lega ogni codice a un indice di slot e a un canale, e "Prepara i
+ * codici" ritrova i codici per indice: un codice rimasto su uno slot che ora è di un altro canale (o che non c'è più)
+ * resta riscattabile ma non compare nel messaggio di nessuno streamer, e fa contare come pieno lo slot nuovo.
+ * Sono da liberare: i codici su uno slot che non è di questo canale, e quelli oltre i pacchetti dello slot (prima si
+ * tengono i riscattati, che non si possono liberare, poi i più vecchi nell'ordine in cui arrivano). I riscattati non si
+ * liberano mai. `codes` nell'ordine del database (data di assegnazione, poi id).
+ */
+export function misplacedCodes(slots: readonly { channel: string; packs: number }[], channel: string, codes: readonly PlacedCode[]): string[] {
+  const out: string[] = [];
+  const bySlot = new Map<number, PlacedCode[]>();
+  for (const c of codes) {
+    if (slots[c.slot]?.channel !== channel) {
+      if (!c.redeemed) out.push(c.code);
+      continue;
+    }
+    bySlot.set(c.slot, [...(bySlot.get(c.slot) ?? []), c]);
+  }
+  for (const [slot, list] of bySlot) {
+    const keep = [...list.filter((c) => c.redeemed), ...list.filter((c) => !c.redeemed)];
+    for (const c of keep.slice(Math.max(0, slots[slot].packs))) if (!c.redeemed) out.push(c.code);
+  }
+  return out;
+}

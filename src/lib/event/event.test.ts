@@ -247,6 +247,25 @@ describe("configurazione", () => {
     }
     assert.equal(all.size, CFG.LIMITS.slots * CFG.LIMITS.packs, "mai due slot o due pacchetti con lo stesso nome");
   });
+  test("codici fuori posto dopo un cambio dei passaggi (16/11/2026)", () => {
+    const slots = [
+      { channel: "attrix", packs: 3 },
+      { channel: "soul", packs: 2 },
+      { channel: "attrix", packs: 1 },
+    ];
+    const code = (c: string, slot: number, redeemed = false) => ({ code: c, slot, redeemed });
+    // al posto giusto e nel numero giusto: niente da liberare
+    assert.deepEqual(C.misplacedCodes(slots, "attrix", [code("A1", 0), code("A2", 0), code("A3", 0), code("A4", 2)]), []);
+    // su uno slot che ora è di un altro canale, o che non c'è più
+    assert.deepEqual(C.misplacedCodes(slots, "attrix", [code("A1", 0), code("X1", 1), code("X2", 7)]), ["X1", "X2"]);
+    // un canale tolto dai passaggi: tutti i suoi codici
+    assert.deepEqual(C.misplacedCodes(slots, "delmo", [code("D1", 0), code("D2", 1)]), ["D1", "D2"]);
+    // oltre i pacchetti: restano i più vecchi
+    assert.deepEqual(C.misplacedCodes(slots, "soul", [code("S1", 1), code("S2", 1), code("S3", 1)]), ["S3"]);
+    // i riscattati non si liberano mai e restano per primi
+    assert.deepEqual(C.misplacedCodes(slots, "soul", [code("S1", 1), code("S2", 1), code("S3", 1, true)]), ["S2"]);
+    assert.deepEqual(C.misplacedCodes(slots, "soul", [code("R1", 0, true), code("S1", 1)]), []);
+  });
   test("estrazione dopo l'evento: pacchetti nel totale e negli avvisi sui codici", () => {
     const text = "Tutti gli iscritti a OriginsMeta partecipano.";
     const { config, errors } = CFG.parseConfig({ ...sampleConfig(), finalDraw: { packs: 10, text } }, "strict");

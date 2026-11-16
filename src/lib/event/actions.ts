@@ -5,7 +5,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { parseConfig, configWarnings } from "./config";
 import { pauseRun, resumeRun, skipRun, startRun, stopRun } from "./clock";
 import { cryptoRand, newDraw, nextRound, resetState, setWinner, spin, undoRound, undoSpin } from "./engine";
-import { isCodeShape, normalizeCode, staffWinnerLogin, twitchLogin } from "./codes";
+import { isCodeShape, misplacedCodes, normalizeCode, staffWinnerLogin, twitchLogin } from "./codes";
 import { parseControlEvent, parseModEvent } from "./view";
 import type { AssignResult, AssignStatus, Assignment, ControlEvent, EventConfig, EventState, ModEvent, RedeemStatus } from "./types";
 
@@ -221,8 +221,18 @@ export type StreamerCodes = { channel: string; packs: number; slots: number[]; c
  * link del mod del canale (community_event_assign), a un vincitore di comodo per pacchetto (`staffWinnerLogin`), e un
  * codice si riscatta solo se è stato dato a uno slot. Si può rifare: gli stessi nomi riprendono gli stessi codici.
  * Nessuna migrazione: sono le funzioni del 10/11.
+ *
+ * Dopo un cambio dei passaggi (16/11/2026, schema finale di Dav: da 17 slot a 14) i codici restano legati agli indici di
+ * prima: `misplaced` conta quelli fuori posto (anche dei canali tolti dai passaggi) e "Prepara" non assegna niente
+ * finché non si conferma `realign`, che li libera (community_event_release, con il link del mod del loro canale; mai i
+ * riscattati) e poi assegna come sempre. I codici liberati tornano nel mucchio e il database li ridà per primi, anche a
+ * un altro streamer: dopo un riallineamento i messaggi già mandati vanno rifatti tutti.
  */
-export async function streamerCodes(slug: string, prepare: boolean): Promise<{ ok: true; streamers: StreamerCodes[]; free: number } | ActionError> {
+export async function streamerCodes(
+  slug: string,
+  prepare: boolean,
+  realign = false,
+): Promise<{ ok: true; streamers: StreamerCodes[]; free: number; misplaced: number; released: number } | ActionError> {
   if (!okSlug(slug)) return { ok: false, error: "not_found" };
   const sb = await supabaseServer();
   if (!sb) return { ok: false, error: "unavailable" };
@@ -241,7 +251,40 @@ export async function streamerCodes(slug: string, prepare: boolean): Promise<{ o
   }
   const slots = event.config.slots;
   const tokenOf = new Map(event.mods.map((m) => [m.channel, m.token]));
-  if (prepare) {
+  // i codici di ogni canale che ha un link del mod, anche di chi non è più nei passaggi
+  const readCodes = async (): Promise<Map<string, ModEvent["codes"]> | Error> => {
+    const views = await Promise.all(
+      event.mods.map(async (m) => {
+        const { data, error } = await sb.rpc("community_event_mod_view", { p_slug: slug, p_token: m.token });
+        if (error) throw new Error(errorCode(error));
+        return [m.channel, parseModEvent(data)?.codes ?? []] as const;
+      }),
+    ).catch((e: Error) => e);
+    return views instanceof Error ? views : new Map(views);
+  };
+  const misplacedOf = (codesOf: Map<string, ModEvent["codes"]>) => [...codesOf].map(([ch, codes]) => ({ ch, list: misplacedCodes(slots, ch, codes) }));
+  let codesOf = await readCodes();
+  if (codesOf instanceof Error) return { ok: false, error: codesOf.message };
+  const before = misplacedOf(codesOf);
+  const misplacedBefore = before.reduce((n, x) => n + x.list.length, 0);
+  let released = 0;
+  if (prepare && misplacedBefore > 0 && realign) {
+    const jobs = before.flatMap(({ ch, list }) => list.map((code) => ({ code, token: tokenOf.get(ch) })));
+    // a gruppi: il database li fa comunque uno alla volta (lucchetto dell'evento)
+    for (let i = 0; i < jobs.length; i += 8) {
+      const done = await Promise.all(
+        jobs.slice(i, i + 8).map(async ({ code, token }) => {
+          if (!token) return "skip";
+          const { data, error } = await sb.rpc("community_event_release", { p_slug: slug, p_token: token, p_code: code });
+          return error ? new Error(errorCode(error)) : String(data);
+        }),
+      );
+      const failed = done.find((x): x is Error => x instanceof Error);
+      if (failed) return { ok: false, error: failed.message };
+      released += done.filter((x) => x === "ok").length;
+    }
+  }
+  if (prepare && (misplacedBefore === 0 || realign)) {
     for (const [i, s] of slots.entries()) {
       const token = tokenOf.get(s.channel);
       if (!token || s.packs < 1) continue;
@@ -249,19 +292,13 @@ export async function streamerCodes(slug: string, prepare: boolean): Promise<{ o
       const { error } = await sb.rpc("community_event_assign", { p_slug: slug, p_token: token, p_slot: i, p_logins: logins });
       if (error) return { ok: false, error: errorCode(error) };
     }
+    codesOf = await readCodes();
+    if (codesOf instanceof Error) return { ok: false, error: codesOf.message };
   }
-  const views = await Promise.all(
-    channels.map(async (ch) => {
-      const token = tokenOf.get(ch);
-      if (!token) return { ch, codes: [] as ModEvent["codes"] };
-      const { data, error } = await sb.rpc("community_event_mod_view", { p_slug: slug, p_token: token });
-      if (error) throw new Error(errorCode(error));
-      return { ch, codes: parseModEvent(data)?.codes ?? [] };
-    }),
-  ).catch((e: Error) => e);
-  if (views instanceof Error) return { ok: false, error: views.message };
-  const streamers = views.map(({ ch, codes }) => {
+  const misplaced = misplacedOf(codesOf).reduce((n, x) => n + x.list.length, 0);
+  const streamers = channels.map((ch) => {
     const mine = slots.flatMap((s, i) => (s.channel === ch ? [i] : []));
+    const codes = (codesOf.get(ch) ?? []).filter((c) => slots[c.slot]?.channel === ch);
     return {
       channel: ch,
       packs: mine.reduce((n, i) => n + slots[i].packs, 0),
@@ -270,7 +307,7 @@ export async function streamerCodes(slug: string, prepare: boolean): Promise<{ o
     };
   });
   const fresh = await readControl(slug, null);
-  return { ok: true, streamers, free: fresh.ok ? Math.max(0, fresh.event.codes.total - fresh.event.codes.assigned) : 0 };
+  return { ok: true, streamers, free: fresh.ok ? Math.max(0, fresh.event.codes.total - fresh.event.codes.assigned) : 0, misplaced, released };
 }
 
 /* ---------- mod ---------- */
