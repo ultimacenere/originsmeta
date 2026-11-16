@@ -37,6 +37,10 @@ import { CreatorVideoRail, type RailVideo } from "@/components/CreatorVideoRail"
 import { kickstarterPromoActive, kickstarterSliderPinned } from "@/lib/kickstarter";
 import { kickstarterLabels } from "@/lib/kickstarterLabels";
 import { KickstarterBar } from "@/components/KickstarterBar";
+import { eventPath } from "@/lib/event/links";
+
+/** Fino a quando la slide dell'Attrix Showmatch sta nella home italiana (16/11/2026: fino alla fine del 22/11, ora italiana). */
+const ATTRIX_SLIDE_UNTIL = Date.parse("2026-11-23T00:00:00+01:00");
 
 /**
  * Dal 29/09/2026 (pacchetto FUMETTI, Pierluigi: i fumetti di Vega "come news") le news in evidenza e la bacheca mostrano
@@ -214,6 +218,22 @@ export default async function Home({ params }: { params: LocaleParams }) {
   // Dal 27/10/2026 lo slider resta fermo sulla prima slide, quella del Kickstarter (KICKSTARTER_SLIDER_PINNED_UNTIL)
   const sliderPinned = kickstarterSliderPinned(now);
   const slides: Slide[] = [
+    // Attrix Showmatch (16/11/2026, a diretta in corso; Pierluigi: "SUBITO LINK IN HOME NELLO SLIDER!"): prima slide della
+    // home italiana fino al 23/11 (l'evento e la sua pagina sono solo in italiano), anche con lo slider fermo sulla prima.
+    // Immagine: l'illustrazione ufficiale "The Club" del media kit (contenuto, mai design).
+    ...(locale === "it" && now.getTime() < ATTRIX_SLIDE_UNTIL
+      ? [
+          {
+            src: "/media/art-the-club.webp",
+            alt: "Illustrazione ufficiale di Origins TCG: personaggi del gioco giocano a carte ai tavoli di un locale, The Club, con un grande acquario sullo sfondo.",
+            kicker: "Evento della community · 16 novembre",
+            title: "Attrix Showmatch",
+            text: "Lo showmatch dei creator italiani di Origins TCG, in diretta su Twitch, con 125 pacchetti in palio. Hai vinto un codice? Riscattalo qui.",
+            cta: "Vai all'evento",
+            href: eventPath("attrix-showmatch"),
+          },
+        ]
+      : []),
     // Prima slide dal 26/10/2026, finché dura la promozione (KICKSTARTER_PROMO_UNTIL): il Kickstarter della Alpha Edition,
     // verso la landing /kickstarter (Tim Jooste di Koin, 26/10/2026: "make it the front page of Origins Meta"). Immagine:
     // la key art di Goldi del media kit, l'eroina della copertina dei pacchetti di Myths & Legends.

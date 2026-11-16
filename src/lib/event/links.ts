@@ -13,7 +13,8 @@ export const EVENT_SHORT_PATHS: Readonly<Record<string, string>> = { "attrix-sho
  * noindex e nessun menu, calendario, sitemap, news, popup o informativa la linka o la nomina; chi ha l'indirizzo (o il
  * link breve) la apre lo stesso. Per annunciarlo si aggiunge lo slug, nello stesso commit che lo linka dal sito.
  */
-export const EVENT_ANNOUNCED: ReadonlySet<string> = new Set<string>([]);
+// 16/11/2026, a diretta in corso: l'Attrix Showmatch è nello slider della home italiana (Pierluigi: "SUBITO LINK IN HOME NELLO SLIDER!")
+export const EVENT_ANNOUNCED: ReadonlySet<string> = new Set<string>(["attrix-showmatch"]);
 
 export function eventAnnounced(slug: string): boolean {
   return EVENT_ANNOUNCED.has(slug);

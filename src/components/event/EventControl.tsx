@@ -44,6 +44,9 @@ function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfi
   const [free, setFree] = useState(0);
   const [misplaced, setMisplaced] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
+  // codici nascosti di default (16/11/2026, a diretta in corso; Pierluigi: "TASTO PER NASCONDERE I CODICI GENERATI"): la
+  // regia può essere a schermo; «Copia i codici» li copia lo stesso
+  const [showCodes, setShowCodes] = useState(false);
   const run = useCallback(
     async (prepare: boolean) => {
       setBusy(true);
@@ -109,7 +112,11 @@ function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfi
         <button type="button" className="btn btn-ghost text-xs" disabled={busy} onClick={() => void run(false)}>
           {L.control.streamers.refresh}
         </button>
+        <button type="button" className="btn btn-ghost text-xs" aria-pressed={showCodes} onClick={() => setShowCodes((v) => !v)}>
+          {showCodes ? L.control.streamers.hideCodes : L.control.streamers.showCodes}
+        </button>
       </div>
+      {list && !showCodes ? <p className="ev-note">{L.control.streamers.codesHidden}</p> : null}
       <p role="status" className="ev-tool-status">
         {busy ? "…" : msg}
       </p>
@@ -133,13 +140,15 @@ function StreamerCodesPanel({ slug, config }: { slug: string; config: EventConfi
                 {slotsOf(s).map((slot) => (
                   <p key={slot} className="ev-streamer-codes">
                     <b>{fillEvent(L.control.streamers.block, { n: blockOf(slot), packs: config.slots[slot].packs })}</b>{" "}
-                    {s.codes
-                      .filter((c) => c.slot === slot)
-                      .map((c) => (
-                        <code key={c.code} className={c.redeemed ? "is-redeemed" : undefined} title={c.redeemed ? L.control.streamers.redeemed : undefined}>
-                          {formatCode(c.code)}
-                        </code>
-                      ))}
+                    {showCodes
+                      ? s.codes
+                          .filter((c) => c.slot === slot)
+                          .map((c) => (
+                            <code key={c.code} className={c.redeemed ? "is-redeemed" : undefined} title={c.redeemed ? L.control.streamers.redeemed : undefined}>
+                              {formatCode(c.code)}
+                            </code>
+                          ))
+                      : null}
                   </p>
                 ))}
               </li>
