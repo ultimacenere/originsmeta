@@ -44,62 +44,64 @@ const ATTRIX_SLIDE_UNTIL = Date.parse("2026-11-23T00:00:00+01:00");
 
 /**
  * Slide dell'Attrix Showmatch dopo la diretta (16/11/2026, Pierluigi: "Congratulazioni a tutti i 120 vincitori del
- * giveaway / Hai vinto una busta di carte?? riscatta il codice qua!! con il link. Fallo in tutte le lingue!"). In tutte
- * le lingue; il tasto porta al riquadro del riscatto (#codice) della pagina dell'evento, che esiste solo in italiano.
+ * giveaway / Hai vinto una busta di carte?? riscatta il codice qua!! con il link. Fallo in tutte le lingue!", poi "vai
+ * 110 pacchetti, domani facciamo il giveaway nostro": i codici dati agli streamer sono 110, i 15 dell'estrazione di
+ * OriginsMeta vengono dopo). In tutte le lingue; il tasto porta al riquadro del riscatto (#codice) della pagina
+ * dell'evento, che esiste solo in italiano.
  */
 const ATTRIX_SLIDE: Record<Locale, Omit<Slide, "src" | "href">> = {
   it: {
     kicker: "Attrix Showmatch · 16 novembre",
-    title: "Congratulazioni a tutti i 120 vincitori del giveaway!",
+    title: "Congratulazioni a tutti i 110 vincitori del giveaway!",
     text: "Hai vinto una busta di carte? Riscatta qui il tuo codice!",
     cta: "Riscatta il codice",
     alt: "Illustrazione ufficiale di Origins TCG: personaggi del gioco giocano a carte ai tavoli di un locale, The Club, con un grande acquario sullo sfondo.",
   },
   en: {
     kicker: "Attrix Showmatch · 16 November",
-    title: "Congratulations to all 120 giveaway winners!",
+    title: "Congratulations to all 110 giveaway winners!",
     text: "Did you win a card pack? Redeem your code here!",
     cta: "Redeem your code",
     alt: "Official Origins TCG artwork: game characters playing cards at the tables of a club, The Club, with a large aquarium in the background.",
   },
   es: {
     kicker: "Attrix Showmatch · 16 de noviembre",
-    title: "¡Enhorabuena a los 120 ganadores del sorteo!",
+    title: "¡Enhorabuena a los 110 ganadores del sorteo!",
     text: "¿Has ganado un sobre de cartas? ¡Canjea tu código aquí!",
     cta: "Canjear el código",
     alt: "Ilustración oficial de Origins TCG: personajes del juego juegan a las cartas en las mesas de un local, The Club, con un gran acuario al fondo.",
   },
   fr: {
     kicker: "Attrix Showmatch · 16 novembre",
-    title: "Félicitations aux 120 gagnants du giveaway !",
+    title: "Félicitations aux 110 gagnants du giveaway !",
     text: "Vous avez gagné un booster de cartes ? Échangez votre code ici !",
     cta: "Échanger le code",
     alt: "Illustration officielle d’Origins TCG : des personnages du jeu jouent aux cartes aux tables d’un club, The Club, avec un grand aquarium en arrière-plan.",
   },
   pt: {
     kicker: "Attrix Showmatch · 16 de novembro",
-    title: "Parabéns aos 120 vencedores do sorteio!",
+    title: "Parabéns aos 110 vencedores do sorteio!",
     text: "Você ganhou um pacote de cartas? Resgate seu código aqui!",
     cta: "Resgatar o código",
     alt: "Ilustração oficial de Origins TCG: personagens do jogo jogam cartas nas mesas de um clube, The Club, com um grande aquário ao fundo.",
   },
   de: {
     kicker: "Attrix Showmatch · 16. November",
-    title: "Glückwunsch an alle 120 Gewinner des Giveaways!",
+    title: "Glückwunsch an alle 110 Gewinner des Giveaways!",
     text: "Du hast ein Kartenpack gewonnen? Löse deinen Code hier ein!",
     cta: "Code einlösen",
     alt: "Offizielle Illustration von Origins TCG: Figuren aus dem Spiel spielen Karten an den Tischen eines Clubs, The Club, mit einem großen Aquarium im Hintergrund.",
   },
   ru: {
     kicker: "Attrix Showmatch · 16 ноября",
-    title: "Поздравляем всех 120 победителей розыгрыша!",
+    title: "Поздравляем всех 110 победителей розыгрыша!",
     text: "Вы выиграли набор карт? Активируйте код здесь!",
     cta: "Активировать код",
     alt: "Официальная иллюстрация Origins TCG: персонажи игры играют в карты за столиками клуба The Club, на заднем плане — большой аквариум.",
   },
   "zh-cn": {
     kicker: "Attrix Showmatch · 11 月 16 日",
-    title: "恭喜全部 120 位抽奖获奖者！",
+    title: "恭喜全部 110 位抽奖获奖者！",
     text: "你赢得了一包卡牌吗？在这里兑换你的代码！",
     cta: "兑换代码",
     alt: "Origins TCG 官方插画：游戏角色在一家名为 The Club 的俱乐部里围桌打牌，背景是一个巨大的水族箱。",
