@@ -11153,3 +11153,94 @@ begin
 end $$;
 revoke all on function public.community_event_forget(text) from public, anon;
 grant execute on function public.community_event_forget(text) to authenticated;
+
+-- ===== 17/11/2026: STEAM, ACCOUNT DOPPI =====
+-- =====================================================================================================
+-- 17/11/2026 — ACCOUNT DOPPI DA "CONTINUA CON STEAM" (messaggio di Tankready allo staff, girato da Pierluigi: "Tankready
+--   non riesce a collegare il suo steam id"). Chi ha già un account del sito (Discord o email) ed entra con "Continua con
+--   Steam" prima di aver collegato Steam si ritrova un secondo account, nuovo e vuoto, nato con Steam (indirizzo tecnico,
+--   nessun altro modo per entrare). Dall'account di sempre "Collega Steam" rispondeva poi 'taken' ("già collegato a un
+--   altro profilo"). Tankready: account tankready del 05/11 e tankready-1 nato con Steam il 14/11.
+--
+--   steam_account_empty(uid)  l'account non ha niente: nessuna riga lo nomina in una tabella (fuori dallo schema auth) che
+--                             ha una chiave esterna verso public.profiles(id) o auth.users(id), tranne il profilo stesso e
+--                             il collegamento con Steam. Sono esattamente le righe che la cancellazione dell'account si
+--                             porterebbe via (o che la bloccherebbero): una tabella nuova conta da sola, senza toccare questa
+--                             funzione. Una tabella che non si riesce a leggere conta come "non vuoto".
+--   steam_link_claim(k, id)   come steam_link_set (solo con il segreto del server, per lo SteamID appena confermato da Steam
+--                             alla rotta di ritorno), ma quando lo SteamID è collegato a un account nato con Steam, senza
+--                             altri modi per entrare (steam_account_only) e vuoto, cancella quell'account e collega lo
+--                             SteamID all'iscritto della sessione: chi ha appena dimostrato su Steam di essere il padrone
+--                             dell'account Steam era l'unico che poteva entrare nell'account vuoto. Esito 'merged'; gli altri
+--                             come steam_link_set. Se l'account nato con Steam ha qualcosa (mazzi, voti, iscrizioni, foto…)
+--                             resta 'taken' e lo si sistema a mano.
+--
+--   La rotta /auth/steam/callback chiama steam_link_claim solo quando steam_link_set risponde 'taken'; senza questo blocco
+--   l'esito resta 'taken' come prima (il sito regge). Nessuna tabella nuova, nessuna grant né revoke su public.profiles.
+--   Idempotente. Prova a secco: node scripts/steam-claim-dry-run.mjs (src/lib/steam/steam.test.ts controlla il blocco).
+-- =====================================================================================================
+
+create or replace function public.steam_account_empty(p_uid uuid)
+returns boolean language plpgsql stable security definer set search_path = public, pg_temp as $$
+declare
+  r record;
+  found boolean;
+begin
+  if p_uid is null then return false; end if;
+  for r in
+    select distinct c.conrelid::regclass as tbl, a.attname as col
+      from pg_constraint c
+      join pg_class t on t.oid = c.conrelid
+      join pg_namespace n on n.oid = t.relnamespace
+      join pg_attribute a on a.attrelid = c.conrelid and a.attnum = any (c.conkey)
+     where c.contype = 'f'
+       and c.confrelid in ('public.profiles'::regclass, 'auth.users'::regclass)
+       and n.nspname <> 'auth'
+       and c.conrelid not in ('public.profiles'::regclass, 'public.steam_links'::regclass)
+  loop
+    begin
+      execute format('select exists (select 1 from %s where %I = $1)', r.tbl, r.col) into found using p_uid;
+    exception when others then
+      return false;
+    end;
+    if found then return false; end if;
+  end loop;
+  return true;
+end $$;
+revoke all on function public.steam_account_empty(uuid) from public, anon, authenticated;
+
+create or replace function public.steam_link_claim(p_key text, p_steam_id text)
+returns text language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  uid uuid := auth.uid();
+  current_id text;
+  holder uuid;
+begin
+  if not public.notify_key_ok(p_key) then raise exception 'forbidden' using errcode = '42501'; end if;
+  if uid is null then raise exception 'not_logged_in' using errcode = '42501'; end if;
+  if p_steam_id is null or p_steam_id !~ '^7656119[0-9]{10}$' then return 'invalid'; end if;
+  if not exists (select 1 from public.profiles p where p.id = uid) then return 'invalid'; end if;
+  perform pg_advisory_xact_lock(hashtext('steam_link:' || p_steam_id));
+  select l.steam_id into current_id from public.steam_links l where l.user_id = uid;
+  if current_id = p_steam_id then return 'same'; end if;
+  if current_id is not null then return 'other'; end if;
+  select l.user_id into holder from public.steam_links l where l.steam_id = p_steam_id;
+  if holder is null then
+    insert into public.steam_links (user_id, steam_id) values (uid, p_steam_id);
+    return 'ok';
+  end if;
+  if not public.steam_account_only(holder) or not public.steam_account_empty(holder) then return 'taken'; end if;
+  begin
+    -- si porta via profilo e collegamento (on delete cascade); se qualcosa la blocca, non cambia niente
+    delete from auth.users u where u.id = holder;
+  exception when foreign_key_violation then
+    return 'taken';
+  end;
+  insert into public.steam_links (user_id, steam_id) values (uid, p_steam_id);
+  return 'merged';
+exception when unique_violation then
+  return case when exists (select 1 from public.steam_links l where l.user_id = uid) then 'other' else 'taken' end;
+end $$;
+revoke all on function public.steam_link_claim(text, text) from public, anon;
+grant execute on function public.steam_link_claim(text, text) to authenticated;
+comment on function public.steam_link_claim(text, text) is 'Come steam_link_set, ma sposta lo SteamID da un account vuoto nato con Steam (che si cancella) all''iscritto della sessione (17/11/2026, rotta /auth/steam/callback).';

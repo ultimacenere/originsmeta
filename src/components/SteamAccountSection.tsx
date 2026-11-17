@@ -10,7 +10,7 @@ import { newTabProps, SteamLogo } from "./SteamButton";
 
 /** Tono dell'esito: conferme in verde, annullamenti e avvisi in celeste, il resto in rosso (come il pannello di accesso). */
 function toneOf(outcome: SteamLinkOutcome): "good" | "warn" | "bad" {
-  if (outcome === "linked" || outcome === "already" || outcome === "unlinked") return "good";
+  if (outcome === "linked" || outcome === "already" || outcome === "unlinked" || outcome === "merged") return "good";
   if (outcome === "cancelled" || outcome === "steamOnly" || outcome === "missing") return "warn";
   return "bad";
 }

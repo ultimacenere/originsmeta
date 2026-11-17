@@ -60,9 +60,10 @@ const en: SteamLabels = {
     mismatch: "The connection was started from another account on this site: try again from here.",
     unlinked: "Steam account disconnected.",
     steamOnly: "You created this account with Steam: it's how you sign in, so the connection stays.",
+    merged: "Done: your Steam account is connected. The empty account you had created with “Continue with Steam” has been deleted.",
   },
   privacy:
-    "Steam account. If you connect Steam to your profile or sign in with “Continue with Steam”, Steam (Valve) confirms your SteamID, the public number of your Steam profile; we never receive your password or access to your Steam account. We store the SteamID and the date of the connection on Supabase: they are not public and are only used to sign you in. If you create your account with Steam, your display name starts from your Steam profile name (change it whenever you like) and the account gets a technical email address that receives no mail. A ten-minute technical cookie keeps track of the trip to Steam. You can disconnect Steam from your profile at any time; the SteamID is deleted with your account.",
+    "Steam account. If you connect Steam to your profile or sign in with “Continue with Steam”, Steam (Valve) confirms your SteamID, the public number of your Steam profile; we never receive your password or access to your Steam account. We store the SteamID and the date of the connection on Supabase: they are not public and are only used to sign you in. If you create your account with Steam, your display name starts from your Steam profile name (change it whenever you like) and the account gets a technical email address that receives no mail. A ten-minute technical cookie keeps track of the trip to Steam. You can disconnect Steam from your profile at any time; the SteamID is deleted with your account. If you had created an account with “Continue with Steam” and then connect the same Steam account from your usual account, the account created with Steam is deleted if it is empty, and Steam moves to your usual account.",
 };
 
 const it: SteamLabels = {
@@ -90,9 +91,10 @@ const it: SteamLabels = {
     mismatch: "Il collegamento era partito da un altro account del sito: riprova da qui.",
     unlinked: "Account Steam scollegato.",
     steamOnly: "Hai creato l'account con Steam: è il tuo modo per entrare, quindi il collegamento resta.",
+    merged: "Fatto: il tuo account Steam è collegato. L'account vuoto che avevi creato con “Continua con Steam” è stato cancellato.",
   },
   privacy:
-    "Account Steam. Se colleghi Steam al profilo o entri con “Continua con Steam”, Steam (Valve) ci conferma il tuo SteamID, il numero pubblico del tuo profilo Steam; non riceviamo mai la password né l'accesso al tuo account Steam. Conserviamo su Supabase lo SteamID e la data del collegamento: non sono pubblici e servono solo a farti entrare. Se crei l'account con Steam, il nome mostrato parte dal nome del tuo profilo Steam (lo cambi quando vuoi) e l'account ha un indirizzo email tecnico che non riceve posta. Un cookie tecnico di dieci minuti tiene il giro verso Steam. Puoi scollegare Steam dal profilo in qualsiasi momento; lo SteamID si cancella con l'account.",
+    "Account Steam. Se colleghi Steam al profilo o entri con “Continua con Steam”, Steam (Valve) ci conferma il tuo SteamID, il numero pubblico del tuo profilo Steam; non riceviamo mai la password né l'accesso al tuo account Steam. Conserviamo su Supabase lo SteamID e la data del collegamento: non sono pubblici e servono solo a farti entrare. Se crei l'account con Steam, il nome mostrato parte dal nome del tuo profilo Steam (lo cambi quando vuoi) e l'account ha un indirizzo email tecnico che non riceve posta. Un cookie tecnico di dieci minuti tiene il giro verso Steam. Puoi scollegare Steam dal profilo in qualsiasi momento; lo SteamID si cancella con l'account. Se avevi creato un account con “Continua con Steam” e poi colleghi lo stesso account Steam dal tuo account di sempre, l'account creato con Steam, se è vuoto, si cancella e Steam passa all'account di sempre.",
 };
 
 const es: SteamLabels = {
@@ -120,9 +122,10 @@ const es: SteamLabels = {
     mismatch: "La conexión se inició desde otra cuenta del sitio: vuelve a intentarlo desde aquí.",
     unlinked: "Cuenta de Steam desconectada.",
     steamOnly: "Creaste esta cuenta con Steam: es tu forma de entrar, así que la conexión se queda.",
+    merged: "Listo: tu cuenta de Steam está conectada. Hemos borrado la cuenta vacía que habías creado con “Continuar con Steam”.",
   },
   privacy:
-    "Cuenta de Steam. Si conectas Steam a tu perfil o entras con “Continuar con Steam”, Steam (Valve) nos confirma tu SteamID, el número público de tu perfil de Steam; nunca recibimos tu contraseña ni acceso a tu cuenta de Steam. Guardamos en Supabase el SteamID y la fecha de la conexión: no son públicos y solo sirven para que entres. Si creas tu cuenta con Steam, tu nombre visible parte del nombre de tu perfil de Steam (lo cambias cuando quieras) y la cuenta tiene una dirección de correo técnica que no recibe mensajes. Una cookie técnica de diez minutos acompaña el paso por Steam. Puedes desconectar Steam de tu perfil en cualquier momento; el SteamID se borra con tu cuenta.",
+    "Cuenta de Steam. Si conectas Steam a tu perfil o entras con “Continuar con Steam”, Steam (Valve) nos confirma tu SteamID, el número público de tu perfil de Steam; nunca recibimos tu contraseña ni acceso a tu cuenta de Steam. Guardamos en Supabase el SteamID y la fecha de la conexión: no son públicos y solo sirven para que entres. Si creas tu cuenta con Steam, tu nombre visible parte del nombre de tu perfil de Steam (lo cambias cuando quieras) y la cuenta tiene una dirección de correo técnica que no recibe mensajes. Una cookie técnica de diez minutos acompaña el paso por Steam. Puedes desconectar Steam de tu perfil en cualquier momento; el SteamID se borra con tu cuenta. Si habías creado una cuenta con “Continuar con Steam” y luego conectas la misma cuenta de Steam desde tu cuenta de siempre, la cuenta creada con Steam, si está vacía, se borra y Steam pasa a tu cuenta de siempre.",
 };
 
 const fr: SteamLabels = {
@@ -150,9 +153,10 @@ const fr: SteamLabels = {
     mismatch: "L'association a été lancée depuis un autre compte du site : réessayez d'ici.",
     unlinked: "Compte Steam dissocié.",
     steamOnly: "Vous avez créé ce compte avec Steam : c'est votre façon de vous connecter, l'association reste donc en place.",
+    merged: "C'est fait : votre compte Steam est associé. Le compte vide que vous aviez créé avec « Continuer avec Steam » a été supprimé.",
   },
   privacy:
-    "Compte Steam. Si vous associez Steam à votre profil ou vous connectez avec « Continuer avec Steam », Steam (Valve) nous confirme votre SteamID, le numéro public de votre profil Steam ; nous ne recevons jamais votre mot de passe ni l'accès à votre compte Steam. Nous conservons sur Supabase le SteamID et la date de l'association : ils ne sont pas publics et servent uniquement à vous connecter. Si vous créez votre compte avec Steam, votre nom affiché part du nom de votre profil Steam (modifiable à tout moment) et le compte reçoit une adresse e-mail technique qui ne reçoit aucun message. Un cookie technique de dix minutes accompagne le passage par Steam. Vous pouvez dissocier Steam de votre profil à tout moment ; le SteamID est supprimé avec votre compte.",
+    "Compte Steam. Si vous associez Steam à votre profil ou vous connectez avec « Continuer avec Steam », Steam (Valve) nous confirme votre SteamID, le numéro public de votre profil Steam ; nous ne recevons jamais votre mot de passe ni l'accès à votre compte Steam. Nous conservons sur Supabase le SteamID et la date de l'association : ils ne sont pas publics et servent uniquement à vous connecter. Si vous créez votre compte avec Steam, votre nom affiché part du nom de votre profil Steam (modifiable à tout moment) et le compte reçoit une adresse e-mail technique qui ne reçoit aucun message. Un cookie technique de dix minutes accompagne le passage par Steam. Vous pouvez dissocier Steam de votre profil à tout moment ; le SteamID est supprimé avec votre compte. Si vous aviez créé un compte avec « Continuer avec Steam » puis associez le même compte Steam depuis votre compte habituel, le compte créé avec Steam est supprimé s'il est vide, et Steam passe à votre compte habituel.",
 };
 
 const pt: SteamLabels = {
@@ -180,9 +184,10 @@ const pt: SteamLabels = {
     mismatch: "A conexão começou a partir de outra conta do site: tente de novo por aqui.",
     unlinked: "Conta Steam desconectada.",
     steamOnly: "Você criou esta conta com a Steam: é o seu jeito de entrar, então a conexão fica.",
+    merged: "Pronto: sua conta Steam está conectada. A conta vazia que você tinha criado com “Continuar com a Steam” foi apagada.",
   },
   privacy:
-    "Conta Steam. Se você conectar a Steam ao seu perfil ou entrar com “Continuar com a Steam”, a Steam (Valve) nos confirma o seu SteamID, o número público do seu perfil Steam; nunca recebemos sua senha nem acesso à sua conta Steam. Guardamos no Supabase o SteamID e a data da conexão: não são públicos e servem só para você entrar. Se você criar a conta com a Steam, o nome exibido parte do nome do seu perfil Steam (você muda quando quiser) e a conta tem um endereço de e-mail técnico que não recebe mensagens. Um cookie técnico de dez minutos acompanha a passagem pela Steam. Você pode desconectar a Steam do seu perfil a qualquer momento; o SteamID é apagado junto com a conta.",
+    "Conta Steam. Se você conectar a Steam ao seu perfil ou entrar com “Continuar com a Steam”, a Steam (Valve) nos confirma o seu SteamID, o número público do seu perfil Steam; nunca recebemos sua senha nem acesso à sua conta Steam. Guardamos no Supabase o SteamID e a data da conexão: não são públicos e servem só para você entrar. Se você criar a conta com a Steam, o nome exibido parte do nome do seu perfil Steam (você muda quando quiser) e a conta tem um endereço de e-mail técnico que não recebe mensagens. Um cookie técnico de dez minutos acompanha a passagem pela Steam. Você pode desconectar a Steam do seu perfil a qualquer momento; o SteamID é apagado junto com a conta. Se você tinha criado uma conta com “Continuar com a Steam” e depois conecta a mesma conta Steam pela sua conta de sempre, a conta criada com a Steam, se estiver vazia, é apagada e a Steam passa para a sua conta de sempre.",
 };
 
 const de: SteamLabels = {
@@ -210,9 +215,10 @@ const de: SteamLabels = {
     mismatch: "Die Verbindung wurde von einem anderen Konto dieser Seite gestartet: Versuch es hier noch einmal.",
     unlinked: "Steam-Konto getrennt.",
     steamOnly: "Du hast dieses Konto mit Steam erstellt: So meldest du dich an, deshalb bleibt die Verbindung bestehen.",
+    merged: "Erledigt: Dein Steam-Konto ist verbunden. Das leere Konto, das du mit „Weiter mit Steam“ erstellt hattest, wurde gelöscht.",
   },
   privacy:
-    "Steam-Konto. Wenn du Steam mit deinem Profil verbindest oder dich mit „Weiter mit Steam“ anmeldest, bestätigt uns Steam (Valve) deine SteamID, die öffentliche Nummer deines Steam-Profils; dein Passwort oder Zugriff auf dein Steam-Konto bekommen wir nie. Wir speichern die SteamID und das Datum der Verbindung bei Supabase: Sie sind nicht öffentlich und dienen nur deiner Anmeldung. Erstellst du dein Konto mit Steam, übernimmt der Anzeigename den Namen deines Steam-Profils (jederzeit änderbar), und das Konto bekommt eine technische E-Mail-Adresse, die keine Post empfängt. Ein technisches Cookie von zehn Minuten begleitet den Weg über Steam. Du kannst Steam jederzeit von deinem Profil trennen; die SteamID wird mit deinem Konto gelöscht.",
+    "Steam-Konto. Wenn du Steam mit deinem Profil verbindest oder dich mit „Weiter mit Steam“ anmeldest, bestätigt uns Steam (Valve) deine SteamID, die öffentliche Nummer deines Steam-Profils; dein Passwort oder Zugriff auf dein Steam-Konto bekommen wir nie. Wir speichern die SteamID und das Datum der Verbindung bei Supabase: Sie sind nicht öffentlich und dienen nur deiner Anmeldung. Erstellst du dein Konto mit Steam, übernimmt der Anzeigename den Namen deines Steam-Profils (jederzeit änderbar), und das Konto bekommt eine technische E-Mail-Adresse, die keine Post empfängt. Ein technisches Cookie von zehn Minuten begleitet den Weg über Steam. Du kannst Steam jederzeit von deinem Profil trennen; die SteamID wird mit deinem Konto gelöscht. Hattest du ein Konto mit „Weiter mit Steam“ erstellt und verbindest dasselbe Steam-Konto dann von deinem gewohnten Konto aus, wird das mit Steam erstellte Konto gelöscht, wenn es leer ist, und Steam wechselt zu deinem gewohnten Konto.",
 };
 
 const ru: SteamLabels = {
@@ -240,9 +246,10 @@ const ru: SteamLabels = {
     mismatch: "Привязку начали из другого аккаунта сайта: попробуйте снова отсюда.",
     unlinked: "Аккаунт Steam отвязан.",
     steamOnly: "Вы создали этот аккаунт через Steam: это ваш способ входа, поэтому привязка остаётся.",
+    merged: "Готово: аккаунт Steam привязан. Пустой аккаунт, который вы создали через «Продолжить через Steam», удалён.",
   },
   privacy:
-    "Аккаунт Steam. Если вы привязываете Steam к профилю или входите через «Продолжить через Steam», Steam (Valve) подтверждает нам ваш SteamID — публичный номер вашего профиля Steam; ваш пароль и доступ к аккаунту Steam мы не получаем никогда. Мы храним в Supabase SteamID и дату привязки: они не публичны и нужны только для входа. Если вы создаёте аккаунт через Steam, отображаемое имя берётся из имени вашего профиля Steam (его можно изменить в любой момент), а у аккаунта есть технический адрес электронной почты, на который письма не приходят. Технический cookie на десять минут сопровождает переход в Steam. Отвязать Steam от профиля можно в любой момент; SteamID удаляется вместе с аккаунтом.",
+    "Аккаунт Steam. Если вы привязываете Steam к профилю или входите через «Продолжить через Steam», Steam (Valve) подтверждает нам ваш SteamID — публичный номер вашего профиля Steam; ваш пароль и доступ к аккаунту Steam мы не получаем никогда. Мы храним в Supabase SteamID и дату привязки: они не публичны и нужны только для входа. Если вы создаёте аккаунт через Steam, отображаемое имя берётся из имени вашего профиля Steam (его можно изменить в любой момент), а у аккаунта есть технический адрес электронной почты, на который письма не приходят. Технический cookie на десять минут сопровождает переход в Steam. Отвязать Steam от профиля можно в любой момент; SteamID удаляется вместе с аккаунтом. Если вы создали аккаунт через «Продолжить через Steam», а потом привязываете тот же аккаунт Steam к своему обычному аккаунту, созданный через Steam аккаунт удаляется, если он пуст, и Steam переходит к обычному аккаунту.",
 };
 
 const zhCn: SteamLabels = {
@@ -270,9 +277,10 @@ const zhCn: SteamLabels = {
     mismatch: "这次关联是从本站的另一个账号发起的：请在这里重新操作。",
     unlinked: "已解除 Steam 账号的关联。",
     steamOnly: "你是用 Steam 创建这个账号的：这是你的登录方式，所以关联会保留。",
+    merged: "完成：你的 Steam 账号已关联。你之前通过“使用 Steam 继续”创建的空账号已被删除。",
   },
   privacy:
-    "Steam 账号。如果你把 Steam 关联到个人资料，或使用“使用 Steam 继续”登录，Steam（Valve）会向我们确认你的 SteamID，即你 Steam 个人资料的公开编号；我们永远不会收到你的密码，也无法访问你的 Steam 账号。我们在 Supabase 上保存 SteamID 和关联日期：这些信息不公开，只用于让你登录。如果你用 Steam 创建账号，显示名称会取自你的 Steam 个人资料名称（可随时修改），账号会使用一个不接收邮件的技术性电子邮件地址。一个有效期十分钟的技术性 cookie 会记录前往 Steam 的过程。你可以随时从个人资料中解除 Steam 关联；SteamID 会随账号一起删除。",
+    "Steam 账号。如果你把 Steam 关联到个人资料，或使用“使用 Steam 继续”登录，Steam（Valve）会向我们确认你的 SteamID，即你 Steam 个人资料的公开编号；我们永远不会收到你的密码，也无法访问你的 Steam 账号。我们在 Supabase 上保存 SteamID 和关联日期：这些信息不公开，只用于让你登录。如果你用 Steam 创建账号，显示名称会取自你的 Steam 个人资料名称（可随时修改），账号会使用一个不接收邮件的技术性电子邮件地址。一个有效期十分钟的技术性 cookie 会记录前往 Steam 的过程。你可以随时从个人资料中解除 Steam 关联；SteamID 会随账号一起删除。如果你曾通过“使用 Steam 继续”创建过账号，之后又在常用账号中关联同一个 Steam 账号，那么用 Steam 创建的账号在为空时会被删除，Steam 关联会转到你的常用账号。",
 };
 
 export const steamLabels: Record<Locale, SteamLabels> = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn };

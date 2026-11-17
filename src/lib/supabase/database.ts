@@ -1243,6 +1243,8 @@ export type Database = {
       steam_link_status: { Args: Record<string, never>; Returns: { steam_id: string; linked_at: string; steam_only: boolean }[] };
       /** collega lo SteamID confermato da Steam, solo dalla rotta /auth/steam/callback con il segreto del server */
       steam_link_set: { Args: { p_key: string; p_steam_id: string }; Returns: string };
+      /** blocco "17/11/2026: STEAM, ACCOUNT DOPPI": come steam_link_set, più lo spostamento da un account vuoto nato con Steam ('merged') */
+      steam_link_claim: { Args: { p_key: string; p_steam_id: string }; Returns: string };
       /** scollega il proprio account Steam: ok, none, steam_only */
       steam_link_remove: { Args: Record<string, never>; Returns: string };
       /** eventi della community (10/11/2026): pagina e overlay, senza i talent da svelare né codici; null se l'evento non c'è */

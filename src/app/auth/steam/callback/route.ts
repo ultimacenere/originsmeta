@@ -31,8 +31,9 @@ type AuthErr = { code?: string; message?: string; status?: number } | null | und
  * Ritorno da Steam (09/11/2026, src/lib/steam/openid.ts). Il cookie del giro vale una volta sola e si cancella subito.
  * Poi: lo stato dell'indirizzo deve essere quello del cookie, l'asserzione deve passare i controlli e Steam deve
  * confermarla. Con lo SteamID confermato:
- * - collegamento (`link`): steam_link_set con la sessione dell'utente e il segreto del server, poi il profilo con
- *   `?steam=<esito>#steam` (src/lib/steam/link.ts);
+ * - collegamento (`link`): steam_link_set con la sessione dell'utente e il segreto del server (e, se l'account Steam è
+ *   di un account vuoto nato con Steam, steam_link_claim, dal 17/11/2026), poi il profilo con `?steam=<esito>#steam`
+ *   (src/lib/steam/link.ts);
  * - accesso (`login`): con la chiave segreta (src/lib/supabase/admin.ts) il profilo collegato a quello SteamID, oppure
  *   un account nuovo (indirizzo tecnico, nomi dal profilo Steam, collegamento scritto subito); poi un link di accesso
  *   generato e verificato qui, che scrive i cookie della sessione come il ritorno /auth/callback. Nessuna email parte.
@@ -82,7 +83,19 @@ async function link(state: SteamState, steamId: string, toProfile: (o: SteamLink
     console.error("[steam] steam_link_set:", error.code, error.message);
     return toProfile(steamMigrationMissing(error) ? "missing" : "error");
   }
-  return toProfile(linkOutcome(data));
+  const outcome = linkOutcome(data);
+  if (outcome !== "taken") return toProfile(outcome);
+  // Account Steam di un altro profilo: se è un account vuoto nato con "Continua con Steam" (l'account doppio di chi era
+  // entrato con Steam prima di collegarlo), steam_link_claim lo cancella e sposta qui il collegamento (17/11/2026).
+  // Senza il blocco "17/11/2026: STEAM, ACCOUNT DOPPI" resta 'taken', come prima.
+  const claim = await supabase.rpc("steam_link_claim", { p_key: key, p_steam_id: steamId });
+  if (claim.error) {
+    if (!steamMigrationMissing(claim.error)) console.error("[steam] steam_link_claim:", claim.error.code, claim.error.message);
+    return toProfile("taken");
+  }
+  const claimed = linkOutcome(claim.data);
+  if (claimed === "merged") console.info("[steam] collegamento spostato da un account vuoto nato con Steam, che è stato cancellato");
+  return toProfile(claimed);
 }
 
 /** L'email dell'account (serve al link di accesso), o null. */

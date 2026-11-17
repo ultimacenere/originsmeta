@@ -311,6 +311,7 @@ describe("link.ts: esiti del collegamento", () => {
     assert.equal(K.linkOutcome("same"), "already");
     assert.equal(K.linkOutcome("other"), "other");
     assert.equal(K.linkOutcome("taken"), "taken");
+    assert.equal(K.linkOutcome("merged"), "merged", "steam_link_claim: spostato da un account vuoto nato con Steam");
     assert.equal(K.linkOutcome("invalid"), "error");
     assert.equal(K.linkOutcome(null), "error");
     assert.equal(K.unlinkOutcome("ok"), "unlinked");
@@ -389,6 +390,70 @@ describe("blocco STEAM di supabase/schema.sql", () => {
     }
     assert.ok(block.includes("references public.profiles(id) on delete cascade"));
     assert.deepEqual(schemaProblems(sql), []);
+  });
+});
+
+describe("blocco STEAM, ACCOUNT DOPPI di supabase/schema.sql (17/11/2026)", () => {
+  const sql = readFileSync(new URL("../../../supabase/schema.sql", import.meta.url), "utf8");
+  const TITLE = "-- ===== 17/11/2026: STEAM, ACCOUNT DOPPI =====";
+  const start = sql.indexOf(TITLE);
+  const end = sql.indexOf("\n-- ===== ", start + 10);
+  const block = sql.slice(start, end < 0 ? undefined : end);
+  const body = (fn: string) => block.slice(block.indexOf(`function public.${fn}(`), block.indexOf(`revoke all on function public.${fn}(`));
+
+  test("c'è, dopo il blocco STEAM, e la prova a secco legge lo stesso titolo", () => {
+    assert.ok(start > sql.indexOf("-- ===== 09/11/2026: STEAM ====="));
+    const dry = readFileSync(new URL("../../../scripts/steam-claim-dry-run.mjs", import.meta.url), "utf8");
+    assert.ok(dry.includes(`const MARKER = "${TITLE}";`));
+  });
+
+  test("solo funzioni: nessuna tabella, nessuna grant né revoke sui profili, schema-guard contento", () => {
+    for (const s of sqlStatements(block)) {
+      assert.ok(!/^create table\b/.test(s), s);
+      assert.ok(!/^(grant|revoke)\b/.test(s) || !/\bpublic\.profiles\b/.test(s), s);
+    }
+    assert.deepEqual(schemaProblems(sql), []);
+  });
+
+  test("security definer con search_path; steam_account_empty chiusa ai client, steam_link_claim solo agli iscritti", () => {
+    for (const fn of ["steam_account_empty", "steam_link_claim"]) {
+      const at = block.indexOf(`create or replace function public.${fn}(`);
+      assert.ok(at >= 0, fn);
+      assert.match(block.slice(at, at + 400), /security definer set search_path = public, pg_temp/, fn);
+    }
+    assert.ok(block.includes("revoke all on function public.steam_account_empty(uuid) from public, anon, authenticated;"));
+    assert.ok(!/grant execute on function public\.steam_account_empty/.test(block));
+    assert.ok(block.includes("revoke all on function public.steam_link_claim(text, text) from public, anon;"));
+    assert.ok(block.includes("grant execute on function public.steam_link_claim(text, text) to authenticated;"));
+  });
+
+  test("vuoto = nessuna riga nelle tabelle con una chiave esterna verso profili o utenti, tranne profilo e collegamento", () => {
+    const empty = body("steam_account_empty");
+    assert.ok(empty.includes("c.contype = 'f'"));
+    assert.ok(empty.includes("c.confrelid in ('public.profiles'::regclass, 'auth.users'::regclass)"));
+    assert.ok(empty.includes("c.conrelid not in ('public.profiles'::regclass, 'public.steam_links'::regclass)"));
+    assert.ok(empty.includes("n.nspname <> 'auth'"), "le tabelle di auth (identità, sessioni) se ne vanno con l'utente");
+    assert.match(empty, /exception when others then\s+return false;/, "una tabella che non si legge conta come non vuota");
+  });
+
+  test("steam_link_claim: prima il segreto, poi i controlli, poi la cancellazione dell'account doppio e il collegamento", () => {
+    const claim = body("steam_link_claim");
+    const at = (s: string) => {
+      const i = claim.indexOf(s);
+      assert.ok(i >= 0, s);
+      return i;
+    };
+    assert.ok(claim.includes(`p_steam_id !~ '${O.STEAM_ID_PATTERN}'`), "stessa espressione dello SteamID");
+    assert.ok(at("notify_key_ok(p_key)") < at("pg_advisory_xact_lock(hashtext('steam_link:' || p_steam_id))"));
+    assert.ok(at("hashtext('steam_link:' || p_steam_id)") > 0, "stesso lock di steam_link_set");
+    const guard = at("if not public.steam_account_only(holder) or not public.steam_account_empty(holder) then return 'taken'; end if;");
+    const del = at("delete from auth.users u where u.id = holder;");
+    assert.ok(guard < del, "si cancella solo un account nato con Steam e vuoto");
+    assert.match(claim.slice(del), /exception when foreign_key_violation then\s+return 'taken';/);
+    assert.ok(del < claim.lastIndexOf("insert into public.steam_links (user_id, steam_id) values (uid, p_steam_id);"));
+    assert.ok(claim.includes("return 'merged';"));
+    // gli esiti che non sono 'merged' sono quelli di steam_link_set, che la rotta traduce con linkOutcome
+    for (const r of ["'same'", "'other'", "'taken'", "'ok'", "'invalid'"]) assert.ok(claim.includes(`return ${r}`), r);
   });
 });
 
