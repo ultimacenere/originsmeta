@@ -5,9 +5,10 @@
  * nessuno può creare in anticipo l'account Steam di un altro con il link via email. Il legame fra l'account e Steam sta
  * nella tabella steam_links (blocco "09/11/2026: STEAM" di supabase/schema.sql), scritta subito dopo la creazione.
  *
- * Nome mostrato e nome utente partono dal nome del profilo Steam (`steamSignupNames`), con le regole dei nomi del sito
- * (src/lib/community/profileNames.ts): un nome che non va bene (parole dello staff, caratteri invisibili, troppo corto)
- * non si usa e il database sceglie "player" come per gli altri accessi. Si cambiano poi da /account/profile#name.
+ * Nome mostrato e nome utente partono dal nome scelto al primo accesso (dal 18/11/2026: la pagina di accesso propone quello
+ * del profilo Steam, se il server l'ha letto; firstLogin.ts), con le regole dei nomi del sito (`steamSignupNames`,
+ * src/lib/community/profileNames.ts): un nome utente che non va bene (caratteri non latini, parole riservate) lascia
+ * scegliere al database "player" come per gli altri accessi. Si cambiano poi da /account/profile#name.
  *
  * Funzioni pure tranne `fetchSteamPersona` (che riceve `fetch`): test in steam.test.ts.
  */

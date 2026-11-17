@@ -5,6 +5,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { LoginPanel } from "@/components/LoginPanel";
 import { loginLabels } from "@/lib/loginLabels";
 import { steamLoginOn } from "@/lib/supabase/admin";
+import { steamLabels } from "@/lib/steamLabels";
 
 export async function generateMetadata({ params }: { params: LocaleParams }): Promise<Metadata> {
   const { locale, dict } = await resolveLocale(params);
@@ -27,7 +28,13 @@ export default async function LoginPage({ params }: { params: LocaleParams }) {
       {/* con l'accesso con Steam attivo (09/11/2026) l'introduzione lo nomina accanto a Discord e all'email */}
       <p className="mt-4 max-w-2xl text-chalk-muted">{steamLoginOn() ? a.introSteam : a.intro}</p>
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-        <LoginPanel next={href(locale, "/account")} labels={loginLabels(d, steamLoginOn())} locale={locale} />
+        {/* primo accesso con Steam (18/11/2026): la scelta fra account nuovo e account di sempre, solo qui (src/lib/steam/firstLogin.ts) */}
+        <LoginPanel
+          next={href(locale, "/account")}
+          labels={loginLabels(d, steamLoginOn())}
+          locale={locale}
+          steamNew={steamLoginOn() ? steamLabels[locale].firstLogin : undefined}
+        />
         <section className="felt-panel p-6" aria-labelledby="login-why">
           <h2 id="login-why" className="kicker text-mint">
             {a.whyTitle}

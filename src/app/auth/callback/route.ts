@@ -5,6 +5,8 @@ import { defaultLocale, isLocale, locales, type Locale } from "@/lib/i18n";
 import { LANGUAGE_ALIASES, preferredLocale } from "@/app/t/locale";
 import { authErrorKind, type AuthErrorKind } from "@/lib/loginLabels";
 import { isNewAccount, withAuthSignal } from "@/lib/analytics";
+import { STEAM_FLOW_PARAM, STEAM_PENDING_VALUE } from "@/lib/steam/firstLogin";
+import { applySteamPending } from "@/lib/steam/session";
 
 /** Solo percorsi interni: niente redirect verso altri siti. */
 function safeNext(raw: string | null, locale: Locale): string {
@@ -58,7 +60,15 @@ export async function GET(request: Request) {
   // dall'indirizzo (`consumeAuthSignal` in src/lib/analytics.ts, chiamata da GoogleAnalytics.tsx). Qui niente eventi.
   // Un account nuovo lo riconosce `isNewAccount`: con l'email conta la conferma appena avvenuta, perché Supabase crea
   // l'utente quando spedisce il link e `last_sign_in_at` arriva solo quando lo si apre (minuti dopo).
-  const done = (user: Parameters<typeof isNewAccount>[0]) => NextResponse.redirect(`${origin}${withAuthSignal(next, isNewAccount(user, via) ? "sign_up" : "login", via)}`);
+  // Primo accesso con Steam (18/11/2026, src/lib/steam/firstLogin.ts): chi ha scelto "Ho già un account" arriva qui con
+  // `steam=pending`; dopo l'accesso lo Steam in sospeso (cookie firmato) si collega a questo account e si va al profilo
+  // con l'esito. Senza il cookie (scaduto, o link aperto in un altro browser) si torna a `next` come sempre.
+  const steamPending = url.searchParams.get(STEAM_FLOW_PARAM) === STEAM_PENDING_VALUE;
+  const done = async (user: Parameters<typeof isNewAccount>[0]) => {
+    const event = isNewAccount(user, via) ? "sign_up" : "login";
+    const linked = steamPending ? await applySteamPending(supabase, locale, origin.startsWith("https:")) : null;
+    return NextResponse.redirect(`${origin}${withAuthSignal(linked?.path ?? next, event, via)}`);
+  };
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return done(data.user);

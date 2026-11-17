@@ -175,12 +175,15 @@
  *                                                                                 limit | too_many | closed | …)
  *     event_redeem_signin   "Accedi e riscatta": verso l'accesso con il codice     placement
  *                         tenuto nel browser
+ *     steam_new_choice      primo accesso con Steam senza un account collegato     choice (create: "Crea l'account con
+ *                         (18/11/2026, src/lib/steam/firstLogin.ts): la scelta    Steam" | existing: Discord o email da
+ *                         fatta sulla pagina di accesso                           "Ho già un account")
  *
  * Per vedere i parametri nei rapporti di GA4 vanno registrati in Amministrazione → Definizioni personalizzate, tutti
  * con ambito "evento" (method e search_term GA4 li ha già):
  *   - dimensioni personalizzate: lang, locale, placement, target, server, cta, legendary, source, kind, stars, score,
  *     vote_type, search_area, destination, section, tier_source, card, visibility, deck_mode, guide_lang, comic_lang, provider,
- *     host, tool, format, category, tournament;
+ *     host, tool, format, category, tournament, choice;
  *   - metriche personalizzate (numeri da sommare, unità "standard"): results, size, sources, cards.
  * `lang` va a GA4 con ogni evento (dal percorso); `locale` è il parametro dei tre eventi nati con a9400e8 e resta per
  * non rompere i rapporti già impostati: hanno lo stesso valore.
@@ -317,6 +320,7 @@ export type EventParams = {
   tournament_promo_view: { tournament: string };
   tournament_promo_click: { tournament: string };
   tournament_promo_close: { tournament: string; method: "close" | "later" | "esc" | "backdrop" };
+  steam_new_choice: { choice: "create" | "existing" };
   event_channel_click: { placement: "clock" | "talent"; channel: string };
   event_code_redeem: { result: string };
   event_redeem_signin: { placement: string };
@@ -387,6 +391,7 @@ export const VERCEL_PROPS = {
   tournament_promo_view: ["tournament"],
   tournament_promo_click: ["tournament"],
   tournament_promo_close: ["method", "tournament"],
+  steam_new_choice: ["choice"],
   event_channel_click: ["placement", "channel"],
   event_code_redeem: ["result"],
   event_redeem_signin: ["placement"],

@@ -64,6 +64,10 @@ const { de }: typeof import("../dictionaries/de") = await import("../dictionarie
 const { ru }: typeof import("../dictionaries/ru") = await import("../dictionaries/ru.ts");
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 const { zhCn }: typeof import("../dictionaries/zh-cn") = await import("../dictionaries/zh-cn.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const PE: typeof import("./pending") = await import("./pending.ts");
+// @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
+const FL: typeof import("./firstLogin") = await import("./firstLogin.ts");
 
 const ORIGIN = "https://originsmeta.com";
 const STATE = "AbCdEfGhIjKlMnOpQrStUvWxYz012345";
@@ -506,5 +510,80 @@ describe("testi nelle otto lingue", () => {
     assert.equal(AN.isNewAccount({ created_at: ago(1), confirmed_at: ago(1) }, "steam", NOW), true);
     assert.equal(AN.isNewAccount({ created_at: ago(20), confirmed_at: ago(20) }, "steam", NOW), false);
     assert.equal(AN.isNewAccount({ created_at: ago(60 * 24 * 30), confirmed_at: ago(60 * 24 * 30) }, "steam", NOW), false);
+  });
+});
+
+describe("primo accesso con Steam (pending.ts, firstLogin.ts; 18/11/2026)", () => {
+  const SECRET = "s".repeat(40);
+
+  test("cookie firmato: andata e ritorno, nome del profilo Steam tagliato a 64 caratteri", () => {
+    const raw = PE.encodeSteamPending({ id: STEAM_ID, name: `  Tank${"x".repeat(100)}  `, t: NOW }, SECRET);
+    assert.match(raw, /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/);
+    const back = PE.decodeSteamPending(raw, SECRET, NOW + 60_000);
+    assert.equal(back?.id, STEAM_ID);
+    assert.equal(back?.t, NOW);
+    assert.equal(back?.name?.length, 64);
+    assert.ok(back?.name?.startsWith("Tank"));
+    assert.equal(PE.decodeSteamPending(PE.encodeSteamPending({ id: STEAM_ID, name: null, t: NOW }, SECRET), SECRET, NOW)?.name, null);
+  });
+
+  test("cookie firmato: altro segreto, firma o contenuto toccati, scaduto, dal futuro, forma sbagliata → null", () => {
+    const raw = PE.encodeSteamPending({ id: STEAM_ID, name: "Tank", t: NOW }, SECRET);
+    const [payload, sig] = raw.split(".");
+    assert.equal(PE.decodeSteamPending(raw, "t".repeat(40), NOW), null, "altro segreto");
+    assert.equal(PE.decodeSteamPending(raw, "corto", NOW), null, "segreto troppo corto: niente cookie");
+    assert.equal(PE.decodeSteamPending(`${payload}.${sig.slice(0, -1)}${sig.endsWith("A") ? "B" : "A"}`, SECRET, NOW), null, "firma toccata");
+    // un altro SteamID nello stesso cookie: la firma non torna
+    const other = Buffer.from(JSON.stringify({ i: "76561198000000000", n: "Tank", t: NOW })).toString("base64url");
+    assert.equal(PE.decodeSteamPending(`${other}.${sig}`, SECRET, NOW), null, "contenuto toccato");
+    assert.equal(PE.decodeSteamPending(raw, SECRET, NOW + PE.STEAM_PENDING_MAX_AGE_S * 1000 + 1), null, "più di 10 minuti");
+    assert.ok(PE.decodeSteamPending(raw, SECRET, NOW + PE.STEAM_PENDING_MAX_AGE_S * 1000 - 1), "10 minuti meno un istante");
+    assert.equal(PE.decodeSteamPending(raw, SECRET, NOW - 120_000), null, "dal futuro");
+    for (const bad of ["", "abc", `${payload}.`, `.${sig}`, `${payload}.${sig}.x`, "x".repeat(2000)]) assert.equal(PE.decodeSteamPending(bad, SECRET, NOW), null, bad.slice(0, 20));
+    // uno SteamID non valido, anche se firmato giusto
+    const notSteam = PE.encodeSteamPending({ id: "12345", name: null, t: NOW }, SECRET);
+    assert.equal(PE.decodeSteamPending(notSteam, SECRET, NOW), null);
+  });
+
+  test("cookie: solo per /auth, httpOnly, SameSite=Lax, 10 minuti (0 per toglierlo)", () => {
+    assert.deepEqual(PE.steamPendingCookieOptions(true), { httpOnly: true, sameSite: "lax", secure: true, path: "/auth", maxAge: 600 });
+    assert.equal(PE.steamPendingCookieOptions(false, true).maxAge, 0);
+    assert.equal(PE.STEAM_PENDING_COOKIE_PATH, "/auth", "il ritorno /auth/callback e le rotte /auth/steam lo ricevono");
+    assert.ok(!PE.STEAM_PENDING_COOKIE.startsWith(O.STEAM_STATE_COOKIE + "="));
+    assert.ok(PE.pendingSecretOk("x".repeat(32)) && !PE.pendingSecretOk("x".repeat(31)) && !PE.pendingSecretOk(undefined));
+  });
+
+  test("indirizzi della scelta e del profilo", () => {
+    assert.equal(FL.steamChoicePath("it", "/it/decks?x=1#a"), "/it/login?steam=new&next=%2Fit%2Fdecks%3Fx%3D1%23a");
+    assert.equal(FL.steamChoicePath("fr", "/fr/account", "reserved"), "/fr/login?steam=new&next=%2Ffr%2Faccount&name_error=reserved");
+    assert.equal(FL.steamLinkedPath("de", "merged"), "/de/account?steam=merged#steam");
+    assert.equal(FL.parseSteamNameError("invalid"), "invalid");
+    assert.equal(FL.parseSteamNameError("<b>"), null);
+    assert.equal(FL.STEAM_CREATE_ROUTE, "/auth/steam/create");
+    assert.equal(FL.STEAM_PENDING_ROUTE, "/auth/steam/pending");
+    assert.ok(FL.STEAM_CREATE_ROUTE.startsWith(PE.STEAM_PENDING_COOKIE_PATH) && FL.STEAM_PENDING_ROUTE.startsWith(PE.STEAM_PENDING_COOKIE_PATH));
+  });
+
+  test("risposta di GET /auth/steam/pending: il nome solo con la scelta aperta", () => {
+    assert.deepEqual(FL.parsePendingInfo({ pending: true, name: " Tank " }), { pending: true, name: "Tank" });
+    assert.deepEqual(FL.parsePendingInfo({ pending: false, name: "Tank" }), { pending: false, name: null });
+    assert.deepEqual(FL.parsePendingInfo({ pending: "true" }), { pending: false, name: null });
+    assert.deepEqual(FL.parsePendingInfo(null), { pending: false, name: null });
+    assert.equal(FL.parsePendingInfo({ pending: true, name: "x".repeat(100) }).name?.length, 64);
+  });
+
+  test("testi della scelta in ogni lingua; l'avviso di scadenza nomina il tasto vero", () => {
+    const dicts = { en, it, es, fr, pt, de, ru, "zh-cn": zhCn } as const;
+    for (const l of locales) {
+      const f = steamLabels[l].firstLogin;
+      for (const [k, v] of Object.entries(f)) assert.ok(v.trim().length > 0, `${l}.firstLogin.${k}`);
+      assert.ok(f.expired.includes(dicts[l].auth.steam), `${l}: "${dicts[l].auth.steam}" nell'avviso`);
+      assert.ok(f.title.includes("Steam") && f.title.includes("OriginsMeta"), `${l}.title`);
+    }
+  });
+
+  test("misura della scelta", () => {
+    assert.deepEqual(AN.vercelProps("steam_new_choice", { choice: "create", lang: "it" }), { choice: "create" });
+    assert.ok(AN.isEventName("steam_new_choice"));
   });
 });
