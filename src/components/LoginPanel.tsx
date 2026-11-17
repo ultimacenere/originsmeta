@@ -7,6 +7,18 @@ import { isCaptchaError, turnstileEnabled } from "@/lib/turnstile";
 import { authErrorKind, cleanOtp, OTP_MAX_DIGITS, otpErrorKind, type AuthErrorKind, type LoginLabels, type OtpErrorKind } from "@/lib/loginLabels";
 import { countsOnArrival, isNewAccount, navigationType, trackEvent, withAuthSignal, type AuthMethod } from "@/lib/analytics";
 import { useMounted } from "@/lib/useMounted";
+import { checkDisplayName, cleanDisplayName, DISPLAY_NAME_MAX, DISPLAY_NAME_MIN, type DisplayNameCheck } from "@/lib/community/profileNames";
+import {
+  parsePendingInfo,
+  parseSteamNameError,
+  STEAM_CREATE_ROUTE,
+  STEAM_FLOW_PARAM,
+  STEAM_NAME_ERROR_PARAM,
+  STEAM_NEW_VALUE,
+  STEAM_PENDING_ROUTE,
+  STEAM_PENDING_VALUE,
+} from "@/lib/steam/firstLogin";
+import type { SteamFirstLoginLabels } from "@/lib/steamLabels";
 import { DiscordLogo } from "./DiscordButton";
 import { SteamLogo } from "./SteamButton";
 import { Turnstile } from "./Turnstile";
@@ -71,8 +83,15 @@ function safePath(raw: string | null): string | null {
  * telefono l'ha ricaricata). Il codice si verifica qui, nel browser, con l'indirizzo scritto nel campo email: niente
  * PKCE, quindi entra questo browser qualunque sia il dispositivo su cui si legge la posta. Poi si va a `next` con una
  * navigazione completa e il segnale della misura, come dal ritorno /auth/callback.
+ *
+ * Primo accesso con Steam (18/11/2026, src/lib/steam/firstLogin.ts; solo sulla pagina di accesso, che passa `steamNew`):
+ * con `?steam=new` il ritorno da Steam ha trovato uno SteamID senza account. Se il cookie firmato c'è ancora (GET
+ * /auth/steam/pending) il pannello chiede prima: "Crea l'account con Steam" (nome sul sito, proposto quello del profilo
+ * Steam se il server l'ha letto; modulo POST verso /auth/steam/create) oppure "Ho già un account" (Discord o email qui
+ * sotto: il ritorno porta `steam=pending` e collega Steam a quell'account; con il codice dell'email lo fa POST
+ * /auth/steam/pending). Se il cookie non c'è più, un avviso invita a ripremere "Continua con Steam".
  */
-export function LoginPanel({ next, labels, locale }: { next: string; labels: LoginLabels; locale?: string }) {
+export function LoginPanel({ next, labels, locale, steamNew }: { next: string; labels: LoginLabels; locale?: string; steamNew?: SteamFirstLoginLabels }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [pending, setPending] = useState<Via | null>(null);
@@ -86,6 +105,11 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   const [codeOpen, setCodeOpen] = useState(false);
   const [codeStatus, setCodeStatus] = useState<CodeStatus>(null);
   const [verifying, setVerifying] = useState(false);
+  // primo accesso con Steam: "none" fuori dal giro, "open" scelta aperta, "expired" cookie scaduto o di un altro browser
+  const [steamChoice, setSteamChoice] = useState<"none" | "open" | "expired">("none");
+  const [steamName, setSteamName] = useState("");
+  const [steamNameCheck, setSteamNameCheck] = useState<DisplayNameCheck | null>(null);
+  const [creating, setCreating] = useState(false);
   const mounted = useMounted();
   // serve per gli errori `?error=`, che arrivano sempre con una navigazione completa da /auth/callback
   const params = mounted ? new URLSearchParams(window.location.search) : null;
@@ -122,10 +146,41 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
     return () => window.clearInterval(id);
   }, [resendAt]);
 
+  // Primo accesso con Steam: la scelta si apre solo se il cookie firmato del ritorno da Steam c'è ancora.
+  useEffect(() => {
+    if (!mounted || !steamNew) return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get(STEAM_FLOW_PARAM) !== STEAM_NEW_VALUE) return;
+    const fromServer = parseSteamNameError(q.get(STEAM_NAME_ERROR_PARAM));
+    let alive = true;
+    fetch(STEAM_PENDING_ROUTE, { cache: "no-store", credentials: "same-origin" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json: unknown) => {
+        if (!alive) return;
+        const info = parsePendingInfo(json);
+        setSteamChoice(info.pending ? "open" : "expired");
+        if (info.pending && info.name) {
+          const proposed = cleanDisplayName(info.name);
+          // il nome del profilo Steam si propone solo se va bene come nome sul sito
+          if (checkDisplayName(proposed) === "ok") setSteamName((typed) => typed || proposed);
+        }
+        if (fromServer) setSteamNameCheck(fromServer);
+      })
+      .catch(() => {
+        if (alive) setSteamChoice("expired");
+      });
+    return () => {
+      alive = false;
+    };
+  }, [mounted, steamNew]);
+
   // Tornando indietro da Discord la pagina può essere ripresa dalla cache del browser con i tasti ancora bloccati.
   useEffect(() => {
     const onShow = (e: PageTransitionEvent) => {
-      if (e.persisted) setPending(null);
+      if (e.persisted) {
+        setPending(null);
+        setCreating(false);
+      }
     };
     window.addEventListener("pageshow", onShow);
     return () => window.removeEventListener("pageshow", onShow);
@@ -134,7 +189,10 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
   // Il ritorno si calcola al clic, non nel render: arrivando a /login con un <Link> (tasto Accedi dell'header,
   // "Accedi per votare"…) il primo render vede ancora l'indirizzo della pagina di prima, senza ?next.
   const backPath = () => safePath(new URLSearchParams(window.location.search).get("next")) ?? next;
-  const redirectTo = (via: Via) => `${window.location.origin}/auth/callback?next=${encodeURIComponent(backPath())}&via=${via}`;
+  // con la scelta del primo accesso aperta, "Ho già un account": il ritorno collega lo Steam in sospeso (/auth/callback)
+  const steamOpen = steamNew !== undefined && steamChoice === "open";
+  const redirectTo = (via: Via) =>
+    `${window.location.origin}/auth/callback?next=${encodeURIComponent(backPath())}&via=${via}${steamOpen ? `&${STEAM_FLOW_PARAM}=${STEAM_PENDING_VALUE}` : ""}`;
   // Se il widget non si carica (rete bloccata, estensione) non si tiene l'utente fuori: si lascia provare.
   const needsCaptcha = turnstileEnabled && !captchaBroken;
   const waitSeconds = resendAt ? Math.max(0, Math.ceil((resendAt - clock) / 1000)) : 0;
@@ -152,6 +210,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
     const sb = supabaseBrowser();
     if (!sb) return;
     trackEvent("login_start", { method: "discord" });
+    if (steamOpen) trackEvent("steam_new_choice", { choice: "existing" });
     setPending("discord");
     setStatus("idle");
     const { data, error } = await sb.auth.signInWithOAuth({ provider: "discord", options: { redirectTo: redirectTo("discord"), skipBrowserRedirect: true } });
@@ -214,6 +273,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
     if (!error) {
       // misura: per l'email l'accesso "parte" quando il link è spedito (l'indirizzo non va mai nei parametri)
       trackEvent("login_start", { method: "email" });
+      if (steamOpen) trackEvent("steam_new_choice", { choice: "existing" });
       setSentTo(address);
       setStatus("sent");
       // un link nuovo porta un codice nuovo: quello scritto prima non vale più
@@ -256,15 +316,47 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
       codeFailed(otpErrorKind(error));
       return;
     }
+    // Primo accesso con Steam, "Ho già un account" con il codice: niente /auth/callback, quindi lo Steam in sospeso lo
+    // collega POST /auth/steam/pending (la sessione appena aperta è nei cookie) e si va al profilo con l'esito.
+    let target = backPath();
+    if (steamOpen) {
+      try {
+        const res = await fetch(STEAM_PENDING_ROUTE, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ page: window.location.pathname }),
+        });
+        const json = (await res.json().catch(() => null)) as { path?: unknown } | null;
+        const linked = typeof json?.path === "string" ? safePath(json.path) : null;
+        if (linked) target = linked;
+      } catch {
+        /* rete: Steam si collega poi dal profilo */
+      }
+    }
     // Navigazione completa, come dal ritorno /auth/callback: le pagine renderizzate sul server leggono i cookie appena
     // scritti dal client, e il segnale ?om_auth= fa contare sign_up o login all'arrivo (`consumeAuthSignal`).
     // `verifying` resta acceso fino al cambio di pagina.
-    window.location.assign(withAuthSignal(backPath(), isNewAccount(data.user, "email") ? "sign_up" : "login", "email"));
+    window.location.assign(withAuthSignal(target, isNewAccount(data.user, "email") ? "sign_up" : "login", "email"));
+  };
+
+  // "Crea l'account con Steam": il modulo va al server con una navigazione completa; qui solo il controllo del nome
+  // (le stesse regole del server, profileNames.ts), così un nome che non va non fa perdere quello scritto.
+  const createWithSteam = (e: FormEvent<HTMLFormElement>) => {
+    const check = checkDisplayName(cleanDisplayName(steamName));
+    if (check !== "ok") {
+      e.preventDefault();
+      setSteamNameCheck(check);
+      return;
+    }
+    setSteamNameCheck(null);
+    setCreating(true);
+    trackEvent("steam_new_choice", { choice: "create" });
   };
 
   if (!supabaseEnabled) return <p className="card-night p-6 text-pale-muted">{labels.disabled}</p>;
 
-  const busy = pending !== null;
+  const busy = pending !== null || creating;
   const submitLabel = pending === "email" ? labels.sending : afterSend ? labels.resend : labels.magicLink;
   const waitingForCaptcha = turnstileEnabled && !captchaBroken && !captchaToken && !coolingDown && !busy;
   // Il conto alla rovescia sta in una riga sotto il tasto e non dentro: un tasto disabilitato è volutamente sbiadito.
@@ -308,6 +400,61 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
 
   return (
     <div className="card-night p-6 sm:p-8">
+      {steamNew && steamOpen ? (
+        <>
+          {/* primo accesso con Steam: prima la scelta, poi (sotto) l'accesso a un account che c'è già */}
+          <section aria-labelledby="steam-new-title" className="mb-6 rounded-[12px] border-2 border-sky/60 bg-sky/[0.08] p-4 sm:p-5">
+            <h2 id="steam-new-title" className="t-item flex items-center gap-2">
+              <SteamLogo className="h-5 w-5 flex-none" />
+              <span>{steamNew.title}</span>
+            </h2>
+            <p className="mt-2 text-sm text-chalk">{steamNew.text}</p>
+            <form method="post" action={STEAM_CREATE_ROUTE} onSubmit={createWithSteam} className="mt-4 flex flex-col gap-2" aria-busy={creating}>
+              <input type="hidden" name="next" value={backPath()} />
+              <label htmlFor="steam-new-name" className="text-sm font-semibold text-pale">
+                {steamNew.nameLabel}
+              </label>
+              <input
+                id="steam-new-name"
+                name="name"
+                type="text"
+                required
+                minLength={DISPLAY_NAME_MIN}
+                maxLength={DISPLAY_NAME_MAX}
+                autoComplete="nickname"
+                spellCheck={false}
+                value={steamName}
+                onChange={(e) => {
+                  setSteamName(e.target.value);
+                  if (steamNameCheck) setSteamNameCheck(null);
+                }}
+                aria-describedby="steam-new-name-hint"
+                aria-invalid={steamNameCheck !== null || undefined}
+                className="rounded-lg border border-sky bg-night px-3 py-2.5 text-pale"
+              />
+              <p id="steam-new-name-hint" className="text-xs text-pale-muted">
+                {steamNew.nameHint}
+              </p>
+              {steamNameCheck ? <Note tone="bad">{steamNameCheck === "reserved" ? steamNew.nameReserved : steamNew.nameInvalid}</Note> : null}
+              <button
+                type="submit"
+                disabled={busy}
+                aria-busy={creating}
+                className="btn-steam btn-steam-dark mt-1 w-full justify-center py-3 text-base disabled:opacity-60"
+              >
+                <SteamLogo className="h-5 w-5" />
+                <span>{creating ? steamNew.creating : steamNew.create}</span>
+              </button>
+            </form>
+          </section>
+          <p className="mb-3 text-sm font-semibold text-pale">{steamNew.existing}</p>
+        </>
+      ) : null}
+      {steamNew && steamChoice === "expired" ? (
+        <div className="mb-5">
+          <Note tone="warn">{steamNew.expired}</Note>
+        </div>
+      ) : null}
       <button
         type="button"
         onClick={discord}
@@ -318,7 +465,7 @@ export function LoginPanel({ next, labels, locale }: { next: string; labels: Log
         <DiscordLogo className="h-5 w-5" />
         <span>{pending === "discord" ? labels.redirecting : labels.discord}</span>
       </button>
-      {labels.steamOn ? (
+      {labels.steamOn && !steamOpen ? (
         // colori del tasto "Sign in through Steam" di Valve (superficie scura del negozio, btn-steam-dark)
         <button
           type="button"

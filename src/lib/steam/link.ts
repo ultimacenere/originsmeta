@@ -26,15 +26,21 @@ export const STEAM_LINK_OUTCOMES = [
   "unlinked",
   /** account nato con Steam: il collegamento resta */
   "steamOnly",
+  /**
+   * collegato ora, spostandolo da un account vuoto nato con Steam che si è cancellato (17/11/2026, steam_link_claim del
+   * blocco "17/11/2026: STEAM, ACCOUNT DOPPI")
+   */
+  "merged",
 ] as const;
 export type SteamLinkOutcome = (typeof STEAM_LINK_OUTCOMES)[number];
 
-/** Risposta di steam_link_set → esito mostrato nel profilo. */
+/** Risposta di steam_link_set o di steam_link_claim → esito mostrato nel profilo. */
 export function linkOutcome(rpc: unknown): SteamLinkOutcome {
   if (rpc === "ok") return "linked";
   if (rpc === "same") return "already";
   if (rpc === "other") return "other";
   if (rpc === "taken") return "taken";
+  if (rpc === "merged") return "merged";
   return "error";
 }
 
