@@ -13,12 +13,12 @@ export const deText: Record<string, NewsCopy> = {
     title: "Attrix Showmatch: die 15 Gewinner der OriginsMeta-Verlosung",
     metaTitle: "Attrix Showmatch: die 15 Gewinner",
     description:
-      "Die 15 Gewinner der OriginsMeta-Verlosung unter den Anmeldungen während des Attrix Showmatch am 16. November und wie du den Code des Packs einlöst.",
+      "Wir haben die 15 Gewinner unter den Teilnehmenden des Attrix Showmatch von gestern Abend verlost: Sie bekommen im Spiel ein Kartenpack von Origins TCG.",
     summary:
-      "Am 16. November 2026 haben die italienischen Creator von Origins TCG das Attrix Showmatch auf Twitch gespielt und live 110 Kartenpacks verschenkt. Die anderen 15 haben wir unter den Konten verlost, die während des Streams auf OriginsMeta erstellt wurden: Hier sind die Gewinner, die ihren Code per Nachricht auf der Seite bekommen.",
-    body: `Am Montag, 16. November 2026, haben die italienischen Creator von Origins TCG das Attrix Showmatch auf ihren Twitch-Kanälen gespielt, und OriginsMeta hat die Seite des Events betreut: das Deck-Rad, die Runden und das Giveaway. Während des Streams haben die Streamer 110 Codes verschenkt, einen pro Kartenpack, in 14 Blöcken von 8 Minuten und 30 Sekunden. Die anderen 15 Packs haben wir unter den Teilnehmenden des Streams verlost, die sich während der Show bei OriginsMeta angemeldet haben.
+      "Wir haben die 15 Gewinner unter den Teilnehmenden des Events von gestern Abend, dem Attrix Showmatch, verlost: Sie bekommen im Spiel ein Kartenpack von Origins. Herzlichen Glückwunsch!",
+    body: `Wir haben die 15 Gewinner unter den Teilnehmenden des Events von gestern Abend, dem Attrix Showmatch, verlost: Sie bekommen im Spiel ein Kartenpack von Origins!
 
-## Die 15 Gewinner {#gewinner}
+## Herzlichen Glückwunsch an {#gewinner}
 
 1. don-h
 2. hexyxi
@@ -36,29 +36,7 @@ export const deText: Record<string, NewsCopy> = {
 14. bailey01527
 15. sbarz
 
-Das sind die Benutzernamen auf OriginsMeta. Jeder Gewinner bekommt eine Nachricht im Postfach der Seite, dem Umschlag oben neben dem Avatar, mit seinem Code.
-
-## So löst du den Code ein {#einloesen}
-
-1. Melde dich bei OriginsMeta mit dem Konto an, mit dem du dich registriert hast.
-2. Öffne die Nachricht des Teams und kopiere den Code.
-3. Füge ihn im Feld «Riscatta il codice» (Code einlösen) auf der [Seite des Events](/de/events/attrix-showmatch) ein, die auf Italienisch ist.
-4. Damit du das Pack im Spiel bekommst, wenn Koin Games es freigibt, verbinde dein Steam-Konto mit deinem Profil ([Mein Profil](/de/account#steam), Bereich Steam).
-
-Der Code gehört nur dir: Teile ihn nicht, denn er gilt nur einmal.
-
-## So haben wir verlost {#verlosung}
-
-Teilgenommen haben alle Konten, die am 16. November 2026 zwischen 20 und 23 Uhr italienischer Zeit (19 bis 22 Uhr UTC) auf OriginsMeta erstellt wurden: 58 Konten. Ausgeschlossen waren die Konten des Teams und die mit einer Rolle (Creator, Autoren, Pros), und in diesem Zeitraum gab es keine. Die Verlosung lässt sich wiederholen: Wir haben die Startliste in der Reihenfolge der Anmeldung und den Seed der Mischung aufbewahrt, also kommen bei einer Wiederholung dieselben 15 Namen heraus. Nach der Verlosung haben wir zwei Konten ersetzt, die automatisch erstellt oder Wegwerfkonten zu sein schienen (player-211 und robloxgod): Ein Pack geht an magicofhandss, MagicOfHands aus der Community, vom Team ausgewählt, das andere an bailey01527, den ersten nicht gezogenen Namen derselben Mischung.
-
-## Die 110 Codes aus dem Stream {#codes-stream}
-
-Wenn du während des Streams einen Code gewonnen hast, löst du ihn auf derselben [Seite des Events](/de/events/attrix-showmatch) ein, mit einem OriginsMeta-Konto, auch wenn du es erst nach dem Gewinn erstellt hast. Jeder Code gilt nur einmal: Das Pack bekommt, wer ihn zuerst einlöst.`,
-    highlights: [
-      { label: "Die 15 Gewinner", text: "verlost unter den 58 Konten, die während des Streams erstellt wurden, mit zwei Ersetzungen", anchor: "gewinner" },
-      { label: "So löst du ein", text: "der Code kommt per Nachricht auf der Seite, du fügst ihn auf der Seite des Events ein", anchor: "einloesen" },
-      { label: "So haben wir verlost", text: "eine wiederholbare Verlosung, mit Startliste und Seed aufbewahrt", anchor: "verlosung" },
-    ],
+Jeder Gewinner hat auf der Seite eine Nachricht mit seinem Code bekommen, einzulösen auf der [Seite des Events](/de/events/attrix-showmatch).`,
   },
   "balance-patch-1117-sherwood-forest": {
     title: "Origins TCG Patch Notes vom 17. November: Dr. Frank kostet 5, Genie sinkt auf 3/2, Sherwood Forest wird selten",

@@ -217,55 +217,18 @@ const raw: RawNews[] = [
     ),
     metaTitle: n("Attrix Showmatch: the 15 giveaway winners", "Attrix Showmatch: i 15 vincitori del sorteggio", "Attrix Showmatch: los 15 ganadores del sorteo"),
     description: n(
-      "The 15 winners of the OriginsMeta draw among people who signed up during the Attrix Showmatch on 16 November, and how to redeem the Origins TCG pack code.",
-      "I 15 vincitori dell'estrazione di OriginsMeta fra chi si è iscritto durante l'Attrix Showmatch del 16 novembre, e come riscattare il codice del pacchetto.",
-      "Los 15 ganadores del sorteo de OriginsMeta entre quienes se registraron durante el Attrix Showmatch del 16 de noviembre y cómo canjear el código.",
+      "We drew the 15 winners among the participants of last night's Attrix Showmatch: they will receive a pack of Origins TCG cards in the game. Here are the names.",
+      "Abbiamo estratto i 15 vincitori fra i partecipanti all'Attrix Showmatch di ieri sera: riceveranno in gioco una busta di carte di Origins TCG. Ecco i nomi.",
+      "Sorteamos a los 15 ganadores entre los participantes del Attrix Showmatch de anoche: recibirán en el juego un sobre de cartas de Origins TCG. Aquí están.",
     ),
     summary: n(
-      "On 16 November 2026 the Italian creators of Origins TCG played the Attrix Showmatch on Twitch and gave away 110 card packs live. We drew the other 15 among the accounts created on OriginsMeta during the stream: here are the winners, who each get their code in a message on the site.",
-      "Il 16 novembre 2026 i creator italiani di Origins TCG hanno giocato l'Attrix Showmatch su Twitch e hanno dato 110 pacchetti di carte in diretta. Gli altri 15 li abbiamo estratti fra gli account creati su OriginsMeta durante la diretta: ecco i vincitori, che ricevono il codice in un messaggio sul sito.",
-      "El 16 de noviembre de 2026 los creadores italianos de Origins TCG jugaron el Attrix Showmatch en Twitch y regalaron 110 sobres de cartas en directo. Los otros 15 los sorteamos entre las cuentas creadas en OriginsMeta durante el directo: estos son los ganadores, que reciben su código en un mensaje en la web.",
+      "We drew the 15 winners among the participants of last night's event, the Attrix Showmatch: they will receive a pack of Origins cards in the game. Congratulations!",
+      "Abbiamo estratto i 15 vincitori fra i partecipanti all'evento di ieri sera, l'Attrix Showmatch: riceveranno in gioco una busta di carte di Origins. Congratulazioni!",
+      "Sorteamos a los 15 ganadores entre los participantes del evento de anoche, el Attrix Showmatch: recibirán en el juego un sobre de cartas de Origins. ¡Enhorabuena!",
     ),
-    body: n(`On Monday 16 November 2026 the Italian creators of Origins TCG played the Attrix Showmatch on their Twitch channels, with OriginsMeta running the event page: the deck wheel, the rounds and the giveaway. During the stream the streamers gave away 110 codes, one per card pack, in 14 blocks of 8 minutes and 30 seconds. We drew the other 15 packs among the stream's participants who signed up to OriginsMeta during the show.
+    body: n(`We drew the 15 winners among the participants of last night's event, the Attrix Showmatch: they will receive a pack of Origins cards in the game!
 
-## The 15 winners {#winners}
-
-1. don-h
-2. hexyxi
-3. giuliap-cel
-4. magicofhandss
-5. ak-dabmaster420
-6. calculette
-7. ferartero14
-8. pafstar
-9. xalon0
-10. lucabellomaria
-11. ottobrown97
-12. ollaretheg
-13. bendragon-96
-14. bailey01527
-15. sbarz
-
-The names are OriginsMeta usernames. Each winner gets a message in the site inbox, the envelope at the top next to the avatar, with their code.
-
-## How to redeem the code {#redeem}
-
-1. Sign in to OriginsMeta with the account you signed up with.
-2. Open the staff message and copy the code.
-3. Paste it in the "Riscatta il codice" (redeem the code) box of the [event page](/en/events/attrix-showmatch), which is in Italian.
-4. To receive the pack in the game, when Koin Games releases it, link your Steam account to your profile ([My profile](/en/account#steam), Steam section).
-
-The code is yours only: don't share it, because it works once.
-
-## How we drew {#draw}
-
-Everyone who created an OriginsMeta account on 16 November 2026 between 20:00 and 23:00 Italian time (19:00 to 22:00 UTC) took part: 58 accounts. Staff accounts and accounts with a role (creators, authors, pros) were left out, and there were none in that window. The draw can be repeated: we kept the starting list, in sign-up order, and the seed of the shuffle, so running it again gives the same 15 names. After the draw we replaced two accounts that looked automatic or throwaway (player-211 and robloxgod): one pack goes to magicofhandss, MagicOfHands of the community, chosen by the staff, and the other to bailey01527, the first name not drawn in the same shuffle.
-
-## The 110 codes given live {#live-codes}
-
-If you won a code during the stream, you redeem it on the same [event page](/en/events/attrix-showmatch), with an OriginsMeta account even created after winning. Each code works once: the pack goes to whoever redeems it first.`, `Lunedì 16 novembre 2026 i creator italiani di Origins TCG hanno giocato l'Attrix Showmatch sui loro canali Twitch, e OriginsMeta ha curato la pagina dell'evento: la ruota dei mazzi, i turni e il giveaway. In diretta gli streamer hanno dato 110 codici, uno per pacchetto di carte, nei loro 14 blocchi da 8 minuti e 30 secondi. Gli altri 15 pacchetti li abbiamo estratti noi fra i partecipanti alla diretta che si sono iscritti a OriginsMeta durante lo show.
-
-## I 15 vincitori {#vincitori}
+## Congratulations to {#winners}
 
 1. don-h
 2. hexyxi
@@ -283,26 +246,9 @@ If you won a code during the stream, you redeem it on the same [event page](/en/
 14. bailey01527
 15. sbarz
 
-Sono i nomi utente di OriginsMeta. Ogni vincitore riceve un messaggio nella casella del sito, la busta in alto accanto all'avatar, con il suo codice.
+Each winner has received a message on the site with their code, to redeem on the [event page](/en/events/attrix-showmatch).`, `Abbiamo estratto i 15 vincitori fra i partecipanti all'evento di ieri sera, l'Attrix Showmatch: riceveranno in gioco una busta di carte di Origins!
 
-## Come riscattare il codice {#riscatto}
-
-1. Accedi a OriginsMeta con l'account con cui ti sei iscritto.
-2. Apri il messaggio dello staff e copia il codice.
-3. Incollalo nel riquadro «Riscatta il codice» della [pagina dell'evento](/it/events/attrix-showmatch).
-4. Per ricevere il pacchetto nel gioco, quando Koin Games lo rilascerà, collega il tuo account Steam al profilo ([Il mio profilo](/it/account#steam), sezione Steam).
-
-Il codice è solo tuo: non condividerlo, perché vale una volta sola.
-
-## Come abbiamo estratto {#estrazione}
-
-Partecipavano tutti gli account creati su OriginsMeta il 16 novembre 2026 dalle 20:00 alle 23:00, ora italiana: 58 iscritti. Restavano fuori gli account dello staff e quelli con un ruolo (creator, autori, pro), e in quella finestra non ce n'erano. L'estrazione si può rifare: abbiamo tenuto la lista di partenza, in ordine di iscrizione, e il seme del mescolamento, quindi rifacendola escono gli stessi 15 nomi. Dopo l'estrazione abbiamo sostituito due account che sembravano creati in automatico o usa e getta (player-211 e robloxgod): un pacchetto va a magicofhandss, MagicOfHands della community, scelto dallo staff, e l'altro a bailey01527, il primo nome non estratto dello stesso mescolamento.
-
-## I 110 codici dati in diretta {#codici-diretta}
-
-Chi ha vinto un codice durante la diretta lo riscatta sulla stessa [pagina dell'evento](/it/events/attrix-showmatch), con un account di OriginsMeta anche fatto dopo aver vinto. Ogni codice vale una volta sola: il pacchetto va a chi lo riscatta per primo.`, `El lunes 16 de noviembre de 2026 los creadores italianos de Origins TCG jugaron el Attrix Showmatch en sus canales de Twitch, y OriginsMeta se encargó de la página del evento: la ruleta de mazos, las rondas y el sorteo. Durante el directo los streamers regalaron 110 códigos, uno por sobre de cartas, en 14 bloques de 8 minutos y 30 segundos. Los otros 15 sobres los sorteamos nosotros entre los participantes del directo que se registraron en OriginsMeta durante el show.
-
-## Los 15 ganadores {#ganadores}
+## Congratulazioni a {#vincitori}
 
 1. don-h
 2. hexyxi
@@ -320,41 +266,27 @@ Chi ha vinto un codice durante la diretta lo riscatta sulla stessa [pagina dell'
 14. bailey01527
 15. sbarz
 
-Son los nombres de usuario de OriginsMeta. Cada ganador recibe un mensaje en el buzón de la web, el sobre de arriba junto al avatar, con su código.
+Ogni vincitore ha ricevuto un messaggio sul sito con il suo codice, da riscattare sulla [pagina dell'evento](/it/events/attrix-showmatch).`, `Sorteamos a los 15 ganadores entre los participantes del evento de anoche, el Attrix Showmatch: ¡recibirán en el juego un sobre de cartas de Origins!
 
-## Cómo canjear el código {#canjear}
+## Enhorabuena a {#ganadores}
 
-1. Inicia sesión en OriginsMeta con la cuenta con la que te registraste.
-2. Abre el mensaje del staff y copia el código.
-3. Pégalo en el recuadro «Riscatta il codice» (canjea el código) de la [página del evento](/es/events/attrix-showmatch), que está en italiano.
-4. Para recibir el sobre en el juego, cuando Koin Games lo publique, vincula tu cuenta de Steam a tu perfil ([Mi perfil](/es/account#steam), sección Steam).
+1. don-h
+2. hexyxi
+3. giuliap-cel
+4. magicofhandss
+5. ak-dabmaster420
+6. calculette
+7. ferartero14
+8. pafstar
+9. xalon0
+10. lucabellomaria
+11. ottobrown97
+12. ollaretheg
+13. bendragon-96
+14. bailey01527
+15. sbarz
 
-El código es solo tuyo: no lo compartas, porque solo vale una vez.
-
-## Cómo sorteamos {#sorteo}
-
-Participaban todas las cuentas creadas en OriginsMeta el 16 de noviembre de 2026 entre las 20:00 y las 23:00, hora italiana (de 19:00 a 22:00 UTC): 58 cuentas. Quedaban fuera las cuentas del staff y las que tienen un rol (creadores, autores, pros), y en esa franja no había ninguna. El sorteo se puede repetir: guardamos la lista de partida, en orden de registro, y la semilla de la mezcla, así que al repetirlo salen los mismos 15 nombres. Después del sorteo sustituimos dos cuentas que parecían automáticas o de usar y tirar (player-211 y robloxgod): un sobre va a magicofhandss, MagicOfHands de la comunidad, elegido por el staff, y el otro a bailey01527, el primer nombre no sorteado de la misma mezcla.
-
-## Los 110 códigos del directo {#codigos-directo}
-
-Si ganaste un código durante el directo, lo canjeas en la misma [página del evento](/es/events/attrix-showmatch), con una cuenta de OriginsMeta aunque la hayas creado después de ganar. Cada código vale una sola vez: el sobre es para quien lo canjea primero.`),
-    highlights: {
-      en: [
-        { label: "The 15 winners", text: "drawn among the 58 accounts created during the stream, with two replacements", anchor: "winners" },
-        { label: "How to redeem", text: "the code arrives in a message on the site, you paste it on the event page", anchor: "redeem" },
-        { label: "How we drew", text: "a repeatable draw, with the starting list and the seed kept", anchor: "draw" },
-      ],
-      it: [
-        { label: "I 15 vincitori", text: "estratti fra i 58 account creati durante la diretta, con due sostituzioni", anchor: "vincitori" },
-        { label: "Come riscattare", text: "il codice arriva in un messaggio sul sito, si incolla nella pagina dell'evento", anchor: "riscatto" },
-        { label: "Come abbiamo estratto", text: "un'estrazione ripetibile, con la lista di partenza e il seme conservati", anchor: "estrazione" },
-      ],
-      es: [
-        { label: "Los 15 ganadores", text: "sorteados entre las 58 cuentas creadas durante el directo, con dos sustituciones", anchor: "ganadores" },
-        { label: "Cómo canjear", text: "el código llega en un mensaje en la web y se pega en la página del evento", anchor: "canjear" },
-        { label: "Cómo sorteamos", text: "un sorteo repetible, con la lista de partida y la semilla guardadas", anchor: "sorteo" },
-      ],
-    },
+Cada ganador ha recibido un mensaje en la web con su código, para canjearlo en la [página del evento](/es/events/attrix-showmatch).`),
   },
   {
     // Patch di bilanciamento del 17/11/2026 (la seconda dell'Accesso anticipato, senza numero di versione: `ea-1117` in

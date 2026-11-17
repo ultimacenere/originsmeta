@@ -24,12 +24,12 @@ export const frText: Record<string, NewsCopy> = {
     title: "Attrix Showmatch : les 15 gagnants du tirage d'OriginsMeta",
     metaTitle: "Attrix Showmatch : les 15 gagnants du tirage",
     description:
-      "Les 15 gagnants du tirage d'OriginsMeta parmi les inscrits pendant l'Attrix Showmatch du 16 novembre, et comment échanger le code du booster d'Origins TCG.",
+      "Nous avons tiré au sort les 15 gagnants parmi les participants à l'Attrix Showmatch d'hier soir : ils recevront dans le jeu un booster de cartes Origins TCG.",
     summary:
-      "Le 16 novembre 2026, les créateurs italiens d'Origins TCG ont joué l'Attrix Showmatch sur Twitch et ont offert 110 boosters de cartes en direct. Nous avons tiré au sort les 15 autres parmi les comptes créés sur OriginsMeta pendant le direct : voici les gagnants, qui reçoivent leur code dans un message sur le site.",
-    body: `Le lundi 16 novembre 2026, les créateurs italiens d'Origins TCG ont joué l'Attrix Showmatch sur leurs chaînes Twitch, et OriginsMeta a géré la page de l'événement : la roue des decks, les rondes et le giveaway. Pendant le direct, les streamers ont offert 110 codes, un par booster de cartes, dans 14 blocs de 8 minutes et 30 secondes. Nous avons tiré au sort les 15 autres boosters parmi les participants au direct qui se sont inscrits sur OriginsMeta pendant le show.
+      "Nous avons tiré au sort les 15 gagnants parmi les participants à l'événement d'hier soir, l'Attrix Showmatch : ils recevront dans le jeu un booster de cartes Origins. Félicitations !",
+    body: `Nous avons tiré au sort les 15 gagnants parmi les participants à l'événement d'hier soir, l'Attrix Showmatch : ils recevront dans le jeu un booster de cartes Origins !
 
-## Les 15 gagnants {#gagnants}
+## Félicitations à {#gagnants}
 
 1. don-h
 2. hexyxi
@@ -47,29 +47,7 @@ export const frText: Record<string, NewsCopy> = {
 14. bailey01527
 15. sbarz
 
-Ce sont les noms d'utilisateur d'OriginsMeta. Chaque gagnant reçoit un message dans la messagerie du site, l'enveloppe en haut à côté de l'avatar, avec son code.
-
-## Comment échanger le code {#echanger}
-
-1. Connectez-vous à OriginsMeta avec le compte de votre inscription.
-2. Ouvrez le message du staff et copiez le code.
-3. Collez-le dans le cadre « Riscatta il codice » (échanger le code) de la [page de l'événement](/fr/events/attrix-showmatch), qui est en italien.
-4. Pour recevoir le booster dans le jeu, quand Koin Games le distribuera, liez votre compte Steam à votre profil ([Mon profil](/fr/account#steam), section Steam).
-
-Le code n'est qu'à vous : ne le partagez pas, car il ne sert qu'une fois.
-
-## Notre tirage {#tirage}
-
-Tous les comptes créés sur OriginsMeta le 16 novembre 2026 entre 20 h et 23 h, heure italienne (de 19 h à 22 h UTC), participaient : 58 comptes. Les comptes du staff et ceux qui ont un rôle (créateurs, auteurs, pros) étaient exclus, et il n'y en avait aucun dans ce créneau. Le tirage peut être refait : nous avons gardé la liste de départ, dans l'ordre d'inscription, et la graine du mélange, donc en le refaisant on obtient les mêmes 15 noms. Après le tirage, nous avons remplacé deux comptes qui semblaient automatiques ou jetables (player-211 et robloxgod) : un booster va à magicofhandss, MagicOfHands de la communauté, choisi par le staff, et l'autre à bailey01527, le premier nom non tiré du même mélange.
-
-## Les 110 codes du direct {#codes-direct}
-
-Si vous avez gagné un code pendant le direct, vous l'échangez sur la même [page de l'événement](/fr/events/attrix-showmatch), avec un compte OriginsMeta, même créé après avoir gagné. Chaque code ne sert qu'une fois : le booster va à la première personne qui l'échange.`,
-    highlights: [
-      { label: "Les 15 gagnants", text: "tirés parmi les 58 comptes créés pendant le direct, avec deux remplacements", anchor: "gagnants" },
-      { label: "Comment échanger", text: "le code arrive dans un message sur le site, à coller sur la page de l'événement", anchor: "echanger" },
-      { label: "Notre tirage", text: "un tirage reproductible, avec la liste de départ et la graine gardées", anchor: "tirage" },
-    ],
+Chaque gagnant a reçu un message sur le site avec son code, à échanger sur la [page de l'événement](/fr/events/attrix-showmatch).`,
   },
   "balance-patch-1117-sherwood-forest": {
     title: "Patch d'Origins TCG du 17 novembre : Dr. Frank coûte 5, Genie passe à 3/2, Sherwood Forest devient rare",
