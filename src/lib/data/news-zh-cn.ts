@@ -28,7 +28,7 @@ export const zhCnText: Record<string, NewsCopy> = {
 1. don-h
 2. hexyxi
 3. giuliap-cel
-4. player-211
+4. magicofhandss
 5. ak-dabmaster420
 6. calculette
 7. ferartero14
@@ -38,7 +38,7 @@ export const zhCnText: Record<string, NewsCopy> = {
 11. ottobrown97
 12. ollaretheg
 13. bendragon-96
-14. robloxgod
+14. bailey01527
 15. sbarz
 
 以上是 OriginsMeta 的用户名。每位获奖者都会在网站的消息箱（右上角头像旁的信封）里收到一条附有代码的消息。
@@ -54,13 +54,13 @@ export const zhCnText: Record<string, NewsCopy> = {
 
 ## 我们如何抽奖 {#chou-jiang}
 
-参加抽奖的是 2026年11月16日意大利时间 20:00 到 23:00（UTC 19:00 到 22:00）之间在 OriginsMeta 创建的所有账号：共 58 个。工作人员账号和有角色的账号（创作者、作者、职业选手）不参加，而在这段时间里没有这样的账号。抽奖可以重复：我们保存了按注册顺序排列的初始名单和打乱用的种子，重新抽一次得到的还是这 15 个名字。
+参加抽奖的是 2026年11月16日意大利时间 20:00 到 23:00（UTC 19:00 到 22:00）之间在 OriginsMeta 创建的所有账号：共 58 个。工作人员账号和有角色的账号（创作者、作者、职业选手）不参加，而在这段时间里没有这样的账号。抽奖可以重复：我们保存了按注册顺序排列的初始名单和打乱用的种子，重新抽一次得到的还是这 15 个名字。抽奖之后，我们替换了两个看起来是自动生成或一次性的账号（player-211 和 robloxgod）：一个卡包给社区成员 magicofhandss（MagicOfHands），由工作人员选定；另一个给 bailey01527，即同一次打乱中第一个未被抽中的名字。
 
 ## 直播中送出的 110 个代码 {#zhi-bo-dai-ma}
 
 如果你在直播中赢得了代码，请在同一个[活动页面](/zh-cn/events/attrix-showmatch)兑换，用 OriginsMeta 账号即可，赢了之后再注册也可以。每个代码只能用一次：卡包归最先兑换的人。`,
     highlights: [
-      { label: "15 位获奖者", text: "从直播期间创建的 58 个账号中抽出", anchor: "huo-jiang-zhe" },
+      { label: "15 位获奖者", text: "从直播期间创建的 58 个账号中抽出，并替换了两位", anchor: "huo-jiang-zhe" },
       { label: "如何兑换", text: "代码通过网站消息发送，粘贴到活动页面即可", anchor: "dui-huan" },
       { label: "我们如何抽奖", text: "可以重复的抽奖，保存了初始名单和种子", anchor: "chou-jiang" },
     ],

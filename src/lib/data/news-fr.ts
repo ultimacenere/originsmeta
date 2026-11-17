@@ -34,7 +34,7 @@ export const frText: Record<string, NewsCopy> = {
 1. don-h
 2. hexyxi
 3. giuliap-cel
-4. player-211
+4. magicofhandss
 5. ak-dabmaster420
 6. calculette
 7. ferartero14
@@ -44,7 +44,7 @@ export const frText: Record<string, NewsCopy> = {
 11. ottobrown97
 12. ollaretheg
 13. bendragon-96
-14. robloxgod
+14. bailey01527
 15. sbarz
 
 Ce sont les noms d'utilisateur d'OriginsMeta. Chaque gagnant reçoit un message dans la messagerie du site, l'enveloppe en haut à côté de l'avatar, avec son code.
@@ -60,13 +60,13 @@ Le code n'est qu'à vous : ne le partagez pas, car il ne sert qu'une fois.
 
 ## Notre tirage {#tirage}
 
-Tous les comptes créés sur OriginsMeta le 16 novembre 2026 entre 20 h et 23 h, heure italienne (de 19 h à 22 h UTC), participaient : 58 comptes. Les comptes du staff et ceux qui ont un rôle (créateurs, auteurs, pros) étaient exclus, et il n'y en avait aucun dans ce créneau. Le tirage peut être refait : nous avons gardé la liste de départ, dans l'ordre d'inscription, et la graine du mélange, donc en le refaisant on obtient les mêmes 15 noms.
+Tous les comptes créés sur OriginsMeta le 16 novembre 2026 entre 20 h et 23 h, heure italienne (de 19 h à 22 h UTC), participaient : 58 comptes. Les comptes du staff et ceux qui ont un rôle (créateurs, auteurs, pros) étaient exclus, et il n'y en avait aucun dans ce créneau. Le tirage peut être refait : nous avons gardé la liste de départ, dans l'ordre d'inscription, et la graine du mélange, donc en le refaisant on obtient les mêmes 15 noms. Après le tirage, nous avons remplacé deux comptes qui semblaient automatiques ou jetables (player-211 et robloxgod) : un booster va à magicofhandss, MagicOfHands de la communauté, choisi par le staff, et l'autre à bailey01527, le premier nom non tiré du même mélange.
 
 ## Les 110 codes du direct {#codes-direct}
 
 Si vous avez gagné un code pendant le direct, vous l'échangez sur la même [page de l'événement](/fr/events/attrix-showmatch), avec un compte OriginsMeta, même créé après avoir gagné. Chaque code ne sert qu'une fois : le booster va à la première personne qui l'échange.`,
     highlights: [
-      { label: "Les 15 gagnants", text: "tirés parmi les 58 comptes créés pendant le direct", anchor: "gagnants" },
+      { label: "Les 15 gagnants", text: "tirés parmi les 58 comptes créés pendant le direct, avec deux remplacements", anchor: "gagnants" },
       { label: "Comment échanger", text: "le code arrive dans un message sur le site, à coller sur la page de l'événement", anchor: "echanger" },
       { label: "Notre tirage", text: "un tirage reproductible, avec la liste de départ et la graine gardées", anchor: "tirage" },
     ],

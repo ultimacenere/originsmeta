@@ -233,7 +233,7 @@ const raw: RawNews[] = [
 1. don-h
 2. hexyxi
 3. giuliap-cel
-4. player-211
+4. magicofhandss
 5. ak-dabmaster420
 6. calculette
 7. ferartero14
@@ -243,7 +243,7 @@ const raw: RawNews[] = [
 11. ottobrown97
 12. ollaretheg
 13. bendragon-96
-14. robloxgod
+14. bailey01527
 15. sbarz
 
 The names are OriginsMeta usernames. Each winner gets a message in the site inbox, the envelope at the top next to the avatar, with their code.
@@ -259,7 +259,7 @@ The code is yours only: don't share it, because it works once.
 
 ## How we drew {#draw}
 
-Everyone who created an OriginsMeta account on 16 November 2026 between 20:00 and 23:00 Italian time (19:00 to 22:00 UTC) took part: 58 accounts. Staff accounts and accounts with a role (creators, authors, pros) were left out, and there were none in that window. The draw can be repeated: we kept the starting list, in sign-up order, and the seed of the shuffle, so running it again gives the same 15 names.
+Everyone who created an OriginsMeta account on 16 November 2026 between 20:00 and 23:00 Italian time (19:00 to 22:00 UTC) took part: 58 accounts. Staff accounts and accounts with a role (creators, authors, pros) were left out, and there were none in that window. The draw can be repeated: we kept the starting list, in sign-up order, and the seed of the shuffle, so running it again gives the same 15 names. After the draw we replaced two accounts that looked automatic or throwaway (player-211 and robloxgod): one pack goes to magicofhandss, MagicOfHands of the community, chosen by the staff, and the other to bailey01527, the first name not drawn in the same shuffle.
 
 ## The 110 codes given live {#live-codes}
 
@@ -270,7 +270,7 @@ If you won a code during the stream, you redeem it on the same [event page](/en/
 1. don-h
 2. hexyxi
 3. giuliap-cel
-4. player-211
+4. magicofhandss
 5. ak-dabmaster420
 6. calculette
 7. ferartero14
@@ -280,7 +280,7 @@ If you won a code during the stream, you redeem it on the same [event page](/en/
 11. ottobrown97
 12. ollaretheg
 13. bendragon-96
-14. robloxgod
+14. bailey01527
 15. sbarz
 
 Sono i nomi utente di OriginsMeta. Ogni vincitore riceve un messaggio nella casella del sito, la busta in alto accanto all'avatar, con il suo codice.
@@ -296,7 +296,7 @@ Il codice è solo tuo: non condividerlo, perché vale una volta sola.
 
 ## Come abbiamo estratto {#estrazione}
 
-Partecipavano tutti gli account creati su OriginsMeta il 16 novembre 2026 dalle 20:00 alle 23:00, ora italiana: 58 iscritti. Restavano fuori gli account dello staff e quelli con un ruolo (creator, autori, pro), e in quella finestra non ce n'erano. L'estrazione si può rifare: abbiamo tenuto la lista di partenza, in ordine di iscrizione, e il seme del mescolamento, quindi rifacendola escono gli stessi 15 nomi.
+Partecipavano tutti gli account creati su OriginsMeta il 16 novembre 2026 dalle 20:00 alle 23:00, ora italiana: 58 iscritti. Restavano fuori gli account dello staff e quelli con un ruolo (creator, autori, pro), e in quella finestra non ce n'erano. L'estrazione si può rifare: abbiamo tenuto la lista di partenza, in ordine di iscrizione, e il seme del mescolamento, quindi rifacendola escono gli stessi 15 nomi. Dopo l'estrazione abbiamo sostituito due account che sembravano creati in automatico o usa e getta (player-211 e robloxgod): un pacchetto va a magicofhandss, MagicOfHands della community, scelto dallo staff, e l'altro a bailey01527, il primo nome non estratto dello stesso mescolamento.
 
 ## I 110 codici dati in diretta {#codici-diretta}
 
@@ -307,7 +307,7 @@ Chi ha vinto un codice durante la diretta lo riscatta sulla stessa [pagina dell'
 1. don-h
 2. hexyxi
 3. giuliap-cel
-4. player-211
+4. magicofhandss
 5. ak-dabmaster420
 6. calculette
 7. ferartero14
@@ -317,7 +317,7 @@ Chi ha vinto un codice durante la diretta lo riscatta sulla stessa [pagina dell'
 11. ottobrown97
 12. ollaretheg
 13. bendragon-96
-14. robloxgod
+14. bailey01527
 15. sbarz
 
 Son los nombres de usuario de OriginsMeta. Cada ganador recibe un mensaje en el buzón de la web, el sobre de arriba junto al avatar, con su código.
@@ -333,24 +333,24 @@ El código es solo tuyo: no lo compartas, porque solo vale una vez.
 
 ## Cómo sorteamos {#sorteo}
 
-Participaban todas las cuentas creadas en OriginsMeta el 16 de noviembre de 2026 entre las 20:00 y las 23:00, hora italiana (de 19:00 a 22:00 UTC): 58 cuentas. Quedaban fuera las cuentas del staff y las que tienen un rol (creadores, autores, pros), y en esa franja no había ninguna. El sorteo se puede repetir: guardamos la lista de partida, en orden de registro, y la semilla de la mezcla, así que al repetirlo salen los mismos 15 nombres.
+Participaban todas las cuentas creadas en OriginsMeta el 16 de noviembre de 2026 entre las 20:00 y las 23:00, hora italiana (de 19:00 a 22:00 UTC): 58 cuentas. Quedaban fuera las cuentas del staff y las que tienen un rol (creadores, autores, pros), y en esa franja no había ninguna. El sorteo se puede repetir: guardamos la lista de partida, en orden de registro, y la semilla de la mezcla, así que al repetirlo salen los mismos 15 nombres. Después del sorteo sustituimos dos cuentas que parecían automáticas o de usar y tirar (player-211 y robloxgod): un sobre va a magicofhandss, MagicOfHands de la comunidad, elegido por el staff, y el otro a bailey01527, el primer nombre no sorteado de la misma mezcla.
 
 ## Los 110 códigos del directo {#codigos-directo}
 
 Si ganaste un código durante el directo, lo canjeas en la misma [página del evento](/es/events/attrix-showmatch), con una cuenta de OriginsMeta aunque la hayas creado después de ganar. Cada código vale una sola vez: el sobre es para quien lo canjea primero.`),
     highlights: {
       en: [
-        { label: "The 15 winners", text: "drawn among the 58 accounts created during the stream", anchor: "winners" },
+        { label: "The 15 winners", text: "drawn among the 58 accounts created during the stream, with two replacements", anchor: "winners" },
         { label: "How to redeem", text: "the code arrives in a message on the site, you paste it on the event page", anchor: "redeem" },
         { label: "How we drew", text: "a repeatable draw, with the starting list and the seed kept", anchor: "draw" },
       ],
       it: [
-        { label: "I 15 vincitori", text: "estratti fra i 58 account creati durante la diretta", anchor: "vincitori" },
+        { label: "I 15 vincitori", text: "estratti fra i 58 account creati durante la diretta, con due sostituzioni", anchor: "vincitori" },
         { label: "Come riscattare", text: "il codice arriva in un messaggio sul sito, si incolla nella pagina dell'evento", anchor: "riscatto" },
         { label: "Come abbiamo estratto", text: "un'estrazione ripetibile, con la lista di partenza e il seme conservati", anchor: "estrazione" },
       ],
       es: [
-        { label: "Los 15 ganadores", text: "sorteados entre las 58 cuentas creadas durante el directo", anchor: "ganadores" },
+        { label: "Los 15 ganadores", text: "sorteados entre las 58 cuentas creadas durante el directo, con dos sustituciones", anchor: "ganadores" },
         { label: "Cómo canjear", text: "el código llega en un mensaje en la web y se pega en la página del evento", anchor: "canjear" },
         { label: "Cómo sorteamos", text: "un sorteo repetible, con la lista de partida y la semilla guardadas", anchor: "sorteo" },
       ],

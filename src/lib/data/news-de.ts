@@ -23,7 +23,7 @@ export const deText: Record<string, NewsCopy> = {
 1. don-h
 2. hexyxi
 3. giuliap-cel
-4. player-211
+4. magicofhandss
 5. ak-dabmaster420
 6. calculette
 7. ferartero14
@@ -33,7 +33,7 @@ export const deText: Record<string, NewsCopy> = {
 11. ottobrown97
 12. ollaretheg
 13. bendragon-96
-14. robloxgod
+14. bailey01527
 15. sbarz
 
 Das sind die Benutzernamen auf OriginsMeta. Jeder Gewinner bekommt eine Nachricht im Postfach der Seite, dem Umschlag oben neben dem Avatar, mit seinem Code.
@@ -49,13 +49,13 @@ Der Code gehört nur dir: Teile ihn nicht, denn er gilt nur einmal.
 
 ## So haben wir verlost {#verlosung}
 
-Teilgenommen haben alle Konten, die am 16. November 2026 zwischen 20 und 23 Uhr italienischer Zeit (19 bis 22 Uhr UTC) auf OriginsMeta erstellt wurden: 58 Konten. Ausgeschlossen waren die Konten des Teams und die mit einer Rolle (Creator, Autoren, Pros), und in diesem Zeitraum gab es keine. Die Verlosung lässt sich wiederholen: Wir haben die Startliste in der Reihenfolge der Anmeldung und den Seed der Mischung aufbewahrt, also kommen bei einer Wiederholung dieselben 15 Namen heraus.
+Teilgenommen haben alle Konten, die am 16. November 2026 zwischen 20 und 23 Uhr italienischer Zeit (19 bis 22 Uhr UTC) auf OriginsMeta erstellt wurden: 58 Konten. Ausgeschlossen waren die Konten des Teams und die mit einer Rolle (Creator, Autoren, Pros), und in diesem Zeitraum gab es keine. Die Verlosung lässt sich wiederholen: Wir haben die Startliste in der Reihenfolge der Anmeldung und den Seed der Mischung aufbewahrt, also kommen bei einer Wiederholung dieselben 15 Namen heraus. Nach der Verlosung haben wir zwei Konten ersetzt, die automatisch erstellt oder Wegwerfkonten zu sein schienen (player-211 und robloxgod): Ein Pack geht an magicofhandss, MagicOfHands aus der Community, vom Team ausgewählt, das andere an bailey01527, den ersten nicht gezogenen Namen derselben Mischung.
 
 ## Die 110 Codes aus dem Stream {#codes-stream}
 
 Wenn du während des Streams einen Code gewonnen hast, löst du ihn auf derselben [Seite des Events](/de/events/attrix-showmatch) ein, mit einem OriginsMeta-Konto, auch wenn du es erst nach dem Gewinn erstellt hast. Jeder Code gilt nur einmal: Das Pack bekommt, wer ihn zuerst einlöst.`,
     highlights: [
-      { label: "Die 15 Gewinner", text: "verlost unter den 58 Konten, die während des Streams erstellt wurden", anchor: "gewinner" },
+      { label: "Die 15 Gewinner", text: "verlost unter den 58 Konten, die während des Streams erstellt wurden, mit zwei Ersetzungen", anchor: "gewinner" },
       { label: "So löst du ein", text: "der Code kommt per Nachricht auf der Seite, du fügst ihn auf der Seite des Events ein", anchor: "einloesen" },
       { label: "So haben wir verlost", text: "eine wiederholbare Verlosung, mit Startliste und Seed aufbewahrt", anchor: "verlosung" },
     ],
