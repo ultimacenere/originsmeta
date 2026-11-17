@@ -14,6 +14,57 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "attrix-showmatch-giveaway-winners": {
+    title: "Attrix Showmatch：OriginsMeta 抽奖的 15 位获奖者",
+    metaTitle: "Attrix Showmatch：15 位抽奖获奖者",
+    description:
+      "Origins TCG 意大利创作者的 Attrix Showmatch 于 2026年11月16日在 Twitch 直播。OriginsMeta 在直播期间注册的账号中抽出了 15 位获奖者，本文公布名单，并说明获奖者如何在活动页面兑换卡包代码，以及如何通过关联 Steam 在游戏中领取卡包。",
+    summary:
+      "2026年11月16日，Origins TCG 的意大利创作者在 Twitch 上进行了 Attrix Showmatch，并在直播中送出了 110 个卡包。另外 15 个由我们在直播期间于 OriginsMeta 创建的账号中抽出：以下是获奖者，每人都会在网站上收到一条附有代码的消息。",
+    body: `2026年11月16日（星期一），Origins TCG 的意大利创作者在各自的 Twitch 频道上进行了 Attrix Showmatch，OriginsMeta 负责活动页面：卡组转盘、轮次和抽奖。直播期间，主播们在 14 个 8 分 30 秒的时段里送出了 110 个代码，每个代码对应一个卡包。另外 15 个卡包由我们在直播参与者中抽出，也就是在节目期间注册 OriginsMeta 的人。
+
+## 15 位获奖者 {#huo-jiang-zhe}
+
+1. don-h
+2. hexyxi
+3. giuliap-cel
+4. magicofhandss
+5. ak-dabmaster420
+6. calculette
+7. ferartero14
+8. pafstar
+9. xalon0
+10. lucabellomaria
+11. ottobrown97
+12. ollaretheg
+13. bendragon-96
+14. bailey01527
+15. sbarz
+
+以上是 OriginsMeta 的用户名。每位获奖者都会在网站的消息箱（右上角头像旁的信封）里收到一条附有代码的消息。
+
+## 如何兑换代码 {#dui-huan}
+
+1. 用你注册时的账号登录 OriginsMeta。
+2. 打开工作人员的消息，复制代码。
+3. 把代码粘贴到[活动页面](/zh-cn/events/attrix-showmatch)的「Riscatta il codice」（兑换代码）框里，页面是意大利语的。
+4. 想在游戏里收到卡包（Koin Games 发放时），请把你的 Steam 账号关联到个人资料（[我的资料](/zh-cn/account#steam)，Steam 部分）。
+
+代码只属于你：不要分享，它只能用一次。
+
+## 我们如何抽奖 {#chou-jiang}
+
+参加抽奖的是 2026年11月16日意大利时间 20:00 到 23:00（UTC 19:00 到 22:00）之间在 OriginsMeta 创建的所有账号：共 58 个。工作人员账号和有角色的账号（创作者、作者、职业选手）不参加，而在这段时间里没有这样的账号。抽奖可以重复：我们保存了按注册顺序排列的初始名单和打乱用的种子，重新抽一次得到的还是这 15 个名字。抽奖之后，我们替换了两个看起来是自动生成或一次性的账号（player-211 和 robloxgod）：一个卡包给社区成员 magicofhandss（MagicOfHands），由工作人员选定；另一个给 bailey01527，即同一次打乱中第一个未被抽中的名字。
+
+## 直播中送出的 110 个代码 {#zhi-bo-dai-ma}
+
+如果你在直播中赢得了代码，请在同一个[活动页面](/zh-cn/events/attrix-showmatch)兑换，用 OriginsMeta 账号即可，赢了之后再注册也可以。每个代码只能用一次：卡包归最先兑换的人。`,
+    highlights: [
+      { label: "15 位获奖者", text: "从直播期间创建的 58 个账号中抽出，并替换了两位", anchor: "huo-jiang-zhe" },
+      { label: "如何兑换", text: "代码通过网站消息发送，粘贴到活动页面即可", anchor: "dui-huan" },
+      { label: "我们如何抽奖", text: "可以重复的抽奖，保存了初始名单和种子", anchor: "chou-jiang" },
+    ],
+  },
   "balance-patch-1117-sherwood-forest": {
     title: "Origins TCG 11月17日补丁说明：Dr. Frank 降到 5 费，Genie 变为 3/2，Sherwood Forest 改为稀有",
     metaTitle: "Origins TCG 11月17日补丁：Dr. Frank 5 费，Sherwood 变稀有",

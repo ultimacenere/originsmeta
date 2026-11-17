@@ -10,6 +10,57 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "attrix-showmatch-giveaway-winners": {
+    title: "Attrix Showmatch: os 15 vencedores do sorteio do OriginsMeta",
+    metaTitle: "Attrix Showmatch: os 15 vencedores do sorteio",
+    description:
+      "Os 15 vencedores do sorteio do OriginsMeta entre quem se cadastrou durante o Attrix Showmatch de 16 de novembro e como resgatar o código do pacote.",
+    summary:
+      "Em 16 de novembro de 2026, os criadores italianos de Origins TCG jogaram o Attrix Showmatch na Twitch e deram 110 pacotes de cartas ao vivo. Sorteamos os outros 15 entre as contas criadas no OriginsMeta durante a live: aqui estão os vencedores, que recebem o código em uma mensagem no site.",
+    body: `Na segunda-feira, 16 de novembro de 2026, os criadores italianos de Origins TCG jogaram o Attrix Showmatch nos seus canais da Twitch, e o OriginsMeta cuidou da página do evento: a roleta de decks, as rodadas e o sorteio. Durante a live, os streamers deram 110 códigos, um por pacote de cartas, em 14 blocos de 8 minutos e 30 segundos. Os outros 15 pacotes nós sorteamos entre os participantes da live que se cadastraram no OriginsMeta durante o show.
+
+## Os 15 vencedores {#vencedores}
+
+1. don-h
+2. hexyxi
+3. giuliap-cel
+4. magicofhandss
+5. ak-dabmaster420
+6. calculette
+7. ferartero14
+8. pafstar
+9. xalon0
+10. lucabellomaria
+11. ottobrown97
+12. ollaretheg
+13. bendragon-96
+14. bailey01527
+15. sbarz
+
+São os nomes de usuário do OriginsMeta. Cada vencedor recebe uma mensagem na caixa do site, o envelope no alto ao lado do avatar, com o seu código.
+
+## Como resgatar o código {#resgatar}
+
+1. Entre no OriginsMeta com a conta com que você se cadastrou.
+2. Abra a mensagem da equipe e copie o código.
+3. Cole o código no quadro «Riscatta il codice» (resgatar o código) da [página do evento](/pt/events/attrix-showmatch), que está em italiano.
+4. Para receber o pacote no jogo, quando a Koin Games liberar, vincule a sua conta Steam ao seu perfil ([Meu perfil](/pt/account#steam), seção Steam).
+
+O código é só seu: não compartilhe, porque ele vale uma vez só.
+
+## Como sorteamos {#sorteio}
+
+Participaram todas as contas criadas no OriginsMeta em 16 de novembro de 2026 entre 20h e 23h, horário italiano (das 19h às 22h UTC): 58 contas. Ficaram de fora as contas da equipe e as que têm um papel (criadores, autores, pros), e nessa janela não havia nenhuma. O sorteio pode ser refeito: guardamos a lista de partida, em ordem de cadastro, e a semente da mistura, então refazendo saem os mesmos 15 nomes. Depois do sorteio, substituímos duas contas que pareciam automáticas ou descartáveis (player-211 e robloxgod): um pacote vai para magicofhandss, MagicOfHands da comunidade, escolhido pela equipe, e o outro para bailey01527, o primeiro nome não sorteado da mesma mistura.
+
+## Os 110 códigos da live {#codigos-live}
+
+Se você ganhou um código durante a live, resgate na mesma [página do evento](/pt/events/attrix-showmatch), com uma conta do OriginsMeta, mesmo criada depois de ganhar. Cada código vale uma vez só: o pacote vai para quem resgatar primeiro.`,
+    highlights: [
+      { label: "Os 15 vencedores", text: "sorteados entre as 58 contas criadas durante a live, com duas substituições", anchor: "vencedores" },
+      { label: "Como resgatar", text: "o código chega em uma mensagem no site e você cola na página do evento", anchor: "resgatar" },
+      { label: "Como sorteamos", text: "um sorteio que pode ser refeito, com a lista de partida e a semente guardadas", anchor: "sorteio" },
+    ],
+  },
   "balance-patch-1117-sherwood-forest": {
     title: "Patch de Origins TCG de 17 de novembro: Dr. Frank custa 5, Genie cai para 3/2 e Sherwood Forest vira raro",
     metaTitle: "Patch 17/11: Dr. Frank a 5, Sherwood raro",
