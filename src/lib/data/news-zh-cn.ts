@@ -21,7 +21,7 @@ export const zhCnText: Record<string, NewsCopy> = {
       "Origins TCG 意大利创作者的 Attrix Showmatch 于 2026年11月16日在 Twitch 直播。OriginsMeta 在直播期间注册的账号中抽出了 15 位获奖者，本文公布名单，并说明获奖者如何在活动页面兑换卡包代码，以及如何通过关联 Steam 在游戏中领取卡包。",
     summary:
       "2026年11月16日，Origins TCG 的意大利创作者在 Twitch 上进行了 Attrix Showmatch，并在直播中送出了 110 个卡包。另外 15 个由我们在直播期间于 OriginsMeta 创建的账号中抽出：以下是获奖者，每人都会在网站上收到一条附有代码的消息。",
-    body: `2026年11月16日（星期一），Origins TCG 的意大利创作者在各自的 Twitch 频道上进行了 Attrix Showmatch，OriginsMeta 负责活动页面：卡组转盘、轮次和抽奖。直播期间，主播们在 14 个 8 分 30 秒的时段里送出了 110 个代码，每个代码对应一个卡包。另外 15 个卡包由我们在参与活动的人中抽出，也就是在节目期间注册 OriginsMeta 的人。
+    body: `2026年11月16日（星期一），Origins TCG 的意大利创作者在各自的 Twitch 频道上进行了 Attrix Showmatch，OriginsMeta 负责活动页面：卡组转盘、轮次和抽奖。直播期间，主播们在 14 个 8 分 30 秒的时段里送出了 110 个代码，每个代码对应一个卡包。另外 15 个卡包由我们在直播参与者中抽出，也就是在节目期间注册 OriginsMeta 的人。
 
 ## 15 位获奖者 {#huo-jiang-zhe}
 

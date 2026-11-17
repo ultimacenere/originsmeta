@@ -27,7 +27,7 @@ export const frText: Record<string, NewsCopy> = {
       "Les 15 gagnants du tirage d'OriginsMeta parmi les inscrits pendant l'Attrix Showmatch du 16 novembre, et comment échanger le code du booster d'Origins TCG.",
     summary:
       "Le 16 novembre 2026, les créateurs italiens d'Origins TCG ont joué l'Attrix Showmatch sur Twitch et ont offert 110 boosters de cartes en direct. Nous avons tiré au sort les 15 autres parmi les comptes créés sur OriginsMeta pendant le direct : voici les gagnants, qui reçoivent leur code dans un message sur le site.",
-    body: `Le lundi 16 novembre 2026, les créateurs italiens d'Origins TCG ont joué l'Attrix Showmatch sur leurs chaînes Twitch, et OriginsMeta a géré la page de l'événement : la roue des decks, les rondes et le giveaway. Pendant le direct, les streamers ont offert 110 codes, un par booster de cartes, dans 14 blocs de 8 minutes et 30 secondes. Nous avons tiré au sort les 15 autres boosters parmi les personnes qui ont participé à l'événement en s'inscrivant sur OriginsMeta pendant le show.
+    body: `Le lundi 16 novembre 2026, les créateurs italiens d'Origins TCG ont joué l'Attrix Showmatch sur leurs chaînes Twitch, et OriginsMeta a géré la page de l'événement : la roue des decks, les rondes et le giveaway. Pendant le direct, les streamers ont offert 110 codes, un par booster de cartes, dans 14 blocs de 8 minutes et 30 secondes. Nous avons tiré au sort les 15 autres boosters parmi les participants au direct qui se sont inscrits sur OriginsMeta pendant le show.
 
 ## Les 15 gagnants {#gagnants}
 
