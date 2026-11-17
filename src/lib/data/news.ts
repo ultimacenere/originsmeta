@@ -226,7 +226,7 @@ const raw: RawNews[] = [
       "Il 16 novembre 2026 i creator italiani di Origins TCG hanno giocato l'Attrix Showmatch su Twitch e hanno dato 110 pacchetti di carte in diretta. Gli altri 15 li abbiamo estratti fra gli account creati su OriginsMeta durante la diretta: ecco i vincitori, che ricevono il codice in un messaggio sul sito.",
       "El 16 de noviembre de 2026 los creadores italianos de Origins TCG jugaron el Attrix Showmatch en Twitch y regalaron 110 sobres de cartas en directo. Los otros 15 los sorteamos entre las cuentas creadas en OriginsMeta durante el directo: estos son los ganadores, que reciben su código en un mensaje en la web.",
     ),
-    body: n(`On Monday 16 November 2026 the Italian creators of Origins TCG played the Attrix Showmatch on their Twitch channels, with OriginsMeta running the event page: the deck wheel, the rounds and the giveaway. During the stream the streamers gave away 110 codes, one per card pack, in 14 blocks of 8 minutes and 30 seconds. We drew the other 15 packs among the people who signed up to OriginsMeta during the show.
+    body: n(`On Monday 16 November 2026 the Italian creators of Origins TCG played the Attrix Showmatch on their Twitch channels, with OriginsMeta running the event page: the deck wheel, the rounds and the giveaway. During the stream the streamers gave away 110 codes, one per card pack, in 14 blocks of 8 minutes and 30 seconds. We drew the other 15 packs among the people who took part in the event, signing up to OriginsMeta during the show.
 
 ## The 15 winners {#winners}
 
@@ -263,7 +263,7 @@ Everyone who created an OriginsMeta account on 16 November 2026 between 20:00 an
 
 ## The 110 codes given live {#live-codes}
 
-If you won a code during the stream, you redeem it on the same [event page](/en/events/attrix-showmatch), with an OriginsMeta account even created after winning. Each code works once: the pack goes to whoever redeems it first.`, `Lunedì 16 novembre 2026 i creator italiani di Origins TCG hanno giocato l'Attrix Showmatch sui loro canali Twitch, e OriginsMeta ha curato la pagina dell'evento: la ruota dei mazzi, i turni e il giveaway. In diretta gli streamer hanno dato 110 codici, uno per pacchetto di carte, nei loro 14 blocchi da 8 minuti e 30 secondi. Gli altri 15 pacchetti li abbiamo estratti noi fra chi si è iscritto a OriginsMeta durante lo show.
+If you won a code during the stream, you redeem it on the same [event page](/en/events/attrix-showmatch), with an OriginsMeta account even created after winning. Each code works once: the pack goes to whoever redeems it first.`, `Lunedì 16 novembre 2026 i creator italiani di Origins TCG hanno giocato l'Attrix Showmatch sui loro canali Twitch, e OriginsMeta ha curato la pagina dell'evento: la ruota dei mazzi, i turni e il giveaway. In diretta gli streamer hanno dato 110 codici, uno per pacchetto di carte, nei loro 14 blocchi da 8 minuti e 30 secondi. Gli altri 15 pacchetti li abbiamo estratti noi fra chi ha partecipato all'evento, iscrivendosi a OriginsMeta durante lo show.
 
 ## I 15 vincitori {#vincitori}
 
@@ -300,7 +300,7 @@ Partecipavano tutti gli account creati su OriginsMeta il 16 novembre 2026 dalle 
 
 ## I 110 codici dati in diretta {#codici-diretta}
 
-Chi ha vinto un codice durante la diretta lo riscatta sulla stessa [pagina dell'evento](/it/events/attrix-showmatch), con un account di OriginsMeta anche fatto dopo aver vinto. Ogni codice vale una volta sola: il pacchetto va a chi lo riscatta per primo.`, `El lunes 16 de noviembre de 2026 los creadores italianos de Origins TCG jugaron el Attrix Showmatch en sus canales de Twitch, y OriginsMeta se encargó de la página del evento: la ruleta de mazos, las rondas y el sorteo. Durante el directo los streamers regalaron 110 códigos, uno por sobre de cartas, en 14 bloques de 8 minutos y 30 segundos. Los otros 15 sobres los sorteamos nosotros entre quienes se registraron en OriginsMeta durante el show.
+Chi ha vinto un codice durante la diretta lo riscatta sulla stessa [pagina dell'evento](/it/events/attrix-showmatch), con un account di OriginsMeta anche fatto dopo aver vinto. Ogni codice vale una volta sola: il pacchetto va a chi lo riscatta per primo.`, `El lunes 16 de noviembre de 2026 los creadores italianos de Origins TCG jugaron el Attrix Showmatch en sus canales de Twitch, y OriginsMeta se encargó de la página del evento: la ruleta de mazos, las rondas y el sorteo. Durante el directo los streamers regalaron 110 códigos, uno por sobre de cartas, en 14 bloques de 8 minutos y 30 segundos. Los otros 15 sobres los sorteamos nosotros entre quienes participaron en el evento, registrándose en OriginsMeta durante el show.
 
 ## Los 15 ganadores {#ganadores}
 

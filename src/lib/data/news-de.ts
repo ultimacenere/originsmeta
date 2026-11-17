@@ -16,7 +16,7 @@ export const deText: Record<string, NewsCopy> = {
       "Die 15 Gewinner der OriginsMeta-Verlosung unter den Anmeldungen während des Attrix Showmatch am 16. November und wie du den Code des Packs einlöst.",
     summary:
       "Am 16. November 2026 haben die italienischen Creator von Origins TCG das Attrix Showmatch auf Twitch gespielt und live 110 Kartenpacks verschenkt. Die anderen 15 haben wir unter den Konten verlost, die während des Streams auf OriginsMeta erstellt wurden: Hier sind die Gewinner, die ihren Code per Nachricht auf der Seite bekommen.",
-    body: `Am Montag, 16. November 2026, haben die italienischen Creator von Origins TCG das Attrix Showmatch auf ihren Twitch-Kanälen gespielt, und OriginsMeta hat die Seite des Events betreut: das Deck-Rad, die Runden und das Giveaway. Während des Streams haben die Streamer 110 Codes verschenkt, einen pro Kartenpack, in 14 Blöcken von 8 Minuten und 30 Sekunden. Die anderen 15 Packs haben wir unter allen verlost, die sich während der Show bei OriginsMeta angemeldet haben.
+    body: `Am Montag, 16. November 2026, haben die italienischen Creator von Origins TCG das Attrix Showmatch auf ihren Twitch-Kanälen gespielt, und OriginsMeta hat die Seite des Events betreut: das Deck-Rad, die Runden und das Giveaway. Während des Streams haben die Streamer 110 Codes verschenkt, einen pro Kartenpack, in 14 Blöcken von 8 Minuten und 30 Sekunden. Die anderen 15 Packs haben wir unter allen verlost, die am Event teilgenommen und sich während der Show bei OriginsMeta angemeldet haben.
 
 ## Die 15 Gewinner {#gewinner}
 
