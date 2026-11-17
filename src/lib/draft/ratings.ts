@@ -5,6 +5,8 @@
  * `30-synergies.md`, `40-archetypes.md`, `60-playbook.md`, scritti il 19-20/09/2026 con le regole confermate da Davdas)
  * e riviste sulle statistiche di oggi (patch 0.7: Spellbook a 4 mana, Dorothy a 4, Christopher Robin 5/4, Wicked
  * Stepmother 4/6…).
+ * Patch del 17/11/2026 (ea-1117): rivisti i voti delle sette carte giocabili cambiate (Dr. Frank e Imhotep costano 1 in
+ * meno, Sorcerer's Apprentice 3/4, Kanga 2/4; Genie 3/2, Morgan le Fay 1/1, Asanbosam 5/4).
  *
  * Le idee che guidano i voti, dal cervello:
  * - due mana al primo round, +1 per round: un mazzo senza carte da 2 comincia guardando;
@@ -39,7 +41,7 @@ export const RATINGS: Record<string, CardRating> = {
   // Dr. Frank e le sue sette carte, nel gioco dalla patch del 04/11/2026 (cards.ts, `enteredGame`): voti nostri, dati prima
   // di averle giocate, dalle prime impressioni dei creator (news dr-frank-boss-new-cards) e dal testo. Il cimitero si
   // riempie con i personaggi che muoiono e con gli scarti: per questo vogliono "death" e "discard".
-  "dr-frank": { r: 6.6, gives: ["evil"], wants: ["death", "discard"] },
+  "dr-frank": { r: 6.9, gives: ["evil"], wants: ["death", "discard"] },
 
   // --- 0-1 mana
   "itsy-bitsy-spider": { r: 2.2, gives: ["evil"] },
@@ -82,13 +84,13 @@ export const RATINGS: Record<string, CardRating> = {
   shahrazad: { r: 5, gives: ["good", "heal"], wants: ["discard"] },
   "three-blind-mice": { r: 5, gives: ["wide", "death"] },
   "ugly-duckling": { r: 4, wants: ["discard"] },
-  "morgan-le-fay": { r: 5.3, gives: ["evil", "discard", "reveal", "spell"] },
+  "morgan-le-fay": { r: 4.9, gives: ["evil", "discard", "reveal", "spell"] },
   "red-knight": { r: 5.4, gives: ["power"] },
 
   // --- 3 mana
   aladdin: { r: 5.6, gives: ["good"], wants: ["discard"] },
   "ali-baba": { r: 5.5, gives: ["good"], roles: ["draw"] },
-  asanbosam: { r: 6.9, gives: ["evil", "discard", "reveal"] },
+  asanbosam: { r: 6.7, gives: ["evil", "discard", "reveal"] },
   beast: { r: 5.4, gives: ["evil"], wants: ["ally", "wide"] },
   "big-bad-wolf": { r: 6.5, gives: ["evil"] },
   "black-knight": { r: 6.1, gives: ["reveal"], roles: ["removal"] },
@@ -102,7 +104,7 @@ export const RATINGS: Record<string, CardRating> = {
   humpty: { r: 5.5, gives: ["death", "evil"], roles: ["draw"] },
   jack: { r: 5, gives: ["reveal"] },
   jill: { r: 5, gives: ["heal"] },
-  kanga: { r: 4.1, gives: ["good"], wants: ["move"] },
+  kanga: { r: 4.3, gives: ["good"], wants: ["move"] },
   "king-shahryar": { r: 5.2, gives: ["evil", "discard"], roles: ["draw"] },
   mary: { r: 4.4, gives: ["reveal", "death"] },
   "mind-palace": { r: 5, roles: ["draw"] },
@@ -122,7 +124,7 @@ export const RATINGS: Record<string, CardRating> = {
   "christopher-robin": { r: 6.5, gives: ["good"] },
   glinda: { r: 4.6, gives: ["good"], wants: ["spell", "wide"] },
   huntsman: { r: 6, gives: ["good"] },
-  imhotep: { r: 6, gives: ["death", "evil"], roles: ["sweeper"] },
+  imhotep: { r: 6.3, gives: ["death", "evil"], roles: ["sweeper"] },
   jekyll: { r: 6.1, gives: ["good", "heal", "reveal"] },
   lancelot: { r: 5.6, gives: ["good"], wants: ["good"] },
   "little-john": { r: 6, gives: ["good", "reveal"] },
@@ -151,14 +153,14 @@ export const RATINGS: Record<string, CardRating> = {
   hare: { r: 4.6, gives: ["move"] },
   impundulu: { r: 6, gives: ["evil", "discard"], roles: ["removal", "barrier"] },
   "rain-of-arrows": { r: 6.4, roles: ["sweeper"] },
-  "sorcerers-apprentice": { r: 4.6, gives: ["wide"], wants: ["spell"] },
+  "sorcerers-apprentice": { r: 5, gives: ["wide"], wants: ["spell"] },
   "the-green-knight": { r: 6, gives: ["power"] },
   "three-musketeers": { r: 6.4, gives: ["good", "wide", "reveal"] },
   "franken-bride": { r: 5.6, gives: ["evil", "death", "heal"], roles: ["defender"] },
 
   // --- 6+ mana
   cockatrice: { r: 7, gives: ["evil", "death"], roles: ["removal", "finisher"] },
-  genie: { r: 4.4, gives: ["discard", "spell", "reveal"] },
+  genie: { r: 3.7, gives: ["discard", "spell", "reveal"] },
   "guy-of-gisborne": { r: 6.5, gives: ["evil"], roles: ["barrier"] },
   "heroic-charge": { r: 5.6, wants: ["wide"], roles: ["finisher", "barrier"] },
   koschei: { r: 6, gives: ["evil", "death"], wants: ["discard"] },

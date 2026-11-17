@@ -16,7 +16,7 @@ export const ptText: Record<GuideSlug, GuideCopy> = {
     faq: [
       {
         q: "Quantas Lendárias existem em Origins TCG?",
-        a: "Doze entre as cartas jogáveis: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs e Robin Hood, verificadas no jogo em 22 de setembro de 2026, e Dr. Frank, que entrou no jogo com o patch de 4 de novembro de 2026 e ainda não foi verificado no jogo. O banco de dados do OriginsMeta guarda mais oito que não estão no jogo.",
+        a: "Doze entre as cartas jogáveis: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs e Robin Hood, todas verificadas no jogo em 11 de novembro de 2026. Dr. Frank entrou no jogo com o patch de 4 de novembro de 2026. O banco de dados do OriginsMeta guarda mais oito que não estão no jogo.",
       },
       {
         q: "Quantas Lendárias um deck pode ter?",
@@ -34,7 +34,7 @@ export const ptText: Record<GuideSlug, GuideCopy> = {
     body: `
 ## Em resumo {#em-resumo}
 
-- **Doze Lendárias** estão entre as cartas jogáveis de Origins TCG, em Acesso Antecipado no Steam desde 27 de outubro de 2026: seis custam 4 de mana, uma custa 5, uma custa 6, três custam 7 e uma custa 8. A décima segunda, Dr. Frank, entrou no jogo com o [patch de 4 de novembro de 2026](/pt/news/balance-patch-1104-cyber-queen).
+- **Doze Lendárias** estão entre as cartas jogáveis de Origins TCG, em Acesso Antecipado no Steam desde 27 de outubro de 2026: seis custam 4 de mana, duas custam 5, três custam 7 e uma custa 8. A décima segunda, Dr. Frank, entrou no jogo com o [patch de 4 de novembro de 2026](/pt/news/balance-patch-1104-cyber-queen) e custa 5 desde o [patch de 17 de novembro de 2026](/pt/news/balance-patch-1117-sherwood-forest).
 - Onze são personagens e uma é um feitiço, Legion of the Dead. Cinco são Good, quatro Evil e três Neutral.
 - Quatro delas criam outras cartas com o seu texto: Dracula, Van Helsing, Legion of the Dead e Three Not So Little Pigs.
 - Das onze que estavam no jogo antes de novembro, sete mudaram nos patches de balanceamento entre agosto e 21 de setembro de 2026; Dracula, Van Helsing, Legion of the Dead e Robin Hood não. O [patch 0.7](/pt/news/patch-0-7) de 29 de setembro de 2026 não rebalanceou nenhuma delas, e o patch de 4 de novembro de 2026 transformou Dorothy em uma 3/3.
@@ -52,8 +52,8 @@ As Lendárias abaixo estão em ordem de custo e, com o mesmo custo, em ordem alf
 | [Queen of Hearts](/pt/cards/queen-of-hearts) | 4 | 3/3 | Evil | 2 |
 | [Van Helsing](/pt/cards/van-helsing) | 4 | 3/4 | Good | 3 |
 | [Wicked Stepmother](/pt/cards/wicked-stepmother) | 4 | 4/6 | Evil | 0 |
+| [Dr. Frank](/pt/cards/dr-frank) | 5 | 2/2 | Evil | 0 |
 | [Merlin](/pt/cards/merlin) | 5 | 5/5 | Neutral | 1 |
-| [Dr. Frank](/pt/cards/dr-frank) | 6 | 2/2 | Evil | 0 |
 | [King Arthur](/pt/cards/king-arthur) | 7 | 7/7 | Good | 2 |
 | [Legion of the Dead](/pt/cards/legion-of-the-dead) | 7 | feitiço | Neutral | 2 |
 | [Three Not So Little Pigs](/pt/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 4 |
@@ -67,7 +67,7 @@ A última coluna conta os decks que cada Lendária lidera entre os 20 publicados
 - **O seu oponente a vê.** O patch 0.6.1 do playtest fechado (14 de agosto de 2026) adicionou uma prévia da Lendária do oponente durante o mulligan, segundo as [notas do patch oficiais](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **No Conquest, ela dá nome ao deck.** Na Crimson Cup cada jogador leva três decks, e quando você bane um dos decks do oponente só vê a Lendária dele ([regras da Crimson Cup](/pt/news/crimson-cup-format-check-in)). Os anúncios não dizem se as três Lendárias precisam ser diferentes; no Big Bob's Playtest Battle precisavam. Como montar os três decks: o nosso [guia do Conquest](/pt/guides/origins-tcg-conquest).
 
-Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em português em 20 de outubro de 2026, exceto o de Dr. Frank, que entrou no jogo em 4 de novembro de 2026: ainda não lemos a carta dele no jogo, então o seu texto em português é uma tradução nossa com o glossário do jogo. Custos e estatísticas foram verificados carta por carta em 22 de setembro de 2026. As sagas e as notas sobre cada lenda são do OriginsMeta. Os patches são os acompanhados no [MetaShifting](/pt/metashifting): as atualizações 0.6.1, 0.6.2 e 0.6.3 do playtest (agosto de 2026), o patch de 21 de setembro de 2026, o patch 0.7 de 29 de setembro de 2026, que não rebalanceou nenhuma Lendária, e o patch de 4 de novembro de 2026, que transformou Dorothy em uma 3/3 e trouxe Dr. Frank; as notas do patch 0.8 (27 de outubro de 2026, Acesso Antecipado) não citam mudanças nas cartas. O poder lendário não é tratado aqui: ainda não o transcrevemos do jogo, e a página de cada carta vai mostrá-lo quando fizermos isso.
+Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em português. Custos e estatísticas foram verificados carta por carta em 11 de novembro de 2026; as mudanças posteriores vêm das notas dos patches. As sagas e as notas sobre cada lenda são do OriginsMeta. Os patches são os acompanhados no [MetaShifting](/pt/metashifting): as atualizações 0.6.1, 0.6.2 e 0.6.3 do playtest (agosto de 2026), o patch de 21 de setembro de 2026, o patch 0.7 de 29 de setembro de 2026, que não rebalanceou nenhuma Lendária, o patch de 4 de novembro de 2026, que transformou Dorothy em uma 3/3 e trouxe Dr. Frank, e o patch de 17 de novembro de 2026, que deixou Dr. Frank 1 mais barato; as notas do patch 0.8 (27 de outubro de 2026, Acesso Antecipado) não citam mudanças nas cartas. O poder lendário de cada uma, como o jogo o mostra, está na página da carta.
 
 ## Dorothy {#dorothy}
 
@@ -153,6 +153,20 @@ Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em p
 - **Guia.** Ainda nenhum: [mande o seu](/pt/guides/submit).
 - **Página da carta.** [Wicked Stepmother, carta Lendária: estatísticas e texto](/pt/cards/wicked-stepmother).
 
+## Dr. Frank {#dr-frank}
+
+**5 mana · 2/2 · personagem · Evil** · Saga: Horror gótico
+
+> Antes do combate, invoca um personagem aleatório do seu cemitério em um espaço aleatório.
+
+- **A Lendária mais recente.** Entrou no jogo com o [patch de 4 de novembro de 2026](/pt/news/balance-patch-1104-cyber-queen) como a Lendária do deck Relentless pilotado por Cyber Queen, o chefe n.º 11, junto com outras sete cartas ([as oito cartas de Dr. Frank](/pt/news/dr-frank-boss-new-cards)). O texto acima é o lido no jogo em 11 de novembro de 2026.
+- **A lenda.** Victor Frankenstein, o estudante que montou uma criatura viva no romance de Mary Shelley de 1818.
+- **As cartas que o acompanham.** [It's Alive](/pt/cards/its-alive), um feitiço de 3 de mana que faz a mesma coisa uma vez, e as duas cartas com Renascimento, [Frank's Monster](/pt/cards/franks-monster) e [Franken Bride](/pt/cards/franken-bride). O poder lendário dele adiciona It's Alive! à sua mão no início da partida.
+- **Patches.** Patch de 17 de novembro de 2026: mana 6 → 5 ([notas do patch](/pt/news/balance-patch-1117-sherwood-forest)).
+- **Decks no OriginsMeta em 25 de setembro de 2026.** Nenhum: ele ainda não estava no jogo. Os decks que o usam agora são contados em [As mais jogadas](/pt/tier-list/most-played).
+- **Guia.** Ainda nenhum: [mande o seu](/pt/guides/submit).
+- **Página da carta.** [Dr. Frank, carta Lendária: estatísticas e texto](/pt/cards/dr-frank).
+
 ## Merlin {#merlin}
 
 **5 mana · 5/5 · personagem · Neutral** · Saga: Lenda arturiana
@@ -164,20 +178,6 @@ Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em p
 - **Decks no OriginsMeta em 25 de setembro de 2026.** Um: Spellcast.
 - **Guia.** Ainda nenhum: [mande o seu](/pt/guides/submit).
 - **Página da carta.** [Merlin, carta Lendária: estatísticas e texto](/pt/cards/merlin).
-
-## Dr. Frank {#dr-frank}
-
-**6 mana · 2/2 · personagem · Evil** · Saga: Horror gótico
-
-> Antes do combate, invoca um personagem aleatório do seu cemitério em um espaço aleatório.
-
-- **A Lendária mais recente.** Entrou no jogo com o [patch de 4 de novembro de 2026](/pt/news/balance-patch-1104-cyber-queen) como a Lendária do deck Relentless pilotado por Cyber Queen, o chefe n.º 11, junto com outras sete cartas ([as oito cartas de Dr. Frank](/pt/news/dr-frank-boss-new-cards)). O texto acima é o da carta oficial, traduzido por nós com o glossário do jogo: ainda não o lemos no jogo.
-- **A lenda.** Victor Frankenstein, o estudante que montou uma criatura viva no romance de Mary Shelley de 1818.
-- **As cartas que o acompanham.** [It's Alive](/pt/cards/its-alive), um feitiço de 3 de mana que faz a mesma coisa uma vez, e as duas cartas com Renascimento, [Frank's Monster](/pt/cards/franks-monster) e [Franken Bride](/pt/cards/franken-bride). Nas prévias dos criadores, o poder lendário dele coloca It's Alive na sua mão no início da partida.
-- **Patches.** Nenhuma mudança desde que entrou no jogo.
-- **Decks no OriginsMeta em 25 de setembro de 2026.** Nenhum: ele ainda não estava no jogo. Os decks que o usam agora são contados em [As mais jogadas](/pt/tier-list/most-played).
-- **Guia.** Ainda nenhum: [mande o seu](/pt/guides/submit).
-- **Página da carta.** [Dr. Frank, carta Lendária: estatísticas e texto](/pt/cards/dr-frank).
 
 ## King Arthur {#king-arthur}
 
@@ -243,7 +243,7 @@ O nosso banco de dados também guarda oito Lendárias que não estão no jogo: [
 
 ## De onde vêm os números {#fontes}
 
-- **Cartas:** o [banco de dados de cartas](/pt/cards) do OriginsMeta: custos, estatísticas e textos em inglês das cartas jogáveis verificados um por um no jogo em 22 de setembro de 2026, textos em italiano e espanhol lidos no jogo em 25 de setembro de 2026, textos em português lidos no jogo em 20 de outubro de 2026. As estatísticas são as do patch de 4 de novembro de 2026. O custo, as estatísticas e o texto de Dr. Frank são os da carta oficial que a Koin Games revelou em 2 de novembro de 2026, ainda não verificados no jogo.
+- **Cartas:** o [banco de dados de cartas](/pt/cards) do OriginsMeta: custos, estatísticas e textos das cartas jogáveis verificados um por um no jogo em 11 de novembro de 2026, em todos os idiomas do site. As estatísticas são as do patch de 17 de novembro de 2026.
 - **Patches:** as notas do patch oficiais no Steam, carta por carta no [MetaShifting](/pt/metashifting).
 - **Decks:** os 20 decks publicados no OriginsMeta de 15 de setembro até as 20:00 CEST de 25 de setembro de 2026 ([todos os decks de Origins TCG](/pt/decks)); a contagem depois disso está em [As mais jogadas](/pt/tier-list/most-played).
 
@@ -806,7 +806,7 @@ Vinte e cinco cartas: a Lendária mais doze cartas jogadas em duas cópias cada.
 | [Pegasus](/pt/cards/pegasus) | 3 | 2/4; depois de se mover, duplica o seu Poder |
 | [Flying Monkey](/pt/cards/flying-monkey) | 3 | 4/1; Ao revelar move QUALQUER outro personagem para um espaço aleatório aqui |
 | [Wicked Witch of the West](/pt/cards/wicked-witch-of-the-west) | 3 | 1/5; quando sobrevive a dano, adiciona um Flying Monkey à sua mão e se move um espaço para a esquerda |
-| [Kanga](/pt/cards/kanga) | 3 | 2/3; antes do combate, os aliados que se moveram nesta rodada recebem +1⚔️/+1❤️ |
+| [Kanga](/pt/cards/kanga) | 3 | 2/4; antes do combate, os aliados que se moveram nesta rodada recebem +1⚔️/+1❤️ |
 | [En Passant](/pt/cards/en-passant) | 3 | Feitiço: move um aliado e causa o Poder dele ao personagem à frente dele |
 | [Spellbook](/pt/cards/spellbook) | 4 | Feitiço: daqui em diante, um feitiço aleatório na mão a cada rodada, descartado antes do combate |
 | [Magic Carpet](/pt/cards/magic-carpet) | 4 | 4/4; Ao revelar move os seus outros aliados um espaço para a esquerda, ou um espaço para a direita |
@@ -895,7 +895,7 @@ Vinte e cinco cartas: a Lendária mais doze cartas jogadas em duas cópias cada.
 | [Bagheera](/pt/cards/bagheera) | 2 | 1/1; Ao revelar em um espaço central, recebe +2⚔️/+2❤️ |
 | [Morgiana](/pt/cards/morgiana) | 2 | 2/3; impede que TODAS as habilidades Ao revelar aconteçam no seu local |
 | [Mind Palace](/pt/cards/mind-palace) | 3 | Feitiço: compra 2 cartas |
-| [Asanbosam](/pt/cards/asanbosam) | 3 | 5/5; Ao revelar descarta uma carta aleatória de custo par |
+| [Asanbosam](/pt/cards/asanbosam) | 3 | 5/4; Ao revelar descarta uma carta aleatória de custo par |
 | [Golden Egg](/pt/cards/golden-egg) | 3 | 0/1; Ao morrer invoca um Golden Goose (5/5) no seu espaço |
 | [Flying Monkey](/pt/cards/flying-monkey) | 3 | 4/1; Ao revelar move QUALQUER outro personagem para um espaço aleatório aqui |
 | [En Passant](/pt/cards/en-passant) | 3 | Feitiço: move um aliado e causa o Poder dele ao personagem à frente dele |
@@ -910,7 +910,7 @@ Dez personagens e três feitiços. As três cartas baratas não estão ali para 
 Três cartas fazem o dano — **Boogeyman, Asanbosam e Impundulu** — e todo o resto existe para protegê-las ou abrir caminho.
 
 - **Boogeyman** é um 7/7 por quatro de mana, a melhor relação da lista, com um porém: ao ser revelado, ele destrói o aliado do seu local com o menor Poder, ele mesmo incluído. Coloque-o em uma linha vazia e ele se mata; coloque-o ao lado de um [Golden Egg](/pt/cards/golden-egg) e o Egg morre, deixando um Golden Goose 5/5 no seu espaço. É esse o combo que o autor aponta: duas cartas, um 7/7 e um 5/5.
-- **Asanbosam** é um 5/5 por três, e ao ser revelado faz o oponente descartar uma carta aleatória de custo par.
+- **Asanbosam** é um 5/4 por três, e ao ser revelado faz o oponente descartar uma carta aleatória de custo par.
 - **Impundulu** transforma cada ataque em um [Lightning Strike](/pt/cards/lightning-strike) na sua mão: dano repetível, desde que você o gaste antes do próximo combate.
 
 A **Lendária** fecha a partida em vez de começá-la: por sete de mana, *Enche o seu tabuleiro de Zombies* ocupa todos os espaços livres de uma vez. Ela rende mais na rodada depois de uma troca que esvaziou o seu lado, ou nos dois locais que você não estava disputando.
@@ -932,7 +932,7 @@ A nota do autor é curta e clara: **Bagheera e Thumbelina são começos perfeito
 ## Rodada a rodada
 
 1. **Rodadas 1–2: ocupar espaço barato.** Bagheera no centro, Thumbelina onde você espera lutar, Bullseye em qualquer coisa com três de Vida.
-2. **Rodada 3: a primeira ameaça.** Asanbosam como um 5/5, ou o Golden Egg na linha para onde o Boogeyman vai na rodada seguinte.
+2. **Rodada 3: a primeira ameaça.** Asanbosam como um 5/4, ou o Golden Egg na linha para onde o Boogeyman vai na rodada seguinte.
 3. **Rodada 4: Boogeyman.** No Egg se você o tiver, senão ao lado do menor corpo que você pode se dar ao luxo de perder — e nunca em uma linha vazia.
 4. **Rodadas 5–6: pressão e cartas.** Impundulu começa a produzir Strikes; Mind Palace reabastece a mão. O autor é explícito: sem o Mind Palace o deck fica sem cartas cedo demais.
 5. **Rodada 7: Legion of the Dead.** Cada espaço livre vira um 2/2. Conte os espaços antes de jogá-la: depois de uma rodada em que você trocou muito, ela vale dois ou três corpos a mais.
@@ -1298,10 +1298,10 @@ O deck está marcado só para a ladder, mas cabe numa seleção de Conquest: uma
 | 4 de novembro | [Notas do patch](/pt/news/balance-patch-1104-cyber-queen): dez cartas rebalanceadas, Cyber Queen é o chefe nº 11 |
 | 6 de novembro | [AMA do roadmap](/pt/news/origins-tcg-roadmap-ama-recap) no Discord oficial: o plano do Acesso Antecipado até fevereiro |
 | 10 de novembro | [Patch 0.8.2](/pt/news/patch-notes-0-8-2): exploits da ranqueada fechados, menos desconexões, matchmaking melhor para quem está começando no PvP; nenhuma mudança nas cartas |
+| 17 de novembro | [Patch de balanceamento](/pt/news/balance-patch-1117-sherwood-forest): nove cartas rebalanceadas, Dr. Frank custa 5, Sherwood Forest vira raro |
 
 ## O que vem a seguir
 
-- **17 de novembro de 2026.** Patch de balanceamento, com uma mudança esperada em Sherwood Forest.
 - **Novembro de 2026.** O primeiro torneio mensal do Acesso Antecipado, no formato Conquest com cerca de 400 vagas; a Koin dá os detalhes na semana de 9 de novembro.
 - **2 de dezembro de 2026.** Fim da temporada ranqueada atual e primeira grande atualização: Collector Pass, Prestige, cápsulas, locais novos e títulos. Segue uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.
 - **Fevereiro de 2027.** O set completo Myths and Legends, cerca de 218 cartas, com todas as recompensas do Kickstarter; a edição padrão chega às lojas.

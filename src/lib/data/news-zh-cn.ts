@@ -14,6 +14,94 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "balance-patch-1117-sherwood-forest": {
+    title: "Origins TCG 11月17日补丁说明：Dr. Frank 降到 5 费，Genie 变为 3/2，Sherwood Forest 改为稀有",
+    metaTitle: "Origins TCG 11月17日补丁：Dr. Frank 5 费，Sherwood 变稀有",
+    description:
+      "Origins TCG 2026年11月17日平衡补丁说明：Dr. Frank 和 Imhotep 费用减少 1，Genie 变为 3/2，Morgan le Fay 变为 1/1，Sorcerer's Apprentice 和 Kanga 变强，地点 Sherwood Forest 从普通改为稀有。",
+    summary:
+      "2026年11月17日，Koin Games 推出了 Origins TCG 抢先体验的第二个平衡补丁，服务器为安装更新停机一到两小时。九张卡牌只改了费用或数值：Dr. Frank、Imhotep 和 Zombie 费用减少 1，Sorcerer's Apprentice 和 Kanga 变强，Genie、Morgan le Fay、Asanbosam 和 Broomstick 变弱。地点 Sherwood Forest 从普通改为稀有，因为它召唤的 Merry Men 把墓地塞满了。",
+    highlights: [
+      { label: "九张卡牌有改动", text: "五个增强、四个削弱，只改费用和数值", anchor: "suo-you-gai-dong" },
+      { label: "Dr. Frank 降到 5 费", text: "Relentless 卡组的传奇卡牌，仍是 2/2", anchor: "dr-frank" },
+      { label: "Genie 变为 3/2", text: "两周前刚降过费用", anchor: "genie" },
+      { label: "Imhotep 和 Zombie 费用减少 1", anchor: "geng-pian-yi" },
+      { label: "Sorcerer's Apprentice 和 Kanga 变强", text: "3/4 和 2/4", anchor: "bian-qiang" },
+      { label: "Morgan le Fay、Asanbosam 和 Broomstick 变弱", anchor: "bian-ruo" },
+      { label: "Sherwood Forest 改为稀有", text: "墓地里的 Merry Men 会变少", anchor: "sherwood" },
+      { label: "OriginsMeta 上的变化", text: "卡牌和卡组构筑器已经更新", anchor: "originsmeta" },
+    ],
+    body: `## 何时上线 {#he-shi-shang-xian}
+
+Koin Games 于 2026年11月17日在官方 Discord 和 Steam 上发布了补丁说明，Steam 帖子发布于 UTC 时间 18:00（北京时间 11月18日 02:00），服务器为安装更新停机一到两小时。这就是 Koin 在[路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap) 中预告在 11月17日推出的平衡补丁，也是抢先体验阶段继 [11月4日补丁](/zh-cn/news/balance-patch-1104-cyber-queen)之后的第二个平衡补丁。和上一个一样，它没有版本号。
+
+## 所有改动 {#suo-you-gai-dong}
+
+格式：法力 · 力量/生命。
+
+| 卡牌 | 改动前 | 改动后 | 改了什么 |
+| --- | --- | --- | --- |
+| Dr. Frank | 6 · 2/2 | 5 · 2/2 | 费用减少 1 |
+| Imhotep | 4 · 2/2 | 3 · 2/2 | 费用减少 1 |
+| Zombie | 2 · 2/2 | 1 · 2/2 | 费用减少 1 |
+| Sorcerer's Apprentice | 5 · 2/3 | 5 · 3/4 | 力量 +1，生命 +1 |
+| Kanga | 3 · 2/3 | 3 · 2/4 | 生命 +1 |
+| Genie | 5 · 4/4 | 5 · 3/2 | 力量 -1，生命 -2 |
+| Morgan le Fay | 2 · 1/3 | 2 · 1/1 | 生命 -2 |
+| Asanbosam | 3 · 5/5 | 3 · 5/4 | 生命 -1 |
+| Broomstick | 1 · 1/1 | 2 · 1/1 | 费用增加 1 |
+
+五个增强、四个削弱，全部是角色。没有任何卡牌改动文本或能力，只改了费用和数值。Zombie 和 Broomstick 是衍生卡，由其他卡牌放入场上。唯一的另一项改动是一个地点的稀有度，也就是下文的 Sherwood Forest。
+
+## Dr. Frank 降到 5 费 {#dr-frank}
+
+Dr. Frank 是 Relentless 卡组的传奇卡牌，11月4日随[他的八张卡](/zh-cn/news/dr-frank-boss-new-cards)一起进入游戏。这次他从 6 法力降到 5 法力，仍是 2/2。战斗前，他会从你的墓地召唤一个随机角色到一个随机格子上：降到 5 费后，他可以早一个回合登场。
+
+在我们 11月9日的[第一份强度榜](/zh-cn/news/origins-tcg-tier-list-legendaries-november-2026)中，Dr. Frank 位于 D 级：在 11月4日补丁中用 OriginsMeta Tracker 记录的 596 场对局里，胜率为 39.8%。这是他登场以来的第一次改动。
+
+## Genie 变为 3/2 {#genie}
+
+11月4日的补丁让 Genie 从 6 法力降到了 5 法力。这次费用不变，但力量 -1、生命 -2：从 4/4 变为 3/2。能力没有变：展示时，弃掉你的手牌，并将 3 个随机法术加入你的手牌。
+
+## Imhotep 和 Zombie 费用减少 1 {#geng-pian-yi}
+
+Imhotep 从 4 法力降到 3 法力，仍是 2/2：死亡时，对此处所有敌方角色造成 2 点伤害。2/2 的衍生卡 Zombie 现在只要 1 费。当 [Necromancer](/zh-cn/cards/necromancer) 把两个 Zombie 加入你的手牌时，也就是它弃掉的牌不是邪恶卡牌时，这个费用才有意义；[Legion of the Dead](/zh-cn/cards/legion-of-the-dead) 则会直接把它们放到场上。
+
+## Sorcerer's Apprentice 和 Kanga 变强 {#bian-qiang}
+
+Sorcerer's Apprentice 仍是 5 法力，从 2/3 变为 3/4：每当你打出法术时，它会在一个随机格子上召唤一个 Broomstick。Kanga 仍是 3 法力，生命 +1，变为 2/4：战斗前，她使本回合移动过的友方角色获得力量 +1、生命 +1。
+
+## Morgan le Fay、Asanbosam 和 Broomstick 变弱 {#bian-ruo}
+
+Morgan le Fay 是 Dr. Frank 的八张卡之一，仍是 2 法力，但从 1/3 变为 1/1。展示时，弃掉你最右边的一张牌，并将一个随机法术加入你的手牌，其费用减少 2 点。Asanbosam 费用和力量不变，生命 -1，变为 5/4：展示时，随机弃掉一张费用为偶数的牌。Sorcerer's Apprentice 和 [Animate Object](/zh-cn/cards/animate-object) 召唤的 1/1 Broomstick 现在需要 2 费。
+
+## Sherwood Forest 改为稀有 {#sherwood}
+
+唯一一项与卡牌无关的改动：地点 Sherwood Forest 从普通改为稀有。这个地点会召唤 Merry Men，也就是 Robin Hood 一伙的 1/1 角色；据 Koin 说，这些 Merry Men 把墓地塞满了。对于像 Dr. Frank 这样从墓地随机召回角色的卡组来说，墓地里满是 Merry Men，就意味着更有可能召回一个 1/1。Koin 写道，他们听取了玩家的意见，让这片森林变得稀疏了。
+
+在[路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap#sherwood) 中，Koin 曾解释过这个问题：目前普通地点很少，所以大约每三场对局就有一场会出现 Sherwood，而正式上线时普通地点会超过 50 个。改为稀有后，它出现的次数应该会减少。它的效果和其他地点都在我们的[地点页面](/zh-cn/locations)上。
+
+## OriginsMeta 上的变化 {#originsmeta}
+
+- [卡牌数据库](/zh-cn/cards)、[卡组构筑器](/zh-cn/deck-builder)和 [MetaShifting](/zh-cn/metashifting) 已经显示新数值。这九张卡的文本仍是 11月11日在游戏中读取的版本。
+- 如果你在补丁前发布过卡组，它的页面会提供“更新到版本 EA · 11月17日”：你可以更换卡牌，同时保留名称、攻略和链接。
+- [Analytics](/zh-cn/analytics) 会继续显示 11月4日补丁的数据，直到新补丁有了第一批记录的对局。
+- 我们的[传奇卡牌强度榜](/zh-cn/tier-list)基于 11月4日补丁的对局：等这个补丁有了足够的对局，我们会重新读取数据，并在新闻中解释每一次变动。
+
+## 我们还不知道的 {#hai-bu-zhi-dao}
+
+- 稀有地点比普通地点少出现多少。
+- 等更多地点加入后，Sherwood Forest 会不会改回普通：在 AMA 中，Koin 说的是暂时改为稀有。
+- 下一个平衡补丁的日期：在 AMA 中，Koin 说平衡补丁大约每两周一次。
+
+来源：Origins TCG 官方 Discord 上的 11月17日补丁说明，以及 Steam 上的帖子“Enough with the Merry Men!!!”及其配图（2026年11月17日，UTC 18:00）。`,
+    faq: [
+      { q: "Origins TCG 2026年11月17日的补丁改了什么？", a: "九张卡牌改动了费用或数值：Dr. Frank、Imhotep 和 Zombie 费用减少 1，Sorcerer's Apprentice 和 Kanga 变强，Genie、Morgan le Fay、Asanbosam 和 Broomstick 变弱。地点 Sherwood Forest 从普通改为稀有。没有卡牌改动文本。" },
+      { q: "11月17日补丁后 Dr. Frank 多少费？", a: "5 法力，原来是 6 法力，仍是 2/2。这是他 11月4日作为 Relentless 卡组的传奇卡牌进入游戏以来的第一次改动。" },
+      { q: "Sherwood Forest 为什么改为稀有？", a: "Koin 写道，它召唤的 Merry Men 把墓地塞满了。在路线图 AMA 中，Koin 解释过目前普通地点很少，所以大约每三场对局就有一场会出现 Sherwood；改为稀有后，它出现的次数应该会减少。" },
+      { q: "11月17日的补丁改动了卡牌文本吗？", a: "没有。九项改动都只涉及费用、力量或生命，卡牌文本仍是 2026年11月11日在游戏中读取的版本。" },
+    ],
+  },
   "patch-notes-0-8-2": {
     title: "Origins TCG 0.8.2 补丁：封堵漏洞、减少掉线，新玩家的 PvP 起步更公平",
     metaTitle: "Origins TCG 0.8.2 补丁说明：公平竞技与掉线修复",

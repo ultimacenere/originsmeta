@@ -161,6 +161,13 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 3, power: 2, health: 3 },
       note: { en: "Cheaper and smaller.", it: "Più economica e più piccola.", es: "Más barata y más pequeña.", fr: "Moins chère et plus petite.", pt: "Mais barata e menor.", de: "Billiger und kleiner.", ru: "Дешевле и слабее.", "zh-cn": "更便宜也更小。" },
     },
+    {
+      patch: "ea-1117",
+      kind: "buff",
+      from: { mana: 3, power: 2, health: 3 },
+      to: { mana: 3, power: 2, health: 4 },
+      note: { en: "+1 Health.", it: "+1 Salute.", es: "+1 de Salud.", fr: "+1 Santé.", pt: "+1 de Vida.", de: "+1 Leben.", ru: "+1 к Здоровью.", "zh-cn": "生命 +1。" },
+    },
   ],
   "wicked-witch-of-the-west": [
     {
@@ -435,6 +442,13 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 4, power: 2, health: 2 },
       note: { en: "-1 Health.", it: "-1 Salute.", es: "-1 de Salud.", fr: "-1 Santé.", pt: "-1 de Vida.", de: "-1 Leben.", ru: "-1 к Здоровью.", "zh-cn": "生命值 -1。" },
     },
+    {
+      patch: "ea-1117",
+      kind: "buff",
+      from: { mana: 4, power: 2, health: 2 },
+      to: { mana: 3, power: 2, health: 2 },
+      note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
+    },
   ],
   genie: [
     {
@@ -448,6 +462,13 @@ export const cardHistory: Record<string, Change[]> = {
       from: { mana: 6, power: 4, health: 4 },
       to: { mana: 5, power: 4, health: 4 },
       note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
+    },
+    {
+      patch: "ea-1117",
+      kind: "nerf",
+      from: { mana: 5, power: 4, health: 4 },
+      to: { mana: 5, power: 3, health: 2 },
+      note: { en: "-1 Power, -2 Health.", it: "-1 Potenza, -2 Salute.", es: "-1 de Poder, -2 de Salud.", fr: "-1 Puissance, -2 Santé.", pt: "-1 de Poder, -2 de Vida.", de: "-1 Kraft, -2 Leben.", ru: "-1 к Силе, -2 к Здоровью.", "zh-cn": "力量 -1，生命 -2。" },
     },
   ],
   "mind-palace": [
@@ -709,6 +730,62 @@ export const cardHistory: Record<string, Change[]> = {
       from: { mana: 1 },
       to: { mana: 2 },
       note: { en: "Costs 1 more. Not in the patch notes: read in the game on 7 November.", it: "Costa 1 in più. Non è nelle patch notes: letto nel gioco il 7 novembre.", es: "Cuesta 1 más. No está en las notas del parche: leído en el juego el 7 de noviembre.", fr: "Coûte 1 de plus. Absent des patch notes : relevé dans le jeu le 7 novembre.", pt: "Custa 1 a mais. Não está nas notas da atualização: lido no jogo em 7 de novembro.", de: "Kostet 1 mehr. Steht nicht in den Patchnotes: am 7. November im Spiel abgelesen.", ru: "Стоит на 1 больше. В патч-ноутах этого нет: прочитано в игре 7 ноября.", "zh-cn": "费用增加 1。补丁说明未提及：11月7日在游戏中读取。" },
+    },
+  ],
+  // Patch del 17/11/2026 (ea-1117), post Steam "Enough with the Merry Men!!!": le carte che prima non avevano modifiche.
+  // Broomstick e Zombie sono carte create (le evocano Sorcerer's Apprentice, Necromancer e Legion of the Dead).
+  "dr-frank": [
+    {
+      patch: "ea-1117",
+      kind: "buff",
+      from: { mana: 6, power: 2, health: 2 },
+      to: { mana: 5, power: 2, health: 2 },
+      note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
+    },
+  ],
+  "sorcerers-apprentice": [
+    {
+      patch: "ea-1117",
+      kind: "buff",
+      from: { mana: 5, power: 2, health: 3 },
+      to: { mana: 5, power: 3, health: 4 },
+      note: { en: "+1 Power, +1 Health.", it: "+1 Potenza, +1 Salute.", es: "+1 de Poder, +1 de Salud.", fr: "+1 Puissance, +1 Santé.", pt: "+1 de Poder, +1 de Vida.", de: "+1 Kraft, +1 Leben.", ru: "+1 к Силе, +1 к Здоровью.", "zh-cn": "力量 +1，生命 +1。" },
+    },
+  ],
+  zombie: [
+    {
+      patch: "ea-1117",
+      kind: "buff",
+      from: { mana: 2, power: 2, health: 2 },
+      to: { mana: 1, power: 2, health: 2 },
+      note: { en: "Costs 1 less.", it: "Costa 1 in meno.", es: "Cuesta 1 menos.", fr: "Coûte 1 de moins.", pt: "Custa 1 a menos.", de: "Kostet 1 weniger.", ru: "Стоит на 1 меньше.", "zh-cn": "费用减少 1。" },
+    },
+  ],
+  asanbosam: [
+    {
+      patch: "ea-1117",
+      kind: "nerf",
+      from: { mana: 3, power: 5, health: 5 },
+      to: { mana: 3, power: 5, health: 4 },
+      note: { en: "-1 Health.", it: "-1 Salute.", es: "-1 de Salud.", fr: "-1 Santé.", pt: "-1 de Vida.", de: "-1 Leben.", ru: "-1 к Здоровью.", "zh-cn": "生命 -1。" },
+    },
+  ],
+  broomstick: [
+    {
+      patch: "ea-1117",
+      kind: "nerf",
+      from: { mana: 1, power: 1, health: 1 },
+      to: { mana: 2, power: 1, health: 1 },
+      note: { en: "Costs 1 more.", it: "Costa 1 in più.", es: "Cuesta 1 más.", fr: "Coûte 1 de plus.", pt: "Custa 1 a mais.", de: "Kostet 1 mehr.", ru: "Стоит на 1 больше.", "zh-cn": "费用增加 1。" },
+    },
+  ],
+  "morgan-le-fay": [
+    {
+      patch: "ea-1117",
+      kind: "nerf",
+      from: { mana: 2, power: 1, health: 3 },
+      to: { mana: 2, power: 1, health: 1 },
+      note: { en: "-2 Health.", it: "-2 Salute.", es: "-2 de Salud.", fr: "-2 Santé.", pt: "-2 de Vida.", de: "-2 Leben.", ru: "-2 к Здоровью.", "zh-cn": "生命 -2。" },
     },
   ],
 };

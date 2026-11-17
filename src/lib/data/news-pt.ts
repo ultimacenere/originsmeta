@@ -10,6 +10,94 @@ import type { NewsCopy } from "./news-fr";
  * "Atualização de …" per gli articoli aggiornati).
  */
 export const ptText: Record<string, NewsCopy> = {
+  "balance-patch-1117-sherwood-forest": {
+    title: "Patch de Origins TCG de 17 de novembro: Dr. Frank custa 5, Genie cai para 3/2 e Sherwood Forest vira raro",
+    metaTitle: "Patch 17/11: Dr. Frank a 5, Sherwood raro",
+    description:
+      "Notas do patch de Origins TCG de 17 de novembro: Dr. Frank e Imhotep custam 1 a menos, Genie cai para 3/2, Morgan le Fay para 1/1 e Sherwood Forest vira raro.",
+    summary:
+      "Em 17 de novembro a Koin Games lançou o segundo patch de balanceamento do Acesso Antecipado de Origins TCG, com os servidores fora do ar por uma ou duas horas para instalá-lo. Nove cartas mudam só de custo ou de estatísticas: Dr. Frank, Imhotep e Zombie custam 1 a menos, Sorcerer's Apprentice e Kanga crescem, e Genie, Morgan le Fay, Asanbosam e Broomstick ficam mais fracas. O local Sherwood Forest passa de comum a raro, porque os seus Merry Men enchiam o cemitério.",
+    highlights: [
+      { label: "Nove cartas mudam", text: "cinco buffs e quatro nerfs, só custo e estatísticas", anchor: "mudancas" },
+      { label: "Dr. Frank custa 5", text: "a Lendária do deck Relentless continua 2/2", anchor: "dr-frank" },
+      { label: "Genie cai para 3/2", text: "duas semanas depois de ficar mais barato", anchor: "genie" },
+      { label: "Imhotep e Zombie custam 1 a menos", anchor: "mais-baratas" },
+      { label: "Sorcerer's Apprentice e Kanga crescem", text: "3/4 e 2/4", anchor: "maiores" },
+      { label: "Morgan le Fay, Asanbosam e Broomstick ficam mais fracas", anchor: "mais-fracas" },
+      { label: "Sherwood Forest vira raro", text: "menos Merry Men no cemitério", anchor: "sherwood" },
+      { label: "No OriginsMeta", text: "cartas e Deck builder já atualizados", anchor: "originsmeta" },
+    ],
+    body: `## Quando chegou {#quando}
+
+A Koin Games publicou as notas do patch de 17 de novembro de 2026 no Discord oficial e no Steam, onde o post saiu às 18:00 UTC (15:00 em Brasília), com os servidores fora do ar por uma ou duas horas para instalar a atualização. É o patch de balanceamento que a Koin tinha anunciado para 17 de novembro no [AMA do roadmap](/pt/news/origins-tcg-roadmap-ama-recap), o segundo do Acesso Antecipado depois do [patch de 4 de novembro](/pt/news/balance-patch-1104-cyber-queen). Como aquele, não tem número de versão.
+
+## Todas as mudanças {#mudancas}
+
+Formato: mana · Poder/Vida.
+
+| Carta | Antes | Depois | O que muda |
+| --- | --- | --- | --- |
+| Dr. Frank | 6 · 2/2 | 5 · 2/2 | custa 1 a menos |
+| Imhotep | 4 · 2/2 | 3 · 2/2 | custa 1 a menos |
+| Zombie | 2 · 2/2 | 1 · 2/2 | custa 1 a menos |
+| Sorcerer's Apprentice | 5 · 2/3 | 5 · 3/4 | +1 de Poder, +1 de Vida |
+| Kanga | 3 · 2/3 | 3 · 2/4 | +1 de Vida |
+| Genie | 5 · 4/4 | 5 · 3/2 | -1 de Poder, -2 de Vida |
+| Morgan le Fay | 2 · 1/3 | 2 · 1/1 | -2 de Vida |
+| Asanbosam | 3 · 5/5 | 3 · 5/4 | -1 de Vida |
+| Broomstick | 1 · 1/1 | 2 · 1/1 | custa 1 a mais |
+
+Cinco buffs e quatro nerfs, todos em personagens. Nenhuma carta muda de texto ou de habilidades: só custo e estatísticas. Zombie e Broomstick são cartas criadas, as que outras cartas colocam em jogo. A única outra mudança é a raridade de um local, Sherwood Forest, mais abaixo.
+
+## Dr. Frank custa 5 {#dr-frank}
+
+Dr. Frank, a Lendária do deck Relentless, no jogo desde 4 de novembro com [as suas oito cartas](/pt/news/dr-frank-boss-new-cards), passa de 6 para 5 de mana e continua 2/2. Antes do combate, ele invoca um personagem aleatório do seu cemitério em um espaço aleatório: por 5 de mana, pode entrar em campo uma rodada antes.
+
+Na nossa [primeira tier list](/pt/news/origins-tcg-tier-list-legendaries-november-2026), de 9 de novembro, Dr. Frank estava no tier D, com win rate de 39,8% em 596 partidas registradas com o OriginsMeta Tracker no patch de 4 de novembro. É a primeira mudança dele desde que chegou.
+
+## Genie cai para 3/2 {#genie}
+
+Genie tinha passado de 6 para 5 de mana com o patch de 4 de novembro. Agora mantém esse custo, mas perde 1 de Poder e 2 de Vida: 3/2 em vez de 4/4. A habilidade não muda: Ao revelar, você descarta a sua mão e recebe 3 feitiços aleatórios.
+
+## Imhotep e Zombie custam 1 a menos {#mais-baratas}
+
+Imhotep passa de 4 para 3 de mana e continua 2/2: Ao morrer, causa 2 de dano a todos os inimigos do seu local. Zombie, a carta criada 2/2, agora custa 1. O custo conta quando [Necromancer](/pt/cards/necromancer) adiciona dois Zombies à sua mão, ou seja, quando a carta que ele descarta não é Maligna; já [Legion of the Dead](/pt/cards/legion-of-the-dead) os coloca direto no tabuleiro.
+
+## Sorcerer's Apprentice e Kanga crescem {#maiores}
+
+Sorcerer's Apprentice continua custando 5 e passa de 2/3 para 3/4: toda vez que você joga um feitiço, ele invoca uma Broomstick em um espaço aleatório. Kanga continua custando 3 e ganha 1 de Vida, agora 2/4: antes do combate, ela dá +1 de Poder e +1 de Vida aos aliados que se moveram nesta rodada.
+
+## Morgan le Fay, Asanbosam e Broomstick ficam mais fracas {#mais-fracas}
+
+Morgan le Fay, uma das oito cartas de Dr. Frank, continua custando 2, mas passa de 1/3 para 1/1. Ao revelar, você descarta a sua carta mais à direita e recebe um feitiço aleatório com o custo reduzido em 2. Asanbosam mantém custo e Poder e perde 1 de Vida, agora 5/4: Ao revelar, você descarta uma carta aleatória de custo par. Broomstick, a 1/1 que Sorcerer's Apprentice e [Animate Object](/pt/cards/animate-object) invocam, agora custa 2.
+
+## Sherwood Forest vira raro {#sherwood}
+
+A única mudança que não é numa carta: o local Sherwood Forest passa de comum a raro. É o local que invoca Merry Men, os personagens 1/1 do bando de Robin Hood, e segundo a Koin esses Merry Men estavam enchendo o cemitério. Para os decks que trazem de volta um personagem aleatório do cemitério, como o de Dr. Frank, um cemitério cheio de Merry Men significa mais chances de trazer de volta um 1/1. A Koin escreve que ouviu os jogadores e deixou a floresta mais rala.
+
+No [AMA do roadmap](/pt/news/origins-tcg-roadmap-ama-recap#sherwood), a Koin tinha explicado o problema: hoje poucos locais são comuns, por isso Sherwood aparecia mais ou menos em uma a cada três partidas, e no lançamento haverá mais de 50 locais comuns. Como raro, ele deve aparecer menos vezes. O efeito dele e os outros locais estão na nossa [página dos locais](/pt/locations).
+
+## O que muda no OriginsMeta {#originsmeta}
+
+- O [banco de dados de cartas](/pt/cards), o [Deck builder](/pt/deck-builder) e o [MetaShifting](/pt/metashifting) já mostram os valores novos. Os textos das nove cartas continuam os lidos no jogo em 11 de novembro.
+- Se você publicou um deck antes do patch, a página dele oferece "Atualizar para a versão EA · 17 nov.": você troca as cartas e mantém nome, guia e link.
+- O [Analytics](/pt/analytics) continua mostrando os números do patch de 4 de novembro até este ter as primeiras partidas registradas.
+- A nossa [tier list das Lendárias](/pt/tier-list) se baseia nas partidas do patch de 4 de novembro: vamos reler os números quando este patch tiver partidas suficientes, e explicar cada mudança em uma notícia.
+
+## O que ainda não sabemos {#o-que-nao-sabemos}
+
+- Quanto menos um local raro aparece em relação a um comum.
+- Se Sherwood Forest vai voltar a ser comum quando chegarem mais locais: no AMA, a Koin falou em raro por enquanto.
+- A data do próximo patch de balanceamento: no AMA, a Koin falou em um a cada duas semanas, mais ou menos.
+
+Fontes: as notas do patch de 17 de novembro no Discord oficial de Origins TCG e o post "Enough with the Merry Men!!!" no Steam, com a sua imagem (17 de novembro de 2026, 18:00 UTC).`,
+    faq: [
+      { q: "O que muda no patch de Origins TCG de 17 de novembro de 2026?", a: "Nove cartas mudam de custo ou de estatísticas: Dr. Frank, Imhotep e Zombie custam 1 a menos, Sorcerer's Apprentice e Kanga crescem, e Genie, Morgan le Fay, Asanbosam e Broomstick ficam mais fracas. O local Sherwood Forest passa de comum a raro. Nenhuma carta muda de texto." },
+      { q: "Quanto custa Dr. Frank depois do patch de 17 de novembro?", a: "5 de mana em vez de 6, e ele continua 2/2. É a primeira mudança dele desde que entrou no jogo em 4 de novembro como Lendária do deck Relentless." },
+      { q: "Por que Sherwood Forest virou raro?", a: "A Koin escreve que os Merry Men que ele invoca estavam enchendo o cemitério. No AMA do roadmap, explicou que hoje poucos locais são comuns, por isso Sherwood aparecia mais ou menos em uma a cada três partidas; como raro, deve aparecer menos vezes." },
+      { q: "O patch de 17 de novembro muda o texto de alguma carta?", a: "Não. As nove mudanças são de custo, Poder ou Vida, e os textos das cartas continuam os lidos no jogo em 11 de novembro de 2026." },
+    ],
+  },
   "patch-notes-0-8-2": {
     title: "Patch 0.8.2 de Origins TCG: exploits fechados, menos desconexões e um começo mais justo no PvP",
     metaTitle: "Origins TCG, patch 0.8.2: jogo limpo e desconexões",

@@ -14,7 +14,7 @@ export const esText: Record<GuideSlug, GuideCopy> = {
     faq: [
       {
         q: "¿Cuántas Legendarias hay en Origins TCG?",
-        a: "Doce jugables: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs y Robin Hood, verificadas en el juego el 22 de septiembre de 2026, y Dr. Frank, que llegó al juego con el parche del 4 de noviembre de 2026 y todavía no se ha verificado en el juego. La base de datos de OriginsMeta conserva otras ocho que ya no están en el juego.",
+        a: "Doce jugables: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs y Robin Hood, todas verificadas en el juego el 11 de noviembre de 2026. Dr. Frank llegó al juego con el parche del 4 de noviembre de 2026. La base de datos de OriginsMeta conserva otras ocho que ya no están en el juego.",
       },
       {
         q: "¿Cuántas Legendarias puede tener un mazo?",
@@ -32,7 +32,7 @@ export const esText: Record<GuideSlug, GuideCopy> = {
     body: `
 ## En resumen {#en-resumen}
 
-- Origins TCG tiene **doce Legendarias** jugables: seis cuestan 4 de maná, una 5, una 6, tres 7 y una 8. La duodécima, Dr. Frank, llegó al juego con el [parche del 4 de noviembre de 2026](/es/news/balance-patch-1104-cyber-queen).
+- Origins TCG tiene **doce Legendarias** jugables: seis cuestan 4 de maná, dos 5, tres 7 y una 8. La duodécima, Dr. Frank, llegó al juego con el [parche del 4 de noviembre de 2026](/es/news/balance-patch-1104-cyber-queen) y cuesta 5 desde el [parche del 17 de noviembre de 2026](/es/news/balance-patch-1117-sherwood-forest).
 - Once son unidades y una es un hechizo, Legion of the Dead. Cinco son Good, cuatro Evil y tres Neutral.
 - Cuatro crean otras cartas con su texto: Dracula, Van Helsing, Legion of the Dead y Three Not So Little Pigs.
 - De las once que estaban en el juego antes de noviembre, siete cambiaron en los parches de equilibrio entre agosto y el 21 de septiembre de 2026; Dracula, Van Helsing, Legion of the Dead y Robin Hood no. El [parche 0.7](/es/news/patch-0-7) del 29 de septiembre de 2026 no reequilibró ninguna y las notas de la versión 0.8 del 27 de octubre de 2026, la primera del Acceso anticipado, no citan cambios en las cartas; el parche del 4 de noviembre de 2026 convirtió a Dorothy en una 3/3.
@@ -50,8 +50,8 @@ Aquí abajo las Legendarias van por orden de coste y, con el mismo coste, por or
 | [Queen of Hearts](/es/cards/queen-of-hearts) | 4 | 3/3 | Evil | 2 |
 | [Van Helsing](/es/cards/van-helsing) | 4 | 3/4 | Good | 3 |
 | [Wicked Stepmother](/es/cards/wicked-stepmother) | 4 | 4/6 | Evil | 0 |
+| [Dr. Frank](/es/cards/dr-frank) | 5 | 2/2 | Evil | 0 |
 | [Merlin](/es/cards/merlin) | 5 | 5/5 | Neutral | 1 |
-| [Dr. Frank](/es/cards/dr-frank) | 6 | 2/2 | Evil | 0 |
 | [King Arthur](/es/cards/king-arthur) | 7 | 7/7 | Good | 2 |
 | [Legion of the Dead](/es/cards/legion-of-the-dead) | 7 | hechizo | Neutral | 2 |
 | [Three Not So Little Pigs](/es/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 4 |
@@ -65,7 +65,7 @@ La última columna cuenta los mazos que lidera cada Legendaria entre los 20 publ
 - **Tu rival la ve.** El parche 0.6.1 del playtest cerrado (14 de agosto de 2026) añadió la vista previa de la Legendaria del rival durante el mulligan, según las [notas oficiales del parche](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **En Conquest da nombre al mazo.** En la Crimson Cup cada jugador lleva tres mazos, y cuando baneas uno de los mazos de tu rival solo ves su Legendaria ([reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in)). Los anuncios no dicen si las tres Legendarias tienen que ser distintas; en Big Bob's Playtest Battle tenían que serlo. Cómo armar los tres mazos: nuestra [guía de Conquest](/es/guides/origins-tcg-conquest).
 
-Los textos de las cartas citados aquí abajo son los oficiales del juego, leídos en el juego en español, salvo el de Dr. Frank: llegó al juego el 4 de noviembre de 2026 y todavía no hemos leído allí su carta, así que su texto en español es una traducción nuestra con el glosario del juego. Los costes y las estadísticas se comprobaron carta por carta el 22 de septiembre de 2026. Las sagas y las notas sobre cada leyenda son de OriginsMeta. Los parches son los que seguimos en [MetaShifting](/es/metashifting): las actualizaciones 0.6.1, 0.6.2 y 0.6.3 del playtest (agosto de 2026), el parche del 21 de septiembre de 2026, el parche 0.7 del 29 de septiembre de 2026, que no reequilibró ninguna Legendaria, y el parche del 4 de noviembre de 2026, que convirtió a Dorothy en una 3/3 y trajo a Dr. Frank. El poder legendario no aparece aquí: todavía no lo hemos transcrito del juego, y la ficha de cada carta lo mostrará cuando lo hagamos.
+Los textos de las cartas citados aquí abajo son los oficiales del juego, leídos en el juego en español. Los costes y las estadísticas se comprobaron carta por carta el 11 de noviembre de 2026; los cambios posteriores vienen de las notas del parche. Las sagas y las notas sobre cada leyenda son de OriginsMeta. Los parches son los que seguimos en [MetaShifting](/es/metashifting): las actualizaciones 0.6.1, 0.6.2 y 0.6.3 del playtest (agosto de 2026), el parche del 21 de septiembre de 2026, el parche 0.7 del 29 de septiembre de 2026, que no reequilibró ninguna Legendaria, el parche del 4 de noviembre de 2026, que convirtió a Dorothy en una 3/3 y trajo a Dr. Frank, y el parche del 17 de noviembre de 2026, que bajó en 1 el coste de Dr. Frank. El poder legendario de cada una, tal como lo muestra el juego, está en su ficha.
 
 ## Dorothy {#dorothy}
 
@@ -151,6 +151,20 @@ Los textos de las cartas citados aquí abajo son los oficiales del juego, leído
 - **Guía.** Todavía no: [mándanos la tuya](/es/guides/submit).
 - **Ficha.** [Wicked Stepmother, carta Legendaria: estadísticas y texto](/es/cards/wicked-stepmother).
 
+## Dr. Frank {#dr-frank}
+
+**5 de maná · 2/2 · unidad · Evil** · Saga: Terror gótico
+
+> Antes del combate, invoca un personaje aleatorio de tu cementerio en un espacio aleatorio.
+
+- **La Legendaria más reciente.** Llegó al juego con el [parche del 4 de noviembre de 2026](/es/news/balance-patch-1104-cyber-queen) como Legendaria del mazo Relentless que pilota Cyber Queen, el jefe n.º 11, junto con otras siete cartas ([las ocho cartas de Dr. Frank](/es/news/dr-frank-boss-new-cards)). El texto es el leído en el juego el 11 de noviembre de 2026.
+- **La leyenda.** Victor Frankenstein, el estudiante que ensambló una criatura viva en la novela de Mary Shelley de 1818.
+- **Las cartas de su mazo.** [It's Alive](/es/cards/its-alive), un hechizo de 3 de maná que hace lo mismo una vez, y las dos cartas con Renacer, [Frank's Monster](/es/cards/franks-monster) y [Franken Bride](/es/cards/franken-bride). Su poder legendario añade It's Alive! a tu mano al empezar la partida.
+- **Parches.** Parche del 17 de noviembre de 2026: maná de 6 a 5 ([notas del parche](/es/news/balance-patch-1117-sherwood-forest)).
+- **Mazos en OriginsMeta a 25 de septiembre de 2026.** Ninguno: todavía no estaba en el juego. Los mazos que lo usan ahora se cuentan en [Las más jugadas](/es/tier-list/most-played).
+- **Guía.** Todavía no: [mándanos la tuya](/es/guides/submit).
+- **Ficha.** [Dr. Frank, carta Legendaria: estadísticas y texto](/es/cards/dr-frank).
+
 ## Merlin {#merlin}
 
 **5 de maná · 5/5 · unidad · Neutral** · Saga: Leyenda artúrica
@@ -162,20 +176,6 @@ Los textos de las cartas citados aquí abajo son los oficiales del juego, leído
 - **Mazos en OriginsMeta a 25 de septiembre de 2026.** Uno: Spellcast.
 - **Guía.** Todavía no: [mándanos la tuya](/es/guides/submit).
 - **Ficha.** [Merlin, carta Legendaria: estadísticas y texto](/es/cards/merlin).
-
-## Dr. Frank {#dr-frank}
-
-**6 de maná · 2/2 · unidad · Evil** · Saga: Terror gótico
-
-> Antes del combate, invoca un personaje aleatorio de tu cementerio en un espacio aleatorio.
-
-- **La Legendaria más reciente.** Llegó al juego con el [parche del 4 de noviembre de 2026](/es/news/balance-patch-1104-cyber-queen) como Legendaria del mazo Relentless que pilota Cyber Queen, el jefe n.º 11, junto con otras siete cartas ([las ocho cartas de Dr. Frank](/es/news/dr-frank-boss-new-cards)). El texto es el de la carta oficial, traducido por nosotros con el glosario del juego: todavía no lo hemos leído en el juego.
-- **La leyenda.** Victor Frankenstein, el estudiante que ensambló una criatura viva en la novela de Mary Shelley de 1818.
-- **Las cartas de su mazo.** [It's Alive](/es/cards/its-alive), un hechizo de 3 de maná que hace lo mismo una vez, y las dos cartas con Renacer, [Frank's Monster](/es/cards/franks-monster) y [Franken Bride](/es/cards/franken-bride). En las vistas previas de los creadores, su poder legendario te pone It's Alive en la mano al empezar la partida.
-- **Parches.** Sin cambios desde que llegó al juego.
-- **Mazos en OriginsMeta a 25 de septiembre de 2026.** Ninguno: todavía no estaba en el juego. Los mazos que lo usan ahora se cuentan en [Las más jugadas](/es/tier-list/most-played).
-- **Guía.** Todavía no: [mándanos la tuya](/es/guides/submit).
-- **Ficha.** [Dr. Frank, carta Legendaria: estadísticas y texto](/es/cards/dr-frank).
 
 ## King Arthur {#king-arthur}
 
@@ -241,7 +241,7 @@ Nuestra base de datos conserva también ocho Legendarias que ya no están en el 
 
 ## De dónde salen los números {#fuentes}
 
-- **Cartas:** la [base de datos de cartas](/es/cards) de OriginsMeta: costes, estadísticas y textos en inglés de las cartas jugables comprobados uno por uno en el juego el 22 de septiembre de 2026, textos en italiano y en español leídos en el juego el 25 de septiembre de 2026. Las estadísticas son las del parche del 4 de noviembre de 2026. El coste, las estadísticas y el texto de Dr. Frank son los de la carta oficial que Koin Games dio a conocer el 2 de noviembre de 2026, todavía no verificados en el juego.
+- **Cartas:** la [base de datos de cartas](/es/cards) de OriginsMeta: costes, estadísticas y textos de las cartas jugables comprobados uno por uno en el juego el 11 de noviembre de 2026, en todos los idiomas del sitio. Las estadísticas son las del parche del 17 de noviembre de 2026.
 - **Parches:** las notas oficiales de los parches en Steam, carta por carta en [MetaShifting](/es/metashifting); las de la versión 0.8 (27 de octubre de 2026, Acceso anticipado) no citan cambios en las cartas.
 - **Mazos:** los 20 mazos publicados en OriginsMeta desde el 15 de septiembre hasta las 20:00 (CEST) del 25 de septiembre de 2026 ([todos los mazos de Origins TCG](/es/decks)); el recuento posterior está en [Las más jugadas](/es/tier-list/most-played).
 
@@ -754,7 +754,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias cada una.
 | [Pegasus](/es/cards/pegasus) | 3 | 2/4; después de moverse, duplica su Poder |
 | [Flying Monkey](/es/cards/flying-monkey) | 3 | 4/1; Al revelar mueve a CUALQUIER otro personaje a un espacio al azar de aquí |
 | [Wicked Witch of the West](/es/cards/wicked-witch-of-the-west) | 3 | 1/5; cuando sobrevive al daño, añade un Flying Monkey a tu mano y se mueve un espacio a la izquierda |
-| [Kanga](/es/cards/kanga) | 3 | 2/3; antes del combate, los aliados que se movieron en esta ronda obtienen +1⚔️/+1❤️ |
+| [Kanga](/es/cards/kanga) | 3 | 2/4; antes del combate, los aliados que se movieron en esta ronda obtienen +1⚔️/+1❤️ |
 | [En Passant](/es/cards/en-passant) | 3 | Hechizo: mueve a un aliado e inflige daño igual a su Poder al personaje que tiene enfrente |
 | [Spellbook](/es/cards/spellbook) | 4 | Hechizo: a partir de ahora, un hechizo al azar en la mano cada ronda, que se descarta antes del combate |
 | [Magic Carpet](/es/cards/magic-carpet) | 4 | 4/4; Al revelar mueve a tus otros aliados un espacio a la izquierda, o un espacio a la derecha |
@@ -843,7 +843,7 @@ Veinticinco cartas: la Legendaria más doce cartas con dos copias de cada una.
 | [Bagheera](/es/cards/bagheera) | 2 | 1/1; Al revelar en un espacio central obtiene +2⚔️/+2❤️ |
 | [Morgiana](/es/cards/morgiana) | 2 | 2/3; impide que se activen TODAS las habilidades Al revelar en su ubicación |
 | [Mind Palace](/es/cards/mind-palace) | 3 | Hechizo: roba 2 cartas |
-| [Asanbosam](/es/cards/asanbosam) | 3 | 5/5; Al revelar descarta una carta aleatoria de coste par |
+| [Asanbosam](/es/cards/asanbosam) | 3 | 5/4; Al revelar descarta una carta aleatoria de coste par |
 | [Golden Egg](/es/cards/golden-egg) | 3 | 0/1; Al morir invoca una Golden Goose (5/5) en su espacio |
 | [Flying Monkey](/es/cards/flying-monkey) | 3 | 4/1; Al revelar mueve a CUALQUIER otro personaje a un espacio aleatorio de su ubicación |
 | [En Passant](/es/cards/en-passant) | 3 | Hechizo: mueve a un aliado e inflige su Poder al personaje de enfrente |
@@ -858,7 +858,7 @@ Diez unidades y tres hechizos. Las tres cartas baratas no son relleno: este mazo
 Tres cartas hacen el daño —**Boogeyman, Asanbosam e Impundulu**— y todo lo demás existe para protegerlas o abrirles el camino.
 
 - **Boogeyman** es un 7/7 por cuatro de maná, la mejor relación entre coste y estadísticas de la lista, con un inconveniente: al revelarse destruye al aliado de su ubicación con menos Poder, él incluido. Ponlo en un carril vacío y se mata a sí mismo; ponlo junto a un [Golden Egg](/es/cards/golden-egg) y el que muere es el Huevo, que deja una Golden Goose 5/5 en su espacio. Ese es el combo que señala el autor: dos cartas, un 7/7 y un 5/5.
-- **Asanbosam** es un 5/5 por tres de maná y, al revelarse, hace que el rival descarte una carta aleatoria de coste par.
+- **Asanbosam** es un 5/4 por tres de maná y, al revelarse, hace que el rival descarte una carta aleatoria de coste par.
 - **Impundulu** convierte cada ataque en un [Lightning Strike](/es/cards/lightning-strike) en tu mano: daño repetible, siempre que lo gastes antes del siguiente combate.
 
 La **Legendaria** cierra la partida en lugar de empezarla: a siete de maná, *Llena tu tablero de Zombies* ocupa de golpe todos los espacios libres. Rinde al máximo en la ronda siguiente a un intercambio que te ha vaciado el lado del tablero, o en las dos ubicaciones que no estabas disputando.
@@ -880,7 +880,7 @@ La nota del autor es breve y clara: **Bagheera y Thumbelina son inicios perfecto
 ## Ronda a ronda
 
 1. **Rondas 1–2: ocupa espacio a bajo coste.** Bagheera en el centro, Thumbelina donde esperes pelear, Bullseye sobre cualquier cosa con tres de Salud.
-2. **Ronda 3: la primera amenaza.** Asanbosam como 5/5, o el Golden Egg en el carril al que irá Boogeyman en la ronda siguiente.
+2. **Ronda 3: la primera amenaza.** Asanbosam como 5/4, o el Golden Egg en el carril al que irá Boogeyman en la ronda siguiente.
 3. **Ronda 4: Boogeyman.** Junto al Huevo si lo tienes; si no, junto al cuerpo más pequeño que puedas permitirte perder, y nunca en un carril vacío.
 4. **Rondas 5–6: presión y cartas.** Impundulu empieza a producir Strikes; Mind Palace rellena la mano. El autor lo dice sin rodeos: sin Mind Palace, el mazo se queda sin cartas demasiado pronto.
 5. **Ronda 7: Legion of the Dead.** Cada espacio libre se convierte en un 2/2. Cuenta los espacios antes de jugarla: después de una ronda con muchos intercambios, vale dos o tres cuerpos más.
@@ -1637,11 +1637,11 @@ Origins TCG está en Acceso anticipado desde el 27 de octubre de 2026, con la ve
 | 4 de noviembre | [Notas del parche](/es/news/balance-patch-1104-cyber-queen): diez cartas reequilibradas, Cyber Queen es el jefe n.º 11 |
 | 6 de noviembre | [AMA de la hoja de ruta](/es/news/origins-tcg-roadmap-ama-recap) en el Discord oficial: el plan del Acceso anticipado hasta febrero |
 | 10 de noviembre | [Parche 0.8.2](/es/news/patch-notes-0-8-2): exploits de la clasificatoria cerrados, menos desconexiones, mejor emparejamiento para quien empieza en PvP; ningún cambio en las cartas |
+| 17 de noviembre | [Parche de equilibrio](/es/news/balance-patch-1117-sherwood-forest): nueve cartas reequilibradas, Dr. Frank cuesta 5, Sherwood Forest pasa a rara |
 
 ## Lo que viene
 
 - **Kickstarter de la Alpha Edition.** Abierto desde el 27 de octubre de 2026: el Alpha Set "Myths & Legends", exclusivo del Kickstarter, tiene 218 cartas que Koin irá publicando a lo largo del Acceso anticipado. Todo lo que hay que saber, en nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
-- **17 de noviembre de 2026.** Parche de equilibrio, con un cambio previsto en Sherwood Forest.
 - **Noviembre de 2026.** El primer torneo mensual del Acceso anticipado, en formato Conquest con unas 400 plazas; Koin da los detalles la semana del 9 de noviembre.
 - **2 de diciembre de 2026.** Fin de la temporada clasificatoria en curso y primera gran actualización: Collector Pass, Prestige, cápsulas, ubicaciones nuevas y títulos. Sigue una temporada hasta mediados de enero y otra de mediados de enero a febrero.
 - **Febrero de 2027.** El set completo Myths and Legends, unas 218 cartas, con todas las recompensas del Kickstarter; la edición estándar llega a las tiendas.

@@ -12,7 +12,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
     faq: [
       {
         q: "Origins TCG 有多少张传说卡？",
-        a: "可用的有十二张：2026年9月22日在游戏中核对过的 Dorothy、Dracula、Mulan、Queen of Hearts、Van Helsing、Wicked Stepmother、Merlin、King Arthur、Legion of the Dead、Three Not So Little Pigs 和 Robin Hood，以及随 2026年11月4日的补丁进入游戏、尚未在游戏中核对的 Dr. Frank。OriginsMeta 数据库里还保留着另外八张已经不在游戏中的传说卡。",
+        a: "可用的有十二张：Dorothy、Dracula、Mulan、Queen of Hearts、Van Helsing、Wicked Stepmother、Dr. Frank、Merlin、King Arthur、Legion of the Dead、Three Not So Little Pigs 和 Robin Hood，全部于 2026年11月11日在游戏中核对过。Dr. Frank 随 2026年11月4日的补丁进入游戏。OriginsMeta 数据库里还保留着另外八张已经不在游戏中的传说卡。",
       },
       {
         q: "一副卡组可以放几张传说卡？",
@@ -30,7 +30,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
     body: `
 ## 简而言之 {#jian-er-yan-zhi}
 
-- Origins TCG 自 2026年10月27日起在 Steam 抢先体验中免费游玩，目前共有**十二张可用传说卡**：六张费用为 4 法力，一张为 5，一张为 6，三张为 7，一张为 8。第十二张是 Dr. Frank，随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏。
+- Origins TCG 自 2026年10月27日起在 Steam 抢先体验中免费游玩，目前共有**十二张可用传说卡**：六张费用为 4 法力，两张为 5，三张为 7，一张为 8。第十二张是 Dr. Frank，随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏，自 [2026年11月17日的补丁](/zh-cn/news/balance-patch-1117-sherwood-forest)起费用为 5。
 - 其中十一张是单位，一张是法术，即 Legion of the Dead。五张属于 Good，四张属于 Evil，三张属于 Neutral。
 - 有四张会通过卡牌文本生成其他卡牌：Dracula、Van Helsing、Legion of the Dead 和 Three Not So Little Pigs。
 - 在 11月之前就已在游戏中的十一张里，有七张在 2026年8月至 9月21日之间的平衡补丁中被改动过；Dracula、Van Helsing、Legion of the Dead 和 Robin Hood 没有变化。2026年9月29日的 [0.7 补丁](/zh-cn/news/patch-0-7)没有调整其中任何一张，2026年11月4日的补丁则让 Dorothy 变为 3/3。
@@ -48,8 +48,8 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 | [Queen of Hearts](/zh-cn/cards/queen-of-hearts) | 4 | 3/3 | Evil | 2 |
 | [Van Helsing](/zh-cn/cards/van-helsing) | 4 | 3/4 | Good | 3 |
 | [Wicked Stepmother](/zh-cn/cards/wicked-stepmother) | 4 | 4/6 | Evil | 0 |
+| [Dr. Frank](/zh-cn/cards/dr-frank) | 5 | 2/2 | Evil | 0 |
 | [Merlin](/zh-cn/cards/merlin) | 5 | 5/5 | Neutral | 1 |
-| [Dr. Frank](/zh-cn/cards/dr-frank) | 6 | 2/2 | Evil | 0 |
 | [King Arthur](/zh-cn/cards/king-arthur) | 7 | 7/7 | Good | 2 |
 | [Legion of the Dead](/zh-cn/cards/legion-of-the-dead) | 7 | 法术 | Neutral | 2 |
 | [Three Not So Little Pigs](/zh-cn/cards/three-not-so-little-pigs) | 7 | 3/3 | Neutral | 4 |
@@ -63,7 +63,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 - **对手看得到它。** 封闭测试的 0.6.1 补丁（2026年8月14日）加入了在调度（mulligan）阶段预览对手传说卡的功能，见[官方补丁说明](https://store.steampowered.com/news/app/4429430/view/1840944183780414)。
 - **在 Conquest 中它就是卡组的名字。** 在 Crimson Cup 中每位玩家带三副卡组，当你禁用对手的一副卡组时，你只能看到它的传说卡（[Crimson Cup 规则](/zh-cn/news/crimson-cup-format-check-in)）。公告没有说明三张传说卡是否必须不同；在 Big Bob's Playtest Battle 中是必须的。如何组合三副卡组：见我们的 [Conquest 攻略](/zh-cn/guides/origins-tcg-conquest)。
 
-除 Dr. Frank 外，下面引用的卡牌文本都是 OriginsMeta 根据游戏内官方英文文本翻译的中文版本，尚未与游戏内的简体中文文本逐一核对。Dr. Frank 于 2026年11月4日进入游戏，我们还没有在游戏中读到他的卡牌：他的文本译自官方卡牌。费用和数据于 2026年9月22日逐张核对。传说出处和每个传说的介绍由 OriginsMeta 撰写。补丁为 [MetaShifting](/zh-cn/metashifting) 中追踪的那些：试玩测试更新 0.6.1、0.6.2 和 0.6.3（2026年8月）、2026年9月21日的试玩版补丁、2026年9月29日没有调整任何传说卡的 0.7 补丁，以及 2026年11月4日的补丁，它让 Dorothy 变为 3/3，并带来了 Dr. Frank；2026年10月27日的 0.8 补丁说明是抢先体验的第一份补丁说明，没有提到卡牌改动。这里不介绍传说之力：我们还没有从游戏中把它记录下来，记录之后会显示在每张卡的页面上。
+下面引用的卡牌文本都是游戏的官方简体中文文本，于 2026年11月11日从游戏文件中读取。费用和数据于 2026年11月11日逐张核对，之后的改动来自补丁说明。传说出处和每个传说的介绍由 OriginsMeta 撰写。补丁为 [MetaShifting](/zh-cn/metashifting) 中追踪的那些：试玩测试更新 0.6.1、0.6.2 和 0.6.3（2026年8月）、2026年9月21日的试玩版补丁、2026年9月29日没有调整任何传说卡的 0.7 补丁、2026年11月4日的补丁（它让 Dorothy 变为 3/3，并带来了 Dr. Frank），以及 2026年11月17日的补丁（它让 Dr. Frank 的费用减少 1）；2026年10月27日的 0.8 补丁说明是抢先体验的第一份补丁说明，没有提到卡牌改动。每张传说卡的传说之力以游戏中的显示为准，见各自的卡牌页面。
 
 ## Dorothy {#dorothy}
 
@@ -149,6 +149,20 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 - **攻略。** 暂无：[把你的攻略发给我们](/zh-cn/guides/submit)。
 - **卡牌页面。** [Wicked Stepmother，传说卡：数据与文本](/zh-cn/cards/wicked-stepmother)。
 
+## Dr. Frank {#dr-frank}
+
+**5 法力 · 2/2 · 单位 · Evil** · 出处：哥特恐怖
+
+> 战斗前，从你的墓地召唤一个随机角色到一个随机格子上。
+
+- **最新的传说卡。** 他随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏，是第 11 位首领 Cyber Queen 所用 Relentless 卡组中的传说卡，同时到来的还有另外七张卡（[Dr. Frank 的八张新卡](/zh-cn/news/dr-frank-boss-new-cards)）。上面的文本是 2026年11月11日从游戏中读取的官方文本。
+- **传说。** 维克多·弗兰肯斯坦，在玛丽·雪莱 1818 年的小说中拼造出活物的学生。
+- **围绕他的卡牌。** [It's Alive](/zh-cn/cards/its-alive)，一张 3 法力的法术，效果与他相同，但只生效一次；还有两张具有重生（Rebirth）的卡，[Frank's Monster](/zh-cn/cards/franks-monster) 和 [Franken Bride](/zh-cn/cards/franken-bride)。他的传说之力会在对局开始时把 It's Alive! 加入你的手牌。
+- **补丁。** 2026年11月17日的补丁：法力 6 → 5（[补丁说明](/zh-cn/news/balance-patch-1117-sherwood-forest)）。
+- **OriginsMeta 上的卡组，2026年9月25日。** 一副也没有：那时他还不在游戏中。现在有多少卡组使用他，见[最常用](/zh-cn/tier-list/most-played)。
+- **攻略。** 暂无：[把你的攻略发给我们](/zh-cn/guides/submit)。
+- **卡牌页面。** [Dr. Frank，传说卡：数据与文本](/zh-cn/cards/dr-frank)。
+
 ## Merlin {#merlin}
 
 **5 法力 · 5/5 · 单位 · Neutral** · 出处：亚瑟王传说
@@ -160,20 +174,6 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 - **OriginsMeta 上的卡组，2026年9月25日。** 一副：Spellcast。
 - **攻略。** 暂无：[把你的攻略发给我们](/zh-cn/guides/submit)。
 - **卡牌页面。** [Merlin，传说卡：数据与文本](/zh-cn/cards/merlin)。
-
-## Dr. Frank {#dr-frank}
-
-**6 法力 · 2/2 · 单位 · Evil** · 出处：哥特恐怖
-
-> 战斗前，从你的墓地召唤一个随机角色到一个随机格子上。
-
-- **最新的传说卡。** 他随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏，是第 11 位首领 Cyber Queen 所用 Relentless 卡组中的传说卡，同时到来的还有另外七张卡（[Dr. Frank 的八张新卡](/zh-cn/news/dr-frank-boss-new-cards)）。上面的文本译自官方卡牌：我们还没有在游戏中读到它。
-- **传说。** 维克多·弗兰肯斯坦，在玛丽·雪莱 1818 年的小说中拼造出活物的学生。
-- **围绕他的卡牌。** [It's Alive](/zh-cn/cards/its-alive)，一张 3 法力的法术，效果与他相同，但只生效一次；还有两张具有重生（Rebirth）的卡，[Frank's Monster](/zh-cn/cards/franks-monster) 和 [Franken Bride](/zh-cn/cards/franken-bride)。在创作者们的预览中，他的传说之力会在对局开始时把 It's Alive 放入你的手牌。
-- **补丁。** 自进入游戏以来没有改动。
-- **OriginsMeta 上的卡组，2026年9月25日。** 一副也没有：那时他还不在游戏中。现在有多少卡组使用他，见[最常用](/zh-cn/tier-list/most-played)。
-- **攻略。** 暂无：[把你的攻略发给我们](/zh-cn/guides/submit)。
-- **卡牌页面。** [Dr. Frank，传说卡：数据与文本](/zh-cn/cards/dr-frank)。
 
 ## King Arthur {#king-arthur}
 
@@ -239,7 +239,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 ## 数据来源 {#shu-ju-lai-yuan}
 
-- **卡牌：** OriginsMeta [卡牌数据库](/zh-cn/cards)：可用卡牌的费用、数据和英文文本于 2026年9月22日在游戏中逐张核对，中文文本为 OriginsMeta 的翻译，尚未与游戏内文本核对。数据为 2026年11月4日补丁的版本。Dr. Frank 的费用、数据和文本来自 Koin Games 于 2026年11月2日公布的官方卡牌，尚未在游戏中核对。
+- **卡牌：** OriginsMeta [卡牌数据库](/zh-cn/cards)：可用卡牌的费用、数据和文本于 2026年11月11日在游戏中逐张核对，包括本站所有语言的文本。数据为 2026年11月17日补丁的版本。
 - **补丁：** Steam 上的官方补丁说明，在 [MetaShifting](/zh-cn/metashifting) 中逐卡整理。
 - **卡组：** 2026年9月15日至 9月25日 20:00 CEST 在 OriginsMeta 发布的 20 副卡组（[所有 Origins TCG 卡组](/zh-cn/decks)）；之后的统计见[最常用](/zh-cn/tier-list/most-played)。
 
@@ -752,7 +752,7 @@ Mulan 还拥有**连击**（Double Attack），所以她自己的 2/4 身材在�
 | [Pegasus](/zh-cn/cards/pegasus) | 3 | 2/4；移动后力量翻倍 |
 | [Flying Monkey](/zh-cn/cards/flying-monkey) | 3 | 4/1；揭示时将**任意**其他角色移动到此处的一个随机格位 |
 | [Wicked Witch of the West](/zh-cn/cards/wicked-witch-of-the-west) | 3 | 1/5；在伤害中存活时，将一只 Flying Monkey 加入你的手牌，并向左移动一格 |
-| [Kanga](/zh-cn/cards/kanga) | 3 | 2/3；战斗前，本回合移动过的友方获得 +1⚔️/+1❤️ |
+| [Kanga](/zh-cn/cards/kanga) | 3 | 2/4；战斗前，本回合移动过的友方获得 +1⚔️/+1❤️ |
 | [En Passant](/zh-cn/cards/en-passant) | 3 | 法术：移动一个友方，并对其对面的角色造成等同于其力量的伤害 |
 | [Spellbook](/zh-cn/cards/spellbook) | 4 | 法术：从此以后，每回合手牌中获得一张随机法术，在战斗前弃掉 |
 | [Magic Carpet](/zh-cn/cards/magic-carpet) | 4 | 4/4；揭示时将你的其他友方向左移动一格，或向右移动一格 |
@@ -841,7 +841,7 @@ Dorothy 是一个会计数的 3/3：**本局对局中友方每移动一次，+1�
 | [Bagheera](/zh-cn/cards/bagheera) | 2 | 1/1；在中间格位揭示时获得 +2⚔️/+2❤️ |
 | [Morgiana](/zh-cn/cards/morgiana) | 2 | 2/3；阻止其所在地点的**所有**揭示时能力触发 |
 | [Mind Palace](/zh-cn/cards/mind-palace) | 3 | 法术：抽 2 张牌 |
-| [Asanbosam](/zh-cn/cards/asanbosam) | 3 | 5/5；揭示时弃掉一张随机的偶数费用卡牌 |
+| [Asanbosam](/zh-cn/cards/asanbosam) | 3 | 5/4；揭示时弃掉一张随机的偶数费用卡牌 |
 | [Golden Egg](/zh-cn/cards/golden-egg) | 3 | 0/1；死亡时在其格位召唤一只 Golden Goose（5/5） |
 | [Flying Monkey](/zh-cn/cards/flying-monkey) | 3 | 4/1；揭示时将**任意**其他角色移动到此处的一个随机格位 |
 | [En Passant](/zh-cn/cards/en-passant) | 3 | 法术：移动一个友方，并对其对面的角色造成等同于其力量的伤害 |
@@ -856,7 +856,7 @@ Dorothy 是一个会计数的 3/3：**本局对局中友方每移动一次，+1�
 三张牌负责输出——**Boogeyman、Asanbosam 和 Impundulu**——其余的牌都是为了保护它们或为它们开路。
 
 - **Boogeyman** 是一张四费的 7/7，是卡表中性价比最高的牌，但有个代价：揭示时（On Reveal）它会消灭其所在地点力量最低的友方，包括它自己。把它放进空战线，它会消灭自己；把它放在 [Golden Egg](/zh-cn/cards/golden-egg) 旁边，死的就是 Egg，并在其格位留下一只 5/5 的 Golden Goose。这就是作者指出的组合技：两张牌，一个 7/7 加一个 5/5。
-- **Asanbosam** 是一张三费的 5/5，揭示时会让对手随机弃掉一张偶数费用的牌。
+- **Asanbosam** 是一张三费的 5/4，揭示时会让对手随机弃掉一张偶数费用的牌。
 - **Impundulu** 把每一次攻击都变成你手牌中的一张 [Lightning Strike](/zh-cn/cards/lightning-strike)：可重复的伤害，只要你在下一次战斗前用掉它。
 
 **传说卡**的作用是终结对局，而不是开启对局：七费的*用 Zombie 填满你的战场*会一次占满所有空格位。它最好的时机是在一次交换清空你这一侧之后的那个回合，或者打进那两个你没有争夺的地点。

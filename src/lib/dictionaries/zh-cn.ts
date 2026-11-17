@@ -140,7 +140,7 @@ export const zhCn: Dictionary = {
     stats: "数据",
     unknownStats: "数据尚未公布",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "数据截至 2026年11月4日的补丁：游戏收藏中的 130 张卡牌已于 2026年11月11日在游戏中核对（抢先体验 0.8.2 版本），平衡说明来自官方补丁说明。",
+    asOf: "数据截至 2026年11月17日的补丁：游戏收藏中的 130 张卡牌已于 2026年11月11日在游戏中核对（抢先体验 0.8.2 版本），平衡说明来自官方补丁说明。",
     alignment: "阵营",
     good: "Good",
     evil: "Evil",

@@ -41,9 +41,10 @@ export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
  * del 21/09/2026 non ce l'ha (il team la chiama "Demo patch notes - Sep 21 2026"), quindi ha un id nostro
  * e un'etichetta leggibile in `patches`. La seconda della demo, del 29/09/2026, torna ad avere un numero:
  * 0.7 ("Steam Demo Update #2" nell'immagine ufficiale). La prima patch di bilanciamento dell'Accesso anticipato, del
- * 04/11/2026, non ha numero nelle patch notes: id nostro "ea-1104" ed etichetta in `patches`, come la demo del 21/09.
+ * 04/11/2026, non ha numero nelle patch notes: id nostro "ea-1104" ed etichetta in `patches`, come la demo del 21/09. La
+ * seconda, del 17/11/2026, neanche: "ea-1117".
  */
-export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921", "0.7", "ea-1104"] as const;
+export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921", "0.7", "ea-1104", "ea-1117"] as const;
 export type PatchId = (typeof patchOrder)[number];
 export type Alignment = "good" | "evil" | "neutral";
 export type Rarity = "common" | "rare" | "epic" | "legendary";
@@ -147,6 +148,19 @@ export const patches: Record<PatchId, { date: string; at?: string; url: string; 
     title: "Origins just got a new boss!",
     label: { en: "EA · 4 Nov", it: "EA · 4 nov", es: "EA · 4 nov", fr: "EA · 4 nov.", pt: "EA · 4 nov.", de: "EA · 4. Nov.", ru: "EA · 4 нояб.", "zh-cn": "EA · 11月4日" },
     news: "balance-patch-1104-cyber-queen",
+  },
+  // Seconda patch di bilanciamento dell'Accesso anticipato, annunciata nell'AMA del 06/11 per il 17/11 e senza numero di
+  // versione, come quella del 04/11. Post Steam "Enough with the Merry Men!!!" di apix del 17/11/2026 alle 18:00:28 UTC
+  // (gid letto con ISteamNews), con le stesse modifiche delle patch notes del Discord ufficiale ("[BUILD] PATCH NOTES
+  // (Nov 17, 2026)"): nove carte, solo costo e statistiche, e il luogo Sherwood Forest da Comune a Raro (i luoghi del sito
+  // non hanno la rarità: sta solo nella news). Server giù "1-2 hours" per installarla: `at` è l'ora del post Steam.
+  "ea-1117": {
+    date: "2026-11-17",
+    at: "2026-11-17T18:00:28Z",
+    url: "https://store.steampowered.com/news/app/4429430/view/1849458702694759",
+    title: "Enough with the Merry Men!!!",
+    label: { en: "EA · 17 Nov", it: "EA · 17 nov", es: "EA · 17 nov", fr: "EA · 17 nov.", pt: "EA · 17 nov.", de: "EA · 17. Nov.", ru: "EA · 17 нояб.", "zh-cn": "EA · 11月17日" },
+    news: "balance-patch-1117-sherwood-forest",
   },
 };
 

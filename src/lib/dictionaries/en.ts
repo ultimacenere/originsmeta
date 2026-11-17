@@ -134,7 +134,7 @@ export const en = {
     stats: "Stats",
     unknownStats: "stats not yet published",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats as of the patch of 4 November 2026: the 130 cards of the game's collection were checked in the game on 11 November 2026, on Early Access version 0.8.2, and balance changes come from the official patch notes.",
+    asOf: "Stats as of the patch of 17 November 2026: the 130 cards of the game's collection were checked in the game on 11 November 2026, on Early Access version 0.8.2, and balance changes come from the official patch notes.",
     alignment: "Alignment",
     good: "Good",
     evil: "Evil",

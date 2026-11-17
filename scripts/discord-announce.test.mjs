@@ -55,7 +55,9 @@ describe("lettura dei file", () => {
     assert.deepEqual(patches.get("patch-0-7"), { patch: "0.7", date: "2026-09-29" });
     // patch del 04/11/2026, la prima dell'Accesso anticipato: id nostro ea-1104
     assert.deepEqual(patches.get("balance-patch-1104-cyber-queen"), { patch: "ea-1104", date: "2026-11-04" });
-    assert.equal(patches.size, 6);
+    // patch del 17/11/2026, la seconda dell'Accesso anticipato: id nostro ea-1117
+    assert.deepEqual(patches.get("balance-patch-1117-sherwood-forest"), { patch: "ea-1117", date: "2026-11-17" });
+    assert.equal(patches.size, 7);
     for (const slug of patches.keys()) assert.ok(bySlug.has(slug), `la patch cita una news che esiste: ${slug}`);
   });
 });

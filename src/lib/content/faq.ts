@@ -161,7 +161,7 @@ const en: Faq[] = [
   {
     id: "legendaries",
     q: "Which Legendaries are in Origins TCG?",
-    a: "There are 12 in the game, with the stats of the patch of 4 November 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Dr. Frank came into the game with that patch, in the Relentless deck of the boss Cyber Queen, and has not been checked in the game yet. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other eleven are units. Each has its own page in our card database, with the card text, the stats and the balance history.",
+    a: "There are 12 in the game, with the stats of the patch of 17 November 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing and Wicked Stepmother. Dr. Frank came into the game with the patch of 4 November, in the Relentless deck of the boss Cyber Queen. Every deck is led by exactly one of them; Legion of the Dead is the only spell, the other eleven are units. Each has its own page in our card database, with the card text, the stats and the balance history.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Card database" }],
@@ -189,6 +189,7 @@ const en: Faq[] = [
     q: "Where do the card stats on this site come from?",
     a: "Costs, stats, rarities, alignments and texts of the 130 cards in the game's collection were checked one by one in the game on 11 November 2026, on Early Access version 0.8.2: in the collection, and in the game's own texts in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese. Balance changes come from the official patch notes on Steam and on the official Discord; when a card changes without being in the notes, as Trash for Treasure did on 4 November, the site follows the game. Created and removed cards are not in the game's collection, so they have not been checked in the game; the text of created cards is the one in the game's files. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "Patch notes of 17 November" },
       { slug: "balance-patch-1104-cyber-queen", label: "Patch notes of 4 November" },
       { slug: "patch-0-7", label: "Patch 0.7 notes" },
       { slug: "demo-patch-notes-0921", label: "Demo patch notes of 21 September" },
@@ -290,7 +291,7 @@ const it: Faq[] = [
   {
     id: "legendaries",
     q: "Quali Leggendarie ci sono in Origins TCG?",
-    a: "Nel gioco ce ne sono 12, con le statistiche della patch del 4 novembre 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Dr. Frank è entrato nel gioco con quella patch, nel mazzo Relentless del boss Cyber Queen, e non è ancora stato verificato nel gioco. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre undici sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo della carta, le statistiche e lo storico dei bilanciamenti.",
+    a: "Nel gioco ce ne sono 12, con le statistiche della patch del 17 novembre 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Dr. Frank è entrato nel gioco con la patch del 4 novembre, nel mazzo Relentless del boss Cyber Queen. Ogni mazzo ne ha una sola a guidarlo; Legion of the Dead è l'unica magia, le altre undici sono unità. Ognuna ha la sua scheda nel nostro database carte, con il testo della carta, le statistiche e lo storico dei bilanciamenti.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Database carte" }],
@@ -318,6 +319,7 @@ const it: Faq[] = [
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
     a: "Costi, statistiche, rarità, allineamenti e testi delle 130 carte della collezione del gioco sono stati verificati uno per uno nel gioco l'11 novembre 2026, sulla versione 0.8.2 dell'Accesso anticipato: nella collezione e nei testi del gioco in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato. I bilanciamenti vengono dalle patch notes ufficiali su Steam e sul Discord ufficiale; quando una carta cambia senza essere nelle note, come Trash for Treasure il 4 novembre, il sito segue il gioco. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco; il testo delle carte generate è quello dei file del gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "Patch notes del 17 novembre" },
       { slug: "balance-patch-1104-cyber-queen", label: "Patch notes del 4 novembre" },
       { slug: "patch-0-7", label: "Patch notes della 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patch notes della demo del 21 settembre" },
@@ -419,7 +421,7 @@ const es: Faq[] = [
   {
     id: "legendaries",
     q: "¿Qué Legendarias hay en Origins TCG?",
-    a: "En el juego hay 12, con las estadísticas del parche del 4 de noviembre de 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Dr. Frank llegó al juego con ese parche, en el mazo Relentless del jefe Cyber Queen, y todavía no se ha verificado en el juego. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras once son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto de la carta, las estadísticas y el historial de cambios.",
+    a: "En el juego hay 12, con las estadísticas del parche del 17 de noviembre de 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing y Wicked Stepmother. Dr. Frank llegó al juego con el parche del 4 de noviembre, en el mazo Relentless del jefe Cyber Queen. Cada mazo lleva exactamente una; Legion of the Dead es el único hechizo, las otras once son unidades. Cada una tiene su página en nuestra base de datos de cartas, con el texto de la carta, las estadísticas y el historial de cambios.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
@@ -447,6 +449,7 @@ const es: Faq[] = [
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
     a: "Los costes, las estadísticas, las rarezas, los alineamientos y los textos de las 130 cartas de la colección del juego se comprobaron uno por uno en el juego el 11 de noviembre de 2026, en la versión 0.8.2 del Acceso anticipado: en la colección y en los textos del propio juego en inglés, italiano, español, francés, portugués, alemán, ruso y chino simplificado. Los cambios de equilibrio vienen de las notas oficiales de los parches en Steam y en el Discord oficial; cuando una carta cambia sin estar en las notas, como Trash for Treasure el 4 de noviembre, el sitio sigue al juego. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego; el texto de las cartas creadas es el de los archivos del juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "Notas del parche del 17 de noviembre" },
       { slug: "balance-patch-1104-cyber-queen", label: "Notas del parche del 4 de noviembre" },
       { slug: "patch-0-7", label: "Notas del parche 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas del parche de la demo del 21 de septiembre" },
@@ -548,7 +551,7 @@ const fr: Faq[] = [
   {
     id: "legendaries",
     q: "Quelles Légendaires y a-t-il dans Origins TCG ?",
-    a: "Il y en a 12 dans le jeu, avec les statistiques du patch du 4 novembre 2026 : Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing et Wicked Stepmother. Dr. Frank est arrivé dans le jeu avec ce patch, dans le deck Relentless du boss Cyber Queen, et n'a pas encore été vérifié dans le jeu. Chaque deck est mené par exactement l'une d'elles ; Legion of the Dead est le seul sort, les onze autres sont des unités. Chacune a sa page dans notre base de données des cartes, avec le texte de la carte, les statistiques et l'historique des équilibrages.",
+    a: "Il y en a 12 dans le jeu, avec les statistiques du patch du 17 novembre 2026 : Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing et Wicked Stepmother. Dr. Frank est arrivé dans le jeu avec le patch du 4 novembre, dans le deck Relentless du boss Cyber Queen. Chaque deck est mené par exactement l'une d'elles ; Legion of the Dead est le seul sort, les onze autres sont des unités. Chacune a sa page dans notre base de données des cartes, avec le texte de la carte, les statistiques et l'historique des équilibrages.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Base de données des cartes" }],
@@ -576,6 +579,7 @@ const fr: Faq[] = [
     q: "D'où viennent les statistiques des cartes de ce site ?",
     a: "Les coûts, les statistiques, les raretés, les alignements et les textes des 130 cartes de la collection du jeu ont été vérifiés un par un dans le jeu le 11 novembre 2026, sur la version 0.8.2 de l'Accès anticipé : dans la collection et dans les textes du jeu en français, en anglais, en italien, en espagnol, en portugais, en allemand, en russe et en chinois simplifié. Les équilibrages viennent des notes de patch officielles sur Steam et sur le Discord officiel ; quand une carte change sans figurer dans les notes, comme Trash for Treasure le 4 novembre, le site suit le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu ; le texte des cartes créées est celui des fichiers du jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "Notes du patch du 17 novembre" },
       { slug: "balance-patch-1104-cyber-queen", label: "Notes du patch du 4 novembre" },
       { slug: "patch-0-7", label: "Notes du patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notes de patch de la démo du 21 septembre" },
@@ -679,7 +683,7 @@ const pt: Faq[] = [
   {
     id: "legendaries",
     q: "Quais são as Lendárias de Origins TCG?",
-    a: "Há 12 no jogo, com as estatísticas do patch de 4 de novembro de 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Dr. Frank entrou no jogo com esse patch, no deck Relentless do chefe Cyber Queen, e ainda não foi verificado no jogo. Cada deck é liderado por exatamente uma delas; Legion of the Dead é o único feitiço, as outras onze são personagens. Cada uma tem a sua página no nosso banco de dados de cartas, com o texto da carta, as estatísticas e o histórico de balanceamento.",
+    a: "Há 12 no jogo, com as estatísticas do patch de 17 de novembro de 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing e Wicked Stepmother. Dr. Frank entrou no jogo com o patch de 4 de novembro, no deck Relentless do chefe Cyber Queen. Cada deck é liderado por exatamente uma delas; Legion of the Dead é o único feitiço, as outras onze são personagens. Cada uma tem a sua página no nosso banco de dados de cartas, com o texto da carta, as estatísticas e o histórico de balanceamento.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Banco de dados de cartas" }],
@@ -707,6 +711,7 @@ const pt: Faq[] = [
     q: "De onde vêm as estatísticas das cartas deste site?",
     a: "Os custos, as estatísticas, as raridades, os alinhamentos e os textos das 130 cartas da coleção do jogo foram verificados um a um no jogo em 11 de novembro de 2026, na versão 0.8.2 do Acesso Antecipado: na coleção e nos textos do próprio jogo em inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado. As mudanças de balanceamento vêm das notas oficiais do patch na Steam e no Discord oficial; quando uma carta muda sem estar nas notas, como Trash for Treasure em 4 de novembro, o site segue o jogo. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo; o texto das cartas criadas é o dos arquivos do jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "Notas do patch de 17 de novembro" },
       { slug: "balance-patch-1104-cyber-queen", label: "Notas do patch de 4 de novembro" },
       { slug: "patch-0-7", label: "Notas do patch 0.7" },
       { slug: "demo-patch-notes-0921", label: "Notas do patch da demo de 21 de setembro" },
@@ -810,7 +815,7 @@ const de: Faq[] = [
   {
     id: "legendaries",
     q: "Welche Legendären gibt es in Origins TCG?",
-    a: "Im Spiel sind es 12, mit den Werten des Patches vom 4. November 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing und Wicked Stepmother. Dr. Frank kam mit diesem Patch ins Spiel, im Relentless-Deck des Bosses Cyber Queen, und wurde noch nicht im Spiel geprüft. Jedes Deck wird von genau einer davon angeführt; Legion of the Dead ist der einzige Zauber, die anderen elf sind Charaktere. Jede hat ihre eigene Seite in unserer Kartendatenbank, mit dem Kartentext, den Werten und der Balance-Historie.",
+    a: "Im Spiel sind es 12, mit den Werten des Patches vom 17. November 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing und Wicked Stepmother. Dr. Frank kam mit dem Patch vom 4. November ins Spiel, im Relentless-Deck des Bosses Cyber Queen. Jedes Deck wird von genau einer davon angeführt; Legion of the Dead ist der einzige Zauber, die anderen elf sind Charaktere. Jede hat ihre eigene Seite in unserer Kartendatenbank, mit dem Kartentext, den Werten und der Balance-Historie.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "Kartendatenbank" }],
@@ -838,6 +843,7 @@ const de: Faq[] = [
     q: "Woher stammen die Kartenwerte auf dieser Website?",
     a: "Kosten, Werte, Seltenheiten, Gesinnungen und Texte der 130 Karten der Sammlung des Spiels wurden am 11. November 2026 einzeln im Spiel geprüft, auf Version 0.8.2 des Early Access: in der Sammlung und in den Texten des Spiels auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch, Russisch und vereinfachtem Chinesisch. Die Balance-Änderungen stammen aus den offiziellen Patchnotes auf Steam und im offiziellen Discord; ändert sich eine Karte, ohne in den Notes zu stehen, wie Trash for Treasure am 4. November, folgt die Website dem Spiel. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft; der Text der erschaffenen Karten ist der aus den Dateien des Spiels. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "Patchnotes vom 17. November" },
       { slug: "balance-patch-1104-cyber-queen", label: "Patchnotes vom 4. November" },
       { slug: "patch-0-7", label: "Patchnotes zu 0.7" },
       { slug: "demo-patch-notes-0921", label: "Patchnotes der Demo vom 21. September" },
@@ -941,7 +947,7 @@ const ru: Faq[] = [
   {
     id: "legendaries",
     q: "Какие Легендарные карты есть в Origins TCG?",
-    a: "В игре их 12, с характеристиками патча от 4 ноября 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing и Wicked Stepmother. Карта Dr. Frank появилась в игре с этим патчем, в колоде Relentless босса Cyber Queen, и в игре ещё не проверена. Каждую колоду возглавляет ровно одна из них; Legion of the Dead — единственное заклинание, остальные одиннадцать — персонажи. У каждой есть своя страница в нашей базе карт: с текстом карты, характеристиками и историей балансных изменений.",
+    a: "В игре их 12, с характеристиками патча от 17 ноября 2026: Dorothy, Dr. Frank, Dracula, King Arthur, Legion of the Dead, Merlin, Mulan, Queen of Hearts, Robin Hood, Three Not So Little Pigs, Van Helsing и Wicked Stepmother. Карта Dr. Frank появилась в игре с патчем от 4 ноября, в колоде Relentless босса Cyber Queen. Каждую колоду возглавляет ровно одна из них; Legion of the Dead — единственное заклинание, остальные одиннадцать — персонажи. У каждой есть своя страница в нашей базе карт: с текстом карты, характеристиками и историей балансных изменений.",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "База карт" }],
@@ -969,6 +975,7 @@ const ru: Faq[] = [
     q: "Откуда берутся характеристики карт на этом сайте?",
     a: "Стоимость, характеристики, редкость, мировоззрения и тексты 130 карт коллекции игры проверены в игре по одной 11 ноября 2026 года, на версии 0.8.2 раннего доступа: в коллекции и в текстах самой игры на английском, итальянском, испанском, французском, португальском, немецком, русском и упрощённом китайском. Изменения баланса взяты из официальных патчноутов в Steam и в официальном Discord; если карта меняется без упоминания в патчноутах, как Trash for Treasure 4 ноября, сайт следует за игрой. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре; текст созданных карт взят из файлов игры. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "Патчноуты от 17 ноября" },
       { slug: "balance-patch-1104-cyber-queen", label: "Патчноуты от 4 ноября" },
       { slug: "patch-0-7", label: "Патчноуты 0.7" },
       { slug: "demo-patch-notes-0921", label: "Патчноуты демоверсии от 21 сентября" },
@@ -1074,7 +1081,7 @@ const zhCn: Faq[] = [
   {
     id: "legendaries",
     q: "Origins TCG 有哪些传说卡？",
-    a: "游戏中共有 12 张，数值为 2026年11月4日补丁的数值：Dorothy、Dr. Frank、Dracula、King Arthur、Legion of the Dead、Merlin、Mulan、Queen of Hearts、Robin Hood、Three Not So Little Pigs、Van Helsing 和 Wicked Stepmother。Dr. Frank 随该补丁加入游戏，是首领 Cyber Queen 的 Relentless 卡组的传说卡，尚未在游戏中核对。每副卡组都恰好由其中一张领衔；Legion of the Dead 是唯一的法术，其余十一张都是角色。每张传说卡在我们的卡牌数据库中都有自己的页面，包括卡牌文本（中文为我们的翻译）、数值和平衡改动记录。",
+    a: "游戏中共有 12 张，数值为 2026年11月17日补丁的数值：Dorothy、Dr. Frank、Dracula、King Arthur、Legion of the Dead、Merlin、Mulan、Queen of Hearts、Robin Hood、Three Not So Little Pigs、Van Helsing 和 Wicked Stepmother。Dr. Frank 随 11月4日的补丁加入游戏，是首领 Cyber Queen 的 Relentless 卡组的传说卡。每副卡组都恰好由其中一张领衔；Legion of the Dead 是唯一的法术，其余十一张都是角色。每张传说卡在我们的卡牌数据库中都有自己的页面，包括卡牌文本、数值和平衡改动记录。",
     cards: legendaries,
     guides: ["origins-tcg-legendaries", "origins-tcg-explained"],
     links: [{ path: "/cards", label: "卡牌数据库" }],
@@ -1102,6 +1109,7 @@ const zhCn: Faq[] = [
     q: "本站的卡牌数据从哪里来？",
     a: "游戏收藏中 130 张卡牌的费用、数值、稀有度、阵营和文本，已于 2026年11月11日在游戏中逐张核对（抢先体验 0.8.2 版本）：包括收藏界面，以及游戏自带的英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文文本。平衡改动来自 Steam 和官方 Discord 上的官方补丁说明；如果某张卡牌的改动没有写进补丁说明，比如 11月4日的 Trash for Treasure，本站以游戏为准。衍生卡牌和已移除的卡牌不在游戏收藏中，因此未在游戏中核实；衍生卡牌的文本来自游戏文件。卡图是 Koin Games 的官方插画；系列和每个传说的介绍由我们撰写。",
     news: [
+      { slug: "balance-patch-1117-sherwood-forest", label: "11月17日补丁说明" },
       { slug: "balance-patch-1104-cyber-queen", label: "11月4日补丁说明" },
       { slug: "patch-0-7", label: "0.7 补丁说明" },
       { slug: "demo-patch-notes-0921", label: "9月21日的试玩版补丁说明" },
