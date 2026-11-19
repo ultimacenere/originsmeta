@@ -104,11 +104,15 @@ export function patchLine(id: PatchId = latestPatch): string {
 /**
  * Markdown di una guida o di una news pronto per llms-full.txt: via le ancore `{#…}` dei titoli, titoli abbassati di
  * `depth` livelli (il documento ha già `#`, `##` e `###`), link interni resi assoluti, statistiche in parole
- * (`statWords`), righe vuote ripetute ridotte.
+ * (`statWords`), righe vuote ripetute ridotte. Le righe di tasti in HTML delle news (`<p class="news-cta">`, dal
+ * 19/11/2026) diventano link Markdown separati da " · ".
  */
 export function cleanMarkdown(md: string, depth = 2): string {
   return statWords(md)
     .replace(/\r\n/g, "\n")
+    .replace(/^<p class="news-cta">(.*)<\/p>$/gm, (_, inner: string) =>
+      [...inner.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)].map(([, url, text]) => `[${text.trim()}](${url})`).join(" · "),
+    )
     .replace(/^(#{1,6}[ \t].*?)[ \t]*\{#[A-Za-z0-9_-]+\}[ \t]*$/gm, "$1")
     .replace(/^(#{1,6})(?=[ \t])/gm, (hashes: string) => "#".repeat(Math.min(6, hashes.length + depth)))
     .replace(/\]\((\/[^)\s]*)\)/g, (_, path: string) => `](${siteUrl}${path})`)

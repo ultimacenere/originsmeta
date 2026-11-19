@@ -9,6 +9,84 @@ import type { NewsCopy } from "./news-fr";
  * docs/tedesco.md; controlli in newsMeta.test.ts (lunghezze, link con /de/, ancore, paragrafo "Update vom …").
  */
 export const deText: Record<string, NewsCopy> = {
+  "magicofhands-giveaway-kickstarter-bundles": {
+    title: "Giveaway von MagicOfHands: 3 Kickstarter-Bundles von Origins TCG für die besten Spielzüge",
+    metaTitle: "Origins TCG Giveaway: Gewinne ein Kickstarter-Bundle",
+    description:
+      "MagicOfHands vergibt 3 Kickstarter-Bundles von Origins TCG an die besten Gameplay-Clips. So machst du auf X mit, die Preise und die Frist: 2. Dezember.",
+    summary:
+      "MagicOfHands, Creator aus der Community von Origins TCG, vergibt auf X drei Kickstarter-Bundles der Alpha Edition: ein Aspirant für 99 $ und zwei Worthy für 24 $. Die drei besten Gameplay-Clips gewinnen, und du hast Zeit bis zum 2. Dezember.",
+    body: `MagicOfHands, Creator aus der Community von Origins TCG, hat auf X ein Giveaway gestartet, bei dem es **drei Kickstarter-Bundles der Alpha Edition** zu gewinnen gibt: ein **Aspirant für 99 $** und zwei **Worthy für 24 $**. Die drei besten Gameplay-Clips gewinnen, ausgewählt von ihm, und du hast Zeit bis zum **2. Dezember**.
+
+<p class="news-cta"><a class="btn btn-primary" href="https://x.com/magicofhandss/status/2123377556858474857" target="_blank" rel="noopener">Auf X mitmachen →</a> <a class="btn btn-ghost" href="https://x.com/magicofhandss" target="_blank" rel="noopener">@magicofhandss folgen</a></p>
+
+## So machst du mit, in drei Schritten {#teilnahme}
+
+1. **Folge [@magicofhandss](https://x.com/magicofhandss) auf X.**
+2. **Antworte auf den [Giveaway-Post](https://x.com/magicofhandss/status/2123377556858474857)**, um beim Giveaway dabei zu sein.
+3. **Gewinne den Wettbewerb**: Schick deinen besten Clip aus Origins TCG ein (wie, steht unten).
+
+Achtung: **Nur folgen reicht nicht**. Das schreibt er selbst in seinen Slides: Zum Gewinnen brauchst du den Clip.
+
+## Der Clip-Wettbewerb {#wettbewerb}
+
+- **Zitiere den Post** (Quote) und häng deinen besten Gameplay-Clip aus Origins TCG an.
+- **Alles ist erlaubt**: verrückte Combos, große Reads, glückliche Draws.
+- **Die Top 3 gewinnen**: MagicOfHands wählt die drei besten Clips persönlich aus.
+
+## Die Preise {#preise}
+
+| Platz | Preis |
+| --- | --- |
+| 1. | Aspirant Bundle (99 $) |
+| 2. | Worthy Bundle (24 $) |
+| 3. | Worthy Bundle (24 $) |
+
+**Aspirant** (99 $): Alpha Supporter Title, Founder Collector Capsule (Avatar, Kartenrücken, ein Founder-Emote und ein Founder-Slab), der dauerhafte Collector Pass von Origins TCG, eine versiegelte Alpha Booster Box mit 24 Packs, Big Bob Commander und das Big Bob Emote Pack mit 3 Emotes.
+
+**Worthy** (24 $): Alpha Supporter Title, der dauerhafte Collector Pass von Origins TCG und ein versiegeltes Alpha Booster Bundle mit 6 Packs.
+
+![Grafik von Koin Games zur Stufe Worthy für 24 $: ein versiegeltes Alpha Booster Bundle mit 6 Packs und der Collector Pass](/media/kickstarter/worthy.webp)
+
+Alle Stufen der Kampagne findest du in unserem Artikel über die [acht Belohnungsstufen des Kickstarters](/de/news/kickstarter-alpha-edition-reward-tiers).
+
+## Frist und Lieferung {#frist}
+
+- **Clips bis zum 2. Dezember einreichen**, am selben Tag endet auch die Kickstarter-Kampagne.
+- **Es sind Vorab-Preise**: Die Bundles sind noch nicht im Spiel.
+- **Sie kommen zum Launch**, zusammen mit den Kickstarter-Belohnungen.
+
+## Du brauchst ein Unterstützer-Konto auf Kickstarter {#kickstarter}
+
+- **Um den Preis einzulösen**, musst du Unterstützer (Backer) des Kickstarters sein.
+- **1 $ reicht**, um dein Unterstützer-Konto zu aktivieren.
+- **Kein Risiko**: Den Pledge machst du nur, wenn du gewinnst.
+
+Wie die Kampagne funktioniert, erklärt unser [Kickstarter-Guide](/de/guides/origins-tcg-kickstarter). Fragen zum Giveaway beantwortet MagicOfHands per DM auf X.
+
+<p class="news-cta"><a class="btn btn-primary" href="https://x.com/magicofhandss/status/2123377556858474857" target="_blank" rel="noopener">Auf X mitmachen →</a> <a class="btn btn-ghost" href="https://x.com/magicofhandss" target="_blank" rel="noopener">@magicofhandss folgen</a></p>`,
+    highlights: [
+      { label: "Preise", text: "ein Aspirant Bundle für 99 $ und zwei Worthy Bundles für 24 $", anchor: "preise" },
+      { label: "So machst du mit", text: "@magicofhandss folgen, auf den Post antworten, deinen besten Clip schicken", anchor: "teilnahme" },
+      { label: "Clip-Wettbewerb", text: "den Post mit deinem Clip zitieren; MagicOfHands wählt die Top 3", anchor: "wettbewerb" },
+      { label: "Frist", text: "2. Dezember; die Bundles kommen zum Launch", anchor: "frist" },
+      { label: "Kickstarter-Konto", text: "zum Einlösen musst du Unterstützer sein, 1 $ reicht", anchor: "kickstarter" },
+    ],
+    faq: [
+      {
+        q: "Reicht es, MagicOfHands auf X zu folgen, um zu gewinnen?",
+        a: "Nein. Wer @magicofhandss folgt und auf den Post antwortet, ist beim Giveaway dabei, aber die Preise gehen an die drei besten Gameplay-Clips aus Origins TCG, gepostet als Zitat seines Posts bis zum 2. Dezember.",
+      },
+      {
+        q: "Wann bekommen die Gewinner die Bundles?",
+        a: "Zum Launch des Spiels, zusammen mit den Kickstarter-Belohnungen: Die Bundles sind Vorab-Preise und noch nicht im Spiel.",
+      },
+      {
+        q: "Muss ich den Kickstarter unterstützen, um zu gewinnen?",
+        a: "Zum Einlösen des Preises brauchst du ein Unterstützer-Konto auf Kickstarter, das sich mit 1 $ aktivieren lässt. Laut MagicOfHands gibt es kein Risiko: Den Pledge machst du nur, wenn du gewinnst.",
+      },
+    ],
+  },
   "attrix-showmatch-giveaway-winners": {
     title: "Attrix Showmatch: die 15 Gewinner der OriginsMeta-Verlosung",
     metaTitle: "Attrix Showmatch: die 15 Gewinner",

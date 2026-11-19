@@ -14,6 +14,84 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "magicofhands-giveaway-kickstarter-bundles": {
+    title: "MagicOfHands 赠送活动：凭你的最佳操作赢取 3 份 Origins TCG Kickstarter 礼包",
+    metaTitle: "Origins TCG 赠送活动：赢取 Kickstarter 礼包",
+    description:
+      "MagicOfHands 将向最佳游戏片段送出 3 份 Origins TCG 的 Kickstarter 礼包（bundle）。本文介绍如何在 X 上参加、奖品内容和截止日期：12月2日。整理自他在 X 上发布的活动帖子和全部五张规则说明图。",
+    summary:
+      "Origins TCG 社区创作者 MagicOfHands 在 X 上送出三份 Alpha Edition 的 Kickstarter 礼包：一份 99 美元的 Aspirant 和两份 24 美元的 Worthy。三个最佳游戏片段获胜，截止日期为 12月2日。",
+    body: `Origins TCG 社区创作者 MagicOfHands 在 X 上发起了赠送活动，奖品是**三份 Alpha Edition 的 Kickstarter 礼包**：一份 **99 美元的 Aspirant** 和两份 **24 美元的 Worthy**。由他亲自挑选的三个最佳游戏片段获胜，截止日期为 **12月2日**。
+
+<p class="news-cta"><a class="btn btn-primary" href="https://x.com/magicofhandss/status/2123377556858474857" target="_blank" rel="noopener">在 X 上参加 →</a> <a class="btn btn-ghost" href="https://x.com/magicofhandss" target="_blank" rel="noopener">关注 @magicofhandss</a></p>
+
+## 三步参加 {#canjia}
+
+1. **在 X 上关注 [@magicofhandss](https://x.com/magicofhandss)。**
+2. **在[活动帖子](https://x.com/magicofhandss/status/2123377556858474857)下留言**，即可参加赠送活动。
+3. **赢得比赛**：提交你最好的 Origins TCG 游戏片段（方法见下文）。
+
+注意：**只关注是不够的**。他在说明图里写得很清楚：想获奖，必须提交片段。
+
+## 片段比赛 {#bisai}
+
+- **引用转发（quote）这条帖子**，并附上你最好的 Origins TCG 游戏片段。
+- **什么都可以**：疯狂连招、精准预判、幸运抽牌。
+- **前三名获奖**：MagicOfHands 会亲自挑选三个最佳片段。
+
+## 奖品 {#jiangpin}
+
+| 名次 | 奖品 |
+| --- | --- |
+| 第 1 名 | Aspirant Bundle（99 美元） |
+| 第 2 名 | Worthy Bundle（24 美元） |
+| 第 3 名 | Worthy Bundle（24 美元） |
+
+**Aspirant**（99 美元）：Alpha Supporter Title、Founder Collector Capsule（头像、卡背、一个 Founder 表情和一个 Founder slab）、永久的 Origins TCG Collector Pass、一个密封的 24 包 Alpha Booster Box、Big Bob Commander，以及含 3 个表情的 Big Bob Emote Pack。
+
+**Worthy**（24 美元）：Alpha Supporter Title、永久的 Origins TCG Collector Pass 和一个密封的 6 包 Alpha Booster Bundle。
+
+![Koin Games 的 Worthy 档位图（24 美元）：一个密封的 6 包 Alpha Booster Bundle 和 Collector Pass](/media/kickstarter/worthy.webp)
+
+活动的全部档位见我们的文章：[Kickstarter 的八个支持档位](/zh-cn/news/kickstarter-alpha-edition-reward-tiers)。
+
+## 截止日期和发放 {#jiezhi}
+
+- **片段须在 12月2日前提交**，Kickstarter 众筹也在同一天结束。
+- **这些是上线前的奖品**：礼包目前还不在游戏里。
+- **游戏上线时发放**，与 Kickstarter 回报一起到账。
+
+## 需要 Kickstarter 支持者账号 {#kickstarter}
+
+- **领取奖品**需要成为 Kickstarter 的支持者（backer）。
+- **只需 1 美元**即可激活支持者账号。
+- **没有风险**：只有获奖了才需要 pledge。
+
+众筹怎么运作，请看我们的 [Kickstarter 指南](/zh-cn/guides/origins-tcg-kickstarter)。关于赠送活动的任何问题，都可以在 X 上私信 MagicOfHands。
+
+<p class="news-cta"><a class="btn btn-primary" href="https://x.com/magicofhandss/status/2123377556858474857" target="_blank" rel="noopener">在 X 上参加 →</a> <a class="btn btn-ghost" href="https://x.com/magicofhandss" target="_blank" rel="noopener">关注 @magicofhandss</a></p>`,
+    highlights: [
+      { label: "奖品", text: "一份 99 美元的 Aspirant Bundle 和两份 24 美元的 Worthy Bundle", anchor: "jiangpin" },
+      { label: "如何参加", text: "关注 @magicofhandss，在帖子下留言，提交你最好的片段", anchor: "canjia" },
+      { label: "片段比赛", text: "引用转发帖子并附上片段；前三名由 MagicOfHands 挑选", anchor: "bisai" },
+      { label: "截止日期", text: "12月2日；礼包在游戏上线时发放", anchor: "jiezhi" },
+      { label: "Kickstarter 账号", text: "领奖需要成为支持者，1 美元即可", anchor: "kickstarter" },
+    ],
+    faq: [
+      {
+        q: "只在 X 上关注 MagicOfHands 就能获奖吗？",
+        a: "不能。关注 @magicofhandss 并在帖子下留言可以参加赠送活动，但奖品归于三个最佳 Origins TCG 游戏片段，片段需在 12月2日前以引用转发他的帖子的方式发布。",
+      },
+      {
+        q: "获奖者什么时候拿到礼包？",
+        a: "游戏上线时，与 Kickstarter 回报一起发放：这些礼包是上线前的奖品，目前还不在游戏里。",
+      },
+      {
+        q: "必须支持 Kickstarter 才能获奖吗？",
+        a: "领取奖品需要一个 Kickstarter 支持者账号，1 美元即可激活。MagicOfHands 表示没有风险：只有获奖了才需要 pledge。",
+      },
+    ],
+  },
   "attrix-showmatch-giveaway-winners": {
     title: "Attrix Showmatch：OriginsMeta 抽奖的 15 位获奖者",
     metaTitle: "Attrix Showmatch：15 位抽奖获奖者",

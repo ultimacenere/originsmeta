@@ -7,6 +7,84 @@ import type { NewsCopy } from "./news-fr";
  * carte uguali a quelli del gioco (card-lore-ru.ts, docs/testi-ufficiali/ru.tsv): regole e glossario in docs/russo.md.
  */
 export const ruText: Record<string, NewsCopy> = {
+  "magicofhands-giveaway-kickstarter-bundles": {
+    title: "Конкурс от MagicOfHands: 3 набора с Kickstarter Origins TCG за лучшие игровые моменты",
+    metaTitle: "Конкурс Origins TCG: выиграйте набор с Kickstarter",
+    description:
+      "MagicOfHands разыгрывает 3 набора с Kickstarter Origins TCG за лучшие игровые клипы. Как участвовать в X, призы и срок: до 2 декабря.",
+    summary:
+      "MagicOfHands, автор из сообщества Origins TCG, разыгрывает в X три набора с Kickstarter Alpha Edition: один Aspirant за 99 $ и два Worthy за 24 $. Побеждают три лучших игровых клипа, а время у вас есть до 2 декабря.",
+    body: `MagicOfHands, автор из сообщества Origins TCG, запустил в X конкурс, в котором можно выиграть **три набора с Kickstarter Alpha Edition**: один **Aspirant за 99 $** и два **Worthy за 24 $**. Побеждают три лучших игровых клипа, которые он выберет сам, а время у вас есть до **2 декабря**.
+
+<p class="news-cta"><a class="btn btn-primary" href="https://x.com/magicofhandss/status/2123377556858474857" target="_blank" rel="noopener">Участвовать в X →</a> <a class="btn btn-ghost" href="https://x.com/magicofhandss" target="_blank" rel="noopener">Подписаться на @magicofhandss</a></p>
+
+## Как участвовать: три шага {#kak-uchastvovat}
+
+1. **Подпишитесь на [@magicofhandss](https://x.com/magicofhandss) в X.**
+2. **Оставьте комментарий под [постом о конкурсе](https://x.com/magicofhandss/status/2123377556858474857)**, чтобы участвовать.
+3. **Победите в конкурсе**: пришлите свой лучший клип из Origins TCG (как — ниже).
+
+Внимание: **одной подписки мало**. Он сам пишет об этом на слайдах: чтобы победить, нужен клип.
+
+## Конкурс клипов {#konkurs}
+
+- **Процитируйте пост** (quote) и прикрепите свой лучший игровой клип из Origins TCG.
+- **Подходит всё**: безумные комбо, точные прочтения соперника, удачный добор карт.
+- **Побеждают трое лучших**: три лучших клипа MagicOfHands выберет лично.
+
+## Призы {#prizy}
+
+| Место | Приз |
+| --- | --- |
+| 1-е | Aspirant Bundle (99 $) |
+| 2-е | Worthy Bundle (24 $) |
+| 3-е | Worthy Bundle (24 $) |
+
+**Aspirant** (99 $): Alpha Supporter Title, Founder Collector Capsule (аватар, рубашка карт, одна эмоция Founder и один слэб Founder), постоянный Collector Pass Origins TCG, запечатанный Alpha Booster Box на 24 пака, Big Bob Commander и Big Bob Emote Pack с 3 эмоциями.
+
+**Worthy** (24 $): Alpha Supporter Title, постоянный Collector Pass Origins TCG и запечатанный Alpha Booster Bundle на 6 паков.
+
+![Изображение Koin Games для уровня Worthy за 24 $: запечатанный Alpha Booster Bundle на 6 паков и Collector Pass](/media/kickstarter/worthy.webp)
+
+Все уровни кампании — в нашей статье о [восьми уровнях поддержки на Kickstarter](/ru/news/kickstarter-alpha-edition-reward-tiers).
+
+## Срок и доставка {#srok}
+
+- **Клипы принимаются до 2 декабря** — в тот же день заканчивается кампания на Kickstarter.
+- **Это призы до запуска**: в игре наборов пока нет.
+- **Они придут к запуску игры** вместе с наградами Kickstarter.
+
+## Нужен аккаунт спонсора на Kickstarter {#kickstarter}
+
+- **Чтобы получить приз**, нужно быть спонсором (backer) кампании на Kickstarter.
+- **Достаточно 1 $**, чтобы активировать аккаунт спонсора.
+- **Без риска**: делать pledge нужно, только если вы победили.
+
+Как устроена кампания, рассказывает наше [руководство по Kickstarter](/ru/guides/origins-tcg-kickstarter). Вопросы о конкурсе можно задать MagicOfHands в личных сообщениях в X.
+
+<p class="news-cta"><a class="btn btn-primary" href="https://x.com/magicofhandss/status/2123377556858474857" target="_blank" rel="noopener">Участвовать в X →</a> <a class="btn btn-ghost" href="https://x.com/magicofhandss" target="_blank" rel="noopener">Подписаться на @magicofhandss</a></p>`,
+    highlights: [
+      { label: "Призы", text: "один Aspirant Bundle за 99 $ и два Worthy Bundle за 24 $", anchor: "prizy" },
+      { label: "Как участвовать", text: "подпишитесь на @magicofhandss, прокомментируйте пост, пришлите лучший клип", anchor: "kak-uchastvovat" },
+      { label: "Конкурс клипов", text: "процитируйте пост со своим клипом; трёх лучших выберет MagicOfHands", anchor: "konkurs" },
+      { label: "Срок", text: "до 2 декабря; наборы придут к запуску игры", anchor: "srok" },
+      { label: "Аккаунт Kickstarter", text: "чтобы получить приз, нужно быть спонсором, хватит 1 $", anchor: "kickstarter" },
+    ],
+    faq: [
+      {
+        q: "Достаточно ли подписаться на MagicOfHands в X, чтобы выиграть?",
+        a: "Нет. Подписка на @magicofhandss и комментарий под постом дают участие в конкурсе, но призы получат три лучших игровых клипа из Origins TCG, опубликованных цитатой его поста до 2 декабря.",
+      },
+      {
+        q: "Когда победители получат наборы?",
+        a: "К запуску игры, вместе с наградами Kickstarter: это призы до запуска, и в игре их пока нет.",
+      },
+      {
+        q: "Нужно ли поддержать Kickstarter, чтобы выиграть?",
+        a: "Чтобы получить приз, нужен аккаунт спонсора на Kickstarter, который активируется за 1 $. По словам MagicOfHands, риска нет: делать pledge нужно, только если вы победили.",
+      },
+    ],
+  },
   "attrix-showmatch-giveaway-winners": {
     title: "Attrix Showmatch: 15 победителей розыгрыша OriginsMeta",
     metaTitle: "Attrix Showmatch: 15 победителей розыгрыша",
