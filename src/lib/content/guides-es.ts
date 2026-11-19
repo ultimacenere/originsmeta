@@ -1642,7 +1642,7 @@ Origins TCG está en Acceso anticipado desde el 27 de octubre de 2026, con la ve
 ## Lo que viene
 
 - **Kickstarter de la Alpha Edition.** Abierto desde el 27 de octubre de 2026: el Alpha Set "Myths & Legends", exclusivo del Kickstarter, tiene 218 cartas que Koin irá publicando a lo largo del Acceso anticipado. Todo lo que hay que saber, en nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
-- **Noviembre de 2026.** El primer torneo mensual del Acceso anticipado, en formato Conquest con unas 400 plazas; Koin da los detalles la semana del 9 de noviembre.
+- **28–29 de noviembre de 2026.** La Harvest Bowl, el torneo de noviembre de Koin Games para el Acceso anticipado: el sábado, dos clasificatorias de doble eliminación de 512 jugadores; el domingo, la jornada final con los 128 mejores, con un mazo más un banquillo de 3 cartas, jugada en OriginsMeta. Horarios, reglas e inscripción en [nuestra página de la Harvest Bowl](/es/events/harvest-bowl).
 - **2 de diciembre de 2026.** Fin de la temporada clasificatoria en curso y primera gran actualización: Collector Pass, Prestige, cápsulas, ubicaciones nuevas y títulos. Sigue una temporada hasta mediados de enero y otra de mediados de enero a febrero.
 - **Febrero de 2027.** El set completo Myths and Legends, unas 218 cartas, con todas las recompensas del Kickstarter; la edición estándar llega a las tiendas.
 - **Final del Acceso anticipado.** El Myths and Legends Open, para quienes se clasifiquen con los torneos mensuales.

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getDictionary, href, siteUrl, type Dictionary } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
 import { currentUser, supabaseServer } from "@/lib/supabase/server";
-import { getFormatOptions, getInviteCode, getStageOptions, getTournament, listBanStats, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks, withMatchStages } from "@/lib/tournament/queries";
+import { getFormatOptions, getInviteCode, getStageOptions, getTournament, listBanStats, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks, withMatchStages, TOURNAMENT_SELECT } from "@/lib/tournament/queries";
 import { currentMatchOf, isStagedFormat } from "@/lib/tournament/formats";
 import { formatMatchName, formatView } from "@/lib/tournament/formatView";
 import { formatLabels } from "@/lib/tournament/formatLabels";
@@ -38,6 +38,11 @@ import { CardMentionEdges } from "@/components/CardMentionEdges";
 import { CardChip } from "@/components/CardChip";
 import { FREE_OFFER_CURRENCY, JsonLd, breadcrumbs, memberRef, personRef, videoGameId } from "@/components/JsonLd";
 import { authorByUsername } from "@/lib/data/authorsCore";
+import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
+import type { AnnouncementTarget } from "@/components/announcements/AnnouncementControls";
+import { listAnnouncements } from "@/lib/tournament/announcementQueries";
+import { HARVEST_BOWL, isHarvestTournament } from "@/lib/harvestBowl";
+import { harvestBowlLabels } from "@/lib/harvestBowlLabels";
 
 type Params = Promise<{ locale: string; slug: string }>;
 type Search = Promise<Record<string, string | string[] | undefined>>;
@@ -138,6 +143,20 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const viewer = user?.id ?? null;
   // staff: organizzatore e admin leggono il codice d'invito (policy), gli arbitri sono nella loro tabella (05/10/2026)
   const isStaff = Boolean(viewer && (inviteCode || judges.some((j) => j.user_id === viewer)));
+  // Annunci (19/11/2026): quelli rivolti a questo torneo; lo staff scrive a questo torneo e, per l'Harvest Bowl, anche agli
+  // altri tornei dell'evento di cui è staff (stessa funzione delle policy). Per chi non è staff: una lettura in più.
+  const harvest = isHarvestTournament(t);
+  const siblings =
+    isStaff && harvest
+      ? ((await client.from("tournaments").select(TOURNAMENT_SELECT).like("slug", `${HARVEST_BOWL.tournamentPrefix}%`).neq("status", "cancelled").order("starts_at", { ascending: true }).limit(10)).data ?? []) as unknown as { id: string; slug: string; name: string; status: string; profile: { username: string | null } | null }[]
+      : [];
+  const siblingRows = siblings.filter((s) => s.id !== t.id && isHarvestTournament(s));
+  const siblingStaff = await Promise.all(siblingRows.map(async (s) => (await client.rpc("is_tournament_staff", { tid: s.id })).data === true));
+  const announcementTargets: AnnouncementTarget[] | null = isStaff
+    ? [{ id: t.id, slug: t.slug, name: t.name, checked: true }, ...siblingRows.filter((_, i) => siblingStaff[i]).map((s) => ({ id: s.id, slug: s.slug, name: s.name, checked: s.status !== "finished" }))]
+    : null;
+  const announcements = await listAnnouncements(client, [t.id]);
+  const announcementTournaments = [{ id: t.id, slug: t.slug, name: t.name }, ...siblingRows.map((s) => ({ id: s.id, slug: s.slug, name: s.name }))];
   const rounds = totalRounds(matches);
   // con le liste segrete, a torneo in corso, la sezione mostra solo i semifinalisti: la policy dà anche le proprie liste
   // a chi gioca e tutte allo staff, che qui devono vedere quello che vedono tutti
@@ -389,6 +408,19 @@ export default async function TournamentPage({ params, searchParams }: { params:
               {x.judges}: <span className="text-pale">{judges.map((j) => authorName(j.profile)).join(", ")}</span>
             </p>
           ) : null}
+          {harvest ? (
+            <p className="mt-3 text-sm">
+              <Link href={href(locale, HARVEST_BOWL.path)} className="link-mint font-bold">
+                {harvestBowlLabels[locale].eventLink} →
+              </Link>
+            </p>
+          ) : null}
+
+          {/* Bacheca degli annunci (19/11/2026): in alto, perché nei giorni del torneo è quello che si viene a leggere;
+              per chi non è staff non compare finché non c'è un annuncio */}
+          <div className="mt-5">
+            <AnnouncementBoard locale={locale} result={announcements} tournaments={announcementTournaments} staff={announcementTargets} showFor={isStaff} hideWhenEmpty headingLevel={2} />
+          </div>
 
           <div className="mt-5 flex flex-wrap gap-2 text-sm">
             <span className="stat-pill border-2 border-sky text-pale">

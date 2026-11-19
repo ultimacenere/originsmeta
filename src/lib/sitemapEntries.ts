@@ -18,6 +18,7 @@ import { ANALYTICS_PUBLIC } from "./community/badges";
 import { ANALYTICS_MEMBERS_ONLY } from "./membersOnly";
 import { crimsonQualifiers } from "./data/crimsonCup";
 import { withStats } from "./crimsonCup";
+import { HARVEST_BOWL } from "./harvestBowl";
 
 /**
  * Le pagine della sitemap, divise per sezione e per lingua (Ondata 2 del piano SEO/GEO, 25/09/2026: TECH-07, TRJ-06,
@@ -249,6 +250,8 @@ export function sitemapPages(data: CommunityData): SitemapPage[] {
       : []),
     // Calendario: eventi ufficiali (data del modello, events.ts) e tornei della community.
     { path: "/tournaments", section: "pages", route: "/tournaments", dates: [latestTournament] },
+    // L'Harvest Bowl (19/11/2026): pagina dell'evento finché è indicizzabile (HARVEST_BOWL.indexable). Date del modello.
+    ...(HARVEST_BOWL.indexable ? [{ path: HARVEST_BOWL.path, section: "pages", route: "/events/harvest-bowl", dates: [] } satisfies SitemapPage] : []),
     // /faq è l'unica pagina con dati strutturati FAQPage. Le sue date sono quelle del modello.
     { path: "/faq", section: "pages", route: "/faq", dates: [] },
     { path: "/about", section: "pages", route: "/about", dates: [] },

@@ -1319,7 +1319,7 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
     metaTitle: "Origins TCG roadmap and release dates",
     excerpt: "Every confirmed Origins TCG date, from the first Steam post to the demo, the Crimson Cup and Early Access on 27 October 2026, plus what comes next.",
     readTime: 4,
-    updated: "2026-11-17",
+    updated: "2026-11-19",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "When did Origins TCG launch on Steam?", a: "In Early Access on 27 October 2026, with update 0.8, as a free-to-play game. Koin Games aims to leave Early Access with version 1.0 \"roughly\" on 17 March 2027, according to the Steam page: a date that may change." },
@@ -1370,7 +1370,7 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
 ## What comes next
 
 - **Now.** Origins TCG is free on Steam in Early Access, and the Kickstarter for the Alpha Edition, whose date Koin Games' CEO gave on 17 September, is running: everything about it in our [Kickstarter guide](/en/guides/origins-tcg-kickstarter).
-- **November 2026.** The first monthly tournament of Early Access, in Conquest format with about 400 seats; Koin gives the details the week of 9 November.
+- **28–29 November 2026.** The Harvest Bowl, Koin Games' November tournament for Early Access: two double-elimination qualifiers of 512 players on Saturday and the final day for the best 128 on Sunday, with one deck plus a 3-card sideboard, played on OriginsMeta. Schedule, rules and sign-up are on [our Harvest Bowl page](/en/events/harvest-bowl).
 - **2 December 2026.** End of the current ladder season and the first big update: Collector Pass, Prestige, capsules, new locations and titles. One season follows to mid-January and one from mid-January to February.
 - **February 2027.** The full Myths and Legends set, about 218 cards, with all the Kickstarter rewards; the standard edition reaches shops.
 - **End of Early Access.** The Myths and Legends Open, for those who qualify through the monthly tournaments.
@@ -2983,7 +2983,7 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
     metaTitle: "Origins TCG: roadmap e date di uscita",
     excerpt: "Tutte le date confermate di Origins TCG, dal primo post su Steam alla demo, alla Crimson Cup e all'Accesso anticipato del 27 ottobre 2026, e cosa viene dopo.",
     readTime: 4,
-    updated: "2026-11-17",
+    updated: "2026-11-19",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "Quando è uscito Origins TCG su Steam?", a: "In Accesso anticipato il 27 ottobre 2026, con l'aggiornamento 0.8, come gioco free-to-play. Koin Games punta a uscire dall'Accesso anticipato con la versione 1.0 intorno al 17 marzo 2027 (\"roughly\", dice la pagina Steam): una data che può cambiare." },
@@ -3034,7 +3034,7 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
 ## Cosa viene dopo
 
 - **Adesso.** Origins TCG è gratuito su Steam in Accesso anticipato, ed è in corso il Kickstarter dell'Alpha Edition, la cui data era stata annunciata dal CEO di Koin Games il 17 settembre: tutto quello che c'è da sapere nella nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter).
-- **Novembre 2026.** Il primo torneo mensile dell'Accesso anticipato, in formato Conquest con circa 400 posti; Koin dà i dettagli nella settimana del 9 novembre.
+- **28–29 novembre 2026.** La Harvest Bowl, il torneo di novembre di Koin Games per l'Accesso anticipato: sabato due qualificazioni a doppia eliminazione da 512 giocatori, domenica la giornata finale con i migliori 128, con un mazzo più una riserva di 3 carte, giocata su OriginsMeta. Orari, regole e iscrizione sono nella [nostra pagina della Harvest Bowl](/it/events/harvest-bowl).
 - **2 dicembre 2026.** Fine della stagione classificata in corso e primo grande aggiornamento: Collector Pass, Prestige, capsule, luoghi nuovi e titoli. Segue una stagione fino a metà gennaio e una da metà gennaio a febbraio.
 - **Febbraio 2027.** Il set completo Myths and Legends, circa 218 carte, con tutte le ricompense del Kickstarter; l'edizione standard arriva nei negozi.
 - **Fine dell'Accesso anticipato.** Il Myths and Legends Open, per chi si qualifica con i tornei mensili.

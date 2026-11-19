@@ -107,6 +107,68 @@ export const events: Event[] = [
     campaign: true,
   },
   {
+    // 19/11/2026: la Harvest Bowl, torneo di Koin Games del 28-29/11 ospitato sulla piattaforma tornei del sito (post Steam
+    // del 13/11/2026 alle 20:57 UTC). La scheda e la striscia del calendario portano alla pagina dell'evento
+    // (/events/harvest-bowl, src/lib/harvestBowl.ts), dove ci sono le qualificazioni, gli orari e la bacheca degli annunci.
+    slug: "harvest-bowl",
+    official: true,
+    start: "2026-11-28",
+    end: "2026-11-29",
+    title: n("Harvest Bowl", "Harvest Bowl", "Harvest Bowl", "Harvest Bowl", "Harvest Bowl", "Harvest Bowl", "Harvest Bowl", "Harvest Bowl"),
+    where: n(
+      "Online, in game; sign-ups, brackets and matches on OriginsMeta",
+      "Online, in gioco; iscrizioni, tabelloni e partite su OriginsMeta",
+      "Online, en el juego; inscripciones, cuadros y partidas en OriginsMeta",
+      "En ligne, dans le jeu ; inscriptions, tableaux et matchs sur OriginsMeta",
+      "Online, no jogo; inscrições, chaves e partidas no OriginsMeta",
+      "Online, im Spiel; Anmeldung, Brackets und Matches auf OriginsMeta",
+      "Онлайн, в игре; регистрация, сетки и матчи на OriginsMeta",
+      "线上，游戏内进行；报名、对阵表和对局在 OriginsMeta 上",
+    ),
+    format: n(
+      "Saturday 28 November: two double-elimination qualifiers of 512 players, at 15:00 and 21:00 UTC; 64 from each go to Sunday. Sunday 29 November at 15:00 UTC: 128-player seeded Swiss with a Top 8. Best-of-3, one deck plus a 3-card sideboard, open decklists.",
+      "Sabato 28 novembre: due qualificazioni a doppia eliminazione da 512 giocatori, alle 16:00 e alle 22:00 italiane; da ognuna 64 passano a domenica. Domenica 29 novembre alle 16:00: svizzera da 128 con teste di serie e Top 8. Al meglio di tre, un mazzo più una riserva di 3 carte, liste pubbliche.",
+      "Sábado 28 de noviembre: dos clasificatorias de doble eliminación de 512 jugadores, a las 15:00 y a las 21:00 UTC; de cada una pasan 64 al domingo. Domingo 29 de noviembre a las 15:00 UTC: suizo de 128 con cabezas de serie y Top 8. Al mejor de tres, un mazo más un banquillo de 3 cartas, listas públicas.",
+      "Samedi 28 novembre : deux qualifications en double élimination de 512 joueurs, à 16 h et 22 h (heure de Paris) ; 64 de chacune passent au dimanche. Dimanche 29 novembre à 16 h : rondes suisses à 128 avec têtes de série et Top 8. Deux manches gagnantes, un deck plus une réserve de 3 cartes, listes publiques.",
+      "Sábado, 28 de novembro: duas classificatórias em eliminação dupla com 512 jogadores, às 15:00 e às 21:00 UTC; 64 de cada uma vão para o domingo. Domingo, 29 de novembro, às 15:00 UTC: suíço de 128 com cabeças de chave e Top 8. Melhor de três, um deck mais um sideboard de 3 cartas, listas abertas.",
+      "Samstag, 28. November: zwei Double-Elimination-Qualifier mit je 512 Spielern, um 16:00 und 22:00 Uhr MEZ; aus jedem kommen 64 in den Sonntag. Sonntag, 29. November, 16:00 Uhr MEZ: gesetztes Schweizer System mit 128 Spielern und Top 8. Best-of-3, ein Deck plus 3-Karten-Sideboard, offene Decklisten.",
+      "Суббота, 28 ноября: две квалификации на выбывание после двух поражений по 512 игроков, в 15:00 и 21:00 UTC; из каждой 64 проходят в воскресенье. Воскресенье, 29 ноября, 15:00 UTC: швейцарка на 128 игроков с посевом и Top 8. Матчи до двух побед, одна колода плюс сайдборд из 3 карт, открытые списки.",
+      "11月28日周六：两场各 512 人的双败淘汰资格赛，分别在 UTC 15:00 和 21:00 开始；每场前 64 名进入周日。11月29日周日 UTC 15:00：128 人有种子排位的瑞士轮加八强。三局两胜，一套卡组加 3 张备牌，卡组公开。",
+    ),
+    prizes: n(
+      "Top 32: the next set of Tournament Promo cards; everyone who reaches Day 2 gets a prize too.",
+      "Top 32: il prossimo set di carte Tournament Promo; anche chi arriva al secondo giorno riceve un premio.",
+      "Top 32: el próximo set de cartas Tournament Promo; quien llegue al segundo día también recibe un premio.",
+      "Top 32 : la prochaine série de cartes Tournament Promo ; tous ceux qui atteignent le deuxième jour reçoivent aussi une récompense.",
+      "Top 32: o próximo conjunto de cartas Tournament Promo; quem chegar ao segundo dia também ganha um prêmio.",
+      "Top 32: das nächste Set Tournament-Promo-Karten; alle, die Tag 2 erreichen, bekommen ebenfalls einen Preis.",
+      "Top 32: следующий набор карт Tournament Promo; все, кто дойдёт до второго дня, тоже получат приз.",
+      "前 32 名：下一套 Tournament Promo 卡牌；所有进入第二天的玩家也有奖励。",
+    ),
+    text: n(
+      "Koin Games' Origins TCG tournament for Early Access, played entirely on OriginsMeta: sign up for one of the two qualifiers, submit your deck and check in on Saturday. Schedule in your time zone, rules and announcements from the organizers are on the event page.",
+      "Il torneo di Origins TCG di Koin Games per l'Accesso anticipato, giocato tutto su OriginsMeta: ci si iscrive a una delle due qualificazioni, si consegna il mazzo e sabato si fa il check-in. Orari nel tuo fuso, regole e annunci degli organizzatori sono sulla pagina dell'evento.",
+      "El torneo de Origins TCG de Koin Games para el Acceso anticipado, jugado por completo en OriginsMeta: te inscribes en una de las dos clasificatorias, entregas tu mazo y el sábado haces el check-in. Horarios en tu zona, reglas y anuncios de los organizadores están en la página del evento.",
+      "Le tournoi Origins TCG de Koin Games pour l'Accès anticipé, joué entièrement sur OriginsMeta : on s'inscrit à l'une des deux qualifications, on dépose son deck et on fait le check-in le samedi. Horaires dans votre fuseau, règles et annonces des organisateurs sont sur la page de l'événement.",
+      "O torneio de Origins TCG da Koin Games para o Acesso Antecipado, jogado todo no OriginsMeta: você se inscreve em uma das duas classificatórias, envia o deck e faz o check-in no sábado. Horários no seu fuso, regras e anúncios dos organizadores estão na página do evento.",
+      "Das Origins-TCG-Turnier von Koin Games für den Early Access, komplett auf OriginsMeta gespielt: Du meldest dich für einen der beiden Qualifier an, reichst dein Deck ein und checkst am Samstag ein. Zeiten in deiner Zeitzone, Regeln und Ankündigungen der Organisatoren stehen auf der Eventseite.",
+      "Турнир Koin Games по Origins TCG в раннем доступе, полностью на OriginsMeta: запишитесь на одну из двух квалификаций, сдайте колоду и в субботу пройдите check-in. Время в вашем часовом поясе, правила и объявления организаторов — на странице события.",
+      "Koin Games 为抢先体验举办的 Origins TCG 锦标赛，全程在 OriginsMeta 上进行：报名两场资格赛之一，提交卡组，周六签到。按你的时区显示的赛程、规则和主办方公告都在活动页面上。",
+    ),
+    page: {
+      path: "/events/harvest-bowl",
+      label: n("Schedule, rules and sign-up", "Orari, regole e iscrizione", "Horarios, reglas e inscripción", "Horaires, règles et inscription", "Horários, regras e inscrição", "Zeitplan, Regeln und Anmeldung", "Расписание, правила и регистрация", "赛程、规则与报名"),
+    },
+    source: "https://store.steampowered.com/news/app/4429430/view/1849192144189171",
+    // Inizio della Qualificazione 1 come nel post Steam: 10:00 ET (ora solare della costa est, -05:00) = 15:00 UTC; iscrizione gratuita.
+    ld: {
+      name: n("Harvest Bowl 2026", "Harvest Bowl 2026", "Harvest Bowl 2026", "Harvest Bowl 2026", "Harvest Bowl 2026", "Harvest Bowl 2026", "Harvest Bowl 2026", "Harvest Bowl 2026"),
+      alternateName: n("Origins TCG Harvest Bowl", "Harvest Bowl di Origins TCG", "Harvest Bowl de Origins TCG", "Harvest Bowl d'Origins TCG", "Harvest Bowl de Origins TCG", "Harvest Bowl von Origins TCG", "Harvest Bowl по Origins TCG", "Origins TCG Harvest Bowl"),
+      startAt: "2026-11-28T10:00:00-05:00",
+      free: true,
+    },
+  },
+  {
     slug: "next-fest-tournament",
     official: true,
     guide: "steam-next-fest-2026",

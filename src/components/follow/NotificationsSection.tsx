@@ -89,6 +89,8 @@ function notificationText(n: NotificationItem, L: FollowLabels["notifications"])
   const name = n.actor ? authorName(n.actor) : L.someone;
   if (n.kind === "live") return fillFollowLabel(L.live, { name });
   if (n.kind === "match_ready") return fillFollowLabel(L.matchReady, { name });
+  // annunci dei tornei (19/11/2026): il nome del torneo, se si legge
+  if (n.kind === "tournament_announcement") return n.tournamentName ? fillFollowLabel(L.tournamentAnnouncement, { name, tournament: n.tournamentName }) : fillFollowLabel(L.tournamentAnnouncementGone, { name });
   // commenti (22/10/2026): il nome del mazzo singolo o del mazzo torneo, se è ancora online
   if (n.kind === "deck_comment" || n.kind === "comment_reply") {
     const deck = n.deckName ?? n.setName;
@@ -118,7 +120,7 @@ function NotificationCard({ item: n, locale, L }: { item: NotificationItem; loca
       <span className="flex min-w-0 flex-1 basis-48 flex-col gap-1.5">
         <span className="flex flex-wrap items-center gap-2">
           {unread ? <span className="stat-pill bg-mint text-[11px] font-semibold uppercase text-ink">{L.newBadge}</span> : null}
-          <span className={`stat-pill text-[11px] font-semibold uppercase ${n.kind === "live" ? "bg-crimson-deep text-chalk" : n.kind === "match_ready" ? "bg-gold text-ink" : "bg-sky text-ink"}`}>{L.kinds[n.kind]}</span>
+          <span className={`stat-pill text-[11px] font-semibold uppercase ${n.kind === "live" ? "bg-crimson-deep text-chalk" : n.kind === "match_ready" || n.kind === "tournament_announcement" ? "bg-gold text-ink" : "bg-sky text-ink"}`}>{L.kinds[n.kind]}</span>
         </span>
         <span className={`break-words leading-snug ${unread ? "font-bold text-pale" : "text-pale-muted"}`}>{notificationText(n, L)}</span>
         <span className="font-mono text-xs text-pale-muted">

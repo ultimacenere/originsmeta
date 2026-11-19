@@ -1302,7 +1302,7 @@ O deck está marcado só para a ladder, mas cabe numa seleção de Conquest: uma
 
 ## O que vem a seguir
 
-- **Novembro de 2026.** O primeiro torneio mensal do Acesso Antecipado, no formato Conquest com cerca de 400 vagas; a Koin dá os detalhes na semana de 9 de novembro.
+- **28–29 de novembro de 2026.** A Harvest Bowl, o torneio de novembro da Koin Games para o Acesso Antecipado: no sábado, duas classificatórias em eliminação dupla com 512 jogadores; no domingo, o dia final com os 128 melhores, com um deck mais um sideboard de 3 cartas, jogada no OriginsMeta. Horários, regras e inscrição na [nossa página da Harvest Bowl](/pt/events/harvest-bowl).
 - **2 de dezembro de 2026.** Fim da temporada ranqueada atual e primeira grande atualização: Collector Pass, Prestige, cápsulas, locais novos e títulos. Segue uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.
 - **Fevereiro de 2027.** O set completo Myths and Legends, cerca de 218 cartas, com todas as recompensas do Kickstarter; a edição padrão chega às lojas.
 - **Fim do Acesso Antecipado.** O Myths and Legends Open, para quem se classificar pelos torneios mensais.

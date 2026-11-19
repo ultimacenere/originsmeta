@@ -18,15 +18,18 @@ import type { InboxStatus } from "./messages";
  *   - `deck_comment` e `comment_reply` (22/10/2026, blocco COMMENTI AI MAZZI): un commento sotto un tuo mazzo, una
  *     risposta a un tuo commento; li scrive `deck_comment_add`, chi l'ha "causato" è chi ha scritto; portano alla scheda
  *     del mazzo (`/decks/community/<slug>` o `/decks/tournament/<slug>`), alla sezione dei commenti.
+ *   - `tournament_announcement` (19/11/2026, blocco ANNUNCI DEI TORNEI): l'organizzatore o un arbitro di un torneo a cui
+ *     sei iscritto (anche in lista d'attesa) ha pubblicato un annuncio; lo scrive `tournament_announcement_post`, chi
+ *     l'ha "causato" è chi ha scritto; porta alla bacheca della scheda del torneo (`/tournaments/<slug>#announcements`).
  * Ogni avviso porta a un percorso interno senza lingua (`target`): la scheda del mazzo, la guida
  * (`/guides/community/<slug>`), il fumetto (`/news/comics/<slug>`), la pagina /u di chi è in diretta. Il sito lo ricontrolla (`isSafeTarget`) prima di farne
  * un link. Il database verifica che il mazzo o la guida esistano, siano pubblicati e siano dell'autore dell'avviso.
  */
 
-export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_set_published", "match_ready", "deck_comment", "comment_reply"] as const;
+export const NOTIFICATION_KINDS = ["deck_published", "live", "guide_published", "comic_published", "deck_set_published", "match_ready", "deck_comment", "comment_reply", "tournament_announcement"] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
-/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`), la partita pronta dal tabellone, i commenti da `deck_comment_add`. */
-export type PublishKind = Exclude<NotificationKind, "live" | "match_ready" | "deck_comment" | "comment_reply">;
+/** I tipi che partono da chi pubblica (RPC `notify_followers`); la diretta parte dal cron (`notify_live`), la partita pronta dal tabellone, i commenti da `deck_comment_add`, gli annunci da `tournament_announcement_post`. */
+export type PublishKind = Exclude<NotificationKind, "live" | "match_ready" | "deck_comment" | "comment_reply" | "tournament_announcement">;
 
 /** Gli avvisi dei commenti (22/10/2026): portano alla sezione dei commenti della scheda. */
 export const COMMENT_KINDS: readonly NotificationKind[] = ["deck_comment", "comment_reply"];
@@ -60,6 +63,8 @@ const PROFILE_TARGET = /^\/u\/([a-z0-9_-]{1,60})$/;
 const COMIC_TARGET = /^\/news\/comics\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 /** La stanza di una partita di torneo (05/10/2026, avviso `match_ready`), come la scrive tm_notify_ready. */
 const MATCH_TARGET = /^\/tournaments\/[a-z0-9-]{1,90}\/match\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+/** La scheda di un torneo (19/11/2026, avviso `tournament_announcement`), come la scrive tournament_announcement_post. */
+const TOURNAMENT_TARGET = /^\/tournaments\/([a-z0-9-]{1,90})$/;
 
 function isGuideTarget(target: string): boolean {
   const slug = GUIDE_TARGET.exec(target)?.[1];
@@ -71,9 +76,14 @@ function isComicTarget(target: string): boolean {
   return Boolean(slug && slug.length >= 3 && slug.length <= 60);
 }
 
-/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, fumetto, pagina /u, stanza partita. */
+/** Il percorso di un avviso è uno di quelli che il sito sa aprire: scheda di un mazzo, guida della community, fumetto, pagina /u, stanza partita, scheda di un torneo. */
 export function isSafeTarget(target: unknown): target is string {
-  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || DECK_SET_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target) || MATCH_TARGET.test(target));
+  return typeof target === "string" && target.length <= 160 && (DECK_TARGET.test(target) || DECK_SET_TARGET.test(target) || isGuideTarget(target) || isComicTarget(target) || PROFILE_TARGET.test(target) || MATCH_TARGET.test(target) || TOURNAMENT_TARGET.test(target));
+}
+
+/** Lo slug del torneo di un avviso `tournament_announcement` (per leggerne il nome), altrimenti null. */
+export function tournamentSlugOf(target: string): string | null {
+  return TOURNAMENT_TARGET.exec(target)?.[1] ?? null;
 }
 
 /** Lo slug del mazzo di un avviso `deck_published` (per leggerne il nome), altrimenti null. */
@@ -132,6 +142,8 @@ export function notificationsSince(now: number = Date.now()): string {
 /** Il link di un avviso nella lingua di chi lo legge; null per un percorso che il sito non riconosce. Gli avvisi dei commenti portano alla loro sezione. */
 export function notificationHref(locale: string, target: string, kind?: NotificationKind): string | null {
   if (!isSafeTarget(target)) return null;
+  // annunci (19/11/2026): alla bacheca della scheda del torneo
+  if (kind === "tournament_announcement") return `/${locale}${target}#announcements`;
   return kind && COMMENT_KINDS.includes(kind) ? `/${locale}${target}#comments` : `/${locale}${target}`;
 }
 

@@ -11244,3 +11244,179 @@ end $$;
 revoke all on function public.steam_link_claim(text, text) from public, anon;
 grant execute on function public.steam_link_claim(text, text) to authenticated;
 comment on function public.steam_link_claim(text, text) is 'Come steam_link_set, ma sposta lo SteamID da un account vuoto nato con Steam (che si cancella) all''iscritto della sessione (17/11/2026, rotta /auth/steam/callback).';
+
+-- ===== 19/11/2026: ANNUNCI DEI TORNEI =====
+-- =====================================================================================================
+-- 19/11/2026 — ANNUNCI DEI TORNEI (Pierluigi: "fai una pagina evento per il torneo come suggeriva il piano e mettiamoci
+--   una lavagna annunci per apix, a quanto pare vuole fare annunci a tutti i partecipanti al torneo"). L'organizzatore di un
+--   torneo, i suoi arbitri e gli admin del sito (is_tournament_staff) scrivono un annuncio rivolto a uno o più tornei
+--   (Harvest Bowl: le due qualificazioni insieme, poi la finale). L'annuncio si legge sulla scheda di ogni torneo a cui è
+--   rivolto e sulla pagina dell'evento (/events/harvest-bowl); a chi è iscritto, anche in lista d'attesa, arriva un avviso
+--   nella busta del sito (tipo `tournament_announcement`, uno per annuncio e per persona anche se è iscritta a più tornei).
+--
+--   tournament_announcements   l'annuncio: tornei a cui è rivolto (1-8), autore, titolo, testo (Markdown ridotto del sito,
+--                              src/lib/userMarkdown.ts), link facoltativo (https), in evidenza sì/no, numero di destinatari
+--                              dell'avviso, date di creazione e di modifica. Lo legge chi può vedere almeno uno dei tornei
+--                              (can_view_tournament: tutti per un torneo pubblico). Nessuno lo scrive direttamente.
+--   tournament_announcement_post(tids, title, body, link, pinned)   pubblica e manda l'avviso; chi chiama dev'essere staff
+--                              di TUTTI i tornei scelti. Esito {id, recipients}; errori not_logged_in, invalid, not_found,
+--                              forbidden, too_many (al massimo 20 annunci l'ora per autore).
+--   tournament_announcement_edit(id, title, body, link, pinned)     corregge (niente nuovo avviso); edited_at se cambia il testo.
+--   tournament_announcement_delete(id)                               cancella l'annuncio e gli avvisi non ancora letti.
+--   Modifica e cancellazione: staff di tutti i tornei dell'annuncio (o admin del sito).
+--
+--   Limiti uguali nel codice (src/lib/tournament/announcements.ts; announcements.test.ts li confronta con questo blocco).
+--   Il sito regge senza questo blocco: la bacheca dice "non ancora attiva" e la pagina dell'evento non la mostra.
+--   Nessuna grant né revoke su public.profiles. Idempotente. Prova a secco: node scripts/announcements-dry-run.mjs.
+-- =====================================================================================================
+
+create table if not exists public.tournament_announcements (
+  id bigint generated always as identity primary key,
+  tournament_ids uuid[] not null check (cardinality(tournament_ids) between 1 and 8 and array_position(tournament_ids, null) is null),
+  author uuid references public.profiles(id) on delete set null,
+  title text not null check (char_length(title) between 3 and 120),
+  body text not null default '' check (char_length(body) <= 2000),
+  link_url text check (link_url is null or (char_length(link_url) <= 300 and link_url ~ '^https://[^[:space:]<>"]+$')),
+  pinned boolean not null default false,
+  recipients integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  edited_at timestamptz
+);
+create index if not exists tournament_announcements_tids_idx on public.tournament_announcements using gin (tournament_ids);
+create index if not exists tournament_announcements_author_idx on public.tournament_announcements (author, created_at desc);
+drop trigger if exists tournament_announcements_touch on public.tournament_announcements;
+create trigger tournament_announcements_touch before update on public.tournament_announcements
+  for each row execute function public.touch_updated_at();
+comment on table public.tournament_announcements is 'Annunci dello staff di un torneo ai suoi iscritti (19/11/2026, Harvest Bowl). Li scrivono solo tournament_announcement_post/edit/delete; li legge chi vede almeno uno dei tornei.';
+
+alter table public.tournament_announcements enable row level security;
+drop policy if exists "announcements read with tournament" on public.tournament_announcements;
+create policy "announcements read with tournament" on public.tournament_announcements for select to anon, authenticated
+  using (exists (select 1 from unnest(tournament_ids) as x(tid) where public.can_view_tournament(x.tid)));
+-- Nessuna scrittura diretta: policy restrittive, come per gli avvisi. Le funzioni security definer non le vedono.
+drop policy if exists "announcements no direct insert" on public.tournament_announcements;
+create policy "announcements no direct insert" on public.tournament_announcements as restrictive for insert to anon, authenticated with check (false);
+drop policy if exists "announcements no direct update" on public.tournament_announcements;
+create policy "announcements no direct update" on public.tournament_announcements as restrictive for update to anon, authenticated using (false) with check (false);
+drop policy if exists "announcements no direct delete" on public.tournament_announcements;
+create policy "announcements no direct delete" on public.tournament_announcements as restrictive for delete to anon, authenticated using (false);
+revoke all on public.tournament_announcements from anon, authenticated;
+-- la sola lettura, per colonna: fuori `recipients`, che lo staff riceve dall'esito della pubblicazione
+grant select (id, tournament_ids, author, title, body, link_url, pinned, created_at, updated_at, edited_at) on public.tournament_announcements to anon, authenticated;
+
+-- Il tipo di avviso nuovo (elenco uguale a NOTIFICATION_KINDS in src/lib/community/notifications.ts).
+alter table public.notifications drop constraint if exists notifications_kind_check;
+alter table public.notifications add constraint notifications_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready', 'deck_comment', 'comment_reply', 'tournament_announcement')) not valid;
+alter table public.notification_events drop constraint if exists notification_events_kind_check;
+alter table public.notification_events add constraint notification_events_kind_check check (kind in ('deck_published', 'live', 'guide_published', 'comic_published', 'deck_set_published', 'match_ready', 'deck_comment', 'comment_reply', 'tournament_announcement')) not valid;
+
+-- Testo pulito: a capo di Windows tolti, spazi e a capo in testa e in coda tolti.
+create or replace function public.ta_clean(s text)
+returns text language sql immutable set search_path = public, pg_temp as $$
+  select btrim(replace(coalesce(s, ''), chr(13), ''), ' ' || chr(9) || chr(10));
+$$;
+revoke all on function public.ta_clean(text) from public, anon, authenticated;
+
+-- Chi chiama è staff di tutti i tornei dell'elenco (l'elenco non è vuoto e i tornei esistono).
+create or replace function public.ta_staff_of_all(tids uuid[])
+returns boolean language sql stable security definer set search_path = public, pg_temp as $$
+  select auth.uid() is not null
+    and coalesce(cardinality(tids), 0) > 0
+    and (select count(*) from public.tournaments t where t.id = any (tids)) = cardinality(tids)
+    and not exists (select 1 from unnest(tids) as x(tid) where not public.is_tournament_staff(x.tid));
+$$;
+revoke all on function public.ta_staff_of_all(uuid[]) from public, anon, authenticated;
+
+create or replace function public.tournament_announcement_post(p_tids uuid[], p_title text, p_body text, p_link text, p_pinned boolean)
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_tids uuid[];
+  v_title text := public.ta_clean(p_title);
+  v_body text := public.ta_clean(p_body);
+  v_link text := nullif(public.ta_clean(p_link), '');
+  v_id bigint;
+  v_n integer := 0;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select coalesce(array_agg(distinct x), '{}') into v_tids from unnest(coalesce(p_tids, '{}'::uuid[])) as u(x) where x is not null;
+  if cardinality(v_tids) < 1 or cardinality(v_tids) > 8
+     or char_length(v_title) < 3 or char_length(v_title) > 120 or char_length(v_body) > 2000
+     or (v_link is not null and (char_length(v_link) > 300 or v_link !~ '^https://[^[:space:]<>"]+$')) then
+    raise exception 'invalid';
+  end if;
+  if (select count(*) from public.tournaments t where t.id = any (v_tids)) <> cardinality(v_tids) then raise exception 'not_found'; end if;
+  if not public.ta_staff_of_all(v_tids) then raise exception 'forbidden'; end if;
+  -- un autore alla volta: il conteggio dell'ultima ora non si scavalca con due richieste insieme
+  perform pg_advisory_xact_lock(hashtext('tournament_announcement:' || auth.uid()::text));
+  if (select count(*) from public.tournament_announcements a where a.author = auth.uid() and a.created_at > now() - interval '1 hour') >= 20 then
+    raise exception 'too_many';
+  end if;
+  insert into public.tournament_announcements (tournament_ids, author, title, body, link_url, pinned)
+    values (v_tids, auth.uid(), v_title, v_body, v_link, coalesce(p_pinned, false))
+    returning id into v_id;
+  -- l'avviso: a ogni iscritto (anche in lista d'attesa) una volta sola, verso il primo dei suoi tornei in ordine di
+  -- inizio; un errore qui non ferma l'annuncio
+  begin
+    insert into public.notifications (user_id, kind, actor_id, target, event_key)
+    select distinct on (p.user_id) p.user_id, 'tournament_announcement', auth.uid(), '/tournaments/' || t.slug, 'announcement:' || v_id
+      from public.tournament_players p
+      join public.tournaments t on t.id = p.tournament_id
+     where p.tournament_id = any (v_tids)
+       and p.status in ('registered', 'waitlist')
+       and p.user_id <> auth.uid()
+       and t.slug ~ '^[a-z0-9-]{1,90}$'
+     order by p.user_id, t.starts_at, t.id
+    on conflict (user_id, kind, event_key) do nothing;
+    get diagnostics v_n = row_count;
+    insert into public.notification_events (kind, event_key, actor_id, recipients)
+      values ('tournament_announcement', 'announcement:' || v_id, auth.uid(), v_n)
+      on conflict (kind, actor_id, event_key) do nothing;
+  exception when others then
+    raise notice 'tournament_announcement_post, avvisi: %', sqlerrm;
+    v_n := 0;
+  end;
+  update public.tournament_announcements set recipients = v_n where id = v_id;
+  return jsonb_build_object('id', v_id, 'recipients', v_n);
+end $$;
+revoke all on function public.tournament_announcement_post(uuid[], text, text, text, boolean) from public, anon;
+grant execute on function public.tournament_announcement_post(uuid[], text, text, text, boolean) to authenticated;
+
+create or replace function public.tournament_announcement_edit(p_id bigint, p_title text, p_body text, p_link text, p_pinned boolean)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  a public.tournament_announcements%rowtype;
+  v_title text := public.ta_clean(p_title);
+  v_body text := public.ta_clean(p_body);
+  v_link text := nullif(public.ta_clean(p_link), '');
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into a from public.tournament_announcements where id = p_id for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_admin() and not public.ta_staff_of_all(a.tournament_ids) then raise exception 'forbidden'; end if;
+  if char_length(v_title) < 3 or char_length(v_title) > 120 or char_length(v_body) > 2000
+     or (v_link is not null and (char_length(v_link) > 300 or v_link !~ '^https://[^[:space:]<>"]+$')) then
+    raise exception 'invalid';
+  end if;
+  update public.tournament_announcements
+     set title = v_title, body = v_body, link_url = v_link, pinned = coalesce(p_pinned, false),
+         edited_at = case when a.title is distinct from v_title or a.body is distinct from v_body or a.link_url is distinct from v_link then now() else a.edited_at end
+   where id = p_id;
+end $$;
+revoke all on function public.tournament_announcement_edit(bigint, text, text, text, boolean) from public, anon;
+grant execute on function public.tournament_announcement_edit(bigint, text, text, text, boolean) to authenticated;
+
+create or replace function public.tournament_announcement_delete(p_id bigint)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  a public.tournament_announcements%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not_logged_in'; end if;
+  select * into a from public.tournament_announcements where id = p_id for update;
+  if not found then raise exception 'not_found'; end if;
+  if not public.is_admin() and not public.ta_staff_of_all(a.tournament_ids) then raise exception 'forbidden'; end if;
+  delete from public.notifications where kind = 'tournament_announcement' and event_key = 'announcement:' || p_id and read_at is null;
+  delete from public.tournament_announcements where id = p_id;
+end $$;
+revoke all on function public.tournament_announcement_delete(bigint) from public, anon;
+grant execute on function public.tournament_announcement_delete(bigint) to authenticated;

@@ -334,6 +334,19 @@ export type TournamentPlayerRow = {
 };
 export type TournamentDecksRow = { tournament_id: string; user_id: string; codes: string[]; legendaries: string[]; /** 09/11/2026: riserva (slug), solo a migrazione fatta */ sideboard?: string[]; created_at: string; updated_at: string };
 export type TournamentJudgeRow = { tournament_id: string; user_id: string; added_by: string | null; created_at: string };
+/** Riga leggibile di public.tournament_announcements (19/11/2026; fuori `recipients`, che non ha la grant). */
+export type TournamentAnnouncementRow = {
+  id: number;
+  tournament_ids: string[];
+  author: string | null;
+  title: string;
+  body: string;
+  link_url: string | null;
+  pinned: boolean;
+  created_at: string;
+  updated_at: string;
+  edited_at: string | null;
+};
 export type TournamentMessageRow = { id: number; match_id: string; user_id: string; body: string; created_at: string };
 /** 08/11/2026: un ban per giocatore e partita; nessun client legge la tabella (match_bans, tournament_ban_stats). */
 export type TournamentBanRow = { match_id: string; user_id: string; target: string; deck: number; legendary: string | null; created_at: string };
@@ -393,7 +406,7 @@ export type FollowRow = { follower: string; followed: string; created_at: string
 export type NotificationRow = {
   id: number;
   user_id: string;
-  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready" | "deck_comment" | "comment_reply";
+  kind: "deck_published" | "live" | "guide_published" | "comic_published" | "deck_set_published" | "match_ready" | "deck_comment" | "comment_reply" | "tournament_announcement";
   actor_id: string;
   /** percorso interno senza lingua: /decks/community/<slug>, /guides/community/<slug>, /u/<nome utente>, /tournaments/<slug>/match/<id> */
   target: string;
@@ -831,6 +844,21 @@ export type Database = {
           },
         ];
       };
+      /** annunci dei tornei (blocco ANNUNCI DEI TORNEI, 19/11/2026): si scrivono solo con tournament_announcement_post/edit/delete */
+      tournament_announcements: {
+        Row: TournamentAnnouncementRow;
+        Insert: Record<string, never>;
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "tournament_announcements_author_fkey";
+            columns: ["author"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       tournament_judges: {
         Row: TournamentJudgeRow;
         Insert: { tournament_id: string; user_id: string; added_by?: string | null };
@@ -1064,6 +1092,10 @@ export type Database = {
       /** tetto ai mazzi pubblicati: 5 per la community, 20 per l'Autore, nessuno per Creator, Pro, Staff e admin (27/09/2026) */
       max_published_decks: { Args: { uid: string }; Returns: number };
       join_tournament: { Args: { tid: string }; Returns: undefined };
+      /** annunci dei tornei (19/11/2026): esito {id, recipients}; errori not_logged_in, invalid, not_found, forbidden, too_many */
+      tournament_announcement_post: { Args: { p_tids: string[]; p_title: string; p_body: string; p_link: string | null; p_pinned: boolean }; Returns: unknown };
+      tournament_announcement_edit: { Args: { p_id: number; p_title: string; p_body: string; p_link: string | null; p_pinned: boolean }; Returns: undefined };
+      tournament_announcement_delete: { Args: { p_id: number }; Returns: undefined };
       leave_tournament: { Args: { tid: string }; Returns: undefined };
       submit_tournament_decks: { Args: { tid: string; codes: string[] }; Returns: undefined };
       start_tournament: { Args: { tid: string; seeded: string[] }; Returns: undefined };

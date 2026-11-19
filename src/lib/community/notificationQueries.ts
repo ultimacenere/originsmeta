@@ -11,6 +11,7 @@ import {
   missingHeadCount,
   notificationErrorCode,
   notificationsSince,
+  tournamentSlugOf,
   type NotificationErrorCode,
 } from "./notifications";
 
@@ -32,7 +33,7 @@ export type NotificationActor = Profile & { id: string };
  * guida il titolo (null se la guida non è più online: riportata tra le bozze, nascosta dallo staff o eliminata).
  * `gone`: il mazzo o la guida sono stati cercati e non ci sono più (con un errore di lettura resta false).
  */
-export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null; guideTitle: string | null; comicTitle: string | null; setName?: string | null; gone: boolean };
+export type NotificationItem = NotificationRow & { actor: NotificationActor | null; deckName: string | null; guideTitle: string | null; comicTitle: string | null; setName?: string | null; tournamentName?: string | null; gone: boolean };
 
 export type NotificationsResult = { ok: true; data: { items: NotificationItem[]; unread: number } } | { ok: false; error: NotificationErrorCode };
 
@@ -97,8 +98,10 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   const guideSlugs = [...new Set(rows.flatMap((r) => (r.kind === "guide_published" ? [guideSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const comicSlugs = [...new Set(rows.flatMap((r) => (r.kind === "comic_published" ? [comicSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const setSlugs = [...new Set(rows.flatMap((r) => (setKind(r) ? [deckSetSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
+  // annunci dei tornei (19/11/2026): il nome del torneo dalla scheda (un torneo privato che non si vede più resta senza nome)
+  const tournamentSlugs = [...new Set(rows.flatMap((r) => (r.kind === "tournament_announcement" ? [tournamentSlugOf(r.target)] : [])).filter((s): s is string => Boolean(s)))];
   const none = Promise.resolve({ data: [], error: null });
-  const [actors, decks, guides, comics, sets, unread] = await Promise.all([
+  const [actors, decks, guides, comics, sets, tournaments, unread] = await Promise.all([
     actorIds.length ? client.from("profiles").select("id, username, display_name, avatar_url, badge").in("id", actorIds) : none,
     slugs.length ? client.from("community_decks").select("slug, name").in("slug", slugs).eq("status", "published") : none,
     // guide ancora online (revisione del 27/09/2026): prima l'avviso portava anche a una guida tornata tra le bozze
@@ -107,6 +110,7 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
     comicSlugs.length ? client.from("community_comics").select("slug, title").in("slug", comicSlugs).eq("status", "published") : none,
     // mazzi torneo ancora online (04/10/2026), come i mazzi
     setSlugs.length ? client.from("community_deck_sets").select("slug, name").in("slug", setSlugs).eq("status", "published") : none,
+    tournamentSlugs.length ? client.from("tournaments").select("slug, name").in("slug", tournamentSlugs) : none,
     unreadNotificationCount(client, userId),
   ]);
   // profili, nomi dei mazzi e titoli delle guide sono un di più: con un errore (anche la tabella delle guide che non c'è
@@ -121,6 +125,8 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
   const titles = new Map(((guides.data ?? []) as { slug: string; title: string }[]).map((g) => [g.slug, g.title]));
   const comicTitles = new Map(((comics.data ?? []) as { slug: string; title: string }[]).map((c) => [c.slug, c.title]));
   const setNames = new Map(((sets.data ?? []) as { slug: string; name: string }[]).map((x) => [x.slug, x.name]));
+  if (tournaments.error) console.error("[follows] tornei degli avvisi:", tournaments.error.message);
+  const tournamentNames = new Map(((tournaments.data ?? []) as { slug: string; name: string }[]).map((x) => [x.slug, x.name]));
   const items = rows.map((r) => {
     const slug = deckKind(r) ? deckSlugOf(r.target) : null;
     const guide = r.kind === "guide_published" ? guideSlugOf(r.target) : null;
@@ -133,6 +139,7 @@ export async function listNotifications(client: Db, userId: string): Promise<Not
       guideTitle: guide ? (titles.get(guide) ?? null) : null,
       comicTitle: comic ? (comicTitles.get(comic) ?? null) : null,
       setName: set ? (setNames.get(set) ?? null) : null,
+      tournamentName: r.kind === "tournament_announcement" ? (tournamentNames.get(tournamentSlugOf(r.target) ?? "") ?? null) : null,
       gone: slug ? !decks.error && !names.has(slug) : guide ? !guides.error && !titles.has(guide) : comic ? !comics.error && !comicTitles.has(comic) : set ? !sets.error && !setNames.has(set) : false,
     };
   });

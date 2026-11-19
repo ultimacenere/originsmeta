@@ -271,7 +271,7 @@ export const zhCnTextB: Partial<Record<GuideSlug, GuideCopy>> = {
 ## 接下来
 
 - **现在。** Origins TCG 已在 Steam 免费开启抢先体验，而 Alpha Edition 的 Kickstarter 正在进行中，日期由 Koin Games 的 CEO 于 9月17日公布：详情见我们的 [Kickstarter 攻略](/zh-cn/guides/origins-tcg-kickstarter)。
-- **2026年11月。** 抢先体验的第一场月度锦标赛，采用 Conquest 赛制，约 400 个名额；Koin 将在 11月9日那一周公布细节。
+- **2026年11月28–29日。** Harvest Bowl，Koin Games 为抢先体验举办的 11 月锦标赛：周六进行两场各 512 人的双败淘汰资格赛，周日由最强的 128 人进行决赛日，使用一套卡组加 3 张备牌，在 OriginsMeta 上进行。赛程、规则和报名见[我们的 Harvest Bowl 页面](/zh-cn/events/harvest-bowl)。
 - **2026年12月2日。** 当前排位赛季结束，第一次大型更新上线：Collector Pass、Prestige、胶囊、新地点和称号。之后一个赛季持续到 1 月中旬，另一个从 1 月中旬到 2 月。
 - **2027年2月。** 完整的 Myths and Legends 系列，约 218 张卡，同时发放所有 Kickstarter 奖励；标准版进入实体店。
 - **抢先体验结束时。** Myths and Legends Open，面向通过月度锦标赛晋级的玩家。
