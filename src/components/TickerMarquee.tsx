@@ -5,6 +5,7 @@ import Link from "@/components/IntentLink";
 import { useLiveUsers } from "@/lib/liveClient";
 import { liveOrder } from "@/lib/twitchLive";
 import { fillCreator, type LiveStripLabels } from "@/lib/creatorLabels";
+import { calendarCube } from "@/lib/calendarDay";
 
 /** La voce "Ora live" (28/09/2026): indirizzo della pagina /live nella lingua e le sue etichette. */
 export type TickerLive = LiveStripLabels & { href: string };
@@ -19,7 +20,18 @@ export type TickerItem = {
   title: string;
   where: string;
   isNext: boolean;
+  /**
+   * Solo i tornei della community (/api/calendar, 24/11/2026): l'orario vero, con il fuso. La rotta è uguale per tutti e
+   * scrive il giorno in UTC; il browser lo rifà nel fuso di chi guarda (`inLocalDay`).
+   */
+  startsAt?: string;
 };
+
+/** Data, numero e mese del cubetto di un torneo nel fuso di chi guarda; se l'orario non si legge resta quello della rotta. */
+function inLocalDay(it: TickerItem, locale: string): TickerItem {
+  const cube = it.startsAt ? calendarCube(it.startsAt, locale) : null;
+  return cube ? { ...it, ...cube } : it;
+}
 
 type Props = {
   items: TickerItem[];
@@ -121,7 +133,7 @@ export function TickerMarquee({ items: base, empty, ariaLabel, nextLabel, prevLa
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Record<string, TickerItem[]> | null) => {
         const list = data?.[locale];
-        if (alive && Array.isArray(list) && list.length) setExtra(list);
+        if (alive && Array.isArray(list) && list.length) setExtra(list.map((it) => inLocalDay(it, locale)));
       })
       .catch(() => {
         /* la striscia resta con i soli eventi ufficiali */

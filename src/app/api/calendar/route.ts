@@ -6,8 +6,10 @@ import type { TickerItem } from "@/components/TickerMarquee";
 
 /**
  * Tornei della community pubblicati sul calendario (solo `listed`, aperti o in corso, non più vecchi di un giorno),
- * già nel formato della striscia del calendario per entrambe le lingue. Il layout `(site)` resta statico:
+ * già nel formato della striscia del calendario per ogni lingua. Il layout `(site)` resta statico:
  * è `TickerMarquee` nel browser a chiedere questo JSON, rigenerato al massimo ogni 5 minuti.
+ * Il giorno del cubetto qui è quello UTC (la risposta è uguale per tutti); con `startsAt` il browser lo rifà nel fuso
+ * di chi guarda (24/11/2026: il torneo di ChillGiver, 28/11 alle 23:00 UTC, in Italia diceva 28 invece di 29).
  */
 export const revalidate = 300;
 
@@ -29,6 +31,7 @@ export async function GET() {
         title: t.name,
         where: `${d.events.communityBadge} · ${authorName(t.profile)}`,
         isNext: false,
+        startsAt: t.starts_at,
       };
     });
   }

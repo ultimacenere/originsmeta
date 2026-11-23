@@ -90,11 +90,6 @@ export function formatDateShort(locale: Locale, iso: string): string {
   return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" }).format(d);
 }
 
-export function monthShort(locale: Locale, iso: string): string {
-  const d = new Date(iso + (iso.length === 10 ? "T12:00:00Z" : ""));
-  return new Intl.DateTimeFormat(locale, { month: "short", timeZone: "UTC" }).format(d).replace(".", "");
-}
-
-export function dayNumber(iso: string): string {
-  return String(Number(iso.slice(8, 10)));
-}
+// Mese e giorno dei cubetti-data: stanno in calendarDay.ts, senza dizionari, perché li usa anche la striscia del
+// calendario nel browser per i tornei della community (giorno nel fuso di chi guarda, 24/11/2026).
+export { dayNumber, monthShort } from "./calendarDay";
