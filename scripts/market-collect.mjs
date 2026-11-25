@@ -7,6 +7,8 @@
 // scripts/set-cron-key.mjs). Indirizzo e chiave pubblica di Supabase da src/lib/supabase/env.ts.
 // Uso: CRON_SECRET=… node scripts/market-collect.mjs [--budget <secondi>]   (Node 24: importa i .ts direttamente)
 // Esce con 0 anche se Steam limita (lo scrive): il giro dopo riprende dal cursore.
+// Dal 25/11/2026 Steam risponde 429 anche ai server di GitHub: ogni 10 minuti lo lancia il PC di Pierluigi
+// (scripts/market-pc-run.mjs, attività pianificata "OriginsMeta Mercato"), GitHub Actions resta la riserva oraria.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

@@ -5,8 +5,9 @@ import { workflowDispatchRequest } from "@/lib/market/market";
 /**
  * Avvia il giro del mercato su GitHub Actions (18/10/2026, Pierluigi: "si" alla proposta di avere i 10 minuti garantiti).
  * Steam risponde 429 ai server di Vercel, quindi il giro (scripts/market-collect.mjs) gira su GitHub; ma GitHub non
- * garantisce i giri programmati frequenti (ieri uno ogni 2 ore circa). Questa rotta la chiama il cron di Vercel ogni 10
- * minuti (vercel.json, `Authorization: Bearer <CRON_SECRET>`) e chiede a GitHub di avviare market-collect.yml su main
+ * garantisce i giri programmati frequenti (ieri uno ogni 2 ore circa). Questa rotta la chiama il cron di Vercel (vercel.json,
+ * `Authorization: Bearer <CRON_SECRET>`; ogni 10 minuti fino al 25/11/2026, poi una volta l'ora: Steam risponde 429 anche
+ * a GitHub e i giri ogni 10 minuti li fa il PC di Pierluigi con scripts/market-pc-run.mjs) e chiede a GitHub di avviare market-collect.yml su main
  * (`workflowDispatchRequest` in src/lib/market/market.ts). Variabile solo server su Vercel: GITHUB_DISPATCH_TOKEN, un token
  * fine-grained di GitHub con il solo permesso "Actions: Read and write" sul repository originsmeta (scade: va rinnovato).
  * Senza il token risponde `skipped` e restano i giri programmati di GitHub. Mai in cache.
