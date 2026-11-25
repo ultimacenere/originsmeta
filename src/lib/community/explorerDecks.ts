@@ -54,6 +54,9 @@ export function deckArt(slugs: string[], lookup: (slug: string) => CardLike | un
       const c = lookup(s);
       return {
         name: c?.name ?? s,
+        // lo slug del mazzo è quello della carta: serve alla carta del gioco nell'anteprima (25/11/2026)
+        slug: c?.type ? s : undefined,
+        type: c?.type,
         thumb: c?.thumb,
         image: c?.image,
         art: c?.art,
@@ -109,7 +112,20 @@ export function communityExplorerDecks({
       // senza i segni della formattazione (22/10/2026)
       tagline: shorten(stripMarkdown(localizedGuide(deck, locale).text.summary), 140),
       legendary: leg
-        ? { slug: leg.slug, name: leg.name, href: href(locale, `/cards/${leg.slug}`), cover: leg.cover, thumb: leg.thumb, image: leg.image, mana: leg.mana }
+        ? {
+            slug: leg.slug,
+            name: leg.name,
+            href: href(locale, `/cards/${leg.slug}`),
+            cover: leg.cover,
+            thumb: leg.thumb,
+            image: leg.image,
+            mana: leg.mana,
+            art: leg.art,
+            power: leg.power,
+            health: leg.health,
+            ability: leg.ability?.[locale],
+            alignment: leg.alignment,
+          }
         : legCustom
           ? { slug: legCustom.slug, name: legCustom.name }
           : undefined,

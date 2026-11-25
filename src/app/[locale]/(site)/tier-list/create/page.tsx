@@ -42,6 +42,8 @@ export default async function TierMakerPage({ params }: { params: LocaleParams }
     alignment: c.alignment,
     alignmentLabel: c.alignmentLabel,
     typeLabel: c.typeLabel,
+    type: c.type,
+    art: c.art,
   });
   const pool = builderPool(locale, d);
   // Leggendarie in ordine di nome; carte base per costo e poi per nome, come nel deck builder.

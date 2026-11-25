@@ -3,7 +3,9 @@ import { getDictionary, href, type Locale } from "@/lib/i18n";
 import { getCard, statLine, type Card } from "@/lib/data/cards";
 import { initials, sagaHue } from "@/lib/cardArt";
 import { CardPeek, hasPeek, type PeekCard } from "./CardPeek";
-import { FlipCard, type FlipCardData, type FlipCardLabels } from "./FlipCard";
+import { type FlipCardData, type FlipCardLabels } from "./FlipCard";
+import { GameCard, toGameCardInput } from "./GameCard";
+import { gameCardLabel } from "@/game-card/model";
 
 /**
  * Illustrazione della carta: `full` usa quella da 480 px ed è pensata per il riquadro grande della scheda
@@ -45,6 +47,9 @@ function peekOf(card: Card, locale: Locale): PeekCard {
     ability: card.ability?.[locale],
     alignment: card.alignment,
     ...cardLabels(card, locale),
+    slug: card.slug,
+    type: card.type,
+    art: card.art,
   };
 }
 
@@ -191,6 +196,7 @@ export function flipOf(card: Card, locale: Locale): FlipCardData {
     removedLabel: c.removed,
     ability: card.ability?.[locale],
     ...cardLabels(card, locale),
+    game: { input: toGameCardInput(card, locale), lang: locale },
   };
 }
 
@@ -201,12 +207,12 @@ export function flipLabels(locale: Locale): FlipCardLabels {
 }
 
 /**
- * Griglia di carte intere che si girano, per la scheda di un mazzo (richiesta di Pierluigi del 22/09/2026: "come le
- * carte nella sezione Carte, più grandi"). Stessa carta (`FlipCard`) e stesse colonne del database /cards (2 sul
- * telefono, 3 su tablet, 4 dove la pagina è larga), così la carta ha la stessa misura e lo stesso comportamento.
- * Unica differenza: il nome sotto la carta c'è solo su touch (`foot="touch"`), col mouse sta sul retro.
- * Leggendaria per prima, poi le altre per costo e nome come nel gioco. Le carte fuori dal nostro database non ci
- * sono: le mostra la pagina a parte, con il loro nome.
+ * Griglia delle carte di un mazzo (schede dei mazzi singoli e torneo, liste nelle news, finali della Crimson Cup).
+ * Dal 25/11/2026 la carta del gioco (`GameCard`, src/game-card: la stessa delle schede carta, del Tracker e
+ * dell'estensione Twitch; Pierluigi: "i deck hanno ancora le grafiche vecchie"), con nome, testo e statistiche già sulla
+ * carta: niente più carta che si gira. Ogni carta porta alla sua scheda. Stesse colonne di prima (2 sul telefono, 3 su
+ * tablet, 4 dove la pagina è larga). Leggendaria per prima, poi le altre per costo e nome come nel gioco. Le carte fuori
+ * dal nostro database non ci sono: le mostra la pagina a parte, con il loro nome.
  */
 export function DeckCardGrid({ slugs, locale }: { slugs: string[]; locale: Locale }) {
   const list = slugs
@@ -214,12 +220,15 @@ export function DeckCardGrid({ slugs, locale }: { slugs: string[]; locale: Local
     .filter((c): c is Card => c !== undefined)
     .sort((a, b) => Number(Boolean(b.legendary)) - Number(Boolean(a.legendary)) || (a.mana ?? 99) - (b.mana ?? 99) || a.name.localeCompare(b.name));
   if (!list.length) return null;
-  const labels = flipLabels(locale);
+  const c = getDictionary(locale).common;
+  const words = { cost: c.mana, power: c.power, health: c.health };
   return (
-    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+    <ul className="deck-game-grid grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4">
       {list.map((card) => (
         <li key={card.slug} className="min-w-0">
-          <FlipCard card={flipOf(card, locale)} labels={labels} foot="touch" />
+          <Link href={href(locale, `/cards/${card.slug}`)} prefetch={false} className="deck-game-card" aria-label={gameCardLabel(toGameCardInput(card, locale), words)}>
+            <GameCard card={card} locale={locale} />
+          </Link>
         </li>
       ))}
     </ul>

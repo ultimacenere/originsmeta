@@ -9,9 +9,11 @@ import { trackEvent } from "@/lib/analytics";
 import { fill } from "@/lib/tournament/types";
 import type { DraftLabels } from "@/lib/draftLabels";
 import { CopyButton } from "@/components/CopyButton";
+import { GameCardFace } from "@/components/GameCard";
+import type { Locale } from "@/lib/i18n";
 
 /** La carta come la mostra il tavolo: quello che serve al bot più nome, immagini e testo nella lingua della pagina. */
-export type DraftUiCard = BotCard & { name: string; key?: string; image?: string; thumb?: string; ability?: string };
+export type DraftUiCard = BotCard & { name: string; key?: string; image?: string; thumb?: string; ability?: string; art?: string; lang?: Locale };
 
 /**
  * Il tavolo del draft (02/10/2026): il giro, la colonna con le carte, la costruzione e il risultato. Lo usano il draft
@@ -82,18 +84,30 @@ function CardName({ c, className = "" }: { c: DraftUiCard; className?: string })
   );
 }
 
-/** Carta grande: illustrazione ufficiale intera (mai ritagliata, i crediti restano), nome, costo, testo nella lingua. */
+/**
+ * Carta grande: dal 25/11/2026 la carta del gioco (src/game-card, Pierluigi: "ovunque ci siano le carte ci devono essere
+ * le carte ufficiali"), con nome, costo, testo e statistiche; sotto, come prima, nome e allineamento.
+ */
 function BigCard({ c, al, children, dim = false, mark }: { c: DraftUiCard; al: DraftLabels["alignment"]; children?: React.ReactNode; dim?: boolean; mark?: string }) {
   return (
     <div className={`flex flex-col gap-2 ${dim ? "opacity-45" : ""}`}>
-      <div className={`relative overflow-hidden rounded-xl border-[3px] bg-night-2 ${c.legendary ? "border-gold" : "border-sky"}`}>
-        {c.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.image} alt={c.name} loading="lazy" decoding="async" className="block h-auto w-full" />
-        ) : (
-          <div className="grid aspect-[5/7] place-items-center p-3 text-center font-display text-lg text-sky">{c.name}</div>
-        )}
-        {mark ? <span className="absolute left-2 top-2 rounded-full bg-ink/85 px-2 py-0.5 text-xs font-bold text-chalk">{mark}</span> : null}
+      <div className="relative" role="img" aria-label={c.name}>
+        <GameCardFace
+          lang={c.lang ?? "en"}
+          input={{
+            slug: c.slug,
+            name: c.name,
+            type: c.spell ? "spell" : "unit",
+            cost: c.mana ?? null,
+            power: c.power ?? null,
+            health: c.health ?? null,
+            legendary: c.legendary,
+            alignment: c.alignment ?? null,
+            text: c.ability ?? "",
+            art: c.art ?? null,
+          }}
+        />
+        {mark ? <span className="absolute right-2 top-[12%] rounded-full bg-ink/85 px-2 py-0.5 text-xs font-bold text-chalk">{mark}</span> : null}
       </div>
       <div className="min-w-0">
         <p className="text-sm font-bold text-sky">

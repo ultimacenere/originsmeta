@@ -2,6 +2,9 @@ import type { CSSProperties } from "react";
 import Link from "@/components/IntentLink";
 import { alignStyle } from "@/lib/cardArt";
 import { tierTone, type Tier } from "@/lib/tiercode";
+import type { GameCardInput } from "@/game-card/model";
+import type { Locale } from "@/lib/i18n";
+import { GameCardFace } from "./GameCard";
 
 /**
  * Carta intera che si gira: UNA sola implementazione per il database /cards (CardExplorer), la scheda di un mazzo
@@ -56,6 +59,11 @@ export type FlipCardData = {
   ability?: string;
   /** voti degli iscritti (07/10/2026, Pierluigi: "nella pagina carte non vedo i voti"): riga già scritta ("9,0/10 · 1 voto") e fascia, se c'è */
   rating?: { text: string; tier?: Tier };
+  /**
+   * La carta del gioco (25/11/2026, Pierluigi: "tutto il sito e ovunque ci siano le carte ci devono essere le carte
+   * ufficiali"): con questi dati FlipCard disegna la carta del gioco di src/game-card al posto della carta che si gira.
+   */
+  game?: { input: GameCardInput; lang: Locale };
 };
 
 export type FlipCardLabels = { legendary: string; mana: string; power: string; health: string };
@@ -80,6 +88,30 @@ export function FlipCard({
   foot?: "always" | "touch";
   sizes?: string;
 }) {
+  // la carta del gioco (25/11/2026): nome, testo e statistiche sono sulla carta; sotto restano voti e "Rimossa"
+  if (c.game) {
+    return (
+      <Link href={c.href} prefetch={false} className={`card-game${c.removed ? " is-removed" : ""}`}>
+        <span aria-hidden="true" className="block">
+          <GameCardFace input={c.game.input} lang={c.game.lang} />
+        </span>
+        <span className="sr-only">{linkName(c, labels)}</span>
+        {c.removed && c.removedLabel ? (
+          <span className="card-game-foot" aria-hidden="true">
+            <span className="stat-pill bg-bad text-[11px] font-bold text-ink">{c.removedLabel}</span>
+          </span>
+        ) : null}
+        {c.rating ? (
+          <span className="card-game-foot" aria-hidden="true">
+            <span className="card-tile-rating">
+              {c.rating.tier ? <span className={`tier-letter is-small ${tierTone[c.rating.tier]}`}>{c.rating.tier}</span> : null}
+              {c.rating.text}
+            </span>
+          </span>
+        ) : null}
+      </Link>
+    );
+  }
   const src = c.thumb ?? c.image;
   // Nome e statistiche sul retro quando col mouse il piede non c'è (scheda di un mazzo)
   const headOnBack = foot !== "always";

@@ -4,7 +4,7 @@ import { getDictionary, href, type Dictionary, type Locale } from "@/lib/i18n";
 import { getCard, sagas, type Card } from "@/lib/data/cards";
 import { linkCardNames } from "@/lib/cardlinks";
 import { initials } from "@/lib/cardArt";
-import { mentionParts, type MentionPeek, type MentionTarget } from "@/lib/cardPeek";
+import { mentionParts, peekGameOf, type MentionPeek, type MentionTarget } from "@/lib/cardPeek";
 import { CardMentionEdges } from "./CardMentionEdges";
 
 /** `id` non serve più (gli id dei pannelli li dà il browser quando li crea): resta facoltativo perché le pagine lo passano. */
@@ -61,6 +61,7 @@ function peekJson(card: Card, locale: Locale, dict: Dictionary): string {
       stats: card.power !== undefined ? `${c.power}/${c.health}` : undefined,
       unknown: hasStats ? undefined : c.unknownStats,
     },
+    g: peekGameOf(card),
   };
   const json = JSON.stringify(peek);
   peekCache.set(key, json);

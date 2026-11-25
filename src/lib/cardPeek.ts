@@ -45,7 +45,45 @@ export type PeekCard = {
   alignmentLabel?: string;
   /** una riga in più sotto il testo, già scritta (06/10/2026: i voti alle carte nella tier list dei voti, "7,9 su 10 · 5 voti") */
   note?: string;
+  /** per la carta del gioco (25/11/2026): slug, tipo e finestra d'arte (/cards/art/<slug>.webp) */
+  slug?: string;
+  type?: string;
+  art?: string;
 };
+
+/**
+ * La carta del gioco nelle anteprime (25/11/2026, Pierluigi: "ovunque ci siano le carte ci devono essere le carte
+ * ufficiali"): i pochi dati in più che servono a disegnarla nel browser con src/game-card (CardMentionEdges). Nome,
+ * costo, testo e Leggendaria li ha già il pannello; qui slug, tipo, arte, forza, salute e allineamento.
+ */
+export type PeekGame = { s: string; k: "unit" | "spell" | "token"; a?: string; p?: number; h?: number; al?: "good" | "evil" | "neutral" };
+
+export function peekGameOf(card: { slug?: string; type?: string; art?: string; power?: number; health?: number; alignment?: "good" | "evil" | "neutral" }): PeekGame | undefined {
+  if (!card.slug || (card.type !== "unit" && card.type !== "spell" && card.type !== "token")) return undefined;
+  // solo i campi che ci sono: l'attributo resta corto
+  const g: PeekGame = { s: card.slug, k: card.type };
+  if (card.art) g.a = card.art;
+  if (card.power !== undefined) g.p = card.power;
+  if (card.health !== undefined) g.h = card.health;
+  if (card.alignment) g.al = card.alignment;
+  return g;
+}
+
+/** I dati del modello della carta del gioco (src/game-card/model.ts, GameCardInput) da un'anteprima con `g`. */
+export function gameInputOfPeek(d: { name: string; legendary?: boolean; mana?: number; ability?: string; g: PeekGame }) {
+  return {
+    slug: d.g.s,
+    name: d.name,
+    type: d.g.k,
+    cost: d.mana ?? null,
+    power: d.g.p ?? null,
+    health: d.g.h ?? null,
+    legendary: Boolean(d.legendary),
+    alignment: d.g.al ?? null,
+    text: d.ability ?? "",
+    art: d.g.a ?? null,
+  };
+}
 
 /** C'è qualcosa da mostrare? Le carte inserite a mano (senza testo, statistiche né immagine) non hanno anteprima. */
 export function hasPeek(card: PeekCard): boolean {
@@ -67,6 +105,8 @@ export type DeckPeek = {
   ability?: string;
   /** riga in più sotto il testo (i voti alle carte, 06/10/2026) */
   note?: string;
+  /** la carta del gioco (25/11/2026) */
+  g?: PeekGame;
 };
 
 /** Solo i campi che il pannello mostra: `BuilderCard` e le carte dei mazzi portano altro che nell'attributo non serve. */
@@ -83,6 +123,7 @@ export function deckPeekOf(card: PeekCard): DeckPeek {
     alignLabel: align ? card.alignmentLabel : undefined,
     ability: card.ability || undefined,
     ...(card.note ? { note: card.note } : {}),
+    ...(peekGameOf(card) ? { g: peekGameOf(card) } : {}),
   };
 }
 
@@ -101,6 +142,8 @@ export type MentionPeek = {
   ability?: string;
   /** etichette nella lingua della pagina, solo quelle che il pannello usa */
   labels: { preview: string; mana?: string; stats?: string; unknown?: string };
+  /** la carta del gioco (25/11/2026) */
+  g?: PeekGame;
 };
 
 /**

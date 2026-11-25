@@ -3,6 +3,7 @@ import Link from "@/components/IntentLink";
 import { href, type Locale } from "@/lib/i18n";
 import { getCard } from "@/lib/data/cards";
 import { cardImageAlt } from "@/lib/cardPage";
+import { GameCard } from "@/components/GameCard";
 
 /** La Leggendaria del cuore da mostrare, o undefined (slug assente, carta rimossa, non Leggendaria, senza immagine). */
 export function favoriteLegendaryCard(slug: string | null | undefined) {
@@ -22,7 +23,6 @@ export function favoriteLegendaryCard(slug: string | null | undefined) {
 export function FavoriteLegendary({ slug, locale, children }: { slug: string | null; locale: Locale; children?: ReactNode }) {
   const card = favoriteLegendaryCard(slug);
   if (!card) return null;
-  const src = card.image ?? card.art!;
   return (
     <figure className="mx-auto flex w-full max-w-[260px] shrink-0 flex-col items-center gap-2 sm:mx-0 sm:w-[240px]">
       <Link
@@ -30,10 +30,12 @@ export function FavoriteLegendary({ slug, locale, children }: { slug: string | n
         prefetch={false}
         title={card.name}
         aria-label={card.name}
-        className="block w-full overflow-hidden rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
+        className="block w-full rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt={cardImageAlt(card, locale)} loading="lazy" decoding="async" className="block h-auto w-full" />
+        {/* dal 25/11/2026 la carta del gioco (src/game-card): "ovunque ci siano le carte ci devono essere le carte ufficiali" */}
+        <span role="img" aria-label={cardImageAlt(card, locale)} className="block">
+          <GameCard card={card} locale={locale} />
+        </span>
       </Link>
       {children ? <figcaption className="text-center">{children}</figcaption> : null}
     </figure>

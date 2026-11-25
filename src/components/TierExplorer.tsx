@@ -10,6 +10,8 @@ import type { CardVoteLabels } from "@/lib/cardVoteLabels";
 import type { TierCardEntry } from "@/lib/tierTypes";
 import { trackNamedEvent } from "@/lib/analytics";
 import { CardVote } from "./CardVote";
+import { GameCardFace } from "./GameCard";
+import type { Locale } from "@/lib/i18n";
 
 /*
   Carte della sezione Tier list (riprogettazione del 24/09/2026, §1 punto 32 della KB). Un solo componente per le
@@ -251,6 +253,9 @@ export function TierExplorer({
     alignment: e.alignment,
     alignmentLabel: e.alignmentLabel,
     note: voteNote(e),
+    slug: e.slug,
+    type: e.type,
+    art: e.art,
   });
 
   const tile = (e: TierCardEntry, caption?: string) => (
@@ -568,10 +573,24 @@ export function TierExplorer({
           </form>
         </div>
         <div className="tier-dialog-card">
-          {e.image || e.thumb ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={e.image ?? e.thumb} alt="" width={480} height={690} decoding="async" />
-          ) : null}
+          {/* dal 25/11/2026 la carta del gioco (src/game-card) */}
+          <div aria-hidden="true">
+            <GameCardFace
+              lang={locale as Locale}
+              input={{
+                slug: e.slug,
+                name: e.name,
+                type: e.spell ? "spell" : e.type === "token" ? "token" : "unit",
+                cost: e.mana ?? null,
+                power: e.power ?? null,
+                health: e.health ?? null,
+                legendary: Boolean(e.legendary),
+                alignment: e.alignment ?? null,
+                text: e.ability ?? "",
+                art: e.art ?? null,
+              }}
+            />
+          </div>
           <div className="min-w-0">
             <h2 id={`${id}-dialog-title`} className="t-item text-lg">
               {star(e)}

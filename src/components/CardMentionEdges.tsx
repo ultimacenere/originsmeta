@@ -1,7 +1,39 @@
 "use client";
 
 import { useEffect } from "react";
-import { buildDeckPeek, buildMentionPreview, mentionDescription, readPeek, type DeckPeek, type MentionPeek } from "@/lib/cardPeek";
+import { buildDeckPeek, buildMentionPreview, gameInputOfPeek, mentionDescription, readPeek, type DeckPeek, type MentionPeek, type PeekGame } from "@/lib/cardPeek";
+import { build as buildGameCard } from "@/game-card/dom";
+import type { GameCardLang } from "@/game-card/model";
+import "@/game-card/theme.css";
+import "@/game-card/card.css";
+
+/** La lingua della carta del gioco dalla lingua della pagina (<html lang>: it, pt-BR, zh-Hans…). */
+function pageLang(): GameCardLang {
+  const l = (document.documentElement.lang || "en").toLowerCase();
+  if (l.startsWith("zh")) return "zh-cn";
+  const two = l.slice(0, 2);
+  return (["en", "it", "es", "fr", "pt", "de", "ru"].includes(two) ? two : "en") as GameCardLang;
+}
+
+/**
+ * La carta del gioco (25/11/2026, Pierluigi: "ovunque ci siano le carte ci devono essere le carte ufficiali"): lo stesso
+ * modello di schede carta, Tracker ed estensione Twitch, nel pannello dell'anteprima al posto di carta e testo.
+ */
+function gamePanel(cls: string, d: { name: string; legendary?: boolean; mana?: number; ability?: string; note?: string; g: PeekGame }): HTMLElement {
+  const panel = document.createElement("span");
+  panel.className = cls;
+  const wrap = document.createElement("span");
+  wrap.className = `omg-wrap${d.legendary ? " is-leg" : ""}`;
+  wrap.append(buildGameCard(gameInputOfPeek(d), pageLang()));
+  panel.append(wrap);
+  if (d.note) {
+    const n = document.createElement("span");
+    n.className = "deck-peek-note";
+    n.textContent = d.note;
+    panel.append(n);
+  }
+  return panel;
+}
 
 /** Copie montate del componente e funzione che toglie gli eventi quando si smonta l'ultima. */
 let hosts = 0;
@@ -122,7 +154,19 @@ function mentionPanel(mention: HTMLElement, link: HTMLElement): HTMLElement | nu
   const data = mentionData(mention, target);
   if (!data) return null;
   const id = `card-peek-${++panels}`;
-  const panel = buildMentionPreview(document, data, id);
+  let panel: HTMLElement;
+  if (data.g) {
+    panel = document.createElement("span");
+    panel.className = "card-mention-preview";
+    panel.setAttribute("role", "tooltip");
+    panel.id = id;
+    const sr = document.createElement("span");
+    sr.className = "sr-only";
+    sr.textContent = mentionDescription(data);
+    const card = gamePanel(`card-mention-panel is-game${data.legendary ? " is-legendary" : ""}`, { ...data, g: data.g });
+    card.prepend(sr);
+    panel.append(card);
+  } else panel = buildMentionPreview(document, data, id);
   if (existing) existing.replaceWith(panel);
   else mention.append(panel);
   built.set(mention, target);
@@ -150,7 +194,7 @@ function fillPeek(slot: HTMLElement) {
   if (!raw || filled.get(slot) === raw || !hydrated(slot)) return;
   const data = readPeek<DeckPeek>(raw);
   if (!data) return;
-  slot.replaceChildren(buildDeckPeek(document, data));
+  slot.replaceChildren(data.g ? gamePanel(`deck-peek-panel is-game${data.legendary ? " is-legendary" : ""}`, { ...data, g: data.g }) : buildDeckPeek(document, data));
   filled.set(slot, raw);
 }
 

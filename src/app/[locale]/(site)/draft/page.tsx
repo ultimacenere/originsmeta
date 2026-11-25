@@ -33,7 +33,7 @@ export default async function DraftPage({ params }: { params: LocaleParams }) {
   const bySlug = new Map(activeCards.map((c) => [c.slug, c]));
   const cards: DraftUiCard[] = pool.map((p) => {
     const c = bySlug.get(p.slug)!;
-    return { ...p, name: c.name, key: c.key, image: c.image, thumb: c.thumb, ability: c.ability?.[locale] };
+    return { ...p, name: c.name, key: c.key, image: c.image, thumb: c.thumb, ability: c.ability?.[locale], art: c.art, lang: locale };
   });
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">

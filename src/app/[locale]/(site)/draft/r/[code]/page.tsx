@@ -60,7 +60,7 @@ export default async function DraftRoomPage({ params }: { params: Params }) {
     const bySlug = new Map(activeCards.map((c) => [c.slug, c]));
     const cards: DraftUiCard[] = draftPool().map((c) => {
       const card = bySlug.get(c.slug)!;
-      return { ...c, name: card.name, key: card.key, image: card.image, thumb: card.thumb, ability: card.ability?.[locale] };
+      return { ...c, name: card.name, key: card.key, image: card.image, thumb: card.thumb, ability: card.ability?.[locale], art: card.art, lang: locale };
     });
     body = (
       <DraftRoom
