@@ -136,7 +136,7 @@ export const pt: Dictionary = {
     stats: "Stats",
     unknownStats: "stats ainda não publicadas",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats do patch de 17 de novembro de 2026: as 130 cartas da coleção do jogo foram verificadas no jogo em 11 de novembro de 2026, na versão 0.8.2 do Acesso Antecipado, e as notas de balanceamento vêm das notas oficiais dos patches.",
+    asOf: "Stats do patch de 23 de novembro de 2026: as 130 cartas da coleção do jogo foram verificadas no jogo em 11 de novembro de 2026, na versão 0.8.2 do Acesso Antecipado, e as notas de balanceamento vêm das notas oficiais dos patches.",
     alignment: "Alinhamento",
     good: "Good",
     evil: "Evil",

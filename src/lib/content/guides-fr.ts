@@ -1300,11 +1300,13 @@ Le deck n'est étiqueté que pour le ladder, mais il s'intègre dans une sélect
 | 6 novembre | [AMA sur la feuille de route](/fr/news/origins-tcg-roadmap-ama-recap) sur le Discord officiel : le plan de l'Accès anticipé jusqu'en février |
 | 10 novembre | [Patch 0.8.2](/fr/news/patch-notes-0-8-2) : exploits du mode classé colmatés, moins de déconnexions, meilleur matchmaking pour les débutants en PvP ; aucun changement de cartes |
 | 17 novembre | [Patch d'équilibrage](/fr/news/balance-patch-1117-sherwood-forest) : neuf cartes rééquilibrées, Dr. Frank coûte 5, Sherwood Forest devient rare |
+| 23 novembre | [Patch d'équilibrage](/fr/news/balance-patch-1123-harvest-bowl) avant la Harvest Bowl : Glinda et Sandman perdent 1 Santé, Sorcerer's Apprentice coûte 6, la génération aléatoire ne crée plus de Légendaires |
 
 ## Ce qui vient ensuite
 
 - **28–29 novembre 2026.** La Harvest Bowl, le tournoi de novembre de Koin Games pour l'Accès anticipé : le samedi, deux qualifications en double élimination de 512 joueurs, le dimanche, la journée finale avec les 128 meilleurs, avec un deck plus une réserve de 3 cartes, jouée sur OriginsMeta. Horaires, règles et inscription sur [notre page de la Harvest Bowl](/fr/events/harvest-bowl).
-- **2 décembre 2026.** Fin de la saison classée en cours et première grande mise à jour : Collector Pass, Prestige, capsules, nouveaux lieux et titres. Suivent une saison jusqu'à la mi-janvier et une de la mi-janvier à février. Voir notre [guide du mode classé](/fr/guides/origins-tcg-ranked).
+- **2 décembre 2026.** Début de la Season 2 : les récompenses de la démo et des missions sont retirées, celles du mode classé ne peuvent plus être obtenues et Van Helsing sort de la rotation, d'après le [guide de Koin sur la collection](/fr/news/origins-tcg-collecting-guide-season-2). Le Kickstarter se termine le même jour.
+- **8 décembre 2026.** Mise à jour 0.9, la première grande mise à jour : Collector Pass, Prestige, capsules, nouveaux lieux et titres. Koin l'a décalée du 3 décembre pour que tous les contributeurs du Kickstarter commencent dès le premier jour ([State of Origins](/fr/news/state-of-origins-november-2026)). À partir de décembre, les tournois de Koin se jouent sur son propre site, sans limite de joueurs. Suivent une saison jusqu'à la mi-janvier et une de la mi-janvier à février. Voir notre [guide du mode classé](/fr/guides/origins-tcg-ranked).
 - **Février 2027.** Le set complet Myths and Legends, environ 218 cartes, avec toutes les récompenses du Kickstarter ; l'édition standard arrive en boutique.
 - **Fin de l'Accès anticipé.** Le Myths and Legends Open, pour ceux qui se qualifient par les tournois mensuels.
 - **Pendant l'Accès anticipé.** Koin publiera progressivement les 218 cartes de l'Alpha Set « Myths & Legends », l'exclusivité du Kickstarter, d'après le post Steam du 27 octobre 2026.

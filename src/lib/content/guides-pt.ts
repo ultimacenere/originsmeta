@@ -1299,11 +1299,13 @@ O deck está marcado só para a ladder, mas cabe numa seleção de Conquest: uma
 | 6 de novembro | [AMA do roadmap](/pt/news/origins-tcg-roadmap-ama-recap) no Discord oficial: o plano do Acesso Antecipado até fevereiro |
 | 10 de novembro | [Patch 0.8.2](/pt/news/patch-notes-0-8-2): exploits da ranqueada fechados, menos desconexões, matchmaking melhor para quem está começando no PvP; nenhuma mudança nas cartas |
 | 17 de novembro | [Patch de balanceamento](/pt/news/balance-patch-1117-sherwood-forest): nove cartas rebalanceadas, Dr. Frank custa 5, Sherwood Forest vira raro |
+| 23 de novembro | [Patch de balanceamento](/pt/news/balance-patch-1123-harvest-bowl) antes da Harvest Bowl: Glinda e Sandman perdem 1 de Vida, Sorcerer's Apprentice custa 6, a geração aleatória não cria mais Lendárias |
 
 ## O que vem a seguir
 
 - **28–29 de novembro de 2026.** A Harvest Bowl, o torneio de novembro da Koin Games para o Acesso Antecipado: no sábado, duas classificatórias em eliminação dupla com 512 jogadores; no domingo, o dia final com os 128 melhores, com um deck mais um sideboard de 3 cartas, jogada no OriginsMeta. Horários, regras e inscrição na [nossa página da Harvest Bowl](/pt/events/harvest-bowl).
-- **2 de dezembro de 2026.** Fim da temporada ranqueada atual e primeira grande atualização: Collector Pass, Prestige, cápsulas, locais novos e títulos. Segue uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.
+- **2 de dezembro de 2026.** Começa a Season 2: as recompensas da demo e das missões são removidas, as da ranqueada não podem mais ser ganhas e Van Helsing sai da rotação, segundo o [guia da Koin para colecionar](/pt/news/origins-tcg-collecting-guide-season-2). O Kickstarter termina no mesmo dia.
+- **8 de dezembro de 2026.** Atualização 0.9, a primeira grande atualização: Collector Pass, Prestige, cápsulas, locais novos e títulos. A Koin a adiou de 3 de dezembro para que todos os apoiadores do Kickstarter comecem no primeiro dia ([State of Origins](/pt/news/state-of-origins-november-2026)). A partir de dezembro, os torneios da Koin são disputados no próprio site, sem limite de jogadores. Segue uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.
 - **Fevereiro de 2027.** O set completo Myths and Legends, cerca de 218 cartas, com todas as recompensas do Kickstarter; a edição padrão chega às lojas.
 - **Fim do Acesso Antecipado.** O Myths and Legends Open, para quem se classificar pelos torneios mensais.
 - **Durante o Acesso Antecipado.** As 218 cartas do set Alpha "Myths & Legends", exclusivo do Kickstarter, que a Koin vai lançar aos poucos; os cosméticos colecionáveis que não são cartas vão poder ser trocados num próximo update.

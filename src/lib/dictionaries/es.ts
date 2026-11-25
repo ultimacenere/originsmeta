@@ -137,7 +137,7 @@ export const es: Dictionary = {
     updated: "Actualizado",
     stats: "Estadísticas",
     unknownStats: "estadísticas aún no publicadas",
-    asOf: "Estadísticas del parche del 17 de noviembre de 2026: las 130 cartas de la colección del juego se verificaron en el juego el 11 de noviembre de 2026, en la versión 0.8.2 del Acceso anticipado, y los cambios de equilibrio vienen de las notas oficiales de los parches.",
+    asOf: "Estadísticas del parche del 23 de noviembre de 2026: las 130 cartas de la colección del juego se verificaron en el juego el 11 de noviembre de 2026, en la versión 0.8.2 del Acceso anticipado, y los cambios de equilibrio vienen de las notas oficiales de los parches.",
     alignment: "Alineamiento",
     good: "Good",
     evil: "Evil",

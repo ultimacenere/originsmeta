@@ -42,9 +42,10 @@ export type ChangeKind = "buff" | "nerf" | "rework" | "deck";
  * e un'etichetta leggibile in `patches`. La seconda della demo, del 29/09/2026, torna ad avere un numero:
  * 0.7 ("Steam Demo Update #2" nell'immagine ufficiale). La prima patch di bilanciamento dell'Accesso anticipato, del
  * 04/11/2026, non ha numero nelle patch notes: id nostro "ea-1104" ed etichetta in `patches`, come la demo del 21/09. La
- * seconda, del 17/11/2026, neanche: "ea-1117".
+ * seconda, del 17/11/2026, neanche: "ea-1117". La terza, del 23/11/2026 (il "Balance Update... Update" prima dell'Harvest
+ * Bowl), neppure: "ea-1123".
  */
-export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921", "0.7", "ea-1104", "ea-1117"] as const;
+export const patchOrder = ["0.6.1", "0.6.2", "0.6.3", "demo-0921", "0.7", "ea-1104", "ea-1117", "ea-1123"] as const;
 export type PatchId = (typeof patchOrder)[number];
 export type Alignment = "good" | "evil" | "neutral";
 export type Rarity = "common" | "rare" | "epic" | "legendary";
@@ -161,6 +162,21 @@ export const patches: Record<PatchId, { date: string; at?: string; url: string; 
     title: "Enough with the Merry Men!!!",
     label: { en: "EA · 17 Nov", it: "EA · 17 nov", es: "EA · 17 nov", fr: "EA · 17 nov.", pt: "EA · 17 nov.", de: "EA · 17. Nov.", ru: "EA · 17 нояб.", "zh-cn": "EA · 11月17日" },
     news: "balance-patch-1117-sherwood-forest",
+  },
+  // Terza patch di bilanciamento dell'Accesso anticipato, senza numero di versione: annunciata da apix nel Discord ufficiale
+  // (#game-announcements) il 20/11/2026 alle 22:33 UTC ("Harvest Bowl Balance Update!", hotfix "targeting this coming Monday,
+  // November 23") dopo quattro sondaggi del 19-20/11 in #announcements, e installata il 23/11: server giù "around an hour
+  // starting at 10am PST" (Discord: "Servers going down" alle 17:56 UTC, "Servers are back" alle 19:19 UTC). Post Steam
+  // "Balance Update... Update" di apix del 23/11/2026 alle 17:58:36 UTC (gid letto con ISteamNews il 25/11), uguale
+  // all'annuncio del 20/11: Glinda 2/3, Sandman 1/2, Sorcerer's Apprentice 6 mana 4/4, e la generazione casuale che non
+  // crea più Leggendarie (regola di gioco, solo nella news). `at` è l'ora del post Steam.
+  "ea-1123": {
+    date: "2026-11-23",
+    at: "2026-11-23T17:58:36Z",
+    url: "https://store.steampowered.com/news/app/4429430/view/1849827110442601",
+    title: "Balance Update... Update",
+    label: { en: "EA · 23 Nov", it: "EA · 23 nov", es: "EA · 23 nov", fr: "EA · 23 nov.", pt: "EA · 23 nov.", de: "EA · 23. Nov.", ru: "EA · 23 нояб.", "zh-cn": "EA · 11月23日" },
+    news: "balance-patch-1123-harvest-bowl",
   },
 };
 

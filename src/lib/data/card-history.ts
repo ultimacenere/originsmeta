@@ -385,6 +385,13 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 2, power: 1, health: 3 },
       note: { en: "-1 Power, +1 Health.", it: "-1 Potenza, +1 Salute.", es: "-1 de Poder, +1 de Salud.", fr: "-1 Puissance, +1 Santé.", pt: "-1 de Poder, +1 de Vida.", de: "-1 Kraft, +1 Leben.", ru: "-1 к Силе, +1 к Здоровью.", "zh-cn": "力量 -1，生命值 +1。" },
     },
+    {
+      patch: "ea-1123",
+      kind: "nerf",
+      from: { mana: 2, power: 1, health: 3 },
+      to: { mana: 2, power: 1, health: 2 },
+      note: { en: "-1 Health.", it: "-1 Salute.", es: "-1 de Salud.", fr: "-1 Santé.", pt: "-1 de Vida.", de: "-1 Leben.", ru: "-1 к Здоровью.", "zh-cn": "生命 -1。" },
+    },
   ],
   basilisk: [
     {
@@ -751,6 +758,13 @@ export const cardHistory: Record<string, Change[]> = {
       to: { mana: 5, power: 3, health: 4 },
       note: { en: "+1 Power, +1 Health.", it: "+1 Potenza, +1 Salute.", es: "+1 de Poder, +1 de Salud.", fr: "+1 Puissance, +1 Santé.", pt: "+1 de Poder, +1 de Vida.", de: "+1 Kraft, +1 Leben.", ru: "+1 к Силе, +1 к Здоровью.", "zh-cn": "力量 +1，生命 +1。" },
     },
+    {
+      patch: "ea-1123",
+      kind: "rework",
+      from: { mana: 5, power: 3, health: 4 },
+      to: { mana: 6, power: 4, health: 4 },
+      note: { en: "Costs 1 more, +1 Power.", it: "Costa 1 in più, +1 Potenza.", es: "Cuesta 1 más, +1 de Poder.", fr: "Coûte 1 de plus, +1 Puissance.", pt: "Custa 1 a mais, +1 de Poder.", de: "Kostet 1 mehr, +1 Kraft.", ru: "Стоит на 1 больше, +1 к Силе.", "zh-cn": "费用增加 1，力量 +1。" },
+    },
   ],
   zombie: [
     {
@@ -786,6 +800,16 @@ export const cardHistory: Record<string, Change[]> = {
       from: { mana: 2, power: 1, health: 3 },
       to: { mana: 2, power: 1, health: 1 },
       note: { en: "-2 Health.", it: "-2 Salute.", es: "-2 de Salud.", fr: "-2 Santé.", pt: "-2 de Vida.", de: "-2 Leben.", ru: "-2 к Здоровью.", "zh-cn": "生命 -2。" },
+    },
+  ],
+  // Patch del 23/11/2026 (ea-1123), post Steam "Balance Update... Update": Glinda non aveva ancora modifiche.
+  glinda: [
+    {
+      patch: "ea-1123",
+      kind: "nerf",
+      from: { mana: 4, power: 2, health: 4 },
+      to: { mana: 4, power: 2, health: 3 },
+      note: { en: "-1 Health.", it: "-1 Salute.", es: "-1 de Salud.", fr: "-1 Santé.", pt: "-1 de Vida.", de: "-1 Leben.", ru: "-1 к Здоровью.", "zh-cn": "生命 -1。" },
     },
   ],
 };

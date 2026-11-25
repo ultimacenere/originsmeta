@@ -126,7 +126,7 @@ export const de: Dictionary = {
     updated: "Aktualisiert",
     stats: "Werte",
     unknownStats: "Werte noch nicht veröffentlicht",
-    asOf: "Werte des Patches vom 17. November 2026: Die 130 Karten der Sammlung wurden am 11. November 2026 im Spiel geprüft, auf Version 0.8.2 des Early Access, und die Balance-Hinweise stammen aus den offiziellen Patchnotes.",
+    asOf: "Werte des Patches vom 23. November 2026: Die 130 Karten der Sammlung wurden am 11. November 2026 im Spiel geprüft, auf Version 0.8.2 des Early Access, und die Balance-Hinweise stammen aus den offiziellen Patchnotes.",
     alignment: "Gesinnung",
     good: "Good",
     evil: "Evil",

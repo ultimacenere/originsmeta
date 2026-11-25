@@ -14,6 +14,246 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "state-of-origins-november-2026": {
+    title: "State of Origins：带来 Prestige 和 Collector Pass 的 0.9 更新定于 12月8日，12 月起锦标赛不限人数",
+    metaTitle: "Origins TCG 0.9 更新 12月8日上线：State of Origins",
+    description:
+      "Koin Games 的 CEO Tim Jooste 在 State of Origins 中宣布：带来 Prestige 和 Collector Pass 的 0.9 更新推迟到 12月8日，12 月起锦标赛不设人数上限，2027年还将推出手机版、完整系列和实体店活动。",
+    summary:
+      "Koin Games 的 CEO Tim Jooste 在一段 7 分钟的视频中，讲解了从现在到 2027年初会发生什么。带来 Prestige 和 Collector Pass 的 0.9 更新推迟到 12月8日，好让每位 Kickstarter 支持者都能从第一天开始。从 12 月起，锦标赛将在 Koin 自己的网站上进行，不设人数上限；2027年则会带来手机版、完整系列和实体店活动。",
+    body: `Koin Games 的 CEO Tim Jooste 于太平洋时间 11月24日晚（欧洲时间 11月25日）在官方 YouTube 频道发布了“The State of Origins Trading Card Game November 2026 (Unedited)”，并在官方 Discord 上发布了摘要。在不到 7 分钟的时间里，他谈到了 Harvest Bowl、Kickstarter 的结束、0.9 更新和 2027年。
+
+## 0.9 更新将于 12月8日上线 {#0-9-geng-xin}
+
+大型内容更新推迟到 12月8日。Tim 在 Discord 上写道，更新的上线日期是“12/8, not 12/3”，也就是 12月8日，而不是 12月3日。原因在于 Kickstarter：众筹于 12月2日结束，在此之前 Kickstarter 不会告诉 Koin 谁购买了 Collector Pass。为了不让非支持者在第一批 Myths & Legends Prestige 卡牌上抢先一步，Koin 选择多等几天，好让每位支持者都从第一天开始。
+
+0.9 更新带来 Prestige 系统，包括 Collector Pass 和 Prestige Point Pass：
+
+- **Collector Pass。** 拥有它的支持者从 12月8日起每周都能获得收藏品。据 Tim 说，通过 Kickstarter 购买是它今后最划算的价格。
+- **Prestige。** 用 Prestige 点数，你可以逐步获取一套限量收藏：胶囊、3D 角色、表情和 48 张 Prestige 卡牌，仅在 Myths & Legends 系列的前半段提供。它们从 Monochromatic 到 Black and White，再到 Cyberpunk，最受追捧的是艺术家样卡（artist proof）。这些卡牌从不出现在卡包中，只能在接下来大约两个月内获得。
+- Tim 说，有些玩家已经打算同时叠加五个 Prestige pass。
+
+## 试玩版奖励：最后几天 {#shi-wan-ban-jiang-li}
+
+Tim 提醒观众，试玩版奖励“大约 7 天后”就会消失。Koin [11月20日的收藏指南](/zh-cn/news/origins-tcg-collecting-guide-season-2)给出了具体日期：12月2日，届时 Season 2 开始，排位奖励将无法再获得。
+
+## Harvest Bowl 和接下来的锦标赛 {#jin-biao-sai}
+
+Koin 原本预计 Harvest Bowl 会有约 500 名玩家。Tim 在 Discord 上称报名人数为 1,529 人，视频中则说约有 500 人在候补名单上，而奖品是 32 张卡牌，没有现金奖励。正如 Koin 11月19日在 X 上所写，1,024 个名额在不到 24 小时内就被抢光。两场资格赛的候补名单都在 OriginsMeta 上：[资格赛 1](/zh-cn/tournaments/harvest-bowl-qualifier-1)和[资格赛 2](/zh-cn/tournaments/harvest-bowl-qualifier-2)。
+
+从 12 月起，Koin 将在自己的网站上举办锦标赛，不设人数上限：先是 12 月的月度锦标赛，然后是 1 月，再然后是 2 月的下一个杯赛。Tim 说，“如果有 3,000 人想参赛”，团队也会尽量容纳所有人。
+
+## Steam 市场和 Kickstarter {#kickstarter}
+
+- **市场。** 据 Tim 说，游戏中有 56 张可交易的卡牌，其中有几张在 Steam 内外以超过 1,000 美元的价格售出。
+- **Kickstarter。** 现在是最后一周，众筹于 12月2日结束。Tim 预告，即将发布的 Kickstarter 更新视频会有三条消息：每位支持者都有一份礼物，还有一件会让 200 美元档支持者“非常、非常兴奋”的事。在回报档位中，Apprentice 档为 199 美元。
+
+所有档位和日期见我们的 [Kickstarter 攻略](/zh-cn/guides/origins-tcg-kickstarter)。
+
+## 2027年 {#2027}
+
+- **竞技赛事。** 周赛、月赛、杯赛和 bowl 赛，然后是 Masters：每年一次，也是规模最大的公开赛事；最后是 Worlds，只有 32 个席位，奖池丰厚，还有独家收藏品和独一无二的卡牌。
+- **实体店。** 已有超过 100 家门店表示有兴趣参与实体店首发。“Tell your LGS about Origins”日（向你常去的本地卡牌店介绍 Origins）即将到来，Koin 还将招募一支线下团队：Origins Champions。
+- **手机版。** Tim 在 Discord 上还提到了完整系列和开包。
+
+Tim 给出的数字：60,000 次下载。11月24日，Koin 还在 X 上宣布，游戏在 Steam 上的评测已超过 1,000 篇。
+
+## 我们还不知道的 {#hai-bu-zhi-dao}
+
+- Kickstarter 的三条消息：Koin 会在另一个视频中公布。
+- Season 2 是否仍于 12月2日开始：视频推迟的是 0.9 更新，而不是赛季。
+- 12月8日更新的具体时间。
+
+来源：Tim Jooste 在 Origins Trading Card Game 官方 YouTube 频道发布的视频（2026年11月24日，太平洋时间）、他在官方 Discord 上的消息，以及 Koin 11月19日和 24日在 X 上的帖子。`,
+    highlights: [
+      { label: "0.9 更新 12月8日上线", text: "Prestige 和 Collector Pass，从 12月3日推迟", anchor: "0-9-geng-xin" },
+      { label: "试玩版奖励", text: "最后几天可以获得，截至 12月2日", anchor: "shi-wan-ban-jiang-li" },
+      { label: "不限人数的锦标赛", text: "Harvest Bowl 报名 1,529 人，12 月起在 Koin 的网站上进行", anchor: "jin-biao-sai" },
+      { label: "Kickstarter", text: "最后一周，每位支持者都有礼物", anchor: "kickstarter" },
+      { label: "2027年", text: "Masters、Worlds、实体店、手机版", anchor: "2027" },
+    ],
+    faq: [
+      {
+        q: "Origins TCG 的 0.9 更新什么时候上线？",
+        a: "2026年12月8日。Koin 把它从 12月3日推迟，好让每位 Kickstarter 支持者都能从第一天开始使用 Collector Pass。",
+      },
+      {
+        q: "Origins TCG 的 0.9 更新有什么内容？",
+        a: "Prestige 系统，包括 Collector Pass 和 Prestige Point Pass：Collector Pass 持有者每周获得收藏品，还有一套限量收藏，包括 48 张 Prestige 卡牌、胶囊、3D 角色和表情。",
+      },
+      {
+        q: "Origins TCG 以后的锦标赛会限制人数吗？",
+        a: "不会。从 12 月的月度锦标赛起，Koin 将在自己的网站上举办锦标赛，没有 Harvest Bowl 那样的限制；Harvest Bowl 的 1,024 个名额不到一天就满了。",
+      },
+    ],
+  },
+  "balance-patch-1123-harvest-bowl": {
+    title: "Origins TCG 11月23日补丁说明：Glinda 和 Sandman 生命 -1，Sorcerer's Apprentice 改为 6 费",
+    metaTitle: "Origins TCG 11月23日补丁：Glinda 和 Sandman 削弱",
+    description:
+      "Origins TCG 2026年11月23日平衡补丁说明，赶在 Harvest Bowl 之前上线：Glinda 变为 2/3，Sandman 变为 1/2，Sorcerer's Apprentice 改为 6 法力 4/4，随机生成不再产生传奇卡牌。",
+    summary:
+      "上一个补丁之后仅六天，Koin Games 于 11月23日推出了第二次平衡更新，依据社区投票制定，瞄准的是 Harvest Bowl。Glinda 和 Sandman 生命 -1，Sorcerer's Apprentice 改为 6 费并变为 4/4，随机生成卡牌也不再产生传奇卡牌。",
+    body: `## 何时上线 {#he-shi-shang-xian}
+
+Koin Games 于 2026年11月23日（周一）安装了 Origins TCG 抢先体验阶段的第三个平衡补丁。服务器停机约一小时：官方 Discord 在 UTC 时间 17:56 宣布停机，19:19 宣布恢复（中欧时间 18:56 和 20:19），并请玩家重启游戏。Steam 帖子“Balance Update... Update”发布于 UTC 时间 17:58。
+
+这次补丁距离 [11月17日补丁](/zh-cn/news/balance-patch-1117-sherwood-forest)仅六天，距离 11月28日和 29日的锦标赛 [Harvest Bowl](/zh-cn/events/harvest-bowl) 还有五天。当天晚上，Koin 在 X 上写道，Harvest Bowl 之前不会再有任何改动。
+
+## 为什么一周内再出一个补丁 {#wei-shen-me}
+
+11月17日的补丁反响不佳。11月19日，Koin Games 的 CEO Tim Jooste 在官方 Discord 上写道，团队“这周掉了链子”，并承诺推出问卷调查、VIP 测试小组、开发日志，以及更多双向沟通。
+
+11月19日至20日，Koin 在官方 Discord 上发起了四次投票。对于 Glinda（45%）、Sorcerer's Apprentice（48%）和 Sandman（45%），胜出的选项都是：这张卡急需在锦标赛前进行平衡调整。关于随机生成卡牌，59% 的人投票认为它永远不应产生传奇卡牌。
+
+11月20日，Koin 团队的 apix 宣布了将于周一（23日）推出的改动。Koin 表示，他们把玩家反馈与对局数据和自身的设计目标结合起来，并在发布前与 Grandmaster 玩家和内容创作者测试了这些方案。
+
+## 所有改动 {#suo-you-gai-dong}
+
+格式：法力 · 力量/生命。
+
+| 卡牌 | 改动前 | 改动后 | 改了什么 |
+| --- | --- | --- | --- |
+| Glinda | 4 · 2/4 | 4 · 2/3 | 生命 -1 |
+| Sandman | 2 · 1/3 | 2 · 1/2 | 生命 -1 |
+| Sorcerer's Apprentice | 5 · 3/4 | 6 · 4/4 | 费用增加 1，力量 +1 |
+
+除了这三张卡，还有一条玩法规则改动：随机生成不再产生传奇卡牌。没有任何卡牌改动文本。
+
+## Glinda：2/3 {#glinda}
+
+Glinda 是一张 4 法力的稀有卡，每当你打出法术时，使你的友方角色获得力量 +1。据 Koin 说，她让快攻卡组的续航超出了预期，因为她能扛住 [Rain of Arrows](/zh-cn/cards/rain-of-arrows) 这样的解场卡，而 Rain of Arrows 会对所有敌方角色造成 2 点伤害。生命降到 3 之后，情况就不同了。Koin 说曾考虑削得更狠，但考虑到其他改动，决定到此为止，如有需要还可以再调整。
+
+## Sandman：1/2 {#sandman}
+
+Sandman 是一张 2 法力的普通卡，使你的法术费用减少 1。看起来改动不大，但据 Koin 说，生命 -1 会让第一回合就能对付他的 2 费角色大大增加。Koin 希望他仍然是法术卡组的好用工具，也能服务于未来计划中的流派。
+
+## Sorcerer's Apprentice：6 法力，4/4 {#sorcerers-apprentice}
+
+六天前，Sorcerer's Apprentice 仍是 5 法力，从 2/3 变成了 3/4。Koin 原本把它设计为节奏较慢的控制卡组的终结手段，但 Pigs 这样的快攻流派用上了它。现在它是 6 费 4/4：快攻卡组在前期和中期能从它身上得到的强度变少了，慢速卡组用它收尾时则更有力。它的能力不变：每当你打出法术时，它会在一个随机格子上召唤一个 1/1 的 Broomstick。
+
+## 不再随机生成传奇卡牌 {#sui-ji-chuan-qi}
+
+会生成随机卡牌的卡，今后只会产生非传奇卡牌。在现有卡牌中，Humpty 就是其中之一：死亡时，将一张随机卡牌加入你的手牌。Koin 表示这是玩家要求的改动，并且随着卡池扩大，可能会重新考虑这条限制。
+
+## OriginsMeta 上的变化 {#originsmeta}
+
+- [卡牌数据库](/zh-cn/cards)、[卡组构筑器](/zh-cn/deck-builder)和 [MetaShifting](/zh-cn/metashifting) 已经显示新数值。卡牌文本仍是 11月11日在游戏中读取的版本。
+- 如果你在补丁前发布过卡组，它的页面会提供“更新到版本 EA · 11月23日”：你可以更换卡牌，同时保留名称、攻略和链接。
+- [Analytics](/zh-cn/analytics) 会继续显示上一个补丁的数据，直到这个补丁有了第一批记录的对局。
+- 等这个补丁有了足够的对局，我们会重新解读我们的[强度榜](/zh-cn/tier-list)。
+
+## 我们还不知道的 {#hai-bu-zhi-dao}
+
+- 到底哪些卡牌算作随机生成：补丁说明没有列出。
+- Harvest Bowl 之后 Glinda 是否还会改动：Koin 说如有需要可以进一步调整。
+
+来源：Origins TCG 官方 Discord 上 11月20日的公告以及 11月19日和 20日的投票、Steam 上的帖子“Balance Update... Update”（2026年11月23日，UTC 时间 17:58），以及 Koin 同一天在 X 上的帖子。`,
+    highlights: [
+      { label: "三张卡牌有改动", text: "Glinda 2/3，Sandman 1/2，Sorcerer's Apprentice 6 法力 4/4", anchor: "suo-you-gai-dong" },
+      { label: "不再随机生成传奇卡牌", text: "随机生成只会产生非传奇卡牌", anchor: "sui-ji-chuan-qi" },
+      { label: "为什么是现在", text: "四次社区投票，以及 11月28–29日的 Harvest Bowl", anchor: "wei-shen-me" },
+      { label: "锦标赛前的最后一次改动", text: "Koin 表示 Harvest Bowl 之前不会再有其他改动", anchor: "he-shi-shang-xian" },
+      { label: "OriginsMeta 上的变化", text: "卡牌和卡组构筑器已经更新", anchor: "originsmeta" },
+    ],
+    faq: [
+      {
+        q: "Origins TCG 11月23日的补丁改了什么？",
+        a: "Glinda 从 2/4 变为 2/3，Sandman 从 1/3 变为 1/2，Sorcerer's Apprentice 则从 5 法力 3/4 变为 6 法力 4/4。随机生成卡牌不再产生传奇卡牌。",
+      },
+      {
+        q: "Origins TCG 中随机生成的卡牌还会是传奇卡牌吗？",
+        a: "不会。自 2026年11月23日的补丁起，会生成随机卡牌的卡只会产生非传奇卡牌。随着卡池扩大，Koin 可能会重新考虑这条规则。",
+      },
+      {
+        q: "Harvest Bowl 之前还会有平衡改动吗？",
+        a: "不会。11月23日，Koin 在 X 上写道，在 2026年11月28日和 29日的锦标赛 Harvest Bowl 之前不会再有任何改动。",
+      },
+    ],
+  },
+  "origins-tcg-collecting-guide-season-2": {
+    title: "Koin 的 Origins TCG 收藏指南：12月2日 Season 2 开始，评级、Prestige 和 2 月推出的 Set 1",
+    metaTitle: "Origins TCG 收藏指南：Season 2 与 Prestige",
+    description:
+      "Koin Games 11月20日发布的 Origins TCG 收藏指南：12月2日 Season 2 开始时哪些奖励会消失，从 1 到 10 的即时评级、Collector Pass、Prestige，以及 2 月推出、共 218 张卡的 Set 1。",
+    summary:
+      "11月20日，Koin Games 发布了 Origins TCG 收藏指南。最紧迫的部分：Season 2 于 12月2日开始，试玩版、任务和排位奖励将随之永久消失。指南还介绍了收藏卡、从 1 到 10 的即时评级、Collector Pass、Prestige，以及 2 月推出的 Set 1 的 218 张卡牌。",
+    body: `2026年11月20日，Koin Games 发布了“Your ultimate guide to collecting in Origins Trading Card Game”。这是一篇发在 X 上的长文，把面向收藏者的已上线内容和即将推出的内容集中到了一起。以下是要点，先从日期说起。
+
+## 12月2日结束的内容 {#season-2}
+
+Season 2 于 2026年12月2日开始。当天：
+
+- 试玩版和任务奖励将被移除；
+- 排位奖励将无法再获得；
+- 排位排行榜的奖品轮换，[Van Helsing](/zh-cn/cards/van-helsing) 轮换出局。
+
+如果你想要本赛季的奖励，就必须在那之前拿到。Kickstarter 也在同一天结束。11月24日，Koin 在 X 上写道，冲榜还剩 7 天，目前领先的是 Hikkikomori。
+
+**11月25日更新。** 在 [State of Origins](/zh-cn/news/state-of-origins-november-2026) 中，Tim Jooste 把带来 Prestige 和 Collector Pass 的 0.9 更新推迟到 12月8日。Season 2 的日期没有改变。
+
+## 免费竞技 {#mian-fei-jing-ji}
+
+据 Koin 说，每位玩家都能在几小时内获得竞技所需的全部卡牌：打几场对局，击败一个首领，它的卡组就归你了，卡组按固定顺序解锁。花钱永远买不到更强的卡牌，卡包只是外观，并且完全可选。第一个系列 Myths and Legends 共有 218 张卡，于 2 月推出。
+
+## 收藏卡 {#shou-cang-ka}
+
+收藏卡就是你免费获得的同一个角色的升级版：尺寸大约大 30%，人物突破卡框，带有 3D 景深效果、更大的名牌和黑色卡框。在对局中，它的效果与免费版本完全相同。
+
+共有八个稀有度等级，最高为 Storybook 卡牌，大约每 1,200 包出 1 张；在有人抽到之前，Koin 不会公开它们的卡图。Set 1 的 218 张卡中约有 70 张拥有异画，分布在六个等级中，系列中还包括错误卡，也就是数字版的印刷错误卡。
+
+## 即时评级 {#ji-shi-ping-ji}
+
+每张收藏卡在你抽到的那一刻就会完成评级，无需寄送、费用或等待。评级从 1 到 10，最高为 PRISTINE，10 分卡带有特殊效果。低评级显示的是数字故障效果，而不是折痕；和 Counter-Strike 一样，种子（seed）决定图案出现的位置和颜色。评级卡放在外观卡壳中，卡册和奖杯室也即将推出。
+
+## 五种收藏方式 {#wu-zhong-fang-shi}
+
+- **卡包。** 每包 5 张收藏卡；异画只能从卡包中获得。
+- **Collector Pass。** 一次性购买，每个账号限一个，不可交易：每周只要达到最低 XP，你就能免费选择一项：在 48 张卡的 Prestige 系列中抽一次、一个胶囊或一个表情。指南原本计划在 12 月初推出；它将于 12月8日随 0.9 更新上线。Kickstarter 的每个档位都包含它，最低为 24 美元的 Worthy 档。
+- **Prestige。** 通过游玩获得：48 张带有“early access”标志的卡牌，其特殊工艺从不出现在卡包中（Monochromatic、Black and White、Cyberpunk，以及一个尚未公开的第四等级）。游戏进入 Prestige 2 后，Prestige 1 将无法再获得。你最多可以同时升级 5 个 Prestige Pass。
+- **锦标赛。** 只能赢取的宣传卡：Crimson Cup 冠军带走了一张独一无二的金色 Dracula，Harvest Bowl 也会颁发宣传卡。
+- **Kickstarter。** 目前获得 Alpha 版本的唯一途径。
+
+胶囊包含表情、头像、卡背和一款指挥官皮肤，会随时间轮换，胶囊独占的内容也会随之下架。
+
+## Alpha 和印量 {#alpha}
+
+Alpha 是 Set 1 的首印，只通过 Kickstarter 销售：它不会再回归，并包含近 30 种永远不会在游戏中生产的变体。奖励为数字形式，通过 Steam 发放，计划于 2027年2月交付。每种卡图变体的数量等于该档位及更高档位的支持者人数；Legend 档每档限 10 名支持者，还会额外获得一张带编号的签名头像宣传卡。未来的系列将先开放预购窗口，由此决定印量。
+
+## Steam 市场、合成升级和存世量数据 {#shi-chang}
+
+卡牌皮肤和其他外观物品在 Steam 社区市场交易，价格由玩家决定，并适用 Steam 的规则。2027年，一个仿照 Counter-Strike 的 trade-up（合成升级）系统将把多张多余的普通收藏品合成为一张稀有卡。Koin 还计划提供存世量数据（population data），显示每种评级卡和未拆封产品还剩多少。
+
+## 我们还不知道的 {#hai-bu-zhi-dao}
+
+- Prestige 第四等级的名称。在 11月25日的视频中，Tim 称艺术家样卡（artist proof）是最受追捧的。
+- 单独购买 Collector Pass 的价格。
+- Storybook 卡牌长什么样。
+
+我们的[收藏经济攻略](/zh-cn/guides/collector-economy)介绍了基础知识。来源：Koin Games 2026年11月20日发布在 X 上的文章。`,
+    highlights: [
+      { label: "12月2日结束的内容", text: "试玩版、任务和排位奖励；Van Helsing 轮换出局", anchor: "season-2" },
+      { label: "免费竞技", text: "几小时内获得所有竞技卡牌，卡包只是外观", anchor: "mian-fei-jing-ji" },
+      { label: "收藏卡", text: "八个稀有度等级，最高为 Storybook，每 1,200 包出 1 张", anchor: "shou-cang-ka" },
+      { label: "即时评级", text: "从 1 到 10，最高为 PRISTINE", anchor: "ji-shi-ping-ji" },
+      { label: "Collector Pass 和 Prestige", text: "48 张 Prestige 卡牌，从不出现在卡包中", anchor: "wu-zhong-fang-shi" },
+      { label: "Alpha 和 Kickstarter", text: "约 30 种永远不会在游戏中生产的变体", anchor: "alpha" },
+    ],
+    faq: [
+      {
+        q: "2026年12月2日 Origins TCG 会发生什么？",
+        a: "Season 2 开始：试玩版和任务奖励将被移除，排位奖励将无法再获得，排行榜奖品轮换，Van Helsing 轮换出局。Kickstarter 也在同一天结束。",
+      },
+      {
+        q: "Origins TCG 的评级是怎么运作的？",
+        a: "每张收藏卡在你抽到的那一刻就会获得 1 到 10 的评级，最高为 PRISTINE。低评级会显示数字故障效果，图案由种子决定，所以同一评级的卡牌外观也可能不同。",
+      },
+      {
+        q: "在 Origins TCG 中竞技需要花钱吗？",
+        a: "不需要。据 Koin 说，所有竞技卡牌都能在几小时内免费获得，卡包里只有外观收藏版，在对局中的效果与免费卡牌完全相同。",
+      },
+    ],
+  },
   "magicofhands-giveaway-kickstarter-bundles": {
     title: "MagicOfHands 赠送活动：凭你的最佳操作赢取 3 份 Origins TCG Kickstarter 礼包",
     metaTitle: "Origins TCG 赠送活动：赢取 Kickstarter 礼包",

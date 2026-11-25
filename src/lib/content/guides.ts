@@ -1319,7 +1319,7 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
     metaTitle: "Origins TCG roadmap and release dates",
     excerpt: "Every confirmed Origins TCG date, from the first Steam post to the demo, the Crimson Cup and Early Access on 27 October 2026, plus what comes next.",
     readTime: 4,
-    updated: "2026-11-19",
+    updated: "2026-11-25",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "When did Origins TCG launch on Steam?", a: "In Early Access on 27 October 2026, with update 0.8, as a free-to-play game. Koin Games aims to leave Early Access with version 1.0 \"roughly\" on 17 March 2027, according to the Steam page: a date that may change." },
@@ -1366,12 +1366,14 @@ Origins TCG has been in Early Access on Steam since 27 October 2026, with update
 | 6 November | [Roadmap AMA](/en/news/origins-tcg-roadmap-ama-recap) on the official Discord: the Early Access plan up to February |
 | 10 November | [Patch 0.8.2](/en/news/patch-notes-0-8-2): exploits closed in ranked, fewer disconnects, better matchmaking for new PvP players; no card changes |
 | 17 November | [Balance patch](/en/news/balance-patch-1117-sherwood-forest): nine cards rebalanced, Dr. Frank costs 5, Sherwood Forest becomes Rare |
+| 23 November | [Balance patch](/en/news/balance-patch-1123-harvest-bowl) before the Harvest Bowl: Glinda and Sandman lose 1 Health, Sorcerer's Apprentice costs 6, random generation no longer creates Legendaries |
 
 ## What comes next
 
 - **Now.** Origins TCG is free on Steam in Early Access, and the Kickstarter for the Alpha Edition, whose date Koin Games' CEO gave on 17 September, is running: everything about it in our [Kickstarter guide](/en/guides/origins-tcg-kickstarter).
 - **28–29 November 2026.** The Harvest Bowl, Koin Games' November tournament for Early Access: two double-elimination qualifiers of 512 players on Saturday and the final day for the best 128 on Sunday, with one deck plus a 3-card sideboard, played on OriginsMeta. Schedule, rules and sign-up are on [our Harvest Bowl page](/en/events/harvest-bowl).
-- **2 December 2026.** End of the current ladder season and the first big update: Collector Pass, Prestige, capsules, new locations and titles. One season follows to mid-January and one from mid-January to February.
+- **2 December 2026.** Season 2 starts: demo and mission rewards are removed, ranked rewards can no longer be earned and Van Helsing rotates out, according to [Koin's guide to collecting](/en/news/origins-tcg-collecting-guide-season-2). The Kickstarter closes the same day.
+- **8 December 2026.** Update 0.9, the first big update: Collector Pass, Prestige, capsules, new locations and titles. Koin moved it from 3 December so that every Kickstarter backer starts on day one ([State of Origins](/en/news/state-of-origins-november-2026)). From December, Koin's tournaments run on its own website with no player cap. One season follows to mid-January and one from mid-January to February.
 - **February 2027.** The full Myths and Legends set, about 218 cards, with all the Kickstarter rewards; the standard edition reaches shops.
 - **End of Early Access.** The Myths and Legends Open, for those who qualify through the monthly tournaments.
 - **Around 17 March 2027.** Version 1.0: the Steam page says Koin aims to leave Early Access "roughly March 17th, 2027", a date that may change.
@@ -2983,7 +2985,7 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
     metaTitle: "Origins TCG: roadmap e date di uscita",
     excerpt: "Tutte le date confermate di Origins TCG, dal primo post su Steam alla demo, alla Crimson Cup e all'Accesso anticipato del 27 ottobre 2026, e cosa viene dopo.",
     readTime: 4,
-    updated: "2026-11-19",
+    updated: "2026-11-25",
     image: "/media/art-the-club.webp",
     faq: [
       { q: "Quando è uscito Origins TCG su Steam?", a: "In Accesso anticipato il 27 ottobre 2026, con l'aggiornamento 0.8, come gioco free-to-play. Koin Games punta a uscire dall'Accesso anticipato con la versione 1.0 intorno al 17 marzo 2027 (\"roughly\", dice la pagina Steam): una data che può cambiare." },
@@ -3030,12 +3032,14 @@ Origins TCG è in Accesso anticipato su Steam dal 27 ottobre 2026, con l'aggiorn
 | 6 novembre | [AMA sulla roadmap](/it/news/origins-tcg-roadmap-ama-recap) sul Discord ufficiale: il piano dell'Accesso anticipato fino a febbraio |
 | 10 novembre | [Patch 0.8.2](/it/news/patch-notes-0-8-2): chiusi gli exploit della classificata, meno disconnessioni, matchmaking migliore per chi inizia il PvP; nessuna modifica alle carte |
 | 17 novembre | [Patch di bilanciamento](/it/news/balance-patch-1117-sherwood-forest): nove carte ribilanciate, Dr. Frank costa 5, Sherwood Forest diventa raro |
+| 23 novembre | [Patch di bilanciamento](/it/news/balance-patch-1123-harvest-bowl) prima dell'Harvest Bowl: Glinda e Sandman perdono 1 Salute, Sorcerer's Apprentice costa 6, la generazione casuale non crea più Leggendarie |
 
 ## Cosa viene dopo
 
 - **Adesso.** Origins TCG è gratuito su Steam in Accesso anticipato, ed è in corso il Kickstarter dell'Alpha Edition, la cui data era stata annunciata dal CEO di Koin Games il 17 settembre: tutto quello che c'è da sapere nella nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter).
 - **28–29 novembre 2026.** La Harvest Bowl, il torneo di novembre di Koin Games per l'Accesso anticipato: sabato due qualificazioni a doppia eliminazione da 512 giocatori, domenica la giornata finale con i migliori 128, con un mazzo più una riserva di 3 carte, giocata su OriginsMeta. Orari, regole e iscrizione sono nella [nostra pagina della Harvest Bowl](/it/events/harvest-bowl).
-- **2 dicembre 2026.** Fine della stagione classificata in corso e primo grande aggiornamento: Collector Pass, Prestige, capsule, luoghi nuovi e titoli. Segue una stagione fino a metà gennaio e una da metà gennaio a febbraio.
+- **2 dicembre 2026.** Parte la Season 2: le ricompense della demo e delle missioni vengono rimosse, quelle del ranked non si possono più ottenere e Van Helsing esce dalla rotazione, secondo la [guida di Koin al collezionismo](/it/news/origins-tcg-collecting-guide-season-2). Lo stesso giorno chiude il Kickstarter.
+- **8 dicembre 2026.** Aggiornamento 0.9, il primo grande aggiornamento: Collector Pass, Prestige, capsule, luoghi nuovi e titoli. Koin l'ha spostato dal 3 dicembre perché tutti i sostenitori del Kickstarter partano dal primo giorno ([State of Origins](/it/news/state-of-origins-november-2026)). Da dicembre i tornei di Koin si giocano sul suo sito, senza limite di giocatori. Segue una stagione fino a metà gennaio e una da metà gennaio a febbraio.
 - **Febbraio 2027.** Il set completo Myths and Legends, circa 218 carte, con tutte le ricompense del Kickstarter; l'edizione standard arriva nei negozi.
 - **Fine dell'Accesso anticipato.** Il Myths and Legends Open, per chi si qualifica con i tornei mensili.
 - **Intorno al 17 marzo 2027.** Versione 1.0: la pagina Steam dice che Koin punta a uscire dall'Accesso anticipato "roughly March 17th, 2027", una data che può cambiare.

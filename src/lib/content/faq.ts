@@ -189,6 +189,7 @@ const en: Faq[] = [
     q: "Where do the card stats on this site come from?",
     a: "Costs, stats, rarities, alignments and texts of the 130 cards in the game's collection were checked one by one in the game on 11 November 2026, on Early Access version 0.8.2: in the collection, and in the game's own texts in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese. Balance changes come from the official patch notes on Steam and on the official Discord; when a card changes without being in the notes, as Trash for Treasure did on 4 November, the site follows the game. Created and removed cards are not in the game's collection, so they have not been checked in the game; the text of created cards is the one in the game's files. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "Patch notes of 23 November" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Patch notes of 17 November" },
       { slug: "balance-patch-1104-cyber-queen", label: "Patch notes of 4 November" },
       { slug: "patch-0-7", label: "Patch 0.7 notes" },
@@ -319,6 +320,7 @@ const it: Faq[] = [
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
     a: "Costi, statistiche, rarità, allineamenti e testi delle 130 carte della collezione del gioco sono stati verificati uno per uno nel gioco l'11 novembre 2026, sulla versione 0.8.2 dell'Accesso anticipato: nella collezione e nei testi del gioco in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato. I bilanciamenti vengono dalle patch notes ufficiali su Steam e sul Discord ufficiale; quando una carta cambia senza essere nelle note, come Trash for Treasure il 4 novembre, il sito segue il gioco. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco; il testo delle carte generate è quello dei file del gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "Patch notes del 23 novembre" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Patch notes del 17 novembre" },
       { slug: "balance-patch-1104-cyber-queen", label: "Patch notes del 4 novembre" },
       { slug: "patch-0-7", label: "Patch notes della 0.7" },
@@ -449,6 +451,7 @@ const es: Faq[] = [
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
     a: "Los costes, las estadísticas, las rarezas, los alineamientos y los textos de las 130 cartas de la colección del juego se comprobaron uno por uno en el juego el 11 de noviembre de 2026, en la versión 0.8.2 del Acceso anticipado: en la colección y en los textos del propio juego en inglés, italiano, español, francés, portugués, alemán, ruso y chino simplificado. Los cambios de equilibrio vienen de las notas oficiales de los parches en Steam y en el Discord oficial; cuando una carta cambia sin estar en las notas, como Trash for Treasure el 4 de noviembre, el sitio sigue al juego. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego; el texto de las cartas creadas es el de los archivos del juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "Notas del parche del 23 de noviembre" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Notas del parche del 17 de noviembre" },
       { slug: "balance-patch-1104-cyber-queen", label: "Notas del parche del 4 de noviembre" },
       { slug: "patch-0-7", label: "Notas del parche 0.7" },
@@ -579,6 +582,7 @@ const fr: Faq[] = [
     q: "D'où viennent les statistiques des cartes de ce site ?",
     a: "Les coûts, les statistiques, les raretés, les alignements et les textes des 130 cartes de la collection du jeu ont été vérifiés un par un dans le jeu le 11 novembre 2026, sur la version 0.8.2 de l'Accès anticipé : dans la collection et dans les textes du jeu en français, en anglais, en italien, en espagnol, en portugais, en allemand, en russe et en chinois simplifié. Les équilibrages viennent des notes de patch officielles sur Steam et sur le Discord officiel ; quand une carte change sans figurer dans les notes, comme Trash for Treasure le 4 novembre, le site suit le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu ; le texte des cartes créées est celui des fichiers du jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "Notes du patch du 23 novembre" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Notes du patch du 17 novembre" },
       { slug: "balance-patch-1104-cyber-queen", label: "Notes du patch du 4 novembre" },
       { slug: "patch-0-7", label: "Notes du patch 0.7" },
@@ -711,6 +715,7 @@ const pt: Faq[] = [
     q: "De onde vêm as estatísticas das cartas deste site?",
     a: "Os custos, as estatísticas, as raridades, os alinhamentos e os textos das 130 cartas da coleção do jogo foram verificados um a um no jogo em 11 de novembro de 2026, na versão 0.8.2 do Acesso Antecipado: na coleção e nos textos do próprio jogo em inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado. As mudanças de balanceamento vêm das notas oficiais do patch na Steam e no Discord oficial; quando uma carta muda sem estar nas notas, como Trash for Treasure em 4 de novembro, o site segue o jogo. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo; o texto das cartas criadas é o dos arquivos do jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "Notas do patch de 23 de novembro" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Notas do patch de 17 de novembro" },
       { slug: "balance-patch-1104-cyber-queen", label: "Notas do patch de 4 de novembro" },
       { slug: "patch-0-7", label: "Notas do patch 0.7" },
@@ -843,6 +848,7 @@ const de: Faq[] = [
     q: "Woher stammen die Kartenwerte auf dieser Website?",
     a: "Kosten, Werte, Seltenheiten, Gesinnungen und Texte der 130 Karten der Sammlung des Spiels wurden am 11. November 2026 einzeln im Spiel geprüft, auf Version 0.8.2 des Early Access: in der Sammlung und in den Texten des Spiels auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch, Russisch und vereinfachtem Chinesisch. Die Balance-Änderungen stammen aus den offiziellen Patchnotes auf Steam und im offiziellen Discord; ändert sich eine Karte, ohne in den Notes zu stehen, wie Trash for Treasure am 4. November, folgt die Website dem Spiel. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft; der Text der erschaffenen Karten ist der aus den Dateien des Spiels. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "Patchnotes vom 23. November" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Patchnotes vom 17. November" },
       { slug: "balance-patch-1104-cyber-queen", label: "Patchnotes vom 4. November" },
       { slug: "patch-0-7", label: "Patchnotes zu 0.7" },
@@ -975,6 +981,7 @@ const ru: Faq[] = [
     q: "Откуда берутся характеристики карт на этом сайте?",
     a: "Стоимость, характеристики, редкость, мировоззрения и тексты 130 карт коллекции игры проверены в игре по одной 11 ноября 2026 года, на версии 0.8.2 раннего доступа: в коллекции и в текстах самой игры на английском, итальянском, испанском, французском, португальском, немецком, русском и упрощённом китайском. Изменения баланса взяты из официальных патчноутов в Steam и в официальном Discord; если карта меняется без упоминания в патчноутах, как Trash for Treasure 4 ноября, сайт следует за игрой. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре; текст созданных карт взят из файлов игры. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "Патчноуты от 23 ноября" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Патчноуты от 17 ноября" },
       { slug: "balance-patch-1104-cyber-queen", label: "Патчноуты от 4 ноября" },
       { slug: "patch-0-7", label: "Патчноуты 0.7" },
@@ -1109,6 +1116,7 @@ const zhCn: Faq[] = [
     q: "本站的卡牌数据从哪里来？",
     a: "游戏收藏中 130 张卡牌的费用、数值、稀有度、阵营和文本，已于 2026年11月11日在游戏中逐张核对（抢先体验 0.8.2 版本）：包括收藏界面，以及游戏自带的英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文文本。平衡改动来自 Steam 和官方 Discord 上的官方补丁说明；如果某张卡牌的改动没有写进补丁说明，比如 11月4日的 Trash for Treasure，本站以游戏为准。衍生卡牌和已移除的卡牌不在游戏收藏中，因此未在游戏中核实；衍生卡牌的文本来自游戏文件。卡图是 Koin Games 的官方插画；系列和每个传说的介绍由我们撰写。",
     news: [
+      { slug: "balance-patch-1123-harvest-bowl", label: "11月23日补丁说明" },
       { slug: "balance-patch-1117-sherwood-forest", label: "11月17日补丁说明" },
       { slug: "balance-patch-1104-cyber-queen", label: "11月4日补丁说明" },
       { slug: "patch-0-7", label: "0.7 补丁说明" },
