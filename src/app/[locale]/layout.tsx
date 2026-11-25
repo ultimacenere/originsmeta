@@ -19,6 +19,7 @@ import { KickstarterBar } from "@/components/KickstarterBar";
 import { kickstarterPromoActive } from "@/lib/kickstarter";
 import { kickstarterLabels } from "@/lib/kickstarterLabels";
 import { TournamentPromoDialog } from "@/components/TournamentPromo";
+import { SupportPopup } from "@/components/SupportPopup";
 import { TOURNAMENT_PROMO, promoActive } from "@/lib/tournamentPromo";
 import { tournamentPromoText } from "@/lib/tournamentPromoLabels";
 
@@ -160,6 +161,8 @@ export default async function LocaleLayout({ children, params }: Props) {
             labels={tournamentPromoText(l, d.tournaments, promo)}
           />
         ) : null}
+        {/* Popup "Sostieni OriginsMeta" col tasto PayPal (25/11/2026): a ogni visita, anche a chi l'ha già visto */}
+        <SupportPopup locale={l} donateLabel={d.nav.donate} donateAria={d.nav.donateAria} />
         <CookieBanner labels={d.cookies} privacyHref={href(l, "/privacy")} />
         {/* Il grafo del sito su ogni pagina (Ondata 2, GEO-08): il sito nella lingua, OriginsMeta con i fondatori, Koin
             Games come entità propria e il gioco, che la usa per @id come sviluppatore ed editore */}
