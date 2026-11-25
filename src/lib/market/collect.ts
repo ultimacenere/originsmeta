@@ -9,6 +9,8 @@ import {
   parseEcbUsd,
   parseSearchPage,
   searchUrl,
+  STEAM_SEARCH_HEADERS,
+  groupedOnly,
   type MarketCardRef,
   type MarketSourceId,
 } from "./market";
@@ -16,7 +18,7 @@ import {
 /**
  * Raccoglitore dei prezzi del mercato di Steam (17/10/2026), lato server: lo chiama la rotta /api/cron/market a ogni
  * giro del cron (vercel.json, ogni 10 minuti). Per ogni fonte riprende il giro da dove era rimasto (`cursor_start` di
- * market_sources), legge le pagine di market/search/render una dopo l'altra con una pausa di 2,5 secondi (Steam risponde
+ * market_sources), legge le pagine della ricerca del mercato (/market/actions dal 25/11/2026) una dopo l'altra con una pausa di 2,5 secondi (Steam risponde
  * 429 a chi va più veloce) e salva ogni pagina con market_ingest e il segreto del server (CRON_SECRET, notify_key_ok).
  * Si ferma allo scadere del tempo (`budgetMs`): un giro di molti oggetti si completa in più passaggi del cron, e le
  * pagine lo dicono ("ogni oggetto si aggiorna almeno ogni …"). Un 429 di Steam ferma tutto il passaggio; un errore di una
@@ -75,7 +77,7 @@ export async function collectMarket(secret: string, budgetMs = 100_000): Promise
     while (Date.now() < deadline) {
       let json: unknown;
       try {
-        const res = await fetch(searchUrl(source, start), { cache: "no-store", headers: { accept: "application/json" }, signal: AbortSignal.timeout(STEAM_TIMEOUT_MS) });
+        const res = await fetch(searchUrl(source, start), { cache: "no-store", headers: { ...STEAM_SEARCH_HEADERS }, signal: AbortSignal.timeout(STEAM_TIMEOUT_MS) });
         if (res.status === 429) {
           rateLimited = true;
           break;
@@ -94,8 +96,12 @@ export async function collectMarket(secret: string, budgetMs = 100_000): Promise
         run.error = "steam: risposta inattesa";
         break;
       }
+      if (groupedOnly(page)) {
+        run.error = "steam: righe tutte raggruppate, giro saltato";
+        break;
+      }
       const rows = ingestRows(id, page.items, id === "origins" ? cardRefs : []);
-      const { next, done } = nextCursor(start, page.total, page.items.length);
+      const { next, done } = nextCursor(start, page.total, page.seen);
       const saved = await db.rpc("market_ingest", {
         p_key: secret,
         p_source: id,
