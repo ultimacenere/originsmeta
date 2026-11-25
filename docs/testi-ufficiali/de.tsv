@@ -1,4 +1,4 @@
-# Testi ufficiali delle carte in TEDESCO, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
+# Testi ufficiali delle carte in TEDESCO, dati del gioco v0-8-2, letti in data 25/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
 # Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
 # Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
 Itsy Bitsy Spider
@@ -55,6 +55,7 @@ Flying Monkey	Beim Aufdecken: Bewege EINEN BELIEBIGEN anderen Charakter auf ein 
 Frog Prince	Wähle eins: Beim Aufdecken: Ich erhalte +3⚔️ ODER Beim Aufdecken: Ich erhalte +3❤️.
 Golden Egg	Bei Tod: Beschwöre ein Golden Goose [5⚔️/5❤️] auf diesem Feld.
 Humpty	Bei Tod: Füge deiner Hand eine zufällige Karte hinzu.
+Imhotep	Bei Tod: Füge allen Gegnern hier 2 Schaden zu.
 It's Alive	Beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
 Jack	Beim Aufdecken: Zerstöre einen zufälligen Gegner mit 7 oder mehr ⚔️.
 Jill	Wenn ich Schaden erleide, heile 2 Schaden bei deiner Barriere hier.
@@ -79,7 +80,6 @@ Dorothy	Ich kann mich jede Runde Bewegen.\nIch habe +1⚔️/+1❤️ für jede 
 Dracula	Wenn du abwirfst, kehre ich aus deinem Friedhof auf die Hand zurück.\nBeim Aufdecken: Beschwöre Brides of Dracula [2⚔️/2❤️] auf einem zufälligen Feld hier.
 Glinda	Wenn du einen Zauber spielst, gib Verbündeten +1⚔️.
 Huntsman	Bei Vernichtung: Ich erhalte +1⚔️/+1❤️.
-Imhotep	Bei Tod: Füge allen Gegnern hier 2 Schaden zu.
 Jekyll	Beim Aufdecken: Heile 3 Schaden bei EINEM BELIEBIGEN anderen Charakter oder einer Barriere hier.\nWenn ich nach dem Kampf auf der Hand bin, verwandle ich mich in Hyde [5⚔️/3❤️].
 Lancelot	Wenn du hier einen guten Charakter spielst, gib ihm +2⚔️/+2❤️.
 Little John	Beim Aufdecken: Wenn in dieser Runde hier ein Gegner gespielt wurde, erhalte ich +2⚔️/+2❤️.
@@ -103,6 +103,7 @@ Bigfoot	Überrennen
 Boitata	Wenn ein Zauber oder eine Fähigkeit eine deiner Barrieren beschädigen würde, füge diesen Schaden stattdessen der gegnerischen Barriere dort zu.
 Bridge Troll	Verteidiger
 Captain Ahab	Beim Aufdecken: Wirf deine Karte mit den höchsten Kosten ab, um ihre Kosten als Schaden einem Gegner zuzufügen.
+Dr. Frank	Vor dem Kampf beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
 Fairy Godmother	Beim Aufdecken: Gib einem anderen Verbündeten +3⚔️/+3❤️.
 Franken Bride	Wiedergeburt\nWenn ich aus dem Friedhof ins Spiel komme, heile 4 Schaden bei deiner Barriere hier.
 Galahad	Beim Aufdecken: Gib anderen Verbündeten +1⚔️/+1❤️.
@@ -111,16 +112,15 @@ Hare	Erstschlag, Bewegen
 Impundulu	Wenn ich angreife, füge deiner Hand einen Lightning Strike hinzu. Wirf ihn vor dem Kampf nächste Runde ab.
 Merlin	Wiederhole den ersten Zauber, den du jede Runde spielst.
 Rain of Arrows	Füge allen Gegnern 2 Schaden zu.
-Sorcerer's Apprentice	Wenn du einen Zauber spielst, beschwöre einen Broomstick [1⚔️/1❤️] auf einem zufälligen Feld.
 The Green Knight	Nach dem Kampf heile ich allen Schaden bei mir selbst.
 Three Musketeers	Erstschlag\nBeim Aufdecken: Beschwöre einen Musketeer [2⚔️/1❤️] mit Erstschlag auf jedem Feld hier.
 Cockatrice	Todesberührung\nBei Tod: Zerstöre einen zufälligen Gegner.
-Dr. Frank	Vor dem Kampf beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
 Frank's Monster	Wiedergeburt\nWenn ich aus dem Friedhof ins Spiel komme, verdopple ich meine ⚔️.
 Guy of Gisborne	Doppelangriff, Präzisionsschuss 1
 Heroic Charge	Verbündete haben diese Runde +2⚔️ und Überrennen.
 Koschei	Bei Tod oder wenn ich abgeworfen werde: Ich kehre auf deine Hand zurück und erhalte +2⚔️/+2❤️ dauerhaft.
 Mowgli	Beim Aufdecken: Beschwöre Baloo [6⚔️/6❤️] an einem anderen zufälligen Ort.
+Sorcerer's Apprentice	Wenn du einen Zauber spielst, beschwöre einen Broomstick [1⚔️/1❤️] auf einem zufälligen Feld.
 Tin Woodman	Beim Aufdecken: Heile 8 Schaden bei EINEM BELIEBIGEN anderen Charakter oder einer Barriere hier.
 King Arthur	Schild\nBeim Aufdecken: Gib deinen guten Charakteren Schild.
 Legion of the Dead	Fülle dein Spielfeld mit Zombies [2⚔️/2❤️].

@@ -180,14 +180,14 @@ const en: Faq[] = [
   {
     id: "card-list",
     q: "Where can I see every Origins TCG card?",
-    a: "In our card database: the 130 cards of the game with their current stats and the balance history of each one, all checked in the game's collection on 11 November 2026, with the official text in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese as it reads in the game. Plus 22 created cards, the ones that exist only when another card makes them: they are not in the game's collection, so they have not been checked in the game, and their text is the one in the game's files. In the game, the collection is on the Cards tab of My Decks: turn on the “Unowned” filter to see the cards you don't own yet as well.",
+    a: "In our card database: the 130 cards of the game with their current stats and the balance history of each one, all checked in the game's collection on 25 November 2026, with the official text in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese as it reads in the game. Plus 22 created cards, the ones that exist only when another card makes them: they are not in the game's collection, so they have not been checked in the game, and their text is the one in the game's files. In the game, the collection is on the Cards tab of My Decks: turn on the “Unowned” filter to see the cards you don't own yet as well.",
     links: [{ path: "/cards", label: "Card database" }],
     keywords: ["card list", "list of cards", "all cards", "all the cards", "every card", "card database", "database", "collection", "unowned"],
   },
   {
     id: "where-cards",
     q: "Where do the card stats on this site come from?",
-    a: "Costs, stats, rarities, alignments and texts of the 130 cards in the game's collection were checked one by one in the game on 11 November 2026, on Early Access version 0.8.2: in the collection, and in the game's own texts in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese. Balance changes come from the official patch notes on Steam and on the official Discord; when a card changes without being in the notes, as Trash for Treasure did on 4 November, the site follows the game. Created and removed cards are not in the game's collection, so they have not been checked in the game; the text of created cards is the one in the game's files. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
+    a: "Costs, stats, rarities, alignments and texts of the 130 cards in the game's collection were checked one by one in the game on 25 November 2026, on Early Access version 0.8.2: in the collection, and in the game's own texts in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese. Balance changes come from the official patch notes on Steam and on the official Discord; when a card changes without being in the notes, as Trash for Treasure did on 4 November, the site follows the game. Created and removed cards are not in the game's collection, so they have not been checked in the game; the text of created cards is the one in the game's files. The illustrations are the official ones from Koin Games; the sagas and the notes on each legend are ours.",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "Patch notes of 23 November" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Patch notes of 17 November" },
@@ -311,14 +311,14 @@ const it: Faq[] = [
   {
     id: "card-list",
     q: "Dove si vedono tutte le carte di Origins TCG?",
-    a: "Nel nostro database carte: le 130 carte del gioco con le statistiche attuali e lo storico dei bilanciamenti di ognuna, tutte verificate nella collezione del gioco l'11 novembre 2026, con il testo ufficiale in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato come nel gioco. In più 22 carte generate, quelle che esistono solo quando un'altra carta le crea: non sono nella collezione del gioco, quindi non sono state verificate nel gioco, e il loro testo è quello dei file del gioco. Nel gioco la collezione sta in Crea mazzi → I miei deck, scheda Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
+    a: "Nel nostro database carte: le 130 carte del gioco con le statistiche attuali e lo storico dei bilanciamenti di ognuna, tutte verificate nella collezione del gioco il 25 novembre 2026, con il testo ufficiale in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato come nel gioco. In più 22 carte generate, quelle che esistono solo quando un'altra carta le crea: non sono nella collezione del gioco, quindi non sono state verificate nel gioco, e il loro testo è quello dei file del gioco. Nel gioco la collezione sta in Crea mazzi → I miei deck, scheda Carte: attiva il filtro “Non posseduto” per vedere anche le carte che non hai ancora.",
     links: [{ path: "/cards", label: "Database carte" }],
     keywords: ["lista delle carte", "lista carte", "elenco delle carte", "tutte le carte", "database", "collezione", "non posseduto"],
   },
   {
     id: "where-cards",
     q: "Da dove arrivano le statistiche delle carte di questo sito?",
-    a: "Costi, statistiche, rarità, allineamenti e testi delle 130 carte della collezione del gioco sono stati verificati uno per uno nel gioco l'11 novembre 2026, sulla versione 0.8.2 dell'Accesso anticipato: nella collezione e nei testi del gioco in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato. I bilanciamenti vengono dalle patch notes ufficiali su Steam e sul Discord ufficiale; quando una carta cambia senza essere nelle note, come Trash for Treasure il 4 novembre, il sito segue il gioco. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco; il testo delle carte generate è quello dei file del gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
+    a: "Costi, statistiche, rarità, allineamenti e testi delle 130 carte della collezione del gioco sono stati verificati uno per uno nel gioco il 25 novembre 2026, sulla versione 0.8.2 dell'Accesso anticipato: nella collezione e nei testi del gioco in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato. I bilanciamenti vengono dalle patch notes ufficiali su Steam e sul Discord ufficiale; quando una carta cambia senza essere nelle note, come Trash for Treasure il 4 novembre, il sito segue il gioco. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco; il testo delle carte generate è quello dei file del gioco. Le illustrazioni sono quelle ufficiali di Koin Games; le saghe e le note sulle origini delle leggende sono nostre.",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "Patch notes del 23 novembre" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Patch notes del 17 novembre" },
@@ -442,14 +442,14 @@ const es: Faq[] = [
   {
     id: "card-list",
     q: "¿Dónde puedo ver todas las cartas de Origins TCG?",
-    a: "En nuestra base de datos de cartas: las 130 cartas del juego con sus estadísticas actuales y el historial de cambios de cada una, todas comprobadas en la colección del juego el 11 de noviembre de 2026, con el texto oficial en inglés, italiano, español, francés, portugués, alemán, ruso y chino simplificado tal como aparece en el juego. Además, 22 cartas creadas, las que solo existen cuando otra carta las crea: no están en la colección del juego, así que no se han comprobado en el juego, y su texto es el de los archivos del juego. En el juego, la colección está en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
+    a: "En nuestra base de datos de cartas: las 130 cartas del juego con sus estadísticas actuales y el historial de cambios de cada una, todas comprobadas en la colección del juego el 25 de noviembre de 2026, con el texto oficial en inglés, italiano, español, francés, portugués, alemán, ruso y chino simplificado tal como aparece en el juego. Además, 22 cartas creadas, las que solo existen cuando otra carta las crea: no están en la colección del juego, así que no se han comprobado en el juego, y su texto es el de los archivos del juego. En el juego, la colección está en Mis mazos, en la pestaña de las cartas: activa el filtro “No poseído” para ver también las cartas que aún no tienes.",
     links: [{ path: "/cards", label: "Base de datos de cartas" }],
     keywords: ["lista de cartas", "todas las cartas", "base de datos", "coleccion", "no poseido"],
   },
   {
     id: "where-cards",
     q: "¿De dónde salen las estadísticas de las cartas de este sitio?",
-    a: "Los costes, las estadísticas, las rarezas, los alineamientos y los textos de las 130 cartas de la colección del juego se comprobaron uno por uno en el juego el 11 de noviembre de 2026, en la versión 0.8.2 del Acceso anticipado: en la colección y en los textos del propio juego en inglés, italiano, español, francés, portugués, alemán, ruso y chino simplificado. Los cambios de equilibrio vienen de las notas oficiales de los parches en Steam y en el Discord oficial; cuando una carta cambia sin estar en las notas, como Trash for Treasure el 4 de noviembre, el sitio sigue al juego. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego; el texto de las cartas creadas es el de los archivos del juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
+    a: "Los costes, las estadísticas, las rarezas, los alineamientos y los textos de las 130 cartas de la colección del juego se comprobaron uno por uno en el juego el 25 de noviembre de 2026, en la versión 0.8.2 del Acceso anticipado: en la colección y en los textos del propio juego en inglés, italiano, español, francés, portugués, alemán, ruso y chino simplificado. Los cambios de equilibrio vienen de las notas oficiales de los parches en Steam y en el Discord oficial; cuando una carta cambia sin estar en las notas, como Trash for Treasure el 4 de noviembre, el sitio sigue al juego. Las cartas creadas y las retiradas no están en la colección del juego, así que no se han comprobado en el juego; el texto de las cartas creadas es el de los archivos del juego. Las ilustraciones son las oficiales de Koin Games; las sagas y las notas sobre cada leyenda son nuestras.",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "Notas del parche del 23 de noviembre" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Notas del parche del 17 de noviembre" },
@@ -573,14 +573,14 @@ const fr: Faq[] = [
   {
     id: "card-list",
     q: "Où voir toutes les cartes d'Origins TCG ?",
-    a: "Dans notre base de données des cartes : les 130 cartes du jeu avec leurs statistiques actuelles et l'historique des équilibrages de chacune, toutes vérifiées dans la collection du jeu le 11 novembre 2026, avec le texte officiel en français, en anglais, en italien, en espagnol, en portugais, en allemand, en russe et en chinois simplifié tel qu'il se lit dans le jeu. S'y ajoutent 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée : elles ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu, et leur texte est celui des fichiers du jeu. Dans le jeu, la collection se trouve dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées pour voir aussi celles que vous n'avez pas encore.",
+    a: "Dans notre base de données des cartes : les 130 cartes du jeu avec leurs statistiques actuelles et l'historique des équilibrages de chacune, toutes vérifiées dans la collection du jeu le 25 novembre 2026, avec le texte officiel en français, en anglais, en italien, en espagnol, en portugais, en allemand, en russe et en chinois simplifié tel qu'il se lit dans le jeu. S'y ajoutent 22 cartes créées, celles qui n'existent que lorsqu'une autre carte les crée : elles ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu, et leur texte est celui des fichiers du jeu. Dans le jeu, la collection se trouve dans le menu des decks, onglet des cartes : activez le filtre des cartes non possédées pour voir aussi celles que vous n'avez pas encore.",
     links: [{ path: "/cards", label: "Base de données des cartes" }],
     keywords: ["liste des cartes", "toutes les cartes", "base de donnees", "collection", "non possedees", "unowned"],
   },
   {
     id: "where-cards",
     q: "D'où viennent les statistiques des cartes de ce site ?",
-    a: "Les coûts, les statistiques, les raretés, les alignements et les textes des 130 cartes de la collection du jeu ont été vérifiés un par un dans le jeu le 11 novembre 2026, sur la version 0.8.2 de l'Accès anticipé : dans la collection et dans les textes du jeu en français, en anglais, en italien, en espagnol, en portugais, en allemand, en russe et en chinois simplifié. Les équilibrages viennent des notes de patch officielles sur Steam et sur le Discord officiel ; quand une carte change sans figurer dans les notes, comme Trash for Treasure le 4 novembre, le site suit le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu ; le texte des cartes créées est celui des fichiers du jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
+    a: "Les coûts, les statistiques, les raretés, les alignements et les textes des 130 cartes de la collection du jeu ont été vérifiés un par un dans le jeu le 25 novembre 2026, sur la version 0.8.2 de l'Accès anticipé : dans la collection et dans les textes du jeu en français, en anglais, en italien, en espagnol, en portugais, en allemand, en russe et en chinois simplifié. Les équilibrages viennent des notes de patch officielles sur Steam et sur le Discord officiel ; quand une carte change sans figurer dans les notes, comme Trash for Treasure le 4 novembre, le site suit le jeu. Les cartes créées et les cartes retirées ne sont pas dans la collection du jeu, donc elles n'ont pas été vérifiées dans le jeu ; le texte des cartes créées est celui des fichiers du jeu. Les illustrations sont les illustrations officielles de Koin Games ; les sagas et les notes sur chaque légende sont les nôtres.",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "Notes du patch du 23 novembre" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Notes du patch du 17 novembre" },
@@ -706,14 +706,14 @@ const pt: Faq[] = [
   {
     id: "card-list",
     q: "Onde posso ver todas as cartas de Origins TCG?",
-    a: "No nosso banco de dados de cartas: as 130 cartas do jogo com as estatísticas atuais e o histórico de balanceamento de cada uma, todas verificadas na coleção do jogo em 11 de novembro de 2026, com o texto oficial em inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado como aparece no jogo. Mais 22 cartas criadas, as que só existem quando outra carta as gera: não estão na coleção do jogo, por isso não foram verificadas no jogo, e o texto delas é o dos arquivos do jogo. No jogo, a coleção fica em Os meus decks → Cartas: ative o filtro “Não obtidas” para ver também as cartas que você ainda não tem.",
+    a: "No nosso banco de dados de cartas: as 130 cartas do jogo com as estatísticas atuais e o histórico de balanceamento de cada uma, todas verificadas na coleção do jogo em 25 de novembro de 2026, com o texto oficial em inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado como aparece no jogo. Mais 22 cartas criadas, as que só existem quando outra carta as gera: não estão na coleção do jogo, por isso não foram verificadas no jogo, e o texto delas é o dos arquivos do jogo. No jogo, a coleção fica em Os meus decks → Cartas: ative o filtro “Não obtidas” para ver também as cartas que você ainda não tem.",
     links: [{ path: "/cards", label: "Banco de dados de cartas" }],
     keywords: ["lista de cartas", "lista das cartas", "todas as cartas", "banco de dados", "database", "colecao", "nao obtidas"],
   },
   {
     id: "where-cards",
     q: "De onde vêm as estatísticas das cartas deste site?",
-    a: "Os custos, as estatísticas, as raridades, os alinhamentos e os textos das 130 cartas da coleção do jogo foram verificados um a um no jogo em 11 de novembro de 2026, na versão 0.8.2 do Acesso Antecipado: na coleção e nos textos do próprio jogo em inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado. As mudanças de balanceamento vêm das notas oficiais do patch na Steam e no Discord oficial; quando uma carta muda sem estar nas notas, como Trash for Treasure em 4 de novembro, o site segue o jogo. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo; o texto das cartas criadas é o dos arquivos do jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
+    a: "Os custos, as estatísticas, as raridades, os alinhamentos e os textos das 130 cartas da coleção do jogo foram verificados um a um no jogo em 25 de novembro de 2026, na versão 0.8.2 do Acesso Antecipado: na coleção e nos textos do próprio jogo em inglês, italiano, espanhol, francês, português, alemão, russo e chinês simplificado. As mudanças de balanceamento vêm das notas oficiais do patch na Steam e no Discord oficial; quando uma carta muda sem estar nas notas, como Trash for Treasure em 4 de novembro, o site segue o jogo. As cartas criadas e as cartas removidas não estão na coleção do jogo, por isso não foram verificadas no jogo; o texto das cartas criadas é o dos arquivos do jogo. As ilustrações são as oficiais da Koin Games; as sagas e as notas sobre cada lenda são nossas.",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "Notas do patch de 23 de novembro" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Notas do patch de 17 de novembro" },
@@ -839,14 +839,14 @@ const de: Faq[] = [
   {
     id: "card-list",
     q: "Wo sehe ich alle Karten von Origins TCG?",
-    a: "In unserer Kartendatenbank: die 130 Karten des Spiels mit ihren aktuellen Werten und der Balance-Historie jeder Karte, alle am 11. November 2026 in der Sammlung des Spiels geprüft, mit dem offiziellen Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch, Russisch und vereinfachtem Chinesisch, wie er im Spiel steht. Dazu 22 erschaffene Karten, die nur entstehen, wenn eine andere Karte sie erschafft: Sie sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft; ihr Text ist der aus den Dateien des Spiels. Im Spiel liegt die Sammlung unter Meine Decks → Karten: Schalte den Filter „Nicht im Besitz“ ein, um auch die Karten zu sehen, die du noch nicht besitzt.",
+    a: "In unserer Kartendatenbank: die 130 Karten des Spiels mit ihren aktuellen Werten und der Balance-Historie jeder Karte, alle am 25. November 2026 in der Sammlung des Spiels geprüft, mit dem offiziellen Text auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch, Russisch und vereinfachtem Chinesisch, wie er im Spiel steht. Dazu 22 erschaffene Karten, die nur entstehen, wenn eine andere Karte sie erschafft: Sie sind nicht in der Sammlung des Spiels und wurden daher nicht im Spiel geprüft; ihr Text ist der aus den Dateien des Spiels. Im Spiel liegt die Sammlung unter Meine Decks → Karten: Schalte den Filter „Nicht im Besitz“ ein, um auch die Karten zu sehen, die du noch nicht besitzt.",
     links: [{ path: "/cards", label: "Kartendatenbank" }],
     keywords: ["kartenliste", "liste der karten", "alle karten", "jede karte", "kartendatenbank", "datenbank", "database", "sammlung", "unowned"],
   },
   {
     id: "where-cards",
     q: "Woher stammen die Kartenwerte auf dieser Website?",
-    a: "Kosten, Werte, Seltenheiten, Gesinnungen und Texte der 130 Karten der Sammlung des Spiels wurden am 11. November 2026 einzeln im Spiel geprüft, auf Version 0.8.2 des Early Access: in der Sammlung und in den Texten des Spiels auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch, Russisch und vereinfachtem Chinesisch. Die Balance-Änderungen stammen aus den offiziellen Patchnotes auf Steam und im offiziellen Discord; ändert sich eine Karte, ohne in den Notes zu stehen, wie Trash for Treasure am 4. November, folgt die Website dem Spiel. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft; der Text der erschaffenen Karten ist der aus den Dateien des Spiels. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
+    a: "Kosten, Werte, Seltenheiten, Gesinnungen und Texte der 130 Karten der Sammlung des Spiels wurden am 25. November 2026 einzeln im Spiel geprüft, auf Version 0.8.2 des Early Access: in der Sammlung und in den Texten des Spiels auf Englisch, Italienisch, Spanisch, Französisch, Portugiesisch, Deutsch, Russisch und vereinfachtem Chinesisch. Die Balance-Änderungen stammen aus den offiziellen Patchnotes auf Steam und im offiziellen Discord; ändert sich eine Karte, ohne in den Notes zu stehen, wie Trash for Treasure am 4. November, folgt die Website dem Spiel. Erschaffene und entfernte Karten sind nicht in der Sammlung des Spiels, deshalb wurden sie nicht im Spiel geprüft; der Text der erschaffenen Karten ist der aus den Dateien des Spiels. Die Illustrationen sind die offiziellen von Koin Games; die Sagen und die Notizen zu jeder Legende sind von uns.",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "Patchnotes vom 23. November" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Patchnotes vom 17. November" },
@@ -972,14 +972,14 @@ const ru: Faq[] = [
   {
     id: "card-list",
     q: "Где посмотреть все карты Origins TCG?",
-    a: "В нашей базе карт: 130 карт игры с актуальными характеристиками, текстом и историей балансных изменений каждой, все проверены в коллекции игры 11 ноября 2026 года, с официальным текстом на английском, итальянском, испанском, французском, португальском, немецком, русском и упрощённом китайском — таким, как в игре. Плюс 22 созданные карты — те, что появляются, только когда их создаёт другая карта: их нет в коллекции игры, поэтому они не проверены в игре, а их текст взят из файлов игры. В игре коллекция находится в разделе «Мои колоды», на вкладке карт: включите фильтр «Не в коллекции», чтобы видеть и карты, которых у вас ещё нет.",
+    a: "В нашей базе карт: 130 карт игры с актуальными характеристиками, текстом и историей балансных изменений каждой, все проверены в коллекции игры 25 ноября 2026 года, с официальным текстом на английском, итальянском, испанском, французском, португальском, немецком, русском и упрощённом китайском — таким, как в игре. Плюс 22 созданные карты — те, что появляются, только когда их создаёт другая карта: их нет в коллекции игры, поэтому они не проверены в игре, а их текст взят из файлов игры. В игре коллекция находится в разделе «Мои колоды», на вкладке карт: включите фильтр «Не в коллекции», чтобы видеть и карты, которых у вас ещё нет.",
     links: [{ path: "/cards", label: "База карт" }],
     keywords: ["список карт", "все карты", "каждую карту", "база карт", "база данных", "коллекция", "коллекции", "unowned"],
   },
   {
     id: "where-cards",
     q: "Откуда берутся характеристики карт на этом сайте?",
-    a: "Стоимость, характеристики, редкость, мировоззрения и тексты 130 карт коллекции игры проверены в игре по одной 11 ноября 2026 года, на версии 0.8.2 раннего доступа: в коллекции и в текстах самой игры на английском, итальянском, испанском, французском, португальском, немецком, русском и упрощённом китайском. Изменения баланса взяты из официальных патчноутов в Steam и в официальном Discord; если карта меняется без упоминания в патчноутах, как Trash for Treasure 4 ноября, сайт следует за игрой. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре; текст созданных карт взят из файлов игры. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
+    a: "Стоимость, характеристики, редкость, мировоззрения и тексты 130 карт коллекции игры проверены в игре по одной 25 ноября 2026 года, на версии 0.8.2 раннего доступа: в коллекции и в текстах самой игры на английском, итальянском, испанском, французском, португальском, немецком, русском и упрощённом китайском. Изменения баланса взяты из официальных патчноутов в Steam и в официальном Discord; если карта меняется без упоминания в патчноутах, как Trash for Treasure 4 ноября, сайт следует за игрой. Созданных и удалённых карт нет в коллекции игры, поэтому они не проверены в игре; текст созданных карт взят из файлов игры. Иллюстрации — официальные, от Koin Games; саги и заметки о каждой легенде — наши.",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "Патчноуты от 23 ноября" },
       { slug: "balance-patch-1117-sherwood-forest", label: "Патчноуты от 17 ноября" },
@@ -1107,14 +1107,14 @@ const zhCn: Faq[] = [
   {
     id: "card-list",
     q: "在哪里可以看到 Origins TCG 的全部卡牌？",
-    a: "在我们的卡牌数据库里：游戏中的 130 张卡牌，附有当前数值以及每张卡的平衡改动记录，全部已于 2026年11月11日在游戏收藏中核对，并附有游戏内显示的英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文官方文本。另外还有 22 张衍生卡牌，也就是只有在其他卡牌生成它们时才会出现的卡：它们不在游戏收藏中，因此未在游戏中核实，其文本来自游戏文件。在游戏里，收藏位于卡组界面的卡牌页：打开未拥有卡牌的筛选，就能同时看到你还没有的卡牌。",
+    a: "在我们的卡牌数据库里：游戏中的 130 张卡牌，附有当前数值以及每张卡的平衡改动记录，全部已于 2026年11月25日在游戏收藏中核对，并附有游戏内显示的英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文官方文本。另外还有 22 张衍生卡牌，也就是只有在其他卡牌生成它们时才会出现的卡：它们不在游戏收藏中，因此未在游戏中核实，其文本来自游戏文件。在游戏里，收藏位于卡组界面的卡牌页：打开未拥有卡牌的筛选，就能同时看到你还没有的卡牌。",
     links: [{ path: "/cards", label: "卡牌数据库" }],
     keywords: ["卡牌列表", "全部卡牌", "卡牌数据库", "数据库", "图鉴", "收藏", "unowned"],
   },
   {
     id: "where-cards",
     q: "本站的卡牌数据从哪里来？",
-    a: "游戏收藏中 130 张卡牌的费用、数值、稀有度、阵营和文本，已于 2026年11月11日在游戏中逐张核对（抢先体验 0.8.2 版本）：包括收藏界面，以及游戏自带的英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文文本。平衡改动来自 Steam 和官方 Discord 上的官方补丁说明；如果某张卡牌的改动没有写进补丁说明，比如 11月4日的 Trash for Treasure，本站以游戏为准。衍生卡牌和已移除的卡牌不在游戏收藏中，因此未在游戏中核实；衍生卡牌的文本来自游戏文件。卡图是 Koin Games 的官方插画；系列和每个传说的介绍由我们撰写。",
+    a: "游戏收藏中 130 张卡牌的费用、数值、稀有度、阵营和文本，已于 2026年11月25日在游戏中逐张核对（抢先体验 0.8.2 版本）：包括收藏界面，以及游戏自带的英语、意大利语、西班牙语、法语、葡萄牙语、德语、俄语和简体中文文本。平衡改动来自 Steam 和官方 Discord 上的官方补丁说明；如果某张卡牌的改动没有写进补丁说明，比如 11月4日的 Trash for Treasure，本站以游戏为准。衍生卡牌和已移除的卡牌不在游戏收藏中，因此未在游戏中核实；衍生卡牌的文本来自游戏文件。卡图是 Koin Games 的官方插画；系列和每个传说的介绍由我们撰写。",
     news: [
       { slug: "balance-patch-1123-harvest-bowl", label: "11月23日补丁说明" },
       { slug: "balance-patch-1117-sherwood-forest", label: "11月17日补丁说明" },
