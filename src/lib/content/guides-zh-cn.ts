@@ -12,7 +12,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
     faq: [
       {
         q: "Origins TCG 有多少张传说卡？",
-        a: "可用的有十二张：Dorothy、Dracula、Mulan、Queen of Hearts、Van Helsing、Wicked Stepmother、Dr. Frank、Merlin、King Arthur、Legion of the Dead、Three Not So Little Pigs 和 Robin Hood，全部于 2026年11月11日在游戏中核对过。Dr. Frank 随 2026年11月4日的补丁进入游戏。OriginsMeta 数据库里还保留着另外八张已经不在游戏中的传说卡。",
+        a: "可用的有十二张：Dorothy、Dracula、Mulan、Queen of Hearts、Van Helsing、Wicked Stepmother、Dr. Frank、Merlin、King Arthur、Legion of the Dead、Three Not So Little Pigs 和 Robin Hood，全部于 2026年11月25日在游戏中核对过。Dr. Frank 随 2026年11月4日的补丁进入游戏。OriginsMeta 数据库里还保留着另外八张已经不在游戏中的传说卡。",
       },
       {
         q: "一副卡组可以放几张传说卡？",
@@ -63,7 +63,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 - **对手看得到它。** 封闭测试的 0.6.1 补丁（2026年8月14日）加入了在调度（mulligan）阶段预览对手传说卡的功能，见[官方补丁说明](https://store.steampowered.com/news/app/4429430/view/1840944183780414)。
 - **在 Conquest 中它就是卡组的名字。** 在 Crimson Cup 中每位玩家带三副卡组，当你禁用对手的一副卡组时，你只能看到它的传说卡（[Crimson Cup 规则](/zh-cn/news/crimson-cup-format-check-in)）。公告没有说明三张传说卡是否必须不同；在 Big Bob's Playtest Battle 中是必须的。如何组合三副卡组：见我们的 [Conquest 攻略](/zh-cn/guides/origins-tcg-conquest)。
 
-下面引用的卡牌文本都是游戏的官方简体中文文本，于 2026年11月11日从游戏文件中读取。费用和数据于 2026年11月11日逐张核对，之后的改动来自补丁说明。传说出处和每个传说的介绍由 OriginsMeta 撰写。补丁为 [MetaShifting](/zh-cn/metashifting) 中追踪的那些：试玩测试更新 0.6.1、0.6.2 和 0.6.3（2026年8月）、2026年9月21日的试玩版补丁、2026年9月29日没有调整任何传说卡的 0.7 补丁、2026年11月4日的补丁（它让 Dorothy 变为 3/3，并带来了 Dr. Frank），以及 2026年11月17日的补丁（它让 Dr. Frank 的费用减少 1）；2026年10月27日的 0.8 补丁说明是抢先体验的第一份补丁说明，没有提到卡牌改动。每张传说卡的传说之力以游戏中的显示为准，见各自的卡牌页面。
+下面引用的卡牌文本都是游戏的官方简体中文文本，于 2026年11月25日从游戏文件中读取。费用和数据于 2026年11月25日逐张核对，之后的改动来自补丁说明。传说出处和每个传说的介绍由 OriginsMeta 撰写。补丁为 [MetaShifting](/zh-cn/metashifting) 中追踪的那些：试玩测试更新 0.6.1、0.6.2 和 0.6.3（2026年8月）、2026年9月21日的试玩版补丁、2026年9月29日没有调整任何传说卡的 0.7 补丁、2026年11月4日的补丁（它让 Dorothy 变为 3/3，并带来了 Dr. Frank），以及 2026年11月17日的补丁（它让 Dr. Frank 的费用减少 1）；2026年10月27日的 0.8 补丁说明是抢先体验的第一份补丁说明，没有提到卡牌改动。每张传说卡的传说之力以游戏中的显示为准，见各自的卡牌页面。
 
 ## Dorothy {#dorothy}
 
@@ -155,7 +155,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 > 战斗前，从你的墓地召唤一个随机角色到一个随机格子上。
 
-- **最新的传说卡。** 他随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏，是第 11 位首领 Cyber Queen 所用 Relentless 卡组中的传说卡，同时到来的还有另外七张卡（[Dr. Frank 的八张新卡](/zh-cn/news/dr-frank-boss-new-cards)）。上面的文本是 2026年11月11日从游戏中读取的官方文本。
+- **最新的传说卡。** 他随 [2026年11月4日的补丁](/zh-cn/news/balance-patch-1104-cyber-queen)进入游戏，是第 11 位首领 Cyber Queen 所用 Relentless 卡组中的传说卡，同时到来的还有另外七张卡（[Dr. Frank 的八张新卡](/zh-cn/news/dr-frank-boss-new-cards)）。上面的文本是 2026年11月25日从游戏中读取的官方文本。
 - **传说。** 维克多·弗兰肯斯坦，在玛丽·雪莱 1818 年的小说中拼造出活物的学生。
 - **围绕他的卡牌。** [It's Alive](/zh-cn/cards/its-alive)，一张 3 法力的法术，效果与他相同，但只生效一次；还有两张具有重生（Rebirth）的卡，[Frank's Monster](/zh-cn/cards/franks-monster) 和 [Franken Bride](/zh-cn/cards/franken-bride)。他的传说之力会在对局开始时把 It's Alive! 加入你的手牌。
 - **补丁。** 2026年11月17日的补丁：法力 6 → 5（[补丁说明](/zh-cn/news/balance-patch-1117-sherwood-forest)）。
@@ -239,7 +239,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 ## 数据来源 {#shu-ju-lai-yuan}
 
-- **卡牌：** OriginsMeta [卡牌数据库](/zh-cn/cards)：可用卡牌的费用、数据和文本于 2026年11月11日在游戏中逐张核对，包括本站所有语言的文本。数据为 2026年11月17日补丁的版本。
+- **卡牌：** OriginsMeta [卡牌数据库](/zh-cn/cards)：可用卡牌的费用、数据和文本于 2026年11月25日在游戏中逐张核对，包括本站所有语言的文本。数据为 2026年11月17日补丁的版本。
 - **补丁：** Steam 上的官方补丁说明，在 [MetaShifting](/zh-cn/metashifting) 中逐卡整理。
 - **卡组：** 2026年9月15日至 9月25日 20:00 CEST 在 OriginsMeta 发布的 20 副卡组（[所有 Origins TCG 卡组](/zh-cn/decks)）；之后的统计见[最常用](/zh-cn/tier-list/most-played)。
 

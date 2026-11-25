@@ -1,4 +1,4 @@
-# Testi ufficiali delle carte in PORTOGHESE DEL BRASILE, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
+# Testi ufficiali delle carte in PORTOGHESE DEL BRASILE, dati del gioco v0-8-2, letti in data 25/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
 # Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
 # Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
 Itsy Bitsy Spider
@@ -55,6 +55,7 @@ Flying Monkey	Ao revelar: Move QUALQUER outro personagem para um espaço aleató
 Frog Prince	Escolhe uma: Ao revelar: Recebo +3⚔️ OU Ao revelar: Recebo +3❤️.
 Golden Egg	Ao morrer: Invoca um Golden Goose [5⚔️/5❤️] neste espaço.
 Humpty	Ao morrer: Adiciona uma carta aleatória à sua mão.
+Imhotep	Ao morrer: Causa 2 de dano a todos os inimigos aqui.
 It's Alive	Invoca um personagem aleatório do seu cemitério em um espaço aleatório.
 Jack	Ao revelar: Destrói um inimigo aleatório que tenha 7 ou mais ⚔️.
 Jill	Quando recebo dano, cura 2 de dano da sua barreira aqui.
@@ -79,7 +80,6 @@ Dorothy	Posso me Mover a cada rodada.\nTenho +1⚔️/+1❤️ por cada vez que 
 Dracula	Quando você descarta, volto do seu cemitério para a mão.\nAo revelar: Invoca Brides of Dracula [2⚔️/2❤️] em um espaço aleatório aqui.
 Glinda	Quando você joga um feitiço, dá +1⚔️ aos aliados.
 Huntsman	Ao matar: Recebo +1⚔️/+1❤️.
-Imhotep	Ao morrer: Causa 2 de dano a todos os inimigos aqui.
 Jekyll	Ao revelar: Cura 3 de dano de QUALQUER outro personagem ou barreira aqui.\nSe estiver na mão depois do combate, me transformo em Hyde [5⚔️/3❤️].
 Lancelot	Quando você joga um personagem Bom aqui, dá-lhe +2⚔️/+2❤️.
 Little John	Ao revelar: Se um inimigo foi jogado aqui nesta rodada, recebo +2⚔️/+2❤️.
@@ -103,6 +103,7 @@ Bigfoot	Atropelar
 Boitata	Se um feitiço ou habilidade fosse causar dano a alguma das suas barreiras, causa esse dano à barreira do oponente nesse local em vez disso.
 Bridge Troll	Defensor
 Captain Ahab	Ao revelar: Descarta a sua carta de maior custo para causar o custo dela como dano a um inimigo.
+Dr. Frank	Antes do combate, invoca um personagem aleatório do seu cemitério em um espaço aleatório.
 Fairy Godmother	Ao revelar: Dá a outro aliado +3⚔️/+3❤️.
 Franken Bride	Renascimento\nQuando entro em jogo vindo do cemitério, cura 4 de dano da sua barreira aqui.
 Galahad	Ao revelar: Dá aos outros aliados +1⚔️/+1❤️.
@@ -111,16 +112,15 @@ Hare	Primeiro golpe, Mover
 Impundulu	Quando ataco, adiciona um Lightning Strike à sua mão. Descarta-o antes do combate da próxima rodada.
 Merlin	Repete o primeiro feitiço que você jogar a cada rodada.
 Rain of Arrows	Causa 2 de dano a todos os inimigos.
-Sorcerer's Apprentice	Quando você joga um feitiço, invoca uma Broomstick [1⚔️/1❤️] em um espaço aleatório.
 The Green Knight	Depois do combate, curo todo o dano de mim mesmo.
 Three Musketeers	Primeiro golpe\nAo revelar: Invoca um Musketeer [2⚔️/1❤️] com Primeiro golpe em cada espaço aqui.
 Cockatrice	Toque mortífero\nAo morrer: Destrói um inimigo aleatório.
-Dr. Frank	Antes do combate, invoca um personagem aleatório do seu cemitério em um espaço aleatório.
 Frank's Monster	Renascimento\nQuando entro em jogo vindo do cemitério, duplico o meu ⚔️.
 Guy of Gisborne	Ataque duplo, Tiro certeiro 1
 Heroic Charge	Os aliados têm +2⚔️ e Atropelar nesta rodada.
 Koschei	Ao morrer ou ao ser descartado: volto à sua mão e recebo +2⚔️/+2❤️ permanentemente.
 Mowgli	Ao revelar: Invoca Baloo [6⚔️/6❤️] em outro local aleatório.
+Sorcerer's Apprentice	Quando você joga um feitiço, invoca uma Broomstick [1⚔️/1❤️] em um espaço aleatório.
 Tin Woodman	Ao revelar: Cura 8 de dano de QUALQUER outro personagem ou barreira aqui.
 King Arthur	Escudo\nAo revelar: Dá Escudo aos seus personagens Bons.
 Legion of the Dead	Enche o seu tabuleiro de Zombies [2⚔️/2❤️].

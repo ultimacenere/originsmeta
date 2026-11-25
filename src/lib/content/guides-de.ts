@@ -16,7 +16,7 @@ export const deText: Record<GuideSlug, GuideCopy> = {
     faq: [
       {
         q: "Wie viele Legendäre gibt es in Origins TCG?",
-        a: "Zwölf spielbare: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs und Robin Hood, alle am 11. November 2026 im Spiel geprüft. Dr. Frank ist mit dem Patch vom 4. November 2026 ins Spiel gekommen. Die Datenbank von OriginsMeta führt acht weitere, die nicht mehr im Spiel sind.",
+        a: "Zwölf spielbare: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs und Robin Hood, alle am 25. November 2026 im Spiel geprüft. Dr. Frank ist mit dem Patch vom 4. November 2026 ins Spiel gekommen. Die Datenbank von OriginsMeta führt acht weitere, die nicht mehr im Spiel sind.",
       },
       {
         q: "Wie viele Legendäre darf ein Deck haben?",
@@ -67,7 +67,7 @@ Die letzte Spalte zählt die Decks, die jede Legendäre unter den 20 anführt, d
 - **Dein Gegner sieht sie.** Patch 0.6.1 des geschlossenen Playtests (14. August 2026) hat während des Mulligans eine Vorschau auf die Legendäre des Gegners eingeführt, laut den [offiziellen Patchnotes](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **Im Conquest gibt sie dem Deck seinen Namen.** Bei der Crimson Cup bringt jeder Spieler drei Decks mit, und wenn du eines der Decks deines Gegners bannst, siehst du nur seine Legendäre ([Regeln der Crimson Cup](/de/news/crimson-cup-format-check-in)). Ob sich die drei Legendären unterscheiden müssen, sagen die Ankündigungen nicht; bei Big Bob's Playtest Battle mussten sie es. Wie du drei Decks zusammenstellst, erklärt unser [Conquest-Guide](/de/guides/origins-tcg-conquest).
 
-Die zitierten Kartentexte sind die offiziellen des Spiels, im Spiel auf Deutsch gelesen. Kosten und Werte wurden am 11. November 2026 Karte für Karte geprüft; spätere Änderungen stammen aus den Patchnotes. Die Sagas und die Notizen zu jeder Legende stammen von OriginsMeta. Die Patches sind die in [MetaShifting](/de/metashifting) erfassten: die Playtest-Updates 0.6.1, 0.6.2 und 0.6.3 (August 2026), der Demo-Patch vom 21. September 2026, Patch 0.7 vom 29. September 2026, der keine Legendäre neu ausbalanciert hat, der Patch vom 4. November 2026, der Dorothy zu einer 3/3 gemacht und Dr. Frank ins Spiel gebracht hat, und der Patch vom 17. November 2026, der Dr. Frank um 1 billiger gemacht hat; die Patchnotes zu 0.8 (27. Oktober 2026, Early Access) nennen keine Kartenänderungen. Die legendäre Kraft jeder Karte steht, wie das Spiel sie zeigt, auf ihrer Kartenseite.
+Die zitierten Kartentexte sind die offiziellen des Spiels, im Spiel auf Deutsch gelesen. Kosten und Werte wurden am 25. November 2026 Karte für Karte geprüft; spätere Änderungen stammen aus den Patchnotes. Die Sagas und die Notizen zu jeder Legende stammen von OriginsMeta. Die Patches sind die in [MetaShifting](/de/metashifting) erfassten: die Playtest-Updates 0.6.1, 0.6.2 und 0.6.3 (August 2026), der Demo-Patch vom 21. September 2026, Patch 0.7 vom 29. September 2026, der keine Legendäre neu ausbalanciert hat, der Patch vom 4. November 2026, der Dorothy zu einer 3/3 gemacht und Dr. Frank ins Spiel gebracht hat, und der Patch vom 17. November 2026, der Dr. Frank um 1 billiger gemacht hat; die Patchnotes zu 0.8 (27. Oktober 2026, Early Access) nennen keine Kartenänderungen. Die legendäre Kraft jeder Karte steht, wie das Spiel sie zeigt, auf ihrer Kartenseite.
 
 ## Dorothy {#dorothy}
 
@@ -159,7 +159,7 @@ Die zitierten Kartentexte sind die offiziellen des Spiels, im Spiel auf Deutsch 
 
 > Vor dem Kampf beschwöre einen zufälligen Charakter aus deinem Friedhof auf einem zufälligen Feld.
 
-- **Die neueste Legendäre.** Er ist mit dem [Patch vom 4. November 2026](/de/news/balance-patch-1104-cyber-queen) ins Spiel gekommen, als Legendäre des Relentless-Decks von Cyber Queen, Boss Nr. 11, zusammen mit sieben weiteren Karten ([Dr. Franks acht Karten](/de/news/dr-frank-boss-new-cards)). Der Text oben ist der, den wir am 11. November 2026 im Spiel gelesen haben.
+- **Die neueste Legendäre.** Er ist mit dem [Patch vom 4. November 2026](/de/news/balance-patch-1104-cyber-queen) ins Spiel gekommen, als Legendäre des Relentless-Decks von Cyber Queen, Boss Nr. 11, zusammen mit sieben weiteren Karten ([Dr. Franks acht Karten](/de/news/dr-frank-boss-new-cards)). Der Text oben ist der, den wir am 25. November 2026 im Spiel gelesen haben.
 - **Die Legende.** Victor Frankenstein, der Student, der in Mary Shelleys Roman von 1818 ein lebendes Geschöpf zusammensetzt.
 - **Die Karten um ihn herum.** [It's Alive](/de/cards/its-alive), ein Zauber für 3 Mana, der dasselbe einmal tut, und die beiden Karten mit Wiedergeburt, [Frank's Monster](/de/cards/franks-monster) und [Franken Bride](/de/cards/franken-bride). Seine legendäre Kraft gibt dir zu Beginn der Partie It's Alive! auf die Hand.
 - **Patches.** Patch vom 17. November 2026: Mana 6 → 5 ([Patchnotes](/de/news/balance-patch-1117-sherwood-forest)).
@@ -243,7 +243,7 @@ Unsere Datenbank führt außerdem acht Legendäre, die nicht mehr im Spiel sind:
 
 ## Woher die Zahlen kommen {#quellen}
 
-- **Karten:** die [Kartendatenbank](/de/cards) von OriginsMeta: Kosten, Werte und Texte der spielbaren Karten am 11. November 2026 einzeln im Spiel geprüft, in allen Sprachen der Website. Die Werte sind die des Patches vom 17. November 2026.
+- **Karten:** die [Kartendatenbank](/de/cards) von OriginsMeta: Kosten, Werte und Texte der spielbaren Karten am 25. November 2026 einzeln im Spiel geprüft, in allen Sprachen der Website. Die Werte sind die des Patches vom 17. November 2026.
 - **Patches:** die offiziellen Patchnotes auf Steam, Karte für Karte in [MetaShifting](/de/metashifting).
 - **Decks:** die 20 Decks, die vom 15. September bis 20:00 Uhr CEST am 25. September 2026 auf OriginsMeta veröffentlicht wurden ([alle Decks von Origins TCG](/de/decks)); die Zählung danach steht unter [Meistgespielt](/de/tier-list/most-played).
 

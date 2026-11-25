@@ -129,6 +129,8 @@ Stile del gioco da imitare nei testi nostri:
    che i dati non dicono; le differenze dei dati che non vengono da una patch (rarità, costo) vanno in `card-lore.ts`,
    campi `mana` e `rarity`. Refusi del gioco che il sito non copia: Boogeyman in inglese ("its me").
 
+**Verifica del 25/11/2026** (dopo la patch del 23/11, gioco aperto da Pierluigi alle 10:39, dati ancora nella cartella `v0-8-2`): `game-texts.mjs --json` confrontato con `cards.ts`, 152 carte attive uguali per costo, statistiche, rarità, allineamento e testo inglese; poteri delle 12 Leggendarie e testi delle sette lingue (115 per lingua) uguali; unica differenza il refuso di Boogeyman. `cardsVerified` al 25/11 e le frasi "verificate nel gioco il…" di dizionari, FAQ, guida alle Leggendarie e llms.txt aggiornate; le news restano con le loro date. Il Tracker installato (0.5.4) ha ancora la sua copia delle carte dell'11/11: si allinea con la prossima release.
+
 **Prima dell'11/11/2026 la verifica era solo a vista**, così:
 
 1. Nel gioco, lingua italiana o spagnola: "I miei deck" / "Mis mazos" → scheda Carte, filtro "Non posseduto" /

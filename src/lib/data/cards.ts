@@ -214,9 +214,13 @@ export function patchAt(date: string): PatchId | undefined {
  * sui dati; va aggiornata a ogni nuova verifica. Prima: 22/09/2026, 122 carte della collezione della demo. L'11/11/2026
  * (Accesso anticipato 0.8.2): le 130 carte della collezione, otto di Dr. Frank comprese, rilette a vista nella collezione in
  * italiano (Crea mazzi → I miei deck → Carte, "Non posseduto" acceso, un costo alla volta) e confrontate con i dati e le
- * tabelle delle traduzioni del gioco in tutte le lingue del sito; testi in card-lore*.ts e docs/testi-ufficiali/.
+ * tabelle delle traduzioni del gioco in tutte le lingue del sito; testi in card-lore*.ts e docs/testi-ufficiali/. Il 25/11/2026,
+ * dopo la patch del 23/11 (dati del gioco scaricati quel giorno, cartella v0-8-2): `scripts/game-texts.mjs --json` confrontato
+ * con questo database, 152 carte attive (le 130 della collezione e le carte create) uguali per costo, statistiche, rarità,
+ * allineamento e testo inglese, poteri delle 12 Leggendarie e testi delle sette lingue tradotte uguali (unica differenza il
+ * refuso del gioco su Boogeyman, che il sito non copia).
  */
-export const cardsVerified = { date: "2026-11-11", count: 130 };
+export const cardsVerified = { date: "2026-11-25", count: 130 };
 
 /**
  * Carte entrate nel gioco con una patch, quando i dati importati le danno ancora fra le rimosse (05/11/2026, Pierluigi:

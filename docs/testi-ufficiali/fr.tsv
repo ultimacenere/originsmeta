@@ -1,4 +1,4 @@
-# Testi ufficiali delle carte in FRANCESE, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
+# Testi ufficiali delle carte in FRANCESE, dati del gioco v0-8-2, letti in data 25/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
 # Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
 # Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
 Itsy Bitsy Spider
@@ -55,6 +55,7 @@ Flying Monkey	À la révélation : Déplacez N'IMPORTE QUEL autre personnage ve
 Frog Prince	Au choix : À la révélation : Je gagne +3⚔️ OU À la révélation : Je gagne +3❤️.
 Golden Egg	À la mort : Invoque un Golden Goose [5⚔️/5❤️] sur cette case.
 Humpty	À la mort : Ajoutez une carte aléatoire à votre main.
+Imhotep	À la mort : Infligez 2 dégâts à tous les ennemis ici.
 It's Alive	Invoquez un personnage aléatoire de votre cimetière sur une case aléatoire.
 Jack	À la révélation : Détruisez un ennemi aléatoire ayant 7 ⚔️ ou plus.
 Jill	Quand je subis des dégâts, soignez 2 dégâts de votre barrière ici.
@@ -79,7 +80,6 @@ Dorothy	Je peux me Déplacer chaque manche.\nJ'ai +1⚔️/+1❤️ pour chaque 
 Dracula	Quand vous défaussez, je reviens de votre cimetière dans votre main.\nÀ la révélation : Invoquez Brides of Dracula [2⚔️/2❤️] sur une case aléatoire ici.
 Glinda	Quand vous jouez un sort, donnez +1⚔️ aux alliés.
 Huntsman	À l'élimination : Je gagne +1⚔️/+1❤️.
-Imhotep	À la mort : Infligez 2 dégâts à tous les ennemis ici.
 Jekyll	À la révélation : Soignez 3 dégâts de N'IMPORTE QUEL autre personnage ou barrière ici.\nSi je suis en main après le combat, je me transforme en Hyde [5⚔️/3❤️].
 Lancelot	Quand vous jouez un personnage Bon ici, donnez-lui +2⚔️/+2❤️.
 Little John	À la révélation : Si un ennemi a été joué ici cette manche, je gagne +2⚔️/+2❤️.
@@ -103,6 +103,7 @@ Bigfoot	Piétinement
 Boitata	Si un sort ou une capacité devait endommager l'une de vos barrières, infligez ces dégâts à la barrière adverse là-bas à la place.
 Bridge Troll	Défenseur
 Captain Ahab	À la révélation : Défaussez votre carte au coût le plus élevé pour infliger son coût en dégâts à un ennemi.
+Dr. Frank	Avant le combat, invoquez un personnage aléatoire de votre cimetière sur une case aléatoire.
 Fairy Godmother	À la révélation : Accorde +3⚔️/+3❤️ à un autre allié.
 Franken Bride	Renaissance\nQuand j'entre en jeu depuis le cimetière, soignez 4 dégâts de votre barrière ici.
 Galahad	À la révélation : Accorde +1⚔️/+1❤️ aux autres alliés.
@@ -111,16 +112,15 @@ Hare	Première frappe, Déplacer
 Impundulu	Quand j'attaque, ajoutez un Lightning Strike à votre main. Défaussez-le avant le combat de la manche suivante.
 Merlin	Répétez le premier sort que vous jouez chaque manche.
 Rain of Arrows	Infligez 2 dégâts à tous les ennemis.
-Sorcerer's Apprentice	Quand vous jouez un sort, invoquez un Broomstick [1⚔️/1❤️] sur une case aléatoire.
 The Green Knight	Après le combat, je soigne tous les dégâts sur moi-même.
 Three Musketeers	Première frappe\nÀ la révélation : Invoquez un Musketeer [2⚔️/1❤️] avec Première frappe sur chaque case ici.
 Cockatrice	Contact mortel\nÀ la mort : Détruisez un ennemi au hasard.
-Dr. Frank	Avant le combat, invoquez un personnage aléatoire de votre cimetière sur une case aléatoire.
 Frank's Monster	Renaissance\nQuand j'entre en jeu depuis le cimetière, je double ma ⚔️.
 Guy of Gisborne	Double attaque, Tir de précision 1
 Heroic Charge	Les alliés ont +2⚔️ et Piétinement cette manche.
 Koschei	À la mort ou quand je suis défaussé : je reviens dans votre main et je gagne +2⚔️/+2❤️ de façon permanente.
 Mowgli	À la révélation : Invoquez Baloo [6⚔️/6❤️] à un autre lieu aléatoire.
+Sorcerer's Apprentice	Quand vous jouez un sort, invoquez un Broomstick [1⚔️/1❤️] sur une case aléatoire.
 Tin Woodman	À la révélation : Soignez 8 dégâts de N'IMPORTE QUEL autre personnage ou barrière ici.
 King Arthur	Bouclier\nÀ la révélation : Donne Bouclier à vos personnages Bons.
 Legion of the Dead	Remplissez votre plateau de Zombies [2⚔️/2❤️].

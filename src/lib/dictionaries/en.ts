@@ -134,7 +134,7 @@ export const en = {
     stats: "Stats",
     unknownStats: "stats not yet published",
     /* Dal 25/09/2026 (decisione di Pierluigi) le righe sui dati dicono solo che cosa è verificato nel gioco e che cosa viene dalle patch notes: nessuna fonte nominata */
-    asOf: "Stats as of the patch of 23 November 2026: the 130 cards of the game's collection were checked in the game on 11 November 2026, on Early Access version 0.8.2, and balance changes come from the official patch notes.",
+    asOf: "Stats as of the patch of 23 November 2026: the 130 cards of the game's collection were checked in the game on 25 November 2026, on Early Access version 0.8.2, and balance changes come from the official patch notes.",
     alignment: "Alignment",
     good: "Good",
     evil: "Evil",
@@ -290,7 +290,7 @@ export const en = {
     legendNote: "Legendary cards lead a deck: one per deck, marked with the star. Sagas are OriginsMeta's own grouping by source legend; the game does not expose them.",
     /* riga dei dati in fondo a /cards e a ogni scheda carta (25/09/2026: al posto della fonte nominata e linkata) */
     sourceNote:
-      "Costs, stats, rarities, alignments and texts of the playable cards were checked in the game on 11 November 2026, in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game; the text of created cards is the one in the game's files. Card text © Koin Games. Sagas, origin notes and the text of removed cards in languages other than English are by OriginsMeta.",
+      "Costs, stats, rarities, alignments and texts of the playable cards were checked in the game on 25 November 2026, in English, Italian, Spanish, French, Portuguese, German, Russian and Simplified Chinese; balance changes come from the official patch notes. Created and removed cards are not in the game's collection, so they have not been checked in the game; the text of created cards is the one in the game's files. Card text © Koin Games. Sagas, origin notes and the text of removed cards in languages other than English are by OriginsMeta.",
     detailKicker: "Card",
     collectible: "Collectible card",
     changesTitle: "Balance history",

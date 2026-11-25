@@ -14,7 +14,7 @@ export const esText: Record<GuideSlug, GuideCopy> = {
     faq: [
       {
         q: "¿Cuántas Legendarias hay en Origins TCG?",
-        a: "Doce jugables: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs y Robin Hood, todas verificadas en el juego el 11 de noviembre de 2026. Dr. Frank llegó al juego con el parche del 4 de noviembre de 2026. La base de datos de OriginsMeta conserva otras ocho que ya no están en el juego.",
+        a: "Doce jugables: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs y Robin Hood, todas verificadas en el juego el 25 de noviembre de 2026. Dr. Frank llegó al juego con el parche del 4 de noviembre de 2026. La base de datos de OriginsMeta conserva otras ocho que ya no están en el juego.",
       },
       {
         q: "¿Cuántas Legendarias puede tener un mazo?",
@@ -65,7 +65,7 @@ La última columna cuenta los mazos que lidera cada Legendaria entre los 20 publ
 - **Tu rival la ve.** El parche 0.6.1 del playtest cerrado (14 de agosto de 2026) añadió la vista previa de la Legendaria del rival durante el mulligan, según las [notas oficiales del parche](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **En Conquest da nombre al mazo.** En la Crimson Cup cada jugador lleva tres mazos, y cuando baneas uno de los mazos de tu rival solo ves su Legendaria ([reglas de la Crimson Cup](/es/news/crimson-cup-format-check-in)). Los anuncios no dicen si las tres Legendarias tienen que ser distintas; en Big Bob's Playtest Battle tenían que serlo. Cómo armar los tres mazos: nuestra [guía de Conquest](/es/guides/origins-tcg-conquest).
 
-Los textos de las cartas citados aquí abajo son los oficiales del juego, leídos en el juego en español. Los costes y las estadísticas se comprobaron carta por carta el 11 de noviembre de 2026; los cambios posteriores vienen de las notas del parche. Las sagas y las notas sobre cada leyenda son de OriginsMeta. Los parches son los que seguimos en [MetaShifting](/es/metashifting): las actualizaciones 0.6.1, 0.6.2 y 0.6.3 del playtest (agosto de 2026), el parche del 21 de septiembre de 2026, el parche 0.7 del 29 de septiembre de 2026, que no reequilibró ninguna Legendaria, el parche del 4 de noviembre de 2026, que convirtió a Dorothy en una 3/3 y trajo a Dr. Frank, y el parche del 17 de noviembre de 2026, que bajó en 1 el coste de Dr. Frank. El poder legendario de cada una, tal como lo muestra el juego, está en su ficha.
+Los textos de las cartas citados aquí abajo son los oficiales del juego, leídos en el juego en español. Los costes y las estadísticas se comprobaron carta por carta el 25 de noviembre de 2026; los cambios posteriores vienen de las notas del parche. Las sagas y las notas sobre cada leyenda son de OriginsMeta. Los parches son los que seguimos en [MetaShifting](/es/metashifting): las actualizaciones 0.6.1, 0.6.2 y 0.6.3 del playtest (agosto de 2026), el parche del 21 de septiembre de 2026, el parche 0.7 del 29 de septiembre de 2026, que no reequilibró ninguna Legendaria, el parche del 4 de noviembre de 2026, que convirtió a Dorothy en una 3/3 y trajo a Dr. Frank, y el parche del 17 de noviembre de 2026, que bajó en 1 el coste de Dr. Frank. El poder legendario de cada una, tal como lo muestra el juego, está en su ficha.
 
 ## Dorothy {#dorothy}
 
@@ -157,7 +157,7 @@ Los textos de las cartas citados aquí abajo son los oficiales del juego, leído
 
 > Antes del combate, invoca un personaje aleatorio de tu cementerio en un espacio aleatorio.
 
-- **La Legendaria más reciente.** Llegó al juego con el [parche del 4 de noviembre de 2026](/es/news/balance-patch-1104-cyber-queen) como Legendaria del mazo Relentless que pilota Cyber Queen, el jefe n.º 11, junto con otras siete cartas ([las ocho cartas de Dr. Frank](/es/news/dr-frank-boss-new-cards)). El texto es el leído en el juego el 11 de noviembre de 2026.
+- **La Legendaria más reciente.** Llegó al juego con el [parche del 4 de noviembre de 2026](/es/news/balance-patch-1104-cyber-queen) como Legendaria del mazo Relentless que pilota Cyber Queen, el jefe n.º 11, junto con otras siete cartas ([las ocho cartas de Dr. Frank](/es/news/dr-frank-boss-new-cards)). El texto es el leído en el juego el 25 de noviembre de 2026.
 - **La leyenda.** Victor Frankenstein, el estudiante que ensambló una criatura viva en la novela de Mary Shelley de 1818.
 - **Las cartas de su mazo.** [It's Alive](/es/cards/its-alive), un hechizo de 3 de maná que hace lo mismo una vez, y las dos cartas con Renacer, [Frank's Monster](/es/cards/franks-monster) y [Franken Bride](/es/cards/franken-bride). Su poder legendario añade It's Alive! a tu mano al empezar la partida.
 - **Parches.** Parche del 17 de noviembre de 2026: maná de 6 a 5 ([notas del parche](/es/news/balance-patch-1117-sherwood-forest)).
@@ -241,7 +241,7 @@ Nuestra base de datos conserva también ocho Legendarias que ya no están en el 
 
 ## De dónde salen los números {#fuentes}
 
-- **Cartas:** la [base de datos de cartas](/es/cards) de OriginsMeta: costes, estadísticas y textos de las cartas jugables comprobados uno por uno en el juego el 11 de noviembre de 2026, en todos los idiomas del sitio. Las estadísticas son las del parche del 17 de noviembre de 2026.
+- **Cartas:** la [base de datos de cartas](/es/cards) de OriginsMeta: costes, estadísticas y textos de las cartas jugables comprobados uno por uno en el juego el 25 de noviembre de 2026, en todos los idiomas del sitio. Las estadísticas son las del parche del 17 de noviembre de 2026.
 - **Parches:** las notas oficiales de los parches en Steam, carta por carta en [MetaShifting](/es/metashifting); las de la versión 0.8 (27 de octubre de 2026, Acceso anticipado) no citan cambios en las cartas.
 - **Mazos:** los 20 mazos publicados en OriginsMeta desde el 15 de septiembre hasta las 20:00 (CEST) del 25 de septiembre de 2026 ([todos los mazos de Origins TCG](/es/decks)); el recuento posterior está en [Las más jugadas](/es/tier-list/most-played).
 
