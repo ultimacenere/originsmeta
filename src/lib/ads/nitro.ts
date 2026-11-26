@@ -14,12 +14,30 @@
 export const NITRO_SITE_ID: string | null = "2882";
 
 /**
- * L'id numerico del consenso personalizzato per Google Analytics nella CMP di Nitro (pannello › Sites › il sito ›
- * "(EU) Custom Consents", Internal ID `ga`, Name "Google Analytics Consent": guida "Support for Google Analytics and
- * Consent Mode"). Con l'id, dove vale il GDPR c'è solo la finestra di Nitro e GA4 segue la casella `ga`; finché è `null`
- * lì si vedono la finestra di Nitro e il nostro banner, che resta quello di GA4. Va messo prima di andare online.
+ * L'id del consenso personalizzato per Google Analytics nella CMP di Nitro: è l'Internal ID del pannello (Sites › il sito
+ * › "(EU) Custom Consents", Internal ID `ga`, Name "Google Analytics Consent", creato il 26/11/2026; guida "Support for
+ * Google Analytics and Consent Mode"). La CMP lo usa come chiave: `__tcfapi('hasCustomConsent', 2, cb, 'ga')` e il cookie
+ * `ncmp-cc` contengono la stringa, non un numero (letto nel codice della CMP, gpp-*.min.js, 26/11). Con l'id, dove vale
+ * il GDPR c'è solo la finestra di Nitro e GA4 segue la casella `ga`; con `null` lì si vedono la finestra di Nitro e il
+ * nostro banner, che resta quello di GA4.
  */
-export const NITRO_GA_CONSENT_ID: number | null = null;
+export const NITRO_GA_CONSENT_ID: string | null = "ga";
+
+/**
+ * La lingua della finestra del consenso di Nitro. La CMP sceglie da sola la lingua del browser; il cookie `ncmp-lang` ha
+ * la precedenza, e lo scriviamo con la lingua della pagina (nitroClient.ts). Le traduzioni di Nitro per russo e cinese
+ * sono vuote (s.nitropay.com/cmp/ru.json e zh.json = `{}`, 26/11/2026): lì l'inglese.
+ */
+export const NITRO_CMP_LANG: Record<string, string> = {
+  en: "en",
+  it: "it",
+  es: "es",
+  fr: "fr",
+  pt: "pt",
+  de: "de",
+  ru: "en",
+  "zh-cn": "en",
+};
 
 /** Forma dell'id del sito (cifre e lettere, come nei nomi dei file di Nitro): un valore diverso tiene gli annunci spenti. */
 export const NITRO_SITE_ID_RE = /^[0-9a-z][0-9a-z-]{0,63}$/i;

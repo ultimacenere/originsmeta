@@ -3,7 +3,7 @@
  * consenso (CMP, solo dove vale il GDPR) e il link della CCPA. Solo per i componenti client: usa `window` e `document`.
  * Regole e indirizzi in nitro.ts; API in api-docs.nitropay.com e nelle guide di nitropay.com/docs.
  */
-import { NITRO_GA_CONSENT_ID, nitroDemo, nitroScriptUrl, type NitroAdOptions } from "./nitro";
+import { NITRO_CMP_LANG, NITRO_GA_CONSENT_ID, nitroDemo, nitroScriptUrl, type NitroAdOptions } from "./nitro";
 import { getConsent, setConsent } from "../consent";
 
 type NitroAdsApi = {
@@ -17,7 +17,7 @@ type TcfData = { eventStatus?: string } | null;
 
 /** La parte dell'API TCF v2 che usiamo, con il comando `hasCustomConsent` che Nitro aggiunge per i consensi personalizzati. */
 type TcfApi = {
-  (command: "hasCustomConsent", version: 2, callback: (consented: boolean) => void, consentId: number): void;
+  (command: "hasCustomConsent", version: 2, callback: (consented: boolean | null) => void, consentId: string): void;
   (command: "addEventListener", version: 2, callback: (data: TcfData, success: boolean) => void): void;
 };
 
@@ -54,6 +54,15 @@ function nitroAds(): NitroAdsApi {
  * Lo script di Nitro nel <head>, una volta per scheda (guida di onboarding, passo 1): `data-spa="auto"` perché Next
  * cambia pagina senza ricaricarla (Nitro rinfresca da solo gli annunci), `data-demo` fuori dalla produzione.
  */
+/**
+ * La lingua della finestra del consenso: il cookie `ncmp-lang`, che la CMP legge all'avvio al posto della lingua del
+ * browser (26/11/2026: su /en la finestra usciva in italiano). Va scritto prima dello script e a ogni cambio di lingua.
+ */
+export function setNitroCmpLanguage(locale: string): void {
+  const lang = NITRO_CMP_LANG[locale] ?? "en";
+  document.cookie = `ncmp-lang=${lang}; path=/; max-age=31536000; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
+}
+
 export function loadNitroScript(siteId: string): void {
   nitroAds();
   if (document.getElementById(SCRIPT_ID)) return;
@@ -122,6 +131,8 @@ export function syncGaConsentFromNitro(): () => void {
         "hasCustomConsent",
         2,
         (consented) => {
+          // null: la CMP non conosce ancora il consenso `ga` (configurazione del sito non arrivata), quindi non si tocca niente
+          if (consented === null) return;
           const value = consented ? "all" : "necessary";
           if (getConsent() !== value) setConsent(value);
         },

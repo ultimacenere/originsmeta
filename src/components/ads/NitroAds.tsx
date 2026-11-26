@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { GLOBAL_PLACEMENTS, NITRO_SITE_ID, adsAllowedPath, adsEnabled } from "@/lib/ads/nitro";
-import { createAd, loadNitroScript, refreshCcpaLinks, removeAd, syncGaConsentFromNitro } from "@/lib/ads/nitroClient";
+import { createAd, loadNitroScript, refreshCcpaLinks, removeAd, setNitroCmpLanguage, syncGaConsentFromNitro } from "@/lib/ads/nitroClient";
 
 /** Altezza dell'anchor in fondo allo schermo: la leggono il piede della pagina e i tasti fissi (globals.css, FeedbackWidget…). */
 const ANCHOR_VAR = "--ad-anchor-h";
@@ -27,6 +27,12 @@ function visibleHeight(el: HTMLElement | null): number {
 export function NitroAds() {
   const pathname = usePathname();
   const allowed = adsAllowedPath(pathname);
+
+  // La finestra del consenso nella lingua della pagina (cookie ncmp-lang, 26/11/2026), prima dello script e a ogni cambio
+  const locale = pathname.split("/")[1] ?? "";
+  useEffect(() => {
+    if (adsEnabled()) setNitroCmpLanguage(locale);
+  }, [locale]);
 
   useEffect(() => {
     if (!adsEnabled() || !NITRO_SITE_ID) return;

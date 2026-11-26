@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 // Node vuole l'estensione `.ts` nel percorso, ma il tsconfig del progetto non ha `allowImportingTsExtensions`:
 // TypeScript segnala TS5097 sulle righe seguenti e le ignoriamo apposta, come in hubMeta.test.ts.
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { AD_SECTIONS, GLOBAL_PLACEMENTS, IN_CONTENT_SLOTS, NITRO_GA_CONSENT_ID, NITRO_SITE_ID, adsAllowedPath, adsEnabled, nitroAdsTxtUrl, nitroDemo, nitroScriptUrl } from "./nitro.ts";
+import { AD_SECTIONS, GLOBAL_PLACEMENTS, IN_CONTENT_SLOTS, NITRO_CMP_LANG, NITRO_GA_CONSENT_ID, NITRO_SITE_ID, adsAllowedPath, adsEnabled, nitroAdsTxtUrl, nitroDemo, nitroScriptUrl } from "./nitro.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { adsLabels } from "../adsLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
@@ -66,8 +66,12 @@ describe("interruttore e indirizzi", () => {
     assert.match(config, /source: "\/ads\.txt", destination: `https:\/\/api\.nitropay\.com\/v1\/ads-\$\{NITRO_SITE_ID\}\.txt`, statusCode: 301/);
   });
 
-  test("consenso per Google Analytics: nessuno o un numero intero positivo", () => {
-    assert.ok(NITRO_GA_CONSENT_ID === null || (Number.isInteger(NITRO_GA_CONSENT_ID) && NITRO_GA_CONSENT_ID > 0));
+  test("consenso per Google Analytics: nessuno o l'Internal ID del pannello, `ga`", () => {
+    assert.ok(NITRO_GA_CONSENT_ID === null || NITRO_GA_CONSENT_ID === "ga");
+  });
+
+  test("lingua della finestra del consenso per ogni lingua del sito", () => {
+    for (const l of siteLocales()) assert.ok(NITRO_CMP_LANG[l], `${l}: manca la lingua della CMP`);
   });
 
   test("annunci finti fuori dalla produzione", () => {
