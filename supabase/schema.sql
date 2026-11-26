@@ -5877,6 +5877,20 @@ begin
 end $$;
 revoke all on function public.tm_promote_waitlist(uuid) from public, anon, authenticated;
 
+-- 26/11/2026: più posti, la lista d'attesa entra subito. Chi allarga un torneo (per esempio da 8 a 16) si aspetta che
+-- chi aspettava entri, in ordine di arrivo; prima restava in lista e i nuovi iscritti gli passavano davanti
+-- (ZeKiriam, torneo OM-BTLL). Vale solo con il check-in (senza non c'è lista d'attesa) e finché il check-in è aperto.
+create or replace function public.tournaments_promote_on_resize()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if new.size > old.size then perform public.tm_promote_waitlist(new.id); end if;
+  return null;
+end $$;
+revoke all on function public.tournaments_promote_on_resize() from public, anon, authenticated;
+drop trigger if exists tournaments_promote_on_resize on public.tournaments;
+create trigger tournaments_promote_on_resize after update of size on public.tournaments
+  for each row execute function public.tournaments_promote_on_resize();
+
 -- Avvio automatico (torneo pieno, mazzi di tutti): mai con il check-in, che parte all'ora d'inizio.
 create or replace function public.tm_autostart(tid uuid)
 returns void language plpgsql set search_path = public, pg_temp as $$
