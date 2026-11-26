@@ -163,8 +163,9 @@ export default async function LocaleLayout({ children, params }: Props) {
             labels={tournamentPromoText(l, d.tournaments, promo)}
           />
         ) : null}
-        {/* Popup "Sostieni OriginsMeta" col tasto PayPal (25/11/2026): a ogni visita, anche a chi l'ha già visto */}
-        <SupportPopup locale={l} donateLabel={d.nav.donate} donateAria={d.nav.donateAria} />
+        {/* Popup "Sostieni OriginsMeta" col tasto PayPal (25/11/2026): a ogni visita, anche a chi l'ha già visto. Con la
+            pubblicità di Nitro accesa non c'è (Pierluigi, 26/11/2026: "il pop up quando la pubblicità è attiva verrà rimosso") */}
+        {adsEnabled() ? null : <SupportPopup locale={l} donateLabel={d.nav.donate} donateAria={d.nav.donateAria} />}
         {/* Pubblicità con Nitro (14/11/2026): script, spazi di tutte le pagine e finestra del consenso per l'UE, solo con
             gli annunci accesi (NITRO_SITE_ID in src/lib/ads/nitro.ts) e prima del nostro banner, che dove vale il GDPR lascia
             il posto alla finestra di Nitro */}
