@@ -3414,12 +3414,12 @@
   }
   .tier-dialog-card {
     display: grid;
-    grid-template-columns: 9.5rem minmax(0, 1fr);
+    grid-template-columns: 11rem minmax(0, 1fr);
     align-items: start;
     gap: 1rem;
     margin-top: 0.5rem;
   }
-  .tier-dialog-card img {
+  .tier-dialog-card > img {
     width: 100%;
     height: auto;
     border-radius: 10px;
@@ -3651,7 +3651,7 @@
     border-radius: 18px 18px 0 0;
   }
   .tier-dialog-card {
-    grid-template-columns: 7rem minmax(0, 1fr);
+    grid-template-columns: 8.5rem minmax(0, 1fr);
   }
   .tier-arch {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -7709,5 +7709,74 @@
   }
   .ccpa-link:empty {
     display: none;
+  }
+}
+
+/* La carta del gioco al posto della carta che si gira (25/11/2026, Pierluigi: "ovunque ci siano le carte ci devono
+   essere le carte ufficiali"): /cards (FlipCard con i dati del gioco) e le schede dei mazzi (DeckCardGrid). La carta
+   (src/game-card) ha già nome, testo e statistiche; sotto restano solo "Rimossa" e i voti. Al passaggio si alza appena. */
+@layer components {
+  .card-game,
+  .deck-game-card {
+    display: block;
+    border-radius: 0.75rem;
+    transition: transform 0.15s ease;
+  }
+  .card-game:hover,
+  .deck-game-card:hover {
+    transform: translateY(-3px);
+  }
+  .card-game:focus-visible,
+  .deck-game-card:focus-visible {
+    outline: 3px solid var(--color-mint);
+    outline-offset: 4px;
+  }
+  .card-game.is-removed .omg-card {
+    filter: grayscale(0.6);
+    opacity: 0.85;
+  }
+  .card-game-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+    padding-left: 7%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-game,
+    .deck-game-card {
+      transition: none;
+    }
+    .card-game:hover,
+    .deck-game-card:hover {
+      transform: none;
+    }
+  }
+}
+
+/* Anteprime con la carta del gioco (25/11/2026): chip, righe del deck builder, elenchi dei mazzi, tier list e nomi di
+   carta nei testi. Il pannello è la carta stessa (src/game-card), senza cornice né fondo; largo come una carta. */
+@layer components {
+  .deck-peek:has(> .is-game),
+  .card-mention-preview:has(> .is-game) {
+    width: 240px;
+  }
+  .deck-peek-panel.is-game,
+  .card-mention-panel.is-game {
+    display: block;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    filter: drop-shadow(0 10px 18px rgba(6, 3, 16, 0.55));
+  }
+  .deck-peek-panel.is-game .deck-peek-note {
+    display: block;
+    margin-top: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 8px;
+    background: var(--color-night);
   }
 }

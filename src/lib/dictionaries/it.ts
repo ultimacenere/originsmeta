@@ -132,7 +132,7 @@ export const it: Dictionary = {
     updated: "Aggiornato",
     stats: "Statistiche",
     unknownStats: "statistiche non ancora pubblicate",
-    asOf: "Statistiche alla patch del 17 novembre 2026: le 130 carte della collezione del gioco sono state verificate nel gioco l'11 novembre 2026, sulla versione 0.8.2 dell'Accesso anticipato, e i bilanciamenti vengono dalle patch notes ufficiali.",
+    asOf: "Statistiche alla patch del 23 novembre 2026: le 130 carte della collezione del gioco sono state verificate nel gioco il 25 novembre 2026, sulla versione 0.8.2 dell'Accesso anticipato, e i bilanciamenti vengono dalle patch notes ufficiali.",
     alignment: "Allineamento",
     good: "Good",
     evil: "Evil",
@@ -286,7 +286,7 @@ export const it: Dictionary = {
     countRemoved: "rimosse nelle build precedenti",
     legendNote: "Le carte Leggendarie guidano il mazzo: una per mazzo, segnate con la stella. Le saghe sono una classificazione di OriginsMeta per leggenda d'origine; il gioco non le espone.",
     sourceNote:
-      "Costi, statistiche, rarità, allineamenti e testi delle carte giocabili sono stati verificati nel gioco l'11 novembre 2026, in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato; i bilanciamenti vengono dalle patch notes ufficiali. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco; il testo delle carte generate è quello dei file del gioco. Testi delle carte © Koin Games. Saghe, note sulle origini e testi delle carte rimosse nelle lingue diverse dall'inglese sono di OriginsMeta.",
+      "Costi, statistiche, rarità, allineamenti e testi delle carte giocabili sono stati verificati nel gioco il 25 novembre 2026, in inglese, italiano, spagnolo, francese, portoghese, tedesco, russo e cinese semplificato; i bilanciamenti vengono dalle patch notes ufficiali. Le carte generate e le carte rimosse non sono nella collezione del gioco, quindi non sono state verificate nel gioco; il testo delle carte generate è quello dei file del gioco. Testi delle carte © Koin Games. Saghe, note sulle origini e testi delle carte rimosse nelle lingue diverse dall'inglese sono di OriginsMeta.",
     detailKicker: "Carta",
     collectible: "Carta da collezione",
     changesTitle: "Storico bilanciamenti",

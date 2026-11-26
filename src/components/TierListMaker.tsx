@@ -52,7 +52,7 @@ import { CardPeek, hasPeek } from "./CardPeek";
  */
 
 /** Il minimo di una carta che serve al tabellone e all'anteprima: la pagina lo ricava da `builderPool`. */
-export type TierCard = Pick<BuilderCard, "slug" | "name" | "legendary" | "mana" | "power" | "health" | "thumb" | "image" | "ability" | "alignment" | "alignmentLabel" | "typeLabel">;
+export type TierCard = Pick<BuilderCard, "slug" | "name" | "legendary" | "mana" | "power" | "health" | "thumb" | "image" | "ability" | "alignment" | "alignmentLabel" | "typeLabel"> & Partial<Pick<BuilderCard, "type" | "art">>;
 
 export type TierMakerLabels = {
   tabsLabel: string;

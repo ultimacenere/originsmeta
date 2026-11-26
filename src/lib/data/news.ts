@@ -200,6 +200,696 @@ function withTranslations(item: RawNews): NewsItem {
 
 const raw: RawNews[] = [
   {
+    // "The State of Origins Trading Card Game November 2026 (Unedited)", video di Tim Jooste (CEO di Koin Games) sul canale YouTube
+    // ufficiale, caricato il 24/11 alle 17:58 ora del Pacifico (25/11, 01:58 UTC), 6 minuti e 54 secondi; riassunto di Tim in
+    // #announcements del Discord ufficiale (25/11, 02:46 UTC) e post X di @origins_tcg del 25/11. Trascrizione letta con firecrawl dai
+    // sottotitoli automatici: "Coin" = Koin, "N9"/"9 update" = 0.9, "529" = 1.529 (il numero del Discord), "Apex" = apix. Il numero dei
+    // partecipanti alla Crimson Cup detto nel video ("21,100" nei sottotitoli) non si riporta: non è chiaro. Altri fatti: 1.000
+    // recensioni su Steam (X, 24/11), Harvest Bowl pieno in meno di 24 ore (X, 19/11). Copertina: la miniatura ufficiale del video.
+    slug: "state-of-origins-november-2026",
+    image: "/media/news-state-of-origins-nov-2026.webp",
+    url: "https://www.youtube.com/watch?v=h2UTE9ElTG0",
+    source: "press",
+    guides: ["roadmap-and-dates", "origins-tcg-kickstarter"],
+    date: "2026-11-25",
+    title: n(
+      "State of Origins: update 0.9 with Prestige and Collector Pass on 8 December, open tournaments from December",
+      "State of Origins: l'aggiornamento 0.9 con Prestige e Collector Pass l'8 dicembre, tornei senza limiti",
+      "State of Origins: la 0.9 con Prestige y Collector Pass el 8 de diciembre, torneos abiertos desde diciembre",
+    ),
+    metaTitle: n(
+      "Origins TCG 0.9 on 8 December: State of Origins",
+      "Origins TCG 0.9 l'8 dicembre: lo State of Origins",
+      "Origins TCG 0.9 el 8 de diciembre: State of Origins",
+    ),
+    description: n(
+      "Tim Jooste's State of Origins: update 0.9 with Prestige and Collector Pass moves to 8 December, December tournaments with no cap, and what comes in 2027.",
+      "Lo State of Origins di Tim Jooste: l'aggiornamento 0.9 con Prestige e Collector Pass slitta all'8 dicembre, tornei senza limiti da dicembre e i piani 2027.",
+      "El State of Origins de Tim Jooste: la 0.9 con Prestige y Collector Pass pasa al 8 de diciembre, torneos sin límite desde diciembre y lo que llega en 2027.",
+    ),
+    summary: n(
+      "In a 7-minute video, Koin Games' CEO Tim Jooste explained what happens between now and early 2027. The 0.9 update, with Prestige and the Collector Pass, moves to 8 December so that every Kickstarter backer starts on day one. From December, tournaments run on Koin's own website with no cap on players, and 2027 brings mobile, the full set and in-store events.",
+      "In un video di 7 minuti Tim Jooste, CEO di Koin Games, ha spiegato che cosa succede da qui all'inizio del 2027. L'aggiornamento 0.9, con Prestige e Collector Pass, slitta all'8 dicembre perché tutti i sostenitori del Kickstarter partano dal primo giorno. Da dicembre i tornei si giocano sul sito di Koin senza limite di giocatori, e il 2027 porta mobile, set completo ed eventi nei negozi.",
+      "En un vídeo de 7 minutos, el CEO de Koin Games, Tim Jooste, explicó qué pasa de aquí a principios de 2027. La actualización 0.9, con Prestige y el Collector Pass, se retrasa al 8 de diciembre para que todos los patrocinadores del Kickstarter empiecen desde el primer día. Desde diciembre los torneos se juegan en el sitio de Koin sin límite de jugadores, y 2027 trae la versión móvil, el set completo y eventos en tiendas.",
+    ),
+    highlights: {
+      en: [
+        { label: "Update 0.9 on 8 December", text: "Prestige and Collector Pass, moved from 3 December", anchor: "update-0-9" },
+        { label: "Demo rewards", text: "last days to earn them, until 2 December", anchor: "demo-rewards" },
+        { label: "Tournaments with no cap", text: "1,529 sign-ups for the Harvest Bowl, from December on Koin's website", anchor: "tournaments" },
+        { label: "Kickstarter", text: "final week, a gift for every backer", anchor: "kickstarter" },
+        { label: "2027", text: "Masters, Worlds, shops, mobile", anchor: "2027" },
+      ],
+      it: [
+        { label: "Aggiornamento 0.9 l'8 dicembre", text: "Prestige e Collector Pass, spostato dal 3 dicembre", anchor: "aggiornamento-0-9" },
+        { label: "Ricompense della demo", text: "ultimi giorni per ottenerle, fino al 2 dicembre", anchor: "ricompense-demo" },
+        { label: "Tornei senza limiti", text: "1.529 iscritti all'Harvest Bowl, da dicembre sul sito di Koin", anchor: "tornei" },
+        { label: "Kickstarter", text: "ultima settimana, un regalo per ogni sostenitore", anchor: "kickstarter" },
+        { label: "2027", text: "Masters, Worlds, negozi, mobile", anchor: "2027" },
+      ],
+      es: [
+        { label: "Actualización 0.9 el 8 de diciembre", text: "Prestige y Collector Pass, retrasada desde el 3 de diciembre", anchor: "actualizacion-0-9" },
+        { label: "Recompensas de la demo", text: "últimos días para obtenerlas, hasta el 2 de diciembre", anchor: "recompensas-demo" },
+        { label: "Torneos sin límite", text: "1.529 inscritos en la Harvest Bowl, desde diciembre en el sitio de Koin", anchor: "torneos" },
+        { label: "Kickstarter", text: "última semana, un regalo para cada patrocinador", anchor: "kickstarter" },
+        { label: "2027", text: "Masters, Worlds, tiendas, móvil", anchor: "2027" },
+      ],
+    },
+    faq: {
+      en: [
+        { q: "When does Origins TCG update 0.9 come out?", a: "On 8 December 2026. Koin moved it from 3 December so that every Kickstarter backer can start the Collector Pass on day one." },
+        { q: "What is in the 0.9 update of Origins TCG?", a: "The Prestige system, with the Collector Pass and the Prestige Point Pass: weekly collectibles for Collector Pass owners and a limited collection of 48 Prestige cards, capsules, 3D characters and emotes." },
+        { q: "Will future Origins TCG tournaments have a player cap?", a: "No. From the December monthly on, Koin runs its tournaments on its own website without the limits of the Harvest Bowl, which filled its 1,024 spots in less than a day." },
+      ],
+      it: [
+        { q: "Quando esce l'aggiornamento 0.9 di Origins TCG?", a: "L'8 dicembre 2026. Koin l'ha spostato dal 3 dicembre perché tutti i sostenitori del Kickstarter possano partire con il Collector Pass dal primo giorno." },
+        { q: "Che cosa c'è nell'aggiornamento 0.9 di Origins TCG?", a: "Il sistema Prestige, con il Collector Pass e il Prestige Point Pass: collezionabili ogni settimana per chi ha il Collector Pass e una collezione limitata di 48 carte Prestige, capsule, personaggi 3D ed emote." },
+        { q: "I prossimi tornei di Origins TCG avranno un limite di giocatori?", a: "No. Dal torneo mensile di dicembre Koin gioca i tornei sul proprio sito, senza i limiti dell'Harvest Bowl, che ha riempito i suoi 1.024 posti in meno di un giorno." },
+      ],
+      es: [
+        { q: "¿Cuándo sale la actualización 0.9 de Origins TCG?", a: "El 8 de diciembre de 2026. Koin la retrasó desde el 3 de diciembre para que todos los patrocinadores del Kickstarter puedan empezar el Collector Pass desde el primer día." },
+        { q: "¿Qué trae la actualización 0.9 de Origins TCG?", a: "El sistema Prestige, con el Collector Pass y el Prestige Point Pass: coleccionables cada semana para quien tiene el Collector Pass y una colección limitada de 48 cartas Prestige, cápsulas, personajes 3D y emotes." },
+        { q: "¿Los próximos torneos de Origins TCG tendrán límite de jugadores?", a: "No. Desde el torneo mensual de diciembre, Koin juega sus torneos en su propio sitio, sin los límites de la Harvest Bowl, que llenó sus 1.024 plazas en menos de un día." },
+      ],
+    },
+    body: n(
+      `Tim Jooste, the CEO of Koin Games, published "The State of Origins Trading Card Game November 2026 (Unedited)" on the official YouTube channel on the evening of 24 November, Pacific time (25 November in Europe), with a summary on the official Discord. In just under 7 minutes he covered the Harvest Bowl, the end of the Kickstarter, the 0.9 update and 2027.
+
+## Update 0.9 arrives on 8 December {#update-0-9}
+
+The big content update moves to 8 December. On Discord Tim wrote that it launches "12/8, not 12/3". The reason is the Kickstarter: the campaign closes on 2 December and until then Kickstarter does not tell Koin who bought a Collector Pass. Rather than letting non-backers get a head start on the first Myths & Legends Prestige cards, Koin waits a few days so that every backer starts on day one.
+
+Update 0.9 brings the Prestige system, with the Collector Pass and the Prestige Point Pass:
+
+- **Collector Pass.** Backers who have it earn collectibles every week, starting on 8 December. According to Tim, the Kickstarter is the best value you will ever get for it.
+- **Prestige.** With Prestige points you work towards a limited collection of capsules, 3D characters, emotes and 48 Prestige cards, available only in the first half of the Myths & Legends set. They go from Monochromatic to Black and White, then Cyberpunk, with artist proofs as the top chase. These cards never appear in packs, and you can only earn them in the next couple of months.
+- Tim says some players are already planning to stack five Prestige passes at once.
+
+## Demo rewards: the last days {#demo-rewards}
+
+Tim reminded viewers that the demo rewards go away "in like 7 days". Koin's [guide to collecting of 20 November](/en/news/origins-tcg-collecting-guide-season-2) puts the date on 2 December, when Season 2 starts and ranked rewards can no longer be earned.
+
+## Harvest Bowl and the next tournaments {#tournaments}
+
+For the Harvest Bowl Koin expected about 500 players. On Discord Tim counts 1,529 sign-ups, and in the video about 500 people are on the waitlist, for a prize of 32 cards and no cash. The 1,024 spots filled up in less than 24 hours, as Koin wrote on X on 19 November. The waitlists of the two qualifiers are on OriginsMeta: [qualifier 1](/en/tournaments/harvest-bowl-qualifier-1) and [qualifier 2](/en/tournaments/harvest-bowl-qualifier-2).
+
+From December, Koin runs its tournaments on its own website, with no cap on players: the December monthly, then January, then the next cup in February. "If 3,000 people want to compete", Tim said, the team will try to handle everybody.
+
+## Steam Market and Kickstarter {#kickstarter}
+
+- **Market.** According to Tim there are 56 tradable cards in the game, and a few have sold for over $1,000, on and off Steam.
+- **Kickstarter.** It is the final week, and the campaign closes on 2 December. Tim announced three news items for a Kickstarter update video coming soon: a gift for every backer, and something that will make backers at the $200 level "very, very excited". In the reward tiers, Apprentice costs $199.
+
+All the tiers and dates are in our [Kickstarter guide](/en/guides/origins-tcg-kickstarter).
+
+## 2027 {#2027}
+
+- **Competitive scene.** Weeklies, monthlies, cups and bowls, then the Masters, once a year and the largest open events, and finally Worlds, with only 32 seats, big prize pools, exclusive collectibles and one-of-one cards.
+- **Shops.** Over 100 stores have expressed interest in being part of the in-store launch. A "Tell your LGS about Origins" day is coming, and Koin will recruit an on-the-ground team, the Origins Champions.
+- **Mobile.** On Discord Tim also lists the full set and pack opening.
+
+The numbers Tim gave: 60,000 downloads. On 24 November Koin also announced on X that the game had passed 1,000 reviews on Steam.
+
+## What we don't know yet {#unknown}
+
+- The three Kickstarter announcements, which Koin will give in a separate video.
+- Whether Season 2 still starts on 2 December: the video moves the 0.9 update, not the season.
+- The time of the update on 8 December.
+
+Sources: Tim Jooste's video on the official Origins Trading Card Game YouTube channel (24 November 2026, Pacific time), his message on the official Discord and Koin's posts on X of 19 and 24 November.`,
+      `Tim Jooste, CEO di Koin Games, ha pubblicato "The State of Origins Trading Card Game November 2026 (Unedited)" sul canale YouTube ufficiale la sera del 24 novembre, ora del Pacifico (il 25 novembre in Italia), con un riassunto sul Discord ufficiale. In poco meno di 7 minuti ha parlato di Harvest Bowl, fine del Kickstarter, aggiornamento 0.9 e 2027.
+
+## L'aggiornamento 0.9 arriva l'8 dicembre {#aggiornamento-0-9}
+
+Il grande aggiornamento dei contenuti slitta all'8 dicembre. Sul Discord Tim ha scritto che esce "12/8, non 12/3", cioè l'8 dicembre e non il 3. Il motivo è il Kickstarter: la campagna chiude il 2 dicembre e fino ad allora Kickstarter non dice a Koin chi ha comprato un Collector Pass. Per non dare a chi non ha sostenuto il gioco un vantaggio sulle prime carte Prestige di Myths & Legends, Koin aspetta qualche giorno, così che tutti i sostenitori partano dal primo giorno.
+
+L'aggiornamento 0.9 porta il sistema Prestige, con il Collector Pass e il Prestige Point Pass:
+
+- **Collector Pass.** I sostenitori che lo hanno ottengono collezionabili ogni settimana, dall'8 dicembre. Secondo Tim il Kickstarter è il modo più conveniente che ci sarà mai per averlo.
+- **Prestige.** Con i punti Prestige si punta a una collezione limitata di capsule, personaggi 3D, emote e 48 carte Prestige, disponibili solo nella prima metà del set Myths & Legends. Vanno dalle Monochromatic alle Black and White, poi le Cyberpunk, con le artist proof come carte più ambite. Non escono mai nelle buste e si possono ottenere solo nei prossimi due mesi circa.
+- Tim racconta che alcuni giocatori pensano già di accumulare cinque Prestige pass insieme.
+
+## Ricompense della demo: gli ultimi giorni {#ricompense-demo}
+
+Tim ha ricordato che le ricompense della demo spariscono "fra circa 7 giorni". La [guida al collezionismo di Koin del 20 novembre](/it/news/origins-tcg-collecting-guide-season-2) indica la data: il 2 dicembre, quando inizia la Season 2 e le ricompense del ranked non si possono più ottenere.
+
+## Harvest Bowl e i prossimi tornei {#tornei}
+
+Per l'Harvest Bowl Koin si aspettava circa 500 giocatori. Sul Discord Tim conta 1.529 iscritti, e nel video parla di circa 500 persone in lista d'attesa, per un premio di 32 carte e nessun premio in denaro. I 1.024 posti si sono riempiti in meno di 24 ore, come Koin ha scritto su X il 19 novembre. Le liste d'attesa delle due qualificazioni sono su OriginsMeta: [qualificazione 1](/it/tournaments/harvest-bowl-qualifier-1) e [qualificazione 2](/it/tournaments/harvest-bowl-qualifier-2).
+
+Da dicembre Koin giocherà i suoi tornei sul proprio sito, senza limite di giocatori: il torneo mensile di dicembre, poi gennaio, poi la prossima coppa a febbraio. "Se 3.000 persone vogliono giocare", ha detto Tim, il team proverà a farle giocare tutte.
+
+## Steam Market e Kickstarter {#kickstarter}
+
+- **Mercato.** Secondo Tim nel gioco ci sono 56 carte scambiabili, e alcune sono state vendute per più di 1.000 dollari, su Steam e fuori.
+- **Kickstarter.** È l'ultima settimana e la campagna chiude il 2 dicembre. Tim ha annunciato tre novità per un video sul Kickstarter in arrivo: un regalo per ogni sostenitore, e qualcosa che farà "molto, molto contenti" i sostenitori del livello da 200 dollari. Fra i livelli, Apprentice costa 199 $.
+
+Tutti i livelli e le date sono nella nostra [guida al Kickstarter](/it/guides/origins-tcg-kickstarter).
+
+## Il 2027 {#2027}
+
+- **Competitivo.** Tornei settimanali e mensili, coppe e bowl, poi i Masters, una volta l'anno e i più grandi eventi aperti, e infine i Worlds, con soli 32 posti, montepremi ricchi, collezionabili esclusivi e carte uniche.
+- **Negozi.** Più di 100 negozi hanno chiesto di partecipare al lancio nei negozi. Arriverà una giornata "Tell your LGS about Origins", per parlare del gioco al proprio negozio di fiducia, e Koin cercherà una squadra sul territorio, gli Origins Champions.
+- **Mobile.** Sul Discord Tim cita anche il set completo e l'apertura delle buste.
+
+I numeri dati da Tim: 60.000 download. Il 24 novembre Koin ha anche annunciato su X che il gioco ha superato le 1.000 recensioni su Steam.
+
+## Che cosa non sappiamo ancora {#non-sappiamo}
+
+- Le tre novità sul Kickstarter, che Koin darà in un video a parte.
+- Se la Season 2 parte ancora il 2 dicembre: il video sposta l'aggiornamento 0.9, non la stagione.
+- L'ora dell'aggiornamento dell'8 dicembre.
+
+Fonti: il video di Tim Jooste sul canale YouTube ufficiale di Origins Trading Card Game (24 novembre 2026, ora del Pacifico), il suo messaggio sul Discord ufficiale e i post di Koin su X del 19 e del 24 novembre.`,
+      `Tim Jooste, CEO de Koin Games, publicó "The State of Origins Trading Card Game November 2026 (Unedited)" en el canal oficial de YouTube la noche del 24 de noviembre, hora del Pacífico (el 25 de noviembre en Europa), con un resumen en el Discord oficial. En poco menos de 7 minutos habló de la Harvest Bowl, del final del Kickstarter, de la actualización 0.9 y de 2027.
+
+## La actualización 0.9 llega el 8 de diciembre {#actualizacion-0-9}
+
+La gran actualización de contenido se retrasa al 8 de diciembre. En Discord Tim escribió que sale "12/8, not 12/3", es decir, el 8 de diciembre y no el 3. El motivo es el Kickstarter: la campaña cierra el 2 de diciembre y hasta entonces Kickstarter no le dice a Koin quién ha comprado un Collector Pass. Para no dar a quien no apoyó la campaña ventaja en las primeras cartas Prestige de Myths & Legends, Koin espera unos días, así todos los patrocinadores empiezan desde el primer día.
+
+La actualización 0.9 trae el sistema Prestige, con el Collector Pass y el Prestige Point Pass:
+
+- **Collector Pass.** Los patrocinadores que lo tienen reciben coleccionables cada semana, desde el 8 de diciembre. Según Tim, el Kickstarter es la forma más barata que habrá nunca de conseguirlo.
+- **Prestige.** Con los puntos Prestige vas desbloqueando una colección limitada de cápsulas, personajes 3D, emotes y 48 cartas Prestige, disponibles solo en la primera mitad del set Myths & Legends. Van de las Monochromatic a las Black and White y luego las Cyberpunk, con los artist proof como las cartas más buscadas. Estas cartas nunca salen en los sobres y solo se pueden conseguir en los próximos dos meses, más o menos.
+- Tim cuenta que algunos jugadores ya piensan acumular cinco Prestige pass a la vez.
+
+## Recompensas de la demo: los últimos días {#recompensas-demo}
+
+Tim recordó que las recompensas de la demo desaparecen "en unos 7 días". La [guía de Koin sobre el coleccionismo del 20 de noviembre](/es/news/origins-tcg-collecting-guide-season-2) pone la fecha: el 2 de diciembre, cuando empieza la Season 2 y las recompensas de la clasificatoria ya no se pueden obtener.
+
+## La Harvest Bowl y los próximos torneos {#torneos}
+
+Para la Harvest Bowl Koin esperaba unos 500 jugadores. En Discord Tim cuenta 1.529 inscritos, y en el vídeo habla de unas 500 personas en lista de espera, para un premio de 32 cartas y sin dinero. Las 1.024 plazas se llenaron en menos de 24 horas, como Koin escribió en X el 19 de noviembre. Las listas de espera de los dos clasificatorios están en OriginsMeta: [clasificatorio 1](/es/tournaments/harvest-bowl-qualifier-1) y [clasificatorio 2](/es/tournaments/harvest-bowl-qualifier-2).
+
+Desde diciembre, Koin juega sus torneos en su propio sitio, sin límite de jugadores: el torneo mensual de diciembre, luego el de enero y después la próxima copa, en febrero. "Si 3.000 personas quieren competir", dijo Tim, el equipo intentará que jueguen todas.
+
+## Steam Market y Kickstarter {#kickstarter}
+
+- **Mercado.** Según Tim hay 56 cartas intercambiables en el juego, y algunas se han vendido por más de 1.000 dólares, dentro y fuera de Steam.
+- **Kickstarter.** Es la última semana y la campaña cierra el 2 de diciembre. Tim anunció tres novedades para un próximo vídeo sobre el Kickstarter: un regalo para cada patrocinador y algo que dejará "muy, muy emocionados" a los patrocinadores del nivel de 200 dólares. Entre los niveles de recompensa, Apprentice cuesta 199 dólares.
+
+Todos los niveles y las fechas están en nuestra [guía del Kickstarter](/es/guides/origins-tcg-kickstarter).
+
+## 2027 {#2027}
+
+- **Escena competitiva.** Torneos semanales y mensuales, copas y bowls, luego los Masters, una vez al año y los mayores eventos abiertos, y por último los Worlds, con solo 32 plazas, grandes bolsas de premios, coleccionables exclusivos y cartas únicas.
+- **Tiendas.** Más de 100 tiendas han mostrado interés en participar en el lanzamiento en tiendas. Llega una jornada "Tell your LGS about Origins", para hablar del juego en tu tienda habitual, y Koin reclutará un equipo sobre el terreno, los Origins Champions.
+- **Móvil.** En Discord Tim menciona también el set completo y la apertura de sobres.
+
+Las cifras que dio Tim: 60.000 descargas. El 24 de noviembre Koin también anunció en X que el juego había superado las 1.000 reseñas en Steam.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- Las tres novedades del Kickstarter, que Koin dará en un vídeo aparte.
+- Si la Season 2 sigue empezando el 2 de diciembre: el vídeo mueve la actualización 0.9, no la temporada.
+- La hora de la actualización del 8 de diciembre.
+
+Fuentes: el vídeo de Tim Jooste en el canal oficial de YouTube de Origins Trading Card Game (24 de noviembre de 2026, hora del Pacífico), su mensaje en el Discord oficial y las publicaciones de Koin en X del 19 y del 24 de noviembre.`,
+    ),
+  },
+  {
+    // Patch di bilanciamento del 23/11/2026 (ea-1123 in cards.ts), la terza dell'Accesso anticipato. Fonti: annuncio di apix in
+    // #game-announcements del Discord ufficiale (20/11, 22:33 UTC, "Harvest Bowl Balance Update!"), i quattro sondaggi del 19-20/11 in
+    // #announcements (risposte vincenti 45%, 48%, 59%, 45%), il messaggio di Tim Jooste del 19/11 alle 02:54 UTC, il post Steam
+    // "Balance Update... Update" di apix (23/11, 17:58:36 UTC, gid 1849827110442601, letto con ISteamNews il 25/11), i messaggi del
+    // Discord sul fermo dei server (17:56 e 19:19 UTC) e il post X di @origins_tcg del 23/11 ("There won't be anymore changes before
+    // the Harvest Bowl!"). Le battute del post ("The sauce") non sono copiate. Copertina: la grafica del post Steam (Harvest Bowl,
+    // 800×450) portata a 1600×900 senza ritagli.
+    slug: "balance-patch-1123-harvest-bowl",
+    image: "/media/news-patch-1123.webp",
+    url: "https://store.steampowered.com/news/app/4429430/view/1849827110442601",
+    source: "steam",
+    cards: ["glinda", "sandman", "sorcerers-apprentice", "humpty"],
+    guides: ["roadmap-and-dates", "origins-tcg-ranked"],
+    date: "2026-11-23",
+    title: n(
+      "Origins TCG patch notes, 23 November: Glinda and Sandman lose 1 Health, Sorcerer's Apprentice costs 6",
+      "Patch di Origins TCG del 23 novembre: Glinda e Sandman perdono 1 Salute, Sorcerer's Apprentice costa 6",
+      "Parche de Origins TCG del 23 de noviembre: Glinda y Sandman pierden 1 de Salud, Sorcerer's Apprentice cuesta 6",
+    ),
+    metaTitle: n(
+      "Origins TCG patch 23 Nov: Glinda and Sandman nerfed",
+      "Patch Origins TCG del 23/11: Glinda e Sandman giù",
+      "Parche de Origins TCG 23/11: nerf a Glinda y Sandman",
+    ),
+    description: n(
+      "Origins TCG patch of 23 November, before the Harvest Bowl: Glinda 2/3, Sandman 1/2, Sorcerer's Apprentice at 6 mana 4/4, and no more random Legendaries.",
+      "Patch di Origins TCG del 23 novembre, prima dell'Harvest Bowl: Glinda 2/3, Sandman 1/2, Sorcerer's Apprentice a 6 mana 4/4 e niente più Leggendarie casuali.",
+      "Parche de Origins TCG del 23 de noviembre, antes de la Harvest Bowl: Glinda 2/3, Sandman 1/2, Sorcerer's Apprentice 6 de maná 4/4 y sin Legendarias al azar.",
+    ),
+    summary: n(
+      "Six days after the previous patch, Koin Games shipped a second balance update on 23 November, built on community polls and aimed at the Harvest Bowl. Glinda and Sandman lose 1 Health, Sorcerer's Apprentice costs 6 and becomes 4/4, and random card generation no longer creates Legendary cards.",
+      "Sei giorni dopo la patch precedente, il 23 novembre Koin Games ha installato un secondo bilanciamento, nato dai sondaggi della community e pensato per l'Harvest Bowl. Glinda e Sandman perdono 1 Salute, Sorcerer's Apprentice costa 6 e diventa 4/4, e la generazione casuale di carte non crea più Leggendarie.",
+      "Seis días después del parche anterior, el 23 de noviembre Koin Games publicó un segundo cambio de equilibrio, basado en encuestas de la comunidad y pensado para la Harvest Bowl. Glinda y Sandman pierden 1 de Salud, Sorcerer's Apprentice cuesta 6 y pasa a ser 4/4, y la generación aleatoria de cartas ya no crea cartas Legendarias.",
+    ),
+    highlights: {
+      en: [
+        { label: "Three cards change", text: "Glinda 2/3, Sandman 1/2, Sorcerer's Apprentice 6 mana 4/4", anchor: "changes" },
+        { label: "No more random Legendaries", text: "random generation only creates non-Legendary cards", anchor: "random" },
+        { label: "Why now", text: "four community polls and the Harvest Bowl on 28-29 November", anchor: "why" },
+        { label: "Last change before the tournament", text: "Koin says nothing else changes before the Harvest Bowl", anchor: "when" },
+        { label: "On OriginsMeta", text: "cards and deck builder already updated", anchor: "originsmeta" },
+      ],
+      it: [
+        { label: "Cambiano tre carte", text: "Glinda 2/3, Sandman 1/2, Sorcerer's Apprentice 6 mana 4/4", anchor: "modifiche" },
+        { label: "Niente più Leggendarie casuali", text: "la generazione casuale crea solo carte non Leggendarie", anchor: "casuali" },
+        { label: "Perché adesso", text: "quattro sondaggi della community e l'Harvest Bowl del 28-29 novembre", anchor: "perche" },
+        { label: "Ultima modifica prima del torneo", text: "Koin dice che fino all'Harvest Bowl non cambia altro", anchor: "quando" },
+        { label: "Su OriginsMeta", text: "carte e deck builder già aggiornati", anchor: "originsmeta" },
+      ],
+      es: [
+        { label: "Cambian tres cartas", text: "Glinda 2/3, Sandman 1/2, Sorcerer's Apprentice 6 de maná 4/4", anchor: "cambios" },
+        { label: "Se acabaron las Legendarias aleatorias", text: "la generación aleatoria solo crea cartas no Legendarias", anchor: "aleatorias" },
+        { label: "Por qué ahora", text: "cuatro encuestas de la comunidad y la Harvest Bowl del 28 y 29 de noviembre", anchor: "por-que" },
+        { label: "Último cambio antes del torneo", text: "Koin dice que no cambia nada más antes de la Harvest Bowl", anchor: "cuando" },
+        { label: "En OriginsMeta", text: "cartas y deck builder ya actualizados", anchor: "originsmeta" },
+      ],
+    },
+    faq: {
+      en: [
+        { q: "What changed in the Origins TCG patch of 23 November?", a: "Glinda goes from 2/4 to 2/3 and Sandman from 1/3 to 1/2, while Sorcerer's Apprentice goes from 5 mana 3/4 to 6 mana 4/4. Random card generation no longer creates Legendary cards." },
+        { q: "Can random cards still be Legendary in Origins TCG?", a: "No. Since the patch of 23 November 2026, cards that generate random cards only create non-Legendary ones. Koin may revisit the rule as the card pool grows." },
+        { q: "Will there be more balance changes before the Harvest Bowl?", a: "No. On 23 November Koin wrote on X that there will be no more changes before the Harvest Bowl, the tournament of 28 and 29 November 2026." },
+      ],
+      it: [
+        { q: "Che cosa cambia con la patch di Origins TCG del 23 novembre?", a: "Glinda passa da 2/4 a 2/3 e Sandman da 1/3 a 1/2, mentre Sorcerer's Apprentice passa da 5 mana 3/4 a 6 mana 4/4. La generazione casuale di carte non crea più Leggendarie." },
+        { q: "Le carte casuali possono ancora essere Leggendarie in Origins TCG?", a: "No. Dalla patch del 23 novembre 2026 le carte che generano carte a caso creano solo carte non Leggendarie. Koin potrà rivedere la regola quando le carte saranno di più." },
+        { q: "Ci saranno altri bilanciamenti prima dell'Harvest Bowl?", a: "No. Il 23 novembre Koin ha scritto su X che fino all'Harvest Bowl, il torneo del 28 e 29 novembre 2026, non ci saranno altre modifiche." },
+      ],
+      es: [
+        { q: "¿Qué cambió en el parche de Origins TCG del 23 de noviembre?", a: "Glinda pasa de 2/4 a 2/3 y Sandman de 1/3 a 1/2, mientras que Sorcerer's Apprentice pasa de 5 de maná 3/4 a 6 de maná 4/4. La generación aleatoria de cartas ya no crea cartas Legendarias." },
+        { q: "¿Las cartas aleatorias todavía pueden ser Legendarias en Origins TCG?", a: "No. Desde el parche del 23 de noviembre de 2026, las cartas que generan cartas aleatorias solo crean cartas no Legendarias. Koin podría revisar la regla cuando crezca el número de cartas." },
+        { q: "¿Habrá más cambios de equilibrio antes de la Harvest Bowl?", a: "No. El 23 de noviembre Koin escribió en X que no habrá más cambios antes de la Harvest Bowl, el torneo del 28 y 29 de noviembre de 2026." },
+      ],
+    },
+    body: n(
+      `## When it landed {#when}
+
+Koin Games installed the third balance patch of Origins TCG's Early Access on Monday 23 November 2026. The servers went down for about an hour: the official Discord announced the downtime at 17:56 UTC and the return at 19:19 UTC (18:56 and 20:19 in Central Europe), asking players to restart the game. The Steam post, "Balance Update... Update", went up at 17:58 UTC.
+
+It comes six days after the [patch of 17 November](/en/news/balance-patch-1117-sherwood-forest) and five days before the [Harvest Bowl](/en/events/harvest-bowl), the tournament of 28 and 29 November. The same evening Koin wrote on X that there will be no more changes before the Harvest Bowl.
+
+## Why a second patch in a week {#why}
+
+The patch of 17 November was not well received. On 19 November Tim Jooste, the CEO of Koin Games, wrote on the official Discord that the team had "dropped the ball this week", and promised surveys, VIP testing groups, dev diaries and more communication in both directions.
+
+Between 19 and 20 November Koin ran four polls on the official Discord. For Glinda (45%), Sorcerer's Apprentice (48%) and Sandman (45%) the winning answer was that the card urgently needed a balance update before the tournament. On random card generation, 59% voted that it should never create Legendary cards.
+
+On 20 November apix, from the Koin team, announced the changes for Monday the 23rd. Koin says it combined the feedback with gameplay data and its design goals, and that it tested the proposals with Grandmaster players and creators before shipping them.
+
+## All the changes {#changes}
+
+Format: mana · Power/Health.
+
+| Card | Before | After | What changes |
+| --- | --- | --- | --- |
+| Glinda | 4 · 2/4 | 4 · 2/3 | -1 Health |
+| Sandman | 2 · 1/3 | 2 · 1/2 | -1 Health |
+| Sorcerer's Apprentice | 5 · 3/4 | 6 · 4/4 | costs 1 more, +1 Power |
+
+On top of the three cards there is a gameplay rule: random generation no longer creates Legendary cards. No card changes its text.
+
+## Glinda: 2/3 {#glinda}
+
+Glinda, a Rare at 4 mana, gives your allies +1 Power every time you play a spell. According to Koin she was giving aggressive decks more staying power than intended, because she survived removal like [Rain of Arrows](/en/cards/rain-of-arrows), which deals 2 damage to all enemies. With 3 Health that is no longer the case. Koin says it considered going further, but stopped here given the rest of the changes, and can adjust again if needed.
+
+## Sandman: 1/2 {#sandman}
+
+Sandman, a Common at 2 mana, makes your spells cost 1 less. It looks like a small change, but according to Koin losing 1 Health greatly increases the number of 2-cost characters that can deal with him in the first round. Koin wants him to stay a useful tool for spell decks and for archetypes it has planned for the future.
+
+## Sorcerer's Apprentice: 6 mana, 4/4 {#sorcerers-apprentice}
+
+Six days ago Sorcerer's Apprentice had grown from 2/3 to 3/4 at 5 mana. Koin meant it as a finisher for slower, controlling decks, but aggressive archetypes like Pigs picked it up. Now it costs 6 and is 4/4: less power in the early and middle game for aggressive decks, more punch as a finisher for slow ones. Its ability does not change: every time you play a spell, it summons a Broomstick 1/1 on a random space.
+
+## No more random Legendaries {#random}
+
+Cards that generate random cards will now only create non-Legendary ones. Among today's cards, Humpty is one of them: On Death it adds a random card to your hand. Koin says players asked for this change, and that it may revisit the restriction as the card pool grows.
+
+## What changes on OriginsMeta {#originsmeta}
+
+- The [card database](/en/cards), the [deck builder](/en/deck-builder) and [MetaShifting](/en/metashifting) already show the new values. The texts of the cards stay the ones read in the game on 11 November.
+- If you published a deck before the patch, its page offers you "Update to version EA · 23 Nov": you change the cards and keep name, guide and link.
+- [Analytics](/en/analytics) keeps showing the numbers of the previous patch until this one has its first recorded games.
+- Our [tier list](/en/tier-list) will be read again once this patch has enough games.
+
+## What we don't know yet {#unknown}
+
+- Exactly which cards count as random generation: the patch notes do not list them.
+- Whether Glinda will change again after the Harvest Bowl: Koin says it can adjust further if needed.
+
+Sources: the announcement of 20 November and the polls of 19 and 20 November on the official Origins TCG Discord, the "Balance Update... Update" post on Steam (23 November 2026, 17:58 UTC) and Koin's post on X of the same day.`,
+      `## Quando è arrivata {#quando}
+
+Koin Games ha installato la terza patch di bilanciamento dell'Accesso anticipato di Origins TCG lunedì 23 novembre 2026. I server sono rimasti giù per circa un'ora: il Discord ufficiale ha annunciato il fermo alle 18:56 italiane e il ritorno alle 20:19 (17:56 e 19:19 UTC), chiedendo di riavviare il gioco. Il post su Steam, "Balance Update... Update", è uscito alle 18:58 italiane.
+
+Arriva sei giorni dopo la [patch del 17 novembre](/it/news/balance-patch-1117-sherwood-forest) e cinque giorni prima dell'[Harvest Bowl](/it/events/harvest-bowl), il torneo del 28 e 29 novembre. La sera stessa Koin ha scritto su X che fino all'Harvest Bowl non ci saranno altre modifiche.
+
+## Perché una seconda patch in una settimana {#perche}
+
+La patch del 17 novembre non è piaciuta. Il 19 novembre Tim Jooste, CEO di Koin Games, ha scritto sul Discord ufficiale che questa settimana il team aveva "fatto cadere la palla" e ha promesso sondaggi, gruppi di test VIP, diari degli sviluppatori e più comunicazione nei due sensi.
+
+Fra il 19 e il 20 novembre Koin ha lanciato quattro sondaggi sul Discord ufficiale. Per Glinda (45%), Sorcerer's Apprentice (48%) e Sandman (45%) ha vinto la risposta secondo cui la carta aveva urgente bisogno di un bilanciamento prima del torneo. Sulla generazione casuale di carte, il 59% ha votato che non dovrebbe mai creare Leggendarie.
+
+Il 20 novembre apix, del team di Koin, ha annunciato le modifiche per lunedì 23. Koin dice di aver unito i pareri della community ai dati delle partite e ai suoi obiettivi di design, e di aver provato le proposte con giocatori Grandmaster e creator prima di pubblicarle.
+
+## Tutte le modifiche {#modifiche}
+
+Formato: mana · Potenza/Salute.
+
+| Carta | Prima | Dopo | Che cosa cambia |
+| --- | --- | --- | --- |
+| Glinda | 4 · 2/4 | 4 · 2/3 | -1 Salute |
+| Sandman | 2 · 1/3 | 2 · 1/2 | -1 Salute |
+| Sorcerer's Apprentice | 5 · 3/4 | 6 · 4/4 | costa 1 in più, +1 Potenza |
+
+Oltre alle tre carte cambia una regola di gioco: la generazione casuale non crea più carte Leggendarie. Nessuna carta cambia testo.
+
+## Glinda: 2/3 {#glinda}
+
+Glinda, Rara da 4 mana, dà +1 Potenza agli alleati ogni volta che giochi una magia. Secondo Koin dava ai mazzi aggressivi più resistenza del previsto, perché sopravviveva alle rimozioni come [Rain of Arrows](/it/cards/rain-of-arrows), che infligge 2 danni a tutti i nemici. Con 3 Salute non succede più. Koin dice di aver valutato un intervento più forte, ma di essersi fermata qui viste le altre modifiche, pronta a correggere ancora se serve.
+
+## Sandman: 1/2 {#sandman}
+
+Sandman, Comune da 2 mana, fa costare 1 in meno le tue magie. Sembra una modifica piccola, ma secondo Koin con 1 Salute in meno aumentano di molto i personaggi da 2 mana che possono eliminarlo al primo round. Koin vuole che resti utile ai mazzi di magie e agli archetipi che ha in programma per il futuro.
+
+## Sorcerer's Apprentice: 6 mana, 4/4 {#sorcerers-apprentice}
+
+Sei giorni fa Sorcerer's Apprentice era cresciuto da 2/3 a 3/4 a 5 mana. Per Koin doveva chiudere le partite dei mazzi lenti e di controllo, ma l'hanno adottato gli archetipi aggressivi come Pigs. Ora costa 6 ed è 4/4: meno forza a inizio e metà partita per i mazzi aggressivi, più peso come carta di chiusura per quelli lenti. L'abilità non cambia: ogni volta che giochi una magia evoca una Broomstick 1/1 su uno spazio casuale.
+
+## Niente più Leggendarie casuali {#casuali}
+
+Le carte che generano carte a caso creeranno solo carte non Leggendarie. Fra le carte di oggi c'è Humpty, che Alla morte aggiunge una carta casuale alla tua mano. Koin dice che è una modifica chiesta dai giocatori e che potrà rivedere la regola quando le carte saranno di più.
+
+## Che cosa cambia su OriginsMeta {#originsmeta}
+
+- Il [database delle carte](/it/cards), il [deck builder](/it/deck-builder) e [MetaShifting](/it/metashifting) mostrano già i valori nuovi. I testi delle carte restano quelli letti nel gioco l'11 novembre.
+- Se hai pubblicato un mazzo prima della patch, la sua pagina ti propone "Aggiorna alla versione EA · 23 nov": cambi le carte e tieni nome, guida e link.
+- [Analytics](/it/analytics) mostra i numeri della patch precedente finché questa non ha le prime partite registrate.
+- La nostra [tier list](/it/tier-list) la rileggeremo quando questa patch avrà abbastanza partite.
+
+## Che cosa non sappiamo ancora {#non-sappiamo}
+
+- Quali carte contino esattamente come generazione casuale: le patch notes non le elencano.
+- Se Glinda cambierà ancora dopo l'Harvest Bowl: Koin dice che può correggere ancora se serve.
+
+Fonti: l'annuncio del 20 novembre e i sondaggi del 19 e 20 novembre sul Discord ufficiale di Origins TCG, il post "Balance Update... Update" su Steam (23 novembre 2026, 18:58 italiane) e il post di Koin su X dello stesso giorno.`,
+      `## Cuándo llegó {#cuando}
+
+Koin Games instaló el tercer parche de equilibrio del Acceso anticipado de Origins TCG el lunes 23 de noviembre de 2026. Los servidores estuvieron caídos alrededor de una hora: el Discord oficial anunció la parada a las 17:56 UTC y la vuelta a las 19:19 UTC (18:56 y 20:19 en Europa central), y pidió a los jugadores que reiniciaran el juego. La publicación de Steam, "Balance Update... Update", salió a las 17:58 UTC.
+
+Llega seis días después del [parche del 17 de noviembre](/es/news/balance-patch-1117-sherwood-forest) y cinco días antes de la [Harvest Bowl](/es/events/harvest-bowl), el torneo del 28 y 29 de noviembre. Esa misma noche Koin escribió en X que no habrá más cambios antes de la Harvest Bowl.
+
+## Por qué un segundo parche en una semana {#por-que}
+
+El parche del 17 de noviembre no gustó. El 19 de noviembre Tim Jooste, CEO de Koin Games, escribió en el Discord oficial que esa semana el equipo había fallado ("dropped the ball") y prometió encuestas, grupos de prueba VIP, diarios de desarrollo y más comunicación en los dos sentidos.
+
+Entre el 19 y el 20 de noviembre Koin lanzó cuatro encuestas en el Discord oficial. Para Glinda (45 %), Sorcerer's Apprentice (48 %) y Sandman (45 %) ganó la respuesta de que la carta necesitaba con urgencia un cambio de equilibrio antes del torneo. Sobre la generación aleatoria de cartas, el 59 % votó que nunca debería crear cartas Legendarias.
+
+El 20 de noviembre apix, del equipo de Koin, anunció los cambios para el lunes 23. Koin dice que combinó las opiniones de la comunidad con los datos de las partidas y sus objetivos de diseño, y que probó las propuestas con jugadores Grandmaster y creadores de contenido antes de publicarlas.
+
+## Todos los cambios {#cambios}
+
+Formato: maná · Poder/Salud.
+
+| Carta | Antes | Después | Qué cambia |
+| --- | --- | --- | --- |
+| Glinda | 4 · 2/4 | 4 · 2/3 | -1 de Salud |
+| Sandman | 2 · 1/3 | 2 · 1/2 | -1 de Salud |
+| Sorcerer's Apprentice | 5 · 3/4 | 6 · 4/4 | cuesta 1 más, +1 de Poder |
+
+Además de las tres cartas cambia una regla de juego: la generación aleatoria ya no crea cartas Legendarias. Ninguna carta cambia su texto.
+
+## Glinda: 2/3 {#glinda}
+
+Glinda, una carta rara de 4 de maná, da +1 de Poder a tus aliados cada vez que juegas un hechizo. Según Koin daba a los mazos agresivos más aguante del previsto, porque sobrevivía a eliminaciones como [Rain of Arrows](/es/cards/rain-of-arrows), que inflige 2 de daño a todos los enemigos. Con 3 de Salud eso ya no pasa. Koin dice que se planteó ir más lejos, pero que se detuvo aquí por el resto de los cambios, y que puede volver a ajustarla si hace falta.
+
+## Sandman: 1/2 {#sandman}
+
+Sandman, una carta común de 2 de maná, hace que tus hechizos cuesten 1 menos. Parece un cambio pequeño, pero según Koin perder 1 de Salud aumenta mucho el número de personajes de coste 2 que pueden acabar con él en la primera ronda. Koin quiere que siga siendo una herramienta útil para los mazos de hechizos y para arquetipos que tiene previstos para el futuro.
+
+## Sorcerer's Apprentice: 6 de maná, 4/4 {#sorcerers-apprentice}
+
+Hace seis días Sorcerer's Apprentice había crecido de 2/3 a 3/4 con 5 de maná. Koin lo pensaba como carta de cierre para mazos más lentos y de control, pero lo adoptaron arquetipos agresivos como Pigs. Ahora cuesta 6 y es 4/4: menos fuerza al principio y a mitad de partida para los mazos agresivos, más pegada como cierre para los lentos. Su habilidad no cambia: cada vez que juegas un hechizo, invoca una Broomstick 1/1 en un espacio aleatorio.
+
+## Se acabaron las Legendarias aleatorias {#aleatorias}
+
+Las cartas que generan cartas aleatorias ahora solo crearán cartas no Legendarias. Entre las cartas actuales, Humpty es una de ellas: Al morir añade una carta aleatoria a tu mano. Koin dice que fueron los jugadores quienes pidieron este cambio, y que puede revisar la restricción cuando crezca el número de cartas.
+
+## Qué cambia en OriginsMeta {#originsmeta}
+
+- La [base de datos de cartas](/es/cards), el [deck builder](/es/deck-builder) y [MetaShifting](/es/metashifting) ya muestran los valores nuevos. Los textos de las cartas siguen siendo los leídos en el juego el 11 de noviembre.
+- Si publicaste un mazo antes del parche, su página te ofrece "Actualizar a la versión EA · 23 nov": cambias las cartas y conservas nombre, guía y enlace.
+- [Analytics](/es/analytics) sigue mostrando los números del parche anterior hasta que este tenga sus primeras partidas registradas.
+- Volveremos a leer nuestra [tier list](/es/tier-list) cuando este parche tenga suficientes partidas.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- Qué cartas cuentan exactamente como generación aleatoria: las notas del parche no las enumeran.
+- Si Glinda volverá a cambiar después de la Harvest Bowl: Koin dice que puede volver a ajustarla si hace falta.
+
+Fuentes: el anuncio del 20 de noviembre y las encuestas del 19 y 20 de noviembre en el Discord oficial de Origins TCG, la publicación "Balance Update... Update" en Steam (23 de noviembre de 2026, 17:58 UTC) y la publicación de Koin en X del mismo día.`,
+    ),
+  },
+  {
+    // "Your ultimate guide to collecting in Origins Trading Card Game", articolo X di @origins_tcg del 20/11/2026 (19:51 UTC), letto
+    // per intero con firecrawl il 25/11; annunciato anche in #announcements del Discord ufficiale. Fatti nuovi rispetto alla guida
+    // collector-economy: Season 2 il 2/12 (ricompense di demo e missioni rimosse, ricompense ranked finite, premi della classifica
+    // che ruotano, Van Helsing che esce dalla rotazione), Collector Pass "early December", Prestige da 48 carte, grading, trade-up e pop
+    // data. Il 25/11 Tim ha spostato all'8/12 il grande aggiornamento (news state-of-origins-november-2026): lo dice la news. Copertina:
+    // keyart ufficiale di Mulan del media kit, mai usato da una news (lo screenshot di Mulan Leggendaria ha la targhetta di un giocatore).
+    slug: "origins-tcg-collecting-guide-season-2",
+    image: "/media/keyart-mulan.webp",
+    url: "https://x.com/origins_tcg/status/2123866898525827245",
+    source: "press",
+    cards: ["van-helsing"],
+    guides: ["collector-economy", "origins-tcg-kickstarter", "origins-tcg-ranked"],
+    date: "2026-11-20",
+    title: n(
+      "Koin's guide to collecting in Origins TCG: Season 2 on 2 December, grading, Prestige and Set 1 in February",
+      "La guida di Koin al collezionismo in Origins TCG: Season 2 il 2 dicembre, grading, Prestige e Set 1",
+      "La guía de Koin para coleccionar en Origins TCG: Season 2 el 2 de diciembre, graduación, Prestige y Set 1",
+    ),
+    metaTitle: n(
+      "Origins TCG collecting guide: Season 2 and Prestige",
+      "Collezionare in Origins TCG: Season 2 e Prestige",
+      "Coleccionar en Origins TCG: Season 2 y Prestige",
+    ),
+    description: n(
+      "Koin's guide to collecting in Origins TCG: what ends with Season 2 on 2 December, instant grading, the Collector Pass, Prestige and the 218-card Set 1.",
+      "La guida di Koin al collezionismo in Origins TCG: che cosa finisce con la Season 2 del 2 dicembre, grading immediato, Collector Pass, Prestige e Set 1.",
+      "La guía de Koin sobre coleccionismo en Origins TCG: qué termina con la Season 2 del 2 de diciembre, graduación instantánea, Collector Pass, Prestige y Set 1.",
+    ),
+    summary: n(
+      "On 20 November Koin Games published its guide to collecting in Origins TCG. The most urgent part: Season 2 starts on 2 December, and with it demo, mission and ranked rewards disappear for good. The guide also explains collector cards, instant grading from 1 to 10, the Collector Pass, Prestige and the 218 cards of Set 1, out in February.",
+      "Il 20 novembre Koin Games ha pubblicato la sua guida al collezionismo in Origins TCG. La parte più urgente: il 2 dicembre parte la Season 2 e con lei spariscono per sempre le ricompense della demo, delle missioni e del ranked. La guida spiega anche carte da collezione, grading immediato da 1 a 10, Collector Pass, Prestige e le 218 carte del Set 1, in uscita a febbraio.",
+      "El 20 de noviembre Koin Games publicó su guía sobre el coleccionismo en Origins TCG. La parte más urgente: la Season 2 empieza el 2 de diciembre y con ella desaparecen para siempre las recompensas de la demo, de las misiones y de la clasificatoria. La guía explica también las cartas de colección, la graduación instantánea del 1 al 10, el Collector Pass, Prestige y las 218 cartas del Set 1, que sale en febrero.",
+    ),
+    highlights: {
+      en: [
+        { label: "What ends on 2 December", text: "demo, mission and ranked rewards; Van Helsing rotates out", anchor: "season-2" },
+        { label: "Free to compete", text: "every competitive card in a few hours, packs are cosmetic", anchor: "free" },
+        { label: "Collector cards", text: "eight rarity tiers up to Storybook, 1 in 1,200 packs", anchor: "collector" },
+        { label: "Instant grading", text: "from 1 to 10, PRISTINE at the top", anchor: "grading" },
+        { label: "Collector Pass and Prestige", text: "48 Prestige cards, never in packs", anchor: "ways" },
+        { label: "Alpha and the Kickstarter", text: "about 30 variants never produced in the game", anchor: "alpha" },
+      ],
+      it: [
+        { label: "Che cosa finisce il 2 dicembre", text: "ricompense di demo, missioni e ranked; Van Helsing esce dalla rotazione", anchor: "season-2" },
+        { label: "Gratis per competere", text: "tutte le carte competitive in poche ore, le buste sono estetiche", anchor: "gratis" },
+        { label: "Carte da collezione", text: "otto livelli di rarità fino alle Storybook, 1 busta su 1.200", anchor: "collezione" },
+        { label: "Grading immediato", text: "da 1 a 10, PRISTINE in cima", anchor: "grading" },
+        { label: "Collector Pass e Prestige", text: "48 carte Prestige, mai nelle buste", anchor: "modi" },
+        { label: "Alpha e Kickstarter", text: "circa 30 varianti che non usciranno mai nel gioco", anchor: "alpha" },
+      ],
+      es: [
+        { label: "Qué termina el 2 de diciembre", text: "recompensas de la demo, las misiones y la clasificatoria; Van Helsing sale de la rotación", anchor: "season-2" },
+        { label: "Gratis para competir", text: "todas las cartas competitivas en unas horas, los sobres son cosméticos", anchor: "gratis" },
+        { label: "Cartas de colección", text: "ocho niveles de rareza hasta las Storybook, 1 de cada 1.200 sobres", anchor: "coleccion" },
+        { label: "Graduación instantánea", text: "del 1 al 10, con PRISTINE en lo más alto", anchor: "graduacion" },
+        { label: "Collector Pass y Prestige", text: "48 cartas Prestige, nunca en los sobres", anchor: "formas" },
+        { label: "Alpha y el Kickstarter", text: "unas 30 variantes que nunca se producirán en el juego", anchor: "alpha" },
+      ],
+    },
+    faq: {
+      en: [
+        { q: "What happens in Origins TCG on 2 December 2026?", a: "Season 2 starts: demo and mission rewards are removed, ranked rewards can no longer be earned, the leaderboard prizes rotate and Van Helsing rotates out. The Kickstarter closes the same day." },
+        { q: "How does grading work in Origins TCG?", a: "Every collector card is graded from 1 to 10 the moment you pull it, with PRISTINE at the top. Low grades show digital glitches, and a seed sets the pattern, so cards with the same grade can look different." },
+        { q: "Do you have to pay to compete in Origins TCG?", a: "No. According to Koin every competitive card can be earned for free in a few hours, and packs only contain cosmetic collector versions that play exactly like the free cards." },
+      ],
+      it: [
+        { q: "Che cosa succede in Origins TCG il 2 dicembre 2026?", a: "Parte la Season 2: le ricompense della demo e delle missioni vengono rimosse, quelle del ranked non si possono più ottenere, i premi della classifica cambiano e Van Helsing esce dalla rotazione. Lo stesso giorno chiude il Kickstarter." },
+        { q: "Come funziona il grading in Origins TCG?", a: "Ogni carta da collezione riceve un voto da 1 a 10 nel momento in cui la trovi, con PRISTINE in cima. I voti bassi mostrano difetti digitali, e un seme decide il disegno, quindi due carte con lo stesso voto possono essere diverse." },
+        { q: "Bisogna pagare per competere in Origins TCG?", a: "No. Secondo Koin tutte le carte competitive si ottengono gratis in poche ore, e le buste contengono solo versioni da collezione estetiche, che in partita funzionano come le carte gratuite." },
+      ],
+      es: [
+        { q: "¿Qué pasa en Origins TCG el 2 de diciembre de 2026?", a: "Empieza la Season 2: se eliminan las recompensas de la demo y de las misiones, las de la clasificatoria ya no se pueden obtener, cambian los premios del ranking y Van Helsing sale de la rotación. Ese mismo día cierra el Kickstarter." },
+        { q: "¿Cómo funciona la graduación en Origins TCG?", a: "Cada carta de colección recibe un grado del 1 al 10 en el momento en que la sacas, con PRISTINE en lo más alto. Los grados bajos muestran fallos digitales, y una semilla decide el patrón, así que dos cartas con el mismo grado pueden verse distintas." },
+        { q: "¿Hay que pagar para competir en Origins TCG?", a: "No. Según Koin, todas las cartas competitivas se consiguen gratis en unas horas, y los sobres solo contienen versiones de colección cosméticas, que en la partida funcionan exactamente igual que las cartas gratuitas." },
+      ],
+    },
+    body: n(
+      `On 20 November 2026 Koin Games published "Your ultimate guide to collecting in Origins Trading Card Game", a long article on X that puts in one place what is live and what is coming for collectors. Here are the main points, starting with the dates.
+
+## What ends on 2 December {#season-2}
+
+Season 2 starts on 2 December 2026. That day:
+
+- demo and mission rewards are removed;
+- ranked rewards can no longer be earned;
+- the prizes of the ranked leaderboard rotate, and [Van Helsing](/en/cards/van-helsing) rotates out.
+
+If you want this season's rewards, you have to earn them before then. The Kickstarter closes the same day. On 24 November Koin wrote on X that there were 7 days left to climb the leaderboard, with Hikkikomori in the lead.
+
+**Update of 25 November.** In the [State of Origins](/en/news/state-of-origins-november-2026) Tim Jooste moved the 0.9 update, with Prestige and the Collector Pass, to 8 December. The date of Season 2 was not changed.
+
+## Free to compete {#free}
+
+According to Koin, every player earns all the cards needed to compete in a few hours: you play a few matches, beat a boss and its deck becomes yours, with the decks arriving in a set order. Spending never buys stronger cards, and packs are cosmetic and optional. The first set, Myths and Legends, has 218 cards and comes out in February.
+
+## Collector cards {#collector}
+
+A collector card is the same character you earn for free, upgraded: about 30% bigger, breaking out of the frame, with a 3D depth effect, a larger nameplate and a black frame. In a match it plays exactly like the free version.
+
+There are eight rarity tiers, up to Storybook cards, about 1 in 1,200 packs, whose art Koin will not show until someone pulls one. About 70 of the 218 cards in Set 1 have alternate art across six tiers, and the set includes error cards, a digital take on misprints.
+
+## Instant grading {#grading}
+
+Every collector card is graded the moment you pull it, with no submission, fee or wait. The scale goes from 1 to 10, with PRISTINE at the top, and 10s get a special effect. Low grades show digital glitches instead of creases, and a seed, as in Counter-Strike, sets where the pattern lands and its colour. Graded cards sit in cosmetic cases, and binders and a trophy room are on the way.
+
+## Five ways to collect {#ways}
+
+- **Packs.** Five collector cards each; alternate art only comes from packs.
+- **Collector Pass.** A one-time purchase, one per account and not tradable: every week you reach the minimum XP you get a free pick between a roll into the 48-card Prestige set, a capsule or an emote. The guide planned it for early December; it arrives on 8 December with update 0.9. Every Kickstarter tier includes it, starting with Worthy at $24.
+- **Prestige.** Earned by playing: 48 cards with an "early access" badge and treatments that never appear in packs (Monochromatic, Black and White, Cyberpunk and a fourth tier still under wraps). When the game moves to Prestige 2, Prestige 1 can no longer be earned. You can level up to 5 Prestige Passes at once.
+- **Tournaments.** Promo cards you can only win: the Crimson Cup winner took home a one-of-one golden Dracula, and the Harvest Bowl also awards promos.
+- **Kickstarter.** For now, the only way to get the Alpha edition.
+
+Capsules, with emotes, avatars, card backs and a commander skin, rotate over time, and what was exclusive to a capsule leaves with it.
+
+## Alpha and print runs {#alpha}
+
+Alpha is the first print of Set 1 and is sold only through the Kickstarter: it never comes back, and it includes close to 30 variants that will never be produced in the game. Rewards are digital, delivered through Steam, with delivery planned for February 2027. The supply of each art variant equals the number of backers at that tier and above, and the Legend tiers, 10 backers each, add a serialized signature profile promo. Future sets will open with a pre-order window that sets their print run.
+
+## Steam Market, trade-up and population data {#market}
+
+Card skins and other cosmetics trade on the Steam Community Market, where players set the prices and Steam's rules apply. In 2027 a trade-up system modelled on Counter-Strike's will turn several bulk collectibles into one rare card. Koin also plans population data, to show how many of each graded card and sealed product are still around.
+
+## What we don't know yet {#unknown}
+
+- The name of the fourth Prestige tier. In the video of 25 November Tim called the artist proofs the top chase.
+- The price of the Collector Pass bought on its own.
+- What the Storybook cards look like.
+
+Our [guide to the collector economy](/en/guides/collector-economy) explains the basics. Source: Koin Games' article on X of 20 November 2026.`,
+      `Il 20 novembre 2026 Koin Games ha pubblicato "Your ultimate guide to collecting in Origins Trading Card Game", un lungo articolo su X che mette in un posto solo che cosa c'è già e che cosa arriva per i collezionisti. Ecco i punti principali, a partire dalle date.
+
+## Che cosa finisce il 2 dicembre {#season-2}
+
+Il 2 dicembre 2026 parte la Season 2. Quel giorno:
+
+- le ricompense della demo e delle missioni vengono rimosse;
+- le ricompense del ranked non si possono più ottenere;
+- i premi della classifica ranked cambiano e [Van Helsing](/it/cards/van-helsing) esce dalla rotazione.
+
+Chi vuole le ricompense di questa stagione deve ottenerle prima. Lo stesso giorno chiude il Kickstarter. Il 24 novembre Koin ha scritto su X che restavano 7 giorni per scalare la classifica, con Hikkikomori in testa.
+
+**Aggiornamento del 25 novembre.** Nello [State of Origins](/it/news/state-of-origins-november-2026) Tim Jooste ha spostato all'8 dicembre l'aggiornamento 0.9, con Prestige e Collector Pass. La data della Season 2 non è cambiata.
+
+## Gratis per competere {#gratis}
+
+Secondo Koin ogni giocatore ottiene in poche ore tutte le carte che servono per competere: giochi qualche partita, batti un boss e il suo mazzo diventa tuo, con i mazzi che arrivano in un ordine fisso. Spendere non compra mai carte più forti, e le buste sono estetiche e facoltative. Il primo set, Myths and Legends, ha 218 carte ed esce a febbraio.
+
+## Carte da collezione {#collezione}
+
+Una carta da collezione è lo stesso personaggio che ottieni gratis, in versione migliorata: più grande di circa il 30%, esce dalla cornice, ha un effetto di profondità 3D, una targhetta del nome più grande e la cornice nera. In partita funziona esattamente come la versione gratuita.
+
+I livelli di rarità sono otto, fino alle carte Storybook, circa 1 busta su 1.200, che Koin non mostrerà finché qualcuno non ne troverà una. Circa 70 delle 218 carte del Set 1 hanno illustrazioni alternative su sei livelli, e il set comprende anche carte con errori di stampa, nella versione digitale.
+
+## Grading immediato {#grading}
+
+Ogni carta da collezione riceve un voto nel momento in cui la trovi, senza spedizioni, costi o attese. La scala va da 1 a 10, con PRISTINE in cima, e i 10 hanno un effetto speciale. I voti bassi mostrano difetti digitali al posto delle pieghe, e un seme, come in Counter-Strike, decide dove cade il disegno e di che colore è. Le carte valutate stanno in custodie estetiche, e raccoglitori e una sala dei trofei sono in arrivo.
+
+## Cinque modi di collezionare {#modi}
+
+- **Buste.** Cinque carte da collezione ciascuna; le illustrazioni alternative escono solo dalle buste.
+- **Collector Pass.** Un acquisto unico, uno per account e non scambiabile: ogni settimana in cui raggiungi l'XP minima ricevi una scelta gratuita fra un tiro nel set Prestige da 48 carte, una capsula o un'emote. La guida lo dava per inizio dicembre; arriva l'8 dicembre con l'aggiornamento 0.9. È compreso in ogni livello del Kickstarter, a partire da Worthy da 24 $.
+- **Prestige.** Si ottiene giocando: 48 carte con il marchio "early access" e trattamenti che non escono mai nelle buste (Monochromatic, Black and White, Cyberpunk e un quarto livello ancora segreto). Quando il gioco passerà al Prestige 2, il Prestige 1 non si potrà più ottenere. Si possono far salire fino a 5 Prestige Pass insieme.
+- **Tornei.** Carte promo che si possono solo vincere: il vincitore della Crimson Cup ha portato a casa un Dracula dorato unico, e anche l'Harvest Bowl assegna delle promo.
+- **Kickstarter.** Per ora l'unico modo di avere l'edizione Alpha.
+
+Le capsule, con emote, avatar, dorsi delle carte e una skin per il comandante, cambiano nel tempo, e quello che era esclusivo di una capsula se ne va con lei.
+
+## Alpha e tirature {#alpha}
+
+Alpha è la prima stampa del Set 1 e si vende solo con il Kickstarter: non tornerà più e comprende quasi 30 varianti che nel gioco non verranno mai prodotte. Le ricompense sono digitali, consegnate tramite Steam, con la consegna prevista a febbraio 2027. Le copie di ogni variante di illustrazione sono tante quanti i sostenitori di quel livello e dei livelli superiori, e i livelli Legend, da 10 sostenitori ciascuno, aggiungono una promo del profilo firmata e numerata. I set futuri si apriranno con un periodo di preordine che fisserà la loro tiratura.
+
+## Steam Market, trade-up e dati di popolazione {#mercato}
+
+Le skin delle carte e gli altri oggetti estetici si scambiano sullo Steam Community Market, dove i prezzi li fanno i giocatori e valgono le regole di Steam. Nel 2027 un sistema di trade-up, sul modello di Counter-Strike, trasformerà più collezionabili doppi in una carta rara. Koin prevede anche i dati di popolazione, per sapere quante copie di ogni carta valutata e di ogni prodotto sigillato esistono ancora.
+
+## Che cosa non sappiamo ancora {#non-sappiamo}
+
+- Il nome del quarto livello Prestige. Nel video del 25 novembre Tim ha indicato le artist proof come le carte più ambite.
+- Il prezzo del Collector Pass comprato da solo.
+- Come sono fatte le carte Storybook.
+
+La nostra [guida all'economia da collezione](/it/guides/collector-economy) spiega le basi. Fonte: l'articolo di Koin Games su X del 20 novembre 2026.`,
+      `El 20 de noviembre de 2026 Koin Games publicó "Your ultimate guide to collecting in Origins Trading Card Game", un artículo largo en X que reúne en un solo lugar lo que ya está disponible y lo que llega para los coleccionistas. Estos son los puntos principales, empezando por las fechas.
+
+## Qué termina el 2 de diciembre {#season-2}
+
+La Season 2 empieza el 2 de diciembre de 2026. Ese día:
+
+- se eliminan las recompensas de la demo y de las misiones;
+- las recompensas de la clasificatoria ya no se pueden obtener;
+- cambian los premios del ranking de la clasificatoria, y [Van Helsing](/es/cards/van-helsing) sale de la rotación.
+
+Si quieres las recompensas de esta temporada, tienes que conseguirlas antes. Ese mismo día cierra el Kickstarter. El 24 de noviembre Koin escribió en X que quedaban 7 días para subir en el ranking, con Hikkikomori en cabeza.
+
+**Actualización del 25 de noviembre.** En el [State of Origins](/es/news/state-of-origins-november-2026) Tim Jooste retrasó al 8 de diciembre la actualización 0.9, con Prestige y el Collector Pass. La fecha de la Season 2 no ha cambiado.
+
+## Gratis para competir {#gratis}
+
+Según Koin, cada jugador consigue en unas horas todas las cartas que necesita para competir: juegas unas cuantas partidas, vences a un jefe y su mazo pasa a ser tuyo, con los mazos llegando en un orden fijo. Gastar dinero nunca compra cartas más fuertes, y los sobres son cosméticos y opcionales. El primer set, Myths and Legends, tiene 218 cartas y sale en febrero.
+
+## Cartas de colección {#coleccion}
+
+Una carta de colección es el mismo personaje que consigues gratis, mejorado: un 30 % más grande, más o menos, sale del marco, tiene un efecto de profundidad 3D, una placa del nombre más grande y un marco negro. En la partida funciona exactamente igual que la versión gratuita.
+
+Hay ocho niveles de rareza, hasta las cartas Storybook, más o menos 1 de cada 1.200 sobres, cuya ilustración Koin no enseñará hasta que alguien saque una. Unas 70 de las 218 cartas del Set 1 tienen ilustraciones alternativas en seis niveles, y el set incluye cartas con errores, la versión digital de los errores de impresión.
+
+## Graduación instantánea {#graduacion}
+
+Cada carta de colección recibe su grado en el momento en que la sacas, sin envíos, tarifas ni esperas. La escala va del 1 al 10, con PRISTINE en lo más alto, y los 10 tienen un efecto especial. Los grados bajos muestran fallos digitales en lugar de pliegues, y una semilla, como en Counter-Strike, decide dónde cae el patrón y de qué color es. Las cartas graduadas van en estuches cosméticos, y están en camino carpetas y una sala de trofeos.
+
+## Cinco formas de coleccionar {#formas}
+
+- **Sobres.** Cinco cartas de colección cada uno; las ilustraciones alternativas solo salen de los sobres.
+- **Collector Pass.** Una compra única, uno por cuenta y no intercambiable: cada semana en la que alcanzas la XP mínima recibes una elección gratuita entre una tirada en el set Prestige de 48 cartas, una cápsula o un emote. La guía lo preveía para principios de diciembre; llega el 8 de diciembre con la actualización 0.9. Está incluido en todos los niveles del Kickstarter, empezando por Worthy, de 24 dólares.
+- **Prestige.** Se consigue jugando: 48 cartas con una insignia "early access" y acabados que nunca salen en los sobres (Monochromatic, Black and White, Cyberpunk y un cuarto nivel todavía en secreto). Cuando el juego pase a Prestige 2, Prestige 1 ya no se podrá conseguir. Puedes subir de nivel hasta 5 Prestige Pass a la vez.
+- **Torneos.** Cartas promo que solo se pueden ganar: el ganador de la Crimson Cup se llevó un Dracula dorado único, y la Harvest Bowl también da promos.
+- **Kickstarter.** Por ahora, la única forma de conseguir la edición Alpha.
+
+Las cápsulas, con emotes, avatares, dorsos de cartas y una skin de comandante, rotan con el tiempo, y lo que era exclusivo de una cápsula se va con ella.
+
+## Alpha y tiradas {#alpha}
+
+Alpha es la primera impresión del Set 1 y solo se vende a través del Kickstarter: no volverá nunca, e incluye casi 30 variantes que nunca se producirán en el juego. Las recompensas son digitales, se entregan a través de Steam y la entrega está prevista para febrero de 2027. Las copias de cada variante de ilustración son tantas como patrocinadores de ese nivel y de los superiores, y los niveles Legend, de 10 patrocinadores cada uno, añaden una promo de perfil firmada y numerada. Los próximos sets abrirán con un periodo de reserva que fijará su tirada.
+
+## Steam Market, trade-up y datos de población {#mercado}
+
+Las skins de cartas y otros cosméticos se intercambian en el Mercado de la Comunidad de Steam, donde los precios los ponen los jugadores y se aplican las reglas de Steam. En 2027 un sistema de trade-up inspirado en el de Counter-Strike convertirá varios coleccionables repetidos en una carta rara. Koin también prevé datos de población, para mostrar cuántas copias quedan de cada carta graduada y de cada producto sellado.
+
+## Lo que todavía no sabemos {#pendiente}
+
+- El nombre del cuarto nivel Prestige. En el vídeo del 25 de noviembre Tim señaló los artist proof como las cartas más buscadas.
+- El precio del Collector Pass comprado por separado.
+- Cómo son las cartas Storybook.
+
+Nuestra [guía de la economía de colección](/es/guides/collector-economy) explica lo básico. Fuente: el artículo de Koin Games en X del 20 de noviembre de 2026.`,
+    ),
+  },
+  {
     // Giveaway di MagicOfHands su X (19/11/2026, 12:27 italiane). MagicOfHands, creator della community, l'ha chiesto a Pierluigi
     // su Discord ("ho appena iniziato un giveaway su X, c'è modo di mettere la news anche su meta?"); Pierluigi: "fai una notizia
     // da mettere sul sito, con le sue istruzioni ... per farlo seguire su X". Fonte: il post https://x.com/magicofhandss/status/

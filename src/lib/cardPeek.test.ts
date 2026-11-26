@@ -16,6 +16,8 @@ import {
   buildMentionPreview,
   cardLinkPattern,
   deckPeekOf,
+  gameInputOfPeek,
+  peekGameOf,
   hasPeek,
   linkMentionsInHtml,
   mentionDescription,
@@ -145,8 +147,27 @@ describe("buildDeckPeek e deckPeekOf: il pannello di CardPeek", () => {
   test("nell'attributo solo i campi del pannello, non il resto della carta del builder", () => {
     const builderCard = { name: "Mulan", slug: "mulan", key: "C00001", type: "unit", mana: 4, power: 2, health: 4, ability: "Double Attack", alignment: "good" as const };
     const peek = deckPeekOf(builderCard);
-    assert.deepEqual(Object.keys(JSON.parse(JSON.stringify(peek))).sort(), ["ability", "mana", "name", "stats"]);
+    // dal 25/11/2026 anche `g`, i pochi dati in più della carta del gioco (niente chiave, saga o altro del builder)
+    assert.deepEqual(Object.keys(JSON.parse(JSON.stringify(peek))).sort(), ["ability", "g", "mana", "name", "stats"]);
+    assert.deepEqual(peek.g, { s: "mulan", k: "unit", p: 2, h: 4, al: "good" });
     assert.equal(peek.align, undefined, "senza etichetta l'allineamento non si mostra, come prima");
+  });
+  test("carta del gioco nelle anteprime: i dati del modello, e niente g senza slug o tipo", () => {
+    const peek = deckPeekOf({ name: "Mulan", slug: "mulan", type: "unit", art: "/cards/art/mulan.webp", mana: 4, power: 2, health: 4, legendary: true, ability: "Double Attack" });
+    assert.deepEqual(gameInputOfPeek({ ...peek, g: peek.g! }), {
+      slug: "mulan",
+      name: "Mulan",
+      type: "unit",
+      cost: 4,
+      power: 2,
+      health: 4,
+      legendary: true,
+      alignment: null,
+      text: "Double Attack",
+      art: "/cards/art/mulan.webp",
+    });
+    assert.equal(deckPeekOf({ name: "Carta a mano", ability: "x" }).g, undefined);
+    assert.equal(peekGameOf({ slug: "x", type: "boh" }), undefined);
   });
   test("hasPeek: le carte inserite a mano senza nulla da mostrare non hanno anteprima", () => {
     assert.equal(hasPeek({ name: "Carta a mano" }), false);

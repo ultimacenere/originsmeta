@@ -34,7 +34,7 @@ export function PayPalButton({
 }: {
   children: ReactNode;
   label: string;
-  placement: "header" | "menu";
+  placement: "header" | "menu" | "popup";
   size?: "md" | "sm";
   className?: string;
 }) {

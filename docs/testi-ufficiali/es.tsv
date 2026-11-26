@@ -1,4 +1,4 @@
-# Testi ufficiali delle carte in SPAGNOLO, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
+# Testi ufficiali delle carte in SPAGNOLO, dati del gioco v0-8-2, letti in data 25/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
 # Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
 # Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
 Itsy Bitsy Spider
@@ -55,6 +55,7 @@ Flying Monkey	Al revelar: Mueve CUALQUIER otro personaje a un espacio aleatorio 
 Frog Prince	Elige una: Al revelar: Obtengo +3⚔️ O Al revelar: Obtengo +3❤️.
 Golden Egg	Al morir: Invoca un Golden Goose [5⚔️/5❤️] en este espacio.
 Humpty	Al morir: Añade una carta aleatoria a tu mano.
+Imhotep	Al morir: Inflige 2 de daño a todos los enemigos aquí.
 It's Alive	Invoca un personaje aleatorio de tu cementerio en un espacio aleatorio.
 Jack	Al revelar: Destruye a un enemigo aleatorio que tenga 7 o más ⚔️.
 Jill	Cuando recibo daño, cura 2 de daño de tu barrera aquí.
@@ -79,7 +80,6 @@ Dorothy	Puedo Moverme cada ronda.\nTengo +1⚔️/+1❤️ por cada vez que un a
 Dracula	Cuando descartas, vuelvo de tu cementerio a la mano.\nAl revelar: Invoca Brides of Dracula [2⚔️/2❤️] en un espacio aleatorio aquí.
 Glinda	Cuando juegas un hechizo, da +1⚔️ a los aliados.
 Huntsman	Al matar: Obtengo +1⚔️/+1❤️.
-Imhotep	Al morir: Inflige 2 de daño a todos los enemigos aquí.
 Jekyll	Al revelar: Cura 3 de daño de CUALQUIER otro personaje o barrera aquí.\nSi estoy en la mano después del combate, me transformo en Hyde [5⚔️/3❤️].
 Lancelot	Cuando juegas un personaje Bueno aquí, dale +2⚔️/+2❤️.
 Little John	Al revelar: Si un enemigo fue jugado aquí esta ronda, obtengo +2⚔️/+2❤️.
@@ -103,6 +103,7 @@ Bigfoot	Arrollar
 Boitata	Si un hechizo o habilidad fuera a dañar alguna de tus barreras, inflige ese daño a la barrera del oponente allí en su lugar.
 Bridge Troll	Defensor
 Captain Ahab	Al revelar: Descarta tu carta de mayor coste para infligir su coste como daño a un enemigo.
+Dr. Frank	Antes del combate, invoca un personaje aleatorio de tu cementerio en un espacio aleatorio.
 Fairy Godmother	Al revelar: Da a otro aliado +3⚔️/+3❤️.
 Franken Bride	Renacer\nCuando entro en juego desde el cementerio, cura 4 de daño de tu barrera aquí.
 Galahad	Al revelar: Da a los otros aliados +1⚔️/+1❤️.
@@ -111,16 +112,15 @@ Hare	Primer golpe, Mover
 Impundulu	Cuando ataco, añade un Lightning Strike a tu mano. Descártalo antes del combate de la próxima ronda.
 Merlin	Repite el primer hechizo que juegues cada ronda.
 Rain of Arrows	Inflige 2 de daño a todos los enemigos.
-Sorcerer's Apprentice	Cuando juegas un hechizo, invoca una Broomstick [1⚔️/1❤️] en un espacio aleatorio.
 The Green Knight	Después del combate, curo todo el daño de mí mismo.
 Three Musketeers	Primer golpe\nAl revelar: Invoca un Musketeer [2⚔️/1❤️] con Primer golpe en cada espacio aquí.
 Cockatrice	Toque mortal\nAl morir: Destruye un enemigo al azar.
-Dr. Frank	Antes del combate, invoca un personaje aleatorio de tu cementerio en un espacio aleatorio.
 Frank's Monster	Renacer\nCuando entro en juego desde el cementerio, duplico mi ⚔️.
 Guy of Gisborne	Ataque doble, Disparo certero 1
 Heroic Charge	Los aliados tienen +2⚔️ y Arrollar esta ronda.
 Koschei	Al morir o al ser descartado: vuelvo a tu mano y obtengo +2⚔️/+2❤️ permanentemente.
 Mowgli	Al revelar: Invoca a Baloo [6⚔️/6❤️] en otra ubicación aleatoria.
+Sorcerer's Apprentice	Cuando juegas un hechizo, invoca una Broomstick [1⚔️/1❤️] en un espacio aleatorio.
 Tin Woodman	Al revelar: Cura 8 de daño de CUALQUIER otro personaje o barrera aquí.
 King Arthur	Escudo\nAl revelar: Da Escudo a tus personajes Buenos.
 Legion of the Dead	Llena tu tablero de Zombies [2⚔️/2❤️].

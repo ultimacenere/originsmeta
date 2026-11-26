@@ -1,7 +1,9 @@
-# Prezzi del Mercato di Steam (tracker dei prezzi, 18/10/2026). Steam risponde 429 alle richieste dei server di Vercel,
-# quindi il giro lo fa questo job. Lo avvia ogni 10 minuti il cron di Vercel (/api/cron/market-dispatch, con il token
-# GITHUB_DISPATCH_TOKEN su Vercel), perché GitHub non garantisce i giri programmati frequenti (il 18/10 uno ogni 2 ore
-# circa); il giro programmato qui sotto, una volta l'ora, resta come riserva se il token manca o scade. Il job: scripts/market-collect.mjs legge le pagine di market/search/render per
+# Prezzi del Mercato di Steam (tracker dei prezzi, 18/10/2026). Dal 25/11/2026 Steam risponde 429 anche ai server di
+# GitHub (prima solo a quelli di Vercel), quindi i giri ogni 10 minuti li fa il PC di Pierluigi (attività pianificata
+# "OriginsMeta Mercato", scripts/market-pc-run.mjs) e questo job è la riserva: lo avvia una volta l'ora il cron di
+# Vercel (/api/cron/market-dispatch, minuto 17, con il token GITHUB_DISPATCH_TOKEN su Vercel), perché GitHub non
+# garantisce i giri programmati (il 18/10 uno ogni 2 ore circa); il giro programmato qui sotto, ogni 6 ore, resta se il
+# token manca o scade. Il job: scripts/market-collect.mjs legge le pagine della ricerca del mercato (/market/actions dal 25/11/2026; market/search/render risponde 404) per
 # Origins TCG e per la controfigura (CS2) e le salva con la funzione market_ingest del database (blocco MERCATO di
 # supabase/schema.sql). Il repository è pubblico: i minuti di Actions non si pagano. GitHub può ritardare i job
 # programmati di qualche minuto: lo storico è orario, non cambia niente.
@@ -12,8 +14,8 @@ name: Prezzi del Mercato di Steam
 
 on:
   schedule:
-    # riserva: una volta l'ora (minuto 17, lontano dai giri di Vercel); i giri ogni 10 minuti li avvia Vercel
-    - cron: "17 * * * *"
+    # riserva della riserva: ogni 6 ore; il giro orario lo avvia Vercel, quelli ogni 10 minuti il PC
+    - cron: "47 */6 * * *"
   workflow_dispatch:
 
 # un giro alla volta: se uno è ancora in corso, il successivo aspetta invece di leggere lo stesso cursore

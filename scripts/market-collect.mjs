@@ -2,15 +2,17 @@
 // server di Vercel già alla prima pagina (provato il 18/10: `rateLimited: true` da /api/cron/market), quindi il giro lo
 // fa GitHub Actions (.github/workflows/market-collect.yml, ogni 10 minuti) o, se serve, un PC con questo script. Stessa
 // logica di src/lib/market/collect.ts e stesso modulo puro (src/lib/market/market.ts): per ogni fonte riprende il giro
-// dal cursore di market_sources, legge una pagina di market/search/render ogni 2,5 secondi e la salva con la funzione
+// dal cursore di market_sources, legge una pagina della ricerca del mercato (/market/actions dal 25/11/2026) ogni 2,5 secondi e la salva con la funzione
 // market_ingest del database, che accetta solo il segreto del cron (CRON_SECRET, lo stesso di Vercel e di
 // scripts/set-cron-key.mjs). Indirizzo e chiave pubblica di Supabase da src/lib/supabase/env.ts.
 // Uso: CRON_SECRET=… node scripts/market-collect.mjs [--budget <secondi>]   (Node 24: importa i .ts direttamente)
 // Esce con 0 anche se Steam limita (lo scrive): il giro dopo riprende dal cursore.
+// Dal 25/11/2026 Steam risponde 429 anche ai server di GitHub: ogni 10 minuti lo lancia il PC di Pierluigi
+// (scripts/market-pc-run.mjs, attività pianificata "OriginsMeta Mercato"), GitHub Actions resta la riserva oraria.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { MARKET_SOURCE_IDS, MARKET_SOURCES, STEAM_PAGE_GAP_MS, ingestRows, nextCursor, parseEcbUsd, parseSearchPage, searchUrl } from "../src/lib/market/market.ts";
+import { MARKET_SOURCE_IDS, MARKET_SOURCES, STEAM_PAGE_GAP_MS, STEAM_SEARCH_HEADERS, groupedOnly, ingestRows, nextCursor, parseEcbUsd, parseSearchPage, searchUrl } from "../src/lib/market/market.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -71,7 +73,7 @@ for (const id of MARKET_SOURCE_IDS) {
   while (Date.now() < deadline) {
     let json;
     try {
-      const res = await fetch(searchUrl(source, start), { headers: { accept: "application/json" }, signal: AbortSignal.timeout(20_000) });
+      const res = await fetch(searchUrl(source, start), { headers: STEAM_SEARCH_HEADERS, signal: AbortSignal.timeout(20_000) });
       if (res.status === 429) {
         rateLimited = true;
         console.warn(`[${id}] Steam 429 (troppe richieste) alla pagina da ${start}: riprendo al prossimo giro`);
@@ -94,8 +96,12 @@ for (const id of MARKET_SOURCE_IDS) {
       failed = true;
       break;
     }
+    if (groupedOnly(page)) {
+      console.warn(`[${id}] Steam raggruppa tutte le righe (${page.grouped}): niente da salvare, giro saltato e dati di prima lasciati com'erano`);
+      break;
+    }
     const rows = ingestRows(id, page.items, id === "origins" ? cardRefs : []);
-    const { next, done } = nextCursor(start, page.total, page.items.length);
+    const { next, done } = nextCursor(start, page.total, page.seen);
     const r = await rest("rpc/market_ingest", {
       method: "POST",
       body: JSON.stringify({ p_key: secret, p_source: id, p_appid: source.appid, p_items: rows, p_next: next, p_total: page.total, p_done: done, p_usd_per_eur: fx }),
@@ -106,6 +112,7 @@ for (const id of MARKET_SOURCE_IDS) {
       break;
     }
     pages += 1;
+    if (page.grouped) console.log(`[${id}] ${page.grouped} righe raggruppate da Steam saltate (pagina da ${start})`);
     saved += Number(r.body) || 0;
     if (done) {
       console.log(`[${id}] giro finito: ${pages} pagine, ${saved} oggetti salvati, ${page.total} sul mercato`);

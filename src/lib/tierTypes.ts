@@ -19,6 +19,9 @@ export type TierCardEntry = {
   power?: number;
   health?: number;
   spell: boolean;
+  /** per la carta del gioco nell'anteprima (25/11/2026) */
+  type?: string;
+  art?: string;
   typeLabel: string;
   alignment?: "good" | "evil" | "neutral";
   alignmentLabel?: string;

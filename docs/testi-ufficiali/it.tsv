@@ -1,4 +1,4 @@
-# Testi ufficiali delle carte in ITALIANO, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
+# Testi ufficiali delle carte in ITALIANO, dati del gioco v0-8-2, letti in data 25/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
 # Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
 # Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
 Itsy Bitsy Spider
@@ -55,6 +55,7 @@ Flying Monkey	Alla rivelazione: Muovi QUALSIASI altro personaggio su uno spazio 
 Frog Prince	Scegline uno: Alla rivelazione: Ottengo +3⚔️ OPPURE Alla rivelazione: Ottengo +3❤️.
 Golden Egg	Alla morte: Evoca un Golden Goose [5⚔️/5❤️] su questo spazio.
 Humpty	Alla morte: Aggiungi una carta casuale alla tua mano.
+Imhotep	Alla morte: Infliggi 2 danni a tutti i nemici qui.
 It's Alive	Evoca un personaggio casuale dal tuo cimitero su uno spazio casuale.
 Jack	Alla rivelazione: Distruggi un nemico casuale che ha 7 o più ⚔️.
 Jill	Quando subisco danni, cura 2 danni alla tua barriera qui.
@@ -79,7 +80,6 @@ Dorothy	Posso Muovermi ogni round.\nHo +1⚔️/+1❤️ per ogni volta che un a
 Dracula	Quando scarti, torno dal tuo cimitero in mano.\nAlla rivelazione: Evoca Brides of Dracula [2⚔️/2❤️] su uno spazio casuale qui.
 Glinda	Quando giochi una magia, dai +1⚔️ agli alleati.
 Huntsman	All'uccisione: Ottengo +1⚔️/+1❤️.
-Imhotep	Alla morte: Infliggi 2 danni a tutti i nemici qui.
 Jekyll	Alla rivelazione: Cura 3 danni a QUALSIASI altro personaggio o barriera qui.\nSe sono in mano dopo il combattimento, mi trasformo in Hyde [5⚔️/3❤️].
 Lancelot	Quando giochi un personaggio Buono qui, dagli +2⚔️/+2❤️.
 Little John	Alla rivelazione: Se un nemico è stato giocato qui in questo round, ottengo +2⚔️/+2❤️.
@@ -103,6 +103,7 @@ Bigfoot	Travolgere
 Boitata	Se una magia o un'abilità stesse per danneggiare una delle tue barriere, infliggi invece quei danni alla barriera avversaria lì.
 Bridge Troll	Difensore
 Captain Ahab	Alla rivelazione: Scarta la tua carta dal costo più alto per infliggere il suo costo come danni a un nemico.
+Dr. Frank	Prima del combattimento, evoca un personaggio casuale dal tuo cimitero su uno spazio casuale.
 Fairy Godmother	Alla rivelazione: Dai a un altro alleato +3⚔️/+3❤️.
 Franken Bride	Rinascita\nQuando entro in gioco dal cimitero, cura 4 danni alla tua barriera qui.
 Galahad	Alla rivelazione: Dai agli altri alleati +1⚔️/+1❤️.
@@ -111,16 +112,15 @@ Hare	Primo colpo, Muovere
 Impundulu	Quando attacco, aggiungi un Lightning Strike alla tua mano. Scartalo prima del combattimento del prossimo round.
 Merlin	Ripeti la prima magia che giochi ogni round.
 Rain of Arrows	Infliggi 2 danni a tutti i nemici.
-Sorcerer's Apprentice	Quando giochi una magia, evoca una Broomstick [1⚔️/1❤️] su uno spazio casuale.
 The Green Knight	Dopo il combattimento, curo tutti i danni su me stesso.
 Three Musketeers	Primo colpo\nAlla rivelazione: Evoca un Musketeer [2⚔️/1❤️] con Primo colpo su ogni spazio qui.
 Cockatrice	Tocco letale\nAlla morte: Distruggi un nemico a caso.
-Dr. Frank	Prima del combattimento, evoca un personaggio casuale dal tuo cimitero su uno spazio casuale.
 Frank's Monster	Rinascita\nQuando entro in gioco dal cimitero, raddoppio la mia ⚔️.
 Guy of Gisborne	Doppio attacco, Tiro di precisione 1
 Heroic Charge	Gli alleati hanno +2⚔️ e Travolgere in questo round.
 Koschei	Alla morte o quando vengo scartato: torno nella tua mano e ottengo +2⚔️/+2❤️ permanentemente.
 Mowgli	Alla rivelazione: Evoca Baloo [6⚔️/6❤️] in un altro luogo casuale.
+Sorcerer's Apprentice	Quando giochi una magia, evoca una Broomstick [1⚔️/1❤️] su uno spazio casuale.
 Tin Woodman	Alla rivelazione: Cura 8 danni a QUALSIASI altro personaggio o barriera qui.
 King Arthur	Scudo\nAlla rivelazione: Dai Scudo ai tuoi personaggi Buoni.
 Legion of the Dead	Riempi il tuo tabellone di Zombie [2⚔️/2❤️].

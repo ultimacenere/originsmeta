@@ -267,12 +267,14 @@ export const zhCnTextB: Partial<Record<GuideSlug, GuideCopy>> = {
 | 11月6日 | 官方 Discord 上的[路线图 AMA](/zh-cn/news/origins-tcg-roadmap-ama-recap)：直到 2 月的抢先体验计划 |
 | 11月10日 | [0.8.2 补丁](/zh-cn/news/patch-notes-0-8-2)：封堵排位中的漏洞，减少掉线，改进 PvP 新玩家的匹配；没有卡牌改动 |
 | 11月17日 | [平衡补丁](/zh-cn/news/balance-patch-1117-sherwood-forest)：九张卡牌平衡调整，Dr. Frank 降到 5 费，Sherwood Forest 改为稀有 |
+| 11月23日 | Harvest Bowl 前的[平衡补丁](/zh-cn/news/balance-patch-1123-harvest-bowl)：Glinda 和 Sandman 生命 -1，Sorcerer's Apprentice 改为 6 费，随机生成不再产生传奇卡牌 |
 
 ## 接下来
 
 - **现在。** Origins TCG 已在 Steam 免费开启抢先体验，而 Alpha Edition 的 Kickstarter 正在进行中，日期由 Koin Games 的 CEO 于 9月17日公布：详情见我们的 [Kickstarter 攻略](/zh-cn/guides/origins-tcg-kickstarter)。
 - **2026年11月28–29日。** Harvest Bowl，Koin Games 为抢先体验举办的 11 月锦标赛：周六进行两场各 512 人的双败淘汰资格赛，周日由最强的 128 人进行决赛日，使用一套卡组加 3 张备牌，在 OriginsMeta 上进行。赛程、规则和报名见[我们的 Harvest Bowl 页面](/zh-cn/events/harvest-bowl)。
-- **2026年12月2日。** 当前排位赛季结束，第一次大型更新上线：Collector Pass、Prestige、胶囊、新地点和称号。之后一个赛季持续到 1 月中旬，另一个从 1 月中旬到 2 月。
+- **2026年12月2日。** Season 2 开始：根据 [Koin 的收藏指南](/zh-cn/news/origins-tcg-collecting-guide-season-2)，试玩版和任务奖励将被移除，排位奖励将无法再获得，Van Helsing 轮换出局。Kickstarter 也在同一天结束。
+- **2026年12月8日。** 0.9 更新，也是第一次大型更新：Collector Pass、Prestige、胶囊、新地点和称号。Koin 把它从 12月3日推迟，好让每位 Kickstarter 支持者都从第一天开始（[State of Origins](/zh-cn/news/state-of-origins-november-2026)）。从 12 月起，Koin 的锦标赛在其官网上进行，不设人数上限。之后一个赛季持续到 1 月中旬，另一个从 1 月中旬到 2 月。
 - **2027年2月。** 完整的 Myths and Legends 系列，约 218 张卡，同时发放所有 Kickstarter 奖励；标准版进入实体店。
 - **抢先体验结束时。** Myths and Legends Open，面向通过月度锦标赛晋级的玩家。
 - **2027年3月17日前后。** 1.0 版本：Steam 页面写道，Koin 的目标是“大约在 2027年3月17日”结束抢先体验，这个日期可能会变。

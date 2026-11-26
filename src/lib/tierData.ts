@@ -113,6 +113,8 @@ export async function loadTierData(locale: Locale): Promise<TierData> {
       power: c.power,
       health: c.health,
       spell: c.type === "spell",
+      type: c.type,
+      art: c.art,
       typeLabel: typeLabel[c.type],
       alignment: c.alignment,
       alignmentLabel: c.alignment ? alignLabel[c.alignment] : undefined,

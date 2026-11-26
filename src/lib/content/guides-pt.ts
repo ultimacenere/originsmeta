@@ -16,7 +16,7 @@ export const ptText: Record<GuideSlug, GuideCopy> = {
     faq: [
       {
         q: "Quantas Lendárias existem em Origins TCG?",
-        a: "Doze entre as cartas jogáveis: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs e Robin Hood, todas verificadas no jogo em 11 de novembro de 2026. Dr. Frank entrou no jogo com o patch de 4 de novembro de 2026. O banco de dados do OriginsMeta guarda mais oito que não estão no jogo.",
+        a: "Doze entre as cartas jogáveis: Dorothy, Dracula, Mulan, Queen of Hearts, Van Helsing, Wicked Stepmother, Dr. Frank, Merlin, King Arthur, Legion of the Dead, Three Not So Little Pigs e Robin Hood, todas verificadas no jogo em 25 de novembro de 2026. Dr. Frank entrou no jogo com o patch de 4 de novembro de 2026. O banco de dados do OriginsMeta guarda mais oito que não estão no jogo.",
       },
       {
         q: "Quantas Lendárias um deck pode ter?",
@@ -67,7 +67,7 @@ A última coluna conta os decks que cada Lendária lidera entre os 20 publicados
 - **O seu oponente a vê.** O patch 0.6.1 do playtest fechado (14 de agosto de 2026) adicionou uma prévia da Lendária do oponente durante o mulligan, segundo as [notas do patch oficiais](https://store.steampowered.com/news/app/4429430/view/1840944183780414).
 - **No Conquest, ela dá nome ao deck.** Na Crimson Cup cada jogador leva três decks, e quando você bane um dos decks do oponente só vê a Lendária dele ([regras da Crimson Cup](/pt/news/crimson-cup-format-check-in)). Os anúncios não dizem se as três Lendárias precisam ser diferentes; no Big Bob's Playtest Battle precisavam. Como montar os três decks: o nosso [guia do Conquest](/pt/guides/origins-tcg-conquest).
 
-Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em português. Custos e estatísticas foram verificados carta por carta em 11 de novembro de 2026; as mudanças posteriores vêm das notas dos patches. As sagas e as notas sobre cada lenda são do OriginsMeta. Os patches são os acompanhados no [MetaShifting](/pt/metashifting): as atualizações 0.6.1, 0.6.2 e 0.6.3 do playtest (agosto de 2026), o patch de 21 de setembro de 2026, o patch 0.7 de 29 de setembro de 2026, que não rebalanceou nenhuma Lendária, o patch de 4 de novembro de 2026, que transformou Dorothy em uma 3/3 e trouxe Dr. Frank, e o patch de 17 de novembro de 2026, que deixou Dr. Frank 1 mais barato; as notas do patch 0.8 (27 de outubro de 2026, Acesso Antecipado) não citam mudanças nas cartas. O poder lendário de cada uma, como o jogo o mostra, está na página da carta.
+Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em português. Custos e estatísticas foram verificados carta por carta em 25 de novembro de 2026; as mudanças posteriores vêm das notas dos patches. As sagas e as notas sobre cada lenda são do OriginsMeta. Os patches são os acompanhados no [MetaShifting](/pt/metashifting): as atualizações 0.6.1, 0.6.2 e 0.6.3 do playtest (agosto de 2026), o patch de 21 de setembro de 2026, o patch 0.7 de 29 de setembro de 2026, que não rebalanceou nenhuma Lendária, o patch de 4 de novembro de 2026, que transformou Dorothy em uma 3/3 e trouxe Dr. Frank, e o patch de 17 de novembro de 2026, que deixou Dr. Frank 1 mais barato; as notas do patch 0.8 (27 de outubro de 2026, Acesso Antecipado) não citam mudanças nas cartas. O poder lendário de cada uma, como o jogo o mostra, está na página da carta.
 
 ## Dorothy {#dorothy}
 
@@ -159,7 +159,7 @@ Os textos das cartas citados abaixo são os oficiais do jogo, lidos no jogo em p
 
 > Antes do combate, invoca um personagem aleatório do seu cemitério em um espaço aleatório.
 
-- **A Lendária mais recente.** Entrou no jogo com o [patch de 4 de novembro de 2026](/pt/news/balance-patch-1104-cyber-queen) como a Lendária do deck Relentless pilotado por Cyber Queen, o chefe n.º 11, junto com outras sete cartas ([as oito cartas de Dr. Frank](/pt/news/dr-frank-boss-new-cards)). O texto acima é o lido no jogo em 11 de novembro de 2026.
+- **A Lendária mais recente.** Entrou no jogo com o [patch de 4 de novembro de 2026](/pt/news/balance-patch-1104-cyber-queen) como a Lendária do deck Relentless pilotado por Cyber Queen, o chefe n.º 11, junto com outras sete cartas ([as oito cartas de Dr. Frank](/pt/news/dr-frank-boss-new-cards)). O texto acima é o lido no jogo em 25 de novembro de 2026.
 - **A lenda.** Victor Frankenstein, o estudante que montou uma criatura viva no romance de Mary Shelley de 1818.
 - **As cartas que o acompanham.** [It's Alive](/pt/cards/its-alive), um feitiço de 3 de mana que faz a mesma coisa uma vez, e as duas cartas com Renascimento, [Frank's Monster](/pt/cards/franks-monster) e [Franken Bride](/pt/cards/franken-bride). O poder lendário dele adiciona It's Alive! à sua mão no início da partida.
 - **Patches.** Patch de 17 de novembro de 2026: mana 6 → 5 ([notas do patch](/pt/news/balance-patch-1117-sherwood-forest)).
@@ -243,7 +243,7 @@ O nosso banco de dados também guarda oito Lendárias que não estão no jogo: [
 
 ## De onde vêm os números {#fontes}
 
-- **Cartas:** o [banco de dados de cartas](/pt/cards) do OriginsMeta: custos, estatísticas e textos das cartas jogáveis verificados um por um no jogo em 11 de novembro de 2026, em todos os idiomas do site. As estatísticas são as do patch de 17 de novembro de 2026.
+- **Cartas:** o [banco de dados de cartas](/pt/cards) do OriginsMeta: custos, estatísticas e textos das cartas jogáveis verificados um por um no jogo em 25 de novembro de 2026, em todos os idiomas do site. As estatísticas são as do patch de 17 de novembro de 2026.
 - **Patches:** as notas do patch oficiais no Steam, carta por carta no [MetaShifting](/pt/metashifting).
 - **Decks:** os 20 decks publicados no OriginsMeta de 15 de setembro até as 20:00 CEST de 25 de setembro de 2026 ([todos os decks de Origins TCG](/pt/decks)); a contagem depois disso está em [As mais jogadas](/pt/tier-list/most-played).
 
@@ -1299,11 +1299,13 @@ O deck está marcado só para a ladder, mas cabe numa seleção de Conquest: uma
 | 6 de novembro | [AMA do roadmap](/pt/news/origins-tcg-roadmap-ama-recap) no Discord oficial: o plano do Acesso Antecipado até fevereiro |
 | 10 de novembro | [Patch 0.8.2](/pt/news/patch-notes-0-8-2): exploits da ranqueada fechados, menos desconexões, matchmaking melhor para quem está começando no PvP; nenhuma mudança nas cartas |
 | 17 de novembro | [Patch de balanceamento](/pt/news/balance-patch-1117-sherwood-forest): nove cartas rebalanceadas, Dr. Frank custa 5, Sherwood Forest vira raro |
+| 23 de novembro | [Patch de balanceamento](/pt/news/balance-patch-1123-harvest-bowl) antes da Harvest Bowl: Glinda e Sandman perdem 1 de Vida, Sorcerer's Apprentice custa 6, a geração aleatória não cria mais Lendárias |
 
 ## O que vem a seguir
 
 - **28–29 de novembro de 2026.** A Harvest Bowl, o torneio de novembro da Koin Games para o Acesso Antecipado: no sábado, duas classificatórias em eliminação dupla com 512 jogadores; no domingo, o dia final com os 128 melhores, com um deck mais um sideboard de 3 cartas, jogada no OriginsMeta. Horários, regras e inscrição na [nossa página da Harvest Bowl](/pt/events/harvest-bowl).
-- **2 de dezembro de 2026.** Fim da temporada ranqueada atual e primeira grande atualização: Collector Pass, Prestige, cápsulas, locais novos e títulos. Segue uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.
+- **2 de dezembro de 2026.** Começa a Season 2: as recompensas da demo e das missões são removidas, as da ranqueada não podem mais ser ganhas e Van Helsing sai da rotação, segundo o [guia da Koin para colecionar](/pt/news/origins-tcg-collecting-guide-season-2). O Kickstarter termina no mesmo dia.
+- **8 de dezembro de 2026.** Atualização 0.9, a primeira grande atualização: Collector Pass, Prestige, cápsulas, locais novos e títulos. A Koin a adiou de 3 de dezembro para que todos os apoiadores do Kickstarter comecem no primeiro dia ([State of Origins](/pt/news/state-of-origins-november-2026)). A partir de dezembro, os torneios da Koin são disputados no próprio site, sem limite de jogadores. Segue uma temporada até meados de janeiro e outra de meados de janeiro a fevereiro.
 - **Fevereiro de 2027.** O set completo Myths and Legends, cerca de 218 cartas, com todas as recompensas do Kickstarter; a edição padrão chega às lojas.
 - **Fim do Acesso Antecipado.** O Myths and Legends Open, para quem se classificar pelos torneios mensais.
 - **Durante o Acesso Antecipado.** As 218 cartas do set Alpha "Myths & Legends", exclusivo do Kickstarter, que a Koin vai lançar aos poucos; os cosméticos colecionáveis que não são cartas vão poder ser trocados num próximo update.

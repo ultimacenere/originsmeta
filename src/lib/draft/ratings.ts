@@ -7,6 +7,7 @@
  * Stepmother 4/6…).
  * Patch del 17/11/2026 (ea-1117): rivisti i voti delle sette carte giocabili cambiate (Dr. Frank e Imhotep costano 1 in
  * meno, Sorcerer's Apprentice 3/4, Kanga 2/4; Genie 3/2, Morgan le Fay 1/1, Asanbosam 5/4).
+ * Patch del 23/11/2026 (ea-1123): Glinda 2/3 e Sandman 1/2 un po' più in basso, Sorcerer's Apprentice a 6 mana 4/4 appena sotto.
  *
  * Le idee che guidano i voti, dal cervello:
  * - due mana al primo round, +1 per round: un mazzo senza carte da 2 comincia guardando;
@@ -79,7 +80,7 @@ export const RATINGS: Record<string, CardRating> = {
   piglet: { r: 4.8, gives: ["good", "reveal"], wants: ["wide"] },
   roo: { r: 5.7, gives: ["good", "move"] },
   rumple: { r: 5.1, gives: ["evil", "reveal"], roles: ["ramp"] },
-  sandman: { r: 3.8, wants: ["spell"] },
+  sandman: { r: 3.6, wants: ["spell"] },
   scarecrow: { r: 5.6, gives: ["good", "reveal"], roles: ["draw"] },
   shahrazad: { r: 5, gives: ["good", "heal"], wants: ["discard"] },
   "three-blind-mice": { r: 5, gives: ["wide", "death"] },
@@ -122,7 +123,7 @@ export const RATINGS: Record<string, CardRating> = {
   "blow-the-house-down": { r: 5.9, wants: ["power"], roles: ["sweeper"] },
   boogeyman: { r: 5.8, gives: ["evil", "reveal", "power"], wants: ["wide"] },
   "christopher-robin": { r: 6.5, gives: ["good"] },
-  glinda: { r: 4.6, gives: ["good"], wants: ["spell", "wide"] },
+  glinda: { r: 4.3, gives: ["good"], wants: ["spell", "wide"] },
   huntsman: { r: 6, gives: ["good"] },
   imhotep: { r: 6.3, gives: ["death", "evil"], roles: ["sweeper"] },
   jekyll: { r: 6.1, gives: ["good", "heal", "reveal"] },
@@ -153,7 +154,7 @@ export const RATINGS: Record<string, CardRating> = {
   hare: { r: 4.6, gives: ["move"] },
   impundulu: { r: 6, gives: ["evil", "discard"], roles: ["removal", "barrier"] },
   "rain-of-arrows": { r: 6.4, roles: ["sweeper"] },
-  "sorcerers-apprentice": { r: 5, gives: ["wide"], wants: ["spell"] },
+  "sorcerers-apprentice": { r: 4.8, gives: ["wide"], wants: ["spell"] },
   "the-green-knight": { r: 6, gives: ["power"] },
   "three-musketeers": { r: 6.4, gives: ["good", "wide", "reveal"] },
   "franken-bride": { r: 5.6, gives: ["evil", "death", "heal"], roles: ["defender"] },

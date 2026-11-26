@@ -1,4 +1,4 @@
-# Testi ufficiali delle carte in CINESE SEMPLIFICATO, dati del gioco v0-8-2, letti in data 11/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
+# Testi ufficiali delle carte in CINESE SEMPLIFICATO, dati del gioco v0-8-2, letti in data 25/11/2026 dalle tabelle delle traduzioni del gioco (cartella d'installazione, sola lettura) con scripts/game-texts.mjs: tutte le 130 carte della collezione.
 # Formato: Nome carta<TAB>testo, \n = a capo nella carta; statistiche nella notazione del sito (⚔️ ❤️); le carte senza testo hanno solo il nome.
 # Il testo è trascritto com'è, anche dove il gioco non è coerente. Si rigenera dai file del gioco (procedura in docs/testi-di-gioco.md).
 Itsy Bitsy Spider
@@ -55,6 +55,7 @@ Flying Monkey	展示时：将任意其他角色移动到此处的一个随机格
 Frog Prince	选择其一：展示时：我获得 +3⚔️或展示时：我获得 +3❤️。
 Golden Egg	死亡时：在这个格子上召唤一个 Golden Goose [5⚔️/5❤️]。
 Humpty	死亡时：将一张随机卡牌加入你的手牌。
+Imhotep	死亡时：对此处所有敌方角色造成 2 点伤害。
 It's Alive	从你的墓地召唤一个随机角色到一个随机格子上。
 Jack	展示时：摧毁一个 ⚔️ 为 7 或更高的随机敌方角色。
 Jill	当我受到伤害时，治疗 2 点此处你屏障的伤害。
@@ -79,7 +80,6 @@ Dorothy	我每个回合都可以移动。\n本局中友方角色每移动一次�
 Dracula	当你弃牌时，将我从你的墓地返回手牌。\n展示时：在此处一个随机格子上召唤 Brides of Dracula [2⚔️/2❤️]。
 Glinda	当你打出法术时，使友方角色获得 +1⚔️。
 Huntsman	击杀时：我获得 +1⚔️/+1❤️。
-Imhotep	死亡时：对此处所有敌方角色造成 2 点伤害。
 Jekyll	展示时：治疗 3 点此处任意其他角色或屏障的伤害。\n如果战斗后我在手牌中，我变形为 Hyde [5⚔️/3❤️]。
 Lancelot	当你在此处打出善良角色时，使它获得 +2⚔️/+2❤️。
 Little John	展示时：如果本回合有敌方角色在此处被打出，我获得 +2⚔️/+2❤️。
@@ -103,6 +103,7 @@ Bigfoot	践踏
 Boitata	当法术或能力将要对你的任一屏障造成伤害时，改为对该处对手的屏障造成该伤害。
 Bridge Troll	守护者
 Captain Ahab	展示时：弃掉你费用最高的一张牌，对一个敌方角色造成等同于其费用的伤害。
+Dr. Frank	战斗前，从你的墓地召唤一个随机角色到一个随机格子上。
 Fairy Godmother	展示时：使另一个友方角色获得 +3⚔️/+3❤️。
 Franken Bride	重生\n当我从墓地进入战场时，治疗 4 点此处你屏障的伤害。
 Galahad	展示时：使其他友方角色获得 +1⚔️/+1❤️。
@@ -111,16 +112,15 @@ Hare	先攻，移动
 Impundulu	我攻击时，将一张 Lightning Strike 加入你的手牌。在下个回合战斗前弃掉它。
 Merlin	重复你每回合打出的第一个法术。
 Rain of Arrows	对所有敌方角色造成 2 点伤害。
-Sorcerer's Apprentice	当你打出法术时，在一个随机格子上召唤一个 Broomstick [1⚔️/1❤️]。
 The Green Knight	战斗后，我治疗自身所有伤害。
 Three Musketeers	先攻\n展示时：在此处每个格子上各召唤一个带有先攻的 Musketeer [2⚔️/1❤️]。
 Cockatrice	死触\n死亡时：摧毁一个随机敌方角色。
-Dr. Frank	战斗前，从你的墓地召唤一个随机角色到一个随机格子上。
 Frank's Monster	重生\n当我从墓地进入战场时，我的 ⚔️ 翻倍。
 Guy of Gisborne	双重攻击，狙击 1
 Heroic Charge	本回合友方角色获得 +2⚔️ 和践踏。
 Koschei	死亡时或被弃掉时：我返回你的手牌，并永久获得 +2⚔️/+2❤️。
 Mowgli	展示时：在另一个随机地点召唤 Baloo [6⚔️/6❤️]。
+Sorcerer's Apprentice	当你打出法术时，在一个随机格子上召唤一个 Broomstick [1⚔️/1❤️]。
 Tin Woodman	展示时：治疗 8 点此处任意其他角色或屏障的伤害。
 King Arthur	护盾\n展示时：使你的善良角色获得护盾。
 Legion of the Dead	用 Zombie [2⚔️/2❤️] 填满你的场地。

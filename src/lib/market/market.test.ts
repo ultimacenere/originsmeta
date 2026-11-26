@@ -1,6 +1,6 @@
 /**
  * Test del tracker dei prezzi del mercato di Steam (17/10/2026): `node --test src/lib/market/market.test.ts`.
- * - Funzioni pure di market.ts: lettura di una pagina di market/search/render (anche righe sporche), slug, classificazione
+ * - Funzioni pure di market.ts: lettura di una pagina della ricerca del mercato (anche righe sporche e raggruppate), slug, classificazione
  *   degli oggetti (controfigura e Origins), cursore del giro, cambio BCE, valute, variazioni, storico, grafico.
  * - Testi di marketLabels.ts nelle quattro lingue: titoli e description nei limiti di Google, stessi segnaposto,
  *   spazio insecabile del francese.
@@ -29,10 +29,13 @@ import {
   niceTicks,
   parseEcbUsd,
   parseSearchPage,
+  parseUsdCents,
+  groupedOnly,
   pastPrices,
   pricePoints,
   rangePoints,
   searchUrl,
+  STEAM_SEARCH_HEADERS,
   workflowDispatchRequest,
   sortBoard,
   defaultSortDir,
@@ -46,44 +49,90 @@ import { MARKET_PUBLIC, canSeeMarket } from "../community/badges.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { ANALYTICS_MEMBERS_ONLY, MARKET_MEMBERS_ONLY, membersOnlySection } from "../membersOnly.ts";
 
-const steamRow = (over: Record<string, unknown> = {}) => ({
-  name: "Lord Hades",
-  hash_name: "1145360-Lord Hades",
-  sell_listings: 3412,
-  sell_price: 7,
-  sell_price_text: "$0.07",
-  asset_description: { appid: 753, icon_url: "IzMF03bk9WpSBq-S", name_color: "", type: "Hades Trading Card", market_hash_name: "1145360-Lord Hades" },
+const steamRow = (over: Record<string, unknown> = {}, desc: Record<string, unknown> = {}) => ({
+  strHash: "Dracula Crimson Cup Tournament Card | Top 32_unique",
+  cSellOrders: 2,
+  cBuyOrders: 0,
+  unSteamFee: 3577,
+  unPublisherFee: 7154,
+  eCurrency: 1,
+  strMinSellSubtotal: "$822.75",
+  asset_description: {
+    appid: 4429430,
+    icon_url: "B3KZEgcCLTGQoM394qcZ",
+    name: "Unique Dracula Crimson Cup Tournament Card | Top 32",
+    name_color: "008CFF",
+    type: "Card",
+    market_name: "Unique Dracula Crimson Cup Tournament Card | Top 32",
+    market_hash_name: "Dracula Crimson Cup Tournament Card | Top 32_unique",
+    market_bucket_group_id: "",
+    ...desc,
+  },
   ...over,
 });
+const steamPage = (results: unknown[], total = results.length) => ({ data: { start: 0, total_count: total, grouping: 1, facets: [], results } });
 
 describe("pagina di Steam", () => {
-  test("legge prezzo, offerte, tipo e icona", () => {
-    const page = parseSearchPage({ success: true, total_count: 36, results: [steamRow()] });
-    assert.deepEqual(page, { total: 36, items: [{ hash_name: "1145360-Lord Hades", name: "Lord Hades", type: "Hades Trading Card", icon: "IzMF03bk9WpSBq-S", name_color: null, price: 7, listings: 3412 }] });
+  test("legge prezzo senza commissioni, offerte, tipo e icona", () => {
+    const page = parseSearchPage(steamPage([steamRow()], 1));
+    assert.deepEqual(page, {
+      total: 1,
+      seen: 1,
+      grouped: 0,
+      items: [{ hash_name: "Dracula Crimson Cup Tournament Card | Top 32_unique", name: "Unique Dracula Crimson Cup Tournament Card | Top 32", type: "Card", icon: "B3KZEgcCLTGQoM394qcZ", name_color: "008cff", price: 82275, listings: 2 }],
+    });
+  });
+  test("prezzi in dollari: migliaia con la virgola, niente centesimi, valori strani", () => {
+    assert.equal(parseUsdCents("$0.69"), 69);
+    assert.equal(parseUsdCents("$1,234.56"), 123456);
+    assert.equal(parseUsdCents("$12"), 1200);
+    assert.equal(parseUsdCents("0,69€"), null);
+    assert.equal(parseUsdCents("$1.2"), null);
+    assert.equal(parseUsdCents(69), null);
   });
   test("senza offerte il prezzo è null; righe sporche scartate", () => {
-    const page = parseSearchPage({
-      success: true,
-      total_count: 3,
-      results: [steamRow({ sell_listings: 0, sell_price: 0 }), steamRow({ hash_name: "", name: "" }), steamRow({ sell_price: PRICE_MAX + 1 }), null, "x"],
-    });
+    const page = parseSearchPage(
+      steamPage([steamRow({ cSellOrders: 0 }), steamRow({ strHash: "" }, { market_hash_name: "", market_name: "", name: "" }), steamRow({ strMinSellSubtotal: "$2,000,000.00" }), null, "x"], 5),
+    );
     assert.equal(page?.items.length, 2);
+    assert.equal(page?.seen, 5, "il cursore conta tutte le righe date da Steam");
     assert.equal(page?.items[0].price, null);
     assert.equal(page?.items[1].price, null, "prezzo fuori scala = nessun prezzo");
   });
+  test("le righe raggruppate (varianti di una skin CS2 unite da Steam) si saltano", () => {
+    const page = parseSearchPage(
+      steamPage([steamRow(), steamRow({ strHash: "MP9 | Starlight Protector (Field-Tested)", cSellOrders: 1205, strMinSellSubtotal: "$54.36" }, { market_bucket_group_id: "G182220EE083004" })], 18),
+    );
+    assert.equal(page?.items.length, 1);
+    assert.equal(page?.grouped, 1);
+    assert.equal(page?.seen, 2);
+    assert.equal(groupedOnly(page!), false);
+    const all = parseSearchPage(steamPage([steamRow({}, { market_bucket_group_id: "G18D2253004" })], 18))!;
+    assert.equal(groupedOnly(all), true, "solo righe raggruppate: giro saltato, dati di prima lasciati");
+    assert.equal(groupedOnly(parseSearchPage(steamPage([], 0))!), false, "una fonte vuota chiude il giro");
+  });
   test("icona con caratteri strani scartata, testo ripulito dai caratteri invisibili", () => {
-    const page = parseSearchPage({ success: true, total_count: 1, results: [steamRow({ name: "Lord​  Hades‮", asset_description: { icon_url: "../x", type: "T" } })] });
+    const page = parseSearchPage(steamPage([steamRow({}, { market_name: "Lord​  Hades‮", icon_url: "../x" })]));
     assert.equal(page?.items[0].icon, null);
     assert.equal(page?.items[0].name, "Lord Hades");
   });
-  test("risposta di errore = null", () => {
+  test("risposta di errore o in un'altra valuta = null", () => {
     assert.equal(parseSearchPage({ success: false }), null);
     assert.equal(parseSearchPage(null), null);
-    assert.equal(parseSearchPage({ success: true }), null);
+    assert.equal(parseSearchPage({ data: {} }), null);
+    assert.equal(parseSearchPage({ success: true, total_count: 1, results: [] }), null, "il formato di market/search/render non vale più");
+    assert.equal(parseSearchPage(steamPage([steamRow({ eCurrency: 3, strMinSellSubtotal: "0,69€" })])), null);
   });
-  test("indirizzo della ricerca con i filtri della fonte", () => {
-    assert.match(searchUrl(MARKET_SOURCES.standin, 20), /appid=730&norender=1&sort_column=name&sort_dir=asc&start=20&category_730_ItemSet%5B%5D=tag_set_community_30$/);
-    assert.match(searchUrl(MARKET_SOURCES.origins, -5), /appid=4429430&.*start=0$/);
+  test("indirizzo della ricerca con i filtri della fonte, in ordine di nome", () => {
+    const qp = (u: string) => {
+      const url = new URL(u);
+      assert.equal(url.origin + url.pathname, "https://steamcommunity.com/market/actions");
+      assert.equal(url.searchParams.get("q"), "Search");
+      return JSON.parse(url.searchParams.get("qp") ?? "null");
+    };
+    assert.deepEqual(qp(searchUrl(MARKET_SOURCES.standin, 30)), [{ appid: 730, start: 30, sort: 1, direction: 1, filters: { ItemSet: ["set_community_30"] } }]);
+    assert.deepEqual(qp(searchUrl(MARKET_SOURCES.origins, -5)), [{ appid: 4429430, start: 0, sort: 1, direction: 1 }]);
+    assert.equal(STEAM_SEARCH_HEADERS["x-valve-request-type"], "queryAction");
   });
 });
 
@@ -121,7 +170,7 @@ describe("slug e classificazione", () => {
     assert.equal(classifyItem("origins", { name: "Merlin Capsule", type: "Sealed Product Box" }, cards).kind, "pack", "il tipo di Steam vince");
   });
   test("righe per market_ingest: al massimo 100, con slug e classe", () => {
-    const items = parseSearchPage({ success: true, total_count: 1, results: [steamRow({ name: "AK-47 | Nightwish (Field-Tested)", hash_name: "AK-47 | Nightwish (Field-Tested)", asset_description: { type: "Covert Rifle" } })] })!.items;
+    const items = parseSearchPage(steamPage([steamRow({ strHash: "AK-47 | Nightwish (Field-Tested)" }, { market_name: "AK-47 | Nightwish (Field-Tested)", type: "Covert Rifle" })]))!.items;
     const rows = ingestRows("standin", Array(150).fill(items[0]));
     assert.equal(rows.length, INGEST_MAX_ITEMS);
     assert.equal(rows[0].slug, "ak-47-nightwish-field-tested");

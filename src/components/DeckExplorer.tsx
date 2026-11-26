@@ -28,6 +28,9 @@ type DeckCard = {
   alignment?: "good" | "evil" | "neutral";
   alignmentLabel?: string;
   ability?: string;
+  /** per la carta del gioco nell'anteprima (25/11/2026) */
+  slug?: string;
+  type?: string;
 };
 
 export type ExplorerDeck = {
@@ -38,7 +41,21 @@ export type ExplorerDeck = {
   href: string;
   tagline: string;
   /** `href` = scheda della carta, quando la Leggendaria è nel nostro database */
-  legendary?: { slug: string; name: string; href?: string; cover?: string; thumb?: string; image?: string; mana?: number };
+  legendary?: {
+    slug: string;
+    name: string;
+    href?: string;
+    cover?: string;
+    thumb?: string;
+    image?: string;
+    mana?: number;
+    /** per la carta del gioco nell'anteprima (25/11/2026) */
+    art?: string;
+    power?: number;
+    health?: number;
+    ability?: string;
+    alignment?: "good" | "evil" | "neutral";
+  };
   /** artwork della Leggendaria caricato da un Creator o dallo Staff (29/09/2026, `deckArtUrl`): prende il posto della
    *  miniatura ufficiale; l'anteprima al passaggio del mouse resta la carta ufficiale */
   art?: string;
@@ -509,7 +526,12 @@ export function DeckExplorer({ decks, labels, invite }: { decks: ExplorerDeck[];
                 <div className="w-[140px] shrink-0">
                   <Link href={d.href} className="block">
                     {d.legendary && (d.legendary.thumb || d.art) ? (
-                      <DeckCardArt card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana }} size="md" legendary art={d.art} />
+                      <DeckCardArt
+                        card={{ name: d.legendary.name, thumb: d.legendary.thumb, image: d.legendary.image, mana: d.legendary.mana, slug: d.legendary.art ? d.legendary.slug : undefined, type: "unit", art: d.legendary.art, power: d.legendary.power, health: d.legendary.health, ability: d.legendary.ability, alignment: d.legendary.alignment }}
+                        size="md"
+                        legendary
+                        art={d.art}
+                      />
                     ) : (
                       <span className="deck-card deck-card-md">
                         <span className="deck-card-initials" aria-hidden="true">

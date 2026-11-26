@@ -5,8 +5,8 @@
  * (collect.ts), le letture (queries.ts), le pagine /market e il grafico nel browser.
  *
  * Come funziona: Steam non dà lo storico dei prezzi senza un accesso (market/pricehistory risponde 400), quindi lo
- * storico lo costruisce il sito. A ogni giro del cron /api/cron/market si leggono le pagine pubbliche di
- * market/search/render (10 oggetti per pagina, solo dollari: prezzo più basso in vendita e numero di offerte) e il
+ * storico lo costruisce il sito. A ogni giro del cron /api/cron/market si leggono le pagine pubbliche della
+ * ricerca del mercato (`searchUrl`, 30 oggetti per pagina, solo dollari: prezzo più basso in vendita e numero di offerte) e il
  * database tiene una riga per oggetto, una per ora (30 giorni) e una per giorno (per sempre): blocco MERCATO di
  * supabase/schema.sql. Gli euro si calcolano con il cambio BCE del giorno, e le pagine lo dicono.
  *
@@ -28,8 +28,8 @@ export const MARKET_CURRENCIES: readonly MarketCurrency[] = ["EUR", "USD"];
 export type MarketSource = {
   id: MarketSourceId;
   appid: number;
-  /** filtri in più della ricerca di Steam (già codificati) */
-  query: string;
+  /** filtri della ricerca di Steam: categoria del filtro → tag (`filters` della ricerca del nuovo mercato) */
+  filters: Record<string, string[]>;
   /** l'appid dell'indirizzo della scheda su Steam (per la controfigura è 753, la comunità di Steam) */
   listingAppid: number;
   /** icone degli oggetti sulle pagine: Origins (illustrazioni delle carte, contenuto) e, dal 18/10/2026, la controfigura CS2 */
@@ -37,10 +37,10 @@ export type MarketSource = {
 };
 
 export const MARKET_SOURCES: Record<MarketSourceId, MarketSource> = {
-  origins: { id: "origins", appid: 4429430, query: "", listingAppid: 4429430, icons: true },
-  // Counter-Strike 2, collezione Dreams & Nightmares (tag del filtro "Collection" di market/appfilters/730); con le
-  // immagini delle skin dal 18/10/2026 (Pierluigi: "servono per la demo con Koin")
-  standin: { id: "standin", appid: 730, query: "category_730_ItemSet%5B%5D=tag_set_community_30", listingAppid: 730, icons: true },
+  origins: { id: "origins", appid: 4429430, filters: {}, listingAppid: 4429430, icons: true },
+  // Counter-Strike 2, collezione Dreams & Nightmares (tag del filtro "Collection"); con le immagini delle skin dal
+  // 18/10/2026 (Pierluigi: "servono per la demo con Koin")
+  standin: { id: "standin", appid: 730, filters: { ItemSet: ["set_community_30"] }, listingAppid: 730, icons: true },
 };
 export const MARKET_SOURCE_IDS = Object.keys(MARKET_SOURCES) as MarketSourceId[];
 
@@ -69,8 +69,8 @@ export function workflowDispatchRequest(token: string): { url: string; init: { m
   };
 }
 
-/** Oggetti per pagina di market/search/render (Steam ignora `count` e ne dà 10). */
-export const STEAM_PAGE_SIZE = 10;
+/** Oggetti per pagina della ricerca del mercato (dal 25/11/2026 Steam ne dà 30; prima, con market/search/render, 10). */
+export const STEAM_PAGE_SIZE = 30;
 /** Pausa fra due pagine dello stesso giro: Steam risponde 429 a chi va troppo veloce. */
 export const STEAM_PAGE_GAP_MS = 2500;
 /** Tetto di oggetti per chiamata di market_ingest (lo stesso controllo è nell'SQL). */
@@ -80,9 +80,28 @@ export const PRICE_MAX = 100_000_000;
 /** Ogni quanto gira il cron (vercel.json): le pagine dicono "controlliamo ogni 10 minuti". */
 export const MARKET_CRON_MINUTES = 10;
 
+/**
+ * La ricerca del mercato di Steam (25/11/2026). Fra il 24 e il 25/11/2026 Steam ha rifatto il mercato (pagine nuove fatte
+ * sul server) e market/search/render risponde 404 a tutti: la pagina /market/search ora carica i risultati con una
+ * "query action", GET /market/actions?q=Search&qp=[{…}] con l'intestazione `x-valve-request-type: queryAction`
+ * (`STEAM_SEARCH_HEADERS`), letta nel codice della pagina di Steam. Ordine per nome dalla A (sort 1, direction 1).
+ */
 export function searchUrl(source: MarketSource, start: number): string {
-  const extra = source.query ? `&${source.query}` : "";
-  return `https://steamcommunity.com/market/search/render/?appid=${source.appid}&norender=1&sort_column=name&sort_dir=asc&start=${Math.max(0, Math.floor(start))}${extra}`;
+  const query: Record<string, unknown> = { appid: source.appid, start: Math.max(0, Math.floor(start)), sort: 1, direction: 1 };
+  if (Object.keys(source.filters).length) query.filters = source.filters;
+  return `https://steamcommunity.com/market/actions?q=Search&qp=${encodeURIComponent(JSON.stringify([query]))}`;
+}
+
+/** Senza questa intestazione /market/actions risponde con la pagina HTML invece che con il JSON. */
+export const STEAM_SEARCH_HEADERS: Readonly<Record<string, string>> = { "x-valve-request-type": "queryAction", accept: "application/json" };
+
+/** "$1,234.56" → 123456 centesimi; null se il testo non è un prezzo in dollari. */
+export function parseUsdCents(text: unknown): number | null {
+  if (typeof text !== "string") return null;
+  const m = /^\s*\$\s*(\d{1,3}(?:,\d{3})*|\d+)(?:\.(\d{2}))?\s*(?:USD)?\s*$/.exec(text);
+  if (!m) return null;
+  const cents = Number(m[1].replace(/,/g, "")) * 100 + Number(m[2] ?? 0);
+  return Number.isSafeInteger(cents) ? cents : null;
 }
 
 /** La scheda dell'oggetto sul mercato di Steam (per il tasto "Vedi su Steam"). */
@@ -112,32 +131,58 @@ const cleanText = (v: unknown, max: number): string =>
 
 const intOr = (v: unknown, fallback: number): number => (typeof v === "number" && Number.isFinite(v) ? Math.floor(v) : fallback);
 
+/** Una pagina della ricerca letta: `seen` sono le righe date da Steam (per il cursore), `grouped` quelle saltate. */
+export type SearchPage = { total: number; items: RawMarketItem[]; seen: number; grouped: number };
+
 /**
- * Una pagina di market/search/render (norender=1). Restituisce null se la risposta non è quella attesa (Steam a volte
- * risponde `success: false` o una pagina di errore). Gli oggetti senza nome o con numeri fuori scala si scartano.
+ * Una pagina della ricerca del mercato (`{ data: { total_count, results } }` di /market/actions, dal 25/11/2026).
+ * Restituisce null se la risposta non è quella attesa o se i prezzi non sono in dollari (lo storico è in centesimi di
+ * dollaro: meglio un giro fallito che prezzi in un'altra valuta). Prezzo = `strMinSellSubtotal`, il prezzo più basso
+ * senza commissioni, lo stesso numero che dava `sell_price` di market/search/render (controllato il 25/11 sulla cassa
+ * Dreams & Nightmares: 70 l'ultimo giro vecchio, $0.69 il nuovo). Le righe raggruppate (`market_bucket_group_id`: per
+ * CS2 Steam unisce usura e StatTrak di una skin in una riga sola, con le offerte di tutto il gruppo e il nome di una
+ * variante) si saltano, perché attribuirebbero a una variante i numeri del gruppo; gli oggetti di Origins non sono
+ * raggruppati. Gli oggetti senza nome o con numeri fuori scala si scartano.
  */
-export function parseSearchPage(json: unknown): { total: number; items: RawMarketItem[] } | null {
+/**
+ * Una pagina fatta solo di righe raggruppate (dal 25/11/2026 è così per la controfigura CS2, cassa compresa): niente da
+ * salvare, e mandarla a market_ingest a fine giro azzererebbe prezzi e offerte di tutti gli oggetti della fonte, che su
+ * Steam ci sono ancora. Il raccoglitore salta il giro di quella fonte e i dati restano quelli dell'ultimo giro riuscito.
+ */
+export function groupedOnly(page: SearchPage): boolean {
+  return page.items.length === 0 && page.grouped > 0;
+}
+
+export function parseSearchPage(json: unknown): SearchPage | null {
   if (!json || typeof json !== "object") return null;
-  const j = json as { success?: unknown; total_count?: unknown; results?: unknown };
-  if (j.success !== true || !Array.isArray(j.results)) return null;
+  const data = (json as { data?: unknown }).data;
+  if (!data || typeof data !== "object") return null;
+  const j = data as { total_count?: unknown; results?: unknown };
+  if (typeof j.total_count !== "number" || !Array.isArray(j.results)) return null;
   const total = Math.max(0, intOr(j.total_count, 0));
   const items: RawMarketItem[] = [];
+  let grouped = 0;
   for (const r of j.results) {
     if (!r || typeof r !== "object") continue;
     const row = r as Record<string, unknown>;
+    if (row.eCurrency !== undefined && row.eCurrency !== 1) return null;
     const desc = (row.asset_description && typeof row.asset_description === "object" ? row.asset_description : {}) as Record<string, unknown>;
-    const hash = cleanText(row.hash_name ?? desc.market_hash_name, 300);
-    const name = cleanText(row.name ?? desc.market_name ?? hash, 300);
+    if (typeof desc.market_bucket_group_id === "string" && desc.market_bucket_group_id !== "") {
+      grouped += 1;
+      continue;
+    }
+    const hash = cleanText(row.strHash ?? desc.market_hash_name, 300);
+    const name = cleanText(desc.market_name ?? desc.name ?? hash, 300);
     if (!hash || !name) continue;
-    const listings = intOr(row.sell_listings, 0);
-    const cents = intOr(row.sell_price, -1);
+    const listings = intOr(row.cSellOrders, 0);
     if (listings < 0 || listings > PRICE_MAX) continue;
-    const price = listings > 0 && cents >= 0 && cents <= PRICE_MAX ? cents : null;
+    const cents = parseUsdCents(row.strMinSellSubtotal);
+    const price = listings > 0 && cents !== null && cents <= PRICE_MAX ? cents : null;
     const icon = typeof desc.icon_url === "string" && /^[A-Za-z0-9_-]{1,1000}$/.test(desc.icon_url) ? desc.icon_url : null;
     const color = typeof desc.name_color === "string" && /^[0-9a-fA-F]{6}$/.test(desc.name_color) ? desc.name_color.toLowerCase() : null;
     items.push({ hash_name: hash, name, type: cleanText(desc.type, 200), icon, name_color: color, price, listings });
   }
-  return { total, items };
+  return { total, items, seen: j.results.length, grouped };
 }
 
 /** Slug stabile dal nome dell'oggetto su Steam ("demo" è riservato a /market/demo). */
@@ -225,7 +270,7 @@ export function ingestRows(source: MarketSourceId, items: readonly RawMarketItem
   return items.slice(0, INGEST_MAX_ITEMS).map((it) => ({ ...it, ...classifyItem(source, it, cards), slug: marketSlug(it.hash_name) }));
 }
 
-/** Dove riprendere dopo una pagina e se il giro è finito (pagine in ordine di nome, 10 alla volta). */
+/** Dove riprendere dopo una pagina e se il giro è finito (pagine in ordine di nome; `got` = righe date da Steam). */
 export function nextCursor(start: number, total: number, got: number): { next: number; done: boolean } {
   const next = start + Math.max(got, 0);
   if (got <= 0 || next >= total) return { next: 0, done: true };

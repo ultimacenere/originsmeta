@@ -48,6 +48,11 @@ export function toGameCardInput(card: Card, locale: Locale): GameCardInput {
   };
 }
 
+/** La carta del gioco dai dati del modello: per i componenti che non hanno la `Card` intera (FlipCard, /cards). */
+export function GameCardFace({ input, lang, className = "" }: { input: GameCardInput; lang: Locale; className?: string }) {
+  return <div className={`omg-wrap${input.legendary ? " is-leg" : ""} ${className}`}>{render(gameCardTree(input, lang), 0)}</div>;
+}
+
 export function GameCard({ card, locale, className = "", priority = false }: { card: Card; locale: Locale; className?: string; priority?: boolean }) {
   const tree = gameCardTree(toGameCardInput(card, locale), locale);
   if (priority) {

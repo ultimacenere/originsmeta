@@ -77,27 +77,27 @@ describe("frase d'attacco: esempi", () => {
     const decks = { n: 1, total: 16 };
     assert.equal(
       lead("merlin", "en", decks),
-      "Merlin is a Legendary unit in Origins TCG, the digital card game by Koin Games. It costs 5 mana, has 5 Power and 5 Health, and is Neutral. It is a playable card (checked in the game on November 11, 2026). It leads 1 of the 16 decks published on OriginsMeta.",
+      "Merlin is a Legendary unit in Origins TCG, the digital card game by Koin Games. It costs 5 mana, has 5 Power and 5 Health, and is Neutral. It is a playable card (checked in the game on November 25, 2026). It leads 1 of the 16 decks published on OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "it", decks),
-      "Merlin è un'unità Leggendaria di Origins TCG, il gioco di carte digitale di Koin Games. Costa 5 mana, ha 5 di Potenza e 5 di Salute ed è Neutral. È nella collezione del gioco (verificata l'11 novembre 2026). Guida 1 dei 16 mazzi pubblicati su OriginsMeta.",
+      "Merlin è un'unità Leggendaria di Origins TCG, il gioco di carte digitale di Koin Games. Costa 5 mana, ha 5 di Potenza e 5 di Salute ed è Neutral. È nella collezione del gioco (verificata il 25 novembre 2026). Guida 1 dei 16 mazzi pubblicati su OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "es", decks),
-      "Merlin es una unidad Legendaria de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 5 de maná, tiene 5 de Poder y 5 de Salud y es Neutral. Está en la colección del juego (verificada el 11 de noviembre de 2026). Lidera 1 de los 16 mazos publicados en OriginsMeta.",
+      "Merlin es una unidad Legendaria de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 5 de maná, tiene 5 de Poder y 5 de Salud y es Neutral. Está en la colección del juego (verificada el 25 de noviembre de 2026). Lidera 1 de los 16 mazos publicados en OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "pt", decks),
-      "Merlin é um personagem Lendário de Origins TCG, o jogo de cartas digital da Koin Games. Custa 5 de mana, tem 5 de Poder e 5 de Vida e é Neutral. Está na coleção do jogo (verificado em 11 de novembro de 2026). Lidera 1 dos 16 decks publicados no OriginsMeta.",
+      "Merlin é um personagem Lendário de Origins TCG, o jogo de cartas digital da Koin Games. Custa 5 de mana, tem 5 de Poder e 5 de Vida e é Neutral. Está na coleção do jogo (verificado em 25 de novembro de 2026). Lidera 1 dos 16 decks publicados no OriginsMeta.",
     );
     assert.equal(
       lead("merlin", "de", decks),
-      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Kraft und 5 Leben und ist Neutral. Die Karte ist in der Sammlung (am 11. November 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
+      "Merlin ist ein Legendärer Charakter aus Origins TCG, dem digitalen Kartenspiel von Koin Games. Er kostet 5 Mana, hat 5 Kraft und 5 Leben und ist Neutral. Die Karte ist in der Sammlung (am 25. November 2026 im Spiel überprüft). Er führt 1 der 16 auf OriginsMeta veröffentlichten Decks an.",
     );
     assert.equal(
       lead("merlin", "ru", decks),
-      "Merlin — Легендарный персонаж из Origins TCG, цифровой карточной игры от Koin Games. Стоит 5 ед. маны, имеет Силу 5 и Здоровье 5, мировоззрение — Neutral. Карта есть в коллекции (проверено в игре 11 ноября 2026 г.). Возглавляет 1 из 16 опубликованных на OriginsMeta колод.",
+      "Merlin — Легендарный персонаж из Origins TCG, цифровой карточной игры от Koin Games. Стоит 5 ед. маны, имеет Силу 5 и Здоровье 5, мировоззрение — Neutral. Карта есть в коллекции (проверено в игре 25 ноября 2026 г.). Возглавляет 1 из 16 опубликованных на OriginsMeta колод.",
     );
   });
 
@@ -109,7 +109,7 @@ describe("frase d'attacco: esempi", () => {
     const decks = { n: 0, total: 16 };
     assert.equal(
       lead("spellbook", "es", decks),
-      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la colección del juego (verificado el 11 de noviembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
+      "Spellbook es un hechizo de Origins TCG, el juego de cartas digital de Koin Games. Cuesta 4 de maná y es Neutral. Está en la colección del juego (verificado el 25 de noviembre de 2026). Ninguno de los 16 mazos publicados en OriginsMeta lo usa todavía.",
     );
     assert.match(lead("spellbook", "it", decks), /^Spellbook è una magia di Origins TCG.*Costa 4 mana ed è Neutral\..*Nessuno dei 16 mazzi pubblicati su OriginsMeta la usa ancora\.$/);
     assert.match(lead("spellbook", "pt", decks), /^Spellbook é um feitiço de Origins TCG.*Custa 4 de mana e é Neutral\. Está na coleção do jogo \(verificado em .*Nenhum dos 16 decks publicados no OriginsMeta usa esta carta ainda\.$/);
@@ -630,12 +630,12 @@ describe("carte entrate nel gioco dopo la verifica (05/11/2026), verificate l'11
   });
   test("frase d'attacco e In breve dicono la verifica, la riga dei dati non dice più che manca", () => {
     const lead = partsText(cardLead(card("dr-frank"), facts("dr-frank", { n: 1, total: 16 }), "en"));
-    assert.match(lead, /checked in the game on November 11, 2026/);
+    assert.match(lead, /checked in the game on November 25, 2026/);
     assert.doesNotMatch(lead, /not been checked/);
     for (const slug of frank) assert.equal(asOfLine(card(slug), "en", cardSource), undefined, slug);
     assert.equal(
       partsText(cardBrief(card("merlin"), facts("merlin"), "en")[0].a),
-      "Yes: it is one of the 12 Legendaries in the game and was checked in the game's collection on November 11, 2026, so it can lead a deck in the deck builder.",
+      "Yes: it is one of the 12 Legendaries in the game and was checked in the game's collection on November 25, 2026, so it can lead a deck in the deck builder.",
     );
   });
   test("nel JSON-LD i testi del gioco in tutte le lingue, come le altre carte della collezione", () => {
