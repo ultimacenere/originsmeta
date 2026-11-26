@@ -11,7 +11,7 @@
  * `null` = annunci spenti: niente script, niente spazi, niente /ads.txt, banner dei cookie, piede e informativa come prima.
  * Lo stesso valore va in `NITRO_SITE_ID` di next.config.ts (il redirect di /ads.txt): il test li confronta.
  */
-export const NITRO_SITE_ID: string | null = null;
+export const NITRO_SITE_ID: string | null = "2882";
 
 /**
  * L'id numerico del consenso personalizzato per Google Analytics nella CMP di Nitro (pannello › Sites › il sito ›

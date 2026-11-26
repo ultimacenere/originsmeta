@@ -16,7 +16,7 @@ const spamKeys = ["r", "channel"] as const;
  * Nitro tiene aggiornato (guida "Setting up your ads.txt file": un 301, per la regola "one hop" dell'IAB; `permanent:
  * true` darebbe un 308, quindi qui `statusCode`).
  */
-const NITRO_SITE_ID: string | null = null;
+const NITRO_SITE_ID: string | null = "2882";
 
 /**
  * Lingua del visitatore per i redirect senza lingua (la radice e le sezioni): italiano; spagnolo anche per catalano,
