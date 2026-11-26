@@ -247,3 +247,20 @@ export async function readListWinrates(opts: { throwOnError?: boolean } = {}): P
     return null;
   }
 }
+
+/**
+ * Prototipi della tier list (26/11/2026, solo sul branch claude/tierlist-lab): gli scontri fra Leggendarie di una patch
+ * precisa, per confrontare le patch. Sola lettura; null se il database non risponde o prima della migrazione.
+ */
+export async function readTrackerMatchups(patch: PatchId): Promise<MatchupStat[] | null> {
+  const db = statsClient();
+  if (!db) return null;
+  try {
+    const data = await part(db, patch, "matchups");
+    if (data === "missing") return null;
+    return parseMatchupStats(data).filter((m) => isLegendaryKey(m.legendary) && isLegendaryKey(m.opponent));
+  } catch (error) {
+    console.warn(`[tier-lab] scontri ${patch}: ${error instanceof Error ? error.message : error}`);
+    return null;
+  }
+}
