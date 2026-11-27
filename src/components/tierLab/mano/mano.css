@@ -1,0 +1,870 @@
+/*
+  «La mano del meta» (prototipo 1 della tier list, 27/11/2026, branch claude/tierlist-lab). Prefisso tlm-.
+  Ogni fascia è una mano di carte del gioco a ventaglio; l'ispezione è la carta grande che si gira, col fascicolo sul retro.
+  Le carte si toccano solo con le ali della Leggendaria (19% a sinistra, fuori dalla cornice): il nome non si copre mai.
+  Palette del sito; con "riduci animazioni" niente transizioni né animazioni.
+*/
+
+.tlm-tone--S { --tone: var(--color-gold); }
+.tlm-tone--A { --tone: var(--color-mint); }
+.tlm-tone--B { --tone: var(--color-sky); }
+.tlm-tone--C { --tone: var(--color-chalk-muted); }
+.tlm-tone--D { --tone: var(--color-pink); }
+.tlm-tone--unranked { --tone: var(--color-pale-muted); }
+
+/* ---------- la risposta in cima ---------- */
+.tlm-answer {
+  margin-top: 1.25rem;
+  color: var(--color-pale);
+  line-height: 1.5;
+}
+.tlm-answer-main {
+  font-size: 1.1rem;
+}
+.tlm-answer-main a {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-gold);
+}
+.tlm-answer-src {
+  font-size: 0.875rem;
+  color: var(--color-chalk-muted);
+}
+.tlm-answer a:hover {
+  text-decoration: underline;
+}
+.tlm-answer-src a {
+  color: var(--color-mint);
+  white-space: nowrap;
+}
+.tlm-hint {
+  margin-top: 0.4rem;
+}
+
+/* ---------- il tavolo e le mani ---------- */
+.tlm-table {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem 1.5rem;
+}
+.tlm-hand {
+  --w: 180px;
+  grid-column: span 12;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tlm-hand--S { --w: 236px; }
+.tlm-hand--A,
+.tlm-hand--B { --w: 204px; }
+@media (min-width: 1024px) {
+  .tlm-hand--A,
+  .tlm-hand--B { grid-column: span 6; }
+  .tlm-hand--C { grid-column: span 5; }
+  .tlm-hand--D { grid-column: span 4; }
+  .tlm-hand--unranked { grid-column: span 3; }
+}
+
+.tlm-hand-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  align-self: center;
+}
+.tlm-hand-title {
+  font-size: 1.125rem;
+  color: var(--color-sky);
+  margin: 0;
+}
+.tlm-hand-mean {
+  font-size: 0.85rem;
+  color: var(--color-chalk-muted);
+  line-height: 1.3;
+}
+
+/* il timbro della fascia: inchiostro un po' consumato, storto */
+.tlm-stamp {
+  color: var(--tone, var(--color-sky));
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 3.4rem;
+  height: 3.4rem;
+  font-family: var(--font-title);
+  font-size: 1.55rem;
+  line-height: 1;
+  border: 3px solid currentColor;
+  border-radius: 0.75rem;
+  box-shadow: inset 0 0 0 3px var(--color-felt), inset 0 0 0 5px currentColor;
+  rotate: -9deg;
+  opacity: 0.92;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.9'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.9'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.tlm-stamp--sm {
+  width: 2.3rem;
+  height: 2.3rem;
+  font-size: 1.05rem;
+  border-width: 2px;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 2px var(--color-night), inset 0 0 0 3.5px currentColor;
+  rotate: 8deg;
+}
+
+/* la mano: carte a ventaglio, un po' ruotate e cadenti ai lati */
+.tlm-fan {
+  --rot: 5deg;
+  --drop: 9px;
+  position: relative;
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.6rem 0.5rem 3.1rem;
+}
+/* l'ombra della mano sul feltro */
+.tlm-fan::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 1.6rem;
+  height: 3rem;
+  background: radial-gradient(ellipse at center, rgba(8, 4, 18, 0.6) 0%, rgba(8, 4, 18, 0) 70%);
+  pointer-events: none;
+}
+.tlm-slot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: var(--w);
+}
+.tlm-slot + .tlm-slot {
+  margin-left: calc(var(--w) * -0.22);
+}
+.tlm-slot:hover,
+.tlm-slot:focus-within {
+  z-index: 5;
+}
+.tlm-card {
+  position: relative;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  transform-origin: 59% 115%;
+  transform: translateY(calc(var(--o2) * var(--drop))) rotate(calc(var(--o) * var(--rot)));
+  filter: drop-shadow(0 12px 14px rgba(8, 4, 18, 0.5));
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 220ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.tlm-card-face {
+  display: block;
+}
+.tlm-card:hover,
+.tlm-card:focus-visible {
+  transform: translateY(-30px) rotate(0deg) scale(1.08);
+  filter: drop-shadow(0 26px 24px rgba(8, 4, 18, 0.62)) drop-shadow(0 0 16px rgba(63, 196, 232, 0.32));
+}
+.tlm-card:focus-visible .omg-card {
+  outline: 3px solid var(--color-mint);
+  outline-offset: 4px;
+  border-radius: 5cqw;
+}
+/* riflesso: una luce che passa sulla carta quando si alza */
+.tlm-card .omg-card::after,
+.tlm-face--front .omg-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: 5cqw;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 34%, rgba(217, 223, 232, 0.17) 47%, rgba(217, 223, 232, 0.05) 53%, transparent 62%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  mix-blend-mode: screen;
+  transition: background-position 750ms ease;
+}
+.tlm-card:hover .omg-card::after,
+.tlm-card:focus-visible .omg-card::after,
+.tlm-face--front:hover .omg-card::after {
+  background-position: 0 0;
+}
+
+/* l'etichetta corta che compare quando la carta si alza */
+.tlm-tag {
+  position: absolute;
+  left: 19%;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.1rem 0.45rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.75rem;
+  background: var(--color-night-3);
+  color: var(--color-chalk);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+  pointer-events: none;
+}
+.tlm-tag-plus {
+  color: var(--color-gold);
+}
+.tlm-card:hover .tlm-tag,
+.tlm-card:focus-visible .tlm-tag {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: none) {
+  .tlm-tag {
+    position: relative;
+    top: auto;
+    margin: 0.55rem 0 0 19%;
+    opacity: 1;
+    transform: none;
+    white-space: normal;
+  }
+  .tlm-card:hover,
+  .tlm-card:focus-visible {
+    transform: translateY(calc(var(--o2) * var(--drop))) rotate(calc(var(--o) * var(--rot)));
+  }
+}
+
+/* ---------- telefono: ogni mano scorre di lato ---------- */
+@media (max-width: 639px) {
+  .tlm-table {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+  .tlm-hand,
+  .tlm-hand--A,
+  .tlm-hand--B { --w: 188px; }
+  .tlm-hand--S { --w: 204px; }
+  .tlm-hand {
+    align-items: stretch;
+  }
+  .tlm-hand-head {
+    align-self: flex-start;
+  }
+  .tlm-fan {
+    --rot: 2deg;
+    --drop: 3px;
+    justify-content: safe center;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    max-width: none;
+    margin-inline: -1rem;
+    padding: 2.1rem 1rem 1.25rem;
+  }
+  .tlm-fan::-webkit-scrollbar {
+    display: none;
+  }
+  .tlm-fan::before {
+    display: none;
+  }
+  .tlm-slot {
+    scroll-snap-align: center;
+  }
+  .tlm-slot:last-child {
+    padding-right: 1rem;
+  }
+}
+
+/* ---------- l'ispezione ---------- */
+html.tlm-lock {
+  overflow: hidden;
+}
+.tlm-inspect {
+  --C: min(400px, calc((100vw - 2rem) / 1.235), calc((100dvh - 13rem) / 1.556));
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--color-pale);
+  background: radial-gradient(ellipse at 50% 42%, rgba(33, 20, 60, 0.94) 0%, rgba(14, 7, 31, 0.97) 70%);
+  overflow: hidden;
+}
+.tlm-inspect::backdrop {
+  background: rgba(14, 7, 31, 0.5);
+}
+.tlm-sheet {
+  height: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 0.75rem 1rem calc(0.9rem + env(safe-area-inset-bottom));
+  animation: tlm-rise 320ms ease-out;
+}
+.tlm-sheet-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.tlm-sheet-count {
+  font-family: var(--font-display);
+  color: var(--color-chalk-muted);
+  font-variant-numeric: tabular-nums;
+}
+.tlm-btn {
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 2px solid var(--color-mint);
+  background: var(--color-night);
+  color: var(--color-mint);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.tlm-btn:hover {
+  background: var(--color-night-3);
+}
+.tlm-btn--ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-chalk);
+}
+.tlm-stage {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  justify-content: center;
+  align-items: center;
+  gap: 1.75rem;
+  perspective: 1800px;
+  touch-action: pan-y;
+}
+.tlm-nav {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid var(--color-sky);
+  background: var(--color-night);
+  color: var(--color-sky);
+  cursor: pointer;
+}
+.tlm-nav:hover {
+  background: var(--color-night-3);
+}
+.tlm-nav svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tlm-slide {
+  width: calc(var(--C) / 0.81);
+}
+.tlm-slide.is-open {
+  animation: tlm-pop 460ms cubic-bezier(0.2, 0.9, 0.25, 1.1);
+}
+.tlm-slide.is-next {
+  animation: tlm-in-next 300ms ease-out;
+}
+.tlm-slide.is-prev {
+  animation: tlm-in-prev 300ms ease-out;
+}
+/* la carta che si gira: le due facce nello stesso posto; il retro ha le ali a destra, così girato combacia */
+.tlm-flip {
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: 59.5% 53.6%;
+  transition: transform 720ms cubic-bezier(0.3, 0.75, 0.25, 1);
+}
+.tlm-flip.is-flipped {
+  transform: rotateY(180deg);
+}
+.tlm-face {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.tlm-face--front {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  filter: drop-shadow(0 24px 30px rgba(8, 4, 18, 0.6));
+}
+.tlm-stamp--card {
+  position: absolute;
+  top: calc(var(--C) * 0.2);
+  right: -3%;
+  width: calc(var(--C) * 0.2);
+  height: calc(var(--C) * 0.2);
+  font-size: calc(var(--C) * 0.095);
+  border-radius: calc(var(--C) * 0.04);
+  rotate: 11deg;
+  background: rgba(14, 7, 31, 0.55);
+  box-shadow: inset 0 0 0 3px rgba(14, 7, 31, 0.9), inset 0 0 0 5px currentColor;
+  z-index: 6;
+}
+.tlm-face--back {
+  position: absolute;
+  inset: 0;
+  padding: 9% 19% 0 0;
+  transform: rotateY(180deg);
+}
+.tlm-back {
+  width: 100%;
+  aspect-ratio: 100 / 144.5;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-night-3) transparent;
+  padding: 1rem 1rem 1.25rem;
+  border: 3px solid var(--color-sky);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(63, 196, 232, 0.14) 0%, rgba(63, 196, 232, 0) 45%),
+    linear-gradient(180deg, var(--color-night-3) 0%, var(--color-night) 28%, var(--color-night-2) 100%);
+  box-shadow: 0 24px 40px rgba(8, 4, 18, 0.6);
+  font-size: 0.9rem;
+  text-align: left;
+}
+.tlm-back:focus-visible {
+  outline: 3px solid var(--color-mint);
+  outline-offset: 3px;
+}
+.tlm-sheet-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-top: 0.75rem;
+}
+.tlm-sheet-hint {
+  font-size: 0.8rem;
+  color: var(--color-chalk-muted);
+}
+@media (hover: none) {
+  .tlm-sheet-hint {
+    display: none;
+  }
+}
+@media (max-width: 639px) {
+  .tlm-sheet {
+    animation-name: tlm-rise-full;
+    padding-inline: 0.75rem;
+  }
+  .tlm-stage {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "card card"
+      "prev next";
+    gap: 0.75rem;
+    align-content: center;
+  }
+  .tlm-slide {
+    grid-area: card;
+    justify-self: center;
+  }
+  .tlm-nav--prev {
+    grid-area: prev;
+    justify-self: end;
+  }
+  .tlm-nav--next {
+    grid-area: next;
+    justify-self: start;
+  }
+  /* sul telefono il retro è più lungo della carta: il fascicolo prende tutta l'altezza libera dello schermo */
+  .tlm-inspect {
+    --C: min(330px, calc((100vw - 1rem) / 1.235));
+  }
+  .tlm-flip {
+    height: max(calc(var(--C) * 1.556), calc(100dvh - 11.5rem));
+  }
+  .tlm-back {
+    aspect-ratio: auto;
+    height: 100%;
+    padding: 0.8rem 0.8rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 14px;
+  }
+}
+
+@keyframes tlm-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes tlm-rise-full {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes tlm-pop {
+  from {
+    opacity: 0;
+    transform: translateY(60px) scale(0.82) rotate(-4deg);
+  }
+}
+@keyframes tlm-in-next {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+}
+@keyframes tlm-in-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+}
+
+/* ---------- il fascicolo ---------- */
+.tlm-file {
+  color: var(--color-pale);
+}
+.tlm-file-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.tlm-file-name {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--color-sky);
+}
+.tlm-file-tier {
+  margin-top: 0.1rem;
+  font-size: 0.85rem;
+  color: var(--color-chalk-muted);
+}
+.tlm-file-tier strong {
+  color: var(--color-chalk);
+  font-family: var(--font-display);
+}
+.tlm-file-why {
+  margin-top: 0.5rem;
+  line-height: 1.45;
+}
+.tlm-file-block {
+  margin-top: 1.1rem;
+}
+.tlm-file-h {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--color-sky);
+}
+.tlm-file-note {
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--color-chalk-muted);
+}
+.tlm-file-empty {
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--color-chalk-muted);
+}
+.tlm-file-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+}
+.tlm-file-link {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+.tlm-file-link a {
+  color: var(--color-mint);
+}
+.tlm-file-link a:hover {
+  text-decoration: underline;
+}
+
+/* barra dell'intervallo */
+.tlm-bar {
+  margin-top: 1.4rem;
+}
+.tlm-bar-track {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--color-night-2);
+}
+.tlm-bar-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  opacity: 0.28;
+}
+.tlm-bar-zone--d { background: var(--color-pink); border-radius: 999px 0 0 999px; }
+.tlm-bar-zone--c { background: var(--color-chalk-muted); }
+.tlm-bar-zone--b { background: var(--color-sky); }
+.tlm-bar-zone--a { background: var(--color-mint); border-radius: 0 999px 999px 0; }
+.tlm-bar-range {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  min-width: 4px;
+  border-radius: 999px;
+  background: var(--color-chalk);
+  opacity: 0.9;
+}
+.tlm-bar-dot {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: var(--color-gold);
+  box-shadow: 0 0 0 2px var(--color-night);
+}
+.tlm-bar-half {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-chalk);
+}
+.tlm-bar-half::before {
+  content: "50%";
+  position: absolute;
+  bottom: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.68rem;
+  line-height: 1;
+  color: var(--color-chalk);
+  font-variant-numeric: tabular-nums;
+}
+.tlm-bar-legend {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--color-chalk-muted);
+  font-variant-numeric: tabular-nums;
+}
+.tlm-bar-legend b {
+  color: var(--color-chalk);
+  font-weight: 700;
+}
+
+/* scontri */
+.tlm-mu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+.tlm-mu-row {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 0.5rem;
+  align-items: center;
+}
+.tlm-mu-thumb {
+  grid-row: span 2;
+  width: 30px;
+  height: 42px;
+  border-radius: 3px;
+  object-fit: cover;
+  background: var(--color-night-3);
+}
+.tlm-mu-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  line-height: 1.15;
+  color: var(--color-pale);
+  overflow-wrap: anywhere;
+}
+.tlm-mu-num {
+  font-size: 0.76rem;
+  line-height: 1.2;
+  color: var(--color-chalk-muted);
+  font-variant-numeric: tabular-nums;
+}
+.tlm-mu-num .is-good { color: var(--color-good); font-weight: 700; }
+.tlm-mu-num .is-bad { color: var(--color-bad); font-weight: 700; }
+
+/* dopo il 9/11 */
+.tlm-after {
+  list-style: none;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.tlm-after-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+.tlm-after-day {
+  font-family: var(--font-display);
+  color: var(--color-chalk);
+  min-width: 8.5rem;
+}
+.tlm-after-num {
+  color: var(--color-pale);
+  font-variant-numeric: tabular-nums;
+}
+.tlm-chip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  padding: 0 0.3rem;
+  border-radius: 0.4rem;
+  background: var(--tone);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+.tlm-changes {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.tlm-change {
+  display: grid;
+  gap: 0.1rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.tlm-change-kind {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-sky);
+}
+.tlm-change.is-nerf .tlm-change-kind { color: var(--color-pink); }
+.tlm-change.is-buff .tlm-change-kind { color: var(--color-mint); }
+.tlm-change-stats {
+  color: var(--color-chalk-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* community e voti */
+.tlm-crowd {
+  margin: 1.1rem 0 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+}
+.tlm-crowd dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-sky);
+}
+.tlm-crowd dd {
+  margin: 0.25rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--color-pale);
+}
+
+/* ---------- metodo e archivio (testo nell'HTML) ---------- */
+.tlm-method {
+  margin-top: 3.5rem;
+  max-width: 46rem;
+}
+.tlm-method p {
+  margin-top: 0.6rem;
+  color: var(--color-pale);
+  line-height: 1.6;
+}
+.tlm-method a,
+.tlm-archive a {
+  color: var(--color-mint);
+}
+.tlm-archive {
+  margin-top: 2.5rem;
+}
+.tlm-archive > summary {
+  cursor: pointer;
+  width: fit-content;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-sky);
+}
+.tlm-archive > summary h2 {
+  margin: 0;
+}
+.tlm-archive-list {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+  gap: 1.25rem;
+}
+.tlm-archive-item {
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+  scroll-margin-top: 8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tlm-card,
+  .tlm-tag,
+  .tlm-flip,
+  .tlm-card .omg-card::after,
+  .tlm-face--front .omg-card::after {
+    transition: none;
+  }
+  .tlm-sheet,
+  .tlm-slide.is-open,
+  .tlm-slide.is-next,
+  .tlm-slide.is-prev {
+    animation: none;
+  }
+}
