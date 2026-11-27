@@ -69,15 +69,17 @@ type DeckRow = { user_id: string; codes: string[] };
 export type TournamentCore = {
   t: Tournament;
   stages: StageOptions;
-  /** solo per svizzera, gironi e doppia eliminazione (come prima: null per l'eliminazione diretta) */
-  fo: FormatOptions | null;
+  /** opzioni dei formati per ogni torneo (la stanza partita le usa sempre, la scheda solo fuori dall'eliminazione diretta) */
+  formatOptions: FormatOptions;
   judges: TournamentJudge[];
   announcements: AnnouncementsResult;
   decks: DeckRow[];
   banStats: BanTally[];
 };
 
-export type TournamentView = TournamentCore & {
+export type TournamentView = Omit<TournamentCore, "formatOptions"> & {
+  /** solo per svizzera, gironi e doppia eliminazione (come prima: null per l'eliminazione diretta) */
+  fo: FormatOptions | null;
   players: TournamentPlayer[];
   matches: TournamentMatch[];
   others: Tournament[];
@@ -105,7 +107,7 @@ async function readCore(slug: string): Promise<TournamentCore | null> {
   const { top_cut, top_cut_hold, top_cut_released_at, deck_ban, swiss_rounds, group_size, group_advance, group_seeding, sideboard, de_pools, de_qualify, de_pool_size, de_qualifier, ...base } = row;
   const t = shapeTournament(base);
   const stages = stageOptionsOf({ top_cut, top_cut_hold, top_cut_released_at, deck_ban });
-  const fo = isStagedFormat(t.format) ? formatOptionsOf({ swiss_rounds, group_size, group_advance, group_seeding, sideboard, de_pools, de_qualify, de_pool_size, de_qualifier }) : null;
+  const formatOptions = formatOptionsOf({ swiss_rounds, group_size, group_advance, group_seeding, sideboard, de_pools, de_qualify, de_pool_size, de_qualifier });
   const [judges, announcements, decks, banStats] = await Promise.all([
     listJudges(t.id, c, true),
     listAnnouncements(c, [t.id]),
@@ -114,7 +116,7 @@ async function readCore(slug: string): Promise<TournamentCore | null> {
   ]);
   // "unavailable" (tabella non ancora migrata) è una risposta vera e resta; un errore qualsiasi no
   if (!announcements.ok && announcements.error === "generic") throw new Error("[tournaments] core: announcements");
-  return { t, stages, fo, judges, announcements, decks, banStats };
+  return { t, stages, formatOptions, judges, announcements, decks, banStats };
 }
 
 function cachedCore(slug: string, tag: string): Promise<TournamentCore | null> {
@@ -181,6 +183,25 @@ async function sessionView(slug: string, client: Db, user: SessionUser | null): 
 }
 
 /**
+ * La parte comune di un torneo pubblico per le altre pagine del torneo (27/11/2026: la stanza partita, che a ogni apertura
+ * e a ogni cambio di stato rileggeva tutti gli iscritti e tutte le partite per nomi e struttura del tabellone). `null`
+ * per un torneo privato, inesistente o se la cache non risponde: la pagina legge come prima con la sessione.
+ */
+export async function loadPublicTournament(slug: string): Promise<{ core: TournamentCore; players: TournamentPlayer[]; matches: TournamentMatch[] } | null> {
+  const tag = tournamentTag(slug);
+  if (!tag) return null;
+  try {
+    const core = await cachedCore(slug, tag);
+    if (!core) return null;
+    const [players, matches] = await Promise.all([cachedPlayers(core.t.id, tag), cachedMatches(core.t.id, core.t.format, tag)]);
+    return { core, players, matches };
+  } catch (e) {
+    console.error("[tournaments] cache del torneo:", e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+/**
  * Tutto quello che serve alla scheda `/tournaments/<slug>`, una volta per richiesta. `null`: niente client Supabase o
  * nessun torneo visibile a chi guarda (404).
  */
@@ -196,12 +217,14 @@ export const loadTournamentView = cache(async (slug: string): Promise<Tournament
     console.error("[tournaments] cache della scheda:", e instanceof Error ? e.message : e);
   }
   if (core) {
+    const { formatOptions, ...shared } = core;
     const t = core.t;
     try {
       const [players, matches, others, mine] = await Promise.all([cachedPlayers(t.id, tag), cachedMatches(t.id, t.format, tag), listedTournaments(), readPersonal(client, user, t)]);
       const viewer = user?.id ?? null;
       return {
-        ...core,
+        ...shared,
+        fo: isStagedFormat(t.format) ? formatOptions : null,
         players: overlayPlayers(players, viewer, mine.player),
         matches: overlayMatches(matches, mine.matches),
         others,
