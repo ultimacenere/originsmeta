@@ -740,6 +740,26 @@ Pierluigi: "una royale rumble tra i creators italiani con giveaway di oltre 125 
 
 Quando il canale Twitch ufficiale (twitch.tv/originstcg, profilo OriginsTCG del sito) è in diretta su Origins TCG, al posto dello slider della home c'è la diretta; quando finisce torna lo slider (Pierluigi: "quando da Twitch loro vanno online, al posto del nostro slider in homepage deve apparire la loro diretta; finisce la diretta, torna tutto come prima"). `OfficialLiveHero` (`src/components/`) avvolge `HeroSlider`: la home resta ISR con lo slider nell'HTML, il browser legge /api/live ogni minuto a scheda visibile (promessa condivisa con il bollino LIVE e la striscia del calendario). Lettore a clic di /live (`LivePlayer`, placement `home_hero`). Testi e regole in `src/lib/officialLive.ts`, test `officialLive.test.ts`. Misura ("voglio anche un tracker di quanti guardano la diretta e quanti cliccano per andare su Twitch"): `official_live_view`, `video_play` (placement home_hero), `official_live_twitch` (method button | player). Profilo: `node scripts/create-originstcg.mjs --apply` (fatto il 18/10/2026). Prova in locale con `LIVE_FIXTURE` in `.env.development.local` (solo `next dev`). **Cast della Crimson Cup (18/10/2026**, Pierluigi: "il coach farà il cast della Crimson tra il 19 e il 21, possiamo mettere lui live solo per il pubblico italiano in sostituzione di quello ufficiale di Origins? se il coach non sta castando allora ritorna o manteniamo quello ufficiale di Origins"): `HERO_STREAMS` in `officialLive.ts` è un elenco in ordine di priorità con lingua e periodo; sulle pagine italiane dal 19 al 21 ottobre 2026 (ora italiana) viene prima la diretta di CoachCrono (profilo `coachcrono`, Creator), titolo "La Crimson Cup in diretta in italiano con CoachCrono"; se non è in diretta vale quella ufficiale, se nessuna lo slider; le altre lingue solo l'ufficiale. Dal 20/10/2026 Robip (profilo `robip-origins`) è secondo sulle pagine italiane. Sulle pagine inglesi, dal 22 al 25 ottobre 2026 (fine del 25 sulla costa est), viene prima la diretta di vint3n (profilo `vint3n`, twitch.tv/vint3n; Pierluigi: "aggiungi vint3n come prio 1 per gli inglesi quando ci sono i broadcasting dei tornei"), titolo "The Crimson Cup live with vint3n"; se non è in diretta vale quella ufficiale. Gli eventi hanno `stream` (official | coachcrono | robip | vint3n). L'ora del confronto è quella della risposta di /api/live (`at` di `useLiveUsers`).
 
+## Analytics a sezioni (27/11/2026)
+
+`/analytics` è un menu di sezioni con una pagina ciascuna (Pierluigi: "sotto analytics diverse sezioni, in cui inseriamo le analisi"). Rotte nel gruppo `src/app/[locale]/(site)/analytics/(sections)/`:
+
+| Sezione | Indirizzo | Cosa mostra |
+| --- | --- | --- |
+| Panoramica | `/analytics` | la patch in breve, podio, chi sale e chi scende, mazzi da copiare, carte più giocate, testi, fonte e Dataset |
+| Leggendarie | `/analytics/legendaries`, `/analytics/legendaries/<slug>` | podio e fasce di risultato; per Leggendaria carte con e senza, scontri, liste da copiare, patch nel tempo |
+| Mazzi | `/analytics/decks` | liste esatte da copiare (codice del gioco, deck builder), archetipi dalle liste |
+| Carte | `/analytics/cards` | «Quando si gioca» (round medio) e tabella con ricerca |
+| Scontri | `/analytics/matchups` | `MatchupExplorer` |
+| Chi sale e chi scende | `/analytics/trends` | Leggendarie e carte fra due patch, carte cambiate da Koin |
+| La partita, Luoghi | `/analytics/match`, `/analytics/locations` | i posti per i dati del Tracker 2.0, senza numeri |
+
+- **Patch**: `?patch=<id>` fra quelle con numeri dalla 0.7 (`SECTION_PATCHES` in `src/lib/community/analyticsSections.ts`), confronto con la precedente. Le pagine si rendono a ogni richiesta; le letture (`readTrackerPatch`) restano in cache 5 minuti come prima.
+- **Numeri**: `src/lib/tracker/sections.ts` (puro: conversione da chiavi a slug, Leggendarie e scontri a due lati, carte di una Leggendaria con e senza, spostamenti netti), test `node --test src/lib/tracker/sections.test.ts` (anche chiavi e segnaposto dei testi nelle otto lingue).
+- **Testi**: `src/lib/analyticsSectionsLabels.ts`, `analyticsLegendariesLabels.ts`, `analyticsDecksCardsLabels.ts`.
+- **Accesso**: riservate agli iscritti come la Panoramica (`ANALYTICS_SECTIONS` in `src/lib/membersOnly.ts` e matcher di `src/proxy.ts`); noindex, fuori da sitemap e hreflang. Per provarle in locale senza accesso: `ANALYTICS_MEMBERS_ONLY = false` solo sul proprio PC, mai nel commit.
+- **Copia del codice**: evento ★ `game_code_copy` con placement `analytics`.
+
 ## Tracker dei prezzi del Mercato di Steam (fase 1, 17/10/2026)
 
 Prezzo più basso in vendita e offerte di ogni carta, variante e oggetto di Origins TCG sul Mercato della Comunità di Steam, con lo storico costruito dal sito (Pierluigi: "il tool che risulterà un gamechanger è un tracker dei prezzi delle carte in tempo reale"). Il 17/10/2026 il mercato di Origins è chiuso (0 oggetti, anche per la demo): la fase 1 è il motore, pronto a registrare dal primo oggetto in vendita, provato su un gioco già sul mercato.

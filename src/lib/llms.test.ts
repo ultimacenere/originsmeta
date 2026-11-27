@@ -207,9 +207,11 @@ describe("public/llms.txt", () => {
       }
       const rest = m[2] ?? "";
       const [section, slug, extra] = rest.split("/");
+      // le sezioni di Analytics stanno nel gruppo di rotte (sections) (27/11/2026)
+      const pageAt = (r: string) => existsSync(app(`[locale]/(site)/${r}/page.tsx`)) || existsSync(app(`[locale]/(site)/${r.replace(/^analytics(?=\/|$)/, "analytics/(sections)")}/page.tsx`));
       // gli elenchi dentro una sezione (/guides/community, /news/comics) sono pagine, non slug di guide o news
       const ok =
-        (rest !== "" && !extra && existsSync(app(`[locale]/(site)/${rest}/page.tsx`))) ||
+        (rest !== "" && !extra && pageAt(rest)) ||
         rest === ""
           ? existsSync(app("[locale]/(home)/page.tsx"))
           : section === "guides" && slug
@@ -220,7 +222,7 @@ describe("public/llms.txt", () => {
                 ? newsSlugs.has(slug) && !extra
                 : section === "cards" && slug
                   ? Boolean(getCard(slug)) && !extra
-                  : existsSync(app(`[locale]/(site)/${rest}/page.tsx`));
+                  : pageAt(rest);
       if (!ok) problems.push(p);
     }
     assert.deepEqual(problems, []);

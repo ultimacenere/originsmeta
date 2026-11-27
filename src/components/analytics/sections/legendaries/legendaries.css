@@ -1,0 +1,586 @@
+/* Sezione «Leggendarie» di Analytics a sezioni (27/11/2026): podio, fasce di risultato, tabella completa e pagina di una
+   Leggendaria (carte al tocco, 3 per riga sul telefono). */
+
+/* ---------- classifica: fasce di risultato ---------- */
+.lg-bands {
+  display: grid;
+  gap: 22px;
+}
+.lg-band {
+  --lg-tone: var(--color-pale);
+  border-left: 4px solid var(--lg-tone);
+  padding-left: 14px;
+}
+.lg-band.is-up-sure {
+  --lg-tone: var(--color-good);
+}
+.lg-band.is-up {
+  --lg-tone: #7af6e8;
+}
+.lg-band.is-even {
+  --lg-tone: var(--color-pale);
+}
+.lg-band.is-down {
+  --lg-tone: #ff79b7;
+}
+.lg-band.is-down-sure {
+  --lg-tone: var(--color-crimson);
+}
+.lg-band-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--lg-tone);
+}
+.lg-band-title span {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  color: var(--color-pale-muted);
+}
+.lg-band-cards {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 16px 14px;
+  list-style: none;
+  padding: 0;
+}
+.lg-bcard a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  border-radius: 12px;
+  transition: transform 0.15s ease;
+}
+.lg-bcard a:hover,
+.lg-bcard a:focus-visible {
+  transform: translateY(-3px);
+}
+.lg-bcard-face {
+  display: block;
+  width: 100%;
+  max-width: 132px;
+}
+.lg-bcard-wr {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.lg-bcard-wr .sez-num {
+  font-size: 1.25rem;
+}
+.lg-bcard-sub {
+  font-size: 0.75rem;
+  color: var(--color-pale-muted);
+  line-height: 1.3;
+}
+
+/* ---------- classifica: tabella completa, chiusa ---------- */
+.lg-table > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  cursor: pointer;
+  list-style: none;
+}
+.lg-table > summary::-webkit-details-marker {
+  display: none;
+}
+.lg-table > summary .sez-h2::after {
+  content: " ▾";
+  font-size: 0.9em;
+  color: var(--color-mint);
+}
+.lg-table[open] > summary .sez-h2::after {
+  content: " ▴";
+}
+.lg-list {
+  margin-top: 16px;
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+}
+.lg-row {
+  display: grid;
+  grid-template-columns: 28px 48px minmax(0, 1.3fr) minmax(140px, 1.6fr) 64px 104px;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  color: var(--color-pale);
+}
+.lg-row:hover,
+.lg-row:focus-visible {
+  border-color: rgba(63, 196, 232, 0.45);
+  background: rgba(63, 196, 232, 0.06);
+}
+.lg-rank {
+  font-family: var(--font-pen, "Segoe Print"), "Segoe Print", cursive;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color-gold);
+  text-align: center;
+}
+.lg-face {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: #21133a;
+}
+.lg-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+.lg-name {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.lg-name b {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-chalk);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lg-name span {
+  font-size: 0.8rem;
+  color: var(--color-pale-muted);
+}
+.lg-wr {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.lg-wr-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--color-pale-muted);
+}
+.lg-wr-top .sez-num {
+  font-size: 1.05rem;
+}
+.lg-move {
+  text-align: right;
+}
+@media (max-width: 720px) {
+  .lg-row {
+    grid-template-columns: 22px 40px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "rank face name move"
+      "rank face wr spark";
+    gap: 6px 10px;
+    padding: 8px;
+  }
+  .lg-rank {
+    grid-area: rank;
+    font-size: 1.3rem;
+  }
+  .lg-face {
+    grid-area: face;
+    width: 40px;
+    height: 40px;
+  }
+  .lg-name {
+    grid-area: name;
+  }
+  .lg-wr {
+    grid-area: wr;
+  }
+  .lg-move {
+    grid-area: move;
+  }
+  .lg-spark {
+    grid-area: spark;
+    align-self: end;
+  }
+  .lg-band-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px 10px;
+  }
+  .lg-bcard-wr .sez-num {
+    font-size: 1.05rem;
+  }
+}
+
+/* ---------- pagina di una Leggendaria ---------- */
+.lg-head {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) 1fr;
+  gap: 28px;
+  align-items: center;
+}
+.lg-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px 18px;
+}
+.lg-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lg-fact span {
+  font-size: 0.82rem;
+  color: var(--color-pale-muted);
+}
+.lg-fact .sez-num {
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+.lg-fact small {
+  font-size: 0.78rem;
+  color: var(--color-pale-muted);
+}
+
+/* carte che porta: carta e quota, il resto al tocco */
+.lg-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 20px 16px;
+  list-style: none;
+  padding: 0;
+}
+.lg-card {
+  position: relative;
+}
+.lg-card > summary {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 12px;
+}
+.lg-card > summary::-webkit-details-marker {
+  display: none;
+}
+.lg-card > summary:focus-visible {
+  outline: 2px solid var(--color-mint);
+  outline-offset: 4px;
+}
+.lg-card-face {
+  display: block;
+  width: 100%;
+  max-width: 140px;
+  transition: transform 0.15s ease;
+}
+.lg-card > summary:hover .lg-card-face,
+.lg-card[open] .lg-card-face {
+  transform: translateY(-3px);
+}
+.lg-card-share {
+  font-size: 0.9rem;
+  color: var(--color-pale);
+}
+.lg-card-share b {
+  font-family: "OM Game", "Montserrat", system-ui, sans-serif;
+  font-weight: 800;
+  color: #fff;
+}
+.lg-card[open] .lg-card-share b {
+  color: var(--color-mint);
+}
+.lg-card .pen-note {
+  position: absolute;
+  top: -8px;
+  right: -2px;
+  z-index: 2;
+  font-size: 1.15rem;
+  rotate: 6deg;
+}
+.lg-card .pen-note.is-up {
+  color: var(--color-good);
+}
+.lg-card .pen-note.is-down {
+  color: var(--color-crimson);
+}
+.lg-card-pop {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(3, 0, 8, 0.45);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--color-pale);
+  text-align: center;
+}
+.lg-card-pop b {
+  color: #fff;
+}
+.lg-card-pop small {
+  color: var(--color-pale-muted);
+}
+.lg-card-diff {
+  margin-top: 2px;
+  color: var(--color-pale-muted);
+}
+.lg-more {
+  margin-top: 18px;
+}
+.lg-more > summary {
+  display: inline-block;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-mint);
+}
+.lg-more[open] > summary {
+  margin-bottom: 16px;
+}
+
+/* scontri */
+.lg-vs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 24px;
+}
+.lg-vs h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.lg-vs ul {
+  margin-top: 8px;
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+}
+.lg-vs-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) minmax(70px, 1fr) 76px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 6px;
+  border-radius: 10px;
+}
+.lg-vs-row:hover {
+  background: rgba(63, 196, 232, 0.06);
+}
+.lg-vs-row .lg-face {
+  width: 34px;
+  height: 34px;
+}
+.lg-vs-num {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+.lg-vs-num small {
+  font-size: 0.72rem;
+  color: var(--color-pale-muted);
+}
+
+/* liste migliori: miniature ufficiali */
+.lg-lists {
+  display: grid;
+  gap: 16px;
+}
+.lg-listcard {
+  padding: 16px;
+}
+.lg-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+}
+.lg-list-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-chalk);
+}
+.lg-thumbs {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+}
+.lg-thumbs a {
+  display: block;
+  border-radius: 6px;
+  transition: transform 0.15s ease;
+}
+.lg-thumbs a:hover,
+.lg-thumbs a:focus-visible {
+  transform: translateY(-3px);
+}
+.lg-thumbs img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+.lg-thumb-none {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 160 / 230;
+  padding: 4px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.65rem;
+  text-align: center;
+  color: var(--color-pale);
+}
+.lg-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* nel tempo */
+.lg-chart {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+}
+.lg-chart-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  fill: var(--color-chalk);
+}
+.lg-chart-val {
+  font-family: "OM Game", "Montserrat", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  fill: #fff;
+}
+.lg-chart-axis {
+  font-size: 12px;
+  fill: var(--color-pale-muted);
+}
+.lg-time {
+  margin-top: 14px;
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+}
+.lg-time-row {
+  display: grid;
+  grid-template-columns: 120px minmax(120px, 1fr) 120px minmax(0, 2fr);
+  gap: 14px;
+  align-items: start;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.lg-time-patch {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-chalk);
+}
+.lg-changes {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--color-pale);
+}
+.lg-kind {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.lg-kind.is-buff {
+  background: rgba(49, 227, 189, 0.18);
+  color: var(--color-good);
+}
+.lg-kind.is-nerf {
+  background: rgba(200, 30, 122, 0.22);
+  color: #ff79b7;
+}
+.lg-kind.is-other {
+  background: rgba(242, 210, 60, 0.18);
+  color: var(--color-gold);
+}
+
+@media (max-width: 720px) {
+  .lg-head {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .lg-head-card {
+    width: 46%;
+    max-width: 180px;
+    margin: 0 auto;
+  }
+  .lg-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+  .lg-fact .sez-num {
+    font-size: 1.3rem;
+  }
+  .lg-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 10px;
+  }
+  .lg-card .pen-note {
+    font-size: 1rem;
+    top: -10px;
+  }
+  .lg-card-share {
+    font-size: 0.82rem;
+  }
+  .lg-card-pop {
+    padding: 6px;
+    font-size: 0.72rem;
+  }
+  .lg-thumbs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .lg-time-row {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+  }
+  .lg-time-row > :nth-child(3) {
+    display: none;
+  }
+  .lg-time-row .lg-changes {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 420px) {
+  .lg-vs-row {
+    grid-template-columns: 30px minmax(0, 1fr) 70px;
+  }
+  .lg-vs-row .sez-bar {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lg-bcard a,
+  .lg-card-face,
+  .lg-thumbs a {
+    transition: none;
+  }
+}

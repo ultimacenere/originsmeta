@@ -47,7 +47,7 @@ import { marketLabels } from "../marketLabels.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 import { MARKET_PUBLIC, canSeeMarket } from "../community/badges.ts";
 // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
-import { ANALYTICS_MEMBERS_ONLY, MARKET_MEMBERS_ONLY, membersOnlySection } from "../membersOnly.ts";
+import { ANALYTICS_MEMBERS_ONLY, ANALYTICS_SECTIONS, MARKET_MEMBERS_ONLY, membersOnlySection } from "../membersOnly.ts";
 
 const steamRow = (over: Record<string, unknown> = {}, desc: Record<string, unknown> = {}) => ({
   strHash: "Dracula Crimson Cup Tournament Card | Top 32_unique",
@@ -404,11 +404,16 @@ describe("Mercato e Analytics riservati agli iscritti (03/11/2026)", () => {
       assert.deepEqual(membersOnlySection(`/${l}/analytics`), { locale: l, section: "analytics" }, l);
     }
     for (const p of ["/it/analytics/crimson-cup", "/it/analytics/crimson-cup/playoffs", "/it/tracker", "/it/marketing", "/xx/market", "/market", "/it/tournaments"]) assert.equal(membersOnlySection(p), null, p);
+    // le sezioni di Analytics (27/11/2026) sono riservate come la Panoramica; la Crimson Cup e un percorso a caso no
+    for (const p of ["/it/analytics/legendaries", "/en/analytics/legendaries/merlin", "/zh-cn/analytics/decks", "/de/analytics/cards", "/fr/analytics/matchups", "/es/analytics/trends", "/pt/analytics/match", "/ru/analytics/locations"])
+      assert.equal(membersOnlySection(p)?.section, "analytics", p);
+    assert.equal(membersOnlySection("/it/analytics/legendaries-x"), null);
   });
   test("il proxy fa passare /analytics e scambia la pagina per chi non ha l'accesso", () => {
     const proxy = fs.readFileSync(new URL("../../proxy.ts", import.meta.url), "utf8");
     assert.match(proxy, /"\/:locale\(en\|it\|es\|fr\|pt\|de\|ru\|zh-cn\)\/analytics"/);
     assert.match(proxy, /if \(gate && !data\?\.claims\?\.sub\) return membersOnly\(\);/);
+    for (const sec of ANALYTICS_SECTIONS) assert.ok(proxy.includes(`analytics/:section(`) && proxy.includes(sec), `sezione ${sec} nel matcher`);
     assert.match(proxy, /members-only/);
   });
   test("pagina riservata e lucchetto nelle quattro lingue", () => {

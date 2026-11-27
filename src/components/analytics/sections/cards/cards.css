@@ -1,0 +1,210 @@
+/* Sezione Carte di Analytics a sezioni (/analytics/cards, 27/11/2026). */
+.ct-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+.ct-views {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 999px;
+  border: 2px solid rgba(63, 196, 232, 0.25);
+}
+.ct-view {
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-pale);
+  cursor: pointer;
+}
+.ct-view.is-on {
+  background: var(--color-mint);
+  color: var(--color-ink);
+}
+.ct-mana {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+/* gemme del mana come nel gioco: esagono azzurro con il numero bianco */
+.ct-gem {
+  width: 32px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: linear-gradient(180deg, #20b7c9, #0d7d93);
+  font-family: "OM Game", "Montserrat", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 0.9rem;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.55;
+}
+.ct-gem.is-all {
+  width: auto;
+  clip-path: none;
+  border-radius: 999px;
+  padding: 0 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+.ct-gem.is-on,
+.ct-gem:hover {
+  opacity: 1;
+}
+.ct-gem.is-on {
+  background: linear-gradient(180deg, #5fe9f0, #20b7c9);
+  color: #0b0716;
+}
+.ct-table-wrap {
+  margin-top: 16px;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 2px solid rgba(63, 196, 232, 0.35);
+  background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+}
+.ct-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.ct-table th,
+.ct-table td {
+  padding: 7px 10px;
+  text-align: right;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.ct-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-night);
+  border-bottom: 2px solid rgba(63, 196, 232, 0.3);
+  font-weight: 400;
+}
+.ct-table tbody tr + tr {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ct-table tbody tr:hover {
+  background: rgba(63, 196, 232, 0.06);
+}
+.ct-table .ct-name-col {
+  text-align: left;
+  white-space: normal;
+}
+.ct-sort {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-pale);
+  cursor: pointer;
+}
+.ct-sort:hover {
+  color: var(--color-mint);
+}
+.ct-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-chalk);
+}
+.ct-name:hover {
+  color: var(--color-mint);
+}
+.ct-name .legendary-star {
+  margin-right: 4px;
+}
+.ct-cost {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 24px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: linear-gradient(180deg, #20b7c9, #0d7d93);
+  font-family: "OM Game", "Montserrat", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 0.75rem;
+  color: #fff;
+}
+.ct-sub {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--color-pale-muted);
+}
+.ct-moves {
+  display: inline-flex;
+  gap: 14px;
+}
+.ct-moves > span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.ct-hand {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 18px 12px;
+  list-style: none;
+  padding: 0;
+}
+.ct-card {
+  position: relative;
+  display: block;
+  transition: transform 0.12s ease;
+}
+.ct-card:hover {
+  transform: translateY(-4px);
+}
+.ct-turn {
+  position: absolute;
+  right: -4px;
+  bottom: 14%;
+  font-size: 1.1rem;
+  rotate: -6deg;
+  text-shadow: 0 1px 3px rgba(3, 0, 8, 0.9);
+}
+.ct-cap {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--color-pale-muted);
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .ct-hand {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px 8px;
+  }
+  .ct-table {
+    font-size: 0.85rem;
+  }
+  .ct-table th,
+  .ct-table td {
+    padding: 6px 6px;
+  }
+}
+
+/* ricerca per nome nella tabella (rifinitura del 27/11) */
+.ct-search {
+  display: block;
+  margin-top: 16px;
+  max-width: 22rem;
+}
+.ct-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid rgba(63, 196, 232, 0.35);
+  background: var(--color-night);
+  color: var(--color-chalk);
+  font-size: 0.95rem;
+}
+.ct-search input:focus {
+  outline: none;
+  border-color: var(--color-mint);
+}

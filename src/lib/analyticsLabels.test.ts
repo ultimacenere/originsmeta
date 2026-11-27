@@ -102,7 +102,7 @@ describe("analytics: download e tipografia", () => {
   // rotta /api/tracker/download; i testi e le pagine non lo contengono, e il tasto porta alla rotta con la lingua
   test("download solo con l'accesso: l'indirizzo dello zip solo nella rotta", () => {
     const src = (p: string) => fs.readFileSync(new URL(p, import.meta.url), "utf8");
-    for (const p of ["./analyticsLabels.ts", "../app/[locale]/(site)/tracker/page.tsx", "../app/[locale]/(site)/analytics/page.tsx", "../components/TrackerDownloadButton.tsx"]) {
+    for (const p of ["./analyticsLabels.ts", "../app/[locale]/(site)/tracker/page.tsx", "../app/[locale]/(site)/analytics/(sections)/page.tsx", "../components/TrackerDownloadButton.tsx"]) {
       assert.ok(!src(p).includes("releases/latest"), p);
       assert.ok(!src(p).includes("trackerDownload\""), p);
     }

@@ -284,3 +284,43 @@ export async function readTrackerCards(patch: PatchId): Promise<{ games: number;
     return null;
   }
 }
+
+/**
+ * Tutti i numeri di una patch precisa (27/11/2026, Analytics a sezioni: la patch si sceglie con ?patch= e si confronta con
+ * la precedente). Stessa lettura in cache di `readWinrate`; null se la patch non ha numeri, prima della migrazione o con
+ * un errore (le sezioni lo dicono e non cadono).
+ */
+export async function readTrackerPatch(patch: PatchId): Promise<WinrateData | null> {
+  const db = statsClient();
+  if (!db) return null;
+  try {
+    const ov = await part(db, patch, "overview");
+    if (ov === "missing") return null;
+    const overview = parseOverview(ov);
+    if (!overview) return null;
+    const rows = {} as StatsRows;
+    for (const name of STATS_PARTS) {
+      if (name === "overview") continue;
+      const data = await part(db, patch, name);
+      if (data === "missing") return null;
+      rows[name] = data;
+    }
+    return onlyLegendaries(
+      {
+        patch,
+        fallback: false,
+        overview,
+        legendaries: parseLegendaryStats(rows.legendaries),
+        lists: parseListStats(rows.lists),
+        archetypes: parseArchetypeStats(rows.archetypes),
+        cards: parseCardStats(rows.cards),
+        matchups: parseMatchupStats(rows.matchups),
+        opponents: parseOpponentStats(rows.opponents),
+      },
+      isLegendaryKey,
+    );
+  } catch (error) {
+    console.warn(`[analytics] patch ${patch}: ${error instanceof Error ? error.message : error}`);
+    return null;
+  }
+}

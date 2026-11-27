@@ -63,6 +63,9 @@ export const config = {
     "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/market",
     "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/market/:path*",
     "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/analytics",
+    // le sezioni di Analytics (27/11/2026): uguali ad ANALYTICS_SECTIONS di src/lib/membersOnly.ts
+    "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/analytics/:section(legendaries|decks|cards|matchups|trends|match|locations)",
+    "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/analytics/:section(legendaries|decks|cards|matchups|trends|match|locations)/:path*",
     "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/account",
     // "Modifica la mia pagina pubblica" (01/10/2026): profilo pubblico, foto e vetrina, pagina renderizzata sul server
     "/:locale(en|it|es|fr|pt|de|ru|zh-cn)/account/profile",
