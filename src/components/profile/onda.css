@@ -1,7 +1,8 @@
 /*
-  Prototipo 2 «In onda» (27/11/2026): sopra le fasce .an-* di /analytics, i pezzi della pagina utente. Tutte le classi
-  iniziano con .onda-. Un solo livello di cornice; niente bianco né nero pieni; con "riduci animazioni" tutto fermo;
-  a 375 px niente scorrimento orizzontale.
+  Pagina pubblica di un iscritto, /u/<nome>, nella grafica «In onda» (27/11/2026, scelta di Pierluigi fra i tre
+  prototipi): sopra le fasce .an-* di /analytics, i pezzi del profilo. Tutte le classi iniziano con .onda-. Un solo
+  livello di cornice; niente bianco né nero pieni; con "riduci animazioni" tutto fermo; a 375 px niente scorrimento
+  orizzontale.
 */
 @layer components {
   .onda {
@@ -84,10 +85,6 @@
     margin-top: 16px;
     max-width: 60ch;
     color: var(--color-pale);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
     overflow-wrap: anywhere;
   }
   .onda-hero-tags {
@@ -371,44 +368,6 @@
     color: var(--color-pale-muted);
     font-variant-numeric: tabular-nums;
   }
-  .onda-idle {
-    margin-top: 28px;
-  }
-  .onda-idle-label {
-    font: 700 0.92rem var(--font-display);
-    color: var(--color-pale);
-  }
-  .onda-idle-list {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 8px;
-    margin: 10px 0 0;
-    padding: 0;
-  }
-  .onda-idle-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 44px;
-    max-width: 100%;
-    padding: 0 14px;
-    border-radius: 999px;
-    background: var(--color-night-2);
-    color: var(--color-chalk);
-    font: 600 0.86rem var(--font-display);
-    text-decoration: none;
-  }
-  .onda-idle-link span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .onda-idle-link:hover,
-  .onda-idle-link:focus-visible {
-    color: var(--color-mint);
-  }
-
   /* ---------- contro il meta ---------- */
   .onda-vs {
     list-style: none;
@@ -484,110 +443,70 @@
     color: var(--color-chalk-muted);
   }
 
-  /* ---------- esempio delle partite personali: tratteggio, cornice a trattini ---------- */
-  .onda-ex {
-    margin-top: 22px;
-    padding: 18px;
-    border: 3px dashed var(--color-chalk-muted);
-    border-radius: 14px;
-    background: repeating-linear-gradient(135deg, rgba(232, 236, 245, 0.035) 0 10px, transparent 10px 20px);
-  }
-  @media (min-width: 640px) {
-    .onda-ex {
-      padding: 24px 28px;
-    }
-  }
-  .onda-ex-warn {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 12px;
-    font-size: 0.9rem;
-    color: var(--color-chalk);
-  }
-  .onda-ex-top {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 26px;
-    margin-top: 18px;
-    font-size: 0.85rem;
+  /* ---------- mazzi senza partite, theory craft, artwork ---------- */
+  .onda-row-idle {
+    font: 600 0.8rem/1.3 var(--font-display);
     color: var(--color-pale-muted);
   }
-  .onda-ex-top b {
-    margin-right: 4px;
-    font: 800 1.9rem/1 var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    color: var(--color-chalk-muted);
-  }
-  .onda-ex-list {
-    list-style: none;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-    margin: 18px 0 0;
-    padding: 0;
-  }
-  @media (min-width: 900px) {
-    .onda-ex-list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px 40px;
-    }
-  }
-  .onda-ex-row {
-    display: grid;
-    grid-template-columns: 52px minmax(0, 1fr) auto;
-    gap: 12px;
-    align-items: center;
-  }
-  .onda-ex-row .an-card {
-    filter: saturate(0.55);
-  }
-  .onda-ex-name {
-    font: 700 0.98rem var(--font-display);
-    color: var(--color-chalk);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .onda-ex-sub {
-    margin-top: 2px;
-    font-size: 0.8rem;
-    color: var(--color-pale-muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .onda-mastery {
-    display: grid;
-    justify-items: end;
-    gap: 4px;
-  }
-  .onda-mastery-lvl {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 2px;
-    color: var(--color-pale-muted);
-    font-size: 0.8rem;
-  }
-  .onda-mastery-lvl .pen-num {
-    font-size: 2rem;
-  }
-  .onda-pips {
-    display: flex;
-    gap: 3px;
-  }
-  .onda-pips i {
-    width: 9px;
-    height: 9px;
-    border-radius: 2px;
-    transform: rotate(45deg);
+  .onda-row-theory {
+    flex: 0 0 auto;
+    padding: 1px 8px;
+    border-radius: 999px;
     background: var(--color-night-3);
+    color: var(--color-pale);
+    font: 700 0.68rem/1.4 var(--font-display);
   }
-  .onda-pips i.is-on {
-    background: var(--color-mint);
+  .onda-row-leg .onda-row-art {
+    object-fit: cover;
   }
-  .onda-mastery-next {
-    font-size: 0.72rem;
-    color: var(--color-pale-muted);
-    font-variant-numeric: tabular-nums;
+
+  /* ---------- copertina e resto del profilo ---------- */
+  .onda-cover {
+    margin-bottom: 22px;
+  }
+  .onda-cover > div {
+    margin-top: 0;
+  }
+  .onda-more > * + * {
+    margin-top: 10px;
+  }
+  .onda-more > :first-child {
+    margin-top: 0;
+  }
+  /* l'ultima fascia chiude la pagina senza il vuoto del margine di /analytics */
+  .an-page.onda {
+    padding-bottom: 0;
+  }
+  .onda-rest {
+    padding-bottom: calc(var(--an-band-y) - 8px);
+  }
+  .onda-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    margin-top: 26px;
+    font-size: 0.9rem;
+  }
+  .onda-featured {
+    margin-top: 22px;
+  }
+  .onda-featured > section {
+    margin-top: 0;
+  }
+
+  @media (min-width: 768px) {
+    .onda-hero-grid.is-solo {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  /* sfondo scelto dal creator (ProfileBackground, fisso dietro a tutto): le fasce lo lasciano vedere */
+  .onda.has-bg .an-band--stage {
+    background:
+      radial-gradient(70% 90% at 12% 0%, rgba(63, 196, 232, 0.14), transparent 62%),
+      linear-gradient(180deg, rgba(14, 7, 31, 0.55), rgba(17, 10, 38, 0.72));
+  }
+  .onda.has-bg .an-band--felt {
+    background: color-mix(in srgb, var(--color-felt) 62%, transparent);
   }
 
   @keyframes onda-in {

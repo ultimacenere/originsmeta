@@ -37,7 +37,7 @@
  *     deck_complete       il mazzo del builder arriva a 25 carte, una volta per    placement
  *                         casella e per scheda (di nuovo solo dopo "Svuota mazzo")
  *   ★ game_code_copy      copia RIUSCITA del codice del gioco (KGBLDC…)           placement (builder | tournament_builder |
- *                                                                                 deck_page | deck_header | decks_list)
+ *                                                                                 deck_page | deck_header | decks_list | profile)
  *     copy_nudge_view     dopo una copia del codice del gioco, il riquadro "entra   placement (dove si è copiato: quello di
  *                         nel Discord / segui l'autore" (CopyNudge, 09/11/2026;     game_code_copy)
  *                         al massimo una volta al giorno per browser)
