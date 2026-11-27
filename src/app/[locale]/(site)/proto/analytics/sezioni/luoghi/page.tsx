@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { protoMeta } from "@/components/proto/ProtoBar";
 import { V2Intro, V2Slots, type Slot } from "@/components/proto/sezioni/V2Slots";
+import { Band } from "@/components/proto/sezioni/parts";
 
 /* Sezione «Luoghi» del prototipo a sezioni (27/11/2026): i luoghi in campo dal Tracker 2.0. Nessun sito lo fa. */
 
@@ -17,7 +18,7 @@ const SLOTS: Slot[] = [
 
 export default function Luoghi() {
   return (
-    <div>
+    <Band top tone="stage">
       <V2Intro title="Luoghi" lead="Come i luoghi cambiano le partite. Nessun sito di statistiche lo fa ancora: sarebbe una cosa solo nostra." />
       <V2Slots slots={SLOTS} />
       <p className="sez-note mt-4">
@@ -27,6 +28,6 @@ export default function Luoghi() {
         </Link>
         .
       </p>
-    </div>
+    </Band>
   );
 }

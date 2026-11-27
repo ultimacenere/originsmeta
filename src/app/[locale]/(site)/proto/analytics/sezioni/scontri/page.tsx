@@ -2,7 +2,8 @@ import { getDictionary } from "@/lib/i18n";
 import { protoMeta } from "@/components/proto/ProtoBar";
 import { MatchupExplorer, type MxCell, type MxLeg } from "@/components/analytics/MatchupExplorer";
 import type { DeltaInfo } from "@/components/analytics/parts";
-import { cardOf, gamesText, loadSez, sezHref } from "@/lib/proto/sezioni";
+import { cardOf, gamesText, loadSez, pctText, sezHref } from "@/lib/proto/sezioni";
+import { Band, SezHead } from "@/components/proto/sezioni/parts";
 import {
   deltaPoints,
   deltaText,
@@ -35,7 +36,8 @@ export function generateMetadata() {
 
 const L = {
   title: "Scontri",
-  lead: "Chi batte chi fra le Leggendarie, contando tutti e due i lati di ogni partita. Scegli una Leggendaria per vedere contro chi vince e contro chi soffre.",
+  lead: "Ogni casella dice quanto vince la Leggendaria della riga contro quella della colonna, contando tutti e due i lati di ogni partita. Tocca una Leggendaria per vedere contro chi vince e contro chi soffre.",
+  notable: (a: string, b: string, p: string, g: string) => `Lo scontro più netto: ${a} contro ${b}, vinto nel ${p} dei casi (${g}).`,
   none: "In questa patch non ci sono ancora abbastanza scontri.",
 };
 
@@ -43,7 +45,12 @@ const fmt = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+
 
 export default async function Scontri({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sez = await loadSez(searchParams);
-  if (!sez) return <p className="text-pale">I numeri del Tracker non rispondono: riprova fra qualche minuto.</p>;
+  if (!sez)
+    return (
+      <Band top tone="stage">
+        <p className="text-pale">I numeri del Tracker non rispondono: riprova fra qualche minuto.</p>
+      </Band>
+    );
   const { cur } = sez;
   const locale = "it" as const;
   const d = getDictionary(locale);
@@ -64,7 +71,12 @@ export default async function Scontri({ searchParams }: { searchParams: Promise<
   const notable = notableMatchup(mus);
   const legBy = new Map(cur.legendaries.map((l) => [l.slug, l]));
   const order = notable ? matchupOrder(mus, new Map(cur.legendaries.map((l) => [l.slug, l.games]))).filter((s) => cardOf(s)) : [];
-  if (!notable || !order.length) return <p className="text-pale">{L.none}</p>;
+  if (!notable || !order.length)
+    return (
+      <Band top tone="stage">
+        <p className="text-pale">{L.none}</p>
+      </Band>
+    );
   const grid = matchupGrid(mus, order);
   const codes = legendaryCodes(order.map((s) => cardOf(s)!.name));
   const legs: MxLeg[] = order.map((s, i) => {
@@ -124,20 +136,23 @@ export default async function Scontri({ searchParams }: { searchParams: Promise<
   const initial = { a: order.indexOf(notable.legendary), b: order.indexOf(notable.opponent) };
 
   return (
-    <div>
-      <h2 className="sez-h2">{L.title}</h2>
-      <p className="sez-lead">{L.lead}</p>
-      <p className="sez-note mt-1">{gamesText(cur.matchedGames)} con la Leggendaria avversaria nota · {cur.label}</p>
-      <div className="an-page mt-5">
-        <MatchupExplorer
-          legs={legs}
-          grid={cells}
-          vs={vs}
-          rowNotable={rowNotable}
-          initial={initial}
-          labels={{ ...w.matchups, vs: w.vs, pt: c.pt, ciAria: c.interval, legendary: d.common.legendary, unit }}
-        />
-      </div>
-    </div>
+    <Band top tone="stage">
+      <SezHead
+        title={L.title}
+        brief={[
+          L.notable(cardOf(notable.legendary)?.name ?? "", cardOf(notable.opponent)?.name ?? "", pctText(notable.r), gamesText(notable.games)),
+          L.lead,
+          `${gamesText(cur.matchedGames)} con la Leggendaria avversaria nota, patch ${cur.label}.`,
+        ]}
+      />
+      <MatchupExplorer
+        legs={legs}
+        grid={cells}
+        vs={vs}
+        rowNotable={rowNotable}
+        initial={initial}
+        labels={{ ...w.matchups, vs: w.vs, pt: c.pt, ciAria: c.interval, legendary: d.common.legendary, unit }}
+      />
+    </Band>
   );
 }

@@ -1,5 +1,6 @@
 import { protoMeta } from "@/components/proto/ProtoBar";
 import { V2Intro, V2Slots, type Slot } from "@/components/proto/sezioni/V2Slots";
+import { Band } from "@/components/proto/sezioni/parts";
 
 /* Sezione «La partita» del prototipo a sezioni (27/11/2026): i dati del Tracker 2.0 sul ritmo della partita. */
 
@@ -18,9 +19,9 @@ const SLOTS: Slot[] = [
 
 export default function Partita() {
   return (
-    <div>
+    <Band top tone="stage">
       <V2Intro title="La partita" lead="Il ritmo delle partite: torri, mana, round e mulligan, contati su tutte le partite registrate." />
       <V2Slots slots={SLOTS} />
-    </div>
+    </Band>
   );
 }

@@ -188,3 +188,23 @@
     padding: 6px 6px;
   }
 }
+
+/* ricerca per nome nella tabella (rifinitura del 27/11) */
+.ct-search {
+  display: block;
+  margin-top: 16px;
+  max-width: 22rem;
+}
+.ct-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid rgba(63, 196, 232, 0.35);
+  background: var(--color-night);
+  color: var(--color-chalk);
+  font-size: 0.95rem;
+}
+.ct-search input:focus {
+  outline: none;
+  border-color: var(--color-mint);
+}

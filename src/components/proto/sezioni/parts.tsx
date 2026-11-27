@@ -47,3 +47,31 @@ export function Spark({ points, width = 96, height = 28 }: { points: (number | n
     </svg>
   );
 }
+
+/** Fascia a tutta larghezza come in /analytics di oggi: `stage` (palco), `felt` (feltro), `deep` (fondo scuro). */
+export function Band({ tone = "felt", id, top = false, children }: { tone?: "stage" | "felt" | "deep"; id?: string; top?: boolean; children: React.ReactNode }) {
+  return (
+    <section id={id} className={`an-band an-band--${tone}${top ? " is-top" : ""} sez-band`}>
+      <div className="an-wrap">{children}</div>
+    </section>
+  );
+}
+
+/** Titolo di sezione con, sotto, le due o tre cose da sapere: frasi calcolate dai numeri, la più importante per prima. */
+export function SezHead({ title, brief, action }: { title: string; brief: React.ReactNode[]; action?: React.ReactNode }) {
+  return (
+    <div className="sez-head">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <h2 className="sez-h2">{title}</h2>
+        {action}
+      </div>
+      {brief.length ? (
+        <ul className="sez-brief">
+          {brief.map((b, i) => (
+            <li key={i}>{b}</li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}

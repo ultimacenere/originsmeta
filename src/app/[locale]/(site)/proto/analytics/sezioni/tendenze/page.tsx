@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { GameCardFace } from "@/components/GameCard";
 import { protoMeta } from "@/components/proto/ProtoBar";
-import { MoveTag, Spark } from "@/components/proto/sezioni/parts";
+import { Band, MoveTag, SezHead, Spark } from "@/components/proto/sezioni/parts";
 import { gameInput, protoNum, type Num } from "@/lib/proto/analyticsProto";
 import { cardOf, gamesText, loadSez, moveOf, pctText, sezHref, type Move } from "@/lib/proto/sezioni";
 
@@ -35,15 +35,19 @@ const L = {
 
 export default async function Tendenze({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sez = await loadSez(searchParams);
-  if (!sez) return <p className="text-pale">I numeri del Tracker non rispondono: riprova fra qualche minuto.</p>;
+  if (!sez)
+    return (
+      <Band top tone="stage">
+        <p className="text-pale">I numeri del Tracker non rispondono: riprova fra qualche minuto.</p>
+      </Band>
+    );
   const { cur, prev, all } = sez;
   const h = (p: string) => sezHref(p, sez);
   if (!prev) {
     return (
-      <div>
-        <h2 className="sez-h2">{L.title}</h2>
-        <p className="sez-lead">{L.first}</p>
-      </div>
+      <Band top tone="stage">
+        <SezHead title={L.title} brief={[L.first]} />
+      </Band>
     );
   }
 
@@ -70,13 +74,33 @@ export default async function Tendenze({ searchParams }: { searchParams: Promise
   // l'ultima patch, ancora con molte meno partite della precedente
   const fresh = cur.patch === all.at(-1)?.patch && cur.games < prev.games / 2;
 
-  return (
-    <div>
-      <h2 className="sez-h2">{L.title}</h2>
-      <p className="sez-lead">{L.lead(prev.label, cur.label)}</p>
-      {fresh ? <p className="pen-note mt-2 text-gold">{L.fresh}</p> : null}
+  const withMove = legRows.filter((r) => r.m);
+  const topUp = withMove[0];
+  const topDown = withMove.at(-1);
+  const brief = [
+    L.lead(prev.label, cur.label),
+    topUp?.m && topUp.m.points > 0 ? (
+      <>
+        Sale di più <b>{cardOf(topUp.slug)?.name}</b>: da {pctText(topUp.m.before.r)} a <b>{pctText(topUp.m.after.r)}</b>.
+      </>
+    ) : null,
+    topDown?.m && topDown.m.points < 0 ? (
+      <>
+        Scende di più <b>{cardOf(topDown.slug)?.name}</b>: da {pctText(topDown.m.before.r)} a <b>{pctText(topDown.m.after.r)}</b>.
+      </>
+    ) : null,
+    changed.length ? (
+      <>
+        Koin ha cambiato <b>{changed.length}</b> {changed.length === 1 ? "carta" : "carte"} in questa patch.
+      </>
+    ) : null,
+  ].filter(Boolean);
 
-      <section className="sez-section mt-8">
+  return (
+    <>
+      <Band top tone="stage">
+        <SezHead title={L.title} brief={brief} />
+        {fresh ? <p className="pen-note mb-4 text-gold">{L.fresh}</p> : null}
         <h3 className="font-display text-lg font-semibold text-chalk">{L.legs}</h3>
         <p className="sez-note">{L.legsLead}</p>
         <ul className="mt-3 grid gap-1">
@@ -98,9 +122,9 @@ export default async function Tendenze({ searchParams }: { searchParams: Promise
             </li>
           ))}
         </ul>
-      </section>
+      </Band>
 
-      <section className="sez-section mt-10">
+      <Band tone="felt">
         <h3 className="font-display text-lg font-semibold text-chalk">{L.picks}</h3>
         <p className="sez-note">{L.picksLead}</p>
         <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -127,13 +151,13 @@ export default async function Tendenze({ searchParams }: { searchParams: Promise
             </div>
           ))}
         </div>
-      </section>
+      </Band>
 
-      <section className="sez-section mt-10">
+      <Band tone="deep">
         <h3 className="font-display text-lg font-semibold text-chalk">{L.koin}</h3>
         <p className="sez-note">{L.koinLead}</p>
         {changed.length ? (
-          <ul className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
+          <ul className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {changed.map(({ c, card }) => {
               const before = prev.cards.find((x) => x.slug === c.slug);
               const ch = card!.history.find((h) => h.patch === cur.patch)!;
@@ -157,7 +181,7 @@ export default async function Tendenze({ searchParams }: { searchParams: Promise
         ) : (
           <p className="sez-note mt-2">{L.noKoin}</p>
         )}
-      </section>
-    </div>
+      </Band>
+    </>
   );
 }
