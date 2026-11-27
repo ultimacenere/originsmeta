@@ -130,7 +130,7 @@ try {
   check("add_judge per nome utente", !(await attempt(`select public.add_judge($1, 'zzdry-judge')`, [T])).error);
   await as(J);
   check("un arbitro non nomina arbitri", /forbidden/.test(err(await attempt(`select public.add_judge($1, 'zzdry-p1')`, [T]))));
-  check("un arbitro non si iscrive", /judge_is_player/.test(err(await attempt(`select public.join_tournament($1)`, [T]))));
+  // dal 27/11/2026 un arbitro può anche iscriversi: la regola contraria non c'è più
 
   for (let i = 0; i < 70; i++) {
     await as(P[i]);

@@ -5927,7 +5927,7 @@ begin
     raise exception 'invite_required';
   end if;
   if exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'already_joined'; end if;
-  if exists (select 1 from public.tournament_judges where tournament_id = tid and user_id = auth.uid()) then raise exception 'judge_is_player'; end if;
+  -- 27/11/2026: un arbitro può anche giocare (Pier: «se hanno arbitri giocatori non è roba che compete a noi»)
   select count(*) filter (where status = 'registered'), count(*) filter (where status = 'waitlist') into n, w from public.tournament_players where tournament_id = tid;
   if n >= t.size then
     -- lista d'attesa solo con il check-in, al massimo quanto i posti
@@ -6307,7 +6307,7 @@ begin
   select id into target from public.profiles where lower(username) = lower(btrim(replace(uname, '@', ''))) limit 1;
   if target is null then raise exception 'user_not_found'; end if;
   if target = t.organizer then raise exception 'already_staff'; end if;
-  if exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id = target and p.status in ('registered', 'waitlist')) then raise exception 'judge_is_player'; end if;
+  -- 27/11/2026: anche un iscritto può fare l'arbitro, lo decide l'organizzatore
   if (select count(*) from public.tournament_judges j where j.tournament_id = tid) >= 10 then raise exception 'too_many_judges'; end if;
   insert into public.tournament_judges (tournament_id, user_id, added_by) values (tid, target, auth.uid()) on conflict (tournament_id, user_id) do nothing;
 end $$;
