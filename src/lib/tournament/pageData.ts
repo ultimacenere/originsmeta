@@ -72,12 +72,14 @@ export type TournamentCore = {
   /** opzioni dei formati per ogni torneo (la stanza partita le usa sempre, la scheda solo fuori dall'eliminazione diretta) */
   formatOptions: FormatOptions;
   judges: TournamentJudge[];
-  announcements: AnnouncementsResult;
+  /** null: la lettura degli annunci è fallita e la scheda li rilegge da sola (la bacheca non deve far cadere la cache) */
+  announcements: AnnouncementsResult | null;
   decks: DeckRow[];
   banStats: BanTally[];
 };
 
-export type TournamentView = Omit<TournamentCore, "formatOptions"> & {
+export type TournamentView = Omit<TournamentCore, "formatOptions" | "announcements"> & {
+  announcements: AnnouncementsResult;
   /** solo per svizzera, gironi e doppia eliminazione (come prima: null per l'eliminazione diretta) */
   fo: FormatOptions | null;
   players: TournamentPlayer[];
@@ -114,9 +116,9 @@ async function readCore(slug: string): Promise<TournamentCore | null> {
     readsDecks(t) ? listVisibleDecks(t.id, c, true) : Promise.resolve([]),
     t.status === "finished" ? listBanStats(c, t.id, true) : Promise.resolve([]),
   ]);
-  // "unavailable" (tabella non ancora migrata) è una risposta vera e resta; un errore qualsiasi no
-  if (!announcements.ok && announcements.error === "generic") throw new Error("[tournaments] core: announcements");
-  return { t, stages, formatOptions, judges, announcements, decks, banStats };
+  // "unavailable" (tabella non ancora migrata) è una risposta vera e resta; un errore qualsiasi non va in cache: la voce
+  // si salva senza annunci (null) e la scheda li rilegge a ogni visita finché la voce non si rinnova
+  return { t, stages, formatOptions, judges, announcements: !announcements.ok && announcements.error === "generic" ? null : announcements, decks, banStats };
 }
 
 function cachedCore(slug: string, tag: string): Promise<TournamentCore | null> {
@@ -220,10 +222,17 @@ export const loadTournamentView = cache(async (slug: string): Promise<Tournament
     const { formatOptions, ...shared } = core;
     const t = core.t;
     try {
-      const [players, matches, others, mine] = await Promise.all([cachedPlayers(t.id, tag), cachedMatches(t.id, t.format, tag), listedTournaments(), readPersonal(client, user, t)]);
+      const [players, matches, others, mine, announcements] = await Promise.all([
+        cachedPlayers(t.id, tag),
+        cachedMatches(t.id, t.format, tag),
+        listedTournaments(),
+        readPersonal(client, user, t),
+        core.announcements ?? listAnnouncements(client, [t.id]),
+      ]);
       const viewer = user?.id ?? null;
       return {
         ...shared,
+        announcements,
         fo: isStagedFormat(t.format) ? formatOptions : null,
         players: overlayPlayers(players, viewer, mine.player),
         matches: overlayMatches(matches, mine.matches),
