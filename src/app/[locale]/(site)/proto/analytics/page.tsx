@@ -16,6 +16,12 @@ export function generateMetadata() {
 
 const PROTOS = [
   {
+    href: "/it/proto/analytics/sezioni",
+    letter: "★",
+    name: "Analytics a sezioni (27/11)",
+    idea: "La pagina di oggi divisa in sezioni, ognuna con le sue analisi: Leggendarie, Mazzi da copiare, Carte e quando si giocano, Scontri, Chi sale e chi scende, e i posti per il Tracker 2.0.",
+  },
+  {
     href: "/it/proto/analytics/tavolo",
     letter: "A",
     name: "Il tavolo",
@@ -41,9 +47,9 @@ export default async function ProtoIndex({ params }: { params: LocaleParams }) {
   const last = patches.at(-1);
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <h1 className="t-page text-sky">Analytics: tre prototipi</h1>
+      <h1 className="t-page text-sky">Analytics: prototipi</h1>
       <p className="mt-3 max-w-2xl text-pale">
-        Tre strade diverse per lo stesso Analytics. Sono pagine vere del sito con i numeri veri del Tracker
+        In cima la versione a sezioni; sotto i tre prototipi del primo giro. Sono pagine vere del sito con i numeri veri del Tracker
         {last ? ` (${last.games.toLocaleString("it-IT")} partite nella patch ${last.label})` : ""}. Si provano anche dal telefono.
       </p>
       <ul className="mt-8 grid grid-cols-1 gap-4">

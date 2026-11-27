@@ -25,7 +25,7 @@ export function ProtoBar({ name, real, provisional }: { name: string; real: stri
         <span className="rounded-full bg-gold px-2.5 py-0.5 font-display text-xs font-bold text-ink">Prototipo</span>
         <span className="font-display font-semibold text-sky">{name}</span>
         <Link href="/it/proto/analytics" className="ml-auto text-mint underline-offset-2 hover:underline">
-          Tutti e tre
+          Tutti i prototipi
         </Link>
       </p>
       <p className="mt-2 text-pale">

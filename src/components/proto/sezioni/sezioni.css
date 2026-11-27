@@ -1,0 +1,171 @@
+/* Prototipo «Analytics a sezioni» (27/11/2026): testata, sottomenu e pezzi comuni alle pagine delle sezioni. */
+.sez-nav {
+  position: sticky;
+  top: 64px;
+  z-index: 20;
+  margin: 16px -16px 0;
+  padding: 10px 16px;
+  background: rgba(21, 12, 44, 0.94);
+  border-bottom: 2px solid rgba(63, 196, 232, 0.25);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  min-height: 52px;
+}
+.sez-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+.sez-tab {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-pale);
+  white-space: nowrap;
+}
+.sez-tab:hover {
+  color: var(--color-mint);
+}
+.sez-tab.is-on {
+  background: var(--color-mint);
+  color: var(--color-ink);
+}
+.sez-soon {
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+.sez-tab.is-on .sez-soon {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+.sez-patches {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+.sez-patch {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 3px 10px;
+  border-radius: 9px;
+  border: 2px solid rgba(63, 196, 232, 0.25);
+  line-height: 1.15;
+}
+.sez-patch b {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--color-chalk);
+}
+.sez-patch span {
+  font-size: 0.7rem;
+  color: var(--color-pale-muted);
+}
+.sez-patch.is-on {
+  border-color: var(--color-sky);
+  background: rgba(63, 196, 232, 0.14);
+}
+.sez-body {
+  margin-top: 28px;
+}
+@media (max-width: 640px) {
+  .sez-nav {
+    top: 56px;
+  }
+}
+
+/* pezzi comuni */
+.sez-h2 {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  color: var(--color-sky);
+  line-height: var(--title-leading, 1.66);
+}
+.sez-lead {
+  margin-top: 4px;
+  max-width: 46rem;
+  color: var(--color-pale);
+}
+.sez-note {
+  font-size: 0.82rem;
+  color: var(--color-pale-muted);
+  line-height: 1.45;
+}
+.sez-section + .sez-section {
+  margin-top: 44px;
+}
+.sez-panel {
+  border-radius: 14px;
+  border: 2px solid rgba(63, 196, 232, 0.35);
+  background: linear-gradient(180deg, var(--color-night) 0%, var(--color-night-2) 100%);
+  padding: 16px;
+}
+.sez-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}
+.sez-num {
+  font-family: "OM Game", "Montserrat", system-ui, sans-serif;
+  font-weight: 800;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.sez-up {
+  color: var(--color-good);
+}
+.sez-down {
+  color: var(--color-crimson);
+}
+.sez-flat {
+  color: var(--color-pale-muted);
+}
+/* barra del win rate: riempimento al valore, intervallo a righe, il 50% segnato */
+.sez-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.sez-bar > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: var(--color-sky);
+}
+.sez-bar > s {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0 3px, rgba(255, 255, 255, 0.08) 3px 6px);
+  border-radius: 999px;
+}
+.sez-bar::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.55);
+}
+.sez-thin {
+  opacity: 0.55;
+}
