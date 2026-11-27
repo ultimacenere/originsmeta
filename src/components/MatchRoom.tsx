@@ -425,17 +425,17 @@ export function MatchRoom({ slug, matchId, me, side, match, names, need, noShowM
       <section className="card-night flex flex-col p-5">
         <h2 className="t-section">{l.chatTitle}</h2>
         <p className="mt-1 text-xs text-pale-muted">{l.chatHint}</p>
-        <ol ref={listRef} className="mt-3 flex max-h-96 min-h-48 flex-1 flex-col gap-2 overflow-y-auto rounded-lg border border-sky bg-night-2/60 p-3" aria-live="polite">
+        <ol ref={listRef} className="mt-3 flex max-h-96 min-h-48 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-lg border border-sky bg-night-2/60 p-3" aria-live="polite">
           {messages.length ? (
             messages.map((msg) => {
               const own = msg.user_id === me;
               const who = msg.user_id === match.player_a ? names.a : msg.user_id === match.player_b ? names.b : "★";
               return (
-                <li key={msg.id} className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${own ? "self-end bg-mint/15 text-pale" : "self-start bg-night-3 text-pale"}`}>
+                <li key={msg.id} className={`min-w-0 max-w-[85%] rounded-lg px-3 py-2 text-sm ${own ? "self-end bg-mint/15 text-pale" : "self-start bg-night-3 text-pale"}`}>
                   <span className="block font-mono text-[10px] text-pale-muted">
                     {own ? l.you : who} · {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
-                  <span className="whitespace-pre-line break-words">{msg.body}</span>
+                  <span className="block whitespace-pre-line wrap-anywhere">{msg.body}</span>
                 </li>
               );
             })
