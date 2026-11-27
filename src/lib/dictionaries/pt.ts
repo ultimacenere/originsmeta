@@ -1819,7 +1819,6 @@ export const pt: Dictionary = {
       no_show_too_early: "É cedo demais: espere o tempo de ausência acabar.",
       opponent_present: "O seu oponente está aqui (abriu a sala, escreveu no chat ou informou o resultado): sem W.O.",
       already_staff: "Este usuário já gerencia o torneio.",
-      judge_is_player: "Um juiz não pode jogar no mesmo torneio.",
       too_many_judges: "No máximo 10 juízes por torneio.",
       finalBestOf: "Escolha a duração da final.",
       noShow: "Ausência: de 5 a 60 minutos, ou vazio.",

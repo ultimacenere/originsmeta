@@ -1737,7 +1737,6 @@ export const de: Dictionary = {
       no_show_too_early: "Es ist zu früh: Warte, bis die Frist für Nichterscheinen abgelaufen ist.",
       opponent_present: "Dein Gegner ist da (hat den Raum geöffnet, im Chat geschrieben oder ein Ergebnis eingetragen): kein kampfloser Sieg.",
       already_staff: "Dieser Nutzer verwaltet das Turnier bereits.",
-      judge_is_player: "Ein Judge kann nicht im selben Turnier spielen.",
       too_many_judges: "Höchstens 10 Judges pro Turnier.",
       finalBestOf: "Wähl die Länge des Finales.",
       noShow: "Nichterscheinen: 5 bis 60 Minuten, oder leer.",

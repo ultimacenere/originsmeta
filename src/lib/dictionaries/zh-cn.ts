@@ -1831,7 +1831,6 @@ export const zhCn: Dictionary = {
       no_show_too_early: "太早了：请等缺席时限结束。",
       opponent_present: "你的对手已到场（打开过房间、在聊天中发过言或上报过结果）：不能判弃权。",
       already_staff: "这名用户已经在管理这场锦标赛。",
-      judge_is_player: "裁判不能参加同一场锦标赛。",
       too_many_judges: "每场锦标赛最多 10 名裁判。",
       finalBestOf: "请选择决赛长度。",
       noShow: "缺席时限：5 到 60 分钟，或留空。",

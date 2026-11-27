@@ -84,7 +84,6 @@ const RPC_ERRORS = [
   "no_show_too_early",
   "opponent_present",
   "already_staff",
-  "judge_is_player",
   "too_many_judges",
   // 08/11/2026, blocco BRACKET E TOP CUT: fase finale in pausa e ban dei mazzi
   ...STAGE_RPC_ERRORS,

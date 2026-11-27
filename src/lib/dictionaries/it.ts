@@ -1809,7 +1809,6 @@ export const it: Dictionary = {
       no_show_too_early: "È presto: aspetta che passi il tempo di assenza.",
       opponent_present: "L'avversario è presente (ha aperto la stanza, scritto in chat o refertato): niente tavolino.",
       already_staff: "Questo utente gestisce già il torneo.",
-      judge_is_player: "Un arbitro non può giocare nello stesso torneo.",
       too_many_judges: "Al massimo 10 arbitri per torneo.",
       finalBestOf: "Scegli la durata della finale.",
       noShow: "Assenza: da 5 a 60 minuti, oppure vuoto.",

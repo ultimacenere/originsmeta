@@ -1827,7 +1827,6 @@ export const en = {
       no_show_too_early: "It's too early: wait until the no-show time is over.",
       opponent_present: "Your opponent is here (opened the room, wrote in the chat or reported): no forfeit.",
       already_staff: "This user already manages the tournament.",
-      judge_is_player: "A judge can't play in the same tournament.",
       too_many_judges: "At most 10 judges per tournament.",
       finalBestOf: "Pick the final's length.",
       noShow: "No-show: from 5 to 60 minutes, or empty.",

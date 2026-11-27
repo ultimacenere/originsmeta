@@ -1822,7 +1822,6 @@ export const fr: Dictionary = {
       no_show_too_early: "C'est trop tôt : attendez la fin du délai d'absence.",
       opponent_present: "Votre adversaire est là (il a ouvert la salle, écrit dans le chat ou déclaré un résultat) : pas de forfait.",
       already_staff: "Cet utilisateur gère déjà le tournoi.",
-      judge_is_player: "Un arbitre ne peut pas jouer dans le même tournoi.",
       too_many_judges: "Au plus 10 arbitres par tournoi.",
       finalBestOf: "Choisissez la durée de la finale.",
       noShow: "Absence : de 5 à 60 minutes, ou vide.",
