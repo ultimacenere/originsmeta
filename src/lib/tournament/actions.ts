@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { isLocale, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
 import { refreshTournament, type TournamentChange } from "./pageCache";
+import { rpcErrorCode } from "./rpcErrorCode";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { checkDeck } from "@/lib/community/util";
 import { validateConquest, type DeckState } from "@/lib/deckrules";
@@ -92,7 +93,8 @@ const RPC_ERRORS = [
 ];
 function rpcError(e: { message?: string } | null | undefined): string {
   const m = e?.message ?? "";
-  return RPC_ERRORS.find((k) => m.includes(k)) ?? "db";
+  // il codice più lungo contenuto nel messaggio: "user_not_found" contiene "not_found" (27/11/2026, rpcErrorCode.ts)
+  return rpcErrorCode(m, RPC_ERRORS) ?? "db";
 }
 
 const UUID = /^[0-9a-f-]{36}$/i;
