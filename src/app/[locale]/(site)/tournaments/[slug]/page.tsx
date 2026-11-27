@@ -3,8 +3,8 @@ import Link from "@/components/IntentLink";
 import { notFound } from "next/navigation";
 import { getDictionary, href, siteUrl, type Dictionary } from "@/lib/i18n";
 import { pageMeta, pageTitleWith, resolveLocale } from "@/lib/page";
-import { currentUser, supabaseServer } from "@/lib/supabase/server";
-import { getFormatOptions, getInviteCode, getStageOptions, getTournament, listBanStats, listJudges, listListedTournaments, listMatches, listPlayers, listVisibleDecks, withMatchStages, TOURNAMENT_SELECT } from "@/lib/tournament/queries";
+import { TOURNAMENT_SELECT } from "@/lib/tournament/queries";
+import { loadTournamentView } from "@/lib/tournament/pageData";
 import { currentMatchOf, isStagedFormat } from "@/lib/tournament/formats";
 import { formatMatchName, formatView } from "@/lib/tournament/formatView";
 import { formatLabels } from "@/lib/tournament/formatLabels";
@@ -40,7 +40,6 @@ import { FREE_OFFER_CURRENCY, JsonLd, breadcrumbs, memberRef, personRef, videoGa
 import { authorByUsername } from "@/lib/data/authorsCore";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import type { AnnouncementTarget } from "@/components/announcements/AnnouncementControls";
-import { listAnnouncements } from "@/lib/tournament/announcementQueries";
 import { HARVEST_BOWL, isHarvestTournament } from "@/lib/harvestBowl";
 import { harvestBowlLabels } from "@/lib/harvestBowlLabels";
 
@@ -52,6 +51,11 @@ type Search = Promise<Record<string, string | string[] | undefined>>;
  * mostrano i tornei privati solo a organizzatore, admin, iscritti e invitati (per gli altri: 404). I tornei
  * pubblici restano indicizzabili; quelli privati sono noindex.
  *
+ * Dati (27/11/2026): per un torneo pubblico la parte uguale per tutti arriva dalla cache dei dati (15 secondi, rinnovata
+ * dalle Server Action) e con la sessione si leggono solo la riga, le partite e il codice d'invito di chi guarda; un
+ * torneo privato si legge tutto con la sessione, come prima. Tutto in src/lib/tournament/pageData.ts, una volta per
+ * richiesta anche con generateMetadata.
+ *
  * In cima (21/09/2026): dopo la creazione (?new=1, solo per l'organizzatore) il pannello "Torneo creato" con il
  * link da incollare su Discord e un messaggio pronto (UX-9); a torneo in corso, per chi gioca ed è ancora in
  * gara, il banner "Il tabellone è partito" con il link alla sua partita (UX-8). Il link breve /t/<tag> è sempre
@@ -62,7 +66,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const { locale, dict } = await resolveLocale(params);
-  const t = await getTournament(slug, await supabaseServer());
+  const t = (await loadTournamentView(slug))?.t;
   if (!t) return {};
   const meta = pageMeta(locale, `/tournaments/${t.slug}`, pageTitleWith(t.name, dict.tournaments.kicker), t.description || dict.tournaments.sectionIntro, t.cover_url ?? undefined);
   return t.visibility === "private" ? { ...meta, robots: { index: false, follow: false } } : meta;
@@ -98,27 +102,13 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const sp = await searchParams;
   const { locale, dict: d } = await resolveLocale(params);
   const x = d.tournaments;
-  const { supabase: client, user } = await currentUser();
-  if (!client) notFound();
-  const t = await getTournament(slug, client);
-  if (!t) notFound();
+  const view = await loadTournamentView(slug);
+  if (!view) notFound();
+  // iscritti, partite, liste visibili, arbitri, opzioni, ban e annunci: in cache per i tornei pubblici (pageData.ts),
+  // con le righe di chi guarda e il codice d'invito letti con la sua sessione
+  const { t, players, matches, others, decks, inviteCode, judges, stages, banStats, fo, announcements, client, user } = view;
 
   const staged = isStagedFormat(t.format);
-  const [players, matches, others, decks, inviteCode, judges, stages, banStats, fo] = await Promise.all([
-    listPlayers(t.id, client),
-    // 09/11/2026: per svizzera e gironi anche fase e girone di ogni partita
-    listMatches(t.id, client).then((ms) => withMatchStages(client, t.id, t.format, ms)),
-    listListedTournaments(30),
-    // a torneo finito tutte le liste; con le liste segrete, a torneo in corso, quelle della top 4 (policy)
-    t.status === "finished" || (t.status === "running" && t.hidden_decklists) ? listVisibleDecks(t.id, client) : Promise.resolve([]),
-    // il codice del link d'invito lo leggono solo organizzatore e admin (policy): per gli altri è null
-    getInviteCode(client, t.id),
-    listJudges(t.id, client),
-    // 08/11/2026: fase finale a bracket, pausa e ban (lettura a parte: regge il database non ancora migrato)
-    getStageOptions(client, t.id),
-    t.status === "finished" ? listBanStats(client, t.id) : Promise.resolve([]),
-    staged ? getFormatOptions(client, t.id) : Promise.resolve(null),
-  ]);
   const sl = stageLabels[locale];
   const fl = formatLabels[locale];
   const dl = doubleElimLabels[locale];
@@ -155,7 +145,6 @@ export default async function TournamentPage({ params, searchParams }: { params:
   const announcementTargets: AnnouncementTarget[] | null = isStaff
     ? [{ id: t.id, slug: t.slug, name: t.name, checked: true }, ...siblingRows.filter((_, i) => siblingStaff[i]).map((s) => ({ id: s.id, slug: s.slug, name: s.name, checked: s.status !== "finished" }))]
     : null;
-  const announcements = await listAnnouncements(client, [t.id]);
   const announcementTournaments = [{ id: t.id, slug: t.slug, name: t.name }, ...siblingRows.map((s) => ({ id: s.id, slug: s.slug, name: s.name }))];
   const rounds = totalRounds(matches);
   // con le liste segrete, a torneo in corso, la sezione mostra solo i semifinalisti: la policy dà anche le proprie liste

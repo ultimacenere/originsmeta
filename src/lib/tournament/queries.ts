@@ -12,38 +12,48 @@ import type { BanTally, MatchBan } from "./stages";
 const ORGANIZER = "profile:profiles!tournaments_organizer_fkey(username, display_name, avatar_url, badge, role)";
 /** Colonne di una scheda torneo (`TournamentCard`); esportata per la vetrina dei creator (src/lib/community/creators.ts). */
 export const TOURNAMENT_SELECT = `id, slug, tag, organizer, name, cover_url, description, rules, lang, starts_at, size, format, deck_mode, conquest_decks, conquest_min_different, best_of, final_best_of, checkin, hidden_decklists, no_show_minutes, discord_url, status, listed, report, visibility, created_at, updated_at, ${ORGANIZER}, players:tournament_players(count)`;
-const PLAYER_SELECT = "tournament_id, user_id, status, decks_submitted, checked_in_at, created_at, updated_at, profile:profiles!tournament_players_user_id_fkey(username, display_name, avatar_url, badge)";
-const MATCH_SELECT = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, reported_by, forfeit, note, ready_at, seen_a, seen_b, reported_at, created_at, updated_at";
+export const PLAYER_SELECT = "tournament_id, user_id, status, decks_submitted, checked_in_at, created_at, updated_at, profile:profiles!tournament_players_user_id_fkey(username, display_name, avatar_url, badge)";
+export const MATCH_SELECT = "id, tournament_id, round, position, player_a, player_b, winner, score_a, score_b, status, reported_by, forfeit, note, ready_at, seen_a, seen_b, reported_at, created_at, updated_at";
 
-type RawTournament = Omit<Tournament, "players"> & { players?: { count: number }[] | number | null };
+export type RawTournament = Omit<Tournament, "players"> & { players?: { count: number }[] | number | null };
 
-function shape(r: RawTournament): Tournament {
+export function shapeTournament(r: RawTournament): Tournament {
   const p = r.players;
   const players = Array.isArray(p) ? Number(p[0]?.count ?? 0) : typeof p === "number" ? p : 0;
   return { ...r, players };
 }
 
 /** Sul calendario e nella lista pubblica solo i tornei `listed` di Creator/Pro/Staff o admin (doppio controllo, oltre al trigger). */
-function listable(t: Tournament): boolean {
+export function listable(t: Tournament): boolean {
   return canListTournaments(t.profile);
 }
 
-export async function listListedTournaments(limit = 60): Promise<Tournament[]> {
+/**
+ * Errori delle letture. Di base si scrivono nel log e la lettura risponde vuota, come sempre. Con `strict` (27/11/2026,
+ * cache della scheda torneo in pageData.ts) lanciano: una risposta vuota per un guasto di Supabase non deve finire nella
+ * cache e restarci per tutti i visitatori.
+ */
+function failed(what: string, message: string, strict: boolean): void {
+  if (strict) throw new Error(`[tournaments] ${what}: ${message}`);
+  console.error(`[tournaments] ${what}:`, message);
+}
+
+export async function listListedTournaments(limit = 60, strict = false): Promise<Tournament[]> {
   const client = supabasePublic();
   if (!client) return [];
   const { data, error } = await client.from("tournaments").select(TOURNAMENT_SELECT).eq("listed", true).eq("visibility", "public").neq("status", "cancelled").order("starts_at", { ascending: true }).limit(limit);
   if (error) {
-    console.error("[tournaments] listListedTournaments:", error.message);
+    failed("listListedTournaments", error.message, strict);
     return [];
   }
-  return ((data ?? []) as unknown as RawTournament[]).map(shape).filter(listable);
+  return ((data ?? []) as unknown as RawTournament[]).map(shapeTournament).filter(listable);
 }
 
 export async function getTournament(slug: string, client: Db | null = supabasePublic()): Promise<Tournament | null> {
   if (!client) return null;
   const { data, error } = await client.from("tournaments").select(TOURNAMENT_SELECT).eq("slug", slug).maybeSingle();
   if (error || !data) return null;
-  return shape(data as unknown as RawTournament);
+  return shapeTournament(data as unknown as RawTournament);
 }
 
 /** Cerca un torneo dal tag; con il client di sessione (route /t/[tag]) la lettura non passa dalla data cache di Next. */
@@ -54,10 +64,10 @@ export async function getTournamentByTag(tag: string, client: Db | null = supaba
 }
 
 /** Liste consegnate visibili al client passato (per l'anonimo: solo a torneo finito, per policy). */
-export async function listVisibleDecks(tid: string, client: Db | null = supabasePublic()): Promise<{ user_id: string; codes: string[] }[]> {
+export async function listVisibleDecks(tid: string, client: Db | null = supabasePublic(), strict = false): Promise<{ user_id: string; codes: string[] }[]> {
   if (!client) return [];
   const { data, error } = await client.from("tournament_decks").select("user_id, codes").eq("tournament_id", tid);
-  if (error) console.error("[tournaments] listVisibleDecks:", error.message);
+  if (error) failed("listVisibleDecks", error.message, strict);
   return ((data ?? []) as { user_id: string; codes: unknown }[]).map((r) => ({ user_id: r.user_id, codes: Array.isArray(r.codes) ? r.codes.filter((c): c is string => typeof c === "string") : [] }));
 }
 
@@ -74,18 +84,35 @@ export async function listLegendaries(tid: string, client: Db | null): Promise<M
 }
 
 /** Arbitri del torneo con il profilo (pubblici come il torneo). */
-export async function listJudges(tid: string, client: Db | null = supabasePublic()): Promise<TournamentJudge[]> {
+export async function listJudges(tid: string, client: Db | null = supabasePublic(), strict = false): Promise<TournamentJudge[]> {
   if (!client) return [];
   const { data, error } = await client.from("tournament_judges").select("tournament_id, user_id, added_by, created_at, profile:profiles!tournament_judges_user_id_fkey(username, display_name, avatar_url, badge)").eq("tournament_id", tid).order("created_at", { ascending: true });
-  if (error) console.error("[tournaments] listJudges:", error.message);
+  if (error) failed("listJudges", error.message, strict);
   return ((data ?? []) as unknown as TournamentJudge[]) ?? [];
 }
 
-export async function listPlayers(tid: string, client: Db | null = supabasePublic()): Promise<TournamentPlayer[]> {
+export async function listPlayers(tid: string, client: Db | null = supabasePublic(), strict = false): Promise<TournamentPlayer[]> {
   if (!client) return [];
   const { data, error } = await client.from("tournament_players").select(PLAYER_SELECT).eq("tournament_id", tid).order("created_at", { ascending: true });
-  if (error) console.error("[tournaments] listPlayers:", error.message);
+  if (error) failed("listPlayers", error.message, strict);
   return ((data ?? []) as unknown as TournamentPlayer[]) ?? [];
+}
+
+/**
+ * Le partite con fase e girone in una lettura sola (27/11/2026, cache della scheda torneo): quello che fanno
+ * listMatches + withMatchStages, su un database migrato. Lancia sugli errori (anche una colonna mancante): chi la
+ * chiama ripiega sulle due letture di sempre.
+ */
+export async function listMatchesWithStages(tid: string, format: string, client: Db | null = supabasePublic()): Promise<TournamentMatch[]> {
+  if (!client) return [];
+  const { data, error } = await client.from("tournament_matches").select(matchSelectFor(format)).eq("tournament_id", tid).order("round", { ascending: true }).order("position", { ascending: true });
+  if (error) failed("listMatchesWithStages", error.message, true);
+  return ((data ?? []) as unknown as TournamentMatch[]) ?? [];
+}
+
+/** Colonne delle partite per formato: fase e girone solo fuori dall'eliminazione diretta, come withMatchStages. */
+export function matchSelectFor(format: string): string {
+  return format === "single_elim" ? MATCH_SELECT : `${MATCH_SELECT}, stage, grp`;
 }
 
 export async function listMatches(tid: string, client: Db | null = supabasePublic()): Promise<TournamentMatch[]> {
@@ -124,13 +151,13 @@ export async function listUserTournaments(client: Db, userId: string): Promise<{
     client.from("tournament_players").select("tournament_id").eq("user_id", userId).limit(100),
     client.from("tournament_invites").select("tournament_id").eq("user_id", userId).limit(100),
   ]);
-  const organized = ((org.data ?? []) as unknown as RawTournament[]).map(shape);
+  const organized = ((org.data ?? []) as unknown as RawTournament[]).map(shapeTournament);
   const playingIds = ((mine.data ?? []) as { tournament_id: string }[]).map((r) => r.tournament_id).filter((id) => !organized.some((t) => t.id === id));
   const invitedIds = ((inv.data ?? []) as { tournament_id: string }[]).map((r) => r.tournament_id).filter((id) => !organized.some((t) => t.id === id) && !playingIds.includes(id));
   const fetchByIds = async (ids: string[]): Promise<Tournament[]> => {
     if (!ids.length) return [];
     const { data } = await client.from("tournaments").select(TOURNAMENT_SELECT).in("id", ids).order("starts_at", { ascending: false });
-    return ((data ?? []) as unknown as RawTournament[]).map(shape);
+    return ((data ?? []) as unknown as RawTournament[]).map(shapeTournament);
   };
   const [playing, invited] = await Promise.all([fetchByIds(playingIds), fetchByIds(invitedIds)]);
   return { organized, playing, invited: invited.filter((t) => t.status === "open" || t.status === "running") };
@@ -147,9 +174,15 @@ export const NO_STAGES: StageOptions = { top_cut: null, top_cut_hold: false, top
  */
 export async function getStageOptions(client: Db | null, tid: string): Promise<StageOptions> {
   if (!client) return NO_STAGES;
-  const { data, error } = await client.from("tournaments").select("top_cut, top_cut_hold, top_cut_released_at, deck_ban").eq("id", tid).maybeSingle();
+  const { data, error } = await client.from("tournaments").select(STAGE_COLUMNS).eq("id", tid).maybeSingle();
   if (error || !data) return NO_STAGES;
-  const r = data as Partial<StageOptions>;
+  return stageOptionsOf(data as Partial<StageOptions>);
+}
+
+/** Colonne del blocco BRACKET E TOP CUT (lette insieme al torneo dalla cache della scheda, pageData.ts). */
+export const STAGE_COLUMNS = "top_cut, top_cut_hold, top_cut_released_at, deck_ban";
+
+export function stageOptionsOf(r: Partial<StageOptions>): StageOptions {
   return { top_cut: r.top_cut ?? null, top_cut_hold: Boolean(r.top_cut_hold), top_cut_released_at: r.top_cut_released_at ?? null, deck_ban: Boolean(r.deck_ban) };
 }
 
@@ -165,10 +198,13 @@ export async function listMatchBans(client: Db | null, mid: string): Promise<Mat
 }
 
 /** Leggendarie bannate nel torneo (allo staff sempre, a tutti a torneo finito), dalla più bannata. */
-export async function listBanStats(client: Db | null, tid: string): Promise<BanTally[]> {
+export async function listBanStats(client: Db | null, tid: string, strict = false): Promise<BanTally[]> {
   if (!client) return [];
   const { data, error } = await client.rpc("tournament_ban_stats", { tid });
-  if (error) return [];
+  if (error) {
+    if (strict) failed("listBanStats", error.message, true);
+    return [];
+  }
   return ((Array.isArray(data) ? data : []) as BanTally[]).filter((r) => r.legendary);
 }
 
@@ -210,7 +246,14 @@ export async function getFormatOptions(client: Db | null, tid: string): Promise<
   // 11/11/2026: la qualificazione senza fase finale, letta a parte e solo per la doppia eliminazione (colonna mancante = spenta)
   const { data: dq } = d.de_pools ? await client.from("tournaments").select("de_qualifier").eq("id", tid).maybeSingle() : { data: null };
   const qualifier = Boolean((dq as { de_qualifier?: boolean } | null)?.de_qualifier);
-  return { swiss_rounds: r.swiss_rounds ?? null, group_size: r.group_size ?? null, group_advance: r.group_advance ?? null, group_seeding: r.group_seeding ?? null, sideboard: r.sideboard ?? null, de_pools: d.de_pools ?? null, de_qualify: d.de_qualify ?? null, de_pool_size: d.de_pool_size ?? null, de_qualifier: qualifier };
+  return formatOptionsOf({ ...r, ...d, de_qualifier: qualifier });
+}
+
+/** Tutte le colonne dei formati nuovi in una lettura: solo su un database migrato fino all'11/11/2026 (cache della scheda). */
+export const FORMAT_COLUMNS = "swiss_rounds, group_size, group_advance, group_seeding, sideboard, de_pools, de_qualify, de_pool_size, de_qualifier";
+
+export function formatOptionsOf(r: Partial<FormatOptions>): FormatOptions {
+  return { swiss_rounds: r.swiss_rounds ?? null, group_size: r.group_size ?? null, group_advance: r.group_advance ?? null, group_seeding: r.group_seeding ?? null, sideboard: r.sideboard ?? null, de_pools: r.de_pools ?? null, de_qualify: r.de_qualify ?? null, de_pool_size: r.de_pool_size ?? null, de_qualifier: Boolean(r.de_pools && r.de_qualifier) };
 }
 
 /**

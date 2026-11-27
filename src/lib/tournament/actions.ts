@@ -1,10 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { isLocale, locales, type Locale } from "@/lib/i18n";
+import { isLocale, type Locale } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
-import { revalidateSitemaps } from "@/lib/sitemapData";
+import { refreshTournament, type TournamentChange } from "./pageCache";
 import { decodeOmCode, encodeOmCode } from "@/lib/deckcode";
 import { checkDeck } from "@/lib/community/util";
 import { validateConquest, type DeckState } from "@/lib/deckrules";
@@ -29,14 +28,13 @@ import { getCard } from "@/lib/data/cards";
 
 export type TournamentActionState = { error?: string; ok?: boolean; href?: string };
 
-function revalidateTournamentPaths(slug?: string) {
-  for (const l of locales) {
-    revalidatePath(`/${l}/tournaments`);
-    revalidatePath(`/${l}/account`);
-    if (slug) revalidatePath(`/${l}/tournaments/${slug}`);
-  }
-  // l'indice e tutte le sitemap divise (Ondata 2): revalidatePath("/sitemap.xml") rinfrescava solo l'indice
-  revalidateSitemaps();
+/**
+ * Dopo iscrizione, ritiro o consegna dei mazzi: se il torneo ora è in corso, l'ultima ha fatto partire il tabellone
+ * (tm_autostart) e la cache della scheda va fatta scadere subito come per un avvio; altrimenti cambia solo l'elenco.
+ */
+async function rosterChange(sb: Client, id: string): Promise<TournamentChange> {
+  const { data } = await sb.from("tournaments").select("status").eq("id", id).maybeSingle();
+  return (data as { status: string } | null)?.status === "running" ? "structure" : "roster";
 }
 
 function localeOf(fd: FormData): Locale {
@@ -129,7 +127,7 @@ export async function createTournament(_prev: TournamentActionState, formData: F
     const { data } = error ? { data: null } : await ctx.supabase.from("tournaments").select("id, slug").eq("slug", slug).maybeSingle();
     if (!error && data) {
       const { id, slug: s } = data as { id: string; slug: string };
-      revalidateTournamentPaths(s);
+      refreshTournament(s, "structure");
       // in diretta nel canale dei tornei del nostro Discord, solo se il torneo è pubblico
       notifyTournamentCreated(id);
       // ?new=1: la scheda apre in cima il pannello "Torneo creato" con il link da incollare su Discord (UX-9)
@@ -150,7 +148,7 @@ export async function joinTournament(id: string, slug: string): Promise<{ error?
   if (!UUID.test(id)) return { error: "not_found" };
   const { error } = await supabase.rpc("join_tournament", { tid: id });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(slug);
+  refreshTournament(slug, await rosterChange(supabase, id));
   // la RPC riesce solo su un torneo "open": se ora è "running", l'ultima iscrizione ha fatto partire il tabellone
   notifyIfStarted(id, "open");
   return { ok: true };
@@ -165,7 +163,8 @@ export async function leaveTournament(id: string, slug: string): Promise<{ error
   const { data: before } = await supabase.from("tournaments").select("status").eq("id", id).maybeSingle();
   const { error } = await supabase.rpc("leave_tournament", { tid: id });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(slug);
+  // a iscrizioni aperte cambia l'elenco; a torneo in corso è un ritiro dalla partita, come quello fatto dallo staff
+  refreshTournament(slug, (before as { status: string } | null)?.status === "running" ? "live" : "roster");
   // a torneo in corso è un ritiro vero: la partita persa a tavolino va su Discord come le altre
   if ((before as { status: string } | null)?.status === "running") await notifyDropResult(supabase, id, user.id);
   return { ok: true };
@@ -204,7 +203,7 @@ async function storeDecks(id: string, raw: string[]): Promise<{ error?: string; 
 
   const { error } = await supabase.rpc("submit_tournament_decks", { tid: id, codes });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(tournament.slug);
+  refreshTournament(tournament.slug, await rosterChange(supabase, id));
   // stato di prima letto sopra ("open"): se dopo la consegna il torneo è "running", è scattato tm_autostart
   notifyIfStarted(id, tournament.status);
   return { slug: tournament.slug };
@@ -230,20 +229,20 @@ export async function submitDeckCodes(tournamentId: string, codes: string[]): Pr
 type Simple = { error?: string; ok?: boolean };
 type Client = NonNullable<Awaited<ReturnType<typeof currentUser>>["supabase"]>;
 
-async function organizerRpc(slug: string, call: (sb: Client) => PromiseLike<{ error: { message?: string } | null }>): Promise<Simple> {
+async function organizerRpc(slug: string, change: TournamentChange, call: (sb: Client) => PromiseLike<{ error: { message?: string } | null }>): Promise<Simple> {
   const { supabase, user } = await currentUser();
   if (!supabase) return { error: "disabled" };
   if (!user) return { error: "notLoggedIn" };
   const { error } = await call(supabase);
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(slug);
+  refreshTournament(slug, change);
   return { ok: true };
 }
 
 /** Avvio con l'ordine dei seed deciso dall'organizzatore (casuale o manuale): la RPC crea il tabellone con i bye. */
 export async function startTournament(id: string, slug: string, seeded: string[]): Promise<Simple> {
   if (!UUID.test(id) || !Array.isArray(seeded) || seeded.some((s) => !UUID.test(s))) return { error: "bad_seeding" };
-  const r = await organizerRpc(slug, (sb) => sb.rpc("start_tournament", { tid: id, seeded }));
+  const r = await organizerRpc(slug, "structure", (sb) => sb.rpc("start_tournament", { tid: id, seeded }));
   // start_tournament accetta solo tornei "open": se è riuscita, il tabellone è appena partito
   if (r.ok) notifyIfStarted(id, "open");
   return r;
@@ -251,12 +250,12 @@ export async function startTournament(id: string, slug: string, seeded: string[]
 
 export async function swapPlayers(id: string, slug: string, u1: string, u2: string): Promise<Simple> {
   if (!UUID.test(id) || !UUID.test(u1) || !UUID.test(u2)) return { error: "bad_swap" };
-  return organizerRpc(slug, (sb) => sb.rpc("swap_players", { tid: id, u1, u2 }));
+  return organizerRpc(slug, "structure", (sb) => sb.rpc("swap_players", { tid: id, u1, u2 }));
 }
 
 export async function setMatchResult(matchId: string, slug: string, a: number, b: number, forfeit: boolean): Promise<Simple> {
   if (!UUID.test(matchId) || !Number.isInteger(a) || !Number.isInteger(b)) return { error: "bad_score" };
-  const r = await organizerRpc(slug, (sb) => sb.rpc("set_match_result", { mid: matchId, a, b, forfeit: Boolean(forfeit) }));
+  const r = await organizerRpc(slug, "live", (sb) => sb.rpc("set_match_result", { mid: matchId, a, b, forfeit: Boolean(forfeit) }));
   if (r.ok) notifyMatchResult(matchId);
   return r;
 }
@@ -264,7 +263,7 @@ export async function setMatchResult(matchId: string, slug: string, a: number, b
 /** Referto di un giocatore (fase 3): il secondo referto uguale conferma, diverso contesta. */
 export async function reportMatchResult(matchId: string, slug: string, a: number, b: number): Promise<Simple> {
   if (!UUID.test(matchId) || !Number.isInteger(a) || !Number.isInteger(b)) return { error: "bad_score" };
-  const r = await organizerRpc(slug, (sb) => sb.rpc("report_match_result", { mid: matchId, a, b }));
+  const r = await organizerRpc(slug, "live", (sb) => sb.rpc("report_match_result", { mid: matchId, a, b }));
   // notify rilegge la partita e annuncia solo se è "confirmed" (il primo referto la lascia "reported")
   if (r.ok) notifyMatchResult(matchId);
   return r;
@@ -296,12 +295,12 @@ export async function invitePlayer(id: string, slug: string, username: string): 
     .replace(/^@/, "")
     .slice(0, 60);
   if (!uname) return { error: "user_not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("invite_player", { tid: id, uname }));
+  return organizerRpc(slug, "structure", (sb) => sb.rpc("invite_player", { tid: id, uname }));
 }
 
 export async function revokeInvite(id: string, slug: string, uid: string): Promise<Simple> {
   if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("revoke_invite", { tid: id, uid }));
+  return organizerRpc(slug, "structure", (sb) => sb.rpc("revoke_invite", { tid: id, uid }));
 }
 
 /** Nuovo link d'invito: il precedente smette di funzionare. */
@@ -312,13 +311,13 @@ export async function rotateInviteCode(id: string, slug: string): Promise<Simple
   if (!user) return { error: "notLoggedIn" };
   const { data, error } = await supabase.rpc("rotate_invite_code", { tid: id });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(slug);
+  refreshTournament(slug, "live");
   return { ok: true, code: typeof data === "string" ? data : undefined };
 }
 
 export async function dropPlayer(id: string, slug: string, uid: string): Promise<Simple> {
   if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
-  const r = await organizerRpc(slug, (sb) => sb.rpc("drop_player", { tid: id, uid }));
+  const r = await organizerRpc(slug, "live", (sb) => sb.rpc("drop_player", { tid: id, uid }));
   if (r.ok) {
     const { supabase } = await currentUser();
     if (supabase) await notifyDropResult(supabase, id, uid);
@@ -346,13 +345,13 @@ async function notifyDropResult(sb: Client, tid: string, uid: string): Promise<v
 /** Check-in del giocatore (dalle 2 ore prima; gli iscritti fino a 5 minuti prima, la lista d'attesa fino all'avvio). */
 export async function checkIn(id: string, slug: string): Promise<Simple> {
   if (!UUID.test(id)) return { error: "not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("check_in", { tid: id }));
+  return organizerRpc(slug, "live", (sb) => sb.rpc("check_in", { tid: id }));
 }
 
 /** Check-in fatto (o tolto) dallo staff per un giocatore, a qualsiasi ora prima dell'avvio. */
 export async function staffCheckIn(id: string, slug: string, uid: string, undo = false): Promise<Simple> {
   if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("staff_check_in", { tid: id, uid, undo: Boolean(undo) }));
+  return organizerRpc(slug, "live", (sb) => sb.rpc("staff_check_in", { tid: id, uid, undo: Boolean(undo) }));
 }
 
 /**
@@ -370,7 +369,7 @@ export async function markMatchSeen(matchId: string): Promise<{ ok: boolean }> {
 /** Vittoria a tavolino: passato il tempo di assenza, se l'avversario non è mai entrato nella stanza. */
 export async function claimNoShow(matchId: string, slug: string): Promise<Simple> {
   if (!UUID.test(matchId)) return { error: "not_found" };
-  const r = await organizerRpc(slug, (sb) => sb.rpc("claim_no_show", { mid: matchId }));
+  const r = await organizerRpc(slug, "live", (sb) => sb.rpc("claim_no_show", { mid: matchId }));
   if (r.ok) notifyMatchResult(matchId);
   return r;
 }
@@ -396,7 +395,7 @@ export async function releaseTopCut(id: string, slug: string): Promise<Simple & 
   if (!user) return { error: "notLoggedIn" };
   const { data, error } = await supabase.rpc("release_top_cut", { tid: id });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(slug);
+  refreshTournament(slug, "structure");
   return { ok: true, count: typeof data === "number" ? data : undefined };
 }
 
@@ -408,12 +407,12 @@ export async function addJudge(id: string, slug: string, username: string): Prom
     .replace(/^@/, "")
     .slice(0, 60);
   if (!uname) return { error: "user_not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("add_judge", { tid: id, uname }));
+  return organizerRpc(slug, "structure", (sb) => sb.rpc("add_judge", { tid: id, uname }));
 }
 
 export async function removeJudge(id: string, slug: string, uid: string): Promise<Simple> {
   if (!UUID.test(id) || !UUID.test(uid)) return { error: "not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("remove_judge", { tid: id, uid }));
+  return organizerRpc(slug, "structure", (sb) => sb.rpc("remove_judge", { tid: id, uid }));
 }
 
 export async function finishTournament(id: string, slug: string, report: string): Promise<Simple> {
@@ -422,14 +421,14 @@ export async function finishTournament(id: string, slug: string, report: string)
     .replace(/\r\n/g, "\n")
     .trim()
     .slice(0, 2000);
-  const r = await organizerRpc(slug, (sb) => sb.rpc("finish_tournament", { tid: id, report: clean || null }));
+  const r = await organizerRpc(slug, "structure", (sb) => sb.rpc("finish_tournament", { tid: id, report: clean || null }));
   if (r.ok) notifyTournamentFinished(id);
   return r;
 }
 
 export async function cancelTournament(id: string, slug: string): Promise<Simple> {
   if (!UUID.test(id)) return { error: "not_found" };
-  return organizerRpc(slug, (sb) => sb.rpc("cancel_tournament", { tid: id }));
+  return organizerRpc(slug, "structure", (sb) => sb.rpc("cancel_tournament", { tid: id }));
 }
 
 /**
@@ -469,7 +468,7 @@ export async function updateTournament(_prev: TournamentActionState, formData: F
   if (error) return { error: error.message.includes("listing_not_allowed") ? "listing" : error.message.includes("private_not_listed") ? "private_not_listed" : "db" };
   if (!data) return { error: "forbidden" };
   const s = (data as { slug: string }).slug;
-  revalidateTournamentPaths(s);
+  refreshTournament(s, "structure");
   return { ok: true, href: `/${locale}/tournaments/${s}/manage` };
 }
 
@@ -481,7 +480,7 @@ export async function deleteTournament(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
   if (UUID.test(id)) {
     const { data } = await supabase.from("tournaments").delete().eq("id", id).select("slug").maybeSingle();
-    revalidateTournamentPaths((data as { slug: string } | null)?.slug);
+    refreshTournament((data as { slug: string } | null)?.slug, "structure");
   }
   redirect(`/${locale}/account`);
 }
@@ -496,7 +495,7 @@ export async function swissNextRound(id: string, slug: string): Promise<Simple &
   if (!user) return { error: "notLoggedIn" };
   const { data, error } = await supabase.rpc("swiss_next_round", { tid: id });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(slug);
+  refreshTournament(slug, "structure");
   return { ok: true, round: typeof data === "number" ? data : undefined };
 }
 
@@ -508,7 +507,7 @@ export async function startFinalStage(id: string, slug: string): Promise<Simple 
   if (!user) return { error: "notLoggedIn" };
   const { data, error } = await supabase.rpc("start_final_stage", { tid: id });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(slug);
+  refreshTournament(slug, "structure");
   return { ok: true, count: typeof data === "number" ? data : undefined };
 }
 
@@ -539,7 +538,8 @@ export async function submitSideboard(id: string, cards: string[]): Promise<Simp
   if (problem) return { error: problem };
   const { error } = await supabase.rpc("submit_tournament_sideboard", { tid: id, cards });
   if (error) return { error: rpcError(error) };
-  revalidateTournamentPaths(tournament.slug);
+  // la sideboard non compare nella scheda: basta ridisegnare la pagina di chi la consegna
+  refreshTournament(tournament.slug, "live");
   return { ok: true };
 }
 

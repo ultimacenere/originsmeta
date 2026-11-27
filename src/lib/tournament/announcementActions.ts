@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { locales } from "@/lib/i18n";
 import { currentUser } from "@/lib/supabase/server";
 import { HARVEST_BOWL } from "@/lib/harvestBowl";
+import { tournamentTag } from "./pageCache";
 import { announcementErrorCode, parseAnnouncementInput, type AnnouncementError } from "./announcements";
 
 /**
@@ -12,7 +13,9 @@ import { announcementErrorCode, parseAnnouncementInput, type AnnouncementError }
  * (funzioni `tournament_announcement_*`, security definer; la tabella non si scrive direttamente). Gli errori tornano come
  * codici di `ANNOUNCEMENT_ERRORS`, che la bacheca traduce.
  *
- * Dopo ogni scrittura si rigenera la pagina dell'evento in tutte le lingue (ISR); le schede dei tornei sono dinamiche.
+ * Dopo ogni scrittura si rigenera la pagina dell'evento in tutte le lingue (ISR); le schede dei tornei sono dinamiche,
+ * ma dal 27/11/2026 la loro parte comune (annunci compresi) sta nella cache dei dati: `updateTag` la fa scadere subito
+ * (pageCache.ts) e ridisegna la pagina di chi scrive.
  */
 
 export type AnnouncementActionState = { ok?: boolean; error?: AnnouncementError; recipients?: number; at?: number };
@@ -21,7 +24,10 @@ function revalidateEvent(slugs: string[]) {
   for (const l of locales) {
     revalidatePath(`/${l}${HARVEST_BOWL.path}`);
     revalidatePath(`/${l}${HARVEST_BOWL.path}/board`);
-    for (const s of slugs) if (/^[a-z0-9-]{1,90}$/.test(s)) revalidatePath(`/${l}/tournaments/${s}`);
+  }
+  for (const s of slugs) {
+    const tag = /^[a-z0-9-]{1,90}$/.test(s) ? tournamentTag(s) : null;
+    if (tag) updateTag(tag);
   }
 }
 
