@@ -58,8 +58,9 @@ export default async function MatchPage({ params, searchParams }: { params: Para
 
   // 27/11/2026: per un torneo pubblico torneo, opzioni, iscritti e partite arrivano dalla cache della scheda (15 secondi,
   // pageData.ts); la partita di questa stanza, le liste, i messaggi e il resto si leggono sempre con la sessione
-  const pub = await loadPublicTournament(slug);
-  const t = pub?.core.t ?? (await getTournament(slug, supabase));
+  // Il torneo (stato compreso) si legge sempre con la sessione: con la copia in cache, nei primi secondi dopo l'avvio
+  // la stanza poteva credere il torneo non ancora partito e nascondere la chat (Harvest Warm-up, 27/11/2026)
+  const [pub, t] = await Promise.all([loadPublicTournament(slug), getTournament(slug, supabase)]);
   if (!t) notFound();
   const match = await getMatch(id, supabase);
   if (!match || match.tournament_id !== t.id) notFound();
