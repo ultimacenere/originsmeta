@@ -5877,6 +5877,20 @@ begin
 end $$;
 revoke all on function public.tm_promote_waitlist(uuid) from public, anon, authenticated;
 
+-- 26/11/2026: più posti, la lista d'attesa entra subito. Chi allarga un torneo (per esempio da 8 a 16) si aspetta che
+-- chi aspettava entri, in ordine di arrivo; prima restava in lista e i nuovi iscritti gli passavano davanti
+-- (ZeKiriam, torneo OM-BTLL). Vale solo con il check-in (senza non c'è lista d'attesa) e finché il check-in è aperto.
+create or replace function public.tournaments_promote_on_resize()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+begin
+  if new.size > old.size then perform public.tm_promote_waitlist(new.id); end if;
+  return null;
+end $$;
+revoke all on function public.tournaments_promote_on_resize() from public, anon, authenticated;
+drop trigger if exists tournaments_promote_on_resize on public.tournaments;
+create trigger tournaments_promote_on_resize after update of size on public.tournaments
+  for each row execute function public.tournaments_promote_on_resize();
+
 -- Avvio automatico (torneo pieno, mazzi di tutti): mai con il check-in, che parte all'ora d'inizio.
 create or replace function public.tm_autostart(tid uuid)
 returns void language plpgsql set search_path = public, pg_temp as $$
@@ -5913,7 +5927,7 @@ begin
     raise exception 'invite_required';
   end if;
   if exists (select 1 from public.tournament_players where tournament_id = tid and user_id = auth.uid()) then raise exception 'already_joined'; end if;
-  if exists (select 1 from public.tournament_judges where tournament_id = tid and user_id = auth.uid()) then raise exception 'judge_is_player'; end if;
+  -- 27/11/2026: un arbitro può anche giocare (Pier: «se hanno arbitri giocatori non è roba che compete a noi»)
   select count(*) filter (where status = 'registered'), count(*) filter (where status = 'waitlist') into n, w from public.tournament_players where tournament_id = tid;
   if n >= t.size then
     -- lista d'attesa solo con il check-in, al massimo quanto i posti
@@ -6293,7 +6307,7 @@ begin
   select id into target from public.profiles where lower(username) = lower(btrim(replace(uname, '@', ''))) limit 1;
   if target is null then raise exception 'user_not_found'; end if;
   if target = t.organizer then raise exception 'already_staff'; end if;
-  if exists (select 1 from public.tournament_players p where p.tournament_id = tid and p.user_id = target and p.status in ('registered', 'waitlist')) then raise exception 'judge_is_player'; end if;
+  -- 27/11/2026: anche un iscritto può fare l'arbitro, lo decide l'organizzatore
   if (select count(*) from public.tournament_judges j where j.tournament_id = tid) >= 10 then raise exception 'too_many_judges'; end if;
   insert into public.tournament_judges (tournament_id, user_id, added_by) values (tid, target, auth.uid()) on conflict (tournament_id, user_id) do nothing;
 end $$;

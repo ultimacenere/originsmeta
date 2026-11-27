@@ -377,8 +377,8 @@ export const zhCn: Dictionary = {
        del 25/09/2026), senza "decks" e "cards", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Origins TCG 强度榜",
     metaTitle: "Origins TCG 强度榜与当前 Meta 环境",
-    intro: "卡组、传说卡和基础卡。OriginsMeta 于 2026年11月9日发布第一版强度榜，先为传说卡划分档位：依据当前补丁的胜率（OriginsMeta Tracker 记录的每局对局双方都计入），并参考 Crimson Cup 的结果进行修正。卡组和基础卡随后推出；在此之前，请看实时榜单。",
-    description: "Origins TCG（Koin Games）强度榜，更新于 2026年11月9日：根据当前补丁的胜率（OriginsMeta Tracker 记录的对局，双方都计入）和 Crimson Cup 官方数据，把传说卡分为 S 到 D 五档；卡组和基础卡随后推出，在此之前可以参考社区强度榜、卡牌评分和使用率最高的卡牌。",
+    intro: "卡组、传说卡和基础卡，逐个补丁查看。传说卡以 OriginsMeta 于 2026年11月9日发布的第一版强度榜为起点：依据补丁胜率（OriginsMeta Tracker 记录的每局对局双方都计入），并参考 Crimson Cup 修正；之后的补丁沿用同一规则。基础卡自 2026年11月27日起分档：带这张卡的卡组胜率，与该补丁的平均胜率比较。卡组随后推出；在此之前，请看实时榜单。",
+    description: "Origins TCG（Koin Games）强度榜：传说卡和基础卡从 S 到 D 逐个补丁分档，依据 OriginsMeta Tracker 记录的对局胜率和 Crimson Cup 的结果，附每个补丁的回放、卡牌改动和分档规则的详细说明。",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
     mainText: "强度榜与实时榜单：",
@@ -395,6 +395,7 @@ export const zhCn: Dictionary = {
       "传说卡：依据 OriginsMeta Tracker 记录的当前补丁对局胜率，在已知对手传说卡的对局中，双方都计入。",
       "即使取 95% 区间的下限仍高于 50% 为 S；50% 起为 A，45% 起为 B，40% 起为 C，低于 40% 为 D。不足 100 局：不分档。",
       "如果一张传说卡在 Crimson Cup 中至少 30% 的对局被禁用并进入决赛，就上调一档，除非这张卡之后改动过。每次变动都会注明日期并在新闻中说明。",
+      "基础卡：带这张卡的卡组胜率，与同一补丁所有记录对局的平均胜率比较（Tracker 只清楚记录者自己的卡组）。95% 区间的下限高于平均为 S，达到平均为 A，低于平均 5 个百分点以内为 B，10 个百分点以内为 C，更低为 D。",
     ],
     tiers: {
       S: "定义环境",
@@ -440,7 +441,7 @@ export const zhCn: Dictionary = {
     lineStatus: "状态",
     lineMeasure: "衡量",
     officialSourceText: "当前补丁的胜率（Analytics，每局双方都计入）和 Crimson Cup 官方数据",
-    officialStatusText: "传说卡已于 2026年11月9日分档；卡组和基础卡随后推出",
+    officialStatusText: "传说卡自 2026年11月9日、基础卡自 2026年11月27日起分档；卡组随后推出",
     officialEmpty: "OriginsMeta 的档位只依据锦标赛成绩。截至 2026年11月9日，实时榜单包括：",
     meanwhileDecks: "在此之前：社区评分最高的卡组",
     meanwhileLegendaries: "在此之前：发布最多的卡组中的传说卡",
@@ -1830,7 +1831,6 @@ export const zhCn: Dictionary = {
       no_show_too_early: "太早了：请等缺席时限结束。",
       opponent_present: "你的对手已到场（打开过房间、在聊天中发过言或上报过结果）：不能判弃权。",
       already_staff: "这名用户已经在管理这场锦标赛。",
-      judge_is_player: "裁判不能参加同一场锦标赛。",
       too_many_judges: "每场锦标赛最多 10 名裁判。",
       finalBestOf: "请选择决赛长度。",
       noShow: "缺席时限：5 到 60 分钟，或留空。",

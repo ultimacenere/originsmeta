@@ -5,6 +5,7 @@ import { href } from "@/lib/i18n";
 import { pageMeta, resolveLocale } from "@/lib/page";
 import { currentUser } from "@/lib/supabase/server";
 import { getFormatOptions, getMatch, getStageOptions, getTournament, listLegendaries, listMatchBans, listMatchSideSwaps, listMatches, listMessages, listPlayers, listSideboards, listVisibleDecks, withMatchStages } from "@/lib/tournament/queries";
+import { loadPublicTournament } from "@/lib/tournament/pageData";
 import { isStagedFormat } from "@/lib/tournament/formats";
 import { formatMatchName, formatView } from "@/lib/tournament/formatView";
 import { formatLabels } from "@/lib/tournament/formatLabels";
@@ -55,7 +56,11 @@ export default async function MatchPage({ params, searchParams }: { params: Para
   if (!user) redirect(`${href(locale, "/login")}?next=${encodeURIComponent(path)}`);
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
 
-  const t = await getTournament(slug, supabase);
+  // 27/11/2026: per un torneo pubblico torneo, opzioni, iscritti e partite arrivano dalla cache della scheda (15 secondi,
+  // pageData.ts); la partita di questa stanza, le liste, i messaggi e il resto si leggono sempre con la sessione
+  // Il torneo (stato compreso) si legge sempre con la sessione: con la copia in cache, nei primi secondi dopo l'avvio
+  // la stanza poteva credere il torneo non ancora partito e nascondere la chat (Harvest Warm-up, 27/11/2026)
+  const [pub, t] = await Promise.all([loadPublicTournament(slug), getTournament(slug, supabase)]);
   if (!t) notFound();
   const match = await getMatch(id, supabase);
   if (!match || match.tournament_id !== t.id) notFound();
@@ -68,18 +73,19 @@ export default async function MatchPage({ params, searchParams }: { params: Para
 
   const staged = isStagedFormat(t.format);
   const [players, decks, legendaries, allMatches, messages, screensA, screensB, stages, bans, fo, sides, sideSwaps] = await Promise.all([
-    listPlayers(t.id, supabase),
+    pub ? pub.players : listPlayers(t.id, supabase),
     listVisibleDecks(t.id, supabase),
     listLegendaries(t.id, supabase),
-    listMatches(t.id, supabase).then((ms) => withMatchStages(supabase, t.id, t.format, ms)),
+    // la copia in cache con questa partita letta adesso (fase e girone restano quelli della copia: non cambiano mai)
+    pub ? pub.matches.map((m) => (m.id === match.id ? { ...m, ...match } : m)) : listMatches(t.id, supabase).then((ms) => withMatchStages(supabase, t.id, t.format, ms)),
     listMessages(match.id, supabase),
     signedScreens(supabase, match.id, match.player_a),
     signedScreens(supabase, match.id, match.player_b),
     // 08/11/2026: fase finale in pausa e ban (letture che reggono il database non ancora migrato)
-    getStageOptions(supabase, t.id),
+    pub ? pub.core.stages : getStageOptions(supabase, t.id),
     listMatchBans(supabase, match.id),
     // 09/11/2026: sideboard (riserve visibili con le regole delle liste e scambi dichiarati)
-    getFormatOptions(supabase, t.id),
+    pub ? pub.core.formatOptions : getFormatOptions(supabase, t.id),
     listSideboards(supabase, t.id),
     listMatchSideSwaps(supabase, match.id),
   ]);

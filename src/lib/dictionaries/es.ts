@@ -372,8 +372,8 @@ export const es: Dictionary = {
        del 25/09/2026), senza "mazos" e "cartas", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list de Origins TCG",
     metaTitle: "Tier list y meta de Origins TCG",
-    intro: "Mazos, Legendarias y cartas base. La primera tier list de OriginsMeta, del 9 de noviembre de 2026, clasifica las Legendarias: el win rate del parche actual, contando los dos lados de cada partida registrada con OriginsMeta Tracker, corregido con la Crimson Cup. Los mazos y las cartas base llegarán después; mientras tanto, las clasificaciones en vivo.",
-    description: "Tier list de Origins TCG (Koin Games), 9 nov 2026: las Legendarias de S a D según el win rate del parche actual y la Crimson Cup, y clasificaciones en vivo.",
+    intro: "Mazos, Legendarias y cartas base, parche a parche. Las Legendarias parten de la primera tier list de OriginsMeta, del 9 de noviembre de 2026: los winrates del parche, contando los dos lados de cada partida registrada con OriginsMeta Tracker, corregidos con la Crimson Cup; la misma regla sigue los parches siguientes. Las cartas base tienen tiers desde el 27 de noviembre de 2026: el winrate de los mazos que las llevan, frente a la media del parche. Los mazos llegan después; mientras tanto, las clasificaciones en vivo.",
+    description: "Tier list de Origins TCG (Koin Games): Legendarias y cartas base de S a D parche a parche, con los winrates de OriginsMeta Tracker y la Crimson Cup.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
     mainText: "La tier list y las clasificaciones en vivo:",
@@ -390,6 +390,7 @@ export const es: Dictionary = {
       "Legendarias: el win rate del parche actual con las partidas registradas en OriginsMeta Tracker, contando los dos lados de cada partida en la que se conoce la Legendaria rival.",
       "S si sigue por encima del 50 % incluso en el extremo inferior del intervalo al 95 %; A desde el 50 %, B desde el 45 %, C desde el 40 %, D por debajo. Con menos de 100 partidas: sin clasificar.",
       "La Crimson Cup sube una Legendaria un tier si fue baneada en al menos el 30 % de sus partidas y llegó a la final, salvo que su carta haya cambiado después. Cada cambio va fechado y explicado en una noticia.",
+      "Cartas base: el winrate de los mazos que las llevan, frente a la media de todas las partidas registradas en el mismo parche (el Tracker solo conoce bien el mazo de quien registra). S si el extremo bajo del intervalo al 95% está por encima de la media, A desde la media, B hasta 5 puntos por debajo, C hasta 10 por debajo, D más abajo.",
     ],
     tiers: {
       S: "Define el meta",
@@ -435,7 +436,7 @@ export const es: Dictionary = {
     lineStatus: "Estado",
     lineMeasure: "Medida",
     officialSourceText: "win rate del parche actual (Analytics, los dos lados de cada partida) y cifras oficiales de la Crimson Cup",
-    officialStatusText: "Legendarias clasificadas el 9 nov 2026; mazos y cartas base después",
+    officialStatusText: "Legendarias desde el 9 nov 2026, cartas base desde el 27 nov 2026; mazos después",
     officialEmpty: "Los tiers de OriginsMeta salen solo de resultados de torneos. Al 9 de noviembre de 2026, las clasificaciones en vivo son:",
     meanwhileDecks: "Mientras tanto: los mazos mejor valorados por la comunidad",
     meanwhileLegendaries: "Mientras tanto: las Legendarias presentes en más mazos publicados",
@@ -1815,7 +1816,6 @@ export const es: Dictionary = {
       no_show_too_early: "Es pronto: espera a que pase el tiempo de ausencia.",
       opponent_present: "Tu rival está presente (abrió la sala, escribió en el chat o reportó): no hay victoria por abandono.",
       already_staff: "Este usuario ya gestiona el torneo.",
-      judge_is_player: "Un árbitro no puede jugar en el mismo torneo.",
       too_many_judges: "Como máximo 10 árbitros por torneo.",
       finalBestOf: "Elige la duración de la final.",
       noShow: "Ausencia: de 5 a 60 minutos, o vacío.",

@@ -312,7 +312,7 @@ No playtest fechado, segundo jogadores no fórum do Steam em 14 de setembro de 2
 
 ## O que o OriginsMeta vai fazer com a ranqueada {#originsmeta}
 
-As finais da Crimson Cup foram disputadas em 25 de outubro de 2026. Em 9 de novembro de 2026 o OriginsMeta publicou a sua primeira [tier list](/pt/tier-list), das Lendárias: o win rate do patch atual a partir das partidas registradas com o OriginsMeta Tracker, contando os dois lados de cada partida ([Analytics](/pt/analytics)), corrigido pela Crimson Cup. Decks e cartas base vêm depois.
+As finais da Crimson Cup foram disputadas em 25 de outubro de 2026. Em 9 de novembro de 2026 o OriginsMeta publicou a sua primeira [tier list](/pt/tier-list), das Lendárias: o win rate do patch atual a partir das partidas registradas com o OriginsMeta Tracker, contando os dois lados de cada partida ([Analytics](/pt/analytics)), corrigido pela Crimson Cup. Desde 27 de novembro de 2026 as cartas base também têm seus tiers, pelo win rate dos decks que as usam contra a média do patch; os decks vêm depois.
 
 ## O que ainda não sabemos {#o-que-nao-sabemos}
 

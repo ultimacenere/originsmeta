@@ -370,8 +370,8 @@ export const pt: Dictionary = {
        del 25/09/2026), senza "decks" e "cartas", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list de Origins TCG",
     metaTitle: "Tier list e meta de Origins TCG",
-    intro: "Decks, Lendárias e cartas base. A primeira tier list do OriginsMeta, de 9 de novembro de 2026, classifica as Lendárias: o win rate do patch atual, contando os dois lados de cada partida registrada com o OriginsMeta Tracker, corrigido pela Crimson Cup. Decks e cartas base vêm depois; enquanto isso, os rankings ao vivo.",
-    description: "Tier list de Origins TCG (Koin Games), 9 nov 2026: as Lendárias de S a D pelo win rate do patch atual e pela Crimson Cup, mais os rankings ao vivo.",
+    intro: "Decks, Lendárias e cartas base, patch a patch. As Lendárias partem da primeira tier list do OriginsMeta, de 9 de novembro de 2026: os win rates do patch, contando os dois lados de cada partida registrada com o OriginsMeta Tracker, corrigidos com a Copa Crimson; a mesma regra segue os patches seguintes. As cartas base têm tiers desde 27 de novembro de 2026: o win rate dos decks que as usam, contra a média do patch. Os decks vêm depois; enquanto isso, os rankings ao vivo.",
+    description: "Tier list de Origins TCG (Koin Games): Lendárias e cartas base de S a D patch a patch, pelos win rates do OriginsMeta Tracker e pela Copa Crimson.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate) */
     mainText: "A tier list e os rankings ao vivo:",
     mainAnchor: "Tier list de Origins TCG",
@@ -387,6 +387,7 @@ export const pt: Dictionary = {
       "Lendárias: o win rate do patch atual a partir das partidas registradas com o OriginsMeta Tracker, contando os dois lados de cada partida em que a Lendária adversária é conhecida.",
       "S se fica acima de 50% mesmo no limite inferior do intervalo de 95%; A a partir de 50%, B de 45%, C de 40%, D abaixo. Menos de 100 partidas: sem classificação.",
       "A Crimson Cup sobe uma Lendária um tier se ela foi banida em pelo menos 30% das suas partidas e chegou às finais, a menos que a carta tenha mudado depois. Cada mudança é datada e explicada numa notícia.",
+      "Cartas base: o win rate dos decks que as usam, contra a média de todas as partidas registradas no mesmo patch (o Tracker só conhece bem o deck de quem registra). S se o limite inferior do intervalo de 95% fica acima da média, A a partir da média, B até 5 pontos abaixo, C até 10 abaixo, D mais abaixo.",
     ],
     tiers: {
       S: "Define o meta",
@@ -432,7 +433,7 @@ export const pt: Dictionary = {
     lineStatus: "Status",
     lineMeasure: "Medida",
     officialSourceText: "win rate do patch atual (Analytics, os dois lados de cada partida) e números oficiais da Crimson Cup",
-    officialStatusText: "Lendárias classificadas em 9 nov 2026; decks e cartas base depois",
+    officialStatusText: "Lendárias desde 9 nov 2026, cartas base desde 27 nov 2026; decks depois",
     officialEmpty: "Os tiers do OriginsMeta saem só de resultados de torneios. Em 9 de novembro de 2026, os rankings ao vivo são:",
     meanwhileDecks: "Enquanto isso: os decks da comunidade mais bem avaliados",
     meanwhileLegendaries: "Enquanto isso: as Lendárias nos decks mais publicados",
@@ -1818,7 +1819,6 @@ export const pt: Dictionary = {
       no_show_too_early: "É cedo demais: espere o tempo de ausência acabar.",
       opponent_present: "O seu oponente está aqui (abriu a sala, escreveu no chat ou informou o resultado): sem W.O.",
       already_staff: "Este usuário já gerencia o torneio.",
-      judge_is_player: "Um juiz não pode jogar no mesmo torneio.",
       too_many_judges: "No máximo 10 juízes por torneio.",
       finalBestOf: "Escolha a duração da final.",
       noShow: "Ausência: de 5 a 60 minutos, ou vazio.",

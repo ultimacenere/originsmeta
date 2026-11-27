@@ -98,6 +98,10 @@ export function ManagePanel(props: Props) {
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  // dove mostrare l'esito dell'ultima azione (27/11/2026, apix su OM-XU74: "adding judges doesnt work"): l'avviso stava solo
+  // in cima al pannello, migliaia di pixel sopra la sezione degli arbitri con 747 iscritti, e chi premeva "Aggiungi
+  // arbitro" con un nome che il sito non conosce non vedeva niente. Le azioni delle sezioni in fondo lo mostrano accanto.
+  const [place, setPlace] = useState<FeedbackPlace>(null);
   const [inviteName, setInviteName] = useState("");
   const [judgeName, setJudgeName] = useState("");
   const live = status === "running" || (status === "open" && checkin);
@@ -121,10 +125,11 @@ export function ManagePanel(props: Props) {
   const nameOf = useMemo(() => new Map(players.map((p) => [p.user_id, p.name])), [players]);
   const plan = checkin ? seatPlan(players.map((p) => ({ user_id: p.user_id, status: p.status, checked_in_at: p.checkedInAt, decks_submitted: p.decks, created_at: p.createdAt })), size) : null;
 
-  const run = (fn: () => Promise<Result>, afterHref?: string) =>
+  const run = (fn: () => Promise<Result>, afterHref?: string, where: FeedbackPlace = null) =>
     start(async () => {
       setError(null);
       setNotice(null);
+      setPlace(where);
       const r = await fn();
       if (r.error) {
         setError(x.errors[r.error as keyof typeof x.errors] ?? sl?.errors[r.error as keyof StageLabels["errors"]] ?? extraErrors?.[r.error] ?? x.errors.db);
@@ -167,16 +172,7 @@ export function ManagePanel(props: Props) {
 
   return (
     <div className="grid gap-6">
-      {error ? (
-        <p role="alert" className="alert-bad">
-          {error}
-        </p>
-      ) : null}
-      {notice && !error ? (
-        <p role="status" className="alert-good">
-          {notice}
-        </p>
-      ) : null}
+      {place === null ? <Feedback error={error} notice={notice} /> : null}
       {live ? <p className="text-xs text-pale-muted">{m.autoRefresh}</p> : null}
 
       {/* Da sistemare (torneo in corso) */}
@@ -263,6 +259,7 @@ export function ManagePanel(props: Props) {
           {m.players} <span className="font-mono text-sm font-normal text-pale-muted">{registered.length}/{size}</span>
           {waitlist.length ? <span className="ml-2 font-mono text-sm font-normal text-gold">+{waitlist.length}</span> : null}
         </h2>
+        {place === "players" ? <Feedback error={error} notice={notice} className="mt-3" /> : null}
         {players.length ? (
           <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             {[...registered, ...waitlist, ...players.filter((p) => p.status !== "registered" && p.status !== "waitlist")].map((p) => {
@@ -276,7 +273,7 @@ export function ManagePanel(props: Props) {
                   {checkin && inGame && status === "open" ? <span className={`font-mono text-[11px] ${p.checkedInAt ? "text-good" : "text-pale-muted"}`}>{p.checkedInAt ? m.checkedIn : m.notCheckedIn}</span> : null}
                   <span className="ml-auto flex gap-1">
                     {checkin && inGame && status === "open" && p.decks ? (
-                      <button type="button" disabled={pending} onClick={() => run(() => staffCheckIn(id, slug, p.user_id, Boolean(p.checkedInAt)))} className="btn btn-ink !px-2 !py-0.5 text-[11px]">
+                      <button type="button" disabled={pending} onClick={() => run(() => staffCheckIn(id, slug, p.user_id, Boolean(p.checkedInAt)), undefined, "players")} className="btn btn-ink !px-2 !py-0.5 text-[11px]">
                         {p.checkedInAt ? m.staffUndo : m.staffCheckIn}
                       </button>
                     ) : null}
@@ -285,7 +282,7 @@ export function ManagePanel(props: Props) {
                         type="button"
                         disabled={pending}
                         onClick={() => {
-                          if (window.confirm(m.dropConfirm)) run(() => dropPlayer(id, slug, p.user_id));
+                          if (window.confirm(m.dropConfirm)) run(() => dropPlayer(id, slug, p.user_id), undefined, "players");
                         }}
                         className="btn btn-danger !px-2 !py-0.5 text-[11px]"
                       >
@@ -313,11 +310,15 @@ export function ManagePanel(props: Props) {
               e.preventDefault();
               const name = judgeName.trim();
               if (!name) return;
-              run(async () => {
-                const r = await addJudge(id, slug, name);
-                if (!r.error) setJudgeName("");
-                return r;
-              });
+              run(
+                async () => {
+                  const r = await addJudge(id, slug, name);
+                  if (!r.error) setJudgeName("");
+                  return r;
+                },
+                undefined,
+                "judges",
+              );
             }}
           >
             <label className="block text-sm">
@@ -328,12 +329,13 @@ export function ManagePanel(props: Props) {
               {m.addJudge}
             </button>
           </form>
+          {place === "judges" ? <Feedback error={error} notice={notice} className="mt-3" /> : null}
           {judges.length ? (
             <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {judges.map((j) => (
                 <li key={j.user_id} className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
                   <span className="min-w-0 truncate text-pale">{j.name}</span>
-                  <button type="button" disabled={pending} onClick={() => run(() => removeJudge(id, slug, j.user_id))} className="ml-auto btn btn-danger !px-2 !py-0.5 text-[11px]">
+                  <button type="button" disabled={pending} onClick={() => run(() => removeJudge(id, slug, j.user_id), undefined, "judges")} className="ml-auto btn btn-danger !px-2 !py-0.5 text-[11px]">
                     {m.revoke}
                   </button>
                 </li>
@@ -361,7 +363,7 @@ export function ManagePanel(props: Props) {
                 disabled={pending}
                 title={m.rotateInviteHint}
                 onClick={() => {
-                  if (window.confirm(m.rotateInviteHint)) run(() => rotateInviteCode(id, slug));
+                  if (window.confirm(m.rotateInviteHint)) run(() => rotateInviteCode(id, slug), undefined, "invites");
                 }}
                 className="btn btn-ghost text-xs"
               >
@@ -375,11 +377,15 @@ export function ManagePanel(props: Props) {
               e.preventDefault();
               const name = inviteName.trim();
               if (!name) return;
-              run(async () => {
-                const r = await invitePlayer(id, slug, name);
-                if (!r.error) setInviteName("");
-                return r;
-              });
+              run(
+                async () => {
+                  const r = await invitePlayer(id, slug, name);
+                  if (!r.error) setInviteName("");
+                  return r;
+                },
+                undefined,
+                "invites",
+              );
             }}
           >
             <label className="block text-sm">
@@ -390,6 +396,7 @@ export function ManagePanel(props: Props) {
               {m.invite}
             </button>
           </form>
+          {place === "invites" ? <Feedback error={error} notice={notice} className="mt-3" /> : null}
           <p className="mt-4 kicker text-pale-muted">{m.invited}</p>
           {invites.length ? (
             <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -397,7 +404,7 @@ export function ManagePanel(props: Props) {
                 <li key={i.user_id} className="flex items-center gap-2 rounded-lg border border-sky bg-night-2/60 px-3 py-2 text-sm">
                   <span className="min-w-0 truncate text-pale">{i.name}</span>
                   {i.registered ? <span className="font-mono text-[11px] text-good">✓</span> : null}
-                  <button type="button" disabled={pending} onClick={() => run(() => revokeInvite(id, slug, i.user_id))} className="ml-auto btn btn-danger !px-2 !py-0.5 text-[11px]">
+                  <button type="button" disabled={pending} onClick={() => run(() => revokeInvite(id, slug, i.user_id), undefined, "invites")} className="ml-auto btn btn-danger !px-2 !py-0.5 text-[11px]">
                     {m.revoke}
                   </button>
                 </li>
@@ -563,4 +570,23 @@ function MatchEditor({ mt, nameOf, need, labels, disabled, matchHref, stageName,
       ) : null}
     </li>
   );
+}
+
+/** Sezione del pannello in cui mostrare l'esito dell'ultima azione; null = in cima, come prima. */
+type FeedbackPlace = "players" | "judges" | "invites" | null;
+
+function Feedback({ error, notice, className = "" }: { error: string | null; notice: string | null; className?: string }) {
+  if (error)
+    return (
+      <p role="alert" className={`alert-bad ${className}`}>
+        {error}
+      </p>
+    );
+  if (notice)
+    return (
+      <p role="status" className={`alert-good ${className}`}>
+        {notice}
+      </p>
+    );
+  return null;
 }
