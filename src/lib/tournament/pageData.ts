@@ -121,19 +121,34 @@ async function readCore(slug: string): Promise<TournamentCore | null> {
   return { t, stages, formatOptions, judges, announcements: !announcements.ok && announcements.error === "generic" ? null : announcements, decks, banStats };
 }
 
+/**
+ * Letture in corso condivise nel processo. Quando una voce scade, ogni richiesta che la trova vecchia ne fa partire una
+ * nuova (`unstable_cache` deduplica solo dentro una richiesta): provato con 30 visite contemporanee sul finto Supabase,
+ * erano 30 riletture di iscritti e partite nello stesso istante. Qui la seconda richiesta aspetta la stessa lettura
+ * della prima. Solo letture anonime e solo finché sono in corso: niente dati di una persona, niente copie vecchie.
+ */
+const inflight = new Map<string, Promise<unknown>>();
+function shared<T>(key: string, read: () => Promise<T>): Promise<T> {
+  const running = inflight.get(key);
+  if (running) return running as Promise<T>;
+  const p = read().finally(() => inflight.delete(key));
+  inflight.set(key, p);
+  return p;
+}
+
 function cachedCore(slug: string, tag: string): Promise<TournamentCore | null> {
-  return unstable_cache(() => readCore(slug), [KEY, "core", slug], { revalidate: TOURNAMENT_PAGE_TTL, tags: [tag] })();
+  return unstable_cache(() => shared(`core:${slug}`, () => readCore(slug)), [KEY, "core", slug], { revalidate: TOURNAMENT_PAGE_TTL, tags: [tag] })();
 }
 
 function cachedPlayers(tid: string, tag: string): Promise<TournamentPlayer[]> {
-  return unstable_cache(() => listPlayers(tid, supabasePublic(), true), [KEY, "players", tid], { revalidate: TOURNAMENT_PAGE_TTL, tags: [tag] })();
+  return unstable_cache(() => shared(`players:${tid}`, () => listPlayers(tid, supabasePublic(), true)), [KEY, "players", tid], { revalidate: TOURNAMENT_PAGE_TTL, tags: [tag] })();
 }
 
 function cachedMatches(tid: string, format: string, tag: string): Promise<TournamentMatch[]> {
-  return unstable_cache(() => listMatchesWithStages(tid, format), [KEY, "matches", tid, format], { revalidate: TOURNAMENT_PAGE_TTL, tags: [tag] })();
+  return unstable_cache(() => shared(`matches:${tid}:${format}`, () => listMatchesWithStages(tid, format)), [KEY, "matches", tid, format], { revalidate: TOURNAMENT_PAGE_TTL, tags: [tag] })();
 }
 
-const cachedListed = unstable_cache(() => listListedTournaments(30, true), [KEY, "listed", "30"], { revalidate: LISTED_TOURNAMENTS_TTL, tags: [LISTED_TOURNAMENTS_TAG] });
+const cachedListed = unstable_cache(() => shared("listed:30", () => listListedTournaments(30, true)), [KEY, "listed", "30"], { revalidate: LISTED_TOURNAMENTS_TTL, tags: [LISTED_TOURNAMENTS_TAG] });
 
 /** I 30 tornei del calendario: dalla cache (60 s), e se la lettura fallisce quella di sempre. */
 function listedTournaments(): Promise<Tournament[]> {
