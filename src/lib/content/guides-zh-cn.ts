@@ -309,7 +309,7 @@ export const zhCnTextA: Partial<Record<GuideSlug, GuideCopy>> = {
 
 ## OriginsMeta 将如何利用排位 {#originsmeta}
 
-Crimson Cup 决赛已于 2026年10月25日举行。2026年11月9日，OriginsMeta 发布了第一版[强度榜](/zh-cn/tier-list)，先为传说卡分档：依据 OriginsMeta Tracker 记录的当前补丁对局胜率，每局双方都计入（[Analytics](/zh-cn/analytics)），并参考 Crimson Cup 修正。卡组和基础卡随后推出。
+Crimson Cup 决赛已于 2026年10月25日举行。2026年11月9日，OriginsMeta 发布了第一版[强度榜](/zh-cn/tier-list)，先为传说卡分档：依据 OriginsMeta Tracker 记录的当前补丁对局胜率，每局双方都计入（[Analytics](/zh-cn/analytics)），并参考 Crimson Cup 修正。自 2026年11月27日起，基础卡也有了档位，依据带这张卡的卡组胜率与该补丁平均胜率的比较；卡组随后推出。
 
 ## 我们尚不知道的 {#shang-bu-zhi-dao}
 

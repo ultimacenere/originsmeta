@@ -360,7 +360,7 @@ We will update this guide whenever a patch changes a Legendary or a new one arri
     metaTitle: "Origins TCG ranked: Grandmaster, season 1 and VP",
     excerpt: "Ranked in Origins TCG, in Early Access since 27 October 2026: the Grandmaster Division and its world leaderboard, season 1, rewards and Victory Points.",
     readTime: 5,
-    updated: "2026-11-07",
+    updated: "2026-11-27",
     image: "/media/keyart-puss-in-boots.webp",
     faq: [
       { q: "When did ranked open in Origins TCG?", a: "On 15 October 2026, with the update Koin Games called \"Ranked is here!\" on Steam, four days before Steam Next Fest; on 21 September the team had said it would arrive with the start of the festival. Since 27 October 2026 ranked has been played in the Early Access version of the game, update 0.8." },
@@ -409,7 +409,7 @@ In the closed playtest, according to players on the Steam forum on 14 September 
 
 ## What OriginsMeta will do with ranked {#originsmeta}
 
-The Crimson Cup finals were played on 25 October 2026. On 9 November 2026 OriginsMeta published its first [tier list](/en/tier-list), of the Legendaries: win rates on the current patch from the games recorded with OriginsMeta Tracker, counting both sides of every game ([Analytics](/en/analytics)), adjusted by the Crimson Cup. Decks and base cards come next.
+The Crimson Cup finals were played on 25 October 2026. On 9 November 2026 OriginsMeta published its first [tier list](/en/tier-list), of the Legendaries: win rates on the current patch from the games recorded with OriginsMeta Tracker, counting both sides of every game ([Analytics](/en/analytics)), adjusted by the Crimson Cup. Base cards have their own tiers since 27 November 2026, from the win rate of the decks that run them against the patch average; decks come next.
 
 ## What we don't know yet {#unknowns}
 
@@ -2075,7 +2075,7 @@ Nel playtest chiuso, secondo i giocatori sul forum di Steam il 14 settembre 2026
 
 ## Cosa farà OriginsMeta con la classificata {#originsmeta}
 
-Le finali della Crimson Cup si sono giocate il 25 ottobre 2026. Il 9 novembre 2026 OriginsMeta ha pubblicato la sua prima [tier list](/it/tier-list), delle Leggendarie: i win rate della patch in corso dalle partite registrate con OriginsMeta Tracker, contando i due lati di ogni partita ([Analytics](/it/analytics)), corretti con la Crimson Cup. Mazzi e carte base arrivano dopo.
+Le finali della Crimson Cup si sono giocate il 25 ottobre 2026. Il 9 novembre 2026 OriginsMeta ha pubblicato la sua prima [tier list](/it/tier-list), delle Leggendarie: i win rate della patch in corso dalle partite registrate con OriginsMeta Tracker, contando i due lati di ogni partita ([Analytics](/it/analytics)), corretti con la Crimson Cup. Dal 27 novembre 2026 anche le carte base hanno le loro fasce, dal win rate dei mazzi che le contengono contro la media della patch; i mazzi arrivano dopo.
 
 ## Cosa non sappiamo ancora {#da-sapere}
 

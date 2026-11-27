@@ -3,12 +3,15 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { GameCardFace } from "@/components/GameCard";
 import type { Locale } from "@/lib/i18n";
-import type { LabTierOrNone } from "@/lib/tierLab/types";
+import type { ReplayTierOrNone } from "@/lib/tierReplay/types";
+import { fill } from "@/lib/tierReplayLabels";
 import {
   LANES,
   changesAt,
   fmtInt,
   fmtPct,
+  gamesText,
+  isShift,
   kindWord,
   laneCards,
   laneName,
@@ -23,13 +26,14 @@ import {
 import "./replay.css";
 
 /**
- * «Il replay delle patch» (prototipo 3 della tier list, 27/11/2026): il palco con le corsie delle fasce, le 12
- * Leggendarie che scivolano da una corsia all'altra (FLIP con la Web Animations API), la barra del tempo e la storia
- * di una carta. Il primo render (anche sul server) è il fotogramma 0, la tier list pubblicata del 9/11.
+ * Il replay delle patch della tier list (27/11/2026, scelto da Pierluigi fra i tre prototipi): il palco con le corsie
+ * delle fasce, le carte che scivolano da una corsia all'altra (FLIP con la Web Animations API), la barra del tempo e la
+ * storia di una carta. Due versioni: le Leggendarie (carte con nome e numeri) e le carte base (kind "card", carte
+ * piccole e il filtro dei cambi). Il primo render, anche sul server, è il fotogramma 0. Testi da replay.l.
  */
 
 const STEP_MS = 2600;
-const tierClass = (t: LabTierOrNone) => `tlr-t-${t === "unranked" ? "n" : t}`;
+const tierClass = (t: ReplayTierOrNone) => `tlr-t-${t === "unranked" ? "n" : t}`;
 
 function reducedMotion(): boolean {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -43,6 +47,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
   const [selected, setSelected] = useState(replay.headlineSlug);
   const compact = replay.kind === "card";
   const words = noun(replay);
+  const l = replay.l;
   const [onlyMoves, setOnlyMoves] = useState(false);
   const tiles = useRef(new Map<string, HTMLElement>());
   const before = useRef<Map<string, DOMRect> | null>(null);
@@ -149,38 +154,37 @@ export function ReplayStage({ replay }: { replay: Replay }) {
   };
 
   const f = frames[frame];
-  // carte base: contano solo i passaggi fra due fasce (entrare o uscire dalle non classificate dipende dalle partite)
-  const moved = compact ? replay.cards.filter((c) => isShift(c, frame)).length : movesCount(replay, frame);
+  const moved = movesCount(replay, frame);
   const card = replay.cards.find((c) => c.slug === selected) ?? replay.cards[0];
   const touched = new Set(f.events.filter((e) => (compact ? !e.legendary : e.legendary)).map((e) => e.slug));
   const filtering = compact && onlyMoves && frame > 0;
 
   return (
-    <section className={`tlr-replay${compact ? " is-compact" : ""}`} aria-label="Replay delle patch">
+    <section className={`tlr-replay${compact ? " is-compact" : ""}`} aria-label={l.stage.aria}>
       <div className="tlr-board">
         <div className="tlr-stage">
           <header className="tlr-score">
             <div className="tlr-score-main">
-              <span className={`tlr-status${f.published ? " is-pub" : ""}`}>{f.published ? "Pubblicata" : words.status}</span>
+              <span className={`tlr-status${f.published ? " is-pub" : ""}`}>{f.published ? l.status.published : l.status.applied}</span>
               <h2 className="tlr-score-title font-title">{f.title}</h2>
             </div>
             <dl className="tlr-score-nums">
               <div>
-                <dt>Partite</dt>
+                <dt>{l.stage.games}</dt>
                 <dd>{fmtInt(locale, f.games)}</dd>
               </div>
               <div>
-                <dt>Cambi di fascia</dt>
+                <dt>{l.stage.moves}</dt>
                 <dd>{frame === 0 ? "–" : moved}</dd>
               </div>
               {f.baseline !== undefined ? (
                 <div>
-                  <dt>Media</dt>
+                  <dt>{l.stage.average}</dt>
                   <dd>{fmtPct(locale, f.baseline)}</dd>
                 </div>
               ) : null}
               <div>
-                <dt>{compact ? "Patch" : "Fotogramma"}</dt>
+                <dt>{compact ? l.stage.patch : l.stage.frame}</dt>
                 <dd>
                   {frame + 1}/{frames.length}
                 </dd>
@@ -195,7 +199,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
                 {f.events.map((e) => (
                   <li key={e.slug} className={`tlr-ev tlr-ev-${e.kind}${e.legendary ? " is-leg" : ""}`}>
                     <a href={e.href}>
-                      {e.legendary ? <span className="tlr-star" aria-label="Leggendaria">★</span> : null}
+                      {e.legendary ? <span className="tlr-star" aria-label={l.stage.star}>★</span> : null}
                       <strong>{e.name}</strong> {e.note}
                     </a>
                   </li>
@@ -204,7 +208,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
             ) : null}
             {f.news ? (
               <a className="tlr-ribbon-news" href={f.news}>
-                {f.published ? "Come sono nate queste fasce" : "Le patch notes della patch"}
+                {f.published ? l.stage.newsPublished : l.stage.newsPatch}
               </a>
             ) : null}
           </div>
@@ -213,7 +217,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
             <div className="tlr-filter">
               <label className="tlr-filter-opt">
                 <input type="checkbox" checked={onlyMoves} onChange={(e) => setOnlyMoves(e.target.checked)} />
-                <span>Solo le carte che cambiano fascia</span>
+                <span>{l.stage.onlyMoves}</span>
               </label>
             </div>
           ) : null}
@@ -221,7 +225,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
           <ol className="tlr-lanes">
             {LANES.map((lane) => {
               const all = laneCards(replay, lane, frame);
-              const list = filtering ? all.filter((c) => isShift(c, frame)) : all;
+              const list = filtering ? all.filter((c) => isShift(replay, c, frame)) : all;
               return (
                 <li key={lane} className={`tlr-lane ${tierClass(lane)}`}>
                   <div className="tlr-lane-head">
@@ -229,7 +233,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
                       {lane === "unranked" ? "–" : lane}
                     </span>
                     <span className="tlr-lane-name">
-                      {lane === "unranked" ? laneName(lane) : `Fascia ${lane}`}
+                      {laneName(l, lane)}
                       {compact ? <span className="tlr-lane-count"> · {all.length}</span> : null}
                     </span>
                   </div>
@@ -255,7 +259,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
                       ))}
                     </ul>
                   ) : (
-                    <p className="tlr-lane-empty">{filtering && all.length ? "Nessuna carta cambia fascia qui" : words.none}</p>
+                    <p className="tlr-lane-empty">{filtering && all.length ? l.stage.noneMoving : words.none}</p>
                   )}
                 </li>
               );
@@ -269,7 +273,7 @@ export function ReplayStage({ replay }: { replay: Replay }) {
       </div>
 
       <div className="tlr-timeline">
-        <button type="button" className="tlr-play btn-primary" onClick={play} aria-label={playing ? "Metti in pausa il replay" : "Fai partire il replay"}>
+        <button type="button" className="tlr-play btn-primary" onClick={play} aria-label={playing ? l.stage.pause : l.stage.play}>
           <span aria-hidden="true">{playing ? "❚❚" : "▶"}</span>
         </button>
         <div
@@ -307,11 +311,6 @@ export function ReplayStage({ replay }: { replay: Replay }) {
   );
 }
 
-function isShift(c: ReplayCard, k: number): boolean {
-  const m = moveAt(c, k);
-  return !!m && (m.dir === "up" || m.dir === "down");
-}
-
 function Tile({
   c,
   k,
@@ -332,10 +331,11 @@ function Tile({
   tileRef: (el: HTMLLIElement) => () => void;
 }) {
   const cell = c.cells[k];
-  const move = moveAt(c, k);
+  const l = replay.l;
+  const move = moveAt(replay, c, k);
   const mods = changesAt(c, replay.frames[k]);
   if (compact) {
-    const label = [c.name, cell.r === null ? "non giocata" : fmtPct(replay.locale, cell.r), move?.text, mods.length ? kindWord(mods[0].kind) : null]
+    const label = [c.name, cell.r === null ? l.stage.notPlayed : fmtPct(replay.locale, cell.r), move?.text, mods.length ? kindWord(l, mods[0].kind) : null]
       .filter(Boolean)
       .join(", ");
     return (
@@ -375,7 +375,7 @@ function Tile({
           <span className="tlr-wr">
             {fmtPct(replay.locale, cell.r)}
             </span>
-          {cell.games ? <span className="tlr-games">{fmtInt(replay.locale, cell.games)} partite</span> : null}
+          {cell.games ? <span className="tlr-games">{gamesText(l, replay.locale, cell.games)}</span> : null}
           {move ? (
             <span key={`${k}-m`} className={`tlr-move is-${move.dir}`}>
               <span aria-hidden="true">{move.dir === "up" || move.dir === "in" ? "▲" : "▼"}</span> {move.text}
@@ -383,7 +383,7 @@ function Tile({
           ) : null}
           {mods.length ? (
             <span key={`${k}-c`} className={`tlr-mod is-${mods[0].kind}`}>
-              {kindWord(mods[0].kind)}
+              {kindWord(l, mods[0].kind)}
               <span className="tlr-mod-note">: {mods.map((m) => m.note).join(" ")}</span>
             </span>
           ) : null}
@@ -396,6 +396,7 @@ function Tile({
 function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: number }) {
   const { locale, frames } = replay;
   const words = noun(replay);
+  const l = replay.l;
   const cell = card.cells[k];
   const bases = frames.map((fr) => fr.baseline ?? null);
   const hasBase = bases.some((b) => b !== null);
@@ -435,16 +436,16 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
           <p className="tlr-story-now">
             <span className={`tlr-chip ${tierClass(cell.tier)}`}>{cell.tier === "unranked" ? "–" : cell.tier}</span>
             <span>
-              {frames[k].label}: {cell.r === null ? "non giocata" : `${fmtPct(locale, cell.r)} di vittorie`}
+              {cell.r === null ? fill(l.story.nowNotPlayed, { frame: frames[k].label }) : fill(l.story.now, { frame: frames[k].label, p: fmtPct(locale, cell.r) })}
             </span>
           </p>
           <a className="tlr-story-link" href={card.href}>
-            Scheda della carta
+            {l.story.cardPage}
           </a>
         </div>
       </div>
 
-      <svg className="tlr-spark" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Win rate di ${card.name} nei ${frames.length} fotogrammi`}>
+      <svg className="tlr-spark" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={fill(l.story.sparkAria, { card: card.name })}>
         {hasBase ? (
           <>
             <path
@@ -452,7 +453,7 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
               d={bases.map((b, i) => (b === null ? "" : `${i === 0 || bases[i - 1] === null ? "M" : "L"}${x(i)},${y(b)}`)).join(" ")}
             />
             <text className="tlr-spark-axis" x={2} y={y(bases[0] ?? 0.5) + 3}>
-              media
+              {l.story.average}
             </text>
           </>
         ) : (
@@ -476,11 +477,11 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
       </svg>
 
       <table className="tlr-story-table">
-        <caption className="sr-only">Fascia, win rate e quota di gioco di {card.name} in ogni fotogramma</caption>
+        <caption className="sr-only">{fill(l.story.tableCaption, { card: card.name })}</caption>
         <thead>
           <tr>
             <th scope="col">
-              <span className="sr-only">Fotogramma</span>
+              <span className="sr-only">{l.story.frame}</span>
             </th>
             {frames.map((fr, i) => (
               <th key={fr.key} scope="col" className={i === k ? "is-on" : undefined}>
@@ -491,7 +492,7 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
         </thead>
         <tbody>
           <tr>
-            <th scope="row">Fascia</th>
+            <th scope="row">{l.story.tier}</th>
             {card.cells.map((c, i) => (
               <td key={i} className={i === k ? "is-on" : undefined}>
                 <span className={`tlr-chip ${tierClass(c.tier)}`}>{c.tier === "unranked" ? "–" : c.tier}</span>
@@ -499,7 +500,7 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
             ))}
           </tr>
           <tr>
-            <th scope="row">Win rate</th>
+            <th scope="row">{l.story.winrate}</th>
             {card.cells.map((c, i) => (
               <td key={i} className={i === k ? "is-on" : undefined}>
                 {fmtPct(locale, c.r)}
@@ -519,7 +520,11 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
 
       <div className="tlr-why">
         <p className="tlr-why-title font-display">
-          {k === 0 ? "Perché sta qui" : moveAt(card, k) ? `Perché è passata ${moveText(card, k)}` : "Perché è rimasta"}
+          {k === 0
+            ? l.story.whyHere
+            : moveAt(replay, card, k)
+              ? fill(l.story.whyMoved, { a: tierWord(l, card.cells[k - 1].tier), b: tierWord(l, card.cells[k].tier) })
+              : l.story.whyStayed}
         </p>
         {why.map((w) => (
           <p key={w}>{w}</p>
@@ -530,12 +535,12 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
         <p className="tlr-story-others">
           {card.community ? (
             <span>
-              Tier list della community <span className={`tlr-chip tlr-t-${card.community.tier}`}>{card.community.tier}</span>
+              {l.story.community} <span className={`tlr-chip tlr-t-${card.community.tier}`}>{card.community.tier}</span>
             </span>
           ) : null}
           {card.votes ? (
             <span>
-              Voti: {new Intl.NumberFormat(locale, { maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(card.votes.avg)} su 10
+              {fill(l.story.votes, { n: new Intl.NumberFormat(locale, { maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(card.votes.avg) })}
               {card.votes.tier ? (
                 <>
                   {" "}
@@ -549,7 +554,7 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
 
       {card.changes.length ? (
         <div className="tlr-hist">
-          <p className="tlr-why-title font-display">Modifiche alla carta</p>
+          <p className="tlr-why-title font-display">{l.story.history}</p>
           <ul>
             {card.changes.map((ch, i) => (
               <li key={i}>
@@ -561,10 +566,4 @@ function Story({ replay, card, k }: { replay: Replay; card: ReplayCard; k: numbe
       ) : null}
     </article>
   );
-}
-
-function moveText(card: ReplayCard, k: number): string {
-  const a = card.cells[k - 1].tier;
-  const b = card.cells[k].tier;
-  return `da ${tierWord(a)} a ${tierWord(b)}`;
 }

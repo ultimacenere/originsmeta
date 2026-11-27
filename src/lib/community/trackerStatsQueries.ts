@@ -249,7 +249,7 @@ export async function readListWinrates(opts: { throwOnError?: boolean } = {}): P
 }
 
 /**
- * Prototipi della tier list (26/11/2026, solo sul branch claude/tierlist-lab): gli scontri fra Leggendarie di una patch
+ * Replay delle patch di /tier-list (26/11/2026): gli scontri fra Leggendarie di una patch
  * precisa, per confrontare le patch. Sola lettura; null se il database non risponde o prima della migrazione.
  */
 export async function readTrackerMatchups(patch: PatchId): Promise<MatchupStat[] | null> {
@@ -266,7 +266,7 @@ export async function readTrackerMatchups(patch: PatchId): Promise<MatchupStat[]
 }
 
 /**
- * Prototipi della tier list (27/11/2026, solo sul branch claude/tierlist-lab): le carte di una patch precisa (mazzi che
+ * Replay delle carte base di /tier-list (27/11/2026): le carte di una patch precisa (mazzi che
  * le contengono, dal lato di chi registra) e la media di chi registra nella stessa patch. Sola lettura; null se il
  * database non risponde o prima della migrazione.
  */

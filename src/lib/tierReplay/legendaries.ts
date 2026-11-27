@@ -1,44 +1,46 @@
 import "server-only";
 import { formatDate, href, type Locale } from "@/lib/i18n";
-import { cards, patchChanges, patches as patchInfo, patchLabel, latestPatch, type PatchId } from "@/lib/data/cards";
+import { cards, patchChanges, patchOrder, patches as patchInfo, patchLabel, latestPatch, type PatchId } from "@/lib/data/cards";
 import { legendaryEvidence, tierIds } from "@/lib/data/tierlist";
 import { crimsonBoost, ladderTier, legendaryTier } from "@/lib/tierRule";
 import { bothSides, wilson } from "@/lib/tracker/snapshot";
 import { readTrackerMatchups } from "@/lib/community/trackerStatsQueries";
-import { loadTierData } from "@/lib/tierData";
+import { loadTierData, type TierData } from "@/lib/tierData";
 import { toGameCardInput } from "@/components/GameCard";
-import type { LabData, LabLegendary, LabPatch, LabPatchStat, LabRate, LabTierOrNone } from "./types";
+import type { ReplayData, ReplayLegendary, ReplayPatch, ReplayPatchStat, ReplayRate, ReplayTierOrNone } from "./types";
 
 /**
- * Dati dei prototipi della tier list (26/11/2026, branch claude/tierlist-lab): tutto in sola lettura.
+ * Dati del replay delle Leggendarie di /tier-list (prototipo del 26/11/2026, scelto da Pierluigi il 27/11): sola lettura.
  * - fasce ufficiali: quelle pubblicate il 9/11 (tierlist.ts, regola di tierRule.ts), ferme a quella lettura;
  * - community e voti 1–10: la lettura di sempre (`loadTierData`), solo fascia e media, mai quante persone;
  * - Tracker: gli scontri fra Leggendarie delle patch dalla ea-1104, contati a due lati come /analytics (`bothSides`);
  *   per le patch dopo il 9/11 la fascia è quella che darebbe la regola, non una fascia pubblicata.
  */
 
-export const LAB_PATCHES: PatchId[] = ["ea-1104", "ea-1117", "ea-1123"];
-export const LAB_NEWS = "origins-tcg-tier-list-legendaries-november-2026";
+/** dalla patch della tier list pubblicata fino a quella in corso: una patch nuova entra da sola */
+export const REPLAY_PATCHES: PatchId[] = patchOrder.slice(Math.max(0, patchOrder.indexOf(legendaryEvidence.patch as PatchId)));
+export const TIER_NEWS = "origins-tcg-tier-list-legendaries-november-2026";
 
-const ORDER: LabTierOrNone[] = [...tierIds, "unranked"];
+const ORDER: ReplayTierOrNone[] = [...tierIds, "unranked"];
 
-function rate(games: number, wins: number): LabRate {
+function rate(games: number, wins: number): ReplayRate {
   const [lo, hi] = games > 0 ? wilson(wins, games) : [0, 0];
   return { games, wins, r: games > 0 ? wins / games : 0, lo, hi };
 }
 
-export async function loadLabData(locale: Locale): Promise<LabData> {
-  const [tier, ...reads] = await Promise.all([loadTierData(locale), ...LAB_PATCHES.map((p) => readTrackerMatchups(p))]);
+/** `tierData`: i dati della tier list già letti dalla pagina, per non rileggerli. */
+export async function loadLegendaryReplay(locale: Locale, tierData?: TierData): Promise<ReplayData> {
+  const [tier, ...reads] = await Promise.all([tierData ?? loadTierData(locale), ...REPLAY_PATCHES.map((p) => readTrackerMatchups(p))]);
   const byKey = new Map(cards.filter((c) => c.legendary && c.key).map((c) => [c.key as string, c.slug]));
 
   // per patch: Leggendarie e scontri a due lati, con le chiavi del gioco tradotte in slug
-  const perPatch = new Map<string, { legs: Map<string, LabPatchStat>; games: number }>();
-  LAB_PATCHES.forEach((patch, i) => {
+  const perPatch = new Map<string, { legs: Map<string, ReplayPatchStat>; games: number }>();
+  REPLAY_PATCHES.forEach((patch, i) => {
     const rows = reads[i];
     if (!rows) return;
     const both = bothSides(rows);
     const totalPresence = both.legendaries.reduce((s, l) => s + l.games, 0) || 1;
-    const legs = new Map<string, LabPatchStat>();
+    const legs = new Map<string, ReplayPatchStat>();
     for (const l of both.legendaries) {
       const slug = byKey.get(l.legendary);
       if (!slug) continue;
@@ -57,12 +59,12 @@ export async function loadLabData(locale: Locale): Promise<LabData> {
   const entries = new Map(tier.cards.filter((c) => c.legendary).map((c) => [c.slug, c]));
   const usedOrder = [...entries.values()].sort((a, b) => b.used - a.used).map((c) => c.slug);
 
-  const legendaries: LabLegendary[] = legendaryEvidence.rows.flatMap((row) => {
+  const legendaries: ReplayLegendary[] = legendaryEvidence.rows.flatMap((row) => {
     const card = cards.find((c) => c.slug === row.slug);
     if (!card) return [];
     const entry = entries.get(row.slug);
-    const patchStats: Record<string, LabPatchStat> = {};
-    for (const p of LAB_PATCHES) {
+    const patchStats: Record<string, ReplayPatchStat> = {};
+    for (const p of REPLAY_PATCHES) {
       const s = perPatch.get(p)?.legs.get(row.slug);
       if (s) patchStats[p] = s;
     }
@@ -114,7 +116,7 @@ export async function loadLabData(locale: Locale): Promise<LabData> {
   legendaries.forEach((l, i) => (l.official.rank = i + 1));
 
   const changesByPatch = new Map(patchChanges().map((g) => [g.patch, g.items]));
-  const labPatches: LabPatch[] = LAB_PATCHES.map((id) => {
+  const labPatches: ReplayPatch[] = REPLAY_PATCHES.map((id) => {
     const info = patchInfo[id];
     const items = changesByPatch.get(id) ?? [];
     return {
@@ -142,7 +144,7 @@ export async function loadLabData(locale: Locale): Promise<LabData> {
     officialReadLabel: formatDate(locale, legendaryEvidence.read),
     officialPatch: legendaryEvidence.patch,
     officialGames: legendaryEvidence.games,
-    officialNews: href(locale, `/news/${LAB_NEWS}`),
+    officialNews: href(locale, `/news/${TIER_NEWS}`),
     patches: labPatches,
     latestPatch,
     legendaries,

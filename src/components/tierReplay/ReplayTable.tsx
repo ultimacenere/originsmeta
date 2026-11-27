@@ -1,4 +1,4 @@
-import { fmtInt, fmtPct, noun, type Replay } from "./frames";
+import { fmtPct, gamesText, noun, type Replay } from "./frames";
 import "./replay.css";
 
 /**
@@ -12,9 +12,7 @@ export function ReplayTable({ replay }: { replay: Replay }) {
     <div className="tlr-table-wrap">
       <table className="tlr-table">
         <caption className="sr-only">
-          {replay.kind === "card"
-            ? `Fascia di prova, win rate dei mazzi che la contengono e partite di ogni carta nelle ${frames.length} patch`
-            : `Fascia, win rate a due lati e partite di ogni Leggendaria nei ${frames.length} fotogrammi del replay`}
+          {replay.kind === "card" ? replay.l.table.captionCard : replay.l.table.captionLegendary}
         </caption>
         <thead>
           <tr>
@@ -36,10 +34,10 @@ export function ReplayTable({ replay }: { replay: Replay }) {
                 <td key={frames[i].key}>
                   <span className={`tlr-chip tlr-t-${cell.tier === "unranked" ? "n" : cell.tier}`}>
                     {cell.tier === "unranked" ? "–" : cell.tier}
-                    {cell.tier === "unranked" ? <span className="sr-only">non classificata</span> : null}
+                    {cell.tier === "unranked" ? <span className="sr-only">{replay.l.unrankedWord}</span> : null}
                   </span>{" "}
                   <span className="tlr-table-wr">{fmtPct(locale, cell.r)}</span>
-                  {cell.games ? <span className="tlr-table-games"> · {fmtInt(locale, cell.games)} partite</span> : null}
+                  {cell.games ? <span className="tlr-table-games"> · {gamesText(replay.l, locale, cell.games)}</span> : null}
                 </td>
               ))}
             </tr>

@@ -1,30 +1,30 @@
 import type { GameCardInput } from "@/game-card/model";
 
 /**
- * Prototipi della tier list (26/11/2026, branch claude/tierlist-lab, mai su main senza il sì di Pierluigi): i dati che
- * `loadLabData` (data.ts, solo server) costruisce una volta e che i tre prototipi ricevono già pronti, anche nei
+ * Replay delle patch di /tier-list (prototipo del 26/11/2026, scelto da Pierluigi il 27/11): i dati che
+ * `loadLegendaryReplay` (legendaries.ts, solo server) costruisce una volta e che il replay riceve già pronti, anche nei
  * componenti client. Niente numeri di persone: delle liste della community e dei voti si passano solo fascia e media.
  */
 
-export type LabTier = "S" | "A" | "B" | "C" | "D";
-export type LabTierOrNone = LabTier | "unranked";
+export type ReplayTier = "S" | "A" | "B" | "C" | "D";
+export type ReplayTierOrNone = ReplayTier | "unranked";
 
 /** Un win rate con l'intervallo di Wilson al 95% (0–1). */
-export type LabRate = { games: number; wins: number; r: number; lo: number; hi: number };
+export type ReplayRate = { games: number; wins: number; r: number; lo: number; hi: number };
 
-export type LabMatchup = LabRate & { opponent: string };
+export type ReplayMatchup = ReplayRate & { opponent: string };
 
 /** La Leggendaria in una patch del Tracker, contando tutti e due i lati (`bothSides`). */
-export type LabPatchStat = LabRate & {
+export type ReplayPatchStat = ReplayRate & {
   /** quota delle presenze in campo nella patch (0–1) */
   share: number;
   /** la fascia che darebbe la regola del 9/11 (ladder di questa patch, poi la Crimson Cup come allora) a questi numeri */
-  ruleTier: LabTierOrNone;
+  ruleTier: ReplayTierOrNone;
   /** gli scontri contro le altre Leggendarie in quella patch, dal più giocato; specchi esclusi */
-  matchups: LabMatchup[];
+  matchups: ReplayMatchup[];
 };
 
-export type LabChange = {
+export type ReplayChange = {
   patch: string;
   patchLabel: string;
   kind: "buff" | "nerf" | "rework" | "deck";
@@ -34,7 +34,7 @@ export type LabChange = {
   to?: { mana?: number; power?: number; health?: number };
 };
 
-export type LabLegendary = {
+export type ReplayLegendary = {
   slug: string;
   name: string;
   /** scheda della carta, con la lingua */
@@ -49,31 +49,31 @@ export type LabLegendary = {
   alignment?: "good" | "evil" | "neutral";
   /** la tier list di OriginsMeta, ferma alla lettura del 9/11 (tierlist.ts) */
   official: {
-    tier: LabTierOrNone;
+    tier: ReplayTierOrNone;
     /** la fascia del solo ladder, prima della Crimson Cup */
-    ladderTier: LabTierOrNone;
+    ladderTier: ReplayTierOrNone;
     /** la Crimson Cup l'ha alzata di una fascia */
     boosted: boolean;
-    rate: LabRate;
+    rate: ReplayRate;
     /** posizione nella classifica ufficiale (1 = la migliore), per fascia e poi bordo basso */
     rank: number;
     crimson: { banRate: number; finalists: number } | null;
     changedAfterCrimson: boolean;
   };
   /** media delle tier list salvate dalla community (S=5 … D=1), se qualcuno l'ha classificata */
-  community?: { tier: LabTier; avg: number };
+  community?: { tier: ReplayTier; avg: number };
   /** voti da 1 a 10: media e fascia (la fascia solo da 3 voti) */
-  votes?: { tier?: LabTier; avg: number };
+  votes?: { tier?: ReplayTier; avg: number };
   /** in quanti mazzi pubblicati compare e posizione fra le Leggendarie */
   used: number;
   usedRank: number;
   /** le patch del Tracker, dalla più vecchia; mancano quelle in cui non è stata giocata */
-  patches: Record<string, LabPatchStat>;
+  patches: Record<string, ReplayPatchStat>;
   /** modifiche ufficiali alla carta, dalla più vecchia (card-history.ts) */
-  changes: LabChange[];
+  changes: ReplayChange[];
 };
 
-export type LabPatch = {
+export type ReplayPatch = {
   id: string;
   label: string;
   date: string;
@@ -86,10 +86,10 @@ export type LabPatch = {
   /** modifiche della patch a qualsiasi carta, quante */
   changeCount: number;
   /** le modifiche della patch per importanza (`patchChanges` di cards.ts), al massimo 8 */
-  events: { slug: string; name: string; href: string; legendary: boolean; kind: LabChange["kind"]; note: string }[];
+  events: { slug: string; name: string; href: string; legendary: boolean; kind: ReplayChange["kind"]; note: string }[];
 };
 
-export type LabData = {
+export type ReplayData = {
   locale: string;
   /** data della lettura delle fasce ufficiali (9/11) e patch da cui vengono */
   officialRead: string;
@@ -99,10 +99,10 @@ export type LabData = {
   /** la news che spiega le fasce, con la lingua */
   officialNews: string;
   /** le patch del Tracker confrontate, dalla più vecchia (ea-1104 è quella delle fasce) */
-  patches: LabPatch[];
+  patches: ReplayPatch[];
   latestPatch: string;
   /** dalla migliore, nell'ordine della tier list ufficiale */
-  legendaries: LabLegendary[];
+  legendaries: ReplayLegendary[];
   /** quando la pagina ha letto il Tracker */
   readAt: string;
   /** il Tracker non ha risposto: i numeri per patch mancano e la pagina lo dice */

@@ -22,6 +22,13 @@ import { DiscordButton } from "@/components/DiscordButton";
 import { contactEmail, officialLinks } from "@/components/Footer";
 import { JsonLd, breadcrumbs, collectionPage, videoGameId } from "@/components/JsonLd";
 import { changeLabel } from "@/lib/linkLabels";
+import { loadLegendaryReplay } from "@/lib/tierReplay/legendaries";
+import { loadCardReplay } from "@/lib/tierReplay/cards";
+import { fill, tierReplayLabels } from "@/lib/tierReplayLabels";
+import { ReplayStage } from "@/components/tierReplay/ReplayStage";
+import { ReplayTable } from "@/components/tierReplay/ReplayTable";
+import { buildReplay, dayMonth, fmtInt, fmtPct, type Replay } from "@/components/tierReplay/frames";
+import { buildCardReplay } from "@/components/tierReplay/cardFrames";
 
 /*
   Tier list di OriginsMeta (riprogettazione del 24/09/2026, §1 punto 32 della KB, decisioni di Pierluigi).
@@ -33,6 +40,10 @@ import { changeLabel } from "@/lib/linkLabels";
   carte tutte uguali di TierExplorer. I dati arrivano da Supabase: la pagina è in ISR come /decks.
   Dal 29/09/2026 (Pierluigi, per la navigabilità) sotto la testata c'è subito il contenuto: introduzione, In breve,
   fonte e stato e che cosa contiene ogni sezione stanno in fondo (`PageNotes`), prima di "Come classifichiamo".
+  Dal 27/11/2026 (Pierluigi ha scelto «Il replay delle patch» fra tre prototipi) Leggendarie e carte base sono un replay:
+  le Leggendarie partono dalla tier list pubblicata (tierlist.ts) e la stessa regola segue le patch dopo; le carte base
+  hanno la loro regola (media della patch al posto del 50%, cardFrames.ts), approvata da Pierluigi lo stesso giorno.
+  Fasce, numeri e metodo stanno nell'HTML del server (primo fotogramma, tabelle, metodo); il browser anima il replay.
 */
 export const revalidate = 300;
 
@@ -57,6 +68,18 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   // i dati della sezione e le partite della scheda "Win rate" (30/09/2026, riaperta il 10/10/2026), in parallelo
   const data = await loadTierData(locale);
   const labels = tierExplorerLabels(d);
+  // il replay delle patch (27/11/2026): Leggendarie e carte base, con i dati della tier list già letti qui sopra
+  const rl = tierReplayLabels[locale];
+  const [legData, cardData] = await Promise.all([loadLegendaryReplay(locale, data), loadCardReplay(locale, data)]);
+  const legReplay = buildReplay(legData, rl);
+  const cardReplay = buildCardReplay(cardData, rl);
+  const firstPatch = legData.patches.find((p) => p.id === legData.officialPatch);
+  const legLead = fill(rl.page.legendaryLead, {
+    date: legData.officialReadLabel,
+    n: fmtInt(locale, legData.officialGames),
+    day: firstPatch ? dayMonth(locale, firstPatch.date) : "",
+  });
+  const cardBases = cardReplay.frames.map((f) => `${f.short} ${fmtPct(locale, f.baseline ?? null)}`).join(rl.listSep);
 
   // Fasce di OriginsMeta: vuote fino ai risultati della Crimson Cup (tierlist.ts). Una mappa slug → fascia per sezione.
   const officialOf = (id: "decks" | "legendaries" | "cards") => {
@@ -91,7 +114,6 @@ export default async function TierListPage({ params }: { params: LocaleParams })
   // "In breve" (revisione dell'Ondata 1): prima la striscia ne mostrava quattro, spareggiate per costo, delle sei
   // Leggendarie che la frase sopra dà a pari merito, e i mazzi a pari voto per data invece che per nome.
   const topDecks = pickPreview(ratedItems, PREVIEW.decks).map((x) => x.deck);
-  const topLegendaries = pickPreview(legendaryItems, PREVIEW.legendaries).map((x) => x.card);
   const topCards = pickPreview(baseItems, PREVIEW.cards).map((x) => x.card);
 
   // In breve (piano SEO/GEO del 25/09/2026, TOOL-03): la risposta subito, in testo, con i dati già caricati qui sopra.
@@ -214,41 +236,55 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         )}
       </section>
 
-      {/* Leggendarie e carte base */}
-      {(["legendaries", "cards"] as const).map((id) => {
-        const entries = id === "legendaries" ? legendaries : base;
-        const top = id === "legendaries" ? topLegendaries : topCards;
-        const hasOfficial = Object.keys(official[id]).length > 0;
-        return (
-          <section key={id} id={id} className="mt-12 scroll-mt-32" aria-labelledby={`${id}-title`}>
-            <h2 id={`${id}-title`} className="t-section">
-              {t.sections[id].title}
-            </h2>
-            {hasOfficial ? (
-              <div className="mt-4">
-                <TierExplorer locale={locale}
-                  id={`official-${id}`}
-                  mode="tiers"
-                  source="official"
-                  official={official[id]}
-                  entries={entries}
-                  deckCount={data.decks.length}
-                  labels={labels}
-                  filters={id === "cards"}
-                />
+      {/* Leggendarie e carte base: il replay delle patch (27/11/2026) */}
+      <section id="legendaries" className="mt-12 scroll-mt-32" aria-labelledby="legendaries-title">
+        <h2 id="legendaries-title" className="t-section">
+          {t.sections.legendaries.title}
+        </h2>
+        <ReplayHead lead={legLead} replay={legReplay} />
+        <div className="mt-4">
+          <ReplayStage replay={legReplay} />
+        </div>
+        <details className="tier-replay-more mt-4">
+          <summary className="t-item cursor-pointer">{rl.table.titleLegendary}</summary>
+          <ReplayTable replay={legReplay} />
+        </details>
+      </section>
+
+      <section id="cards" className="mt-12 scroll-mt-32" aria-labelledby="cards-title">
+        <h2 id="cards-title" className="t-section">
+          {t.sections.cards.title}
+        </h2>
+        {cardReplay.frames.length ? (
+          <>
+            <ReplayHead lead={rl.page.cardLead} replay={cardReplay} />
+            <div className="mt-4">
+              <ReplayStage replay={cardReplay} />
+            </div>
+            <details className="tier-replay-more mt-4">
+              <summary className="t-item cursor-pointer">{rl.table.titleCard}</summary>
+              <ReplayTable replay={cardReplay} />
+            </details>
+            <details className="tier-replay-more mt-3">
+              <summary className="t-item cursor-pointer">{rl.page.cardMethodTitle}</summary>
+              <div className="tlr-method">
+                {rl.page.cardMethod.map((p) => (
+                  <p key={p}>{fill(p, { bases: cardBases })}</p>
+                ))}
               </div>
-            ) : top.length ? (
-              <div className="tier-preview">
-                <p className="kicker text-mint">{id === "legendaries" ? t.meanwhileLegendaries : t.meanwhileCards}</p>
-                <TierExplorer locale={locale} id={`preview-${id}`} mode="strip" source="played" entries={top} deckCount={data.decks.length} labels={labels} />
-                <Link href={`${href(locale, "/tier-list/most-played")}#${id}`} className="tier-more inline-block">
-                  {t.allPlayed} →
-                </Link>
-              </div>
-            ) : null}
-          </section>
-        );
-      })}
+            </details>
+          </>
+        ) : topCards.length ? (
+          // il Tracker non ha risposto: le carte base nei mazzi più pubblicati, come prima del replay
+          <div className="tier-preview">
+            <p className="kicker text-mint">{t.meanwhileCards}</p>
+            <TierExplorer locale={locale} id="preview-cards" mode="strip" source="played" entries={topCards} deckCount={data.decks.length} labels={labels} />
+            <Link href={`${href(locale, "/tier-list/most-played")}#cards`} className="tier-more inline-block">
+              {t.allPlayed} →
+            </Link>
+          </div>
+        ) : null}
+      </section>
 
       {/* Le altre fonti, sempre raggiungibili anche dal fondo della pagina (dal 06/10/2026 anche i voti alle carte) */}
       <div className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -341,5 +377,16 @@ export default async function TierListPage({ params }: { params: LocaleParams })
         </p>
       </details>
     </div>
+  );
+}
+
+/** Sopra il palco: la frase della sezione, il salto più grosso e chi non si è mai mosso, nell'HTML del server. */
+function ReplayHead({ lead, replay }: { lead: string; replay: Replay }) {
+  return (
+    <>
+      <p className="tlr-intro-text">{lead}</p>
+      <p className="tlr-headline font-display">{replay.headline}</p>
+      {replay.steady ? <p className="tlr-steady">{replay.steady}</p> : null}
+    </>
   );
 }
