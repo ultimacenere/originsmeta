@@ -1,4 +1,4 @@
-import { fmtInt, fmtPct, type Replay } from "./frames";
+import { fmtInt, fmtPct, noun, type Replay } from "./frames";
 import "./replay.css";
 
 /**
@@ -7,13 +7,18 @@ import "./replay.css";
  */
 export function ReplayTable({ replay }: { replay: Replay }) {
   const { frames, cards, locale } = replay;
+  const words = noun(replay);
   return (
     <div className="tlr-table-wrap">
       <table className="tlr-table">
-        <caption className="sr-only">Fascia, win rate a due lati e partite di ogni Leggendaria nei {frames.length} fotogrammi del replay</caption>
+        <caption className="sr-only">
+          {replay.kind === "card"
+            ? `Fascia di prova, win rate dei mazzi che la contengono e partite di ogni carta nelle ${frames.length} patch`
+            : `Fascia, win rate a due lati e partite di ogni Leggendaria nei ${frames.length} fotogrammi del replay`}
+        </caption>
         <thead>
           <tr>
-            <th scope="col">Leggendaria</th>
+            <th scope="col">{words.col}</th>
             {frames.map((f) => (
               <th key={f.key} scope="col">
                 {f.label}

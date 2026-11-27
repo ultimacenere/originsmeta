@@ -86,6 +86,11 @@ export default async function LabIndex({ params }: { params: LocaleParams }) {
               <Link href={href(locale, `/tier-list/lab/${p.slug}`)} className="btn-primary mt-4 inline-flex min-h-11 items-center px-5">
                 Apri il prototipo
               </Link>
+              {p.slug === "replay" ? (
+                <Link href={href(locale, "/tier-list/lab/replay/carte")} className="ml-4 mt-4 inline-flex min-h-11 items-center text-mint underline">
+                  La versione per le carte base
+                </Link>
+              ) : null}
             </div>
           </li>
         ))}

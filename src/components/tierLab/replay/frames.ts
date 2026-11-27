@@ -38,6 +38,8 @@ export type ReplayFrame = {
   news?: string;
   /** true quando gli eventi sono quelli della patch nuova di questo fotogramma */
   newPatch: boolean;
+  /** solo carte base: il win rate medio di chi registra nella patch, la riga da cui parte la regola di prova */
+  baseline?: number;
 };
 
 export type ReplayCell = {
@@ -48,6 +50,8 @@ export type ReplayCell = {
   hi: number | null;
   games: number;
   share: number | null;
+  /** la carta non era ancora nel gioco in quella patch */
+  notYet?: boolean;
 };
 
 export type ReplayCard = {
@@ -60,10 +64,15 @@ export type ReplayCard = {
   boosted: boolean;
   ladderTier: LabTierOrNone;
   crimson: { banRate: number; finalists: number } | null;
+  /** solo carte base: fascia e media della tier list della community e dei voti 1–10 (mai quante persone) */
+  community?: { tier: string; avg: number };
+  votes?: { tier?: string; avg: number };
 };
 
 export type Replay = {
   locale: string;
+  /** "legendary": le 12 Leggendarie, regola del 9/11; "card": le carte base, regola di prova (cardFrames.ts) */
+  kind: "legendary" | "card";
   frames: ReplayFrame[];
   cards: ReplayCard[];
   headline: string;
@@ -189,6 +198,7 @@ export function buildReplay(data: LabData): Replay {
 
   return {
     locale,
+    kind: "legendary",
     frames,
     cards,
     headline,
@@ -235,6 +245,18 @@ export function whyAt(r: Replay, card: ReplayCard, k: number): string[] {
   const cell = card.cells[k];
   const out: string[] = [];
   const mod = changesAt(card, f);
+  if (r.kind === "card") {
+    if (cell.notYet) return ["Non era ancora nel gioco."];
+    if (mod.length) out.push(`Modificata da questa patch: ${mod.map((m) => m.note).join(" ")}`);
+    else if (k > 0) out.push("Nessuna modifica alla carta: è cambiato il meta intorno.");
+    if (cell.r === null) out.push("Non giocata in questa patch.");
+    else if (cell.tier === "unranked") out.push("Non classificata qui: le sue partite non bastano per una fascia.");
+    if (cell.r !== null && f.baseline !== undefined)
+      out.push(
+        `I mazzi che la contengono vincono il ${fmtPct(r.locale, cell.r)} delle partite, contro il ${fmtPct(r.locale, f.baseline)} di tutte le partite registrate nella patch.`,
+      );
+    return out;
+  }
   if (k === 0) {
     if (mod.length) out.push(`Modificata con la patch del 4/11: ${mod.map((m) => m.note).join(" ")}`);
     if (card.boosted && card.crimson)
@@ -258,6 +280,13 @@ export function laneCards(r: Replay, lane: LabTierOrNone, k: number): ReplayCard
   return r.cards
     .filter((c) => c.cells[k].tier === lane)
     .sort((a, b) => (b.cells[k].lo ?? -1) - (a.cells[k].lo ?? -1) || b.cells[k].games - a.cells[k].games);
+}
+
+/** le parole del replay: Leggendarie o carte base */
+export function noun(r: Replay) {
+  return r.kind === "card"
+    ? { one: "carta", many: "carte", none: "Nessuna carta", col: "Carta", share: "Nei mazzi", status: "Regola di prova" }
+    : { one: "Leggendaria", many: "Leggendarie", none: "Nessuna Leggendaria", col: "Leggendaria", share: "Quota", status: "Regola applicata" };
 }
 
 /** quante Leggendarie cambiano fascia arrivando al fotogramma k */

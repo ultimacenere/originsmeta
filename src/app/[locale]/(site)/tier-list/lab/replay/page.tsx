@@ -5,6 +5,7 @@ import { pageMeta, resolveLocale, type LocaleParams } from "@/lib/page";
 import { loadLabData } from "@/lib/tierLab/data";
 import { ReplayStage } from "@/components/tierLab/replay/ReplayStage";
 import { ReplayTable } from "@/components/tierLab/replay/ReplayTable";
+import { ReplayTabs } from "@/components/tierLab/replay/ReplayTabs";
 import { buildReplay, fmtInt } from "@/components/tierLab/replay/frames";
 
 /**
@@ -41,6 +42,7 @@ export default async function ReplayPage({ params }: { params: LocaleParams }) {
         <Link href={href(locale, "/tier-list/lab")} className="tlr-back">
           Tutti i prototipi
         </Link>
+        <ReplayTabs locale={locale} current="legendaries" />
         <p className="tlr-intro-text">
           Solo il primo fotogramma è una tier list pubblicata: le fasce del {data.officialReadLabel}, patch del 4/11,{" "}
           {fmtInt(locale, data.officialGames)} partite. Gli altri tre sono la regola del 9/11 applicata ai numeri di
