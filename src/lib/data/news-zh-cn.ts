@@ -14,6 +14,19 @@ import type { NewsCopy } from "./news-fr";
  * tengono i due punti latini: `markSpeakers` di Markdown.tsx colora solo quelle.
  */
 export const zhCnText: Record<string, NewsCopy> = {
+  "origins-tcg-tier-list-base-cards-patch-replay": {
+    title: "Origins TCG 强度榜现在逐个补丁变化，基础卡也有了档位",
+    metaTitle: "Origins TCG 强度榜：基础卡分档与补丁回放",
+    description: "OriginsMeta 上的 Origins TCG 强度榜现在逐个补丁展示传说卡和基础卡：118 张基础卡依据 Tracker 数据分档，与每个补丁的平均胜率比较，并附有回放、卡牌改动说明和完整的分档规则，方便查看每张卡在各个补丁中的变化和原因。",
+    summary: "OriginsMeta 的强度榜变成了回放：点击播放，传说卡和基础卡从 9 月 29 日到 11 月 23 日逐个补丁换档。基础卡第一次有了档位，与每个补丁的平均胜率比较：最新补丁中有 13 张在 S 档。",
+    highlights: [
+      { label: "基础卡", text: "11 月 23 日补丁中 13 张在 S 档", anchor: "jichu-ka" },
+      { label: "方法", text: "带这张卡的卡组胜率，与补丁平均胜率比较", anchor: "fangfa" },
+      { label: "传说卡", text: "11 月 9 日的强度榜，之后逐个补丁", anchor: "chuanshuo-ka" },
+      { label: "它没说什么", text: "只计入记录的对局；卡组随后推出", anchor: "juxian" },
+    ],
+    body: "从今天起，[Origins TCG 强度榜](/zh-cn/tier-list)变成了回放。点击播放，卡牌逐个补丁在各档之间移动，有改动的卡旁边附有补丁说明。点击一张卡，就能看到它的变化：胜率、每个补丁的档位、为什么移动、社区强度榜和评分。基础卡也第一次有了档位。\n\n## 最新补丁中的基础卡 {#jichu-ka}\n\n在 2026 年 11 月 23 日的补丁中（数据读取于 11 月 27 日），有 13 张基础卡在 S 档：\n\n| 卡牌 | 带这张卡的卡组胜率 | 对局 |\n| --- | --- | --- |\n| [Itsy Bitsy Spider](/zh-cn/cards/itsy-bitsy-spider) | 66.5% | 215 |\n| [Beauty](/zh-cn/cards/beauty) | 63.6% | 382 |\n| [Beast](/zh-cn/cards/beast) | 63.3% | 431 |\n| [Galahad](/zh-cn/cards/galahad) | 62.9% | 353 |\n| [Banshee](/zh-cn/cards/banshee) | 62.5% | 160 |\n| [Humpty](/zh-cn/cards/humpty) | 60.1% | 466 |\n| [Ali Baba](/zh-cn/cards/ali-baba) | 59.9% | 925 |\n| [Thumbelina](/zh-cn/cards/thumbelina) | 59.7% | 318 |\n| [Aladdin](/zh-cn/cards/aladdin) | 58.7% | 189 |\n| [Three Blind Mice](/zh-cn/cards/three-blind-mice) | 58.3% | 216 |\n| [Tin Woodman](/zh-cn/cards/tin-woodman) | 58.2% | 244 |\n| [Bagheera](/zh-cn/cards/bagheera) | 57.9% | 530 |\n| [Roo](/zh-cn/cards/roo) | 56.2% | 1,487 |\n\n该补丁的平均胜率为 51.3%。Beauty、Ali Baba 和 Roo 是 9 月 29 日以来在全部四个补丁中都位于 S 档的仅有的基础卡。11 月 23 日的补丁还很新：118 张基础卡中有 58 张的对局还不足以分档，数据每隔几分钟更新一次。所有卡牌都在[基础卡部分](/zh-cn/tier-list#cards)。\n\n## 基础卡如何分档 {#fangfa}\n\n- **与补丁平均胜率比较，而不是与 50% 比较。** 对卡牌来说，Tracker 只清楚记录者自己的卡组：对手那边只能看到打出的卡。一张卡的胜率是带这张卡的卡组的胜率，而记录者赢下了一半以上的对局：9 月 29 日补丁为 60.1%，11 月 4 日补丁为 56.2%，11 月 17 日为 50.5%，11 月 23 日为 51.3%。所以基准线是补丁的平均胜率。\n- **与传说卡相同的门槛。** 95% 区间的下限高于平均为 S，达到平均为 A，低于平均 5 个百分点以内为 B，10 个百分点以内为 C，更低为 D。不足 100 局：不分档。\n- **是卡组，不是单张卡。** 这个数字也取决于传说卡和卡组中的其他卡牌。\n\n## 逐个补丁的传说卡 {#chuanshuo-ka}\n\n第一帧仍是 11 月 9 日发布的强度榜（[文章](/zh-cn/news/origins-tcg-tier-list-legendaries-november-2026)）。之后各帧把同一规则用于每个补丁的 Tracker 数据，页面将它们标为按规则计算，而不是新发布的强度榜。最大的跳跃来自 King Arthur：在 11 月 17 日补丁从 A 变为 C，随后在 11 月 23 日补丁变为 B。Three Not So Little Pigs 是唯一在每一帧都位于 S 档的传说卡。\n\n## 它没说什么 {#juxian}\n\n- 只计入用 OriginsMeta Tracker 记录的对局，所有队列合并计算。\n- 刚发布的补丁对局很少：档位会在之后几天稳定下来。\n- 这还不是卡组排名：卡组随后推出。在此之前，可以看[卡组](/zh-cn/decks)（有人使用时会显示各自的胜率）和 [Analytics](/zh-cn/analytics) 中的数据。",
+  },
   "state-of-origins-november-2026": {
     title: "State of Origins：带来 Prestige 和 Collector Pass 的 0.9 更新定于 12月8日，12 月起锦标赛不限人数",
     metaTitle: "Origins TCG 0.9 更新 12月8日上线：State of Origins",

@@ -91,8 +91,8 @@ export type Replay = {
 export const dayMonth = (locale: string, iso: string) =>
   new Intl.DateTimeFormat(locale, { day: "numeric", month: "numeric", timeZone: "UTC" })
     .format(new Date(`${iso}T12:00:00Z`))
-    .replace(/(^|D)0(d)/g, "$1$2")
-    .replace(/.$/, "");
+    .replace(/(^|\D)0(\d)/g, "$1$2")
+    .replace(/\.$/, "");
 const dayShortMonth = (locale: string, iso: string) =>
   new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${iso}T12:00:00Z`));
 

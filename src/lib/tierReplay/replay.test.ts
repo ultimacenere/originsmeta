@@ -37,7 +37,18 @@ const frames: typeof import("../../components/tierReplay/frames") = await import
 
 const { tierReplayLabels, fill } = labelsModule;
 const { cardTier, buildCardReplay } = cardFrames;
-const { buildReplay, isShift, whyAt } = frames;
+const { buildReplay, isShift, whyAt, dayMonth } = frames;
+
+describe("date dei fotogrammi", () => {
+  test("giorno e mese in cifre, senza zeri davanti né punto finale, con tutte le cifre", () => {
+    assert.equal(dayMonth("it", "2026-11-04"), "4/11");
+    assert.equal(dayMonth("it", "2026-11-17"), "17/11");
+    assert.equal(dayMonth("it", "2026-09-29"), "29/9");
+    assert.equal(dayMonth("en", "2026-11-23"), "11/23");
+    assert.equal(dayMonth("de", "2026-11-04"), "4.11");
+    assert.equal(dayMonth("ru", "2026-11-17"), "17.11");
+  });
+});
 type CardsData = Parameters<typeof buildCardReplay>[0];
 type LegData = Parameters<typeof buildReplay>[0];
 
