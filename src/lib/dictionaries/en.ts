@@ -371,8 +371,8 @@ export const en = {
        del 25/09/2026), senza "decks" e "cards", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Origins TCG tier list",
     metaTitle: "Origins TCG tier list and meta",
-    intro: "Decks, Legendaries and base cards. OriginsMeta's first tier list, of 9 November 2026, ranks the Legendaries: win rates on the current patch, counting both sides of every game recorded with OriginsMeta Tracker, adjusted by the Crimson Cup. Decks and base cards come next; meanwhile, the live rankings.",
-    description: "Origins TCG tier list (Koin Games), 9 Nov 2026: the Legendaries ranked S to D from win rates on the current patch and the Crimson Cup, plus live rankings.",
+    intro: "Decks, Legendaries and base cards, patch by patch. Legendaries start from OriginsMeta's first tier list, of 9 November 2026: the patch win rates, counting both sides of every game recorded with OriginsMeta Tracker, adjusted with the Crimson Cup; the same rule follows the later patches. Base cards have tiers since 27 November 2026: the win rate of the decks that run them, against the patch average. Decks come next; meanwhile, the live rankings.",
+    description: "Origins TCG tier list (Koin Games): Legendaries and base cards from S to D, patch by patch, from OriginsMeta Tracker win rates and the Crimson Cup.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
     mainText: "The tier list and the live rankings:",
@@ -389,6 +389,7 @@ export const en = {
       "Legendaries: the win rate on the current patch from the games recorded with OriginsMeta Tracker, counting both sides of every game where the opposing Legendary is known.",
       "S if it stays above 50% even at the low end of the 95% interval; A from 50%, B from 45%, C from 40%, D below. Under 100 games: not ranked.",
       "The Crimson Cup moves a Legendary up one tier if it was banned in at least 30% of its matches and reached the finals, unless its card changed afterwards. Every change is dated and explained in a news article.",
+      "Base cards: the win rate of the decks that run them, against the average of all games recorded in the same patch (the Tracker only knows the recorder's deck well). S if the low end of the 95% interval is above the average, A from the average, B down to 5 points below, C down to 10 below, D further down.",
     ],
     tiers: {
       S: "Defines the meta",
@@ -434,7 +435,7 @@ export const en = {
     lineStatus: "Status",
     lineMeasure: "Measure",
     officialSourceText: "win rates on the current patch (Analytics, both sides of every game) and the official Crimson Cup numbers",
-    officialStatusText: "Legendaries ranked on 9 Nov 2026; decks and base cards next",
+    officialStatusText: "Legendaries since 9 Nov 2026, base cards since 27 Nov 2026; decks next",
     officialEmpty: "OriginsMeta tiers come only from tournament results. As of 9 November 2026, the live rankings are:",
     meanwhileDecks: "Meanwhile: the community's best-rated decks",
     meanwhileLegendaries: "Meanwhile: the Legendaries in the most published decks",

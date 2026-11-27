@@ -373,8 +373,8 @@ export const fr: Dictionary = {
        del 25/09/2026), senza "decks" e "cartes", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list Origins TCG",
     metaTitle: "Tier list et meta d'Origins TCG",
-    intro: "Decks, Légendaires et cartes de base. La première tier list d'OriginsMeta, du 9 novembre 2026, classe les Légendaires : le win rate du patch en cours, en comptant les deux côtés de chaque partie enregistrée avec OriginsMeta Tracker, corrigé par la Crimson Cup. Les decks et les cartes de base suivront ; en attendant, les classements en direct.",
-    description: "Tier list d'Origins TCG (Koin Games), 9 nov. 2026 : les Légendaires de S à D selon le win rate du patch en cours et la Crimson Cup, et classements en direct.",
+    intro: "Decks, Légendaires et cartes de base, patch après patch. Les Légendaires partent de la première tier list d’OriginsMeta, du 9 novembre 2026 : les win rates du patch, en comptant les deux côtés de chaque partie enregistrée avec OriginsMeta Tracker, corrigés avec la Crimson Cup ; la même règle suit les patchs suivants. Les cartes de base ont des tiers depuis le 27 novembre 2026 : le win rate des decks qui les contiennent, face à la moyenne du patch. Les decks arrivent ensuite ; en attendant, les classements en direct.",
+    description: "Tier list Origins TCG (Koin Games) : Légendaires et cartes de base de S à D patch après patch, d’après les win rates d’OriginsMeta Tracker et la Crimson Cup.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
     mainText: "La tier list et les classements en direct :",
@@ -391,6 +391,7 @@ export const fr: Dictionary = {
       "Légendaires : le win rate du patch en cours d'après les parties enregistrées avec OriginsMeta Tracker, en comptant les deux côtés de chaque partie où la Légendaire adverse est connue.",
       "S si elle reste au-dessus de 50 % même à la borne basse de l'intervalle à 95 % ; A dès 50 %, B dès 45 %, C dès 40 %, D en dessous. Moins de 100 parties : pas classée.",
       "La Crimson Cup fait monter une Légendaire d'un tier si elle a été bannie dans au moins 30 % de ses parties et a atteint les finales, sauf si sa carte a changé depuis. Chaque changement est daté et expliqué dans une actu.",
+      "Cartes de base : le win rate des decks qui les contiennent, face à la moyenne de toutes les parties enregistrées dans le même patch (le Tracker ne connaît bien que le deck de celui qui enregistre). S si le bas de l’intervalle à 95 % est au-dessus de la moyenne, A à partir de la moyenne, B jusqu’à 5 points en dessous, C jusqu’à 10 en dessous, D plus bas.",
     ],
     tiers: {
       S: "Définit la meta",
@@ -436,7 +437,7 @@ export const fr: Dictionary = {
     lineStatus: "État",
     lineMeasure: "Mesure",
     officialSourceText: "win rate du patch en cours (Analytics, les deux côtés de chaque partie) et chiffres officiels de la Crimson Cup",
-    officialStatusText: "Légendaires classées le 9 nov. 2026 ; decks et cartes de base ensuite",
+    officialStatusText: "Légendaires depuis le 9 nov. 2026, cartes de base depuis le 27 nov. 2026 ; decks ensuite",
     officialEmpty: "Les tiers d'OriginsMeta viennent uniquement des résultats des tournois. Au 9 novembre 2026, les classements en direct sont :",
     meanwhileDecks: "En attendant : les decks les mieux notés par la communauté",
     meanwhileLegendaries: "En attendant : les Légendaires présentes dans le plus de decks publiés",

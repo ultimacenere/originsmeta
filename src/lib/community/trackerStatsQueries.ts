@@ -247,3 +247,40 @@ export async function readListWinrates(opts: { throwOnError?: boolean } = {}): P
     return null;
   }
 }
+
+/**
+ * Replay delle patch di /tier-list (26/11/2026): gli scontri fra Leggendarie di una patch
+ * precisa, per confrontare le patch. Sola lettura; null se il database non risponde o prima della migrazione.
+ */
+export async function readTrackerMatchups(patch: PatchId): Promise<MatchupStat[] | null> {
+  const db = statsClient();
+  if (!db) return null;
+  try {
+    const data = await part(db, patch, "matchups");
+    if (data === "missing") return null;
+    return parseMatchupStats(data).filter((m) => isLegendaryKey(m.legendary) && isLegendaryKey(m.opponent));
+  } catch (error) {
+    console.warn(`[tier-lab] scontri ${patch}: ${error instanceof Error ? error.message : error}`);
+    return null;
+  }
+}
+
+/**
+ * Replay delle carte base di /tier-list (27/11/2026): le carte di una patch precisa (mazzi che
+ * le contengono, dal lato di chi registra) e la media di chi registra nella stessa patch. Sola lettura; null se il
+ * database non risponde o prima della migrazione.
+ */
+export async function readTrackerCards(patch: PatchId): Promise<{ games: number; wins: number; cards: CardStat[] } | null> {
+  const db = statsClient();
+  if (!db) return null;
+  try {
+    const [ov, rows] = await Promise.all([part(db, patch, "overview"), part(db, patch, "cards")]);
+    if (ov === "missing" || rows === "missing") return null;
+    const overview = parseOverview(ov);
+    if (!overview) return null;
+    return { games: overview.games, wins: overview.wins, cards: parseCardStats(rows).filter((c) => !isLegendaryKey(c.card)) };
+  } catch (error) {
+    console.warn(`[tier-lab] carte ${patch}: ${error instanceof Error ? error.message : error}`);
+    return null;
+  }
+}

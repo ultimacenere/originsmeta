@@ -314,7 +314,7 @@ Im geschlossenen Playtest wurde ein Deck laut Spielern im Steam-Forum am 14. Sep
 
 ## Was OriginsMeta mit Ranked vorhat {#originsmeta}
 
-Die Finals der Crimson Cup wurden am 25. Oktober 2026 gespielt. Am 9. November 2026 hat OriginsMeta seine erste [Tier-List](/de/tier-list) veröffentlicht, die der Legendären: Win-Rates des aktuellen Patches aus den mit OriginsMeta Tracker aufgezeichneten Spielen, beide Seiten jedes Spiels gezählt ([Analytics](/de/analytics)), korrigiert durch den Crimson Cup. Decks und Basiskarten folgen.
+Die Finals der Crimson Cup wurden am 25. Oktober 2026 gespielt. Am 9. November 2026 hat OriginsMeta seine erste [Tier-List](/de/tier-list) veröffentlicht, die der Legendären: Win-Rates des aktuellen Patches aus den mit OriginsMeta Tracker aufgezeichneten Spielen, beide Seiten jedes Spiels gezählt ([Analytics](/de/analytics)), korrigiert durch den Crimson Cup. Seit dem 27. November 2026 haben auch die Basiskarten ihre Tiers, aus der Win-Rate der Decks, die sie enthalten, gegenüber dem Schnitt des Patches; Decks folgen.
 
 ## Was wir noch nicht wissen {#was-wir-nicht-wissen}
 

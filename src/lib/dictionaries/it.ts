@@ -365,8 +365,8 @@ export const it: Dictionary = {
        del 25/09/2026), senza "mazzi" e "carte", che sono di /decks e /cards (revisione dell'Ondata 1) */
     title: "Tier list di Origins TCG",
     metaTitle: "Tier list e meta di Origins TCG",
-    intro: "Mazzi, Leggendarie e carte base. La prima tier list di OriginsMeta, del 9 novembre 2026, classifica le Leggendarie: i win rate della patch in corso, contando i due lati di ogni partita registrata con OriginsMeta Tracker, corretti con la Crimson Cup. Mazzi e carte base arrivano dopo; intanto, le classifiche vive.",
-    description: "Tier list di Origins TCG (Koin Games), 9 nov 2026: le Leggendarie da S a D dai win rate della patch in corso e dalla Crimson Cup, più le classifiche vive.",
+    intro: "Mazzi, Leggendarie e carte base, patch dopo patch. Le Leggendarie partono dalla prima tier list di OriginsMeta, del 9 novembre 2026: i win rate della patch, contando i due lati di ogni partita registrata con OriginsMeta Tracker, corretti con la Crimson Cup; la stessa regola segue le patch dopo. Le carte base hanno fasce dal 27 novembre 2026: il win rate dei mazzi che le contengono, contro la media della patch. I mazzi arrivano dopo; intanto, le classifiche vive.",
+    description: "Tier list di Origins TCG (Koin Games): Leggendarie e carte base da S a D patch dopo patch, dai win rate di OriginsMeta Tracker e dalla Crimson Cup.",
     /* testo dei link verso /tier-list e /decks dalle pagine vicine (community, più giocate); la classifica non c'è ancora
        e il testo non la promette (revisione dell'Ondata 1) */
     mainText: "La tier list e le classifiche vive:",
@@ -383,6 +383,7 @@ export const it: Dictionary = {
       "Leggendarie: il win rate della patch in corso dalle partite registrate con OriginsMeta Tracker, contando i due lati di ogni partita in cui la Leggendaria avversaria è nota.",
       "S se resta sopra il 50% anche nel bordo basso dell'intervallo al 95%; A dal 50%, B dal 45%, C dal 40%, D sotto. Sotto le 100 partite: non classificata.",
       "La Crimson Cup alza una Leggendaria di una fascia se è stata bannata in almeno il 30% delle sue partite ed è arrivata alle finali, a meno che la carta sia cambiata dopo. Ogni spostamento è datato e spiegato in una news.",
+      "Carte base: il win rate dei mazzi che le contengono, contro la media di tutte le partite registrate nella stessa patch (il Tracker conosce bene solo il mazzo di chi registra). S se il bordo basso dell'intervallo al 95% sta sopra la media, A dalla media, B fino a 5 punti sotto, C fino a 10 sotto, D più in basso.",
     ],
     tiers: {
       S: "Definisce il meta",
@@ -428,7 +429,7 @@ export const it: Dictionary = {
     lineStatus: "Stato",
     lineMeasure: "Misura",
     officialSourceText: "win rate della patch in corso (Analytics, i due lati di ogni partita) e numeri ufficiali della Crimson Cup",
-    officialStatusText: "Leggendarie classificate il 9 nov 2026; mazzi e carte base dopo",
+    officialStatusText: "Leggendarie dal 9 nov 2026, carte base dal 27 nov 2026; mazzi dopo",
     officialEmpty: "Le fasce di OriginsMeta nascono solo dai risultati dei tornei. Al 9 novembre 2026 le classifiche vive sono:",
     meanwhileDecks: "Intanto: i mazzi più votati dalla community",
     meanwhileLegendaries: "Intanto: le Leggendarie nei mazzi più pubblicati",
