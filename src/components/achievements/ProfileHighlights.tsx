@@ -72,6 +72,7 @@ export async function ProfileHighlights({
   decks,
   tierLists,
   locale,
+  withStats = true,
 }: {
   profileId: string;
   memberSince: string | null;
@@ -80,9 +81,11 @@ export async function ProfileHighlights({
   decks: readonly CommunityDeck[];
   tierLists: readonly TierListLike[];
   locale: Locale;
+  /** false sulla pagina /u «In onda» (27/11/2026): i numeri della vetrina stanno nel tabellone in testa */
+  withStats?: boolean;
 }) {
   const showcase = isShowcaseBadge(badge);
-  const [remote, stats] = await Promise.all([readAchievementFacts(profileId), showcase ? readPublicStats(profileId) : Promise.resolve(null)]);
+  const [remote, stats] = await Promise.all([readAchievementFacts(profileId), showcase && withStats ? readPublicStats(profileId) : Promise.resolve(null)]);
   const local: LocalFacts = {
     memberSince,
     decks: decks.map((d) => ({ created_at: d.created_at, votes: d.rating?.votes ?? 0, avg: d.rating?.avg ?? 0, fullGuide: deckIndexable(d) })),
