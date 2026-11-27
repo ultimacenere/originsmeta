@@ -1,0 +1,609 @@
+/*
+  Prototipo 2 «In onda» (27/11/2026): sopra le fasce .an-* di /analytics, i pezzi della pagina utente. Tutte le classi
+  iniziano con .onda-. Un solo livello di cornice; niente bianco né nero pieni; con "riduci animazioni" tutto fermo;
+  a 375 px niente scorrimento orizzontale.
+*/
+@layer components {
+  .onda {
+    --onda-accent: var(--color-sky);
+  }
+
+  /* ---------- sottopancia ---------- */
+  .onda-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .onda-hero-grid {
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 40px;
+    }
+  }
+  .onda-hero-main {
+    min-width: 0;
+  }
+  .onda-lt {
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+    animation: onda-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .onda-lt-photo {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    align-self: center;
+    padding: 4px;
+    border-radius: 50%;
+    background: var(--onda-accent);
+    box-shadow: 0 10px 24px -12px rgba(14, 7, 31, 0.9);
+  }
+  .onda-lt-text {
+    min-width: 0;
+    flex: 1 1 auto;
+    margin-left: -18px;
+  }
+  /* la barra del nome, storta come le grafiche dei cast */
+  .onda-lt-name {
+    position: relative;
+    margin: 0;
+    padding: 6px 16px 6px 30px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--onda-accent) 30%, var(--color-night)) 0%, var(--color-night-2) 75%);
+    border-left: 6px solid var(--onda-accent);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: var(--title-leading);
+    color: var(--color-chalk);
+    overflow-wrap: anywhere;
+  }
+  @media (min-width: 640px) {
+    .onda-lt-name {
+      font-size: 2.1rem;
+      padding-right: 34px;
+    }
+  }
+  .onda-lt-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 0 12px;
+    padding: 4px 22px 4px 24px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    font: 700 0.8rem/1.3 var(--font-display);
+    font-variant-numeric: tabular-nums;
+  }
+  .onda-blurb {
+    margin-top: 16px;
+    max-width: 60ch;
+    color: var(--color-pale);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+  .onda-hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin-top: 16px;
+  }
+  .onda-hero-tags:empty {
+    display: none;
+  }
+  .onda-heart {
+    justify-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 190px;
+    margin: 0;
+    animation: onda-in 0.7s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  @media (min-width: 768px) {
+    .onda-heart {
+      width: 220px;
+    }
+  }
+  .onda-heart > a {
+    display: block;
+    width: 100%;
+    border-radius: 12px;
+  }
+  .onda-heart-card {
+    width: 100%;
+  }
+  .onda-heart figcaption {
+    font-size: 1.15rem;
+    text-align: center;
+  }
+
+  /* ---------- scoreboard ---------- */
+  .onda-score {
+    margin-top: 32px;
+  }
+  .onda-score-src {
+    margin-left: auto;
+    font: 600 0.74rem var(--font-display);
+    color: var(--color-pale-muted);
+  }
+  .onda-cell-label {
+    font: 700 0.82rem/1.25 var(--font-display);
+  }
+  .onda-note {
+    max-width: 70ch;
+  }
+  .onda-empty {
+    margin-top: 28px;
+    font: 700 1.05rem var(--font-display);
+    color: var(--color-pale);
+  }
+
+  /* ---------- testate ---------- */
+  .onda-h2 {
+    font-family: var(--font-title);
+    font-size: 1.35rem;
+    line-height: var(--title-leading);
+  }
+  @media (min-width: 640px) {
+    .onda-h2 {
+      font-size: 1.6rem;
+    }
+  }
+
+  /* ---------- classifica dei mazzi ---------- */
+  .onda-sorts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .onda-sort {
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 2px solid var(--color-night-3);
+    background: var(--color-night-2);
+    color: var(--color-pale);
+    font: 700 0.88rem var(--font-display);
+    cursor: pointer;
+  }
+  .onda-sort:hover {
+    border-color: var(--color-sky);
+  }
+  .onda-sort[aria-pressed="true"] {
+    background: var(--color-sky);
+    border-color: var(--color-sky);
+    color: var(--color-ink);
+  }
+  .onda-board {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .onda-row + .onda-row {
+    border-top: 2px solid var(--color-night-3);
+  }
+  .onda-row-btn {
+    display: grid;
+    grid-template-columns: 30px 44px minmax(0, 1fr) 28px;
+    grid-template-areas:
+      "pos leg name mark"
+      "stat stat stat stat";
+    align-items: center;
+    gap: 10px 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 12px 14px;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .onda-row-btn:hover,
+  .onda-row.is-open .onda-row-btn {
+    background: rgba(63, 196, 232, 0.07);
+  }
+  .onda-row-btn:focus-visible {
+    outline: 3px solid var(--color-mint);
+    outline-offset: -3px;
+  }
+  @media (min-width: 900px) {
+    .onda-row-btn {
+      grid-template-columns: 40px 48px minmax(0, 1.2fr) minmax(0, 1fr) 28px;
+      grid-template-areas: "pos leg name stat mark";
+      gap: 16px;
+      padding: 12px 20px;
+    }
+  }
+  .onda-pos {
+    grid-area: pos;
+    font: 800 1.9rem/1 var(--font-display);
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-sky);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .onda-row:first-child .onda-pos {
+    -webkit-text-stroke-color: var(--color-gold);
+  }
+  .onda-row-leg {
+    grid-area: leg;
+  }
+  .onda-row-leg img,
+  .onda-row-leg-none {
+    display: block;
+    width: 44px;
+    height: auto;
+    aspect-ratio: 5 / 7;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+  .onda-row-leg-none {
+    background: var(--color-night-3);
+  }
+  .onda-row-name {
+    grid-area: name;
+    min-width: 0;
+  }
+  .onda-row-title {
+    display: block;
+    font: 700 1.02rem/1.3 var(--font-display);
+    color: var(--color-sky);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .onda-row-sub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    margin-top: 2px;
+    font-size: 0.8rem;
+    color: var(--color-pale-muted);
+  }
+  .onda-row-legname {
+    flex: 0 1 auto;
+  }
+  .onda-row-stat {
+    grid-area: stat;
+    min-width: 0;
+  }
+  .onda-row-nums {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+    color: var(--color-pale-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .onda-row-nums b {
+    font: 800 1.3rem/1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-chalk);
+  }
+  .onda-form {
+    align-self: center;
+  }
+  .onda-row-mark {
+    grid-area: mark;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-night-3);
+    color: var(--color-chalk);
+    font: 700 1.1rem/1 var(--font-mono);
+  }
+  .onda-row-more {
+    padding: 4px 14px 18px;
+    background: rgba(63, 196, 232, 0.07);
+  }
+  @media (min-width: 900px) {
+    .onda-row-more {
+      padding: 4px 20px 20px 124px;
+    }
+  }
+  .onda-row-more[hidden] {
+    display: none;
+  }
+  .onda-row-cards {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+  }
+  @media (min-width: 640px) {
+    .onda-row-cards {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      max-width: 780px;
+    }
+  }
+  .onda-row-cards a {
+    display: block;
+    border-radius: 5px;
+  }
+  .onda-row-cards img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 7;
+    object-fit: contain;
+    border-radius: 5px;
+    background: var(--color-night-2);
+  }
+  .onda-row-cards a:hover img,
+  .onda-row-cards a:focus-visible img {
+    outline: 2px solid var(--color-mint);
+  }
+  .onda-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    margin-top: 14px;
+  }
+  .onda-tap {
+    min-height: 44px;
+  }
+  .onda-row-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 0.8rem;
+    color: var(--color-pale-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .onda-idle {
+    margin-top: 28px;
+  }
+  .onda-idle-label {
+    font: 700 0.92rem var(--font-display);
+    color: var(--color-pale);
+  }
+  .onda-idle-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    margin: 10px 0 0;
+    padding: 0;
+  }
+  .onda-idle-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    max-width: 100%;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: var(--color-night-2);
+    color: var(--color-chalk);
+    font: 600 0.86rem var(--font-display);
+    text-decoration: none;
+  }
+  .onda-idle-link span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .onda-idle-link:hover,
+  .onda-idle-link:focus-visible {
+    color: var(--color-mint);
+  }
+
+  /* ---------- contro il meta ---------- */
+  .onda-vs {
+    list-style: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+    margin: 26px 0 0;
+    padding: 0;
+  }
+  @media (min-width: 1024px) {
+    .onda-vs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 30px 48px;
+    }
+  }
+  .onda-vs-row {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+  .onda-vs-card {
+    display: block;
+    border-radius: 6px;
+  }
+  .onda-vs-body {
+    min-width: 0;
+  }
+  .onda-vs-bars {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-areas: none;
+    align-items: center;
+    gap: 4px 10px;
+    margin-top: 10px;
+  }
+  .onda-vs-lbl {
+    font: 700 0.78rem var(--font-display);
+    color: var(--color-pale-muted);
+  }
+  .onda-vs-num {
+    grid-column: 2;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
+    color: var(--color-pale-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .onda-vs-num b {
+    font: 800 0.98rem var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-chalk);
+  }
+  .onda-vs-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    margin-top: 6px;
+    font-size: 0.92rem;
+    color: var(--color-pale);
+  }
+  .onda-vs-diff {
+    font: 800 1.15rem var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .onda-vs-diff.is-up {
+    color: var(--color-good);
+  }
+  .onda-vs-diff.is-down {
+    color: var(--color-bad);
+  }
+  .onda-vs-diff.is-even {
+    color: var(--color-chalk-muted);
+  }
+
+  /* ---------- esempio delle partite personali: tratteggio, cornice a trattini ---------- */
+  .onda-ex {
+    margin-top: 22px;
+    padding: 18px;
+    border: 3px dashed var(--color-chalk-muted);
+    border-radius: 14px;
+    background: repeating-linear-gradient(135deg, rgba(232, 236, 245, 0.035) 0 10px, transparent 10px 20px);
+  }
+  @media (min-width: 640px) {
+    .onda-ex {
+      padding: 24px 28px;
+    }
+  }
+  .onda-ex-warn {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    font-size: 0.9rem;
+    color: var(--color-chalk);
+  }
+  .onda-ex-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 26px;
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: var(--color-pale-muted);
+  }
+  .onda-ex-top b {
+    margin-right: 4px;
+    font: 800 1.9rem/1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-chalk-muted);
+  }
+  .onda-ex-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    margin: 18px 0 0;
+    padding: 0;
+  }
+  @media (min-width: 900px) {
+    .onda-ex-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 40px;
+    }
+  }
+  .onda-ex-row {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .onda-ex-row .an-card {
+    filter: saturate(0.55);
+  }
+  .onda-ex-name {
+    font: 700 0.98rem var(--font-display);
+    color: var(--color-chalk);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .onda-ex-sub {
+    margin-top: 2px;
+    font-size: 0.8rem;
+    color: var(--color-pale-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .onda-mastery {
+    display: grid;
+    justify-items: end;
+    gap: 4px;
+  }
+  .onda-mastery-lvl {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    color: var(--color-pale-muted);
+    font-size: 0.8rem;
+  }
+  .onda-mastery-lvl .pen-num {
+    font-size: 2rem;
+  }
+  .onda-pips {
+    display: flex;
+    gap: 3px;
+  }
+  .onda-pips i {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    transform: rotate(45deg);
+    background: var(--color-night-3);
+  }
+  .onda-pips i.is-on {
+    background: var(--color-mint);
+  }
+  .onda-mastery-next {
+    font-size: 0.72rem;
+    color: var(--color-pale-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes onda-in {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .onda-lt,
+    .onda-heart {
+      animation: none;
+    }
+  }
+}

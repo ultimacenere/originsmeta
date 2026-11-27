@@ -1,0 +1,332 @@
+/* Prototipo «Il mazzo dei traguardi» (pagina utente, 27/11/2026). Tutte le classi con il prefisso ct-. */
+
+/* ---------- rarità: il colore della gemma (decise da noi, mai in percentuale) ---------- */
+.ct-r-common .omg-card {
+  --omg-gem-ring-hi: #f4f5fa;
+  --omg-gem-ring: #b4b8c8;
+  --omg-gem-ring-lo: #6d7287;
+}
+.ct-r-rare .omg-card {
+  --omg-gem-ring-hi: #a6ecfd;
+  --omg-gem-ring: #3fc4e8;
+  --omg-gem-ring-lo: #1a7fa3;
+}
+.ct-r-epic .omg-card {
+  --omg-gem-ring-hi: #f7b6ff;
+  --omg-gem-ring: #c25ce6;
+  --omg-gem-ring-lo: #7a2aa6;
+}
+.ct-r-legendary .omg-card {
+  --omg-gem-ring-hi: #ffe873;
+  --omg-gem-ring: #f3b51c;
+  --omg-gem-ring-lo: #b9790a;
+}
+
+/* ---------- la carta dell'iscritto: nostra, con la cornice menta (non sembra una carta del gioco) ---------- */
+.ct-me .omg-card {
+  --omg-frame-hi: #e6fff8;
+  --omg-frame: #31e3bd;
+  --omg-frame-lo: #17a689;
+  --omg-plate: #1d2b48;
+  --omg-body-top: #1b2640;
+  --omg-body: #162036;
+  --omg-body-low: #0f1729;
+  --omg-dash: #31e3bd;
+}
+.ct-me .omg-text {
+  font-weight: 600;
+}
+.ct-me-card {
+  width: 15rem;
+  max-width: 78vw;
+  margin: 0 auto;
+}
+@media (min-width: 1024px) {
+  .ct-me-card {
+    width: 100%;
+    max-width: none;
+  }
+}
+.ct-links ul {
+  justify-content: inherit;
+}
+
+/* ---------- la riga dei conteggi, come nel deck builder: 1 Leggendaria + 24 copie ---------- */
+.ct-count {
+  display: grid;
+  grid-template-columns: repeat(25, minmax(0, 1fr));
+  gap: 3px;
+  margin-top: 0.75rem;
+}
+.ct-count span {
+  height: 10px;
+  border-radius: 3px;
+  background: var(--color-night-3);
+}
+.ct-count span.is-on {
+  background: var(--color-mint);
+}
+.ct-count span.is-leg {
+  background: var(--color-gold);
+}
+
+/* ---------- filtro ---------- */
+.ct-filter {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+@media (min-width: 640px) {
+  .ct-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+.ct-filter-btn {
+  min-height: 44px;
+  padding: 0 0.6rem;
+  white-space: nowrap;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--color-chalk);
+  background: var(--color-night-3);
+}
+.ct-filter-btn:hover {
+  color: var(--color-mint);
+}
+.ct-filter-btn[aria-pressed="true"] {
+  background: var(--color-mint);
+  color: var(--color-ink);
+}
+.ct-filter-btn:focus-visible,
+.ct-slot:focus-visible,
+.ct-coll-link:focus-visible {
+  outline: 3px solid var(--color-mint);
+  outline-offset: 3px;
+}
+
+/* ---------- le 12 carte ---------- */
+.ct-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem 0.5rem;
+}
+@media (min-width: 640px) {
+  .ct-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem 1rem;
+  }
+}
+.ct-slot {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+.ct-slot-face {
+  display: block;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+.ct-slot:hover .ct-slot-face {
+  transform: translateY(-4px) rotate(-1deg);
+}
+.ct-slot.is-off .ct-slot-face,
+.ct-detail-card.is-off {
+  filter: grayscale(1) brightness(0.55);
+  opacity: 0.8;
+}
+.ct-slot.is-off:hover .ct-slot-face {
+  filter: grayscale(0.6) brightness(0.75);
+}
+.ct-under {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  margin-top: 0.35rem;
+  min-width: 0;
+}
+.ct-under-step {
+  font-size: 0.75rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- le copie: due pallini col colore della rarità ---------- */
+.ct-pips {
+  display: inline-flex;
+  gap: 3px;
+  --pip: #b4b8c8;
+}
+.ct-pips.ct-r-rare {
+  --pip: #3fc4e8;
+}
+.ct-pips.ct-r-epic {
+  --pip: #d27cf0;
+}
+.ct-pips.ct-r-legendary {
+  --pip: #f2d23c;
+}
+.ct-pips span {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 2px solid var(--pip);
+  opacity: 0.55;
+}
+.ct-pips span.is-on {
+  background: var(--pip);
+  opacity: 1;
+}
+.ct-pips--lg span {
+  width: 12px;
+  height: 12px;
+}
+.ct-copy-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  background: var(--color-night-3);
+  color: var(--color-pale-muted);
+}
+.ct-copy-mark.is-on {
+  background: var(--color-mint);
+  color: var(--color-ink);
+}
+
+/* ---------- dettaglio: al centro sul desktop, foglio dal basso sul telefono ---------- */
+.ct-dialog {
+  /* card-night mette position: relative: il dialogo modale resta fisso sullo schermo */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
+  padding: 0;
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  color: var(--color-pale);
+}
+.ct-dialog::backdrop {
+  background: rgba(8, 4, 18, 0.72);
+}
+.ct-dialog-body {
+  padding: 1.25rem;
+}
+.ct-detail {
+  display: grid;
+  gap: 1.25rem;
+}
+.ct-detail-card {
+  width: 10rem;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .ct-filter-btn {
+    padding: 0 1rem;
+    font-size: 0.9rem;
+  }
+  .ct-dialog-body {
+    padding: 1.75rem;
+  }
+  .ct-detail {
+    grid-template-columns: 11rem minmax(0, 1fr);
+    align-items: start;
+  }
+  .ct-detail-card {
+    width: 100%;
+  }
+}
+@media (max-width: 639.98px) {
+  .ct-dialog {
+    margin: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 88dvh;
+    border-bottom-width: 0;
+    border-radius: 16px 16px 0 0;
+  }
+  .ct-dialog-body {
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+}
+.ct-dialog[open] {
+  animation: ct-in 0.18s ease-out;
+}
+@keyframes ct-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- la collezione: una fila che scorre dentro sé stessa sul telefono ---------- */
+.ct-coll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  padding: 0.25rem 0.25rem 0.75rem;
+  margin: 0 -0.25rem;
+}
+.ct-coll-item {
+  flex: none;
+  width: 9.5rem;
+  scroll-snap-align: start;
+}
+@media (min-width: 1024px) {
+  .ct-coll {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    overflow: visible;
+    gap: 1.5rem 1rem;
+  }
+  .ct-coll-item {
+    width: auto;
+  }
+}
+.ct-coll-link {
+  display: block;
+  border-radius: 10px;
+}
+.ct-coll-link .omg-wrap {
+  transition: transform 0.18s ease;
+}
+.ct-coll-link:hover .omg-wrap {
+  transform: translateY(-4px);
+}
+.ct-coll-link:hover span.text-sky {
+  color: var(--color-mint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct-slot-face,
+  .ct-coll-link .omg-wrap {
+    transition: none;
+  }
+  .ct-slot:hover .ct-slot-face,
+  .ct-coll-link:hover .omg-wrap {
+    transform: none;
+  }
+  .ct-dialog[open] {
+    animation: none;
+  }
+}
