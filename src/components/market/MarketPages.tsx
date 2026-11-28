@@ -5,8 +5,8 @@ import { notFound } from "next/navigation";
 import { formatDate, href, type Locale } from "@/lib/i18n";
 import { pageMeta, pageTitleWith } from "@/lib/page";
 import { dropHreflang } from "@/lib/community/deckQuality";
-import { getCard } from "@/lib/data/cards";
-import { MARKET_CRON_MINUTES, MARKET_SOURCES, STEAM_PAGE_SIZE, iconUrl, listingUrl, type MarketSourceId } from "@/lib/market/market";
+import { activeCards, getCard, patchLabel, patchOrder, patches } from "@/lib/data/cards";
+import { MARKET_CRON_MINUTES, MARKET_SOURCES, STEAM_PAGE_SIZE, familyOf, iconUrl, listingUrl, piecePartsOf, searchText, type BoardItem, type MarketSourceId } from "@/lib/market/market";
 import { loadMarketBoard, loadMarketItem, type MarketStatus } from "@/lib/market/queries";
 import { marketAccess } from "@/lib/market/access";
 import { MARKET_PUBLIC } from "@/lib/community/badges";
@@ -14,22 +14,25 @@ import { fillMarket, marketLabels } from "@/lib/marketLabels";
 import { JsonLd, breadcrumbs } from "@/components/JsonLd";
 import { LocalTime } from "@/components/LocalTime";
 import { PageNotes } from "@/components/PageNotes";
-import { Change } from "./Change";
-import { MarketBoard } from "./MarketBoard";
-import { MarketMoney } from "./currency";
-import { PriceChart } from "./PriceChart";
+import { ItemStory, type StoryContext, type StoryTwin } from "./ItemStory";
+import { Showcase, type ShowcaseItem } from "./Showcase";
 
 /**
- * Pagine del tracker dei prezzi del mercato di Steam (17/10/2026): tabellone e scheda di un oggetto, per Origins TCG
+ * Pagine del tracker dei prezzi del mercato di Steam (17/10/2026): la vetrina e la scheda di ogni pezzo, per Origins TCG
  * (/market, /market/<oggetto>) e per la controfigura (/market/demo, /market/demo/<oggetto>: dal 18/10/2026 la
- * collezione Dreams & Nightmares di Counter-Strike 2, per provare il motore prima che apra il mercato di Origins). ISR (`revalidate` nelle rotte), letture in
- * src/lib/market/queries.ts. Indicizzazione: il tabellone di Origins solo con almeno un oggetto, le schede degli oggetti
- * e tutta la controfigura mai (noindex, fuori da hreflang e sitemap). Le schede si indicizzeranno quando vedremo gli
- * oggetti veri (fase 2, decisione di Pierluigi).
+ * collezione Dreams & Nightmares di Counter-Strike 2, per provare il motore). Dal 28/11/2026 (Pierluigi, sulle cinque
+ * proposte del Mercato: "vorrei il tool composto dalla vetrina e la scheda che racconta per ogni carta, quindi vetrina
+ * principale, con anche una ricerca carta magari, poi cliccando sulla carta si finisce in la scheda che racconta") il
+ * tabellone a tabella è diventato la vetrina (Showcase.tsx) e la scheda racconta il pezzo (ItemStory.tsx). ISR
+ * (`revalidate` nelle rotte), letture in src/lib/market/queries.ts. Indicizzazione: la vetrina di Origins solo con
+ * almeno un oggetto, le schede e tutta la controfigura mai (noindex, fuori da hreflang e sitemap).
  */
 
 /** Le schede degli oggetti di Origins si indicizzano? (fase 2: si decide con gli oggetti veri) */
 export const MARKET_ITEMS_INDEXABLE = false;
+
+/** Apertura degli scambi con l'Accesso anticipato, 0.8 (post Steam del 27/10/2026 alle 18:08 UTC, news origins-tcg-early-access-0-8). */
+const EARLY_ACCESS_AT = "2026-10-27T18:08:00Z";
 
 const basePath = (source: MarketSourceId) => (source === "standin" ? "/market/demo" : "/market");
 const latestFx = (fx: { usdPerEur: number }[]) => (fx.length ? fx[fx.length - 1].usdPerEur : null);
@@ -43,6 +46,64 @@ export async function marketBoardMeta(locale: Locale, source: MarketSourceId): P
   const indexable = Boolean(board?.items.length);
   const meta = pageMeta(locale, basePath(source), x.title, x.description, undefined, { noindex: !indexable });
   return indexable ? meta : dropHreflang(meta);
+}
+
+/**
+ * I pezzi come li mostra la vetrina (e i gemelli della scheda): per Origins nome della carta, collezione e livello dal
+ * nome di Steam, rarità; per la controfigura la skin, con usura e StatTrak/Souvenir come etichetta.
+ */
+function showcaseItems(items: readonly BoardItem[], source: MarketSourceId, locale: Locale): ShowcaseItem[] {
+  const l = marketLabels[locale];
+  const kinds = source === "standin" ? l.board.demoKinds : l.board.kinds;
+  return items.map((it) => {
+    const card = source === "origins" && it.card ? getCard(it.card) : undefined;
+    const family = familyOf(source, it);
+    const variant = it.variant ? (l.board.variants[it.variant] ?? it.variant) : null;
+    let title: string;
+    let tags: string[];
+    let rarity: string | null = null;
+    let group: string;
+    if (source === "origins") {
+      const parts = piecePartsOf(it.hash_name, card?.name ?? null);
+      title = card?.name ?? it.name;
+      const tag = parts.set && parts.tier ? `${parts.set} · ${parts.tier}` : (parts.set ?? parts.tier ?? variant);
+      tags = tag ? [tag] : [];
+      rarity = parts.rarity;
+      group = parts.set ?? kinds[it.kind];
+    } else {
+      title = family.replace(/^[a-z]+:/, "");
+      tags = it.kind === "card" && variant ? [variant] : [];
+      group = kinds[it.kind];
+    }
+    return {
+      slug: it.slug,
+      hash: it.hash_name,
+      title,
+      tags,
+      rarity,
+      group,
+      family,
+      icon: MARKET_SOURCES[source].icons ? it.icon : null,
+      fallback: card ? `/cards/${card.slug}.webp` : null,
+      price: it.price,
+      listings: it.listings,
+      lastPrice: it.last_price,
+      lastPriceAt: it.last_price_at,
+      lastSeen: it.last_seen,
+      haystack: searchText([title, it.name, ...tags, it.variant ?? "", it.item_type, rarity ?? ""].join(" ")),
+    };
+  });
+}
+
+/** I segni sul grafico della scheda: l'apertura degli scambi e le patch di bilanciamento (solo Origins). */
+function marketContext(locale: Locale): StoryContext[] {
+  const out: StoryContext[] = [{ t: Date.parse(EARLY_ACCESS_AT), label: marketLabels[locale].story.earlyAccess, patch: false }];
+  for (const id of patchOrder) {
+    const p = patches[id];
+    const t = Date.parse(p.at ?? `${p.date}T12:00:00Z`);
+    if (Number.isFinite(t)) out.push({ t, label: patchLabel(id, locale), patch: true });
+  }
+  return out;
 }
 
 function StatusLine({ locale, status, live }: { locale: Locale; status: MarketStatus | null; live: boolean }) {
@@ -63,6 +124,28 @@ function StatusLine({ locale, status, live }: { locale: Locale; status: MarketSt
           s.neverChecked
         )}
       </p>
+    </div>
+  );
+}
+
+/** La riga sotto il titolo della vetrina: quanti pezzi in vendita adesso, quanti visti e da quando, ultima lettura. */
+function ShowcaseStatus({ locale, items, status }: { locale: Locale; items: readonly BoardItem[]; status: MarketStatus | null }) {
+  const l = marketLabels[locale];
+  const onSale = items.filter((it) => it.price !== null).length;
+  const first = items.map((it) => it.first_seen).filter(Boolean).sort()[0];
+  const fmt = (n: number) => new Intl.NumberFormat(locale).format(n);
+  return (
+    <div className="mkt-status mt-3">
+      <span className={onSale ? "mkt-live" : "font-display font-extrabold text-chalk-muted"}>
+        {onSale ? <span className="mkt-dot" aria-hidden="true" /> : null}
+        {fillMarket(l.showcase.onSale, { n: fmt(onSale) })}
+      </span>
+      {first ? <span>{fillMarket(items.length === 1 ? l.showcase.seenOne : l.showcase.seen, { n: fmt(items.length), day: formatDate(locale, first.slice(0, 10)) })}</span> : null}
+      {status?.lastPageAt ? (
+        <span className="text-pale-muted">
+          {l.showcase.lastRead} <LocalTime iso={status.lastPageAt} locale={locale} utcLabel={l.status.utc} />
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -149,11 +232,26 @@ export async function MarketBoardPage({ locale, source }: { locale: Locale; sour
       />
       {demo ? <DemoBanner locale={locale} /> : null}
       <h1 className="t-page">{h1}</h1>
-      {!board ? <p className="felt-panel-mint mt-6 max-w-3xl p-6 text-pale">{l.status.unavailable}</p> : <StatusLine locale={locale} status={board.status} live={items.length > 0} />}
+      {!board ? (
+        <p className="felt-panel-mint mt-6 max-w-3xl p-6 text-pale">{l.status.unavailable}</p>
+      ) : items.length ? (
+        <ShowcaseStatus locale={locale} items={items} status={board.status} />
+      ) : (
+        <StatusLine locale={locale} status={board.status} live={false} />
+      )}
 
       {items.length ? (
-        <div className="mt-8">
-          <MarketBoard items={items} usdPerEur={latestFx(board!.fx)} locale={locale} labels={l} base={path} icons={MARKET_SOURCES[source].icons} demo={demo} />
+        <div className="mt-6">
+          <Showcase
+            items={showcaseItems(items, source, locale)}
+            cards={source === "origins" ? activeCards.map((c) => ({ slug: c.slug, name: c.name })) : []}
+            usdPerEur={latestFx(board!.fx)}
+            locale={locale}
+            labels={{ showcase: l.showcase, board: l.board, currency: l.currency }}
+            base={path}
+            cardBase={href(locale, "/cards")}
+            wide={demo}
+          />
         </div>
       ) : !demo ? (
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -206,17 +304,16 @@ export async function MarketItemPage({ locale, source, slug }: { locale: Locale;
   const demo = source === "standin";
   const board = href(locale, basePath(source));
   const path = `${board}/${item.slug}`;
-  const rate = latestFx(data.fx);
-  const card = item.card ? getCard(item.card) : undefined;
-  const variant = item.variant ? (l.board.variants[item.variant] ?? item.variant) : null;
-  const icons = MARKET_SOURCES[source].icons;
-  const tiles = [
-    { label: l.item.change24h, before: item.price_24h },
-    { label: l.item.change7d, before: item.price_7d },
-    { label: l.item.change30d, before: item.price_30d },
+  const card = source === "origins" && item.card ? getCard(item.card) : undefined;
+  const [self, ...others] = showcaseItems([item, ...data.siblings.map((s) => s.item)], source, locale);
+  // per Origins l'icona originale di Steam (200×200): le misure più grandi aggiungono solo un margine trasparente
+  const image = self.icon ? iconUrl(self.icon, demo ? 512 : 200) : self.fallback;
+  const twins: StoryTwin[] = [
+    { slug: self.slug, href: null, title: self.title, tags: self.tags, price: item.price, lastPrice: item.last_price, daily: data.daily, self: true },
+    ...others.map((o, i) => ({ slug: o.slug, href: `${board}/${o.slug}`, title: o.title, tags: o.tags, price: o.price, lastPrice: o.lastPrice, daily: data.siblings[i].daily, self: false })),
   ];
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <JsonLd
         data={[
           breadcrumbs([
@@ -228,77 +325,57 @@ export async function MarketItemPage({ locale, source, slug }: { locale: Locale;
       />
       {demo ? <DemoBanner locale={locale} /> : null}
       <Link href={board} className="link-mint text-sm">
-        ← {l.item.back}
+        ← {l.story.back}
       </Link>
-      <div className="mt-4 flex min-w-0 flex-wrap items-center gap-4">
-        {icons && item.icon ? <Image src={iconUrl(item.icon)} alt={item.name} width={200} height={150} className="shrink-0 rounded-lg bg-night-3 object-contain p-2" priority /> : null}
-        <div className="min-w-0 flex-1 basis-64">
-          <h1 className="t-page break-words">{item.name}</h1>
-          <p className="mt-1 text-sm text-pale-muted">{[variant, item.item_type, (demo ? l.board.demoKinds : l.board.kinds)[item.kind]].filter(Boolean).join(" · ")}</p>
-          {card ? (
-            <p className="mt-1 text-sm">
-              <Link href={href(locale, `/cards/${card.slug}`)} className="link-mint">
-                {card.name}
-              </Link>
-            </p>
-          ) : null}
+      <div className="mkt-hero mt-4">
+        <div className={`mkt-hero-img ${demo ? "is-wide" : ""}`}>
+          {image ? <Image src={image} alt={item.name} fill sizes="(min-width: 768px) 180px, 110px" priority className={self.icon ? "is-icon" : ""} /> : null}
         </div>
-        <a href={listingUrl(MARKET_SOURCES[source], item.hash_name)} target="_blank" rel="nofollow noopener noreferrer" className="btn btn-ghost text-xs">
-          {l.item.onSteam} ↗
-        </a>
+        <div className="min-w-0">
+          <h1 className="t-page break-words">{self.title}</h1>
+          {self.tags.length || self.rarity ? (
+            <div className="mkt-tags mt-2">
+              {self.tags.map((t) => (
+                <span key={t} className="mkt-tag">
+                  {t}
+                </span>
+              ))}
+              {self.rarity ? <span className="mkt-tag is-rarity">{self.rarity}</span> : null}
+            </div>
+          ) : null}
+          <p className="mt-2 break-words text-xs text-pale-muted">{item.name}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <a href={listingUrl(MARKET_SOURCES[source], item.hash_name)} target="_blank" rel="nofollow noopener noreferrer" className="btn btn-ghost text-xs">
+              {l.item.onSteam}
+            </a>
+            {card ? (
+              <Link href={href(locale, `/cards/${card.slug}`)} className="btn btn-ghost text-xs">
+                {l.story.cardPage}
+              </Link>
+            ) : null}
+          </div>
+        </div>
       </div>
 
-      <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <div className="card-night col-span-2 p-4 sm:col-span-1">
-          <dt className="kicker text-chalk-muted">{l.item.price}</dt>
-          <dd className="mt-1 font-mono text-xl text-chalk tabular-nums">
-            <MarketMoney cents={item.price} usdPerEur={rate} locale={locale} empty={l.board.noOffers} />
-          </dd>
-          {/* senza offerte, l'ultimo prezzo visto (03/11/2026): dichiarato come tale, non come prezzo di adesso */}
-          {item.price === null && item.last_price !== null ? (
-            <dd className="mt-2 text-xs text-pale-muted">
-              {l.item.lastPrice}:{" "}
-              <span className="font-mono text-pale">
-                <MarketMoney cents={item.last_price} usdPerEur={rate} locale={locale} />
-              </span>
-              {item.last_price_at ? (
-                <>
-                  {" · "}
-                  <LocalTime iso={item.last_price_at} locale={locale} utcLabel={l.status.utc} />
-                </>
-              ) : null}
-            </dd>
-          ) : null}
-        </div>
-        {tiles.map((t) => (
-          <div key={t.label} className="card-night p-4">
-            <dt className="kicker text-chalk-muted">{t.label}</dt>
-            <dd className="mt-1 text-lg">
-              <Change now={item.price} before={t.before} locale={locale} />
-            </dd>
-          </div>
-        ))}
-        <div className="card-night p-4">
-          <dt className="kicker text-chalk-muted">{l.item.listings}</dt>
-          <dd className="mt-1 font-mono text-lg text-chalk tabular-nums">{new Intl.NumberFormat(locale).format(item.listings)}</dd>
-        </div>
-      </dl>
-      <p className="mt-3 text-xs text-pale-muted">
-        {item.first_seen ? `${l.item.firstSeen} ${formatDate(locale, item.first_seen.slice(0, 10))}` : null}
-        {data.status?.lastPageAt ? (
-          <>
-            {" · "}
-            {l.item.lastSeen}: <LocalTime iso={data.status.lastPageAt} locale={locale} utcLabel={l.status.utc} />
-          </>
-        ) : null}
-      </p>
-
-      <section aria-labelledby="market-chart" className="card-night mt-8 p-4 sm:p-6">
-        <h2 id="market-chart" className="t-section mb-4">
-          {l.item.chartTitle}
-        </h2>
-        <PriceChart hourly={data.hourly} daily={data.daily} fx={data.fx} usdPerEur={rate} locale={locale} name={item.name} labels={l.item} currencyLabel={l.currency.label} now={data.at} staleSince={item.price === null ? item.last_price_at : null} />
-      </section>
+      <div className="mt-8">
+        <ItemStory
+          locale={locale}
+          labels={{ story: l.story, ranges: l.item.ranges, table: l.item.table, currency: l.currency.label, noOffers: l.board.noOffers }}
+          name={item.name}
+          family={self.title}
+          price={item.price}
+          listings={item.listings}
+          hourly={data.hourly}
+          daily={data.daily}
+          readHours={data.readHours}
+          fx={data.fx}
+          usdPerEur={latestFx(data.fx)}
+          now={data.at}
+          readAt={data.status?.lastPageAt ?? null}
+          context={source === "origins" ? marketContext(locale) : []}
+          twins={twins}
+        />
+      </div>
 
       <Notes locale={locale} />
     </div>

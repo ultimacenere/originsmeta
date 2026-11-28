@@ -39,6 +39,8 @@ import {
   workflowDispatchRequest,
   sortBoard,
   defaultSortDir,
+  familyOf,
+  piecePartsOf,
   type BoardItem,
   // @ts-expect-error TS5097: Node richiede l'estensione .ts nell'import
 } from "./market.ts";
@@ -73,7 +75,7 @@ const steamRow = (over: Record<string, unknown> = {}, desc: Record<string, unkno
 const steamPage = (results: unknown[], total = results.length) => ({ data: { start: 0, total_count: total, grouping: 1, facets: [], results } });
 
 describe("pagina di Steam", () => {
-  test("legge prezzo senza commissioni, offerte, tipo e icona", () => {
+  test("legge prezzo (commissioni comprese), offerte, tipo e icona", () => {
     const page = parseSearchPage(steamPage([steamRow()], 1));
     assert.deepEqual(page, {
       total: 1,
@@ -324,6 +326,21 @@ describe("tabellone e storico", () => {
     assert.deepEqual(niceTicks(5, 5.4, 4), [5, 6]);
     assert.ok(chartGeometry([5, 5], [0, 1], 100, 100), "prezzo fermo: niente divisione per zero");
     assert.equal(chartGeometry([], [], 100, 100), null);
+  });
+});
+
+describe("famiglie e parti del nome (vetrina, 28/11/2026)", () => {
+  test("Origins: i pezzi di una carta stanno insieme; la controfigura per skin, senza usura né StatTrak", () => {
+    assert.equal(familyOf("origins", { card: "dracula", name: "Unique Dracula Crimson Cup Tournament Card | Top 32", kind: "card" }), "card:dracula");
+    assert.equal(familyOf("standin", { card: null, name: "StatTrak™ AK-47 | Nightwish (Field-Tested)", kind: "card" }), "card:AK-47 | Nightwish");
+    assert.equal(familyOf("standin", { card: null, name: "AK-47 | Nightwish (Factory New)", kind: "card" }), "card:AK-47 | Nightwish");
+    assert.equal(familyOf("standin", { card: null, name: "Dreams & Nightmares Case", kind: "pack" }), "pack:Dreams & Nightmares Case");
+  });
+  test("collezione, livello e rarità dal nome di Steam", () => {
+    assert.deepEqual(piecePartsOf("Dracula Crimson Cup Tournament Card | Top 32_unique", "Dracula"), { set: "Crimson Cup", tier: "Top 32", rarity: "Unique" });
+    assert.deepEqual(piecePartsOf("Lightning Strike GDC 2026 Tournament Card | Top 8_unique", "Lightning Strike"), { set: "GDC 2026", tier: "Top 8", rarity: "Unique" });
+    assert.deepEqual(piecePartsOf("Mulan Alpha Prestige | Prestige III_unique", "Mulan"), { set: "Alpha Prestige", tier: "Prestige III", rarity: "Unique" });
+    assert.deepEqual(piecePartsOf("Merlin", "Merlin"), { set: null, tier: null, rarity: null });
   });
 });
 

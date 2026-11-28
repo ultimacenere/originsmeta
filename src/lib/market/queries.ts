@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { cache } from "react";
 import { supabasePublic } from "@/lib/supabase/public";
-import { boardRows, lastPrice, pastPrices, pricePoints, type BoardItem, type MarketSourceId, type PricePoint } from "./market";
+import { boardRows, familyOf, lastPrice, pastPrices, pricePoints, type BoardItem, type MarketSourceId, type PricePoint } from "./market";
+import { readHoursOf } from "./story";
 
 /**
  * Letture del tracker dei prezzi (17/10/2026) per le pagine /market (ISR): client anonimo con la data cache di 60 s
@@ -15,11 +16,36 @@ import { boardRows, lastPrice, pastPrices, pricePoints, type BoardItem, type Mar
 
 export type MarketStatus = { total: number | null; lastSweepAt: string | null; lastPageAt: string | null; sweeping: boolean };
 export type MarketBoard = { status: MarketStatus | null; items: BoardItem[]; fx: { day: string; usdPerEur: number }[] };
-/** `at`: quando sono stati letti i dati (millisecondi): da qui si contano gli intervalli del grafico, uguali nel server e nel browser. */
-export type MarketItemData = { item: BoardItem; hourly: PricePoint[]; daily: PricePoint[]; fx: { day: string; usdPerEur: number }[]; status: MarketStatus | null; at: number };
+/** Un altro pezzo della stessa famiglia (stessa carta, o stessa skin per la controfigura), con lo storico giornaliero. */
+export type MarketSibling = { item: BoardItem; daily: PricePoint[] };
+/**
+ * `at`: quando sono stati letti i dati (millisecondi): da qui si contano gli intervalli del grafico, uguali nel server e nel browser.
+ * `readHours` (28/11/2026, scheda che racconta): le ore in cui il raccoglitore ha letto la fonte negli ultimi 31 giorni,
+ * per distinguere "letto, nessuna offerta" da "non letto"; null quando la fonte ha troppe righe per leggerle (la
+ * controfigura CS2). `siblings`: gli altri pezzi della stessa famiglia, per i piccoli grafici gemelli.
+ */
+export type MarketItemData = {
+  item: BoardItem;
+  hourly: PricePoint[];
+  daily: PricePoint[];
+  fx: { day: string; usdPerEur: number }[];
+  status: MarketStatus | null;
+  at: number;
+  readHours: number[] | null;
+  siblings: MarketSibling[];
+};
 
 const MISSING = new Set(["42P01", "42883", "PGRST202", "PGRST205"]);
 const PAGE = 1000;
+/** Pagine di ore lette al massimo (5.000 righe): oltre, la fonte è troppo grande e la scheda fa senza. */
+const READ_HOURS_PAGES = 5;
+/** Pezzi gemelli al massimo nella scheda. */
+const SIBLINGS_MAX = 8;
+
+/** Gemelli in ordine: prima quelli in vendita, poi dal prezzo (o dall'ultimo prezzo visto) più alto. */
+function siblingOrder(a: BoardItem, b: BoardItem): number {
+  return Number(b.price !== null) - Number(a.price !== null) || (b.price ?? b.last_price ?? 0) - (a.price ?? a.last_price ?? 0) || a.name.localeCompare(b.name);
+}
 
 type Fixture = Record<string, { status?: MarketStatus; items: unknown[]; history?: Record<string, { hourly?: unknown[]; daily?: unknown[] }> }> & { fx?: { day: string; usd_per_eur: number }[] };
 
@@ -91,6 +117,31 @@ export const loadMarketBoard = cache(async (source: MarketSourceId): Promise<Mar
   }
 });
 
+/**
+ * Le ore in cui il raccoglitore ha letto la fonte da `since` (28/11/2026): le ore con almeno un oggetto. La ricerca di
+ * Steam dà solo gli oggetti con offerte, quindi è il modo per sapere che in un'ora il raccoglitore c'era. Null oltre
+ * `READ_HOURS_PAGES` pagine (la controfigura CS2 ne avrebbe più di 100.000): lì la scheda conosce solo le ore con offerte.
+ */
+async function readSourceHours(source: MarketSourceId, since: string): Promise<number[] | null> {
+  const db = supabasePublic();
+  if (!db) return null;
+  const hours: string[] = [];
+  for (let page = 0; page < READ_HOURS_PAGES; page++) {
+    const rows = check(
+      await db
+        .from("market_prices_hourly")
+        .select("hour")
+        .eq("source", source)
+        .gte("hour", since)
+        .order("hour")
+        .range(page * PAGE, page * PAGE + PAGE - 1),
+    );
+    for (const r of rows ?? []) hours.push((r as { hour: string }).hour);
+    if (!rows || rows.length < PAGE) return readHoursOf(hours);
+  }
+  return null;
+}
+
 /** Un oggetto con il suo storico; null se il tracker non è attivo o l'oggetto non c'è. */
 export const loadMarketItem = cache(async (source: MarketSourceId, slug: string): Promise<MarketItemData | null> => {
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > 120) return null;
@@ -102,7 +153,15 @@ export const loadMarketItem = cache(async (source: MarketSourceId, slug: string)
     const h = pricePoints(s.history?.[item.hash_name]?.hourly, "hour");
     const d = pricePoints(s.history?.[item.hash_name]?.daily, "day");
     const at = Date.now();
-    return { item: { ...item, ...pastPrices(h, d, at), ...lastPrice(h, d) }, hourly: h, daily: d, fx: fxRows(fx.fx), status: s.status ?? null, at };
+    const all = boardRows(s.items);
+    const readHours = readHoursOf(Object.values(s.history ?? {}).flatMap((x) => pricePoints(x.hourly, "hour").map((p) => p.t)));
+    const fam = familyOf(source, item);
+    const siblings = all
+      .filter((i) => i.hash_name !== item.hash_name && familyOf(source, i) === fam)
+      .sort(siblingOrder)
+      .slice(0, SIBLINGS_MAX)
+      .map((i) => ({ item: i, daily: pricePoints(s.history?.[i.hash_name]?.daily, "day") }));
+    return { item: { ...item, ...pastPrices(h, d, at), ...lastPrice(h, d) }, hourly: h, daily: d, fx: fxRows(fx.fx), status: s.status ?? null, at, readHours, siblings };
   }
   const db = supabasePublic();
   if (!db) return null;
@@ -138,10 +197,36 @@ export const loadMarketItem = cache(async (source: MarketSourceId, slug: string)
     }
     const h = pricePoints(hourly, "hour");
     const d = pricePoints(daily, "day");
-    const [status, fxs] = await Promise.all([readStatus(source), readFx()]);
+    const [status, fxs, readHours, board] = await Promise.all([readStatus(source), readFx(), readSourceHours(source, since), loadMarketBoard(source)]);
+    const fam = familyOf(source, base);
+    const sibs = (board?.items ?? [])
+      .filter((i) => i.hash_name !== base.hash_name && familyOf(source, i) === fam)
+      .sort(siblingOrder)
+      .slice(0, SIBLINGS_MAX);
+    const siblingDaily = new Map<string, unknown[]>();
+    if (sibs.length) {
+      const rows = check(
+        await db
+          .from("market_prices_daily")
+          .select("hash_name, day, low, high, close, listings")
+          .eq("source", source)
+          .in(
+            "hash_name",
+            sibs.map((i) => i.hash_name),
+          )
+          .order("day")
+          .range(0, 5 * PAGE - 1),
+      );
+      for (const r of rows ?? []) {
+        const k = (r as { hash_name: string }).hash_name;
+        if (!siblingDaily.has(k)) siblingDaily.set(k, []);
+        siblingDaily.get(k)!.push(r);
+      }
+    }
+    const siblings = sibs.map((i) => ({ item: i, daily: pricePoints(siblingDaily.get(i.hash_name) ?? [], "day") }));
     // le variazioni e l'ultimo prezzo visto con le stesse regole di market_board, dallo storico dell'oggetto
     const at = Date.now();
-    return { item: { ...base, ...pastPrices(h, d, at), ...lastPrice(h, d) }, hourly: h, daily: d, fx: fxs, status, at };
+    return { item: { ...base, ...pastPrices(h, d, at), ...lastPrice(h, d) }, hourly: h, daily: d, fx: fxs, status, at, readHours, siblings };
   } catch (error) {
     if (error instanceof MarketMissing) return null;
     throw error;

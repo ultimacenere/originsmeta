@@ -14,6 +14,12 @@
  */
 export const MARKET_MEMBERS_ONLY: boolean = true;
 /**
+ * Sulle anteprime dei branch il Mercato si vede senza accesso, come Analytics (28/11/2026, vetrina e scheda che
+ * racconta): l'anteprima è già dietro il login di Vercel e lì l'accesso al sito non funziona, quindi si vedrebbe solo la
+ * pagina sfocata. In produzione e in locale vale il muro di sempre (`MARKET_MEMBERS_ONLY`).
+ */
+export const MARKET_PREVIEW_OPEN: boolean = process.env.VERCEL_ENV === "preview";
+/**
  * Sulle anteprime dei branch (Vercel Preview, già dietro il login di Vercel) Analytics è aperta: l'accesso al sito lì non
  * funziona e chi guarda l'anteprima vedrebbe solo la pagina sfocata (27/11/2026, Analytics a sezioni). In produzione e in
  * locale vale come sempre.
@@ -39,6 +45,6 @@ export function membersOnlySection(pathname: string): { locale: string; section:
   const m = /^\/(en|it|es|fr|pt|de|ru|zh-cn)\/(market|analytics)(\/.*)?$/.exec(pathname);
   if (!m) return null;
   const [, locale, section, rest] = m;
-  if (section === "market") return MARKET_MEMBERS_ONLY ? { locale, section } : null;
+  if (section === "market") return MARKET_MEMBERS_ONLY && !MARKET_PREVIEW_OPEN ? { locale, section } : null;
   return ANALYTICS_MEMBERS_ONLY && (!rest || rest === "/" || ANALYTICS_SECTION_RE.test(rest)) ? { locale, section: "analytics" } : null;
 }

@@ -138,7 +138,9 @@ export type SearchPage = { total: number; items: RawMarketItem[]; seen: number; 
  * Una pagina della ricerca del mercato (`{ data: { total_count, results } }` di /market/actions, dal 25/11/2026).
  * Restituisce null se la risposta non è quella attesa o se i prezzi non sono in dollari (lo storico è in centesimi di
  * dollaro: meglio un giro fallito che prezzi in un'altra valuta). Prezzo = `strMinSellSubtotal`, il prezzo più basso
- * senza commissioni, lo stesso numero che dava `sell_price` di market/search/render (controllato il 25/11 sulla cassa
+ * che paga chi compra, commissioni comprese (28/11/2026, dai conti della ricerca: per Dracula Top 32 820,65 $ =
+ * 713,61 $ al venditore + `unSteamFee` 35,68 $, il 5%, + `unPublisherFee` 71,36 $, il 10% del gioco; fino al 28/11
+ * questo commento diceva "senza commissioni"), lo stesso numero che dava `sell_price` di market/search/render (controllato il 25/11 sulla cassa
  * Dreams & Nightmares: 70 l'ultimo giro vecchio, $0.69 il nuovo). Le righe raggruppate (`market_bucket_group_id`: per
  * CS2 Steam unisce usura e StatTrak di una skin in una riga sola, con le offerte di tutto il gruppo e il nome di una
  * variante) si saltano, perché attribuirebbero a una variante i numeri del gruppo; gli oggetti di Origins non sono
@@ -523,6 +525,47 @@ export function sortBoard(items: readonly BoardItem[], key: MarketSortKey, dir: 
     if (va === null || vc === null) return va === vc ? byName(a, c) : va === null ? 1 : -1;
     return sign * (va - vc) || byName(a, c);
   });
+}
+
+/**
+ * La famiglia di un oggetto, per le pile della vetrina (28/11/2026) e per "gli altri pezzi" della scheda: per Origins la
+ * carta del database (tutti i pezzi di Dracula insieme), per la controfigura CS2 la skin senza usura né StatTrak/Souvenir
+ * (tutte le versioni di "AK-47 | Nightwish" insieme); le buste e gli oggetti non riconosciuti stanno da soli.
+ */
+export function familyOf(source: MarketSourceId, item: Pick<BoardItem, "card" | "name" | "kind">): string {
+  if (item.kind !== "card") return `${item.kind}:${item.name}`;
+  if (source === "origins") return item.card ? `card:${item.card}` : `card:${item.name}`;
+  const m = CS2_NAME.exec(item.name);
+  return `card:${m && m[2].includes("|") ? m[2] : item.name}`;
+}
+
+/**
+ * Collezione, livello e rarità di un pezzo di Origins dal nome di Steam (28/11/2026), con le parole di Steam: il nome è
+ * "<Carta> <Collezione> | <Livello>_<rarità>" ("Dracula Crimson Cup Tournament Card | Top 32_unique" → Crimson Cup, Top 32,
+ * Unique; "Mulan Alpha Prestige | Prestige III_unique" → Alpha Prestige, Prestige III). Provvisoria come classifyItem:
+ * si rifà quando arriveranno buste e carte Alpha. Senza le parti riconosciute restituisce null e la pagina usa la variante.
+ */
+export function piecePartsOf(hashName: string, cardName: string | null): { set: string | null; tier: string | null; rarity: string | null } {
+  const m = /^(.*?)(?:_([a-z]+))?$/.exec(hashName.trim());
+  const base = (m?.[1] ?? hashName).trim();
+  const rarity = m?.[2] ? m[2].charAt(0).toUpperCase() + m[2].slice(1) : null;
+  const [left, tier] = base.split(" | ").map((x) => x.trim());
+  let set: string | null = left ?? null;
+  if (set && cardName && set.toLowerCase().startsWith(cardName.toLowerCase() + " ")) set = set.slice(cardName.length).trim();
+  else if (set && cardName && set.toLowerCase() === cardName.toLowerCase()) set = null;
+  if (set) set = set.replace(/\s+Tournament Card$/i, "").trim() || null;
+  return { set, tier: tier || null, rarity };
+}
+
+/** Testo per la ricerca della vetrina (28/11/2026): minuscole, senza accenti né segni (™ ® ©), spazi semplici. */
+export function searchText(s: string): string {
+  return s
+    .replace(/[™®©]/g, "")
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /** Il nome del gruppo di un oggetto nel tabellone: la carta (Origins), il nome (controfigura), o l'oggetto stesso. */
